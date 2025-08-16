@@ -31,7 +31,7 @@
 @import url(../css/plugins/dropzone.css);
 @import url(../css/plugins/select2.css);
 @import url(../css/plugins/slick.css);
-@import url(../css/plugins/slick-theme.css);
+/* @import url(../css/plugins/slick-theme.css); */
 @import url(../css/plugins/magnific-popup.css);
 @import url(../css/plugins/font-awesome.css);
 @import url(../css/plugins/icofont.css);
@@ -2553,7 +2553,7 @@ nav a:hover {
     display: inline-block;
     transition: color .3s, background .3s;
     font-weight: 500;
-	font-size: 14px;
+	font-size: 18px;
 	color:var(--navcolor);
 }
 
@@ -2877,7 +2877,7 @@ nav a {
 .header {
     background: #fff;
     position: relative;
-    padding: 1rem 0;
+    padding: 1rem 0 0 0;
 }
 
 .header-top {
@@ -3139,6 +3139,7 @@ nav a {
 .nav-brand img {
     max-width:135px;
 	position: relative;
+    height: 58px;
 }
 .nav-menu.nav-menu-social .text-invers{
 	color:#ffffff;
@@ -7676,7 +7677,7 @@ h3.pa-name {
     bottom: 0px;
     cursor: pointer;
     border-radius: 4px;
-    background:var(--maincolor)
+    background:var(--maincolor);
     color: #ffffff;
     border: 0;
     font-size: 14px;
