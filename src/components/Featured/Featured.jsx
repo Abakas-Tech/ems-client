@@ -1,6 +1,12 @@
 import React from "react";
-
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import instance from "../../utils/axios";
 function Featured() {
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   return (
     <section className="bg-light">
       <div className="container">
