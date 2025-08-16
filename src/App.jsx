@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
-import Header from "./components/header/header";
 import { useEffect } from "react";
 const JQUERY_CDN_URL = "https://code.jquery.com/jquery-3.6.0.min.js";
 const CUSTOM_JS_FILE_PATH = "/custom.js";
+import Routers from "./router/router.jsx";
 function App() {
   useEffect(() => {
     // Helper function to load a single script
@@ -39,7 +39,7 @@ function App() {
   return (
     <>
       <Router>
-        <Header />
+        <Routers />
       </Router>
     </>
   );
