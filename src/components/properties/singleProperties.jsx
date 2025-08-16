@@ -1,109 +1,118 @@
 import React from "react";
-import { Card, Badge, Button, Carousel } from "react-bootstrap";
+import { Carousel, Badge, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt } from "react-icons/fa";
 
-// SingleProperty component for dynamic rendering in a map loop
 const SingleProperty = ({ property, images }) => {
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
-  // Handle navigation to detail page
   const handleNavigate = () => {
-    navigate(`/property/${property.id}`); // Navigate to detail page
+    navigate(`/property/${property.id}`);
   };
 
-  // Define badge colors for variety
-  const badgeColors = ["bg-primary", "bg-success"];
+  const propertyImages =
+    images && images.length > 0
+      ? images
+      : [
+          {
+            image_url: "https://placehold.co/400x300",
+            alt_text: "Property Image",
+          },
+        ];
 
   return (
-    // Card container for the property, clickable for navigation
-    <Card
-      className="border-0 shadow-sm mb-4 cursor-pointer"
-      onClick={handleNavigate}
-    >
-      // Image and badges container
-      <div className="position-relative">
-        // Render badges for is_urgent and category
-        {property.is_urgent && (
-          <Badge
-            className={`position-absolute top-0 start-0 m-2 ${badgeColors[0]} text-white`}
+    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+      <div className="property-listing list_view style_new border-0 shadow-sm mb-4">
+        <div className="d-flex flex-column flex-lg-row">
+          {/* Image Section */}
+          <div
+            className="listing-img-wrapper position-relative flex-shrink-0"
+            style={{ width: "350px", height: "250px" }}
           >
-            Urgent // Badge for is_urgent
-          </Badge>
-        )}
-        <Badge
-          className={`position-absolute top-0 start-0 m-2 ${
-            property.is_urgent ? "mt-4" : "mt-2"
-          } ${badgeColors[1]} text-white`}
-        >
-          For {property.category} // Badge for category (e.g., For Sale)
-        </Badge>
-        // Carousel for images
-        <Carousel
-          interval={3000}
-          controls={images && images.length > 1}
-          indicators={images && images.length > 1}
-        >
-          {images && images.length > 0 ? (
-            images.map((image, index) => (
-              // Carousel item for each image
-              <Carousel.Item key={index}>
-                <Card.Img
-                  variant="top"
-                  src={image.image_url} // Use image from prop
-                  alt={image.alt_text} // Use alt text from prop
-                  className="rounded-top"
-                />
-              </Carousel.Item>
-            ))
-          ) : (
-            // Empty carousel item if no images
-            <Carousel.Item>
-              <div
-                className="rounded-top bg-gray-200"
-                style={{ height: "200px" }}
-              ></div>{" "}
-              // Empty container
-            </Carousel.Item>
-          )}
-        </Carousel>
+            {/* Badges */}
+            <div className="position-absolute top-0 start-0 ms-3 mt-3 z-1 d-flex">
+              {property.category && (
+                <Badge bg="info" className="me-1">
+                  {property.category}
+                </Badge>
+              )}
+              {property.property_type && (
+                <Badge bg="success">{property.property_type}</Badge>
+              )}
+            </div>
+
+            <Carousel indicators={propertyImages.length > 1} interval={null}>
+              {propertyImages.map((img, idx) => (
+                <Carousel.Item key={idx}>
+                  <a href="#" onClick={handleNavigate}>
+                    <img
+                      src={img.image_url}
+                      alt={img.alt_text}
+                      className="img-fluid w-100 h-100"
+                      style={{ objectFit: "cover" }}
+                    />
+                  </a>
+                </Carousel.Item>
+              ))}
+            </Carousel>
+          </div>
+
+          {/* Details Section */}
+          <div className="list_view_flex p-3 flex-grow-1">
+            <div className="listing-detail-wrapper mt-1">
+              {/* Title */}
+              <h4 className="listing-name mb-2">
+                <a href="#" className="prt-link-detail" onClick={handleNavigate}>
+                  {property.title}
+                </a>
+              </h4>
+
+              {/* Location */}
+              {property.location && (
+                <div className="d-flex align-items-center mb-2">
+                  <FaMapMarkerAlt className="me-2 text-danger" size={18} />
+                  <span className="fw-medium">Location:</span>&nbsp;
+                  {property.location}
+                </div>
+              )}
+
+              {/* Features */}
+              <div className="list-fx-features d-flex flex-wrap align-items-center mt-2">
+                {property.bedrooms && (
+                  <div className="listing-card d-flex align-items-center me-3 mb-1">
+                    <FaBed className="me-1" color="#FF6B6B" size={18} />
+                    <span className="fw-medium">{property.bedrooms} Bedrooms</span>
+                  </div>
+                )}
+                {property.bathrooms && (
+                  <div className="listing-card d-flex align-items-center me-3 mb-1">
+                    <FaBath className="me-1" color="#1DD1A1" size={18} />
+                    <span className="fw-medium">{property.bathrooms} Bathrooms</span>
+                  </div>
+                )}
+                {property.area_size && (
+                  <div className="listing-card d-flex align-items-center mb-1">
+                    <FaRulerCombined className="me-1" color="#54a0ff" size={18} />
+                    <span className="fw-medium">{property.area_size} SQFT</span>
+                  </div>
+                )}
+              </div>
+
+              {/* View Detail Button */}
+              <div className="listing-detail-footer d-flex justify-content-end mt-3">
+                <Button
+                  className="btn btn-md btn-main fw-medium"
+                  onClick={handleNavigate}
+                >
+                  View Detail
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      // Card body for property details
-      <Card.Body className="p-3">
-        // Property type
-        <div className="d-flex justify-content-between mb-2">
-          <span className="text-capitalize font-semibold text-gray-800">
-            {property.title} // Display title (e.g., Cozy Apartment)
-          </span>
-          <span className="text-capitalize font-semibold text-gray-600">
-            {property.property_type} // Display property type (e.g., Apartment)
-          </span>
-        </div>
-        // Property details (status, bedrooms, bathrooms, area size)
-        <div className="d-flex justify-content-between mb-3">
-          <span className="text-gray-600">
-            {property.status} // Display status (e.g., Available)
-          </span>
-          <span className="text-gray-600">
-            {property.bedrooms} Beds // Display bedrooms
-          </span>
-          <span className="text-gray-600">
-            {property.bathrooms} Baths // Display bathrooms
-          </span>
-          <span className="text-gray-600">
-            {property.area_size} SQFT // Display area size
-          </span>
-        </div>
-        // View Detail button
-        <Button
-          variant="primary"
-          className="w-100 rounded-md"
-          onClick={handleNavigate} // Navigate on button click
-        >
-          View Detail
-        </Button>
-      </Card.Body>
-    </Card>
+    </div>
   );
 };
 
-export default SingleProperty; // Export the SingleProperty component
+export default SingleProperty;

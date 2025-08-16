@@ -4,7 +4,7 @@ import { Row, Col, Container } from "react-bootstrap";
 import FilterSidebar from "./filterSideBar";
 import PaginationAndSort from "./paginationAndSort";
 import SingleProperty from "./singleProperties";
-import { getAllProperties} from "../../api/public/properties.api";
+import { getAllProperties } from "../../api/public/properties.api";
 import { getPropertyImages } from "../../api/public/properties.image.api";
 
 const PropertyListPage = () => {
@@ -31,7 +31,6 @@ const PropertyListPage = () => {
 
       if (response.status === "success") {
         const { properties, pagination: pg } = response.data;
-        console.log(response)
         setProperties(properties);
         setPagination(pg);
 
@@ -66,9 +65,20 @@ const PropertyListPage = () => {
           <FilterSidebar onFilterChange={setFilters} />
         </Col>
 
-        {/* Property List */}
-        <Col lg={8} md={12} className="list-layout">
-          <div className="row">
+        {/* Main content */}
+        <Col lg={8} md={12}>
+          <Row>
+            {/* Pagination + Sorting */}
+            <PaginationAndSort
+              pagination={pagination}
+              onPageChange={(page) =>
+                setPagination((prev) => ({ ...prev, page }))
+              }
+              onSortChange={(sort) => setFilters((prev) => ({ ...prev, sort }))}
+              total={pagination.total}
+            />
+
+            {/* Property List */}
             {loading ? (
               <div className="col-12 text-center my-5">
                 <div className="spinner-border text-primary" role="status">
@@ -89,18 +99,7 @@ const PropertyListPage = () => {
                 <p>No properties found.</p>
               </div>
             )}
-          </div>
-
-          {/* Pagination + Sorting */}
-          <div className="shorting_pagination mt-4 d-flex justify-content-between align-items-center">
-            <PaginationAndSort
-              pagination={pagination}
-              onPageChange={(page) =>
-                setPagination((prev) => ({ ...prev, page }))
-              }
-              onSortChange={(sort) => setFilters((prev) => ({ ...prev, sort }))}
-            />
-          </div>
+          </Row>
         </Col>
       </Row>
     </Container>
