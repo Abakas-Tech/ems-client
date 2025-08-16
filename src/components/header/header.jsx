@@ -18,6 +18,7 @@ const Header = () => {
     <header className="header head-shadow">
       <div className="container">
         <nav
+        id="navigation"
           className={`navigation ${
             isPortrait ? "navigation-portrait" : "navigation-landscape"
           }`}
@@ -45,7 +46,6 @@ const Header = () => {
               isOpen ? "nav-menus-wrapper-open" : ""
             }`}
           >
-            <span class="nav-menus-wrapper-close-button">✕</span>
             <ul className="nav-menu align-to-right">
               <li>
                 <Link to="/" className="active">
