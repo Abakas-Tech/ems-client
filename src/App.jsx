@@ -1,10 +1,12 @@
+import { BrowserRouter } from "react-router-dom";
 import "./App.css";
+import PropertyListPage from "./components/properties/properties.list";
 
 function App() {
   return (
-    <>
-      <h1>test</h1>
-    </>
+    <BrowserRouter>
+      <PropertyListPage />
+    </BrowserRouter>
   );
 }
 

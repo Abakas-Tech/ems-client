@@ -3,12 +3,8 @@ import axiosInstance from "../../utils/axios";
 // Get all images for a property
 export const getPropertyImages = async (propertyId) => {
   try {
-    const token = localStorage.getItem("authToken");
     const response = await axiosInstance.get(
-      `/properties/${propertyId}/images`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
+      `/properties/${propertyId}/images`
     );
     return response.data;
   } catch (error) {

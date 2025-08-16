@@ -3,12 +3,8 @@ import axiosInstance from "../../utils/axios";
 // Get all properties (with optional query params)
 export const getAllProperties = async (params = {}) => {
   try {
-    const token = localStorage.getItem("authToken");
     const response = await axiosInstance.get("/properties", {
       params,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
     return response.data;
   } catch (error) {
