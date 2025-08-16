@@ -2,16 +2,20 @@ import React from "react";
 
 const FeaturedCard = ({ property }) => {
   const {
+    id,
     title,
     location,
     is_featured,
     status,
+    property_type,
+    is_urgent,
     area_size,
-    bedrooms,
+      bedrooms,
+    tags,
     bathrooms,
     features,
-    tags,
     coordinates,
+    image_url,
   } = property;
 
   const parsedCoordinates =
@@ -20,9 +24,9 @@ const FeaturedCard = ({ property }) => {
   return (
     <div className="property-listing property-1 bg-white p-2 rounded">
       <div className="listing-img-wrapper">
-        <a href={`/properties/${property.id}`}>
+        <a href={`/properties/${id}`}>
           <img
-            src={property.image_url || "https://placehold.co/1280x850"}
+            src={image_url || "https://placehold.co/1280x850"}
             className="img-fluid mx-auto rounded"
             alt={title}
           />
@@ -33,25 +37,36 @@ const FeaturedCard = ({ property }) => {
         <div className="listing-detail-wrapper-box">
           <div className="listing-detail-wrapper d-flex align-items-center justify-content-between">
             <div className="listing-short-detail">
+              {/* Urgent / Normal badge above title */}
+              <span
+                className={`label d-inline-flex mb-1 ${
+                  is_urgent
+                    ? "bg-danger text-white"
+                    : "label for-sale d-inline-flex mb-1"
+                }`}
+              >
+                {is_urgent ? "Urgent" : "Normal"}
+              </span>
+
               {is_featured && (
-                <span className="label featured d-inline-flex mb-1">
+                <span className="label featured d-inline-flex mb-1 ms-1">
                   Featured
                 </span>
               )}
+
               <h4 className="listing-name mb-0">
-                <a href={`/properties/${property.id}`}>{title}</a>
+                <a href={`/properties/${id}`}>{title}</a>
               </h4>
-              <div className="fr-can-rating">
-                <i className="fas fa-star fs-xs filled"></i>
-                <i className="fas fa-star fs-xs filled"></i>
-                <i className="fas fa-star fs-xs filled"></i>
-                <i className="fas fa-star fs-xs filled"></i>
-                <i className="fas fa-star fs-xs"></i>
-              </div>
+              <div className="fr-can-rating text-muted-2 fs-sm">{tags}</div>
             </div>
+
             <div className="list-price">
-              <h6 className="listing-card-info-price text-main">
-                ${property.price || "N/A"}
+              <h6
+                className={`listing-card-info-price ${
+                  status === "available" ? "text-success" : "text-danger"
+                }`}
+              >
+                {status}
               </h6>
             </div>
           </div>
@@ -80,7 +95,7 @@ const FeaturedCard = ({ property }) => {
           </div>
         </div>
 
-        <div className="listing-footer-wrapper">
+        <div className="listing-footer-wrapper d-flex justify-content-between align-items-center">
           <div className="listing-locate">
             <span className="listing-location text-muted-2">
               <i className="fa-solid fa-location-pin me-1"></i>
@@ -89,7 +104,7 @@ const FeaturedCard = ({ property }) => {
           </div>
           <div className="listing-detail-btn">
             <a
-              href={`/properties/${property.id}`}
+              href={`/properties/${id}`}
               className="btn btn-sm px-4 fw-medium btn-main"
             >
               View
