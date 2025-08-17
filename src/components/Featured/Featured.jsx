@@ -1,20 +1,37 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import instance from "../../utils/axios";
-import { fetchFeaturedProperties } from "../../api/public/property.api";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  fetchFeaturedProperties,
+  fetchPropertyImages,
+} from "../../api/public/property.api";
 import FeaturedCard from "./FeaturedCard";
+import Loader from "../Loader/Loader";
+
 function Featured() {
   const [properties, setProperties] = useState([]);
+  const [images, setImages] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
-      setLoading(true);
-      const data = await fetchFeaturedProperties();
-      setProperties(data);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const data = await fetchFeaturedProperties();
+        setProperties(data);
+
+        const imagePromises = data.map((prop) => fetchPropertyImages(prop.id));
+        const imageResults = await Promise.all(imagePromises);
+        const imageMap = data.reduce((acc, prop, index) => {
+          acc[prop.id] = imageResults[index] || [];
+          return acc;
+        }, {});
+        setImages(imageMap);
+      } catch (err) {
+        setError("Failed to fetch properties or images.", err);
+      } finally {
+        setLoading(false);
+      }
     };
     loadData();
   }, []);
@@ -36,23 +53,33 @@ function Featured() {
         </div>
 
         <div className="row list-layout">
-          {properties.map((property) => (
-            <div className="col-xl-6 col-lg-6 col-md-12" key={property.id}>
-              <FeaturedCard property={property} />
+          {loading ? (
+            <div className="d-flex justify-content-center py-5">
+              <Loader />
             </div>
-          ))}
+          ) : error ? (
+            <p className="text-danger text-center">{error}</p>
+          ) : (
+            properties.map((property) => (
+              <div className="col-xl-6 col-lg-6 col-md-12" key={property.id}>
+                <FeaturedCard
+                  property={property}
+                  images={images[property.id] || []}
+                />
+              </div>
+            ))
+          )}
         </div>
 
-        <div className="row">
-          <div className="col-lg-12 col-md-12 col-sm-12 text-center mt-4">
-            <a
-              href="listings-list-with-sidebar.html"
-              className="btn btn-main px-lg-5 rounded"
-            >
-              Browse More Properties
-            </a>
+        {!loading && (
+          <div className="row">
+            <div className="col-lg-12 col-md-12 col-sm-12 text-center mt-4">
+              <Link to="/properties" className="btn btn-main px-lg-5 rounded">
+                Browse More Properties
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

@@ -1,34 +1,27 @@
 import React from "react";
 
-const FeaturedCard = ({ property }) => {
+const FeaturedCard = ({ property, images }) => {
   const {
     id,
     title,
     location,
     is_featured,
     status,
-    property_type,
     is_urgent,
     area_size,
-      bedrooms,
+    bedrooms,
     tags,
     bathrooms,
-    features,
-    coordinates,
-    image_url,
   } = property;
-
-  const parsedCoordinates =
-    typeof coordinates === "string" ? JSON.parse(coordinates) : coordinates;
 
   return (
     <div className="property-listing property-1 bg-white p-2 rounded">
       <div className="listing-img-wrapper">
         <a href={`/properties/${id}`}>
           <img
-            src={image_url || "https://placehold.co/1280x850"}
+            src={images[0]?.image_url || "https://placehold.co/1280x850"}
             className="img-fluid mx-auto rounded"
-            alt={title}
+            alt={images[0]?.alt_text || title}
           />
         </a>
       </div>
@@ -37,7 +30,6 @@ const FeaturedCard = ({ property }) => {
         <div className="listing-detail-wrapper-box">
           <div className="listing-detail-wrapper d-flex align-items-center justify-content-between">
             <div className="listing-short-detail">
-              {/* Urgent / Normal badge above title */}
               <span
                 className={`label d-inline-flex mb-1 ${
                   is_urgent
