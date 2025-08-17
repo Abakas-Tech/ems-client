@@ -2,12 +2,13 @@ import React from "react";
 
 const Contact = () => {
   return (
+    <>
       {/* Contact Section */}
       <section>
         <div className="container">
           <div className="row">
-                      {/* Contact Form */}
-                      <h1>Contact Me</h1>
+            {/* Contact Form */}
+            <h2>Contact Me</h2>
             <div className="col-lg-7 col-md-7">
               <div className="row">
                 <div className="col-lg-6 col-md-6">
@@ -46,8 +47,10 @@ const Contact = () => {
               <div className="contact-info">
                 <h2>Get In Touch</h2>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  I’m here to help you with any questions about buying, selling,
+                  or renting properties. Whether you’re looking for advice,
+                  scheduling a viewing, or need more details about a listing,
+                  feel free to reach out anytime.
                 </p>
 
                 <div className="cn-info-detail">
@@ -55,7 +58,7 @@ const Contact = () => {
                     <i className="fa-solid fa-house"></i>
                   </div>
                   <div className="cn-info-content">
-                    <h4 className="cn-info-title">Reach Us</h4>
+                    <h4 className="cn-info-title">Reach Me</h4>
                     2512, New Market,
                     <br />
                     Eliza Road, Sincher 80 CA,
@@ -81,7 +84,7 @@ const Contact = () => {
                     <i className="fa-solid fa-phone-volume"></i>
                   </div>
                   <div className="cn-info-content">
-                    <h4 className="cn-info-title">Call Us</h4>
+                    <h4 className="cn-info-title">Call Me</h4>
                     (41) 123 521 458
                     <br />
                     +91 235 548 7548
@@ -92,7 +95,7 @@ const Contact = () => {
           </div>
         </div>
       </section>
-    
+    </>
   );
 };
 
