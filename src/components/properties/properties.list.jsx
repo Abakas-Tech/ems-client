@@ -1,6 +1,6 @@
-// src/pages/PropertyListPage.jsx
 import React, { useEffect, useState } from "react";
-import { Row, Col, Container } from "react-bootstrap";
+import { Row, Col, Container, Button } from "react-bootstrap";
+import { FaFilter } from "react-icons/fa";
 import FilterSidebar from "./filterSideBar";
 import PaginationAndSort from "./paginationAndSort";
 import SingleProperty from "./singleProperties";
@@ -17,6 +17,7 @@ const PropertyListPage = () => {
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({});
   const [images, setImages] = useState({}); // { propertyId: [images] }
+  const [showSidebar, setShowSidebar] = useState(false);
 
   // Fetch properties
   const fetchProperties = async (params = {}) => {
@@ -57,17 +58,48 @@ const PropertyListPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, pagination.page, pagination.limit]);
 
+  // Toggle sidebar visibility
+  const handleToggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+  };
+
   return (
     <Container fluid className="mt-4">
       <Row>
-        {/* Sidebar */}
-        <Col lg={4} md={12}>
-          <FilterSidebar onFilterChange={setFilters} />
+        {/* Sidebar for large screens (static) */}
+       
+          
+            <FilterSidebar
+              className="d-none d-lg-block col-sm-12 simple-sidebar sm-sidebar"
+              onFilterChange={setFilters}
+              filterState={filters}
+            />
+         
+       
+        {/* Sidebar for smaller screens (Offcanvas) */}
+        <Col lg={4} md={12} className="d-lg-none">
+          <FilterSidebar
+            show={showSidebar}
+            onHide={() => setShowSidebar(false)}
+            onFilterChange={setFilters}
+            filterState={filters}
+          />
         </Col>
 
         {/* Main content */}
         <Col lg={8} md={12}>
           <Row>
+            {/* Toggle button for sidebar on smaller screens */}
+            <Col xs={12} className="d-lg-none mb-3">
+              <Button
+                className="btn btn-main rounded d-flex align-items-center"
+                onClick={handleToggleSidebar}
+              >
+                <FaFilter className="me-2" />
+                Filter Properties
+              </Button>
+            </Col>
+
             {/* Pagination + Sorting */}
             <PaginationAndSort
               pagination={pagination}
