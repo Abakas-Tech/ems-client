@@ -1,5 +1,5 @@
 import React from "react";
-import { Offcanvas, Accordion, Form, Button } from "react-bootstrap";
+import { Modal, Accordion, Form, Button } from "react-bootstrap";
 import { FaTimesCircle, FaSearch, FaCheckCircle, FaStar } from "react-icons/fa";
 
 const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
@@ -49,15 +49,17 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
     handleFilterChange("tags", value);
   };
 
-  // Sidebar content to be reused for both static and Offcanvas rendering
+  // Sidebar content to be reused for both static and Modal rendering
   const SidebarContent = () => (
     <>
-      <div className="search-sidebar_header">
-        <h4 className="ssh_heading fw-normal fs-6">Close Filter</h4>
-        <button onClick={onHide} className="w3-bar-item w3-button w3-large">
-          <FaTimesCircle className="fs-5 text-muted-2" />
-        </button>
-      </div>
+      {show !== undefined && (
+        <div className="search-sidebar_header">
+          <h4 className="ssh_heading fw-normal fs-6">Close Filter</h4>
+          <button onClick={onHide} className="w3-bar-item w3-button w3-large">
+            <FaTimesCircle className="fs-5 text-muted-2" />
+          </button>
+        </div>
+      )}
       <div className="sidebar-widgets">
         <div className="search-inner p-0">
           <div className="filter-search-box">
@@ -82,7 +84,9 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
               <div className="d-flex align-items-center justify-content-center justify-content-between border rounded-3 px-2 py-3">
                 <div className="eliok-cliops d-flex align-items-center">
                   <FaCheckCircle className="text-success fs-5 me-1" />
-                  <span className="text-muted-2 fw-normal fs-6 ms-1">Urgent</span>
+                  <span className="text-muted-2 fw-normal fs-6 ms-1">
+                    Urgent
+                  </span>
                 </div>
                 <div className="form-check form-switch">
                   <input
@@ -106,7 +110,9 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
               <div className="d-flex align-items-center justify-content-center justify-content-between border rounded-3 px-2 py-3">
                 <div className="eliok-cliops d-flex align-items-center">
                   <FaStar className="text-warning fs-5 me-1" />
-                  <span className="text-muted-2 fw-normal fs-6 ms-1">Featured</span>
+                  <span className="text-muted-2 fw-normal fs-6 ms-1">
+                    Featured
+                  </span>
                 </div>
                 <div className="form-check form-switch">
                   <input
@@ -129,7 +135,10 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
           </div>
 
           <div className="filter_wraps">
-            <Accordion defaultActiveKey={null} className="border-0 bg-transparent shadow-none">
+            <Accordion
+              defaultActiveKey={null}
+              className="border-0 bg-transparent shadow-none"
+            >
               <div className="single_search_boxed">
                 <Accordion.Item eventKey="0" className="border-0">
                   <Accordion.Header className="p-0 border-0">
@@ -440,7 +449,11 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
           </div>
 
           <div className="form-group filter_button">
-            <Button type="button" className="btn btn-main rounded full-width fw-normal fs-6">
+            <Button
+              type="button"
+              className="btn btn-main rounded full-width fw-normal fs-6"
+              onClick={() => show !== undefined && onHide()}
+            >
               Filter ({filterState?.total || 0} Results)
             </Button>
           </div>
@@ -450,18 +463,16 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
   );
 
   return show !== undefined ? (
-    <Offcanvas
+    <Modal
       show={show}
       onHide={onHide}
-      placement="start"
-      className="col-lg-4 col-md-12 col-sm-12 simple-sidebar sm-sidebar"
+      fullscreen={true}
+      className="simple-sidebar sm-sidebar"
     >
-      <Offcanvas.Body>{SidebarContent()}</Offcanvas.Body>
-    </Offcanvas>
+      <Modal.Body>{SidebarContent()}</Modal.Body>
+    </Modal>
   ) : (
-    <div className=" simple-sidebar sm-sidebar">
-      {SidebarContent()}
-    </div>
+    <div className="simple-sidebar sm-sidebar">{SidebarContent()}</div>
   );
 };
 

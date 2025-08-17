@@ -104,12 +104,14 @@ const PropertyListPage = () => {
 
           {/* Sidebar for smaller screens (Offcanvas) */}
           <Col lg={4} md={12} className="d-lg-none">
-            <FilterSidebar
-              show={showSidebar}
-              onHide={() => setShowSidebar(false)}
-              onFilterChange={setFilters}
-              filterState={filters}
-            />
+            <div style={{ "--bs-offcanvas-width": "100vw" }}>
+              <FilterSidebar
+                show={showSidebar}
+                onHide={() => setShowSidebar(false)}
+                onFilterChange={setFilters}
+                filterState={filters}
+              />
+            </div>
           </Col>
 
           {/* Main content */}
@@ -137,10 +139,7 @@ const PropertyListPage = () => {
                 </div>
               ) : properties.length > 0 ? (
                 properties.map((property) => (
-                  <div
-                    className="col-12 mb-4"
-                    key={property.id}
-                  >
+                  <div className="col-12 mb-4" key={property.id}>
                     <SingleProperty
                       property={property}
                       images={images[property.id] || []}
