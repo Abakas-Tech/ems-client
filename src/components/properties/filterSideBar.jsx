@@ -46,7 +46,7 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     handleFilterChange("location", value);
-    handleFilterChange("tags", value);
+    
   };
 
   // Sidebar content to be reused for both static and Modal rendering
@@ -69,7 +69,7 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
                   type="text"
                   className="form-control rounded-3 ps-5"
                   placeholder="Search by space name…"
-                  value={filterState?.location || filterState?.tags || ""}
+                  value={filterState?.location}
                   onChange={handleSearchChange}
                 />
                 <div className="position-absolute top-50 start-0 translate-middle-y ms-2">

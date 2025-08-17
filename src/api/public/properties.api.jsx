@@ -3,9 +3,11 @@ import axiosInstance from "../../utils/axios";
 // Get all properties (with optional query params)
 export const getAllProperties = async (params = {}) => {
   try {
+    console.log(params)
     const response = await axiosInstance.get("/properties", {
       params,
     });
+    console.log(response.data)
     return response.data;
   } catch (error) {
     return {
