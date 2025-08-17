@@ -1,6 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
+import { sendContactRequest } from "../../api/public/contact.api";
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.message || !formData.email) {
+      alert("message and email are required.");
+      return;
+    }
+    try {
+      await sendContactRequest(formData);
+      setSuccess(true);
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      console.error("Submission failed:", error);
+    }
+  };
+
   return (
     <>
       {/* Contact Section */}
@@ -10,36 +38,71 @@ const Contact = () => {
             {/* Contact Form */}
             <h2>Contact Me</h2>
             <div className="col-lg-7 col-md-7">
-              <div className="row">
-                <div className="col-lg-6 col-md-6">
-                  <div className="form-group">
-                    <label>Name</label>
-                    <input type="text" className="form-control simple" />
+              {success ? (
+                <p className="text-success text-center">
+                  Thank you! Your message has been sent.
+                </p>
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  <div className="row">
+                    <div className="col-lg-6 col-md-6">
+                      <div className="form-group">
+                        <label>Name</label>
+                        <input
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          className="form-control simple"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="col-lg-6 col-md-6">
+                      <div className="form-group">
+                        <label>Email</label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          className="form-control simple"
+                          required
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="col-lg-6 col-md-6">
+
                   <div className="form-group">
-                    <label>Email</label>
-                    <input type="email" className="form-control simple" />
+                    <label>Phone No.</label>
+                    <input
+                      type="tel"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      className="form-control simple"
+                    />
                   </div>
-                </div>
-              </div>
 
-              <div className="form-group">
-                <label>Subject</label>
-                <input type="text" className="form-control simple" />
-              </div>
+                  <div className="form-group">
+                    <label>Message</label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="form-control simple"
+                      rows="4"
+                      required
+                    ></textarea>
+                  </div>
 
-              <div className="form-group">
-                <label>Message</label>
-                <textarea className="form-control simple"></textarea>
-              </div>
-
-              <div className="form-group">
-                <button className="btn btn-main px-5 rounded" type="submit">
-                  Submit Request
-                </button>
-              </div>
+                  <div className="form-group">
+                    <button className="btn btn-main px-5 rounded" type="submit">
+                      Submit Request
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
 
             {/* Contact Info */}
