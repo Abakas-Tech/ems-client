@@ -102,9 +102,23 @@ const PropertyListPage = () => {
             />
           </Col>
 
-          {/* Sidebar for smaller screens (Offcanvas) */}
-          <Col lg={4} md={12} className="d-lg-none">
-            <div style={{ "--bs-offcanvas-width": "100vw" }}>
+          {/* Sidebar for smaller screens with smooth open/close */}
+          <Col lg={4} md={12} className="d-lg-none position-relative">
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "#fff",
+                zIndex: 1050,
+                overflowY: "auto",
+                boxShadow: "2px 0 10px rgba(0,0,0,0.2)",
+                transform: showSidebar ? "translateX(0)" : "translateX(-100%)",
+                transition: "transform 0.3s ease-in-out",
+              }}
+            >
               <FilterSidebar
                 show={showSidebar}
                 onHide={() => setShowSidebar(false)}
@@ -113,18 +127,17 @@ const PropertyListPage = () => {
               />
             </div>
           </Col>
-
           {/* Main content */}
-          <Col lg={8} md={12}>
+          <Col className="mb-4">
             {/* Toggle button for sidebar on smaller screens */}
             <Row className="d-lg-none mb-3">
               <Col xs={12}>
                 <Button
-                  className="btn btn-main rounded d-flex align-items-center"
+                  className="btn btn-dark full-width"
                   onClick={handleToggleSidebar}
                 >
                   <FaFilter className="me-2" />
-                  Filter Properties
+                  open the filter
                 </Button>
               </Col>
             </Row>
