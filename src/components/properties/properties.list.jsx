@@ -69,7 +69,7 @@ const PropertyListPage = () => {
         padding: "20px 0",
       }}
     >
-      <Container className="px-3" style={{ maxWidth: "1200px" }}>
+      <Container className="px-3">
         {/* Pagination at top */}
         <Row className="mb-4">
           <Col xs={12}>
@@ -95,7 +95,11 @@ const PropertyListPage = () => {
               paddingRight: "15px",
             }}
           >
-            <FilterSidebar className="w-100" onFilterChange={setFilters} filterState={filters} />
+            <FilterSidebar
+              className="w-100"
+              onFilterChange={setFilters}
+              filterState={filters}
+            />
           </Col>
 
           {/* Sidebar for smaller screens (Offcanvas) */}
@@ -133,7 +137,10 @@ const PropertyListPage = () => {
                 </div>
               ) : properties.length > 0 ? (
                 properties.map((property) => (
-                  <div className="col-12 mb-4" key={property.id}>
+                  <div
+                    className="col-12 mb-4"
+                    key={property.id}
+                  >
                     <SingleProperty
                       property={property}
                       images={images[property.id] || []}
