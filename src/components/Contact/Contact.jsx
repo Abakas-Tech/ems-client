@@ -5,7 +5,7 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    subject: "",
+    phone: "",
     message: "",
   });
   const [success, setSuccess] = useState(false);
@@ -16,16 +16,16 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.message || !formData.email) {
-      alert("message and email are required.");
+    if (!formData.name || !formData.email) {
+      alert("Name and email are required.");
       return;
     }
     try {
       await sendContactRequest(formData);
       setSuccess(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      setFormData({ name: "", email: "", phone: "", message: "" }); // Reset form
     } catch (error) {
-      console.error("Submission failed:", error);
+      console.error("Submission failed in Contact:", error);
     }
   };
 
@@ -74,11 +74,11 @@ const Contact = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Phone No.</label>
+                    <label>Phone</label>
                     <input
                       type="tel"
-                      name="subject"
-                      value={formData.subject}
+                      name="phone"
+                      value={formData.phone}
                       onChange={handleChange}
                       className="form-control simple"
                     />
