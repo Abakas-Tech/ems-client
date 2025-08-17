@@ -10,7 +10,7 @@ const testimonialData = [
   {
     name: "Adam Williams",
     position: "CEO Of Microwoft",
-    image: { image1 },
+    image: image1,
     quote:
       "Cicero famously orated against his political opponent Lucius Sergius Catilina. Occasionally the first Oration against Catiline is taken specimens.",
     color: "bg-main",
@@ -18,7 +18,7 @@ const testimonialData = [
   {
     name: "Retha Deowalim",
     position: "CEO Of Apple",
-    image: { image2 },
+    image: image2,
     quote:
       "Cicero famously orated against his political opponent Lucius Sergius Catilina. Occasionally the first Oration against Catiline is taken specimens.",
     color: "bg-green",
@@ -26,7 +26,7 @@ const testimonialData = [
   {
     name: "Sam J. Wasim",
     position: "Pio Founder",
-    image: { image3 },
+    image: image3,
     quote:
       "Cicero famously orated against his political opponent Lucius Sergius Catilina. Occasionally the first Oration against Catiline is taken specimens.",
     color: "bg-red",
@@ -34,7 +34,7 @@ const testimonialData = [
   {
     name: "Usan Gulwarm",
     position: "CEO Of Facewarm",
-    image: { image1 },
+    image: image1,
     quote:
       "Cicero famously orated against his political opponent Lucius Sergius Catilina. Occasionally the first Oration against Catiline is taken specimens.",
     color: "bg-primary",
@@ -42,7 +42,7 @@ const testimonialData = [
   {
     name: "Shilpa Shethy",
     position: "CEO Of Zapple",
-    image: { image3 },
+    image: image3,
     quote:
       "Cicero famously orated against his political opponent Lucius Sergius Catilina. Occasionally the first Oration against Catiline is taken specimens.",
     color: "bg-warning",
