@@ -2,26 +2,12 @@ import React from "react";
 
 const Contact = () => {
   return (
-    <>
-      {/* Page Title */}
-      <div className="page-title">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12 col-md-12">
-              <h2 className="ipt-title">Contact Us</h2>
-              <span className="ipn-subtitle">
-                Lists of our all Popular agencies
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Contact Section */}
       <section>
         <div className="container">
           <div className="row">
-            {/* Contact Form */}
+                      {/* Contact Form */}
+                      <h1>Contact Me</h1>
             <div className="col-lg-7 col-md-7">
               <div className="row">
                 <div className="col-lg-6 col-md-6">
@@ -106,7 +92,7 @@ const Contact = () => {
           </div>
         </div>
       </section>
-    </>
+    
   );
 };
 
