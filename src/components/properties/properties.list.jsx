@@ -52,55 +52,27 @@ const PropertyListPage = () => {
     }
   };
 
-  // Initial load + whenever filters/pagination change
   useEffect(() => {
     fetchProperties();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, pagination.page, pagination.limit]);
 
-  // Toggle sidebar visibility
   const handleToggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
 
   return (
-    <Container fluid className="mt-4">
-      <Row>
-        {/* Sidebar for large screens (static) */}
-       
-          
-            <FilterSidebar
-              className="d-none d-lg-block col-sm-12 simple-sidebar sm-sidebar"
-              onFilterChange={setFilters}
-              filterState={filters}
-            />
-         
-       
-        {/* Sidebar for smaller screens (Offcanvas) */}
-        <Col lg={4} md={12} className="d-lg-none">
-          <FilterSidebar
-            show={showSidebar}
-            onHide={() => setShowSidebar(false)}
-            onFilterChange={setFilters}
-            filterState={filters}
-          />
-        </Col>
-
-        {/* Main content */}
-        <Col lg={8} md={12}>
-          <Row>
-            {/* Toggle button for sidebar on smaller screens */}
-            <Col xs={12} className="d-lg-none mb-3">
-              <Button
-                className="btn btn-main rounded d-flex align-items-center"
-                onClick={handleToggleSidebar}
-              >
-                <FaFilter className="me-2" />
-                Filter Properties
-              </Button>
-            </Col>
-
-            {/* Pagination + Sorting */}
+    <div
+      style={{
+        backgroundColor: "#ECF3FA",
+        minHeight: "100vh",
+        padding: "20px 0",
+      }}
+    >
+      <Container className="px-3" style={{ maxWidth: "1200px" }}>
+        {/* Pagination at top */}
+        <Row className="mb-4">
+          <Col xs={12}>
             <PaginationAndSort
               pagination={pagination}
               onPageChange={(page) =>
@@ -109,32 +81,75 @@ const PropertyListPage = () => {
               onSortChange={(sort) => setFilters((prev) => ({ ...prev, sort }))}
               total={pagination.total}
             />
+          </Col>
+        </Row>
+
+        {/* Sidebar + Property List */}
+        <Row>
+          {/* Sidebar for large screens */}
+          <Col
+            lg={4}
+            className="d-none d-lg-block"
+            style={{
+              overflowY: "auto",
+              paddingRight: "15px",
+            }}
+          >
+            <FilterSidebar className="w-100" onFilterChange={setFilters} filterState={filters} />
+          </Col>
+
+          {/* Sidebar for smaller screens (Offcanvas) */}
+          <Col lg={4} md={12} className="d-lg-none">
+            <FilterSidebar
+              show={showSidebar}
+              onHide={() => setShowSidebar(false)}
+              onFilterChange={setFilters}
+              filterState={filters}
+            />
+          </Col>
+
+          {/* Main content */}
+          <Col lg={8} md={12}>
+            {/* Toggle button for sidebar on smaller screens */}
+            <Row className="d-lg-none mb-3">
+              <Col xs={12}>
+                <Button
+                  className="btn btn-main rounded d-flex align-items-center"
+                  onClick={handleToggleSidebar}
+                >
+                  <FaFilter className="me-2" />
+                  Filter Properties
+                </Button>
+              </Col>
+            </Row>
 
             {/* Property List */}
-            {loading ? (
-              <div className="col-12 text-center my-5">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
+            <Row>
+              {loading ? (
+                <div className="col-12 text-center my-5">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
                 </div>
-              </div>
-            ) : properties.length > 0 ? (
-              properties.map((property) => (
-                <div className="col-12 mb-4" key={property.id}>
-                  <SingleProperty
-                    property={property}
-                    images={images[property.id] || []}
-                  />
+              ) : properties.length > 0 ? (
+                properties.map((property) => (
+                  <div className="col-12 mb-4" key={property.id}>
+                    <SingleProperty
+                      property={property}
+                      images={images[property.id] || []}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="col-12 text-center">
+                  <p>No properties found.</p>
                 </div>
-              ))
-            ) : (
-              <div className="col-12 text-center">
-                <p>No properties found.</p>
-              </div>
-            )}
-          </Row>
-        </Col>
-      </Row>
-    </Container>
+              )}
+            </Row>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };
 

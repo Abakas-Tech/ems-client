@@ -82,9 +82,7 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
               <div className="d-flex align-items-center justify-content-center justify-content-between border rounded-3 px-2 py-3">
                 <div className="eliok-cliops d-flex align-items-center">
                   <FaCheckCircle className="text-success fs-5 me-1" />
-                  <span className="text-muted-2 fw-normal fs-6 ms-1">
-                    Urgent
-                  </span>
+                  <span className="text-muted-2 fw-normal fs-6 ms-1">Urgent</span>
                 </div>
                 <div className="form-check form-switch">
                   <input
@@ -108,9 +106,7 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
               <div className="d-flex align-items-center justify-content-center justify-content-between border rounded-3 px-2 py-3">
                 <div className="eliok-cliops d-flex align-items-center">
                   <FaStar className="text-warning fs-5 me-1" />
-                  <span className="text-muted-2 fw-normal fs-6 ms-1">
-                    Featured
-                  </span>
+                  <span className="text-muted-2 fw-normal fs-6 ms-1">Featured</span>
                 </div>
                 <div className="form-check form-switch">
                   <input
@@ -133,10 +129,7 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
           </div>
 
           <div className="filter_wraps">
-            <Accordion
-              defaultActiveKey={null}
-              className="border-0 bg-transparent shadow-none"
-            >
+            <Accordion defaultActiveKey={null} className="border-0 bg-transparent shadow-none">
               <div className="single_search_boxed">
                 <Accordion.Item eventKey="0" className="border-0">
                   <Accordion.Header className="p-0 border-0">
@@ -447,10 +440,7 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
           </div>
 
           <div className="form-group filter_button">
-            <Button
-              type="button"
-              className="btn btn-main rounded full-width fw-normal fs-6"
-            >
+            <Button type="button" className="btn btn-main rounded full-width fw-normal fs-6">
               Filter ({filterState?.total || 0} Results)
             </Button>
           </div>
@@ -469,7 +459,7 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
       <Offcanvas.Body>{SidebarContent()}</Offcanvas.Body>
     </Offcanvas>
   ) : (
-    <div className="col-lg-4 col-md-12 col-sm-12 simple-sidebar sm-sidebar">
+    <div className=" simple-sidebar sm-sidebar">
       {SidebarContent()}
     </div>
   );
