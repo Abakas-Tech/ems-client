@@ -61,7 +61,7 @@ const Contact = () => {
         icon: "success",
         title: "Success!",
         text: "Form submitted successfully!",
-        timer: 2000,
+        // timer: 2000,
         showConfirmButton: true,
       });
       setFormData({ name: "", email: "", phone: "", message: "" });
