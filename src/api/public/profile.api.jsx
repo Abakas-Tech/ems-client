@@ -1,9 +1,12 @@
-import { axiosInstance } from "../../utils/axios";
+import {axiosInstance} from "../../utils/axios";
 
 // Get agent profile info
 export const getAgentProfile = async () => {
   try {
-    const response = await axiosInstance.get("/agent-profile");
+    const token = localStorage.getItem("authToken");
+    const response = await axiosInstance.get("/agent-profile", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return response.data;
   } catch (error) {
     return {
