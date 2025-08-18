@@ -99,6 +99,7 @@ const PropertyListPage = () => {
               className="w-100"
               onFilterChange={setFilters}
               filterState={filters}
+              total={pagination.total}
             />
           </Col>
 
@@ -124,6 +125,7 @@ const PropertyListPage = () => {
                 onHide={() => setShowSidebar(false)}
                 onFilterChange={setFilters}
                 filterState={filters}
+                total={pagination.total}
               />
             </div>
           </Col>
