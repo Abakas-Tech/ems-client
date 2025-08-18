@@ -34,7 +34,6 @@
   // Navigation
   !(function (n, e, i, a) {
     (n.navigation = function (t, s) {
-      console.log("Navigation Plugin");
       var o = {
           responsive: !0,
           mobileBreakpoint: 992,
