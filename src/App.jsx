@@ -7,8 +7,8 @@ import AboutSnippet from "./components/about-snippet/about-snippet";
 function App() {
   return (
     <BrowserRouter>
-    <AboutSnippet/>
       <PropertyListPage />
+      <AboutSnippet />
       <ChatBot />
     </BrowserRouter>
   );

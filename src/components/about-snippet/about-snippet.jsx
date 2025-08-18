@@ -86,6 +86,11 @@ const AboutSnippet = () => {
                     </Link>
                   </li>
                 </ul>
+                <div className="mt-3 d-flex justify-content-end">
+                  <Link to="/about" className="btn btn-md btn-main fw-medium">
+                    Learn More
+                  </Link>
+                </div>
                 <div className="clearfix"></div>
               </div>
             </div>
