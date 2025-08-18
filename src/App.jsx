@@ -1,9 +1,10 @@
 import "./App.css";
+import ServicesSection from "./components/Services/ServicesSection";
 
 function App() {
   return (
     <>
-      <h1>test</h1>
+      <ServicesSection />
     </>
   );
 }
