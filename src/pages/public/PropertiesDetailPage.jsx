@@ -61,7 +61,6 @@ const PropertyDetails = () => {
           View photos
         </a>
       </div>
-
       <section className="gray-simple">
         <div className="container">
           <div className="row">
@@ -71,11 +70,20 @@ const PropertyDetails = () => {
               <div className="property_block_wrap style-2 p-4">
                 {property && (
                   <div className="prt-detail-title-desc">
-                    <span className="label text-light bg-green">
+                    <span className="label text-white bg-green fs-6">
                       For {property.category}
                     </span>
                     <h3>{property.title}</h3>
                     <span>
+                      <h3 className="prt=price-fix text-main">
+                        {property.is_urgent ? (
+                          <span>Urgent</span>
+                        ) : property.is_featured ? (
+                          <span>Featured</span>
+                        ) : (
+                          <span>Regular</span>
+                        )}
+                      </h3>
                       <i className="bi bi-geo-alt"></i>
                       {property.location}
                     </span>
