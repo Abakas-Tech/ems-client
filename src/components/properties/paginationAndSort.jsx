@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { FaChevronDown, FaChevronUp, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 
 const PaginationAndSort = ({
   pagination,
@@ -28,12 +33,12 @@ const PaginationAndSort = ({
     setOpen(false); // close menu on selection
   };
 
-  // Generate pagination numbers (max 5 visible)
-  let startPage = Math.max(currentPage - 2, 1);
-  let endPage = Math.min(startPage + 4, totalPages);
-  if (endPage - startPage < 4) {
-    startPage = Math.max(endPage - 4, 1);
-  }
+let startPage = Math.max(currentPage - 2, 1);
+let endPage = Math.min(startPage + 2, totalPages);
+
+if (endPage - startPage < 3) {
+  startPage = Math.max(endPage - 2, 1);
+}
 
   const pageNumbers = [];
   for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
@@ -65,7 +70,7 @@ const PaginationAndSort = ({
               alignItems: "center",
             }}
           >
-            {totalPages > 5 && (
+            {totalPages > 3 && (
               <li
                 onClick={() => handlePageChange(currentPage - 1)}
                 style={{
@@ -111,11 +116,12 @@ const PaginationAndSort = ({
                 {page}
               </li>
             ))}
-            {totalPages > 5 && (
+            {totalPages > 3 && (
               <li
                 onClick={() => handlePageChange(currentPage + 1)}
                 style={{
-                  cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                  cursor:
+                    currentPage === totalPages ? "not-allowed" : "pointer",
                   width: "32px",
                   height: "32px",
                   borderRadius: "50%",
