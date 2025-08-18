@@ -8,6 +8,7 @@ import {
 import { useParams } from "react-router-dom";
 import ContactForm from "../../components/ContactForm/ContactForm.jsx";
 import PropertyCard from "../../components/PropertyCard/PropertyCard.jsx";
+import PropertyGallery from "../../components/PropertyGallery/PropertyGallery.jsx";
 const PropertyDetails = () => {
   const [property, setProperty] = useState({});
   const [images, setImages] = useState([]);
@@ -47,20 +48,7 @@ const PropertyDetails = () => {
   }, []);
   return (
     <>
-      <div class="featured_slick_gallery gray">
-        <div class="featured_slick_gallery-slide">
-          {images.map((image, index) => (
-            <div class="featured_slick_padd" key={index}>
-              <a href={image.url} class="mfp-gallery">
-                <img src={image.image_url} class="img-fluid mx-auto" alt="" />
-              </a>
-            </div>
-          ))}
-        </div>
-        <a href="JavaScript:Void(0);" class="btn-view-pic top">
-          View photos
-        </a>
-      </div>
+      <PropertyGallery images={images} />
       <section className="gray-simple">
         <div className="container">
           <div className="row">
