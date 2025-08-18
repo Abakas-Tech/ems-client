@@ -37,7 +37,7 @@ const AboutSnippet = () => {
                 <img src={agentData.profile_image_url} alt="" />
               </div>
 
-              <div className="agency-content">
+              <div className="agency-content m-0">
                 <div className="agency-name">
                   <h4>
                     <Link to="/agency-page">{agentData.agent_name}</Link>
@@ -86,7 +86,7 @@ const AboutSnippet = () => {
                     </Link>
                   </li>
                 </ul>
-                <div className="mt-3 d-flex justify-content-end">
+                <div className="mt-3 d-flex justify-content-end ">
                   <Link to="/about" className="btn btn-md btn-main fw-medium">
                     Learn More
                   </Link>
