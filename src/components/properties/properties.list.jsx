@@ -6,6 +6,7 @@ import PaginationAndSort from "./paginationAndSort";
 import SingleProperty from "./singleProperties";
 import { getAllProperties } from "../../api/public/properties.api";
 import { getPropertyImages } from "../../api/public/properties.image.api";
+import BottomPagination from "./bottomPagination";
 
 const PropertyListPage = () => {
   const [properties, setProperties] = useState([]);
@@ -166,6 +167,17 @@ const PropertyListPage = () => {
                   <p>No properties found.</p>
                 </div>
               )}
+            </Row>
+            {/* Property List */}
+            <Row>
+              <div className="col-12 mb-4">
+                <BottomPagination
+                  pagination={pagination}
+                  onPageChange={(page) =>
+                    setPagination((prev) => ({ ...prev, page }))
+                  }
+                />
+              </div>
             </Row>
           </Col>
         </Row>
