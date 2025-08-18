@@ -47,6 +47,7 @@ const testimonialData = [
       "Cicero famously orated against his political opponent Lucius Sergius Catilina. Occasionally the first Oration against Catiline is taken specimens.",
     color: "bg-warning",
   },
+  
 ];
 
 const Testimonials = () => {

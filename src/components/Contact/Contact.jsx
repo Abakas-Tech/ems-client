@@ -17,10 +17,10 @@ const Contact = () => {
   });
   const [loading, setLoading] = useState(false);
   const [agentData, setAgentData] = useState({
-    agent_name: "John Agent",
-    agent_email: "support@Rikada.com",
-    agent_phone: "(41) 123 521 458",
-    agent_address: "2512, New Market, Eliza Road, Sincher 80 CA, Canada, USA",
+    agent_name: "Hussen Agent",
+    agent_email: "support@agent.com",
+    agent_phone: "0918241535",
+    agent_address: "Addiss Ababa, Ethiopia",
   });
 
   useEffect(() => {
@@ -62,7 +62,7 @@ const Contact = () => {
         title: "Success!",
         text: "Form submitted successfully!",
         timer: 2000,
-        showConfirmButton: false,
+        showConfirmButton: true,
       });
       setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error) {
@@ -100,7 +100,9 @@ const Contact = () => {
                 </div>
                 <div className="col-lg-6 col-md-6">
                   <div className="form-group">
-                    <label>Email</label>
+                    <label>
+                      Email <span className="text-danger fw-bold">*</span>{" "}
+                    </label>
                     <input
                       type="email"
                       name="email"
@@ -124,7 +126,9 @@ const Contact = () => {
               </div>
 
               <div className="form-group">
-                <label>Message</label>
+                <label>
+                  Message <span className="text-danger fw-bold">*</span>{" "}
+                </label>
                 <textarea
                   name="message"
                   value={formData.message}
@@ -152,7 +156,7 @@ const Contact = () => {
               <h2>Get In Touch</h2>
               <p>
                 <p>
-                  Hi I'm{" "}
+                  Hello I'm{" "}
                   <span
                     style={{
                       fontWeight: "bold",
