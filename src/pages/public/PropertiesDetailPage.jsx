@@ -57,7 +57,7 @@ const PropertyDetails = () => {
             </div>
           ))}
         </div>
-        <a href="JavaScript:Void(0);" class="btn-view-pic">
+        <a href="JavaScript:Void(0);" class="btn-view-pic top">
           View photos
         </a>
       </div>
@@ -176,7 +176,7 @@ const PropertyDetails = () => {
                 </div>
               </div>
 
-              {/* Single Block Wrap  */}
+              {/* Single Block Wrap   For Amenities */}
               <div class="property_block_wrap style-2">
                 <div class="property_block_wrap_header">
                   <a
@@ -204,7 +204,7 @@ const PropertyDetails = () => {
                   </div>
                 </div>
               </div>
-              {/* Single Block Wrap  */}
+              {/* Single Block Wrap For Location */}
               <div class="property_block_wrap style-2">
                 <div class="property_block_wrap_header">
                   <a
@@ -220,7 +220,7 @@ const PropertyDetails = () => {
                   </a>
                 </div>
 
-                <div id="clSix" class="panel-collapse collapse">
+                <div id="clSix" class="panel-collapse collapse show">
                   <div class="block-body">
                     <div class="map-container">
                       {/* Add Google Map with longitude and latitude coordinates */}
@@ -237,7 +237,7 @@ const PropertyDetails = () => {
                   </div>
                 </div>
               </div>
-              {/* Single Block Wrap */}
+              {/* Single Block Wrap  For Gallery*/}
               <div class="property_block_wrap style-2">
                 <div class="property_block_wrap_header">
                   <a
