@@ -120,7 +120,7 @@ const ChatBot = () => {
           }}
         >
           <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center px-4 py-3">
-            <h5 className="mb-0">Abakas Bot</h5>
+            <h5 className="mb-0 text-white">Assistant Bot</h5>
             <button
               className="btn-close btn-close-white"
               onClick={toggleOpen}
@@ -215,10 +215,10 @@ const ChatBot = () => {
                 style={{
                   borderRadius: "0 20px 20px 0",
                   padding: "12px 15px",
-                  width: "50px",
+                  width: "80px",
                 }}
               >
-                <i className="bi bi-send" style={{ fontSize: "18px" }}></i>
+                Message
               </button>
             </div>
           </div>
