@@ -1,5 +1,8 @@
-import React, { useState } from "react";
-import { sendContactRequest } from "../../api/public/contact.api";
+import React, { useState, useEffect } from "react";
+import {
+  sendContactRequest,
+  fetchAgentProfile,
+} from "../../api/public/contact.api";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
@@ -13,6 +16,27 @@ const Contact = () => {
     message: "",
   });
   const [loading, setLoading] = useState(false);
+  const [agentData, setAgentData] = useState({
+    agent_name: "John Agent",
+    agent_email: "support@Rikada.com",
+    agent_phone: "(41) 123 521 458",
+    agent_address: "2512, New Market, Eliza Road, Sincher 80 CA, Canada, USA",
+  });
+
+  useEffect(() => {
+    const loadAgentProfile = async () => {
+      const profile = await fetchAgentProfile();
+      if (profile) {
+        setAgentData({
+          agent_name: profile.agent_name,
+          agent_email: profile.agent_email,
+          agent_phone: profile.agent_phone,
+          agent_address: profile.agent_address,
+        });
+      }
+    };
+    loadAgentProfile();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,7 +64,7 @@ const Contact = () => {
         timer: 2000,
         showConfirmButton: false,
       });
-      setFormData({ name: "", email: "", phone: "", message: "" }); // reset form
+      setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error) {
       console.error("Submission failed:", error);
       MySwal.fire({
@@ -49,7 +73,7 @@ const Contact = () => {
         text: "Form submission failed. Please try again.",
       });
     } finally {
-      setLoading(false); // end loading
+      setLoading(false);
     }
   };
 
@@ -71,7 +95,6 @@ const Contact = () => {
                       value={formData.name}
                       onChange={handleChange}
                       className="form-control simple"
-                      required
                     />
                   </div>
                 </div>
@@ -84,7 +107,6 @@ const Contact = () => {
                       value={formData.email}
                       onChange={handleChange}
                       className="form-control simple"
-                      required
                     />
                   </div>
                 </div>
@@ -109,7 +131,6 @@ const Contact = () => {
                   onChange={handleChange}
                   className="form-control simple"
                   rows="4"
-                  required
                 ></textarea>
               </div>
 
@@ -117,7 +138,7 @@ const Contact = () => {
                 <button
                   className="btn btn-main px-5 rounded"
                   type="submit"
-                  disabled={loading} // disable while sending
+                  disabled={loading}
                 >
                   {loading ? "Sending..." : "Submit Request"}
                 </button>
@@ -130,10 +151,22 @@ const Contact = () => {
             <div className="contact-info">
               <h2>Get In Touch</h2>
               <p>
-                I’m here to help you with any questions about buying, selling,
-                or renting properties. Whether you’re looking for advice,
-                scheduling a viewing, or need more details about a listing, feel
-                free to reach out anytime.
+                <p>
+                  Hi I'm{" "}
+                  <span
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "1.2rem",
+                      color: "#FF5722",
+                    }}
+                  >
+                    {agentData.agent_name}
+                  </span>
+                  , I’m here to help you with any questions about buying,
+                  selling, or renting properties. Whether you’re looking for
+                  advice, scheduling a viewing, or need more details about a
+                  listing, feel free to reach out anytime.
+                </p>
               </p>
 
               <div className="cn-info-detail">
@@ -142,11 +175,7 @@ const Contact = () => {
                 </div>
                 <div className="cn-info-content">
                   <h4 className="cn-info-title">Reach Me</h4>
-                  2512, New Market,
-                  <br />
-                  Eliza Road, Sincher 80 CA,
-                  <br />
-                  Canada, USA
+                  {agentData.agent_address}
                 </div>
               </div>
 
@@ -156,9 +185,7 @@ const Contact = () => {
                 </div>
                 <div className="cn-info-content">
                   <h4 className="cn-info-title">Drop A Mail</h4>
-                  support@Rikada.com
-                  <br />
-                  Rikada@gmail.com
+                  {agentData.agent_email}
                 </div>
               </div>
 
@@ -168,9 +195,7 @@ const Contact = () => {
                 </div>
                 <div className="cn-info-content">
                   <h4 className="cn-info-title">Call Me</h4>
-                  (41) 123 521 458
-                  <br />
-                  +91 235 548 7548
+                  {agentData.agent_phone}
                 </div>
               </div>
             </div>

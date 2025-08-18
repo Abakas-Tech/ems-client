@@ -1,5 +1,5 @@
 import instance from "../../utils/axios.jsx";
-
+// Function to send form data to backend
 export const sendContactRequest = async (formData) => {
   try {
     const response = await instance.post("/contact", formData);
@@ -7,5 +7,20 @@ export const sendContactRequest = async (formData) => {
   } catch (error) {
     console.error("Error sending contact request:", error.message);
     throw error;
+  }
+};
+
+// Function to fethc agent profile
+export const fetchAgentProfile = async () => {
+  try {
+    const response = await instance.get("/agent-profile");
+    return response.data.data;
+  } catch (error) {
+    console.error(
+      "Error fetching agent profile:",
+      error.message,
+      error.response?.data
+    );
+    return null; 
   }
 };
