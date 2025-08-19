@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   fetchFeaturedProperties,
-  fetchPropertyImages,
+  fetchFeaturedPropertyImages,
 } from "../../api/public/property.api";
 import FeaturedCard from "./FeaturedCard";
 import Loader from "../Loader/Loader";
@@ -20,7 +20,9 @@ function Featured() {
         const data = await fetchFeaturedProperties();
         setProperties(data);
 
-        const imagePromises = data.map((prop) => fetchPropertyImages(prop.id));
+        const imagePromises = data.map((prop) =>
+          fetchFeaturedPropertyImages(prop.id)
+        );
         const imageResults = await Promise.all(imagePromises);
         const imageMap = data.reduce((acc, prop, index) => {
           acc[prop.id] = imageResults[index] || [];

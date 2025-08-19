@@ -11,7 +11,7 @@ export const fetchFeaturedProperties = async () => {
   }
 };
 
-export const fetchPropertyImages = async (propertyId) => {
+export const fetchFeaturedPropertyImages = async (propertyId) => {
   try {
     const response = await instance.get(`/properties/${propertyId}/images`);
     console.log(response);
