@@ -58,6 +58,12 @@ const FilterSidebar = ({
       handleFilterChange("location", value);
     }
   };
+  // Separate handler for area size inputs
+  const handleAreaSizeChange = (key, value) => {
+    // If value is empty string, set as undefined
+    const parsedValue = value !== "" ? Number(value) : undefined;
+    handleFilterChange(key, parsedValue);
+  };
 
   // Sidebar content to be reused for both static and Modal rendering
   const SidebarContent = () => (
@@ -69,7 +75,7 @@ const FilterSidebar = ({
             onClick={onHide}
             className="d-flex align-items-center justify-content-center border rounded-circle p-2"
           >
-            <FaTimesCircle className="fs-5 text-muted-2 no-border" />
+            <FaTimesCircle className="fs-4 text-muted-2" />
           </button>
         </div>
       )}
@@ -433,9 +439,9 @@ const FilterSidebar = ({
                                 placeholder="Min (e.g., 500)"
                                 value={filterState?.areaSizeMin || ""}
                                 onChange={(e) =>
-                                  handleFilterChange(
+                                  handleAreaSizeChange(
                                     "areaSizeMin",
-                                    e.target.value ? Number(e.target.value) : ""
+                                    e.target.value
                                   )
                                 }
                               />
@@ -445,9 +451,9 @@ const FilterSidebar = ({
                                 placeholder="Max (e.g., 2000)"
                                 value={filterState?.areaSizeMax || ""}
                                 onChange={(e) =>
-                                  handleFilterChange(
+                                  handleAreaSizeChange(
                                     "areaSizeMax",
-                                    e.target.value ? Number(e.target.value) : ""
+                                    e.target.value
                                   )
                                 }
                               />
