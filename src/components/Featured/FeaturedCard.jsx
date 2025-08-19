@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const FeaturedCard = ({ property, images }) => {
   const {
@@ -17,13 +18,13 @@ const FeaturedCard = ({ property, images }) => {
   return (
     <div className="property-listing property-1 bg-white p-2 rounded">
       <div className="listing-img-wrapper">
-        <a href={`/properties/${id}`}>
+        <Link to={`/properties/${id}`}>
           <img
             src={images[0]?.image_url || "https://placehold.co/1280x850"}
             className="img-fluid mx-auto rounded"
             alt={images[0]?.alt_text || title}
           />
-        </a>
+        </Link>
       </div>
 
       <div className="listing-content">
