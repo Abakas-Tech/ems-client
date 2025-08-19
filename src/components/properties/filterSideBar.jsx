@@ -2,8 +2,14 @@ import React from "react";
 import { Modal, Accordion, Form, Button } from "react-bootstrap";
 import { FaTimesCircle, FaSearch, FaCheckCircle, FaStar } from "react-icons/fa";
 
-const FilterSidebar = ({ show, onHide, onFilterChange, filterState,total }) => {
-  console.log(filterState)
+const FilterSidebar = ({
+  show,
+  onHide,
+  onFilterChange,
+  filterState,
+  total,
+}) => {
+  console.log(filterState);
   const categories = [
     { value: "sale", label: "For Sale" },
     { value: "rent", label: "For Rent" },
@@ -44,23 +50,26 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState,total }) => {
     onFilterChange(newFilters);
   };
 
-const handleSearchChange = (e) => {
-  const value = e.target.value.trim();
-  if (value === "") {
-    handleFilterChange("location", undefined); // or remove from filters
-  } else {
-    handleFilterChange("location", value);
-  }
-};
+  const handleSearchChange = (e) => {
+    const value = e.target.value.trim();
+    if (value === "") {
+      handleFilterChange("location", undefined); // or remove from filters
+    } else {
+      handleFilterChange("location", value);
+    }
+  };
 
   // Sidebar content to be reused for both static and Modal rendering
   const SidebarContent = () => (
     <>
       {show !== undefined && (
-        <div className="search-sidebar_header">
-          <h4 className="ssh_heading fw-normal fs-6">Close Filter</h4>
-          <button onClick={onHide} className="w3-bar-item w3-button w3-large">
-            <FaTimesCircle className="fs-5 text-muted-2" />
+        <div className="search-sidebar_header d-flex align-items-center justify-content-between">
+          <h4 className="ssh_heading fw-normal fs-6 m-0">Close Filter</h4>
+          <button
+            onClick={onHide}
+            className="d-flex align-items-center justify-content-center border rounded-circle p-2"
+          >
+            <FaTimesCircle className="fs-5 text-muted-2 no-border" />
           </button>
         </div>
       )}
@@ -84,7 +93,7 @@ const handleSearchChange = (e) => {
           </div>
 
           <div className="position-relative d-flex flex-xl-row flex-column align-items-center">
-            <div className="urgent-block flex-fill full-width my-1 me-1">
+            <div className="urgent-block flex-fill full-width my-1 ms-1">
               <div className="d-flex align-items-center justify-content-center justify-content-between border rounded-3 px-2 py-3">
                 <div className="eliok-cliops d-flex align-items-center">
                   <FaCheckCircle className="text-success fs-5 me-1" />
@@ -402,16 +411,14 @@ const handleSearchChange = (e) => {
                 <Accordion.Item eventKey="5" className="border-0">
                   <Accordion.Header className="widget-boxed-header p-0 border-0">
                     <h4 className="m-0">
-                     
-                        Area Size (SQFT)
-                        <span className="selected">
-                          {filterState?.areaSizeMin || filterState?.areaSizeMax
-                            ? `${filterState?.areaSizeMin || "Any"} - ${
-                                filterState?.areaSizeMax || "Any"
-                              }`
-                            : "Any"}
-                        </span>
-                    
+                      Area Size (SQFT)
+                      <span className="selected">
+                        {filterState?.areaSizeMin || filterState?.areaSizeMax
+                          ? `${filterState?.areaSizeMin || "Any"} - ${
+                              filterState?.areaSizeMax || "Any"
+                            }`
+                          : "Any"}
+                      </span>
                     </h4>
                   </Accordion.Header>
                   <Accordion.Body className="p-0">
@@ -461,7 +468,7 @@ const handleSearchChange = (e) => {
               className="btn btn-main rounded full-width fw-normal fs-6"
               onClick={() => show !== undefined && onHide()}
             >
-               {total || 0} Results show
+              {total || 0} Results show
             </Button>
           </div>
         </div>
@@ -470,12 +477,7 @@ const handleSearchChange = (e) => {
   );
 
   return show !== undefined ? (
-    <Modal
-      show={show}
-      onHide={onHide}
-      fullscreen={true}
-      className="simple-sidebar sm-sidebar"
-    >
+    <Modal show={show} onHide={onHide} fullscreen={true}>
       <Modal.Body>{SidebarContent()}</Modal.Body>
     </Modal>
   ) : (
