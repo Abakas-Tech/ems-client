@@ -73,7 +73,7 @@ const SingleProperty = ({ property, images }) => {
             <div className="listing-short-detail-wrap">
               <div className="_card_list_flex mb-2">
                 <div className="_card_flex_01 d-flex align-items-center">
-                  {property.is_urgent && (
+                  {Boolean(property.is_urgent) && (
                     <span className="label for-sale me-2 text-light px-2 py-1">
                       urgent
                     </span>

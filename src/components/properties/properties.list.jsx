@@ -54,9 +54,22 @@ const PropertyListPage = () => {
   };
 
   useEffect(() => {
+    setProperties(null);
     fetchProperties();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, pagination.page, pagination.limit]);
+
+  
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 992) {
+        setShowSidebar(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleToggleSidebar = () => {
     setShowSidebar(!showSidebar);
@@ -163,23 +176,24 @@ const PropertyListPage = () => {
                   </div>
                 ))
               ) : (
-                <div className="col-12 text-center">
-                  <p>No properties found.</p>
+                <div className="d-flex justify-content-center align-items-center vh-100">
+                  <div className="text-center">
+                    <p>No properties found.</p>
+                  </div>
                 </div>
               )}
             </Row>
-            {/* Property List */}
-            <Row>
-              <div className="col-12 mb-4">
-                <BottomPagination
-                  pagination={pagination}
-                  onPageChange={(page) =>
-                    setPagination((prev) => ({ ...prev, page }))
-                  }
-                />
-              </div>
-            </Row>
           </Col>
+        </Row>
+        <Row>
+          <div className="col-12 mb-4">
+            <BottomPagination
+              pagination={pagination}
+              onPageChange={(page) =>
+                setPagination((prev) => ({ ...prev, page }))
+              }
+            />
+          </div>
         </Row>
       </Container>
     </div>

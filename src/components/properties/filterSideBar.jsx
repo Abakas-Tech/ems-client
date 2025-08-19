@@ -44,10 +44,14 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState,total }) => {
     onFilterChange(newFilters);
   };
 
-  const handleSearchChange = (e) => {
-    const value = e.target.value;
+const handleSearchChange = (e) => {
+  const value = e.target.value.trim();
+  if (value === "") {
+    handleFilterChange("location", undefined); // or remove from filters
+  } else {
     handleFilterChange("location", value);
-  };
+  }
+};
 
   // Sidebar content to be reused for both static and Modal rendering
   const SidebarContent = () => (
@@ -94,9 +98,9 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState,total }) => {
                     type="checkbox"
                     role="switch"
                     id="flexSwitchCheckUrgent"
-                    checked={filterState?.is_urgent || false}
+                    checked={filterState?.isUrgent || false}
                     onChange={(e) =>
-                      handleFilterChange("is_urgent", e.target.checked)
+                      handleFilterChange("isUrgent", e.target.checked)
                     }
                   />
                   <label
@@ -120,9 +124,9 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState,total }) => {
                     type="checkbox"
                     role="switch"
                     id="flexSwitchCheckFeatured"
-                    checked={filterState?.is_featured || false}
+                    checked={filterState?.isFeatured || false}
                     onChange={(e) =>
-                      handleFilterChange("is_featured", e.target.checked)
+                      handleFilterChange("isFeatured", e.target.checked)
                     }
                   />
                   <label
