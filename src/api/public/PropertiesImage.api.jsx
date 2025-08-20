@@ -1,4 +1,4 @@
-import axiosInstance from "../../utils/axios";
+import { axiosInstance } from "../../utils/axios";
 
 // Get all images for a property
 export const getPropertyImages = async (propertyId) => {

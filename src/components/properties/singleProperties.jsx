@@ -73,7 +73,7 @@ const SingleProperty = ({ property, images }) => {
             <div className="listing-short-detail-wrap">
               <div className="_card_list_flex mb-2">
                 <div className="_card_flex_01 d-flex align-items-center">
-                  {property.is_urgent && (
+                  {Boolean(property.is_urgent) && (
                     <span className="label for-sale me-2 text-light px-2 py-1">
                       urgent
                     </span>
@@ -84,11 +84,7 @@ const SingleProperty = ({ property, images }) => {
                     </span>
                   )}
                 </div>
-                <div className="_card_flex_last">
-                  <h6 className="listing-info-price text-main fs-4 mb-0">
-                    {property.price}
-                  </h6>
-                </div>
+              
               </div>
               <div className="_card_list_flex">
                 <div className="_card_flex_01">

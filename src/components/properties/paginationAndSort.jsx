@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 
 const PaginationAndSort = ({
   pagination,
@@ -28,12 +33,12 @@ const PaginationAndSort = ({
     setOpen(false); // close menu on selection
   };
 
-  // Generate pagination numbers (max 5 visible)
-  let startPage = Math.max(currentPage - 2, 1);
-  let endPage = Math.min(startPage + 4, totalPages);
-  if (endPage - startPage < 4) {
-    startPage = Math.max(endPage - 4, 1);
-  }
+let startPage = Math.max(currentPage - 2, 1);
+let endPage = Math.min(startPage + 2, totalPages);
+
+if (endPage - startPage < 3) {
+  startPage = Math.max(endPage - 2, 1);
+}
 
   const pageNumbers = [];
   for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
@@ -62,8 +67,30 @@ const PaginationAndSort = ({
               margin: 0,
               listStyle: "none",
               fontSize: "clamp(12px,1.2vw,14px)",
+              alignItems: "center",
             }}
           >
+            {totalPages > 3 && (
+              <li
+                onClick={() => handlePageChange(currentPage - 1)}
+                style={{
+                  cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  border: "2px solid #ddd",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "#fff",
+                  color: currentPage === 1 ? "#ccc" : "#333",
+                  fontWeight: 500,
+                  transition: "all 0.2s",
+                }}
+              >
+                <FaChevronLeft />
+              </li>
+            )}
             {pageNumbers.map((page) => (
               <li
                 key={page}
@@ -89,12 +116,34 @@ const PaginationAndSort = ({
                 {page}
               </li>
             ))}
+            {totalPages > 3 && (
+              <li
+                onClick={() => handlePageChange(currentPage + 1)}
+                style={{
+                  cursor:
+                    currentPage === totalPages ? "not-allowed" : "pointer",
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  border: "2px solid #ddd",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "#fff",
+                  color: currentPage === totalPages ? "#ccc" : "#333",
+                  fontWeight: 500,
+                  transition: "all 0.2s",
+                }}
+              >
+                <FaChevronRight />
+              </li>
+            )}
           </ul>
         </div>
       </div>
 
       {/* Second row (on small) / Right (on large): Custom Sort Dropdown */}
-      <div className="d-flex align-items-center justify-content-center justify-content-md-end w-100 w-md-auto position-relative">
+      <div className="d-flex align-items-center  justify-content-md-end w-100 w-md-auto position-relative">
         <div
           className="border rounded d-flex align-items-center position-relative p-3"
           style={{

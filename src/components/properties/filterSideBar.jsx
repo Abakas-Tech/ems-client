@@ -2,7 +2,13 @@ import React from "react";
 import { Modal, Accordion, Form, Button } from "react-bootstrap";
 import { FaTimesCircle, FaSearch, FaCheckCircle, FaStar } from "react-icons/fa";
 
-const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
+const FilterSidebar = ({
+  show,
+  onHide,
+  onFilterChange,
+  filterState,
+  total,
+}) => {
   const categories = [
     { value: "sale", label: "For Sale" },
     { value: "rent", label: "For Rent" },
@@ -44,19 +50,31 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
   };
 
   const handleSearchChange = (e) => {
-    const value = e.target.value;
-    handleFilterChange("location", value);
-    
+    const value = e.target.value.trim();
+    if (value === "") {
+      handleFilterChange("location", undefined); // or remove from filters
+    } else {
+      handleFilterChange("location", value);
+    }
+  };
+  // Separate handler for area size inputs
+  const handleAreaSizeChange = (key, value) => {
+    // If value is empty string, set as undefined
+    const parsedValue = value !== "" ? Number(value) : undefined;
+    handleFilterChange(key, parsedValue);
   };
 
   // Sidebar content to be reused for both static and Modal rendering
   const SidebarContent = () => (
     <>
       {show !== undefined && (
-        <div className="search-sidebar_header">
-          <h4 className="ssh_heading fw-normal fs-6">Close Filter</h4>
-          <button onClick={onHide} className="w3-bar-item w3-button w3-large">
-            <FaTimesCircle className="fs-5 text-muted-2" />
+        <div className="search-sidebar_header d-flex align-items-center justify-content-between">
+          <h4 className="ssh_heading fw-normal fs-6 m-0">Close Filter</h4>
+          <button
+            onClick={onHide}
+            className="d-flex align-items-center justify-content-center border rounded-circle p-2"
+          >
+            <FaTimesCircle className="fs-4 text-muted-2" />
           </button>
         </div>
       )}
@@ -80,7 +98,7 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
           </div>
 
           <div className="position-relative d-flex flex-xl-row flex-column align-items-center">
-            <div className="urgent-block flex-fill full-width my-1 me-1">
+            <div className="urgent-block flex-fill full-width my-1 ms-1">
               <div className="d-flex align-items-center justify-content-center justify-content-between border rounded-3 px-2 py-3">
                 <div className="eliok-cliops d-flex align-items-center">
                   <FaCheckCircle className="text-success fs-5 me-1" />
@@ -94,9 +112,9 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
                     type="checkbox"
                     role="switch"
                     id="flexSwitchCheckUrgent"
-                    checked={filterState?.is_urgent || false}
+                    checked={filterState?.isUrgent || false}
                     onChange={(e) =>
-                      handleFilterChange("is_urgent", e.target.checked)
+                      handleFilterChange("isUrgent", e.target.checked)
                     }
                   />
                   <label
@@ -120,9 +138,9 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
                     type="checkbox"
                     role="switch"
                     id="flexSwitchCheckFeatured"
-                    checked={filterState?.is_featured || false}
+                    checked={filterState?.isFeatured || false}
                     onChange={(e) =>
-                      handleFilterChange("is_featured", e.target.checked)
+                      handleFilterChange("isFeatured", e.target.checked)
                     }
                   />
                   <label
@@ -141,8 +159,8 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
             >
               <div className="single_search_boxed">
                 <Accordion.Item eventKey="0" className="border-0">
-                  <Accordion.Header className="p-0 border-0">
-                    <h4 className="fw-normal fs-6 m-0">
+                  <Accordion.Header className="widget-boxed-header p-0 border-0">
+                    <h4 className="m-0">
                       Category
                       <span className="selected">
                         {categories.find(
@@ -151,6 +169,7 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
                       </span>
                     </h4>
                   </Accordion.Header>
+
                   <Accordion.Body className="p-0">
                     <div className="side-list no-border">
                       <div className="single_filter_card border-top">
@@ -193,8 +212,8 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
 
               <div className="single_search_boxed">
                 <Accordion.Item eventKey="1" className="border-0">
-                  <Accordion.Header className="p-0 border-0">
-                    <h4 className="fw-normal fs-6 m-0">
+                  <Accordion.Header className="widget-boxed-header p-0 border-0">
+                    <h4 className="m-0">
                       Property Type
                       <span className="selected">
                         {propertyTypes.find(
@@ -245,8 +264,8 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
 
               <div className="single_search_boxed">
                 <Accordion.Item eventKey="2" className="border-0">
-                  <Accordion.Header className="p-0 border-0">
-                    <h4 className="fw-normal fs-6 m-0">
+                  <Accordion.Header className="widget-boxed-header p-0 border-0">
+                    <h4 className="m-0">
                       Bedrooms
                       <span className="selected">
                         {bedrooms.find(
@@ -294,8 +313,8 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
 
               <div className="single_search_boxed">
                 <Accordion.Item eventKey="3" className="border-0">
-                  <Accordion.Header className="p-0 border-0">
-                    <h4 className="fw-normal fs-6 m-0">
+                  <Accordion.Header className="widget-boxed-header p-0 border-0">
+                    <h4 className="m-0">
                       Bathrooms
                       <span className="selected">
                         {bathrooms.find(
@@ -346,8 +365,8 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
 
               <div className="single_search_boxed">
                 <Accordion.Item eventKey="4" className="border-0">
-                  <Accordion.Header className="p-0 border-0">
-                    <h4 className="fw-normal fs-6 m-0">
+                  <Accordion.Header className="widget-boxed-header p-0 border-0">
+                    <h4 className="m-0">
                       Status
                       <span className="selected">
                         {statuses.find(
@@ -395,8 +414,8 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
 
               <div className="single_search_boxed">
                 <Accordion.Item eventKey="5" className="border-0">
-                  <Accordion.Header className="p-0 border-0">
-                    <h4 className="fw-normal fs-6 m-0">
+                  <Accordion.Header className="widget-boxed-header p-0 border-0">
+                    <h4 className="m-0">
                       Area Size (SQFT)
                       <span className="selected">
                         {filterState?.areaSizeMin || filterState?.areaSizeMax
@@ -419,9 +438,9 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
                                 placeholder="Min (e.g., 500)"
                                 value={filterState?.areaSizeMin || ""}
                                 onChange={(e) =>
-                                  handleFilterChange(
+                                  handleAreaSizeChange(
                                     "areaSizeMin",
-                                    e.target.value ? Number(e.target.value) : ""
+                                    e.target.value
                                   )
                                 }
                               />
@@ -431,9 +450,9 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
                                 placeholder="Max (e.g., 2000)"
                                 value={filterState?.areaSizeMax || ""}
                                 onChange={(e) =>
-                                  handleFilterChange(
+                                  handleAreaSizeChange(
                                     "areaSizeMax",
-                                    e.target.value ? Number(e.target.value) : ""
+                                    e.target.value
                                   )
                                 }
                               />
@@ -454,7 +473,7 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
               className="btn btn-main rounded full-width fw-normal fs-6"
               onClick={() => show !== undefined && onHide()}
             >
-              Filter ({filterState?.total || 0} Results)
+              {total || 0} Results show
             </Button>
           </div>
         </div>
@@ -463,12 +482,7 @@ const FilterSidebar = ({ show, onHide, onFilterChange, filterState }) => {
   );
 
   return show !== undefined ? (
-    <Modal
-      show={show}
-      onHide={onHide}
-      fullscreen={true}
-      className="simple-sidebar sm-sidebar"
-    >
+    <Modal show={show} onHide={onHide} fullscreen={true}>
       <Modal.Body>{SidebarContent()}</Modal.Body>
     </Modal>
   ) : (

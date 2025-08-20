@@ -5,9 +5,10 @@ import FilterSidebar from "../../components/properties/filterSideBar";
 import PaginationAndSort from "../../components/properties/paginationAndSort";
 import SingleProperty from "../../components/properties/singleProperties";
 import { getAllProperties } from "../../api/public/properties.api";
-import { getPropertyImages } from "../../api/public/properties.image.api";
+import { getPropertyImages } from "../../api/public/PropertiesImage.api";
+import BottomPagination from "../../components/properties/bottomPagination";
 
-const PropertyListPage = () => {
+const PropertyList = () => {
   const [properties, setProperties] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -31,19 +32,22 @@ const PropertyListPage = () => {
       });
 
       if (response.success === true) {
-        const { properties, pagination: pg } = response.data;
-        setProperties(properties);
-        setPagination(pg);
+        if (response.success) {
+          const { properties, pagination: pg } = response.data;
 
-        // Fetch images for each property
-        const imageResults = {};
-        for (const property of properties) {
-          const imgRes = await getPropertyImages(property.id);
-          if (imgRes.success) {
-            imageResults[property.id] = imgRes.data.data;
+          setProperties(properties);
+          setPagination(pg);
+
+          // Fetch images for each property
+          const imageResults = {};
+          for (const property of properties) {
+            const imgRes = await getPropertyImages(property.id);
+            if (imgRes.success) {
+              imageResults[property.id] = imgRes.data.data;
+            }
           }
+          setImages(imageResults);
         }
-        setImages(imageResults);
       }
     } catch (err) {
       console.error("Error fetching properties:", err);
@@ -53,9 +57,21 @@ const PropertyListPage = () => {
   };
 
   useEffect(() => {
+    setProperties(null);
     fetchProperties();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, pagination.page, pagination.limit]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 992) {
+        setShowSidebar(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleToggleSidebar = () => {
     setShowSidebar(!showSidebar);
@@ -99,33 +115,19 @@ const PropertyListPage = () => {
               className="w-100"
               onFilterChange={setFilters}
               filterState={filters}
+              total={pagination.total}
             />
           </Col>
 
           {/* Sidebar for smaller screens with smooth open/close */}
           <Col lg={4} md={12} className="d-lg-none position-relative">
-            <div
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                backgroundColor: "#fff",
-                zIndex: 1050,
-                overflowY: "auto",
-                boxShadow: "2px 0 10px rgba(0,0,0,0.2)",
-                transform: showSidebar ? "translateX(0)" : "translateX(-100%)",
-                transition: "transform 0.3s ease-in-out",
-              }}
-            >
-              <FilterSidebar
-                show={showSidebar}
-                onHide={() => setShowSidebar(false)}
-                onFilterChange={setFilters}
-                filterState={filters}
-              />
-            </div>
+            <FilterSidebar
+              show={showSidebar}
+              onHide={() => setShowSidebar(false)}
+              onFilterChange={setFilters}
+              filterState={filters}
+              total={pagination.total}
+            />
           </Col>
           {/* Main content */}
           <Col className="mb-4">
@@ -160,16 +162,28 @@ const PropertyListPage = () => {
                   </div>
                 ))
               ) : (
-                <div className="col-12 text-center">
-                  <p>No properties found.</p>
+                <div className="d-flex justify-content-center align-items-center vh-100">
+                  <div className="text-center">
+                    <p>No properties found.</p>
+                  </div>
                 </div>
               )}
             </Row>
           </Col>
+        </Row>
+        <Row>
+          <div className="col-12 mb-4">
+            <BottomPagination
+              pagination={pagination}
+              onPageChange={(page) =>
+                setPagination((prev) => ({ ...prev, page }))
+              }
+            />
+          </div>
         </Row>
       </Container>
     </div>
   );
 };
 
-export default PropertyListPage;
+export default PropertyList;
