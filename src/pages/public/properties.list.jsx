@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Container, Button } from "react-bootstrap";
 import { FaFilter } from "react-icons/fa";
-import FilterSidebar from "./filterSideBar";
-import PaginationAndSort from "./paginationAndSort";
-import SingleProperty from "./singleProperties";
+import FilterSidebar from "../../components/properties/filterSideBar";
+import PaginationAndSort from "../../components/properties/paginationAndSort";
+import SingleProperty from "../../components/properties/singleProperties";
 import { getAllProperties } from "../../api/public/properties.api";
 import { getPropertyImages } from "../../api/public/properties.image.api";
 

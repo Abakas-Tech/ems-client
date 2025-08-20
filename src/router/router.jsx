@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Properties from "../components/properties/properties.list.jsx";
+import Properties from "../pages/public/properties.list.jsx";
 const router = () => {
   return (
     <Routes>
