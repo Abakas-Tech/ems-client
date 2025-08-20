@@ -8,7 +8,7 @@ import { getAllProperties } from "../../api/Public/Properties.api";
 import { getPropertyImages } from "../../api/public/PropertiesImage.api";
 import BottomPagination from "./bottomPagination";
 
-const PropertyListPage = () => {
+const PropertyList = () => {
   const [properties, setProperties] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -185,4 +185,4 @@ const PropertyListPage = () => {
   );
 };
 
-export default PropertyListPage;
+export default PropertyList;

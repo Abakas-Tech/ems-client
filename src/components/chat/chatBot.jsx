@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
-import { getWelcomeMessage, sendMessage } from "../../api/public/chatBot.api"; // Import provided API functions
+import { getWelcomeMessage, sendMessage } from "../../api/public/chatBot.api"; 
 import styles from "./chatBot.module.css"; 
 
 const ChatBot = () => {
