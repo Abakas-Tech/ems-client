@@ -30,7 +30,7 @@ const PropertyListPage = () => {
         ...params,
       });
 
-      if (response.status === "success") {
+      if (response.success === true) {
         const { properties, pagination: pg } = response.data;
         setProperties(properties);
         setPagination(pg);
