@@ -11,7 +11,7 @@ const Hero = () => {
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
       }}
-      data-overlay="7"
+      data-overlay="5"
     >
       <div className="container">
         <div className="row justify-content-center">

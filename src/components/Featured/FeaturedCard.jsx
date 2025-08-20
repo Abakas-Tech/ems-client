@@ -48,7 +48,7 @@ const FeaturedCard = ({ property, images }) => {
               )}
 
               <h4 className="listing-name mb-0">
-                <a href={`/properties/${id}`}>{title}</a>
+                <Link to={`/properties/${id}`}>{title}</Link>
               </h4>
               <div className="fr-can-rating text-muted-2 fs-sm">{tags}</div>
             </div>
@@ -96,12 +96,12 @@ const FeaturedCard = ({ property, images }) => {
             </span>
           </div>
           <div className="listing-detail-btn">
-            <a
+            <Link
               href={`/properties/${id}`}
               className="btn btn-sm px-4 fw-medium btn-main"
             >
               View
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -20,7 +20,7 @@ const Contact = () => {
     agent_name: "Hussen Agent",
     agent_email: "support@agent.com",
     agent_phone: "0918241535",
-    agent_address: "Addiss Ababa, Ethiopia",
+    address: "Addiss Ababa, Ethiopia",
   });
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const Contact = () => {
           agent_name: profile.agent_name,
           agent_email: profile.agent_email,
           agent_phone: profile.agent_phone,
-          agent_address: profile.agent_address,
+          address: profile.address,
         });
       }
     };
@@ -155,22 +155,20 @@ const Contact = () => {
             <div className="contact-info">
               <h2>Get In Touch</h2>
               <p>
-                <p>
-                  Hello I'm{" "}
-                  <span
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: "1.2rem",
-                      color: "#FF5722",
-                    }}
-                  >
-                    {agentData.agent_name}
-                  </span>
-                  , I’m here to help you with any questions about buying,
-                  selling, or renting properties. Whether you’re looking for
-                  advice, scheduling a viewing, or need more details about a
-                  listing, feel free to reach out anytime.
-                </p>
+                Hello I'm{" "}
+                <span
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "1.2rem",
+                    color: "#FF5722",
+                  }}
+                >
+                  {agentData.agent_name}
+                </span>
+                , I’m here to help you with any questions about buying, selling,
+                or renting properties. Whether you’re looking for advice,
+                scheduling a viewing, or need more details about a listing, feel
+                free to reach out anytime.
               </p>
 
               <div className="cn-info-detail">
@@ -179,7 +177,7 @@ const Contact = () => {
                 </div>
                 <div className="cn-info-content">
                   <h4 className="cn-info-title">Reach Me</h4>
-                  {agentData.agent_address}
+                  {agentData.address}
                 </div>
               </div>
 

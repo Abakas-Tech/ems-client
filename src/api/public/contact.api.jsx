@@ -14,6 +14,7 @@ export const sendContactRequest = async (formData) => {
 export const fetchAgentProfile = async () => {
   try {
     const response = await instance.get("/agent-profile");
+    console.log(response)
     return response.data.data;
   } catch (error) {
     console.error(
