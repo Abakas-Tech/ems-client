@@ -3,7 +3,7 @@ import axiosInstance from "../../utils/axios";
 // Fetch single property by ID
 export const getPropertyById = async (id) => {
   const res = await axiosInstance.get(`/properties/${id}`);
-  return res.data.data.property;
+  return res.data.data;
 };
 
 // Fetch images for a property

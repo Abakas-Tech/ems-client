@@ -46,6 +46,7 @@ const PropertyDetails = () => {
   useEffect(() => {
     fetchProperty(id);
   }, []);
+  console.log(featuredProperties)
   return (
     <>
       <PropertyGallery images={images} />
@@ -146,6 +147,14 @@ const PropertyDetails = () => {
                         <strong>Status:</strong>
                         {property.status}
                       </li>
+                      <li>
+                        <strong>Halls:</strong>
+                        {property.halls}
+                      </li>
+                      <li>
+                        <strong>Kitchens:</strong>
+                        {property.kitchens}
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -216,7 +225,7 @@ const PropertyDetails = () => {
                   </a>
                 </div>
 
-                <div id="clSix" class="panel-collapse collapse show">
+                <div id="clSix" class="panel-collapse collapse">
                   <div class="block-body">
                     <div class="map-container">
                       {/* Add Google Map with longitude and latitude coordinates */}
@@ -249,7 +258,7 @@ const PropertyDetails = () => {
                   </a>
                 </div>
 
-                <div id="clSev" class="panel-collapse collapse">
+                <div id="clSev" class="panel-collapse collapse show">
                   <div class="block-body">
                     <ul class="list-gallery-inline">
                       {images.map((image, index) => (
@@ -277,7 +286,7 @@ const PropertyDetails = () => {
                 {/* Featured Properties */}
                 <div class="sidebar-widgets">
                   <h4>Featured Property</h4>
-                  <div class="sidebar_featured_property">
+                  <div class="sidebar_featured_property mt-3">
                     {featuredProperties.map((property) => (
                       <PropertyCard property={property} />
                     ))}

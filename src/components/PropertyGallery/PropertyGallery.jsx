@@ -19,10 +19,10 @@ const PropertyGallery = ({ images }) => {
         right: "10px",
         zIndex: 5,
         background: "#767373ff",
-        borderRadius: "50%",
+        // borderRadius: "50%",
         width: "40px",
         height: "40px",
-        border: "none",
+        // border: "none",
       }}
     >
       ❯
@@ -37,10 +37,10 @@ const PropertyGallery = ({ images }) => {
         left: "10px",
         zIndex: 5,
         background: "#767373ff",
-        borderRadius: "50%",
+        // borderRadius: "50%",
         width: "40px",
         height: "40px",
-        border: "none",
+        // border: "none",
       }}
     >
       ❮
@@ -82,7 +82,7 @@ const PropertyGallery = ({ images }) => {
                 src={image.image_url}
                 alt={`property-${i}`}
                 className="img-fluid mx-auto"
-                style={{ cursor: "pointer", borderRadius: "8px" }}
+                style={{ cursor: "pointer" }}
               />
             </a>
           </div>
