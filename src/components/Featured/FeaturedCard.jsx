@@ -71,15 +71,15 @@ const FeaturedCard = ({ property, images }) => {
           <div className="list-fx-features d-flex align-items-center justify-content-between mt-3 mb-1">
             <div className="listing-card d-flex align-items-center">
               <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
-                <i className="fa-solid fa-bed fs-xs"></i>
+                <i class="fa-solid fa-building-shield fs-xs"></i>
               </div>
-              <span className="text-muted-2 fs-sm">{bedrooms} Beds</span>
+              <span className="text-muted-2 fs-sm">{bathrooms}BHK</span>
             </div>
             <div className="listing-card d-flex align-items-center">
               <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
-                <i className="fa-solid fa-bath fs-xs"></i>
+                <i class="fa-solid fa-bed fs-xs"></i>
               </div>
-              <span className="text-muted-2 fs-sm">{bathrooms} Baths</span>
+              <span className="text-muted-2 fs-sm">{bedrooms} Beds</span>
             </div>
             <div className="listing-card d-flex align-items-center">
               <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
@@ -99,7 +99,7 @@ const FeaturedCard = ({ property, images }) => {
           </div>
           <div className="listing-detail-btn">
             <Link
-              href={`/properties/${id}`}
+              to={`/properties/${id}`}
               className="btn btn-sm px-4 fw-medium btn-main"
             >
               View

@@ -44,7 +44,7 @@ function Featured() {
         <div className="row justify-content-center">
           <div className="col-lg-7 col-md-10 text-center">
             <div className="sec-heading center">
-              <h2>Featured Property For Sale</h2>
+              <h2>Featured Properties For Sale</h2>
               <p>
                 Discover the finest properties curated just for you. I am
                 dedicated to helping you find your dream home with ease and
