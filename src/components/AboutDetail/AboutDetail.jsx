@@ -1,27 +1,29 @@
-// AgentPage component (with Title, Info, Experience, Contact Form)
+// AboutDetail component (with Title, Info, Experience, Contact Form)
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faFacebook, faTelegram, faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
 import img from "../../assets/img/img.jpg";
 import { fetchAgentProfile } from "../../api/public/about.api";
 import ContactForm from "../ContactForm/ContactForm";
 
-const AgentPage = () => {
-  // state to store agent data with default values
+const AboutDetail = () => {
   const [agent, setAgent] = useState({
     agent_name: "Adam D. Okraar",
     agent_address: "3599 Huntz Lane",
     profile_image_url: "https://placehold.co/500x500",
     agent_email: "agent@realestate.com",
     agent_phone: "0968301661",
-    telegram: "-",
+    telegram_username: "-",
     city: "Addis Ababa",
     country: "Ethiopia",
     experience_description:
       "Over 10 years of experience in real estate, specializing in property management and client relations across Ethiopia.",
+    facebook_username: "#",
+    whatsapp_username: "#",
   });
 
-  // fetch agent data from backend
   useEffect(() => {
     const getAgent = async () => {
       const data = await fetchAgentProfile();
@@ -40,9 +42,7 @@ const AgentPage = () => {
           <div className="row">
             <div className="col-lg-12 col-md-12">
               <h2 className="ipt-title">Agent Detail</h2>
-              <span className="ipn-subtitle">
-                {agent.agent_name} From Ethiopia
-              </span>
+              <span className="ipn-subtitle">{agent.agent_name} From Ethiopia</span>
             </div>
           </div>
         </div>
@@ -65,32 +65,44 @@ const AgentPage = () => {
                     </h4>
                     <p>
                       <span>
-                        <FontAwesomeIcon icon="location-dot" /> {agent.agent_address}
+                        <FontAwesomeIcon icon={faLocationDot} /> {agent.agent_address}
                       </span>
                     </p>
                   </div>
                   <div className="agency-desc">
-                    <p>
-                      Think of a news blog that's filled with content hourly on the day of going live.
-                      However, reviewers tend to be distracted by comprehensible content. In a professional
-                      context it often happens that private or corporate clients order a publication to be made
-                      and presented with the actual content still not being ready.
-                    </p>
+                     <p>{agent.bio}</p>
                   </div>
-                  <ul className="social-icons mt-5">
+
+                  {/* Social Icons */}
+                  <ul className="social-icons mt-5 d-flex gap-3">
                     <li>
-                      <a className="facebook" href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-                        <FontAwesomeIcon icon={["fab", "facebook"]} />
+                      <a
+                        className="facebook"
+                        href={agent.facebook_username || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <FontAwesomeIcon icon={faFacebook} />
                       </a>
                     </li>
                     <li>
-                      <a className="telegram" href="https://t.me" target="_blank" rel="noopener noreferrer">
-                        <FontAwesomeIcon icon={["fab", "telegram"]} />
+                      <a
+                        className="telegram"
+                        href={agent.telegram_username || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <FontAwesomeIcon icon={faTelegram} />
                       </a>
                     </li>
                     <li>
-                      <a className="whatsapp" href="https://whatsapp.com" target="_blank" rel="noopener noreferrer">
-                        <FontAwesomeIcon icon={["fab", "whatsapp"]} />
+                      <a
+                        className="whatsapp"
+                        href={agent.whatsapp_username || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <FontAwesomeIcon icon={faWhatsapp} />
                       </a>
                     </li>
                   </ul>
@@ -114,7 +126,7 @@ const AgentPage = () => {
                     <li><strong>CEO</strong> {agent.agent_name}</li>
                     <li><strong>Email</strong> {agent.agent_email}</li>
                     <li><strong>Phone</strong> {agent.agent_phone}</li>
-                    <li><strong>Telegram</strong> {agent.telegram}</li>
+                    <li><strong>Telegram</strong> {agent.telegram_username}</li>
                     <li><strong>Address</strong> {agent.agent_address}</li>
                     <li><strong>City</strong> {agent.city}</li>
                     <li><strong>Country</strong> {agent.country}</li>
@@ -148,4 +160,4 @@ const AgentPage = () => {
   );
 };
 
-export default AgentPage;
+export default AboutDetail;
