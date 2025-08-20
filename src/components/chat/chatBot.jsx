@@ -106,7 +106,7 @@ const ChatBot = () => {
       )}
       {isOpen && (
         <div
-          className={`card shadow-lg border-0 ${styles.chatContainer} ${
+          className={`card shadow-lg  ${styles.chatContainer} ${
             isOpen ? styles.slideIn : styles.slideOut
           }`}
           style={{
@@ -116,13 +116,13 @@ const ChatBot = () => {
             width: isMobile ? "100%" : "400px",
             height: isMobile ? "100%" : "550px",
             zIndex: 1050,
-            borderRadius: isMobile ? 0 : "15px",
+
           }}
         >
           <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center px-4 py-3">
             <h5 className="mb-0 text-white">Assistant Bot</h5>
             <button
-              className="btn-close btn-close-white"
+              className="btn-close btn-close-white "
               onClick={toggleOpen}
             ></button>
           </div>

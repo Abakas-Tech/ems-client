@@ -84,11 +84,7 @@ const SingleProperty = ({ property, images }) => {
                     </span>
                   )}
                 </div>
-                <div className="_card_flex_last">
-                  <h6 className="listing-info-price text-main fs-4 mb-0">
-                    {property.price}
-                  </h6>
-                </div>
+              
               </div>
               <div className="_card_list_flex">
                 <div className="_card_flex_01">

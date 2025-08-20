@@ -4,8 +4,8 @@ import { FaFilter } from "react-icons/fa";
 import FilterSidebar from "./filterSideBar";
 import PaginationAndSort from "./paginationAndSort";
 import SingleProperty from "./singleProperties";
-import { getAllProperties } from "../../api/public/properties.api";
-import { getPropertyImages } from "../../api/public/properties.image.api";
+import { getAllProperties } from "../../api/Public/Properties.api";
+import { getPropertyImages } from "../../api/public/PropertiesImage.api";
 import BottomPagination from "./bottomPagination";
 
 const PropertyListPage = () => {
@@ -31,8 +31,10 @@ const PropertyListPage = () => {
         ...params,
       });
 
-      if (response.status === "success") {
+      if (response.success) {
+        
         const { properties, pagination: pg } = response.data;
+
         setProperties(properties);
         setPagination(pg);
 
@@ -59,7 +61,6 @@ const PropertyListPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, pagination.page, pagination.limit]);
 
-  
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 992) {
@@ -119,15 +120,13 @@ const PropertyListPage = () => {
 
           {/* Sidebar for smaller screens with smooth open/close */}
           <Col lg={4} md={12} className="d-lg-none position-relative">
-          
-              <FilterSidebar
-                show={showSidebar}
-                onHide={() => setShowSidebar(false)}
-                onFilterChange={setFilters}
-                filterState={filters}
-                total={pagination.total}
-              />
-          
+            <FilterSidebar
+              show={showSidebar}
+              onHide={() => setShowSidebar(false)}
+              onFilterChange={setFilters}
+              filterState={filters}
+              total={pagination.total}
+            />
           </Col>
           {/* Main content */}
           <Col className="mb-4">
