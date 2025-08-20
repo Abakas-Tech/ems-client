@@ -1,11 +1,11 @@
 import { BrowserRouter } from "react-router-dom";
 import "./App.css";
-import PropertyListPage from "./components/properties/properties.list";
+import Routers from "./router/router";
 
 function App() {
   return (
     <BrowserRouter>
-      <PropertyListPage />
+      <Routers />
     </BrowserRouter>
   );
 }
