@@ -61,7 +61,7 @@ const AboutDetail = () => {
                 <div className="agency-content">
                   <div className="agency-name">
                     <h4>
-                      <Link to="/agency-page">{agent.agent_name} From Ethiopia</Link>
+                      <Link to="/agency-page">{agent.agent_name} </Link>
                     </h4>
                     <p>
                       <span>
