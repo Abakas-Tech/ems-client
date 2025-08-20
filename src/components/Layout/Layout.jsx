@@ -1,12 +1,12 @@
 // Layout.jsx
 import React from "react";
-// import Header from "../Header/Header"; 
+// import header from "../header/header"; 
 import Footer from "../Footer/Footer";
 
 const Layout = ({ children }) => {
   return (
     <>
-      {/* <Header /> */}
+      {/* <header /> */}
       <main>{children}</main>
       <Footer />
     </>
