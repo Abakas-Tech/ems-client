@@ -6,8 +6,6 @@
     color: #fff !important; /* White text on hover */
     text-decoration: none;  /* Remove underline if any */
 }
-
-
 .dark-footer .footer-add p:hover{
     cursor: pointer;       /* Pointer cursor on all screens */
     color: #fff !important; /* White text on hover */
