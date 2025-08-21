@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "./../../context/auth/UseAuth";
 
-const ProtectedRoute = ({ children }) => {
+const ProtecteRoute = ({ children }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,4 +16,4 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : null;
 };
 
-export default ProtectedRoute;
+export default ProtecteRoute;
