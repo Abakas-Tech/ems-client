@@ -66,16 +66,15 @@ const Header = () => {
     return () => document.removeEventListener("click", handleOutsideClick);
   }, [isOpen]);
 
-  // Apply padding-top to body when header-fixed is active
+  // Apply padding-top to body when header-fixed is active and not in portrait mode
   useEffect(() => {
     const isFixed = isScrolled || location.pathname !== "/";
-    if (isFixed) {
-      // Add padding to body when header-fixed is active
-      document.body.style.paddingTop = "80px";
+    if (isFixed && !isPortrait) {
+      document.body.style.paddingTop = "80px"; // Apply padding only on larger screens
     } else {
       document.body.style.paddingTop = "";
     }
-  }, [isScrolled, location.pathname]);
+  }, [isScrolled, location.pathname, isPortrait]);
 
   // Determine if header-fixed should be applied
   const isFixed = isScrolled || location.pathname !== "/";
@@ -159,15 +158,6 @@ const Header = () => {
                   onClick={toggleMenu}
                 >
                   About
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/services"
-                  className={location.pathname === "/services" ? "active" : ""}
-                  onClick={toggleMenu}
-                >
-                  Services
                 </Link>
               </li>
               <li>

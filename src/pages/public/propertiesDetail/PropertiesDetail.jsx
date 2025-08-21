@@ -4,7 +4,7 @@ import {
   getAllProperties,
 } from "../../../api/public/properties.api.jsx";
 import { getPropertyImages } from "../../../api/public/PropertiesImage.api.jsx";
-import { getAgentProfile } from "../../../api/public/profile.api.jsx";
+import { fetchAgentProfile } from "../../../api/public/contact.api.jsx";
 import { useParams } from "react-router-dom";
 import ContactForm from "../../../components/ContactForm/ContactForm.jsx";
 import PropertyCard from "../../../components/properties/PropertyCard/PropertyCard.jsx";
@@ -34,7 +34,7 @@ const PropertyDetails = () => {
       setImages(imagesRes?.data?.data || []);
 
       // 3. Fetch agent profile
-      const profileRes = await getAgentProfile();
+      const profileRes = await fetchAgentProfile();
       setProfile(profileRes || {});
 
       // 4. Fetch featured properties

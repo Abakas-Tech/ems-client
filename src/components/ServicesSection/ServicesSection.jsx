@@ -48,6 +48,13 @@ const services = [
 const ServicesSection = () => {
   return (
     <>
+      <div className="sec-heading center mt-5 mb-5">
+        <h2>Our Services</h2>
+        <p>
+          We offer a wide range of services to help you find, buy, sell, and
+          manage properties.
+        </p>
+      </div>
       <section id="services" className="services section">
         <div className="container">
           <div className="row gy-4">

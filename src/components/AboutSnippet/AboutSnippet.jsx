@@ -49,7 +49,7 @@ const AboutSnippet = ({ showButton  }) => {
     : null;
 
   return (
-    <section className="agent-page p-0 gray-simple">
+    <section className="agent-page p-0 gray-simple mt-5">
       <div className="container">
         <div className="row">
           <div className="col-lg-12 col-md-12">

@@ -1,11 +1,11 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import LandingPage from "../pages/public/LandingPage";
+import LandingPage from "../pages/public/Landing/landingpage.jsx";
 import AboutDetail from "../pages/public/AboutDetail/AboutDetail.jsx";
 import PropertyList from "../pages/public/propertiesList/properties.list.jsx";
 import PropertyDetails from "../pages/public/propertiesDetail/PropertiesDetail.jsx";
-import Services from "../pages/public/Services/Services.jsx";
 import Layout from "../components/Layout/Layout.jsx";
+import Contact from "../pages/public/Contact/Contact.jsx";
 
 function AppRouter() {
   return (
@@ -49,13 +49,12 @@ function AppRouter() {
           </Layout>
         }
       />
-
-      {/* Services */}
+      {/* Contact */}
       <Route
-        path="/services"
+        path="/contact"
         element={
           <Layout>
-            <Services />
+            <Contact />
           </Layout>
         }
       />
