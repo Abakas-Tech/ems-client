@@ -31,7 +31,7 @@
 @import url(../css/plugins/dropzone.css);
 @import url(../css/plugins/select2.css);
 @import url(../css/plugins/slick.css);
-@import url(../css/plugins/slick-theme.css);
+/* @import url(../css/plugins/slick-theme.css); */
 @import url(../css/plugins/magnific-popup.css);
 @import url(../css/plugins/font-awesome.css);
 @import url(../css/plugins/icofont.css);
@@ -1355,7 +1355,7 @@ div[data-overlay] p {
 .parallax {
   overflow: hidden;
 }
-/**! 07. Icons **/
+/** 07. Icons **/
 .icon {
   line-height: 1em;
   font-size: 3.14285714em;
@@ -1401,6 +1401,7 @@ div[data-overlay] p {
   height: $spinner-height-sm;
   border-width: $spinner-border-width-sm;
 }
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -2806,7 +2807,11 @@ nav a:hover {
   display: inline-block;
   transition: color 0.3s, background 0.3s;
   font-weight: 500;
+<<<<<<< HEAD
   font-size: 14px;
+=======
+  font-size: 18px;
+>>>>>>> a74b5a3d895a280e145c650c5d3c7694cd78e356
   color: var(--navcolor);
 }
 
@@ -3416,6 +3421,10 @@ nav a {
 .nav-brand img {
   max-width: 135px;
   position: relative;
+<<<<<<< HEAD
+=======
+  height: 50px;
+>>>>>>> a74b5a3d895a280e145c650c5d3c7694cd78e356
 }
 .nav-menu.nav-menu-social .text-invers {
   color: #ffffff;
@@ -11842,6 +11851,7 @@ th.next.available,
 }
 .account-drop .dropdown-menu ul li:last-child a {
   border: none;
+<<<<<<< HEAD
 }
 .account-drop .dropdown-menu ul li a:hover,
 .account-drop .dropdown-menu ul li a:focus,
@@ -11850,3 +11860,13 @@ th.next.available,
   border-color: color-mix(in srgb, var(--maincolor), transparent 80%);
   color: var(--maincolor);
 }
+=======
+}
+.account-drop .dropdown-menu ul li a:hover,
+.account-drop .dropdown-menu ul li a:focus,
+.account-drop .dropdown-menu ul li a:focus-visible {
+  background: color-mix(in srgb, var(--maincolor), transparent 90%);
+  border-color: color-mix(in srgb, var(--maincolor), transparent 80%);
+  color: var(--maincolor);
+}
+>>>>>>> a74b5a3d895a280e145c650c5d3c7694cd78e356

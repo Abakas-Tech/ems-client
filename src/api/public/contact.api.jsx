@@ -1,8 +1,9 @@
-import instance from "../../utils/axios.jsx";
-// Function to send form data to backend
+import { axiosInstance } from "../../utils/axios";
+
+// Function to send form data to backend 
 export const sendContactRequest = async (formData) => {
   try {
-    const response = await instance.post("/contact", formData);
+    const response = await axiosInstance.post("/contact", formData);
     return response.data;
   } catch (error) {
     console.error("Error sending contact request:", error.message);
@@ -10,11 +11,17 @@ export const sendContactRequest = async (formData) => {
   }
 };
 
-// Function to fethc agent profile
+// Function to send contact message 
+export const sendContactMessage = async (contactForm) => {
+  const res = await axiosInstance.post("/contact", contactForm);
+  return res.data.data;
+};
+
+// Function to fetch agent profile
 export const fetchAgentProfile = async () => {
   try {
-    const response = await instance.get("/agent-profile");
-    console.log(response)
+    const response = await axiosInstance.get("/agent-profile");
+    console.log(response);
     return response.data.data;
   } catch (error) {
     console.error(
