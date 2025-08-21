@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { AuthContext } from "./authContext";
+import { AuthContext } from "./AuthContext";
 import { checkUser } from "../../api/Public/auth.api";
 
 export const AuthProvider = ({ children }) => {

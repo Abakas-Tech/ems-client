@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { LogoutContext } from "./LogoutContext.jsx";
-import LogoutConfirmModal from "../../components/global/logout/logoutConfirm.jsx";
-
 import { useNavigate } from "react-router-dom";
 import useAuth from "./../auth/UseAuth.jsx";
+import Logout from './../../components/global/Logout/Logout';
 
 const LogoutProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ const LogoutProvider = ({ children }) => {
   return (
     <LogoutContext.Provider value={{ logout }}>
       {children}
-      <LogoutConfirmModal
+      <Logout
         show={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirm={() => {

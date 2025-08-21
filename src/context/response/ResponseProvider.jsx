@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ResponseContext } from "./ResponseContext";
-import GlobalResponse from "../../components/global/response/response.jsx";
+import Response from './../../components/global/Response/Response';
 
 let messageId = 0;
 
@@ -22,7 +22,7 @@ const ResponseProvider = ({ children }) => {
       value={{ responseMessages, addMessage, removeMessage }}
     >
       {children}
-      <GlobalResponse />
+      <Response />
     </ResponseContext.Provider>
   );
 };
