@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import AboutDetail from "../pages/public/AboutDetail/AboutDetail.jsx";
 import PropertyList from "../pages/public/propertiesList/properties.list.jsx";
 import PropertyDetails from "../pages/public/propertiesDetail/PropertiesDetail.jsx";
+import Services from "../pages/public/Services/Services.jsx";
 import Layout from "../components/Layout/Layout.jsx";
 const router = () => {
   return (
@@ -35,6 +36,14 @@ const router = () => {
         element={
           <Layout>
             <AboutDetail />{" "}
+          </Layout>
+        }
+      />
+      <Route
+        path="/services"
+        element={
+          <Layout>
+            <Services />{" "}
           </Layout>
         }
       />
