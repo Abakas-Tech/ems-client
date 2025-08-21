@@ -5,6 +5,7 @@ import logo from "../../assets/img/logo.svg";
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
+  const [isFixed, setIsFixed] = useState(false);
 
   const settings = {
     mobileBreakpoint: 992,
@@ -27,6 +28,15 @@ const Header = () => {
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Handle scroll to toggle header-fixed class
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsFixed(window.scrollY > 0);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Toggle off-canvas menu
@@ -57,9 +67,9 @@ const Header = () => {
 
   return (
     <header
-      className={`header head-shadow navigation ${
+      className={`header header-transparent navigation ${
         isPortrait ? "navigation-portrait" : "navigation-landscape"
-      }`}
+      } ${isFixed ? "header-fixed" : ""}`}
     >
       <div className="container">
         <nav
@@ -71,7 +81,7 @@ const Header = () => {
           {/* Nav Header */}
           <div className="nav-header">
             {/* Brand */}
-            <Link className="nav-brand text-logo" to="/">
+            <Link className="nav-brand text-logo exchange" to="/">
               <img src={logo} alt="Logo" />
               <h5 className="m-0">Resido</h5>
             </Link>
