@@ -1,6 +1,6 @@
-// axiosInstances.js
 import axios from "axios";
 
+// Environment-based URLs
 const backend_server_url = import.meta.env.VITE_AXIOS_INSTANCE_BASE_URL;
 const python_server_url = import.meta.env.VITE_AXIOS_PYTHON_BASE_URL;
 

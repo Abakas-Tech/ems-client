@@ -1381,6 +1381,20 @@ div[data-overlay] p {
   border-radius: 50%;
   animation: spinner-border 0.75s linear infinite;
 }
+/* Hide tooltip by default */
+.bhk-card .tooltip-details {
+  display: none;
+  top: 100%; /* position below the BHK div */
+  left: 0;
+  min-width: 140px;
+  font-size: 0.75rem;
+}
+
+/* Show tooltip on hover */
+.bhk-card:hover .tooltip-details {
+  display: block;
+  z-index: 10;
+}
 
 .spinner-border-sm {
   width: $spinner-width-sm;
@@ -2794,6 +2808,7 @@ nav a:hover {
   transition: color 0.3s, background 0.3s;
   font-weight: 500;
   font-size: 18px;
+  color: var(--navcolor);
   color: var(--navcolor);
 }
 
