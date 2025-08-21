@@ -2807,11 +2807,8 @@ nav a:hover {
   display: inline-block;
   transition: color 0.3s, background 0.3s;
   font-weight: 500;
-<<<<<<< HEAD
-  font-size: 14px;
-=======
   font-size: 18px;
->>>>>>> a74b5a3d895a280e145c650c5d3c7694cd78e356
+  color: var(--navcolor);
   color: var(--navcolor);
 }
 
@@ -3421,10 +3418,7 @@ nav a {
 .nav-brand img {
   max-width: 135px;
   position: relative;
-<<<<<<< HEAD
-=======
   height: 50px;
->>>>>>> a74b5a3d895a280e145c650c5d3c7694cd78e356
 }
 .nav-menu.nav-menu-social .text-invers {
   color: #ffffff;
@@ -11851,7 +11845,6 @@ th.next.available,
 }
 .account-drop .dropdown-menu ul li:last-child a {
   border: none;
-<<<<<<< HEAD
 }
 .account-drop .dropdown-menu ul li a:hover,
 .account-drop .dropdown-menu ul li a:focus,
@@ -11860,13 +11853,3 @@ th.next.available,
   border-color: color-mix(in srgb, var(--maincolor), transparent 80%);
   color: var(--maincolor);
 }
-=======
-}
-.account-drop .dropdown-menu ul li a:hover,
-.account-drop .dropdown-menu ul li a:focus,
-.account-drop .dropdown-menu ul li a:focus-visible {
-  background: color-mix(in srgb, var(--maincolor), transparent 90%);
-  border-color: color-mix(in srgb, var(--maincolor), transparent 80%);
-  color: var(--maincolor);
-}
->>>>>>> a74b5a3d895a280e145c650c5d3c7694cd78e356

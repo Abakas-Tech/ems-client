@@ -1,8 +1,8 @@
-import instance from "../../utils/axios";
+import { axiosInstance } from "../../utils/axios";
 
 export const fetchFeaturedProperties = async () => {
   try {
-    const response = await instance.get("/properties?isFeatured=true");
+    const response = await axiosInstance.get("/properties?isFeatured=true");
     console.log(response);
     return response.data.data.properties || [];
   } catch (error) {
@@ -13,7 +13,9 @@ export const fetchFeaturedProperties = async () => {
 
 export const fetchFeaturedPropertyImages = async (propertyId) => {
   try {
-    const response = await instance.get(`/properties/${propertyId}/images`);
+    const response = await axiosInstance.get(
+      `/properties/${propertyId}/images`
+    );
     console.log(response);
     return response.data.data.data || [];
   } catch (error) {
