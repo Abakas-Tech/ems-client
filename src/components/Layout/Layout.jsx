@@ -1,13 +1,14 @@
 // Layout.jsx
 import React from "react";
-// import header from "../header/header"; 
+import Header from "../header/header";
 import Footer from "../Footer/Footer";
-
+import ChatBot from "../chat/chatBot";
 const Layout = ({ children }) => {
   return (
     <>
-      {/* <header /> */}
+      <Header />
       <main>{children}</main>
+      <ChatBot />
       <Footer />
     </>
   );

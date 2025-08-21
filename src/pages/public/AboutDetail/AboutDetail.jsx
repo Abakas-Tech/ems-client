@@ -2,11 +2,15 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import { faFacebook, faTelegram, faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import {
+  faFacebook,
+  faTelegram,
+  faWhatsapp,
+} from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
-import img from "../../assets/img/img.jpg";
-import { fetchAgentProfile } from "../../api/public/about.api";
-import ContactForm from "../ContactForm/ContactForm";
+import img from "../../../assets/img/img.jpg";
+import { fetchAgentProfile } from "../../../api/public/about.api";
+import ContactForm from "../../../components/ContactForm/ContactForm";
 
 const AboutDetail = () => {
   const [agent, setAgent] = useState({
@@ -42,7 +46,9 @@ const AboutDetail = () => {
           <div className="row">
             <div className="col-lg-12 col-md-12">
               <h2 className="ipt-title">Agent Detail</h2>
-              <span className="ipn-subtitle">{agent.agent_name} From Ethiopia</span>
+              <span className="ipn-subtitle">
+                {agent.agent_name} From Ethiopia
+              </span>
             </div>
           </div>
         </div>
@@ -65,12 +71,13 @@ const AboutDetail = () => {
                     </h4>
                     <p>
                       <span>
-                        <FontAwesomeIcon icon={faLocationDot} /> {agent.agent_address}
+                        <FontAwesomeIcon icon={faLocationDot} />{" "}
+                        {agent.agent_address}
                       </span>
                     </p>
                   </div>
                   <div className="agency-desc">
-                     <p>{agent.bio}</p>
+                    <p>{agent.bio}</p>
                   </div>
 
                   {/* Social Icons */}
@@ -115,7 +122,10 @@ const AboutDetail = () => {
           {/* Info & Contact Section */}
           <div className="row mt-4 d-flex flex-wrap">
             {/* Left Side (Info + Experience) */}
-            <div className="col-lg-8 col-md-12 d-flex flex-column" style={{ alignItems: "stretch" }}>
+            <div
+              className="col-lg-8 col-md-12 d-flex flex-column"
+              style={{ alignItems: "stretch" }}
+            >
               {/* Agent Info */}
               <div className="block-wrap mb-4 flex-fill">
                 <div className="block-header">
@@ -123,13 +133,27 @@ const AboutDetail = () => {
                 </div>
                 <div className="block-body">
                   <ul className="dw-proprty-info">
-                    <li><strong>CEO</strong> {agent.agent_name}</li>
-                    <li><strong>Email</strong> {agent.agent_email}</li>
-                    <li><strong>Phone</strong> {agent.agent_phone}</li>
-                    <li><strong>Telegram</strong> {agent.telegram_username}</li>
-                    <li><strong>Address</strong> {agent.agent_address}</li>
-                    <li><strong>City</strong> {agent.city}</li>
-                    <li><strong>Country</strong> {agent.country}</li>
+                    <li>
+                      <strong>CEO</strong> {agent.agent_name}
+                    </li>
+                    <li>
+                      <strong>Email</strong> {agent.agent_email}
+                    </li>
+                    <li>
+                      <strong>Phone</strong> {agent.agent_phone}
+                    </li>
+                    <li>
+                      <strong>Telegram</strong> {agent.telegram_username}
+                    </li>
+                    <li>
+                      <strong>Address</strong> {agent.agent_address}
+                    </li>
+                    <li>
+                      <strong>City</strong> {agent.city}
+                    </li>
+                    <li>
+                      <strong>Country</strong> {agent.country}
+                    </li>
                   </ul>
                 </div>
               </div>

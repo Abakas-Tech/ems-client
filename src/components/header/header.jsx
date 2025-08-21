@@ -1,24 +1,69 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../assets/img/logo.svg";
+
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isPortrait, setIsPortrait] = useState(window.innerWidth < 992);
+  const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
 
-  // Watch screen resize to switch classes
+  const settings = {
+    mobileBreakpoint: 992,
+    showDuration: 300,
+    hideDuration: 300,
+    overlay: true,
+    overlayColor: "rgba(0, 0, 0, 0.5)",
+    offCanvasSide: "left",
+  };
+
+  // Handle screen resize
   useEffect(() => {
     const handleResize = () => {
-      setIsPortrait(window.innerWidth < 992);
+      const newIsPortrait = window.innerWidth <= settings.mobileBreakpoint;
+      setIsPortrait(newIsPortrait);
+      if (!newIsPortrait) {
+        setIsOpen(false);
+        document.body.classList.remove("no-scroll");
+      }
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Toggle off-canvas menu
+  const toggleMenu = () => {
+    if (isPortrait) {
+      setIsOpen(!isOpen);
+      document.body.classList.toggle("no-scroll", !isOpen);
+      if (!isOpen && settings.overlay) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    }
+  };
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (isOpen && !e.target.closest(".navigation")) {
+        setIsOpen(false);
+        document.body.classList.remove("no-scroll");
+        document.body.style.overflow = "";
+      }
+    };
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, [isOpen]);
+
   return (
-    <header className="header head-shadow">
+    <header
+      className={`header head-shadow navigation ${
+        isPortrait ? "navigation-portrait" : "navigation-landscape"
+      }`}
+    >
       <div className="container">
         <nav
-        id="navigation"
+          id="navigation"
           className={`navigation ${
             isPortrait ? "navigation-portrait" : "navigation-landscape"
           }`}
@@ -33,10 +78,7 @@ const Header = () => {
 
             {/* Toggle (Hamburger menu) */}
             {isPortrait && (
-              <div
-                className="nav-toggle"
-                onClick={() => setIsOpen(!isOpen)}
-              ></div>
+              <div className="nav-toggle" onClick={toggleMenu}></div>
             )}
           </div>
 
@@ -44,31 +86,66 @@ const Header = () => {
           <div
             className={`nav-menus-wrapper ${
               isOpen ? "nav-menus-wrapper-open" : ""
+            } ${
+              settings.offCanvasSide === "right"
+                ? "nav-menus-wrapper-right"
+                : ""
             }`}
+            style={{
+              transitionProperty: isPortrait ? settings.offCanvasSide : "none",
+              transitionDuration: `${
+                isOpen ? settings.showDuration : settings.hideDuration
+              }ms`,
+            }}
           >
+            {isPortrait && (
+              <span
+                className="nav-menus-wrapper-close-button"
+                onClick={toggleMenu}
+              >
+                ✕
+              </span>
+            )}
             <ul className="nav-menu align-to-right">
               <li>
-                <Link to="/" className="active">
+                <Link to="/" className="active" onClick={toggleMenu}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/properties">Properties</Link>
+                <Link to="/properties" onClick={toggleMenu}>
+                  Properties
+                </Link>
               </li>
               <li>
-                <Link to="/about">About</Link>
+                <Link to="/about" onClick={toggleMenu}>
+                  About
+                </Link>
               </li>
               <li>
-                <Link to="/services">Services</Link>
+                <Link to="/services" onClick={toggleMenu}>
+                  Services
+                </Link>
               </li>
               <li>
-                <Link to="/contact">Contact</Link>
+                <Link to="/contact" onClick={toggleMenu}>
+                  Contact
+                </Link>
               </li>
               <li className="nav-menu-social add-listing">
-                <Link to="/signin">Sign In</Link>
+                <Link to="/signin" onClick={toggleMenu}>
+                  Sign In
+                </Link>
               </li>
             </ul>
           </div>
+          {isOpen && settings.overlay && isPortrait && (
+            <div
+              className="nav-overlay-panel"
+              style={{ backgroundColor: settings.overlayColor }}
+              onClick={toggleMenu}
+            ></div>
+          )}
         </nav>
       </div>
     </header>

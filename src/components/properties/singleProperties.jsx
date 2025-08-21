@@ -1,6 +1,6 @@
 import React from "react";
 import { Carousel, Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FaShieldAlt,
   FaBed,
@@ -13,7 +13,7 @@ const SingleProperty = ({ property, images }) => {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
-    navigate(`/property/${property.id}`);
+    navigate(`/properties/${property.id}`);
   };
 
   const propertyImages =
@@ -84,18 +84,17 @@ const SingleProperty = ({ property, images }) => {
                     </span>
                   )}
                 </div>
-              
               </div>
               <div className="_card_list_flex">
                 <div className="_card_flex_01">
                   <h4 className="listing-name mb-2">
-                    <a
+                    <Link
                       href="#"
                       className="prt-link-detail"
                       onClick={handleNavigate}
                     >
                       {property.title}
-                    </a>
+                    </Link>
                   </h4>
                 </div>
               </div>

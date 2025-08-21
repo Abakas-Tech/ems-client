@@ -1,52 +1,69 @@
 import React, { useEffect, useState } from "react";
 import {
   getPropertyById,
-  getPropertyImages,
-  getAgentProfile,
-  getFeaturedProperties,
-} from "../../api/public/properties.api.js";
+  getAllProperties,
+} from "../../../api/public/properties.api.jsx";
+import { getPropertyImages } from "../../../api/public/PropertiesImage.api.jsx";
+import { getAgentProfile } from "../../../api/public/profile.api.jsx";
 import { useParams } from "react-router-dom";
-import ContactForm from "../../components/ContactForm/ContactForm.jsx";
-import PropertyCard from "../../components/PropertyCard/PropertyCard.jsx";
-import PropertyGallery from "../../components/PropertyGallery/PropertyGallery.jsx";
+import ContactForm from "../../../components/ContactForm/ContactForm.jsx";
+import PropertyCard from "../../../components/properties/PropertyCard/PropertyCard.jsx";
+import PropertyGallery from "../../../components/properties/PropertyGallery/PropertyGallery.jsx";
 const PropertyDetails = () => {
   const [property, setProperty] = useState({});
   const [images, setImages] = useState([]);
   const [profile, setProfile] = useState({});
   const [featuredProperties, setFeaturedProperties] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const { id } = useParams();
+
   const fetchProperty = async (id) => {
-    // 1. Fetch main property + images + profile
-    const property = await getPropertyById(id);
-    setProperty(property);
+    try {
+      setLoading(true);
+      setError(null);
 
-    const images = await getPropertyImages(id);
-    setImages(images);
+      // 1. Fetch main property
+      const propertyRes = await getPropertyById(id);
+      setProperty(propertyRes?.data || {});
 
-    const profile = await getAgentProfile();
-    setProfile(profile);
+      // 2. Fetch images for main property
+      const imagesRes = await getPropertyImages(id);
+      setImages(imagesRes?.data?.data || []);
 
-    // 2. Fetch featured properties
-    const featured = await getFeaturedProperties({ isFeatured: true });
+      // 3. Fetch agent profile
+      const profileRes = await getAgentProfile();
+      setProfile(profileRes || {});
 
-    // 3. Fetch images for all featured properties in parallel
-    const imagesResponses = await Promise.all(
-      featured.map((prop) => getPropertyImages(prop.id))
-    );
+      // 4. Fetch featured properties
+      const featuredRes = await getAllProperties({ isFeatured: true });
+      const featuredList = featuredRes?.data?.properties || [];
 
-    // 4. Merge images into each property
-    const featuredWithImages = featured.map((prop, index) => ({
-      ...prop,
-      images: imagesResponses[index] || [],
-    }));
+      // 5. Fetch images for all featured properties in parallel
+      const imagesResponses = await Promise.all(
+        featuredList.map((prop) => getPropertyImages(prop.id))
+      );
 
-    setFeaturedProperties(featuredWithImages);
+      // 6. Merge images into each featured property
+      const featuredWithImages = featuredList.map((prop, index) => ({
+        ...prop,
+        images: imagesResponses[index]?.data?.data || [],
+      }));
+
+      setFeaturedProperties(featuredWithImages);
+    } catch (err) {
+      console.error("Error fetching property details:", err);
+      setError("Failed to load property details. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchProperty(id);
-  }, []);
-  console.log(featuredProperties)
+  }, [id]);
   return (
     <>
       <PropertyGallery images={images} />
@@ -182,8 +199,8 @@ const PropertyDetails = () => {
               </div>
 
               {/* Single Block Wrap   For Amenities */}
-              <div class="property_block_wrap style-2">
-                <div class="property_block_wrap_header">
+              <div className="property_block_wrap style-2">
+                <div className="property_block_wrap_header">
                   <a
                     data-bs-toggle="collapse"
                     data-parent="#amen"
@@ -192,16 +209,16 @@ const PropertyDetails = () => {
                     href="javascript:void(0);"
                     aria-expanded="true"
                   >
-                    <h4 class="property_block_title">Ameneties</h4>
+                    <h4 className="property_block_title">Ameneties</h4>
                   </a>
                 </div>
 
-                <div id="clThree" class="panel-collapse collapse show">
-                  <div class="block-body">
-                    <ul class="avl-features third color">
+                <div id="clThree" className="panel-collapse collapse show">
+                  <div className="block-body">
+                    <ul className="avl-features third color">
                       {property?.features?.map((amenity) => (
-                        <li>
-                          <i class="bi bi-check"></i>
+                        <li key={amenity}>
+                          <i className="bi bi-check"></i>
                           <span>{amenity}</span>
                         </li>
                       ))}
@@ -210,8 +227,8 @@ const PropertyDetails = () => {
                 </div>
               </div>
               {/* Single Block Wrap For Location */}
-              <div class="property_block_wrap style-2">
-                <div class="property_block_wrap_header">
+              <div className="property_block_wrap style-2">
+                <div className="property_block_wrap_header">
                   <a
                     data-bs-toggle="collapse"
                     data-parent="#loca"
@@ -219,32 +236,28 @@ const PropertyDetails = () => {
                     aria-controls="clSix"
                     href="javascript:void(0);"
                     aria-expanded="true"
-                    class="collapsed"
+                    className="collapsed"
                   >
-                    <h4 class="property_block_title">Location</h4>
+                    <h4 className="property_block_title">Location</h4>
                   </a>
                 </div>
 
-                <div id="clSix" class="panel-collapse collapse">
-                  <div class="block-body">
-                    <div class="map-container">
+                <div id="clSix" className="panel-collapse collapse">
+                  <div className="block-body">
+                    <div className="map-container">
                       {/* Add Google Map with longitude and latitude coordinates */}
                       <iframe
                         src={`https://maps.google.com/maps?q=${property?.coordinates?.latitude},${property?.coordinates?.longitude}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
                         width="100%"
                         height="450"
-                        frameborder="0"
-                        scrolling="no"
-                        marginheight="0"
-                        marginwidth="0"
                       ></iframe>
                     </div>
                   </div>
                 </div>
               </div>
               {/* Single Block Wrap  For Gallery*/}
-              <div class="property_block_wrap style-2">
-                <div class="property_block_wrap_header">
+              <div className="property_block_wrap style-2">
+                <div className="property_block_wrap_header">
                   <a
                     data-bs-toggle="collapse"
                     data-parent="#clSev"
@@ -252,21 +265,21 @@ const PropertyDetails = () => {
                     aria-controls="clOne"
                     href="javascript:void(0);"
                     aria-expanded="true"
-                    class="collapsed"
+                    className="collapsed"
                   >
-                    <h4 class="property_block_title">Gallery</h4>
+                    <h4 className="property_block_title">Gallery</h4>
                   </a>
                 </div>
 
-                <div id="clSev" class="panel-collapse collapse show">
-                  <div class="block-body">
-                    <ul class="list-gallery-inline">
+                <div id="clSev" className="panel-collapse collapse show">
+                  <div className="block-body">
+                    <ul className="list-gallery-inline">
                       {images.map((image, index) => (
-                        <li>
-                          <a href={image.url} class="mfp-gallery">
+                        <li key={index}>
+                          <a href={image.url} className="mfp-gallery">
                             <img
                               src={image.image_url}
-                              class="img-fluid mx-auto"
+                              className="img-fluid mx-auto"
                               alt=""
                             />
                           </a>
@@ -284,11 +297,11 @@ const PropertyDetails = () => {
                   <ContactForm profile={profile} />
                 </div>
                 {/* Featured Properties */}
-                <div class="sidebar-widgets">
+                <div className="sidebar-widgets">
                   <h4>Featured Property</h4>
-                  <div class="sidebar_featured_property mt-3">
+                  <div className="sidebar_featured_property mt-3">
                     {featuredProperties.map((property) => (
-                      <PropertyCard property={property} />
+                      <PropertyCard property={property} key={property.id} />
                     ))}
                   </div>
                 </div>
