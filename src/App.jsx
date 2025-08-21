@@ -1,11 +1,12 @@
+import { BrowserRouter } from "react-router-dom";
 import "./App.css";
-import ServicesSection from "./components/Services/ServicesSection";
+import Routers from "./router/router";
 
 function App() {
   return (
-    <>
-      <ServicesSection />
-    </>
+    <BrowserRouter>
+      <Routers />
+    </BrowserRouter>
   );
 }
 

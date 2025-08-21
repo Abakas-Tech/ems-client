@@ -48,24 +48,18 @@ const services = [
 const ServicesSection = () => {
   return (
     <>
-      <section class="bg-main position-relative">
-        <div class="position-absolute start-0 top-0 w-25 h-15 bg-light rounded-end-pill opacity-25 mt-4"></div>
-        <div class="position-absolute start-0 bottom-0 w-15 h-20 bg-light rounded-top-pill opacity-25 ms-4"></div>
-        <div class="position-absolute end-0 top-0 w-15 h-25 bg-light rounded-bottom-pill opacity-25 me-4"></div>
-        <div class="position-absolute end-0 bottom-0 w-25 h-15 bg-light rounded-start-pill opacity-25 mb-4"></div>
-        <div class="ht-30"></div>
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-12 col-md-12">
-              <h2 class="ipt-title text-light">Our Services</h2>
-              <span class="ipn-subtitle">
+      <div className="image-cover page-title">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-12 col-md-12">
+              <h2 className="ipt-title">Our Services</h2>
+              <span className="ipn-subtitle">
                 We offer a wide range of services
               </span>
             </div>
           </div>
         </div>
-        <div class="ht-30"></div>
-      </section>
+      </div>
       <section id="services" className="services section">
         <div className="container">
           <div className="row gy-4">
