@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
-import { checkUser } from "../../api/auth/auth.api.jsx";
+import { AuthContext } from "./authContext";
+import { checkUser } from "../../api/Public/auth.api";
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
       const response = await checkUser();
 
       if (response.data.success) {
-        setUser(response.data.user);
+        setUser(true);
       } else {
         setUser(null);
         navigate("/login");
