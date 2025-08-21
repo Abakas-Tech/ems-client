@@ -1,10 +1,9 @@
-import React, { useContext } from "react";
-import { AuthContext } from "../../../context/AuthContext";
 import { X } from "lucide-react";
-import styles from "./globalResponse.module.css";
+import styles from "./response.module.css";
+import useResponse from './../../../context/response/UseResponse';
 
-const GlobalResponse = () => {
-  const { responseMessages, removeMessage } = useContext(AuthContext);
+const Response = () => {
+  const { responseMessages, removeMessage } = useResponse();
 
   return (
     <div className={styles.container}>
@@ -27,4 +26,4 @@ const GlobalResponse = () => {
   );
 };
 
-export default GlobalResponse;
+export default Response;

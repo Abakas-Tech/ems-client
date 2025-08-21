@@ -1,8 +1,8 @@
 import React from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
-import useLoader from "../../../context/loader/useLoader.jsx";
-import styles from "./GlobalLoader.module.css";
+import styles from "./loader.module.css";
+import useLoader from './../../../context/Loader/UseLoader';
 
 const dotVariants = {
   bounce: {
@@ -15,7 +15,7 @@ const dotVariants = {
   },
 };
 
-const GlobalLoader = () => {
+const Loader = () => {
   const { loading } = useLoader();
 
   return (
@@ -65,4 +65,4 @@ const GlobalLoader = () => {
   );
 };
 
-export default GlobalLoader;
+export default Loader;

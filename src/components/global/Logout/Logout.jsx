@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
-import styles from "./LogoutConfirmModal.module.css";
+import styles from "./Logout.module.css";
 
 const Logout = ({ show, onClose, onConfirm }) => {
   return (
