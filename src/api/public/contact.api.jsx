@@ -21,7 +21,7 @@ export const sendContactMessage = async (contactForm) => {
 export const fetchAgentProfile = async () => {
   try {
     const response = await axiosInstance.get("/agent-profile");
-    console.log(response);
+    // console.log(response);
     return response.data.data;
   } catch (error) {
     console.error(

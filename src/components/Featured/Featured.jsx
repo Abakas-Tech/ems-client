@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-  fetchFeaturedProperties,
-  fetchFeaturedPropertyImages,
-} from "../../api/public/property.api";
+import { getAllProperties } from "../../api/public/properties.api";
+import { getPropertyImages } from "../../api/public/PropertiesImage.api";
 import FeaturedCard from "./FeaturedCard";
 import Loader from "../Loader/Loader";
 
@@ -17,20 +15,31 @@ function Featured() {
     const loadData = async () => {
       try {
         setLoading(true);
-        const data = await fetchFeaturedProperties();
-        setProperties(data);
 
-        const imagePromises = data.map((prop) =>
-          fetchFeaturedPropertyImages(prop.id)
+        // Fetch featured properties
+        const params = { isFeatured: true };
+        const data = await getAllProperties(params);
+        const featuredList = data?.data?.properties || [];
+        setProperties(featuredList);
+
+        // Fetch images for each featured property
+        const imagesResponses = await Promise.all(
+          featuredList.map((prop) => getPropertyImages(prop.id))
         );
-        const imageResults = await Promise.all(imagePromises);
-        const imageMap = data.reduce((acc, prop, index) => {
-          acc[prop.id] = imageResults[index] || [];
+
+        // Create images object with property IDs as keys
+        const imagesMap = featuredList.reduce((acc, prop, index) => {
+          acc[prop.id] = imagesResponses[index]?.data?.data || [];
           return acc;
         }, {});
-        setImages(imageMap);
+
+        setImages(imagesMap);
+
+        // Debug: Log the images data
+        // console.log("Images data:", imagesMap);
       } catch (err) {
-        setError("Failed to fetch properties or images.", err);
+        setError("Failed to fetch properties or images.");
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -61,6 +70,8 @@ function Featured() {
             </div>
           ) : error ? (
             <p className="text-danger text-center">{error}</p>
+          ) : properties.length === 0 ? (
+            <p className="text-center">No featured properties found.</p>
           ) : (
             properties.map((property) => (
               <div className="col-xl-6 col-lg-6 col-md-12" key={property.id}>
