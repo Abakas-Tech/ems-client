@@ -13,6 +13,8 @@ const FeaturedCard = ({ property, images }) => {
     bedrooms,
     tags,
     bathrooms,
+    halls,
+    kitchens,
   } = property;
 
   return (
@@ -67,20 +69,42 @@ const FeaturedCard = ({ property, images }) => {
           </div>
         </div>
 
+        {/* Price & Features */}
         <div className="price-features-wrapper">
           <div className="list-fx-features d-flex align-items-center justify-content-between mt-3 mb-1">
-            <div className="listing-card d-flex align-items-center">
+            {/* BHK with hover tooltip */}
+            <div className="listing-card d-flex align-items-center position-relative bhk-card">
               <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
-                <i class="fa-solid fa-building-shield fs-xs"></i>
+                <i className="fa-solid fa-building-shield fs-xs"></i>
               </div>
               <span className="text-muted-2 fs-sm">{bathrooms}BHK</span>
+
+              {/* Tooltip */}
+              <div className="tooltip-details position-absolute bg-white border rounded shadow p-2">
+                <div className="d-flex align-items-center mb-1">
+                  <i className="fa-solid fa-bath me-1"></i>
+                  <span>{bathrooms} Bathrooms</span>
+                </div>
+                <div className="d-flex align-items-center mb-1">
+                  <i className="fa-solid fa-kitchen-set me-1"></i>
+                  <span>{kitchens} Kitchens</span>
+                </div>
+                <div className="d-flex align-items-center">
+                  <i className="fa-solid fa-couch me-1"></i>
+                  <span>{halls} Halls</span>
+                </div>
+              </div>
             </div>
+
+            {/* Bedrooms */}
             <div className="listing-card d-flex align-items-center">
               <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
-                <i class="fa-solid fa-bed fs-xs"></i>
+                <i className="fa-solid fa-bed fs-xs"></i>
               </div>
               <span className="text-muted-2 fs-sm">{bedrooms} Beds</span>
             </div>
+
+            {/* Area size */}
             <div className="listing-card d-flex align-items-center">
               <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
                 <i className="fa-solid fa-clone fs-xs"></i>
@@ -90,6 +114,7 @@ const FeaturedCard = ({ property, images }) => {
           </div>
         </div>
 
+        {/* Footer */}
         <div className="listing-footer-wrapper d-flex justify-content-between align-items-center">
           <div className="listing-locate">
             <span className="listing-location text-muted-2">
