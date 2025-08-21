@@ -1,4 +1,4 @@
-import {axiosInstance} from "../../utils/axios";
+import { axiosInstance } from "../../utils/axios";
 
 // Get agent profile info
 export const getAgentProfile = async () => {
