@@ -8150,7 +8150,7 @@ h3.pa-name {
     bottom: 0px;
     cursor: pointer;
     border-radius: 4px;
-    background:var(--maincolor)
+    background:var(--maincolor);
     color: #ffffff;
     border: 0;
     font-size: 14px;
