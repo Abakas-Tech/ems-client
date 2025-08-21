@@ -3,6 +3,7 @@ import { sendContactMessage } from "../../api/public/contact.api"; // external A
 
 const ContactForm = ({ profile }) => {
   const [contactForm, setContactForm] = useState({
+    name: "",
     email: "",
     phone: "",
     message: "",
@@ -38,7 +39,7 @@ const ContactForm = ({ profile }) => {
       // Pass to external API function
       await sendContactMessage(contactForm);
       alert("Message sent successfully!");
-      setContactForm({ email: "", phone: "", message: "" }); // reset
+      setContactForm({ name: "", email: "", phone: "", message: "" }); // reset
     } catch (error) {
       console.error(error);
       alert("Something went wrong!");
@@ -66,6 +67,17 @@ const ContactForm = ({ profile }) => {
       </div>
 
       <form className="sides-widget-body simple-form" onSubmit={submitForm}>
+        <div className="form-group">
+          <label>Name</label>
+          <input
+            type="text"
+            name="name"
+            className="form-control"
+            placeholder="Your Name"
+            value={contactForm.name}
+            onChange={handleChange}
+          />
+        </div>
         <div className="form-group">
           <label>Email *</label>
           <input
