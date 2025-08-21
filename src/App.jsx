@@ -1,33 +1,6 @@
-import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+import "./App.css";
 import Routers from "./router/router";
-// Define all the URLs for the libraries.
-const JQUERY_CDN_URL = "https://code.jquery.com/jquery-3.6.0.min.js";
-
-const SLICK_CSS_URL =
-  "https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css";
-const SLICK_THEME_CSS_URL =
-  "https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css";
-const SLICK_JS_URL =
-  "https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js";
-
-const RANGESLIDER_CSS_URL =
-  "https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css";
-const RANGESLIDER_JS_URL =
-  "https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js";
-
-const SELECT2_CSS_URL =
-  "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css";
-const SELECT2_JS_URL =
-  "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js";
-
-// Magnific Popup also needs a CSS file.
-const JQUERY_MAGNIFIC_POPUP_CSS_URL =
-  "https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css";
-const JQUERY_MAGNIFIC_POPUP_JS_URL =
-  "https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js";
-
-const CUSTOM_JS_FILE_PATH = "/custom.js";
 
 function App() {
   useEffect(() => {
@@ -121,11 +94,9 @@ function App() {
   }, []); // The empty dependency array ensures this effect runs only once on mount.
 
   return (
-    <>
-      <Router>
-        <Routers />
-      </Router>
-    </>
+    <BrowserRouter>
+      <Routers />
+    </BrowserRouter>
   );
 }
 
