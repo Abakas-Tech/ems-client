@@ -8,11 +8,23 @@ import { BrowserRouter } from "react-router-dom";
 
 import "./index.css";
 import App from "./App.jsx";
+import LoaderProvider from "./context/Loader/LoaderProvider";
+import LogoutProvider from "./context/logout/LogoutProvider.jsx";
+import ResponseProvider from "./context/response/ResponseProvider.jsx";
+import { AuthProvider } from "./context/auth/authProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <LoaderProvider>
+          <LogoutProvider>
+            <ResponseProvider>
+              <App />
+            </ResponseProvider>
+          </LogoutProvider>
+        </LoaderProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 );
