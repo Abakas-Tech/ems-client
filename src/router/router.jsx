@@ -6,6 +6,7 @@ import PropertyList from "../pages/public/propertiesList/properties.list.jsx";
 import PropertyDetails from "../pages/public/propertiesDetail/PropertiesDetail.jsx";
 import Layout from "../components/Layout/Layout.jsx";
 import Contact from "../pages/public/Contact/Contact.jsx";
+import ProtecteRoute from "../utils/ProtectRoute.jsx";
 
 function AppRouter() {
   return (
@@ -56,6 +57,15 @@ function AppRouter() {
           <Layout>
             <Contact />
           </Layout>
+        }
+      />
+      {/* Protected route */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtecteRoute>
+            {/* <DashboardPage /> */}
+          </ProtecteRoute>
         }
       />
     </Routes>
