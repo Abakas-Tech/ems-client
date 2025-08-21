@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/img/logo.svg";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
-  const [isFixed, setIsFixed] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
 
   const settings = {
     mobileBreakpoint: 992,
@@ -33,7 +34,7 @@ const Header = () => {
   // Handle scroll to toggle header-fixed class
   useEffect(() => {
     const handleScroll = () => {
-      setIsFixed(window.scrollY > 0);
+      setIsScrolled(window.scrollY > 0);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -64,6 +65,20 @@ const Header = () => {
     document.addEventListener("click", handleOutsideClick);
     return () => document.removeEventListener("click", handleOutsideClick);
   }, [isOpen]);
+
+  // Apply padding-top to body when header-fixed is active
+  useEffect(() => {
+    const isFixed = isScrolled || location.pathname !== "/";
+    if (isFixed) {
+      // Add padding to body when header-fixed is active
+      document.body.style.paddingTop = "80px";
+    } else {
+      document.body.style.paddingTop = "";
+    }
+  }, [isScrolled, location.pathname]);
+
+  // Determine if header-fixed should be applied
+  const isFixed = isScrolled || location.pathname !== "/";
 
   return (
     <header
@@ -118,32 +133,58 @@ const Header = () => {
             )}
             <ul className="nav-menu align-to-right">
               <li>
-                <Link to="/" className="active" onClick={toggleMenu}>
+                <Link
+                  to="/"
+                  className={location.pathname === "/" ? "active" : ""}
+                  onClick={toggleMenu}
+                >
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/properties" onClick={toggleMenu}>
+                <Link
+                  to="/properties"
+                  className={
+                    location.pathname === "/properties" ? "active" : ""
+                  }
+                  onClick={toggleMenu}
+                >
                   Properties
                 </Link>
               </li>
               <li>
-                <Link to="/about" onClick={toggleMenu}>
+                <Link
+                  to="/about"
+                  className={location.pathname === "/about" ? "active" : ""}
+                  onClick={toggleMenu}
+                >
                   About
                 </Link>
               </li>
               <li>
-                <Link to="/services" onClick={toggleMenu}>
+                <Link
+                  to="/services"
+                  className={location.pathname === "/services" ? "active" : ""}
+                  onClick={toggleMenu}
+                >
                   Services
                 </Link>
               </li>
               <li>
-                <Link to="/contact" onClick={toggleMenu}>
+                <Link
+                  to="/contact"
+                  className={location.pathname === "/contact" ? "active" : ""}
+                  onClick={toggleMenu}
+                >
                   Contact
                 </Link>
               </li>
               <li className="nav-menu-social add-listing">
-                <Link to="/signin" onClick={toggleMenu}>
+                <Link
+                  to="/signin"
+                  className={location.pathname === "/signin" ? "active" : ""}
+                  onClick={toggleMenu}
+                >
                   Sign In
                 </Link>
               </li>
