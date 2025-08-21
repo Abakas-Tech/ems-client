@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
   if (isCheckingAuth) return null;
 
   return (
-    <AuthContext.Provider value={{ user, setUser, checkUserAuth }}>
+    <AuthContext.Provider value={{ user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
