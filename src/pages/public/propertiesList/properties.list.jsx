@@ -4,11 +4,12 @@ import { FaFilter } from "react-icons/fa";
 import FilterSidebar from "../../../components/properties/filterSideBar";
 import PaginationAndSort from "../../../components/properties/paginationAndSort";
 import SingleProperty from "../../../components/properties/singleProperties";
-import { getAllProperties } from "../../../api/public/properties.api";
+import { getAllProperties } from "../../../api/Public/properties.api";
 import { getPropertyImages } from "../../../api/public/PropertiesImage.api";
 import BottomPagination from "../../../components/properties/bottomPagination";
+import SinglePropertyAdmin from './../../../components/admin/Properties/SingleProperyAdmin';
 
-const PropertyList = () => {
+const PropertyList = ({ isPublicPage = true }) => {
   const [properties, setProperties] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -103,47 +104,53 @@ const PropertyList = () => {
         {/* Sidebar + Property List */}
         <Row>
           {/* Sidebar for large screens */}
-          <Col
-            lg={4}
-            className="d-none d-lg-block"
-            style={{
-              overflowY: "auto",
-              paddingRight: "15px",
-            }}
-          >
-            <FilterSidebar
-              className="w-100"
-              onFilterChange={setFilters}
-              filterState={filters}
-              total={pagination.total}
-            />
-          </Col>
+          {isPublicPage && (
+            <Col
+              lg={4}
+              className="d-none d-lg-block"
+              style={{
+                overflowY: "auto",
+                paddingRight: "15px",
+              }}
+            >
+              <FilterSidebar
+                className="w-100"
+                onFilterChange={setFilters}
+                filterState={filters}
+                total={pagination.total}
+              />
+            </Col>
+          )}
 
           {/* Sidebar for smaller screens with smooth open/close */}
-          <Col lg={4} md={12} className="d-lg-none position-relative">
-            <FilterSidebar
-              show={showSidebar}
-              onHide={() => setShowSidebar(false)}
-              onFilterChange={setFilters}
-              filterState={filters}
-              total={pagination.total}
-            />
-          </Col>
+          {isPublicPage && (
+            <Col lg={4} md={12} className="d-lg-none position-relative">
+              <FilterSidebar
+                show={showSidebar}
+                onHide={() => setShowSidebar(false)}
+                onFilterChange={setFilters}
+                filterState={filters}
+                total={pagination.total}
+              />
+            </Col>
+          )}
           {/* Main content */}
+
           <Col className="mb-4">
             {/* Toggle button for sidebar on smaller screens */}
-            <Row className="d-lg-none mb-3">
-              <Col xs={12}>
-                <Button
-                  className="btn btn-dark full-width"
-                  onClick={handleToggleSidebar}
-                >
-                  <FaFilter className="me-2" />
-                  open the filter
-                </Button>
-              </Col>
-            </Row>
-
+            {isPublicPage && (
+              <Row className="d-lg-none mb-3">
+                <Col xs={12}>
+                  <Button
+                    className="btn btn-dark full-width"
+                    onClick={handleToggleSidebar}
+                  >
+                    <FaFilter className="me-2" />
+                    open the filter
+                  </Button>
+                </Col>
+              </Row>
+            )}
             {/* Property List */}
             <Row>
               {loading ? (
@@ -154,12 +161,23 @@ const PropertyList = () => {
                 </div>
               ) : properties.length > 0 ? (
                 properties.map((property) => (
-                  <div className="col-12 mb-4" key={property.id}>
-                    <SingleProperty
-                      property={property}
-                      images={images[property.id] || []}
-                    />
-                  </div>
+                  <>
+                    {isPublicPage ? (
+                      <div className="col-12 mb-4" key={property.id}>
+                        <SingleProperty
+                          property={property}
+                          images={images[property.id] || []}
+                        />
+                      </div>
+                    ) : (
+                      <div className="col-12 mb-0" key={property.id}>
+                        <SinglePropertyAdmin
+                          property={property}
+                          images={images[property.id] || []}
+                        />
+                      </div>
+                    )}
+                  </>
                 ))
               ) : (
                 <div className="d-flex justify-content-center align-items-center vh-100">
