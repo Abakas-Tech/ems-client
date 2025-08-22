@@ -50,10 +50,6 @@ const ImagesUploadForm = ({
     setAltTexts((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async () => {
-    await onSubmit();
-  };
-
   return (
     <div className="container my-4">
       <h3 className="mb-4">Upload Images for Property #{propertyId}</h3>
@@ -62,24 +58,21 @@ const ImagesUploadForm = ({
       <div className="card mb-4 shadow-sm">
         <div
           {...getRootProps()}
-          className={`card-body text-center p-4 ${
+          className={`card-body text-center p-4 border border-2 border-dashed rounded-3 ${
             isDragActive ? "border-primary bg-light" : "border-secondary"
-          } border border-2 border-dashed rounded-3`}
+          }`}
         >
           <input {...getInputProps()} />
-          {isDragActive ? (
-            <div>
-              <i className="bi bi-cloud-upload fs-3 text-primary"></i>
-              <p className="mb-0">Drop the images here...</p>
-            </div>
-          ) : (
-            <div>
-              <i className="bi bi-cloud-upload fs-3 text-primary"></i>
-              <p className="mb-0">Drag & Drop Images Here or Click to Upload</p>
-              <small className="text-muted">
-                Supports JPEG, PNG, GIF (Max 5MB, up to 10 images)
-              </small>
-            </div>
+          <i className="bi bi-cloud-upload fs-3 text-primary"></i>
+          <p className="mb-0">
+            {isDragActive
+              ? "Drop the images here..."
+              : "Drag & Drop Images Here or Click to Upload"}
+          </p>
+          {!isDragActive && (
+            <small className="text-muted">
+              Supports JPEG, PNG, GIF (Max 5MB, up to 10 images)
+            </small>
           )}
         </div>
       </div>
@@ -100,17 +93,23 @@ const ImagesUploadForm = ({
                   />
                   <button
                     type="button"
-                    className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
                     onClick={() => handleRemoveImage(index)}
                     title="Remove image"
-                    style={{ zIndex: 1 }}
+                    className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                    style={{
+                      zIndex: 1,
+                      background: "none",
+                      border: "none",
+                      padding: "2px",
+                      color: "black",
+                    }}
                   >
-                    <X size={16} />
+                    <X size={30} />
                   </button>
                   <div className="card-body p-2">
                     <input
                       type="text"
-                      placeholder="Alt text (optional)"
+                      placeholder="Image title"
                       value={altTexts[index]}
                       onChange={(e) =>
                         handleAltTextChange(index, e.target.value)
@@ -125,18 +124,18 @@ const ImagesUploadForm = ({
         </div>
       )}
 
-      {/* Buttons */}
+      {/* Action Buttons */}
       <div className="d-flex gap-3">
         <button
           type="button"
           className="btn btn-primary fw-medium px-4"
-          onClick={handleSubmit}
+          onClick={onSubmit}
         >
           Submit Images
         </button>
         <button
           type="button"
-          className="btn btn-secondary fw-medium px-4"
+          className="btn btn-dark fw-medium px-4"
           onClick={onCancel}
         >
           Cancel
