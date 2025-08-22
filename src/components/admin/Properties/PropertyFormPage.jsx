@@ -138,7 +138,7 @@ const PropertyFormPage = () => {
           <div className="row">
             <div className="col-lg-12 col-md-12">
               <div className="submit-page">
-                {formStage !== "property" ? (
+                {formStage === "property" ? (
                   <PropertyDetailsForm onSubmit={handlePropertySubmit} />
                 ) : (
                   <ImagesUploadForm
