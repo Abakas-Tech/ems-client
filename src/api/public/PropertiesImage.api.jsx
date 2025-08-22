@@ -38,25 +38,28 @@ export const getPropertyImageById = async (propertyId, imageId) => {
 
 // Add multiple images to a property
 export const addPropertyImages = async (propertyId, formData) => {
+  console.log("addPropertyImages called with propertyId:", propertyId);
+  console.log("FormData contents:", Array.from(formData.entries()));
+
   try {
-    const token = localStorage.getItem("authToken");
     const response = await axiosInstance.post(
       `/properties/${propertyId}/images`,
       formData,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       }
     );
+    console.log("Response from server:", response.data);
     return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.message || error.message || "Unknown error",
-    };
+    console.error("Error in addPropertyImages:", error);
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to upload images";
+    return { success: false, message };
   }
 };
 

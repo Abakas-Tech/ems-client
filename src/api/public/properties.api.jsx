@@ -35,11 +35,9 @@ export const getPropertyById = async (id) => {
 
 // Create a property
 export const createProperty = async (data) => {
+  console.log(data);
   try {
-    const token = localStorage.getItem("authToken");
-    const response = await axiosInstance.post("/properties", data, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axiosInstance.post("/properties", data, {});
     return response.data;
   } catch (error) {
     return {

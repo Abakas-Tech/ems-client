@@ -1,18 +1,8 @@
 import "./App.css";
-import Loader from "./components/global/Loader/Loader";
-import Logout from "./components/global/Logout/Logout";
-import Response from "./components/global/Response/Response";
-import AppRouter from "./router/router";
+import PropertyForm from './components/admin/Properties/PropertyForm';
+
 function App() {
-  return (
-    <div>
-      <AppRouter />
-      {/* Global components */}
-      <Logout />
-      <Response />
-      <Loader />
-    </div>
-  );
+  return <PropertyForm />;
 }
 
 export default App;
