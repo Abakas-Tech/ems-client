@@ -320,7 +320,10 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                         }}
                         className="form-check-input"
                       />
-                      <label htmlFor={`f-${index}`} className="form-check-label">
+                      <label
+                        htmlFor={`f-${index}`}
+                        className="ms-2 form-check-label"
+                      >
                         {feature}
                       </label>
                     </li>
