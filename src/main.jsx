@@ -16,11 +16,14 @@ import { AuthProvider } from "./context/auth/authProvider.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-  
-      
-           
+   
+        <LoaderProvider>
+     
+            <ResponseProvider>
               <App />
-           
+            </ResponseProvider>
+        
+        </LoaderProvider>
      
     </BrowserRouter>
   </StrictMode>

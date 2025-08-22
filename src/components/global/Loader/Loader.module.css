@@ -29,12 +29,12 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: var(--loader-bar-color, #16a34a);
+  background-color:  #16a34a;
 }
 
 .loadingText {
   margin-top: 1.2rem;
-  color: var(--loader-text-color, #1f2937);
+  color: #1f2937;
   font-weight: 600;
   user-select: none;
   font-size: 1.125rem;

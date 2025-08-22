@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import PropertyDetailsForm from "./PropertyDetailsForm";
 import ImagesUploadForm from "./ImagesUploadForm";
+import useLoader from "../../../context/Loader/UseLoader";
+import useResponse from "../../../context/response/UseResponse";
 
 // Lazy-load API functions
 const createProperty = async (...args) => {
@@ -14,17 +16,15 @@ const addPropertyImages = async (...args) => {
 };
 
 const PropertyFormPage = () => {
-  const [submissionStatus, setSubmissionStatus] = useState(null);
   const [files, setFiles] = useState([]);
   const [altTexts, setAltTexts] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formStage, setFormStage] = useState("property");
   const [propertyId, setPropertyId] = useState(null);
+  const { showLoader, hideLoader } = useLoader();
+  const { addMessage } = useResponse();
 
   const handlePropertySubmit = async (data) => {
-    setIsSubmitting(true);
-    setSubmissionStatus(null);
-
+    showLoader();
     const propertyData = {
       title: data.title,
       description: data.description,
@@ -38,7 +38,9 @@ const PropertyFormPage = () => {
       category: data.category?.value,
       isUrgent: !!data.isUrgent,
       isFeatured: !!data.isFeatured,
-      features: data.features.filter(Boolean),
+      features: Array.isArray(data.features)
+        ? data.features.filter(Boolean)
+        : [],
       tags: data.tags
         ? data.tags
             .split(",")
@@ -53,79 +55,59 @@ const PropertyFormPage = () => {
     try {
       const propertyResponse = await createProperty(propertyData);
       if (!propertyResponse.success) {
-        setSubmissionStatus({
-          type: "error",
-          message: propertyResponse.message,
-        });
-        setIsSubmitting(false);
+        addMessage("error", propertyResponse.message);
+        hideLoader();
         return;
       }
 
       setPropertyId(propertyResponse.data.id);
+      addMessage("success", "Property added successfully!");
       setFormStage("images");
-      setIsSubmitting(false);
-    } catch (error) {
-      console.error("Property submission error:", error);
-      setSubmissionStatus({
-        type: "error",
-        message:
-          "An error occurred during property submission. Please try again.",
-      });
-      setIsSubmitting(false);
+      hideLoader();
+    } catch {
+      addMessage(
+        "error",
+        "An error occurred during property submission. Please try again."
+      );
+      hideLoader();
     }
   };
 
   const handleImagesSubmit = async () => {
     if (files.length === 0) {
-      return { success: false, message: "At least one image is required." };
+      addMessage("error", "At least one image is required.");
+      return;
     }
 
-    setIsSubmitting(true);
-    setSubmissionStatus(null);
-
+    showLoader();
     try {
-      console.log("Files before FormData:", files);
-      console.log("AltTexts before FormData:", altTexts);
-      console.log("Property ID:", propertyId);
-
       const formData = new FormData();
-      files.forEach((file, index) => {
+      files.forEach((file) => {
         formData.append("images", file);
-        console.log(
-          `Appending image ${index}:`,
-          file.name,
-          file.type,
-          file.size
-        );
       });
       formData.append("altTexts", JSON.stringify(altTexts));
-      console.log("FormData contents:", Array.from(formData.entries()));
 
       const imageResponse = await addPropertyImages(propertyId, formData);
       if (!imageResponse.success) {
-        setSubmissionStatus({
-          type: "error",
-          message: imageResponse.message || "Failed to upload images.",
-        });
-        setIsSubmitting(false);
+        addMessage(
+          "error",
+          imageResponse.message || "Failed to upload images."
+        );
+        hideLoader();
         return;
       }
 
-      setSubmissionStatus({
-        type: "success",
-        message: "Images submitted successfully!",
-      });
+      addMessage("success", "Images submitted successfully!");
       setFiles([]);
       setAltTexts([]);
       setFormStage("property");
-      setIsSubmitting(false);
-    } catch (error) {
-      console.error("Image submission error:", error);
-      setSubmissionStatus({
-        type: "error",
-        message: "An error occurred during image submission. Please try again.",
-      });
-      setIsSubmitting(false);
+      hideLoader();
+    } catch  {
+      addMessage(
+        "error",
+        "An error occurred during image submission. Please try again."
+      );
+      hideLoader();
     }
   };
 
@@ -134,7 +116,6 @@ const PropertyFormPage = () => {
     setFiles([]);
     setAltTexts([]);
     setPropertyId(null);
-    setSubmissionStatus(null);
   };
 
   return (
@@ -157,24 +138,8 @@ const PropertyFormPage = () => {
           <div className="row">
             <div className="col-lg-12 col-md-12">
               <div className="submit-page">
-                {submissionStatus && (
-                  <div
-                    className={`alert ${
-                      submissionStatus.type === "success"
-                        ? "bg-green text-light"
-                        : "alert-danger"
-                    } text-center`}
-                    role="alert"
-                  >
-                    {submissionStatus.message}
-                  </div>
-                )}
-
                 {formStage === "property" ? (
-                  <PropertyDetailsForm
-                    onSubmit={handlePropertySubmit}
-                    isSubmitting={isSubmitting}
-                  />
+                  <PropertyDetailsForm onSubmit={handlePropertySubmit} />
                 ) : (
                   <ImagesUploadForm
                     propertyId={propertyId}
@@ -184,10 +149,6 @@ const PropertyFormPage = () => {
                     setAltTexts={setAltTexts}
                     onSubmit={handleImagesSubmit}
                     onCancel={handleCancel}
-                    isSubmitting={isSubmitting}
-                    setError={(message) =>
-                      setSubmissionStatus({ type: "error", message })
-                    }
                   />
                 )}
               </div>

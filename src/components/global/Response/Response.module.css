@@ -21,16 +21,16 @@
   word-break: break-word;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.3s ease;
-  color: var(--text-on-alert);
+  color: #ffffff;
   font-family: system-ui, sans-serif;
 }
 
 .success {
-  background-color: var(--success-bg);
+  background-color: #28a745;
 }
 
 .error {
-  background-color: var(--error-bg);
+  background-color: #dc3545;
 }
 
 .closeIcon {

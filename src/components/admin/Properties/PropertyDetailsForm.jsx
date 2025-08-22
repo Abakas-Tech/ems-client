@@ -1,15 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
-import { FaExclamationCircle, FaStar } from "react-icons/fa";
+import { AlertCircle, Star } from "lucide-react";
+import useResponse from "./../../../context/response/UseResponse";
 
-const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
+const PropertyDetailsForm = ({ onSubmit }) => {
+  const { addMessage } = useResponse();
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm();
+    trigger,
+  } = useForm({
+    defaultValues: {
+      features: [],
+    },
+    mode: "onSubmit", // Ensure validation triggers on submit
+  });
+  const [validationError, setValidationError] = useState(null);
 
   const selectStyles = {
     control: (provided) => ({
@@ -19,8 +28,50 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
     }),
   };
 
+  const handleFormSubmit = async (data) => {
+    const fields = [
+      { name: "title", isSelect: false },
+      { name: "category", isSelect: true },
+      { name: "propertyType", isSelect: true },
+      { name: "areaSize", isSelect: false },
+      { name: "address", isSelect: false },
+      { name: "latitude", isSelect: false },
+      { name: "longitude", isSelect: false },
+      { name: "description", isSelect: false },
+      { name: "status", isSelect: true },
+    ];
+
+    for (const field of fields) {
+      const isValid = await trigger(field.name, { shouldFocus: false });
+      if (!isValid) {
+        // Force re-render to update errors
+        setValidationError(field.name);
+        return;
+      }
+    }
+
+    // If all validations pass, clear error and call onSubmit
+    setValidationError(null);
+    onSubmit(data);
+  };
+
+  // Effect to check errors after validationError state changes
+  React.useEffect(() => {
+    if (validationError) {
+      const field = fields.find((f) => f.name === validationError);
+      if (field && errors[field.name]) {
+        const errorMessage = field.isSelect
+          ? errors[field.name]?.message || `${field.name} is required`
+          : errors[field.name].message;
+        addMessage("error", errorMessage);
+      }
+      // Clear validationError to prevent re-triggering
+      setValidationError(null);
+    }
+  }, [validationError, errors, addMessage]);
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(handleFormSubmit)}>
       {/* Basic Information */}
       <div className="form-submit">
         <h3>Basic Information</h3>
@@ -44,9 +95,6 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                 })}
                 className="form-control"
               />
-              {errors.title && (
-                <div className="text-danger">{errors.title.message}</div>
-              )}
             </div>
             <div className="form-group col-md-6">
               <label>
@@ -68,9 +116,6 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                   />
                 )}
               />
-              {errors.category && (
-                <div className="text-danger">{errors.category.message}</div>
-              )}
             </div>
             <div className="form-group col-md-6">
               <label>
@@ -94,9 +139,6 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                   />
                 )}
               />
-              {errors.propertyType && (
-                <div className="text-danger">{errors.propertyType.message}</div>
-              )}
             </div>
             <div className="form-group col-md-6">
               <label>Area Size (optional)</label>
@@ -111,9 +153,6 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                 className="form-control"
                 placeholder="sq ft"
               />
-              {errors.areaSize && (
-                <div className="text-danger">{errors.areaSize.message}</div>
-              )}
             </div>
             <div className="form-group col-md-6">
               <label>Bedrooms (optional)</label>
@@ -210,9 +249,6 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                 })}
                 className="form-control"
               />
-              {errors.address && (
-                <div className="text-danger">{errors.address.message}</div>
-              )}
             </div>
             <div className="form-group col-md-6">
               <label>
@@ -227,9 +263,6 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                 step="any"
                 className="form-control"
               />
-              {errors.latitude && (
-                <div className="text-danger">{errors.latitude.message}</div>
-              )}
             </div>
             <div className="form-group col-md-6">
               <label>
@@ -244,9 +277,6 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                 step="any"
                 className="form-control"
               />
-              {errors.longitude && (
-                <div className="text-danger">{errors.longitude.message}</div>
-              )}
             </div>
           </div>
         </div>
@@ -271,9 +301,6 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                 })}
                 className="form-control h-120"
               />
-              {errors.description && (
-                <div className="text-danger">{errors.description.message}</div>
-              )}
             </div>
             <div className="form-group col-md-12">
               <label>Tags (optional, comma-separated)</label>
@@ -294,10 +321,10 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                     "Internet",
                     "Microwave",
                     "Smoking Allow",
-                    "Terrace",
+                   
                     "Balcony",
                     "Wi-Fi",
-                    "Beach",
+                  
                     "Parking",
                   ].map((feature, index) => (
                     <li key={index}>
@@ -332,7 +359,7 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                   className="form-check-label"
                   style={{ color: "#dc3545" }}
                 >
-                  <FaExclamationCircle style={{ marginRight: "5px" }} />
+                  <AlertCircle style={{ marginRight: "5px" }} size={16} />
                   Is Urgent
                 </label>
               </div>
@@ -350,7 +377,7 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                   className="form-check-label"
                   style={{ color: "#ffc107" }}
                 >
-                  <FaStar style={{ marginRight: "5px" }} />
+                  <Star style={{ marginRight: "5px" }} size={16} />
                   Is Featured
                 </label>
               </div>
@@ -376,21 +403,14 @@ const PropertyDetailsForm = ({ onSubmit, isSubmitting }) => {
                   />
                 )}
               />
-              {errors.status && (
-                <div className="text-danger">{errors.status.message}</div>
-              )}
             </div>
           </div>
         </div>
       </div>
 
       <div className="form-group col-lg-12 col-md-12">
-        <button
-          type="submit"
-          className="btn btn-main fw-medium px-5"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Submit Property"}
+        <button type="submit" className="btn btn-main fw-medium px-5">
+          Submit Property
         </button>
       </div>
     </form>

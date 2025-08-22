@@ -1,6 +1,7 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
-import { FaTimes } from "react-icons/fa";
+import { X } from "lucide-react";
+import useResponse from "./../../../context/response/UseResponse";
 
 const ImagesUploadForm = ({
   propertyId,
@@ -10,9 +11,8 @@ const ImagesUploadForm = ({
   setAltTexts,
   onSubmit,
   onCancel,
-  isSubmitting,
-  setError,
 }) => {
+  const { addMessage } = useResponse();
   const maxFiles = 10;
   const maxFileSize = 5 * 1024 * 1024; // 5MB
   const allowedMimeTypes = {
@@ -31,7 +31,7 @@ const ImagesUploadForm = ({
           fileRejections[0].errors[0].code === "file-too-large"
             ? "Each file must be less than 5MB."
             : "Only JPEG, PNG, and GIF images are allowed.";
-        setError(message);
+        addMessage("error", message);
         return;
       }
       setFiles((prev) => [...prev, ...acceptedFiles]);
@@ -51,86 +51,93 @@ const ImagesUploadForm = ({
   };
 
   const handleSubmit = async () => {
-    const result = await onSubmit();
-    if (!result.success) {
-      setError(result.message);
-    }
+    await onSubmit();
   };
 
   return (
-    <div>
-      {/* Gallery */}
-      <div className="form-submit">
-        <h3>Upload Images for Property #{propertyId}</h3>
-        <div className="submit-section">
-          <div className="row">
-            <div className="form-group col-md-12">
-              <label>Upload Gallery</label>
-              <div
-                {...getRootProps()}
-                className="dropzone dz-clickable primary-dropzone"
-              >
-                <input {...getInputProps()} />
-                {isDragActive ? (
-                  <div className="dz-default dz-message">
-                    <span>Drop the images here...</span>
-                  </div>
-                ) : (
-                  <div className="dz-default dz-message">
-                    <i className="bi bi-cloud-plus-fill text-main"></i>
-                    <span>Drag & Drop Images Here</span>
-                  </div>
-                )}
-              </div>
-              {files.length > 0 && (
-                <div className="mt-3">
-                  <h4>Uploaded Images</h4>
-                  {files.map((file, index) => (
-                    <div
-                      key={index}
-                      className="d-flex align-items-center mb-2 gap-2"
-                    >
-                      <span className="me-2">{file.name}</span>
-                      <input
-                        type="text"
-                        placeholder="Alt text (optional)"
-                        value={altTexts[index]}
-                        onChange={(e) =>
-                          handleAltTextChange(index, e.target.value)
-                        }
-                        className="form-control flex-grow-1"
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleRemoveImage(index)}
-                        title="Remove image"
-                      >
-                        <FaTimes />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+    <div className="container my-4">
+      <h3 className="mb-4">Upload Images for Property #{propertyId}</h3>
+
+      {/* Dropzone */}
+      <div className="card mb-4 shadow-sm">
+        <div
+          {...getRootProps()}
+          className={`card-body text-center p-4 ${
+            isDragActive ? "border-primary bg-light" : "border-secondary"
+          } border border-2 border-dashed rounded-3`}
+        >
+          <input {...getInputProps()} />
+          {isDragActive ? (
+            <div>
+              <i className="bi bi-cloud-upload fs-3 text-primary"></i>
+              <p className="mb-0">Drop the images here...</p>
             </div>
-          </div>
+          ) : (
+            <div>
+              <i className="bi bi-cloud-upload fs-3 text-primary"></i>
+              <p className="mb-0">Drag & Drop Images Here or Click to Upload</p>
+              <small className="text-muted">
+                Supports JPEG, PNG, GIF (Max 5MB, up to 10 images)
+              </small>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="form-group col-lg-12 col-md-12 d-flex gap-3">
+      {/* Gallery */}
+      {files.length > 0 && (
+        <div className="mb-4">
+          <h4 className="mb-3">Uploaded Images</h4>
+          <div className="row g-3">
+            {files.map((file, index) => (
+              <div key={index} className="col-6 col-md-4 col-lg-3">
+                <div className="card shadow-sm position-relative">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={altTexts[index] || file.name}
+                    className="card-img-top img-fluid"
+                    style={{ height: "150px", objectFit: "cover" }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                    onClick={() => handleRemoveImage(index)}
+                    title="Remove image"
+                    style={{ zIndex: 1 }}
+                  >
+                    <X size={16} />
+                  </button>
+                  <div className="card-body p-2">
+                    <input
+                      type="text"
+                      placeholder="Alt text (optional)"
+                      value={altTexts[index]}
+                      onChange={(e) =>
+                        handleAltTextChange(index, e.target.value)
+                      }
+                      className="form-control form-control-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Buttons */}
+      <div className="d-flex gap-3">
         <button
           type="button"
-          className="btn btn-main fw-medium px-5"
+          className="btn btn-primary fw-medium px-4"
           onClick={handleSubmit}
-          disabled={isSubmitting}
         >
-          {isSubmitting ? "Submitting..." : "Submit Images"}
+          Submit Images
         </button>
         <button
           type="button"
-          className="btn btn-secondary fw-medium px-5"
+          className="btn btn-secondary fw-medium px-4"
           onClick={onCancel}
-          disabled={isSubmitting}
         >
           Cancel
         </button>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ResponseContext } from "./ResponseContext";
-import Response from './../../components/global/Response/Response';
+import Response from "./../../components/global/Response/Response";
 
 let messageId = 0;
 
@@ -8,6 +8,7 @@ const ResponseProvider = ({ children }) => {
   const [responseMessages, setResponseMessages] = useState([]);
 
   const addMessage = (type, text) => {
+    console.log(type, text);
     const id = ++messageId;
     setResponseMessages((prev) => [...prev, { id, type, text }]);
     setTimeout(() => removeMessage(id), 5000);
