@@ -11,7 +11,7 @@ function landingpage() {
     <>
       <Hero />
       <ServicesSection />
-      <AboutSnippet />
+      <AboutSnippet showButton={true} />
       <Featured />
       <Testimonials />
       <Contact />
