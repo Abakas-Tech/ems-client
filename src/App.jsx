@@ -1,8 +1,9 @@
 import "./App.css";
-import PropertyForm from './components/admin/Properties/PropertyForm';
+
+import PropertyFormPage from "./components/admin/Properties/PropertyFormPage";
 
 function App() {
-  return <PropertyForm />;
+  return <PropertyFormPage />;
 }
 
 export default App;
