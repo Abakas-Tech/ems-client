@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useFormik } from "formik";
 import Select from "react-select";
 import { AiOutlineExclamationCircle, AiFillStar } from "react-icons/ai";
+import { FaBolt, FaThumbtack } from "react-icons/fa"; // extra amazing icons
 import useResponse from "./../../../context/response/UseResponse";
 
 const PropertyDetailsForm = ({ onSubmit }) => {
@@ -332,7 +333,7 @@ const PropertyDetailsForm = ({ onSubmit }) => {
               </div>
             </div>
 
-            {/* Is Urgent */}
+            {/* Urgent Property */}
             <div className="form-group col-md-12">
               <div className="form-check">
                 <input
@@ -345,15 +346,15 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 />
                 <label
                   htmlFor="isUrgent"
-                  className="form-check-label text-danger"
+                  className="form-check-label text-danger fw-bold"
                 >
-                  <AiOutlineExclamationCircle style={{ marginRight: 5 }} />
-                  Is Urgent
+                  <FaBolt style={{ marginRight: 6 }} />
+                  Mark as Urgent
                 </label>
               </div>
             </div>
 
-            {/* Is Featured */}
+            {/* Featured Property */}
             <div className="form-group col-md-12">
               <div className="form-check">
                 <input
@@ -366,10 +367,10 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 />
                 <label
                   htmlFor="isFeatured"
-                  className="form-check-label text-warning"
+                  className="form-check-label text-warning fw-bold"
                 >
-                  <AiFillStar style={{ marginRight: 5 }} />
-                  Is Featured
+                  <AiFillStar style={{ marginRight: 6 }} />
+                  Highlight as Featured
                 </label>
               </div>
             </div>
