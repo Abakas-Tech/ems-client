@@ -6,11 +6,12 @@ import PropertyList from "../pages/public/propertiesList/properties.list.jsx";
 import PropertyDetails from "../pages/public/propertiesDetail/PropertiesDetail.jsx";
 import Layout from "../components/Layout/Layout.jsx";
 import Contact from "../pages/public/Contact/Contact.jsx";
-import ProtecteRoute from "../utils/ProtectRoute.jsx";
+import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import Login from "../pages/admin/Login/Login.jsx";
 import ScrollToTop from "../components/ScrollToTop/ScrollToTop.jsx";
 import ForgotPassword from "../pages/admin/ForgotPassword/ForgotPassword.jsx";
 import ResetPassword from "../pages/admin/ResetPassword/ResetPassword.jsx";
+import ChangePassword from "../components/ChangePassword/ChangePassword.jsx";
 
 function AppRouter() {
   return (
@@ -67,8 +68,9 @@ function AppRouter() {
         />
 
         <Route path="/login" element={<Login />} />
-        <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/admin/dashboard" element={<ChangePassword />} />
       </Routes>
     </>
   );

@@ -33,7 +33,7 @@ const LoginForm = () => {
       const response = await loginAdmin({ email, password });
       localStorage.setItem("authToken", response.data.token);
       addMessage("success", "Login successful!");
-      navigate("/dashboard");
+      navigate("/admin/dashboard");
     } catch (error) {
       addMessage("error", error.message || "Login failed.");
     } finally {
@@ -80,7 +80,7 @@ const LoginForm = () => {
           </div>
 
           <div className="text-end mb-3 fw-medium">
-            <Link to="/admin/forgot-password" className="link-primary">
+            <Link to="/forgot-password" className="link-primary">
               Forgot Password?
             </Link>
           </div>
