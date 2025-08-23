@@ -6,6 +6,7 @@ export const getPropertyImages = async (propertyId) => {
     const response = await axiosInstance.get(
       `/properties/${propertyId}/images`
     );
+    console.log(response.data);
     return response.data;
   } catch (error) {
     return {
@@ -26,6 +27,7 @@ export const getPropertyImageById = async (propertyId, imageId) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
+    console.log(response.data);
     return response.data;
   } catch (error) {
     return {
@@ -38,8 +40,8 @@ export const getPropertyImageById = async (propertyId, imageId) => {
 
 // Add multiple images to a property
 export const addPropertyImages = async (propertyId, formData) => {
-  console.log("addPropertyImages called with propertyId:", propertyId);
-  console.log("FormData contents:", Array.from(formData.entries()));
+ 
+
 
   try {
     const response = await axiosInstance.post(
@@ -65,14 +67,13 @@ export const addPropertyImages = async (propertyId, formData) => {
 
 // Update a single image for a property
 export const updatePropertyImage = async (propertyId, imageId, formData) => {
+  console.log(propertyId, imageId, formData);
   try {
-    const token = localStorage.getItem("authToken");
     const response = await axiosInstance.put(
       `/properties/${propertyId}/images/${imageId}`,
       formData,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       }

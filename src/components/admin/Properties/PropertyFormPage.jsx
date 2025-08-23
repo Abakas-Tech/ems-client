@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import PropertyDetailsForm from "./PropertyDetailsForm";
 import ImagesUploadForm from "./ImagesUploadForm";
 import useLoader from "../../../context/Loader/UseLoader";
@@ -15,31 +15,37 @@ const addPropertyImages = async (...args) => {
   return module.addPropertyImages(...args);
 };
 const getPropertyById = async (...args) => {
-  const module = await import("../../../api/Public/properties.api"); // Adjust path if needed
+  const module = await import("../../../api/Public/properties.api");
   return module.getPropertyById(...args);
 };
 const updateProperty = async (...args) => {
-  const module = await import("../../../api/Public/properties.api"); // Adjust path if needed
+  const module = await import("../../../api/Public/properties.api");
   return module.updateProperty(...args);
 };
 const getPropertyImages = async (...args) => {
-  const module = await import("../../../api/public/PropertiesImage.api"); // Adjust path if needed
+  const module = await import("../../../api/public/PropertiesImage.api");
   return module.getPropertyImages(...args);
 };
 const updatePropertyImage = async (...args) => {
-  const module = await import("../../../api/public/PropertiesImage.api"); // Adjust path if needed
+  const module = await import("../../../api/public/PropertiesImage.api");
   return module.updatePropertyImage(...args);
 };
 
 const PropertyFormPage = () => {
-  const propertyIdParam = 24;
+  const propertyIdParam  = 28;
   const navigate = useNavigate();
+  const location = useLocation();
   const [files, setFiles] = useState([]);
   const [altTexts, setAltTexts] = useState([]);
-  const [existingImages, setExistingImages] = useState([]); // {id, url, altText, originalAltText, file: null}
-  const [formStage, setFormStage] = useState("property");
+  const [existingImages, setExistingImages] = useState([]);
+  const [formStage, setFormStage] = useState(
+    location.state?.initialFormStage || "property"
+  );
   const [propertyId, setPropertyId] = useState(propertyIdParam || null);
   const [isEditMode, setIsEditMode] = useState(true);
+  const [isNewProperty, setIsNewProperty] = useState(
+    !!location.state?.isNewProperty
+  );
   const [initialValues, setInitialValues] = useState({
     title: "",
     category: null,
@@ -60,133 +66,152 @@ const PropertyFormPage = () => {
     kitchens: null,
   });
 
-
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
-useEffect(() => {
-  if (!propertyIdParam) return;
+  useEffect(() => {
+    if (!propertyIdParam) return;
 
-  setPropertyId(propertyIdParam);
-  showLoader();
+    setIsEditMode(true);
+    setPropertyId(propertyIdParam);
+    showLoader();
 
-  (async () => {
-    try {
-      const [propertyRes, imagesRes] = await Promise.all([
-        getPropertyById(propertyIdParam),
-        getPropertyImages(propertyIdParam),
-      ]);
+    (async () => {
+      try {
+        const [propertyRes, imagesRes] = await Promise.all([
+          getPropertyById(propertyIdParam),
+          getPropertyImages(propertyIdParam),
+        ]);
 
-      // normalize property payload (works if API returns raw object or { data: ... })
-      const propPayload = propertyRes?.data ?? propertyRes;
-      const data =
-        propPayload && typeof propPayload === "object" && propPayload.data
-          ? propPayload.data
-          : propPayload;
+        const propPayload = propertyRes?.data ?? propertyRes;
+        const data =
+          propPayload && typeof propPayload === "object" && propPayload.data
+            ? propPayload.data
+            : propPayload;
 
-      // small helpers for labels
-      const propertyTypeLabel = (pt) =>
-        pt === "apartment"
-          ? "Apartment"
-          : pt === "house"
-          ? "House"
-          : pt === "villa"
-          ? "Villa"
-          : "Land";
+        const propertyTypeLabel = (pt) =>
+          pt === "apartment"
+            ? "Apartment"
+            : pt === "house"
+            ? "House"
+            : pt === "villa"
+            ? "Villa"
+            : "Land";
 
-      const statusLabel = (s) =>
-        s === "available" ? "Available" : s === "sold" ? "Sold" : "Rented";
+        const statusLabel = (s) =>
+          s === "available" ? "Available" : s === "sold" ? "Sold" : "Rented";
 
-      if (data && (data.id || data.title)) {
-        setInitialValues({
-          title: data.title || "",
-          category: data.category
-            ? {
-                value: data.category,
-                label:
-                  data.category === "rent"
-                    ? "For Rent"
-                    : data.category === "sale"
-                    ? "For Sale"
-                    : String(data.category),
-              }
-            : null,
-          propertyType: data.property_type
-            ? {
-                value: data.property_type,
-                label: propertyTypeLabel(data.property_type),
-              }
-            : null,
-          address: data.location || "",
-          // coordinates may be nested under `coordinates`
-          latitude:
-            (data.coordinates && data.coordinates.latitude) ??
-            data.latitude ??
-            "",
-          longitude:
-            (data.coordinates && data.coordinates.longitude) ??
-            data.longitude ??
-            "",
-          description: data.description || "",
-          tags: Array.isArray(data.tags)
-            ? data.tags.join(", ")
-            : data.tags || "",
-          features: Array.isArray(data.features) ? data.features : [],
-          // API uses 0/1 for these fields
-          isUrgent: !!data.is_urgent,
-          isFeatured: !!data.is_featured,
-          status: data.status
-            ? { value: data.status, label: statusLabel(data.status) }
-            : null,
-          areaSize: data.area_size ?? "",
-          bedrooms: data.bedrooms
-            ? { value: data.bedrooms, label: String(data.bedrooms) }
-            : null,
-          bathrooms: data.bathrooms
-            ? { value: data.bathrooms, label: String(data.bathrooms) }
-            : null,
-          halls: data.halls
-            ? { value: data.halls, label: String(data.halls) }
-            : null,
-          kitchens: data.kitchens
-            ? { value: data.kitchens, label: String(data.kitchens) }
-            : null,
-        });
-      } else {
-        addMessage(
-          "error",
-          propertyRes?.message ||
-            propertyRes?.data?.message ||
-            "Failed to fetch property."
-        );
+        if (data && (data.id || data.title)) {
+          setInitialValues({
+            title: data.title || "",
+            category: data.category
+              ? {
+                  value: data.category,
+                  label:
+                    data.category === "rent"
+                      ? "For Rent"
+                      : data.category === "sale"
+                      ? "For Sale"
+                      : String(data.category),
+                }
+              : null,
+            propertyType: data.property_type
+              ? {
+                  value: data.property_type,
+                  label: propertyTypeLabel(data.property_type),
+                }
+              : null,
+            address: data.location || "",
+            latitude:
+              (data.coordinates && data.coordinates.latitude) ??
+              data.latitude ??
+              "",
+            longitude:
+              (data.coordinates && data.coordinates.longitude) ??
+              data.longitude ??
+              "",
+            description: data.description || "",
+            tags: Array.isArray(data.tags)
+              ? data.tags.join(", ")
+              : data.tags || "",
+            features: Array.isArray(data.features) ? data.features : [],
+            isUrgent: !!data.is_urgent,
+            isFeatured: !!data.is_featured,
+            status: data.status
+              ? { value: data.status, label: statusLabel(data.status) }
+              : null,
+            areaSize: data.area_size ?? "",
+            bedrooms: data.bedrooms
+              ? { value: data.bedrooms, label: String(data.bedrooms) }
+              : null,
+            bathrooms: data.bathrooms
+              ? { value: data.bathrooms, label: String(data.bathrooms) }
+              : null,
+            halls: data.halls
+              ? { value: data.halls, label: String(data.halls) }
+              : null,
+            kitchens: data.kitchens
+              ? { value: data.kitchens, label: String(data.kitchens) }
+              : null,
+          });
+        } else {
+          addMessage(
+            "error",
+            propertyRes?.message ||
+              propertyRes?.data?.message ||
+              "Failed to fetch property."
+          );
+        }
+
+        const imgs = (() => {
+          if (!imagesRes) return [];
+          if (Array.isArray(imagesRes)) return imagesRes;
+          if (Array.isArray(imagesRes.data)) return imagesRes.data;
+          if (imagesRes.data && Array.isArray(imagesRes.data.data))
+            return imagesRes.data.data;
+          if (imagesRes.data && Array.isArray(imagesRes.data.images))
+            return imagesRes.data.images;
+          if (
+            imagesRes.data &&
+            imagesRes.data.data &&
+            Array.isArray(imagesRes.data.data.data)
+          )
+            return imagesRes.data.data.data;
+          return [];
+        })();
+
+        if (imgs.length > 0) {
+          setExistingImages(
+            imgs.map((img) => ({
+              id: img.id ?? img.imageId ?? img._id,
+              url:
+                (img.image_url ??
+                  img.imageUrl ??
+                  img.url ??
+                  img.path ??
+                  img.image) ||
+                "",
+              altText: img.alt_text ?? img.altText ?? img.alt ?? "",
+              originalAltText: img.alt_text ?? img.altText ?? img.alt ?? "",
+              publicId: img.public_id ?? img.publicId ?? null,
+              file: null,
+            }))
+          );
+        } else {
+          if (imagesRes && imagesRes.success === false) {
+            addMessage("error", imagesRes.message || "Failed to fetch images.");
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        addMessage("error", "Failed to fetch property details.");
+      } finally {
+        hideLoader();
       }
+    })();
+  }, [propertyIdParam]);
 
-      // images handling — tolerant to shape ( { success, data } OR raw array )
-      const imgs = imagesRes?.data ?? imagesRes;
-      if (Array.isArray(imgs)) {
-        setExistingImages(
-          imgs.map((img) => ({
-            id: img.id ?? img.imageId ?? img._id,
-            url: img.imageUrl ?? img.url ?? img.path,
-            altText: img.altText ?? img.alt ?? "",
-            originalAltText: img.altText ?? img.alt ?? "",
-            file: null,
-          }))
-        );
-      } else {
-        if (imagesRes && imagesRes.success === false) {
-          addMessage("error", imagesRes.message || "Failed to fetch images.");
-        } // else ignore if no images
-      }
-    } catch (err) {
-      console.error(err);
-      addMessage("error", "Failed to fetch property details.");
-    } finally {
-      hideLoader();
-    }
-  })();
-}, [propertyIdParam]);
-
+  // ✅ Updated: stays on page, renders image form instead of navigating
   const handlePropertySubmit = async (data) => {
     showLoader();
     const propertyData = {
@@ -233,8 +258,11 @@ useEffect(() => {
           hideLoader();
           return;
         }
-        setPropertyId(propertyResponse.data.id);
         addMessage("success", "Property added successfully!");
+
+        // ✅ Instead of navigating, render Images form
+        setPropertyId(propertyResponse.data.id);
+        setIsNewProperty(true);
         setFormStage("images");
       }
       hideLoader();
@@ -247,97 +275,84 @@ useEffect(() => {
     }
   };
 
-  const handleImagesSubmit = async () => {
-    showLoader();
-    try {
-      if (isEditMode) {
-        // Update existing images
-        for (const img of existingImages) {
-          if (img.altText !== img.originalAltText || img.file) {
-            const formData = new FormData();
-            if (img.file) formData.append("image", img.file); // Assume API expects 'image'
-            formData.append("altText", img.altText);
-            const updateRes = await updatePropertyImage(
-              propertyId,
-              img.id,
-              formData
-            );
-            if (!updateRes.success) {
-              addMessage(
-                "error",
-                updateRes.message || "Failed to update image."
-              );
-              hideLoader();
-              return;
-            }
-          }
-        }
+ const handleImagesSubmit = async () => {
+   showLoader();
+   try {
+     if (isNewProperty && files.length === 0) {
+       addMessage("error", "At least one image is required.");
+       hideLoader();
+       return;
+     }
 
-        // Add new images if any
-        if (files.length > 0) {
-          const formData = new FormData();
-          files.forEach((file) => formData.append("images", file));
-          formData.append("altTexts", JSON.stringify(altTexts));
-          const addRes = await addPropertyImages(propertyId, formData);
-          if (!addRes.success) {
-            addMessage(
-              "error",
-              addRes.message || "Failed to upload new images."
-            );
-            hideLoader();
-            return;
-          }
-        }
+     // ✅ Update existing images if replaced or altText changed
+     for (const img of existingImages) {
+       if (img.altText !== img.originalAltText || img.file) {
+         const formData = new FormData();
+         if (img.file) {
+           formData.append("image", img.file); // raw file
+         }
+         // backend expects altTexts as JSON array
+         formData.append("altTexts", JSON.stringify([img.altText || ""]));
 
-        addMessage("success", "Images updated successfully!");
-        // Refetch existing images to reset originals
-        const imagesRes = await getPropertyImages(propertyId);
-        if (imagesRes.success) {
-          setExistingImages(
-            imagesRes.data.map((img) => ({
-              id: img.id,
-              url: img.imageUrl,
-              altText: img.altText || "",
-              originalAltText: img.altText || "",
-              file: null,
-            }))
-          );
-        }
-        setFiles([]);
-        setAltTexts([]);
-        setFormStage("property");
-      } else {
-        if (files.length === 0) {
-          addMessage("error", "At least one image is required.");
-          hideLoader();
-          return;
-        }
-        const formData = new FormData();
-        files.forEach((file) => formData.append("images", file));
-        formData.append("altTexts", JSON.stringify(altTexts));
-        const imageResponse = await addPropertyImages(propertyId, formData);
-        if (!imageResponse.success) {
-          addMessage(
-            "error",
-            imageResponse.message || "Failed to upload images."
-          );
-          hideLoader();
-          return;
-        }
-        addMessage("success", "Images submitted successfully!");
-        setFiles([]);
-        setAltTexts([]);
-        setFormStage("property");
-      }
-      hideLoader();
-    } catch {
-      addMessage(
-        "error",
-        "An error occurred during image submission. Please try again."
-      );
-      hideLoader();
-    }
-  };
+         const updateRes = await updatePropertyImage(
+           propertyId,
+           img.id,
+           formData
+         );
+         if (!updateRes.success) {
+           addMessage("error", updateRes.message || "Failed to update image.");
+           hideLoader();
+           return;
+         }
+       }
+     }
+
+     // ✅ Add new images if any
+     if (files.length > 0) {
+       const formData = new FormData();
+       files.forEach((file) => formData.append("images", file));
+       formData.append("altTexts", JSON.stringify(altTexts));
+       const addRes = await addPropertyImages(propertyId, formData);
+       if (!addRes.success) {
+         addMessage("error", addRes.message);
+         hideLoader();
+         return;
+       }
+     }
+
+     addMessage(
+       "success",
+       isNewProperty
+         ? "Images submitted successfully!"
+         : "Images updated successfully!"
+     );
+
+     // Refresh images list
+     const imagesRes = await getPropertyImages(propertyId);
+     if (imagesRes.success) {
+       setExistingImages(
+         imagesRes.data.data.map((img) => ({
+           id: img.id,
+           url: img.imageUrl,
+           altText: img.altText || "",
+           originalAltText: img.altText || "",
+           file: null,
+         }))
+       );
+     }
+     setFiles([]);
+     setAltTexts([]);
+     setIsNewProperty(false);
+     setFormStage("property");
+     hideLoader();
+   } catch {
+     addMessage(
+       "error",
+       "An error occurred during image submission. Please try again."
+     );
+     hideLoader();
+   }
+ };
 
   const handleCancel = () => {
     setFormStage("property");
