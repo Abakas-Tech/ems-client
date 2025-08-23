@@ -6,7 +6,7 @@ export const getAllProperties = async (params = {}) => {
     const response = await axiosInstance.get("/properties", {
       params,
     });
-    console.log(response)
+    console.log(response);
     return response.data;
   } catch (error) {
     return {
@@ -20,11 +20,11 @@ export const getAllProperties = async (params = {}) => {
 // Get property by ID
 export const getPropertyById = async (id) => {
   try {
-    const token = localStorage.getItem("authToken");
-    const response = await axiosInstance.get(`/properties/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+ 
+    const response = await axiosInstance.get(`/properties/${id}`);
+    console.log(response.data.success)
     return response.data;
+  
   } catch (error) {
     return {
       success: false,
@@ -52,10 +52,8 @@ export const createProperty = async (data) => {
 // Update a property by ID
 export const updateProperty = async (id, data) => {
   try {
-    const token = localStorage.getItem("authToken");
-    const response = await axiosInstance.put(`/properties/${id}`, data, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  
+    const response = await axiosInstance.put(`/properties/${id}`, data);
     return response.data;
   } catch (error) {
     return {

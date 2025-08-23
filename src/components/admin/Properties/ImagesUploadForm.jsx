@@ -9,8 +9,11 @@ const ImagesUploadForm = ({
   setFiles,
   altTexts,
   setAltTexts,
+  existingImages,
+  setExistingImages,
   onSubmit,
   onCancel,
+  isEditMode = false,
 }) => {
   const { addMessage } = useResponse();
   const maxFiles = 10;
@@ -45,6 +48,26 @@ const ImagesUploadForm = ({
     setAltTexts(newAltTexts);
   };
 
+  const handleExistingAltTextChange = (index, value) => {
+    const newExisting = [...existingImages];
+    newExisting[index].altText = value.slice(0, 255);
+    setExistingImages(newExisting);
+  };
+
+  const handleReplaceImage = (index, file) => {
+    if (file.size > maxFileSize) {
+      addMessage("error", "File must be less than 5MB.");
+      return;
+    }
+    if (!allowedMimeTypes[file.type]) {
+      addMessage("error", "Only JPEG, PNG, and GIF images are allowed.");
+      return;
+    }
+    const newExisting = [...existingImages];
+    newExisting[index].file = file;
+    setExistingImages(newExisting);
+  };
+
   const handleRemoveImage = (index) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
     setAltTexts((prev) => prev.filter((_, i) => i !== index));
@@ -52,9 +75,55 @@ const ImagesUploadForm = ({
 
   return (
     <div className="container my-4">
-      <h3 className="mb-4">Upload Images for Property #{propertyId}</h3>
-
-      {/* Dropzone */}
+      <h3 className="mb-4">
+        {isEditMode ? "Update Images" : "Upload Images"} for Property #
+        {propertyId}
+      </h3>
+      {/* Existing Images */}
+      {existingImages.length > 0 && (
+        <div className="mb-4">
+          <h4 className="mb-3">Existing Images</h4>
+          <div className="row g-3">
+            {existingImages.map((img, index) => (
+              <div key={index} className="col-6 col-md-4 col-lg-3">
+                <div className="card shadow-sm position-relative">
+                  <img
+                    src={img.file ? URL.createObjectURL(img.file) : img.url}
+                    alt={img.altText || "Existing image"}
+                    className="card-img-top img-fluid"
+                    style={{ height: "150px", objectFit: "cover" }}
+                  />
+                  {/* No remove button for existing images since no delete API */}
+                  <div className="card-body p-2">
+                    <input
+                      type="text"
+                      placeholder="Image title"
+                      value={img.altText}
+                      onChange={(e) =>
+                        handleExistingAltTextChange(index, e.target.value)
+                      }
+                      className="form-control form-control-sm"
+                    />
+                    <div className="mt-2">
+                      <label className="btn btn-sm btn-outline-secondary">
+                        Replace Image
+                        <input
+                          type="file"
+                          hidden
+                          onChange={(e) =>
+                            handleReplaceImage(index, e.target.files[0])
+                          }
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {/* Dropzone for new images */}
       <div className="card mb-4 shadow-sm">
         <div
           {...getRootProps()}
@@ -76,11 +145,10 @@ const ImagesUploadForm = ({
           )}
         </div>
       </div>
-
-      {/* Gallery */}
+      {/* New Uploaded Images */}
       {files.length > 0 && (
         <div className="mb-4">
-          <h4 className="mb-3">Uploaded Images</h4>
+          <h4 className="mb-3">New Uploaded Images</h4>
           <div className="row g-3">
             {files.map((file, index) => (
               <div key={index} className="col-6 col-md-4 col-lg-3">
@@ -123,7 +191,6 @@ const ImagesUploadForm = ({
           </div>
         </div>
       )}
-
       {/* Action Buttons */}
       <div className="d-flex gap-3">
         <button
@@ -131,7 +198,7 @@ const ImagesUploadForm = ({
           className="btn btn-primary fw-medium px-4"
           onClick={onSubmit}
         >
-          Submit Images
+          {isEditMode ? "Update Images" : "Submit Images"}
         </button>
         <button
           type="button"

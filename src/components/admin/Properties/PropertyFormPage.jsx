@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import PropertyDetailsForm from "./PropertyDetailsForm";
 import ImagesUploadForm from "./ImagesUploadForm";
 import useLoader from "../../../context/Loader/UseLoader";
@@ -9,19 +10,182 @@ const createProperty = async (...args) => {
   const module = await import("../../../api/Public/properties.api");
   return module.createProperty(...args);
 };
-
 const addPropertyImages = async (...args) => {
   const module = await import("../../../api/public/PropertiesImage.api");
   return module.addPropertyImages(...args);
 };
+const getPropertyById = async (...args) => {
+  const module = await import("../../../api/Public/properties.api"); // Adjust path if needed
+  return module.getPropertyById(...args);
+};
+const updateProperty = async (...args) => {
+  const module = await import("../../../api/Public/properties.api"); // Adjust path if needed
+  return module.updateProperty(...args);
+};
+const getPropertyImages = async (...args) => {
+  const module = await import("../../../api/public/PropertiesImage.api"); // Adjust path if needed
+  return module.getPropertyImages(...args);
+};
+const updatePropertyImage = async (...args) => {
+  const module = await import("../../../api/public/PropertiesImage.api"); // Adjust path if needed
+  return module.updatePropertyImage(...args);
+};
 
 const PropertyFormPage = () => {
+  const propertyIdParam = 24;
+  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [altTexts, setAltTexts] = useState([]);
+  const [existingImages, setExistingImages] = useState([]); // {id, url, altText, originalAltText, file: null}
   const [formStage, setFormStage] = useState("property");
-  const [propertyId, setPropertyId] = useState(null);
+  const [propertyId, setPropertyId] = useState(propertyIdParam || null);
+  const [isEditMode, setIsEditMode] = useState(true);
+  const [initialValues, setInitialValues] = useState({
+    title: "",
+    category: null,
+    propertyType: null,
+    address: "",
+    latitude: "",
+    longitude: "",
+    description: "",
+    tags: "",
+    features: [],
+    isUrgent: false,
+    isFeatured: false,
+    status: null,
+    areaSize: "",
+    bedrooms: null,
+    bathrooms: null,
+    halls: null,
+    kitchens: null,
+  });
+
+
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
+
+useEffect(() => {
+  if (!propertyIdParam) return;
+
+  setPropertyId(propertyIdParam);
+  showLoader();
+
+  (async () => {
+    try {
+      const [propertyRes, imagesRes] = await Promise.all([
+        getPropertyById(propertyIdParam),
+        getPropertyImages(propertyIdParam),
+      ]);
+
+      // normalize property payload (works if API returns raw object or { data: ... })
+      const propPayload = propertyRes?.data ?? propertyRes;
+      const data =
+        propPayload && typeof propPayload === "object" && propPayload.data
+          ? propPayload.data
+          : propPayload;
+
+      // small helpers for labels
+      const propertyTypeLabel = (pt) =>
+        pt === "apartment"
+          ? "Apartment"
+          : pt === "house"
+          ? "House"
+          : pt === "villa"
+          ? "Villa"
+          : "Land";
+
+      const statusLabel = (s) =>
+        s === "available" ? "Available" : s === "sold" ? "Sold" : "Rented";
+
+      if (data && (data.id || data.title)) {
+        setInitialValues({
+          title: data.title || "",
+          category: data.category
+            ? {
+                value: data.category,
+                label:
+                  data.category === "rent"
+                    ? "For Rent"
+                    : data.category === "sale"
+                    ? "For Sale"
+                    : String(data.category),
+              }
+            : null,
+          propertyType: data.property_type
+            ? {
+                value: data.property_type,
+                label: propertyTypeLabel(data.property_type),
+              }
+            : null,
+          address: data.location || "",
+          // coordinates may be nested under `coordinates`
+          latitude:
+            (data.coordinates && data.coordinates.latitude) ??
+            data.latitude ??
+            "",
+          longitude:
+            (data.coordinates && data.coordinates.longitude) ??
+            data.longitude ??
+            "",
+          description: data.description || "",
+          tags: Array.isArray(data.tags)
+            ? data.tags.join(", ")
+            : data.tags || "",
+          features: Array.isArray(data.features) ? data.features : [],
+          // API uses 0/1 for these fields
+          isUrgent: !!data.is_urgent,
+          isFeatured: !!data.is_featured,
+          status: data.status
+            ? { value: data.status, label: statusLabel(data.status) }
+            : null,
+          areaSize: data.area_size ?? "",
+          bedrooms: data.bedrooms
+            ? { value: data.bedrooms, label: String(data.bedrooms) }
+            : null,
+          bathrooms: data.bathrooms
+            ? { value: data.bathrooms, label: String(data.bathrooms) }
+            : null,
+          halls: data.halls
+            ? { value: data.halls, label: String(data.halls) }
+            : null,
+          kitchens: data.kitchens
+            ? { value: data.kitchens, label: String(data.kitchens) }
+            : null,
+        });
+      } else {
+        addMessage(
+          "error",
+          propertyRes?.message ||
+            propertyRes?.data?.message ||
+            "Failed to fetch property."
+        );
+      }
+
+      // images handling — tolerant to shape ( { success, data } OR raw array )
+      const imgs = imagesRes?.data ?? imagesRes;
+      if (Array.isArray(imgs)) {
+        setExistingImages(
+          imgs.map((img) => ({
+            id: img.id ?? img.imageId ?? img._id,
+            url: img.imageUrl ?? img.url ?? img.path,
+            altText: img.altText ?? img.alt ?? "",
+            originalAltText: img.altText ?? img.alt ?? "",
+            file: null,
+          }))
+        );
+      } else {
+        if (imagesRes && imagesRes.success === false) {
+          addMessage("error", imagesRes.message || "Failed to fetch images.");
+        } // else ignore if no images
+      }
+    } catch (err) {
+      console.error(err);
+      addMessage("error", "Failed to fetch property details.");
+    } finally {
+      hideLoader();
+    }
+  })();
+}, [propertyIdParam]);
 
   const handlePropertySubmit = async (data) => {
     showLoader();
@@ -53,16 +217,26 @@ const PropertyFormPage = () => {
     };
 
     try {
-      const propertyResponse = await createProperty(propertyData);
-      if (!propertyResponse.success) {
-        addMessage("error", propertyResponse.message);
-        hideLoader();
-        return;
+      let propertyResponse;
+      if (isEditMode) {
+        propertyResponse = await updateProperty(propertyId, propertyData);
+        if (!propertyResponse.success) {
+          addMessage("error", propertyResponse.message);
+          hideLoader();
+          return;
+        }
+        addMessage("success", "Property updated successfully!");
+      } else {
+        propertyResponse = await createProperty(propertyData);
+        if (!propertyResponse.success) {
+          addMessage("error", propertyResponse.message);
+          hideLoader();
+          return;
+        }
+        setPropertyId(propertyResponse.data.id);
+        addMessage("success", "Property added successfully!");
+        setFormStage("images");
       }
-
-      setPropertyId(propertyResponse.data.id);
-      addMessage("success", "Property added successfully!");
-      setFormStage("images");
       hideLoader();
     } catch {
       addMessage(
@@ -74,35 +248,89 @@ const PropertyFormPage = () => {
   };
 
   const handleImagesSubmit = async () => {
-    if (files.length === 0) {
-      addMessage("error", "At least one image is required.");
-      return;
-    }
-
     showLoader();
     try {
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append("images", file);
-      });
-      formData.append("altTexts", JSON.stringify(altTexts));
+      if (isEditMode) {
+        // Update existing images
+        for (const img of existingImages) {
+          if (img.altText !== img.originalAltText || img.file) {
+            const formData = new FormData();
+            if (img.file) formData.append("image", img.file); // Assume API expects 'image'
+            formData.append("altText", img.altText);
+            const updateRes = await updatePropertyImage(
+              propertyId,
+              img.id,
+              formData
+            );
+            if (!updateRes.success) {
+              addMessage(
+                "error",
+                updateRes.message || "Failed to update image."
+              );
+              hideLoader();
+              return;
+            }
+          }
+        }
 
-      const imageResponse = await addPropertyImages(propertyId, formData);
-      if (!imageResponse.success) {
-        addMessage(
-          "error",
-          imageResponse.message || "Failed to upload images."
-        );
-        hideLoader();
-        return;
+        // Add new images if any
+        if (files.length > 0) {
+          const formData = new FormData();
+          files.forEach((file) => formData.append("images", file));
+          formData.append("altTexts", JSON.stringify(altTexts));
+          const addRes = await addPropertyImages(propertyId, formData);
+          if (!addRes.success) {
+            addMessage(
+              "error",
+              addRes.message || "Failed to upload new images."
+            );
+            hideLoader();
+            return;
+          }
+        }
+
+        addMessage("success", "Images updated successfully!");
+        // Refetch existing images to reset originals
+        const imagesRes = await getPropertyImages(propertyId);
+        if (imagesRes.success) {
+          setExistingImages(
+            imagesRes.data.map((img) => ({
+              id: img.id,
+              url: img.imageUrl,
+              altText: img.altText || "",
+              originalAltText: img.altText || "",
+              file: null,
+            }))
+          );
+        }
+        setFiles([]);
+        setAltTexts([]);
+        setFormStage("property");
+      } else {
+        if (files.length === 0) {
+          addMessage("error", "At least one image is required.");
+          hideLoader();
+          return;
+        }
+        const formData = new FormData();
+        files.forEach((file) => formData.append("images", file));
+        formData.append("altTexts", JSON.stringify(altTexts));
+        const imageResponse = await addPropertyImages(propertyId, formData);
+        if (!imageResponse.success) {
+          addMessage(
+            "error",
+            imageResponse.message || "Failed to upload images."
+          );
+          hideLoader();
+          return;
+        }
+        addMessage("success", "Images submitted successfully!");
+        setFiles([]);
+        setAltTexts([]);
+        setFormStage("property");
       }
-
-      addMessage("success", "Images submitted successfully!");
-      setFiles([]);
-      setAltTexts([]);
-      setFormStage("property");
       hideLoader();
-    } catch  {
+    } catch {
       addMessage(
         "error",
         "An error occurred during image submission. Please try again."
@@ -115,7 +343,7 @@ const PropertyFormPage = () => {
     setFormStage("property");
     setFiles([]);
     setAltTexts([]);
-    setPropertyId(null);
+    if (!isEditMode) setPropertyId(null);
   };
 
   return (
@@ -125,7 +353,9 @@ const PropertyFormPage = () => {
         <div className="container">
           <div className="row">
             <div className="col-lg-12 col-md-12">
-              <h2 className="ipt-title">Submit Property</h2>
+              <h2 className="ipt-title">
+                {isEditMode ? "Edit Property" : "Submit Property"}
+              </h2>
               <span className="ipn-subtitle">Just Submit Your Property</span>
             </div>
           </div>
@@ -139,7 +369,24 @@ const PropertyFormPage = () => {
             <div className="col-lg-12 col-md-12">
               <div className="submit-page">
                 {formStage === "property" ? (
-                  <PropertyDetailsForm onSubmit={handlePropertySubmit} />
+                  <>
+                    <PropertyDetailsForm
+                      initialValues={initialValues}
+                      onSubmit={handlePropertySubmit}
+                      isEditMode={isEditMode}
+                    />
+                    {isEditMode && (
+                      <div className="form-group col-lg-12 col-md-12 mt-3">
+                        <button
+                          type="button"
+                          className="btn btn-secondary fw-medium px-5"
+                          onClick={() => setFormStage("images")}
+                        >
+                          Update Images
+                        </button>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <ImagesUploadForm
                     propertyId={propertyId}
@@ -147,8 +394,11 @@ const PropertyFormPage = () => {
                     setFiles={setFiles}
                     altTexts={altTexts}
                     setAltTexts={setAltTexts}
+                    existingImages={existingImages}
+                    setExistingImages={setExistingImages}
                     onSubmit={handleImagesSubmit}
                     onCancel={handleCancel}
+                    isEditMode={isEditMode}
                   />
                 )}
               </div>

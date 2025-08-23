@@ -1,13 +1,129 @@
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { useFormik } from "formik";
 import Select from "react-select";
-import { AiOutlineExclamationCircle, AiFillStar } from "react-icons/ai";
-import { FaBolt, FaThumbtack } from "react-icons/fa"; // extra amazing icons
+import { AiFillStar } from "react-icons/ai";
+import { FaBolt } from "react-icons/fa";
 import useResponse from "./../../../context/response/UseResponse";
 
-const PropertyDetailsForm = ({ onSubmit }) => {
+const PropertyDetailsForm = ({
+  initialValues = {},
+  onSubmit,
+  isEditMode = false,
+}) => {
   const { addMessage } = useResponse();
-  const [validationError, setValidationError] = useState(null);
+  const [validationError, setValidationError] = React.useState(null);
+
+  // Normalize incoming initialValues to the shape this form expects
+  const normalizedInitial = useMemo(() => {
+    const d = initialValues || {};
+
+    const propertyTypeLabel = (pt) =>
+      pt === "apartment"
+        ? "Apartment"
+        : pt === "house"
+        ? "House"
+        : pt === "villa"
+        ? "Villa"
+        : "Land";
+
+    const statusLabel = (s) =>
+      s === "available" ? "Available" : s === "sold" ? "Sold" : "Rented";
+
+    const toSelect = (value, labelFn, specialLabels) => {
+      if (value === undefined || value === null) return null;
+      return {
+        value,
+        label: labelFn
+          ? labelFn(value)
+          : specialLabels?.[value] ?? String(value),
+      };
+    };
+
+    return {
+      // basic
+      title: d.title ?? "",
+      category:
+        d.category ??
+        (d.category_name
+          ? { value: d.category_name, label: d.category_name }
+          : null),
+      propertyType: d.property_type
+        ? { value: d.property_type, label: propertyTypeLabel(d.property_type) }
+        : d.propertyType ?? null,
+      // location (coordinates may be nested)
+      address: d.location ?? d.address ?? "",
+      latitude:
+        (d.coordinates && (d.coordinates.latitude ?? "")) ?? d.latitude ?? "",
+      longitude:
+        (d.coordinates && (d.coordinates.longitude ?? "")) ?? d.longitude ?? "",
+      // description / tags / features
+      description: d.description ?? "",
+      tags: Array.isArray(d.tags) ? d.tags.join(", ") : d.tags ?? "",
+      features: Array.isArray(d.features)
+        ? d.features
+        : typeof d.features === "string" && d.features.length
+        ? d.features.split(",").map((t) => t.trim())
+        : [],
+      // booleans (API may use 0/1 or true/false)
+      isUrgent:
+        d.is_urgent !== undefined ? !!Number(d.is_urgent) : !!d.isUrgent,
+      isFeatured:
+        d.is_featured !== undefined ? !!Number(d.is_featured) : !!d.isFeatured,
+      // status select
+      status: d.status
+        ? { value: d.status, label: statusLabel(d.status) }
+        : null,
+      // optional numeric/selects (we keep them as the same select object shape you used)
+      areaSize:
+        d.area_size !== undefined && d.area_size !== null
+          ? String(d.area_size)
+          : d.areaSize !== undefined && d.areaSize !== null
+          ? String(d.areaSize)
+          : "",
+      bedrooms: d.bedrooms ?? null,
+      bathrooms: d.bathrooms ?? null,
+      halls: d.halls ?? null,
+      kitchens: d.kitchens ?? null,
+    };
+  }, [initialValues]);
+
+  // helper: build numeric select options and ensure the current selection is included
+  const buildNumberOptions = (selectedObj, max = 10) => {
+    const selectedVal =
+      selectedObj && typeof selectedObj === "object"
+        ? Number(selectedObj.value)
+        : typeof selectedObj === "number"
+        ? selectedObj
+        : null;
+
+    const base = Array.from({ length: max }, (_, i) => i + 1);
+    if (selectedVal && !base.includes(selectedVal)) base.push(selectedVal);
+    const sorted = base.sort((a, b) => a - b);
+    return sorted.map((n) => ({ value: n, label: String(n) }));
+  };
+
+  // category options ensure current selection (sale/rent) is present
+  const categoryOptions = useMemo(() => {
+    const opts = [
+      { value: "rent", label: "For Rent" },
+      { value: "sale", label: "For Sale" },
+    ];
+    const selected = normalizedInitial.category;
+    if (selected && !opts.some((o) => o.value === selected.value)) {
+      opts.push({
+        value: selected.value,
+        label: selected.label || selected.value,
+      });
+    }
+    return opts;
+  }, [normalizedInitial.category]);
+
+  const propertyTypeOptions = [
+    { value: "apartment", label: "Apartment" },
+    { value: "house", label: "House" },
+    { value: "villa", label: "Villa" },
+    { value: "land", label: "Land" },
+  ];
 
   const selectStyles = {
     control: (provided, state) => ({
@@ -25,6 +141,7 @@ const PropertyDetailsForm = ({ onSubmit }) => {
   };
 
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
       title: "",
       category: null,
@@ -43,10 +160,10 @@ const PropertyDetailsForm = ({ onSubmit }) => {
       bathrooms: null,
       halls: null,
       kitchens: null,
+      ...normalizedInitial,
     },
     onSubmit: (values) => {
       setValidationError(null);
-
       // Top-to-bottom sequential validation
       if (!values.title.trim()) {
         addMessage("error", "Property Title is required");
@@ -88,7 +205,6 @@ const PropertyDetailsForm = ({ onSubmit }) => {
         setValidationError("status");
         return;
       }
-
       // ✅ All good → submit
       onSubmit(values);
     },
@@ -113,7 +229,6 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 className="form-control"
               />
             </div>
-
             {/* Category */}
             <div className="form-group col-md-6">
               <label>
@@ -123,14 +238,10 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 name="category"
                 value={formik.values.category}
                 onChange={(val) => formik.setFieldValue("category", val)}
-                options={[
-                  { value: "rent", label: "For Rent" },
-                  { value: "sale", label: "For Sale" },
-                ]}
+                options={categoryOptions}
                 styles={selectStyles}
               />
             </div>
-
             {/* Property Type */}
             <div className="form-group col-md-6">
               <label>
@@ -140,16 +251,10 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 name="propertyType"
                 value={formik.values.propertyType}
                 onChange={(val) => formik.setFieldValue("propertyType", val)}
-                options={[
-                  { value: "apartment", label: "Apartment" },
-                  { value: "house", label: "House" },
-                  { value: "villa", label: "Villa" },
-                  { value: "land", label: "Land" },
-                ]}
+                options={propertyTypeOptions}
                 styles={selectStyles}
               />
             </div>
-
             {/* Optional Fields */}
             <div className="form-group col-md-6">
               <label>Area Size (optional)</label>
@@ -168,10 +273,7 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 name="bedrooms"
                 value={formik.values.bedrooms}
                 onChange={(val) => formik.setFieldValue("bedrooms", val)}
-                options={[1, 2, 3, 4, 5].map((num) => ({
-                  value: num,
-                  label: num,
-                }))}
+                options={buildNumberOptions(formik.values.bedrooms, 10)}
                 styles={selectStyles}
               />
             </div>
@@ -181,10 +283,7 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 name="bathrooms"
                 value={formik.values.bathrooms}
                 onChange={(val) => formik.setFieldValue("bathrooms", val)}
-                options={[1, 2, 3, 4, 5].map((num) => ({
-                  value: num,
-                  label: num,
-                }))}
+                options={buildNumberOptions(formik.values.bathrooms, 10)}
                 styles={selectStyles}
               />
             </div>
@@ -194,10 +293,7 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 name="halls"
                 value={formik.values.halls}
                 onChange={(val) => formik.setFieldValue("halls", val)}
-                options={[1, 2, 3, 4, 5].map((num) => ({
-                  value: num,
-                  label: num,
-                }))}
+                options={buildNumberOptions(formik.values.halls, 10)}
                 styles={selectStyles}
               />
             </div>
@@ -207,17 +303,13 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 name="kitchens"
                 value={formik.values.kitchens}
                 onChange={(val) => formik.setFieldValue("kitchens", val)}
-                options={[1, 2, 3, 4, 5].map((num) => ({
-                  value: num,
-                  label: num,
-                }))}
+                options={buildNumberOptions(formik.values.kitchens, 10)}
                 styles={selectStyles}
               />
             </div>
           </div>
         </div>
       </div>
-
       {/* Location */}
       <div className="form-submit">
         <h3>Location</h3>
@@ -261,7 +353,6 @@ const PropertyDetailsForm = ({ onSubmit }) => {
           </div>
         </div>
       </div>
-
       {/* Detailed Information */}
       <div className="form-submit">
         <h3>Detailed Information</h3>
@@ -278,7 +369,6 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 className="form-control h-120"
               />
             </div>
-
             <div className="form-group col-md-12">
               <label>Tags (optional, comma-separated)</label>
               <input
@@ -289,7 +379,6 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 placeholder="e.g., modern, cozy"
               />
             </div>
-
             {/* Features */}
             <div className="form-group col-md-12">
               <label>Other Features (optional)</label>
@@ -332,7 +421,6 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                 </ul>
               </div>
             </div>
-
             {/* Urgent Property */}
             <div className="form-group col-md-12">
               <div className="form-check">
@@ -340,7 +428,9 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                   type="checkbox"
                   name="isUrgent"
                   checked={formik.values.isUrgent}
-                  onChange={formik.handleChange}
+                  onChange={(e) =>
+                    formik.setFieldValue("isUrgent", e.target.checked)
+                  }
                   id="isUrgent"
                   className="form-check-input"
                 />
@@ -348,12 +438,10 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                   htmlFor="isUrgent"
                   className="form-check-label text-danger fw-bold"
                 >
-                  <FaBolt style={{ marginRight: 6 }} />
-                  Mark as Urgent
+                  <FaBolt style={{ marginRight: 6 }} /> Mark as Urgent
                 </label>
               </div>
             </div>
-
             {/* Featured Property */}
             <div className="form-group col-md-12">
               <div className="form-check">
@@ -361,7 +449,9 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                   type="checkbox"
                   name="isFeatured"
                   checked={formik.values.isFeatured}
-                  onChange={formik.handleChange}
+                  onChange={(e) =>
+                    formik.setFieldValue("isFeatured", e.target.checked)
+                  }
                   id="isFeatured"
                   className="form-check-input"
                 />
@@ -369,12 +459,11 @@ const PropertyDetailsForm = ({ onSubmit }) => {
                   htmlFor="isFeatured"
                   className="form-check-label text-warning fw-bold"
                 >
-                  <AiFillStar style={{ marginRight: 6 }} />
-                  Highlight as Featured
+                  <AiFillStar style={{ marginRight: 6 }} /> Highlight as
+                  Featured
                 </label>
               </div>
             </div>
-
             {/* Status */}
             <div className="form-group col-md-12">
               <label>
@@ -395,10 +484,9 @@ const PropertyDetailsForm = ({ onSubmit }) => {
           </div>
         </div>
       </div>
-
       <div className="form-group col-lg-12 col-md-12">
         <button type="submit" className="btn btn-main fw-medium px-5">
-          Submit Property
+          {isEditMode ? "Update Property" : "Submit Property"}
         </button>
       </div>
     </form>
