@@ -19,6 +19,7 @@ export const loginAdmin = async (credentials) => {
     throw new Error(error.response?.data?.message || "Login error");
   }
 };
+
 // Forgot Password function
 export const forgotPassword = async (data) => {
   try {
@@ -26,5 +27,25 @@ export const forgotPassword = async (data) => {
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Forgot password error");
+  }
+};
+
+// Reset Password function
+export const resetPassword = async (data) => {
+  try {
+    const response = await axiosInstance.post("/auth/reset-password", data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Reset password error");
+  }
+};
+
+// Reset Password function
+export const changePassword = async (data) => {
+  try {
+    const response = await axiosInstance.post("/auth/change-password", data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Change password error");
   }
 };

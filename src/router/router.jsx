@@ -9,6 +9,7 @@ import Contact from "../pages/public/Contact/Contact.jsx";
 import ProtecteRoute from "../utils/ProtectRoute.jsx";
 import Login from "../pages/admin/Login/Login.jsx";
 import ScrollToTop from "../components/ScrollToTop/ScrollToTop.jsx";
+import ForgotPassword from "../pages/admin/ForgotPassword/ForgotPassword.jsx";
 
 function AppRouter() {
   return (
@@ -66,6 +67,8 @@ function AppRouter() {
         {/* Protected route */}
 
         <Route path="/login" element={<Login />} />
+
+        <Route path="/admin/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </>
   );
