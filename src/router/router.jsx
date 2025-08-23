@@ -10,6 +10,7 @@ import ProtecteRoute from "../utils/ProtectRoute.jsx";
 import Login from "../pages/admin/Login/Login.jsx";
 import ScrollToTop from "../components/ScrollToTop/ScrollToTop.jsx";
 import ForgotPassword from "../pages/admin/ForgotPassword/ForgotPassword.jsx";
+import ResetPassword from "../pages/admin/ResetPassword/ResetPassword.jsx";
 
 function AppRouter() {
   return (
@@ -67,6 +68,7 @@ function AppRouter() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </>
   );
