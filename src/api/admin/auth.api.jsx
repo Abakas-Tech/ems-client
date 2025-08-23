@@ -9,7 +9,7 @@ export const checkUser = async () => {
     },
   });
 };
-
+// Admin login function
 export const loginAdmin = async (credentials) => {
   try {
     const response = await axiosInstance.post("/auth/login", credentials);

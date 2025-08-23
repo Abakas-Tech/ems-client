@@ -4,7 +4,7 @@ import { AuthContext } from "./AuthContext";
 import { checkUser } from "../../api/admin/auth.api";
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(undefined); // undefined = checking
+  const [user, setUser] = useState(undefined);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkUserAuth = async () => {
     // Skip auth check for public pages
-    const publicPaths = ["/login", "/forgot-password"];
+    const publicPaths = ["/login"];
     if (publicPaths.includes(location.pathname)) {
       setUser(null);
       setIsCheckingAuth(false);
@@ -23,9 +23,9 @@ export const AuthProvider = ({ children }) => {
       const response = await checkUser();
 
       if (response.data.success) {
-        setUser(true); // authenticated
+        setUser(true);
       } else {
-        setUser(null); // not authenticated
+        setUser(null);
         navigate("/login");
       }
     } catch {
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [location.pathname]);
 
-  if (isCheckingAuth) return null; // can also show loader
+  if (isCheckingAuth) return null;
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>

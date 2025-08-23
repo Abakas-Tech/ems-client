@@ -8,7 +8,6 @@ import logo from "../../assets/img/logo.svg";
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
@@ -34,7 +33,7 @@ const LoginForm = () => {
       const response = await loginAdmin({ email, password });
       localStorage.setItem("authToken", response.data.token);
       addMessage("success", "Login successful!");
-      navigate("/dashboard"); // redirect after login
+      navigate("/dashboard");
     } catch (error) {
       addMessage("error", error.message || "Login failed.");
     } finally {
@@ -44,15 +43,15 @@ const LoginForm = () => {
 
   return (
     <div
-      className="login-page d-flex justify-content-center align-items-center rounded"
+      className="login-page d-flex justify-content-center align-items-center rounded  "
       style={{ minHeight: "80vh" }}
     >
       <div
-        className="login-container p-4 rounded shadow my-4"
+        className="login-container p-4 rounded shadow-lg my-4"
         style={{ maxWidth: "500px", width: "100%", minHeight: "400px" }}
       >
         <h1 className="text-center mb-3 fw-bolder pt-0 ">Log In</h1>
-        <img src={logo} className="mx-auto d-block mb-4 " />
+        <img src={logo} className="mx-auto d-block mb-4 img-fluid " />
         <form onSubmit={handleSubmit}>
           <div className="form-floating mb-3">
             <input
@@ -80,7 +79,7 @@ const LoginForm = () => {
             <label htmlFor="password">Password</label>
           </div>
 
-          <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="text-end mb-3 fw-medium">
             <Link to="/admin/forgot-password" className="link-primary">
               Forgot Password?
             </Link>
