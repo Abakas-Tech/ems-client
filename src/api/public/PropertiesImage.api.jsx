@@ -65,6 +65,7 @@ export const addPropertyImages = async (propertyId, formData) => {
 // Update multiple images for a property
 // Update multiple images for a property
 export const updatePropertyImages = async (propertyId, formData) => {
+  console.log(propertyId, formData);
   try {
     const response = await axiosInstance.put(
       `/properties/${propertyId}/images`,
@@ -100,6 +101,48 @@ export const deletePropertyImage = async (propertyId, imageId) => {
       success: false,
       message:
         error.response?.data?.message || error.message || "Unknown error",
+    };
+  }
+};
+
+export const updatePropertyImagesAltText = async (propertyId, payload) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/properties/${propertyId}/images/altText`,
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating altText:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update altText",
+    };
+  }
+};
+// Bulk delete altText for multiple images
+// payload: { imageIds: [...] }
+export const deletePropertyImagesAltText = async (propertyId, payload) => {
+  try {
+    const response = await axiosInstance.delete(
+      `/properties/${propertyId}/images/altText`,
+      {
+        data: payload,
+      }
+    );
+    console.log("Deleted altText response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting altText:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to delete altText",
     };
   }
 };

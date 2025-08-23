@@ -29,14 +29,20 @@ const ImagesUploadForm = ({
     maxFiles,
     maxSize: maxFileSize,
     onDrop: (acceptedFiles, fileRejections) => {
+      // If no files selected, just return
+      if (acceptedFiles.length === 0) return;
+
+      // Handle rejections only for actual files
       if (fileRejections.length > 0) {
         const message =
           fileRejections[0].errors[0].code === "file-too-large"
             ? "Each file must be less than 5MB."
-            : "Only JPEG, PNG, and GIF images are allowed.";
+            : "Only JPEG, PNG, and GIF images are allowd.";
         addMessage("error", message);
         return;
       }
+
+      // Add valid files
       setFiles((prev) => [...prev, ...acceptedFiles]);
       setAltTexts((prev) => [...prev, ...acceptedFiles.map(() => "")]);
     },
@@ -54,19 +60,27 @@ const ImagesUploadForm = ({
     setExistingImages(newExisting);
   };
 
-  const handleReplaceImage = (index, file) => {
-    if (file.size > maxFileSize) {
-      addMessage("error", "File must be less than 5MB.");
-      return;
-    }
-    if (!allowedMimeTypes[file.type]) {
-      addMessage("error", "Only JPEG, PNG, and GIF images are allowed.");
-      return;
-    }
-    const newExisting = [...existingImages];
-    newExisting[index].file = file;
-    setExistingImages(newExisting);
-  };
+const handleReplaceImage = (index, file) => {
+  // Skip if no file selected
+  if (!file) return; // <--- ensures no error when nothing selected
+
+  // Validate size
+  if (file.size > maxFileSize) {
+    addMessage("error", "File must be less than 5MB.");
+    return;
+  }
+
+  // Validate type
+  if (!Object.keys(allowedMimeTypes).includes(file.type)) {
+    addMessage("error", "Only JPEG, PNG, and GIF images are al.");
+    return;
+  }
+
+  // Replace the file in existingImages
+  const newExisting = [...existingImages];
+  newExisting[index].file = file;
+  setExistingImages(newExisting);
+};
 
   const handleRemoveImage = (index) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));

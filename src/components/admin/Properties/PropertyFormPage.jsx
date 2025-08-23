@@ -32,7 +32,7 @@ const updatePropertyImages = async (...args) => {
 };
 
 const PropertyFormPage = () => {
-  const propertyIdParam  = 28;
+  const propertyIdParam = 28;
   const navigate = useNavigate();
   const location = useLocation();
   const [files, setFiles] = useState([]);
@@ -278,27 +278,43 @@ const PropertyFormPage = () => {
 const handleImagesSubmit = async () => {
   showLoader();
   try {
-    // 1 Update existing images (if replaced or altText changed)
+    // Collect edited images (file changed OR alt text changed)
     const editedImages = existingImages.filter(
       (img) => img.file || img.altText !== img.originalAltText
     );
 
+    if (editedImages.length === 0 && files.length === 0) {
+      addMessage("error", "No changes detected to update.");
+      hideLoader();
+      return;
+    }
+
     if (editedImages.length > 0) {
       const formData = new FormData();
+
       const imageIds = [];
       const altTextsArr = [];
 
       editedImages.forEach((img) => {
-        if (img.file) formData.append("images", img.file);
-        else formData.append("images", new Blob([])); // empty placeholder if no file
+        if (img.file) {
+          formData.append("images", img.file);
+        } else {
+          // placeholder blob for alt-only update
+          formData.append("images", new Blob([]));
+        }
+
         imageIds.push(img.id);
         altTextsArr.push(img.altText || "");
       });
 
+      // ✅ Stringify arrays to match backend validator
       formData.append("imageIds", JSON.stringify(imageIds));
       formData.append("altTexts", JSON.stringify(altTextsArr));
 
+      console.log("Submitting update payload:", [...formData.entries()]);
+
       const updateRes = await updatePropertyImages(propertyId, formData);
+
       if (!updateRes.success) {
         addMessage("error", updateRes.message || "Failed to update images.");
         hideLoader();
@@ -306,54 +322,16 @@ const handleImagesSubmit = async () => {
       }
     }
 
-    // 2️⃣ Add new images (same as before)
-    if (files.length > 0) {
-      const formData = new FormData();
-      files.forEach((file) => formData.append("images", file));
-      formData.append("altTexts", JSON.stringify(altTexts));
-      const addRes = await addPropertyImages(propertyId, formData);
-      if (!addRes.success) {
-        addMessage("error", addRes.message);
-        hideLoader();
-        return;
-      }
-    }
-
-    addMessage(
-      "success",
-      isNewProperty
-        ? "Images submitted successfully!"
-        : "Images updated successfully!"
-    );
-
-    // Refresh images list
-    const imagesRes = await getPropertyImages(propertyId);
-    if (imagesRes.success) {
-      setExistingImages(
-        imagesRes.data.data.map((img) => ({
-          id: img.id,
-          url: img.imageUrl,
-          altText: img.altText || "",
-          originalAltText: img.altText || "",
-          file: null,
-        }))
-      );
-    }
-
-    setFiles([]);
-    setAltTexts([]);
-    setIsNewProperty(false);
-    setFormStage("property");
-  } catch (err) {
-    console.error(err);
-    addMessage(
-      "error",
-      "An error occurred during image submission. Please try again."
-    );
+    addMessage("success", "Images updated successfully.");
+  } catch (error) {
+    console.error("Image update failed:", error);
+    addMessage("error", "An error occurred while updating images.");
   } finally {
     hideLoader();
   }
 };
+
+
 
   const handleCancel = () => {
     setFormStage("property");
