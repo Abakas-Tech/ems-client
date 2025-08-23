@@ -48,7 +48,7 @@ const LoginForm = () => {
     >
       <div
         className="login-container p-4 rounded shadow-lg my-4"
-        style={{ maxWidth: "500px", width: "100%", minHeight: "400px" }}
+        style={{ maxWidth: "500px", width: "90%", minHeight: "400px" }}
       >
         <h1 className="text-center mb-3 fw-bolder pt-0 ">Log In</h1>
         <img src={logo} className="mx-auto d-block mb-4 img-fluid " />

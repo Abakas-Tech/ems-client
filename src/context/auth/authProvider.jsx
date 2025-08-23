@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const publicPaths = ["/", "/login", "/about", "/contact"];
+    const publicPaths = ["/", "/login", "/about", "/contact", "/admin/forgot-password"];
     if (!publicPaths.includes(location.pathname)) {
       checkUserAuth();
     } else {

@@ -40,7 +40,7 @@ export const resetPassword = async (data) => {
   }
 };
 
-// Reset Password function
+// change Password function
 export const changePassword = async (data) => {
   try {
     const response = await axiosInstance.post("/auth/change-password", data);

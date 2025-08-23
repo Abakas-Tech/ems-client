@@ -64,10 +64,8 @@ function AppRouter() {
             </Layout>
           }
         />
-        {/* Protected route */}
 
         <Route path="/login" element={<Login />} />
-
         <Route path="/admin/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </>
