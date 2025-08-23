@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginAdmin } from "../../api/admin/auth.api";
-import useLoader from "../../context/Loader/UseLoader";
+import useLoader from "../../context/Loader/useLoader";
 import useResponse from "../../context/response/UseResponse";
 import logo from "../../assets/img/logo.svg";
 
@@ -51,8 +51,8 @@ const LoginForm = () => {
         className="login-container p-4 rounded shadow my-4"
         style={{ maxWidth: "500px", width: "100%", minHeight: "400px" }}
       >
-        <h1 className="text-center mb-3 fw-bolder">Log In</h1>
-        <img src={logo} className="mx-auto d-block mb-4" />
+        <h1 className="text-center mb-3 fw-bolder pt-0 ">Log In</h1>
+        <img src={logo} className="mx-auto d-block mb-4 " />
         <form onSubmit={handleSubmit}>
           <div className="form-floating mb-3">
             <input

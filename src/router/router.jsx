@@ -8,62 +8,66 @@ import Layout from "../components/Layout/Layout.jsx";
 import Contact from "../pages/public/Contact/Contact.jsx";
 import ProtecteRoute from "../utils/ProtectRoute.jsx";
 import Login from "../pages/admin/Login/Login.jsx";
+import ScrollToTop from "../components/ScrollToTop/ScrollToTop.jsx";
 
 function AppRouter() {
   return (
-    <Routes>
-      {/* Landing Page */}
-      <Route
-        path="/"
-        element={
-          <Layout>
-            <LandingPage />
-          </Layout>
-        }
-      />
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* Landing Page */}
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <LandingPage />
+            </Layout>
+          }
+        />
 
-      {/* Properties List */}
-      <Route
-        path="/properties"
-        element={
-          <Layout>
-            <PropertyList />
-          </Layout>
-        }
-      />
+        {/* Properties List */}
+        <Route
+          path="/properties"
+          element={
+            <Layout>
+              <PropertyList />
+            </Layout>
+          }
+        />
 
-      {/* Property Details */}
-      <Route
-        path="/properties/:id"
-        element={
-          <Layout>
-            <PropertyDetails />
-          </Layout>
-        }
-      />
+        {/* Property Details */}
+        <Route
+          path="/properties/:id"
+          element={
+            <Layout>
+              <PropertyDetails />
+            </Layout>
+          }
+        />
 
-      {/* About */}
-      <Route
-        path="/about"
-        element={
-          <Layout>
-            <AboutDetail />
-          </Layout>
-        }
-      />
-      {/* Contact */}
-      <Route
-        path="/contact"
-        element={
-          <Layout>
-            <Contact />
-          </Layout>
-        }
-      />
-      {/* Protected route */}
+        {/* About */}
+        <Route
+          path="/about"
+          element={
+            <Layout>
+              <AboutDetail />
+            </Layout>
+          }
+        />
+        {/* Contact */}
+        <Route
+          path="/contact"
+          element={
+            <Layout>
+              <Contact />
+            </Layout>
+          }
+        />
+        {/* Protected route */}
 
-      <Route path="/login" element={<Login />} />
-    </Routes>
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </>
   );
 }
 
