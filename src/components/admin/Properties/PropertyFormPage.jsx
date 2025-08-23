@@ -26,9 +26,9 @@ const getPropertyImages = async (...args) => {
   const module = await import("../../../api/public/PropertiesImage.api");
   return module.getPropertyImages(...args);
 };
-const updatePropertyImage = async (...args) => {
+const updatePropertyImages = async (...args) => {
   const module = await import("../../../api/public/PropertiesImage.api");
-  return module.updatePropertyImage(...args);
+  return module.updatePropertyImages(...args);
 };
 
 const PropertyFormPage = () => {
@@ -275,84 +275,85 @@ const PropertyFormPage = () => {
     }
   };
 
- const handleImagesSubmit = async () => {
-   showLoader();
-   try {
-     if (isNewProperty && files.length === 0) {
-       addMessage("error", "At least one image is required.");
-       hideLoader();
-       return;
-     }
+const handleImagesSubmit = async () => {
+  showLoader();
+  try {
+    // 1 Update existing images (if replaced or altText changed)
+    const editedImages = existingImages.filter(
+      (img) => img.file || img.altText !== img.originalAltText
+    );
 
-     // ✅ Update existing images if replaced or altText changed
-     for (const img of existingImages) {
-       if (img.altText !== img.originalAltText || img.file) {
-         const formData = new FormData();
-         if (img.file) {
-           formData.append("image", img.file); // raw file
-         }
-         // backend expects altTexts as JSON array
-         formData.append("altTexts", JSON.stringify([img.altText || ""]));
+    if (editedImages.length > 0) {
+      const formData = new FormData();
+      const imageIds = [];
+      const altTextsArr = [];
 
-         const updateRes = await updatePropertyImage(
-           propertyId,
-           img.id,
-           formData
-         );
-         if (!updateRes.success) {
-           addMessage("error", updateRes.message || "Failed to update image.");
-           hideLoader();
-           return;
-         }
-       }
-     }
+      editedImages.forEach((img) => {
+        if (img.file) formData.append("images", img.file);
+        else formData.append("images", new Blob([])); // empty placeholder if no file
+        imageIds.push(img.id);
+        altTextsArr.push(img.altText || "");
+      });
 
-     // ✅ Add new images if any
-     if (files.length > 0) {
-       const formData = new FormData();
-       files.forEach((file) => formData.append("images", file));
-       formData.append("altTexts", JSON.stringify(altTexts));
-       const addRes = await addPropertyImages(propertyId, formData);
-       if (!addRes.success) {
-         addMessage("error", addRes.message);
-         hideLoader();
-         return;
-       }
-     }
+      formData.append("imageIds", JSON.stringify(imageIds));
+      formData.append("altTexts", JSON.stringify(altTextsArr));
 
-     addMessage(
-       "success",
-       isNewProperty
-         ? "Images submitted successfully!"
-         : "Images updated successfully!"
-     );
+      const updateRes = await updatePropertyImages(propertyId, formData);
+      if (!updateRes.success) {
+        addMessage("error", updateRes.message || "Failed to update images.");
+        hideLoader();
+        return;
+      }
+    }
 
-     // Refresh images list
-     const imagesRes = await getPropertyImages(propertyId);
-     if (imagesRes.success) {
-       setExistingImages(
-         imagesRes.data.data.map((img) => ({
-           id: img.id,
-           url: img.imageUrl,
-           altText: img.altText || "",
-           originalAltText: img.altText || "",
-           file: null,
-         }))
-       );
-     }
-     setFiles([]);
-     setAltTexts([]);
-     setIsNewProperty(false);
-     setFormStage("property");
-     hideLoader();
-   } catch {
-     addMessage(
-       "error",
-       "An error occurred during image submission. Please try again."
-     );
-     hideLoader();
-   }
- };
+    // 2️⃣ Add new images (same as before)
+    if (files.length > 0) {
+      const formData = new FormData();
+      files.forEach((file) => formData.append("images", file));
+      formData.append("altTexts", JSON.stringify(altTexts));
+      const addRes = await addPropertyImages(propertyId, formData);
+      if (!addRes.success) {
+        addMessage("error", addRes.message);
+        hideLoader();
+        return;
+      }
+    }
+
+    addMessage(
+      "success",
+      isNewProperty
+        ? "Images submitted successfully!"
+        : "Images updated successfully!"
+    );
+
+    // Refresh images list
+    const imagesRes = await getPropertyImages(propertyId);
+    if (imagesRes.success) {
+      setExistingImages(
+        imagesRes.data.data.map((img) => ({
+          id: img.id,
+          url: img.imageUrl,
+          altText: img.altText || "",
+          originalAltText: img.altText || "",
+          file: null,
+        }))
+      );
+    }
+
+    setFiles([]);
+    setAltTexts([]);
+    setIsNewProperty(false);
+    setFormStage("property");
+  } catch (err) {
+    console.error(err);
+    addMessage(
+      "error",
+      "An error occurred during image submission. Please try again."
+    );
+  } finally {
+    hideLoader();
+  }
+};
 
   const handleCancel = () => {
     setFormStage("property");

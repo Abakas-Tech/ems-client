@@ -40,9 +40,6 @@ export const getPropertyImageById = async (propertyId, imageId) => {
 
 // Add multiple images to a property
 export const addPropertyImages = async (propertyId, formData) => {
- 
-
-
   try {
     const response = await axiosInstance.post(
       `/properties/${propertyId}/images`,
@@ -65,12 +62,12 @@ export const addPropertyImages = async (propertyId, formData) => {
   }
 };
 
-// Update a single image for a property
-export const updatePropertyImage = async (propertyId, imageId, formData) => {
-  console.log(propertyId, imageId, formData);
+// Update multiple images for a property
+// Update multiple images for a property
+export const updatePropertyImages = async (propertyId, formData) => {
   try {
     const response = await axiosInstance.put(
-      `/properties/${propertyId}/images/${imageId}`,
+      `/properties/${propertyId}/images`,
       formData,
       {
         headers: {
@@ -87,7 +84,6 @@ export const updatePropertyImage = async (propertyId, imageId, formData) => {
     };
   }
 };
-
 // Delete a single image for a property
 export const deletePropertyImage = async (propertyId, imageId) => {
   try {
