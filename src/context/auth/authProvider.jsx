@@ -37,8 +37,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    checkUserAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const publicPaths = ["/", "/login", "/about", "/contact"];
+    if (!publicPaths.includes(location.pathname)) {
+      checkUserAuth();
+    } else {
+      setUser(localStorage.getItem("authToken") ? true : null);
+      setIsCheckingAuth(false);
+    }
   }, [location.pathname]);
 
   if (isCheckingAuth) return null; // can also show loader

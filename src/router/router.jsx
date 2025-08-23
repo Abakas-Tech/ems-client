@@ -61,10 +61,7 @@ function AppRouter() {
         }
       />
       {/* Protected route */}
-      <Route
-        path="/dashboard"
-        element={<ProtecteRoute>{/* <DashboardPage /> */}</ProtecteRoute>}
-      />
+
       <Route path="/login" element={<Login />} />
     </Routes>
   );

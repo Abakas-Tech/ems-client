@@ -171,7 +171,7 @@ const Header = () => {
               </li>
               <li className="nav-menu-social add-listing">
                 <Link
-                  to="/signin"
+                  to="/login"
                   className={location.pathname === "/signin" ? "active" : ""}
                   onClick={toggleMenu}
                 >

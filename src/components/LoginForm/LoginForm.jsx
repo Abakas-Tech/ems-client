@@ -31,9 +31,9 @@ const LoginForm = () => {
     showLoader();
     try {
       const response = await loginAdmin({ email, password });
-      localStorage.setItem("authToken", response.data.token); // store token
+      localStorage.setItem("authToken", response.data.token);
       addMessage("success", "Login successful!");
-      navigate("/admin/profile"); // redirect after login
+      navigate("/dashboard"); // redirect after login
     } catch (error) {
       addMessage("error", error.message || "Login failed.");
     } finally {
@@ -42,42 +42,41 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="login-page d-flex justify-content-center align-items-center vh-100">
+    <div
+      className="login-page d-flex justify-content-center align-items-center rounded"
+      style={{ minHeight: "80vh" }}
+    >
       <div
-        className="login-container p-4 rounded shadow"
-        style={{ maxWidth: "400px", width: "100%" }}
+        className="login-container p-4 rounded shadow my-4"
+        style={{ maxWidth: "500px", width: "100%", minHeight: "400px" }}
       >
-        <h3 className="text-center mb-4">Log In</h3>
+        <h1 className="text-center mb-4 fw-bolder">Log In</h1>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email address
-            </label>
+          <div className="form-floating mb-3">
             <input
               type="email"
-              id="email"
               className="form-control"
+              id="email"
               placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            <label htmlFor="email">Email address</label>
           </div>
 
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
+          <div className="form-floating mb-3">
             <input
               type="password"
-              id="password"
               className="form-control"
+              id="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <label htmlFor="password">Password</label>
           </div>
 
           <div className="d-flex justify-content-between align-items-center mb-3">
@@ -86,7 +85,10 @@ const LoginForm = () => {
             </Link>
           </div>
 
-          <button type="submit" className="btn btn-primary w-100">
+          <button
+            type="submit"
+            className="btn btn-main fw-medium w-100 rounded-2"
+          >
             Log In
           </button>
         </form>
