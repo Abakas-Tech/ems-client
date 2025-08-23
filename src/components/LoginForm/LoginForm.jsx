@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginAdmin } from "../../api/admin/auth.api";
 import useLoader from "../../context/Loader/UseLoader";
 import useResponse from "../../context/response/UseResponse";
+import logo from "../../assets/img/logo.svg";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -51,7 +52,7 @@ const LoginForm = () => {
         style={{ maxWidth: "500px", width: "100%", minHeight: "400px" }}
       >
         <h1 className="text-center mb-4 fw-bolder">Log In</h1>
-
+        <img src={logo} className="mx-auto d-block mb-3" />
         <form onSubmit={handleSubmit}>
           <div className="form-floating mb-3">
             <input
