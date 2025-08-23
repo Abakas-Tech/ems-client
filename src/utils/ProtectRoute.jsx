@@ -1,19 +1,20 @@
-import React, { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
 import useAuth from "../context/auth/UseAuth";
+import useLoader from "../context/Loader/useLoader";
 
-const ProtecteRoute = ({ children }) => {
+const ProtectedRoute = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { showLoader, hideLoader } = useLoader();
 
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
-  }, [user, navigate, location]);
+  // Show loader while auth is being checked
+  if (user === undefined) return <div>Loading...</div>; // or use your loader component
 
-  return user ? children : null;
+  // If not authenticated, redirect to login
+  if (!user) return <Navigate to="/login" replace />;
+
+  // If authenticated, render nested routes
+  return <Outlet />;
 };
 
-export default ProtecteRoute;
+export default ProtectedRoute;
