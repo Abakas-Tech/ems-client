@@ -19,3 +19,12 @@ export const loginAdmin = async (credentials) => {
     throw new Error(error.response?.data?.message || "Login error");
   }
 };
+// Forgot Password function
+export const forgotPassword = async (data) => {
+  try {
+    const response = await axiosInstance.post("/auth/forgot-password", data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Forgot password error");
+  }
+};
