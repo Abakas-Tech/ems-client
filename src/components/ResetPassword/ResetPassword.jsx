@@ -12,7 +12,6 @@ const ResetPassword = () => {
   const { addMessage } = useResponse();
   const navigate = useNavigate();
   const location = useLocation();
-//   console.log("ResetPassword mounted");
 
   // Extract token from query params
   const params = new URLSearchParams(location.search);
@@ -44,10 +43,9 @@ const ResetPassword = () => {
 
     showLoader();
     try {
-      // send token + newPassword to backend
       const response = await resetPassword({ token, newPassword });
       addMessage("success", response.message || "Password reset successful!");
-      navigate("/login"); // redirect to login instead of profile
+      navigate("/login");
     } catch (error) {
       addMessage("error", error.message || "Reset failed.");
     } finally {
@@ -62,7 +60,7 @@ const ResetPassword = () => {
     >
       <div
         className="login-container p-4 rounded shadow-lg my-4"
-        style={{ maxWidth: "500px", width: "100%", minHeight: "400px" }}
+        style={{ maxWidth: "500px", width: "90%", minHeight: "400px" }}
       >
         <h1 className="text-center mb-3 fw-bolder pt-0">Reset Password</h1>
         <img src={logo} className="mx-auto d-block mb-4 img-fluid" alt="logo" />
