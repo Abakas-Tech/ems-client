@@ -51,8 +51,8 @@ const LoginForm = () => {
         className="login-container p-4 rounded shadow my-4"
         style={{ maxWidth: "500px", width: "100%", minHeight: "400px" }}
       >
-        <h1 className="text-center mb-4 fw-bolder">Log In</h1>
-        <img src={logo} className="mx-auto d-block mb-3" />
+        <h1 className="text-center mb-3 fw-bolder">Log In</h1>
+        <img src={logo} className="mx-auto d-block mb-4" />
         <form onSubmit={handleSubmit}>
           <div className="form-floating mb-3">
             <input
