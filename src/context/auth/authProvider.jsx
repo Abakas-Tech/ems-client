@@ -11,14 +11,6 @@ export const AuthProvider = ({ children }) => {
   const location = useLocation();
 
   const checkUserAuth = async () => {
-    // Skip auth check for public pages
-    const publicPaths = ["/login"];
-    if (publicPaths.includes(location.pathname)) {
-      setUser(null);
-      setIsCheckingAuth(false);
-      return;
-    }
-
     try {
       const response = await checkUser();
 
@@ -41,8 +33,9 @@ export const AuthProvider = ({ children }) => {
       "/",
       "/login",
       "/about",
+      "/properties",
       "/contact",
-      "/admin/forgot-password",
+      "/forgot-password",
       "/reset-password",
     ];
     if (!publicPaths.includes(location.pathname)) {
