@@ -17,6 +17,7 @@ function App() {
           element={<PropertyList isPublicPage={false} />}
         />
         <Route path="/admin/properties/:id" element={<PropertyFormPage />} />
+        <Route path="/admin/addProperties" element={<PropertyFormPage />} />
         <Route path="/admin/properties/veiw/:id" element={<PropertyDetails isPublicPage={false} />} />
       </Routes>
 

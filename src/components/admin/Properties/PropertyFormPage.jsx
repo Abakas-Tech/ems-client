@@ -42,7 +42,7 @@ const PropertyFormPage = () => {
     location.state?.initialFormStage || "property"
   );
   const [propertyId, setPropertyId] = useState(propertyIdParam || null);
-  const [isEditMode, setIsEditMode] = useState(true);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [isNewProperty, setIsNewProperty] = useState(
     !!location.state?.isNewProperty
   );
