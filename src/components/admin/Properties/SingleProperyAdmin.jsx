@@ -2,17 +2,16 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaPen, FaEye, FaTrash, FaStar } from "react-icons/fa";
 
-const SinglePropertyAdmin = ({ property, images }) => {
+const SinglePropertyAdmin = ({ property, images, onDelete }) => {
   const navigate = useNavigate();
-  const handleView = () => navigate(`/admin/properties/${property.id}`);
-  const handleEdit = () => alert(`Edit property: ${property.title}`);
-  const handleDelete = () => {
-    if (
-      window.confirm(`Are you sure you want to delete "${property.title}"?`)
-    ) {
-      alert("Property deleted!");
-    }
+
+  const handleView = () => navigate(`/admin/properties/veiw/${property.id}`);
+  const handleEdit = () => navigate(`/admin/properties/${property.id}`);
+
+  const handleDeleteClick = () => {
+    onDelete(property.id);
   };
+
   const handleFeatured = () => alert(`"${property.title}" is now featured!`);
 
   const propertyImage =
@@ -21,7 +20,7 @@ const SinglePropertyAdmin = ({ property, images }) => {
       : "https://placehold.co/1280x850";
 
   return (
-    <div className="col-md-12 col-sm-12  ps-2 pe-2">
+    <div className="col-md-12 col-sm-12 ps-2 pe-2">
       {/* Single Property */}
       <div className="singles-dashboard-list d-flex flex-column flex-md-row">
         {/* Image Left */}
@@ -40,9 +39,9 @@ const SinglePropertyAdmin = ({ property, images }) => {
         </div>
 
         {/* Details Right */}
-        <div className=" sd-list-right flex-grow-1 d-flex flex-column">
-          <div className="sd-list-left ">
-            <h4 className="listing_dashboard_title ">
+        <div className="sd-list-right flex-grow-1 d-flex flex-column">
+          <div className="sd-list-left">
+            <h4 className="listing_dashboard_title">
               <Link
                 to={`/admin/properties/${property.id}`}
                 className="text-decoration-none"
@@ -107,7 +106,7 @@ const SinglePropertyAdmin = ({ property, images }) => {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                handleDelete();
+                handleDeleteClick();
               }}
               title="Delete Property"
               className="delete"

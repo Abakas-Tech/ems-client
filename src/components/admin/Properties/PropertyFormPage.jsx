@@ -33,8 +33,7 @@ const updatePropertyImages = async (...args) => {
 };
 
 const PropertyFormPage = () => {
-  const propertyIdParam = 28;
-  const navigate = useNavigate();
+  const {id:propertyIdParam} = useParams();
   const location = useLocation();
   const [files, setFiles] = useState([]);
   const [altTexts, setAltTexts] = useState([]);

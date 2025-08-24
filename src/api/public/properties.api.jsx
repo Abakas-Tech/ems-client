@@ -20,11 +20,9 @@ export const getAllProperties = async (params = {}) => {
 // Get property by ID
 export const getPropertyById = async (id) => {
   try {
- 
     const response = await axiosInstance.get(`/properties/${id}`);
-    console.log(response.data.success)
+    console.log(response.data.success);
     return response.data;
-  
   } catch (error) {
     return {
       success: false,
@@ -52,7 +50,6 @@ export const createProperty = async (data) => {
 // Update a property by ID
 export const updateProperty = async (id, data) => {
   try {
-  
     const response = await axiosInstance.put(`/properties/${id}`, data);
     return response.data;
   } catch (error) {
@@ -67,10 +64,7 @@ export const updateProperty = async (id, data) => {
 // Delete a property by ID
 export const deleteProperty = async (id) => {
   try {
-    const token = localStorage.getItem("authToken");
-    const response = await axiosInstance.delete(`/properties/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axiosInstance.delete(`/properties/${id}`);
     return response.data;
   } catch (error) {
     return {

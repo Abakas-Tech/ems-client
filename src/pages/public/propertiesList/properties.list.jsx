@@ -4,10 +4,13 @@ import { FaFilter } from "react-icons/fa";
 import FilterSidebar from "../../../components/properties/filterSideBar";
 import PaginationAndSort from "../../../components/properties/paginationAndSort";
 import SingleProperty from "../../../components/properties/singleProperties";
-import { getAllProperties } from "../../../api/Public/properties.api";
+import {
+  deleteProperty,
+  getAllProperties,
+} from "../../../api/Public/properties.api";
 import { getPropertyImages } from "../../../api/public/PropertiesImage.api";
 import BottomPagination from "../../../components/properties/bottomPagination";
-import SinglePropertyAdmin from './../../../components/admin/Properties/SingleProperyAdmin';
+import SinglePropertyAdmin from "./../../../components/admin/Properties/SingleProperyAdmin";
 
 const PropertyList = ({ isPublicPage = true }) => {
   const [properties, setProperties] = useState([]);
@@ -57,6 +60,20 @@ const PropertyList = ({ isPublicPage = true }) => {
     }
   };
 
+  const handleDeleteProperty = async (id) => {
+    try {
+      const response = await deleteProperty(id);
+
+      if (response.success) {
+        // remove deleted property from state
+        setProperties((prev) => prev.filter((property) => property.id !== id));
+      } else {
+        console.error("Delete failed:", response.message);
+      }
+    } catch (error) {
+      console.error("Error deleting property:", error);
+    }
+  };
   useEffect(() => {
     setProperties(null);
     fetchProperties();
@@ -174,6 +191,7 @@ const PropertyList = ({ isPublicPage = true }) => {
                         <SinglePropertyAdmin
                           property={property}
                           images={images[property.id] || []}
+                          onDelete={handleDeleteProperty}
                         />
                       </div>
                     )}
