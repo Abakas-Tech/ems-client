@@ -4,7 +4,7 @@ import PropertyDetailsForm from "./PropertyDetailsForm";
 import ImagesUploadForm from "./ImagesUploadForm";
 import useLoader from "../../../context/Loader/UseLoader";
 import useResponse from "../../../context/response/UseResponse";
-import { updatePropertyImagesAltText } from "../../../api/public/PropertiesImage.api";
+import { deletePropertyImage, updatePropertyImagesAltText } from "../../../api/public/PropertiesImage.api";
 
 // Lazy-load API functions
 const createProperty = async (...args) => {
@@ -373,6 +373,30 @@ const PropertyFormPage = () => {
     }
   };
 
+  // 🔹 Add inside PropertyFormPage component
+  const handleDeleteImage = async (imageId) => {
+    if (!propertyId || !imageId) return;
+
+    showLoader();
+    try {
+      const res = await deletePropertyImage(propertyId, imageId);
+      if (!res.success) {
+        addMessage("error", res.message || "Failed to delete image.");
+        hideLoader();
+        return;
+      }
+
+      // remove from local state
+      setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
+      addMessage("success", "Image deleted successfully!");
+    } catch (err) {
+      console.error(err);
+      addMessage("error", "An error occurred while deleting image.");
+    } finally {
+      hideLoader();
+    }
+  };
+
   const handleCancel = () => {
     setFormStage("property");
     setFiles([]);
@@ -433,6 +457,8 @@ const PropertyFormPage = () => {
                     onSubmit={handleImagesSubmit}
                     onCancel={handleCancel}
                     isEditMode={isEditMode}
+                    onDeleteImage={handleDeleteImage}
+                  
                   />
                 )}
               </div>

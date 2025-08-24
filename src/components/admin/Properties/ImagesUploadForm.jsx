@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDropzone } from "react-dropzone";
-import { X } from "lucide-react";
+import { X, RefreshCw, Trash2 } from "lucide-react";
 import useResponse from "./../../../context/response/UseResponse";
 
 const ImagesUploadForm = ({
@@ -14,6 +14,8 @@ const ImagesUploadForm = ({
   onSubmit,
   onCancel,
   isEditMode = false,
+  onDeleteImage,
+  fetchPropertyImages, // 🔹 new
 }) => {
   const { addMessage } = useResponse();
   const maxFiles = 10;
@@ -24,25 +26,27 @@ const ImagesUploadForm = ({
     "image/gif": [],
   };
 
+  // 🔹 refetch on mount
+  useEffect(() => {
+    if (propertyId && typeof fetchPropertyImages === "function") {
+      fetchPropertyImages();
+    }
+  }, [propertyId, fetchPropertyImages]);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: allowedMimeTypes,
     maxFiles,
     maxSize: maxFileSize,
     onDrop: (acceptedFiles, fileRejections) => {
-      // If no files selected, just return
       if (acceptedFiles.length === 0) return;
-
-      // Handle rejections only for actual files
       if (fileRejections.length > 0) {
         const message =
           fileRejections[0].errors[0].code === "file-too-large"
             ? "Each file must be less than 5MB."
-            : "Only JPEG, PNG, and GIF images are allowd.";
+            : "Only JPEG, PNG, and GIF images are allowed.";
         addMessage("error", message);
         return;
       }
-
-      // Add valid files
       setFiles((prev) => [...prev, ...acceptedFiles]);
       setAltTexts((prev) => [...prev, ...acceptedFiles.map(() => "")]);
     },
@@ -60,27 +64,20 @@ const ImagesUploadForm = ({
     setExistingImages(newExisting);
   };
 
-const handleReplaceImage = (index, file) => {
-  // Skip if no file selected
-  if (!file) return; // <--- ensures no error when nothing selected
-
-  // Validate size
-  if (file.size > maxFileSize) {
-    addMessage("error", "File must be less than 5MB.");
-    return;
-  }
-
-  // Validate type
-  if (!Object.keys(allowedMimeTypes).includes(file.type)) {
-    addMessage("error", "Only JPEG, PNG, and GIF images are al.");
-    return;
-  }
-
-  // Replace the file in existingImages
-  const newExisting = [...existingImages];
-  newExisting[index].file = file;
-  setExistingImages(newExisting);
-};
+  const handleReplaceImage = (index, file) => {
+    if (!file) return;
+    if (file.size > maxFileSize) {
+      addMessage("error", "File must be less than 5MB.");
+      return;
+    }
+    if (!Object.keys(allowedMimeTypes).includes(file.type)) {
+      addMessage("error", "Only JPEG, PNG, and GIF images are allowed.");
+      return;
+    }
+    const newExisting = [...existingImages];
+    newExisting[index].file = file;
+    setExistingImages(newExisting);
+  };
 
   const handleRemoveImage = (index) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
@@ -93,6 +90,7 @@ const handleReplaceImage = (index, file) => {
         {isEditMode ? "Update Images" : "Upload Images"} for Property #
         {propertyId}
       </h3>
+
       {/* Existing Images */}
       {existingImages.length > 0 && (
         <div className="mb-4">
@@ -107,7 +105,44 @@ const handleReplaceImage = (index, file) => {
                     className="card-img-top img-fluid"
                     style={{ height: "150px", objectFit: "cover" }}
                   />
-                  {/* No remove button for existing images since no delete API */}
+
+                  {/* Replace + Delete icons */}
+                  <div className="position-absolute top-0 end-0 m-2 d-flex gap-2">
+                    {/* Replace */}
+                    <label
+                      className="p-1 d-flex align-items-center justify-content-center shadow-sm"
+                      style={{
+                        borderRadius: "50%",
+                        background: "white",
+                        cursor: "pointer",
+                      }}
+                      title="Replace Image"
+                    >
+                      <RefreshCw size={18} />
+                      <input
+                        type="file"
+                        hidden
+                        onChange={(e) =>
+                          handleReplaceImage(index, e.target.files[0])
+                        }
+                      />
+                    </label>
+                    {/* Delete */}
+                    <button
+                      type="button"
+                      onClick={() => onDeleteImage?.(img.id)}
+                      className="p-1 d-flex align-items-center justify-content-center shadow-sm"
+                      style={{
+                        borderRadius: "50%",
+                        background: "white",
+                        cursor: "pointer",
+                      }}
+                      title="Delete Image"
+                    >
+                      <Trash2 size={18} color="red" />
+                    </button>
+                  </div>
+
                   <div className="card-body p-2">
                     <input
                       type="text"
@@ -118,18 +153,6 @@ const handleReplaceImage = (index, file) => {
                       }
                       className="form-control form-control-sm"
                     />
-                    <div className="mt-2">
-                      <label className="btn btn-sm btn-outline-secondary">
-                        Replace Image
-                        <input
-                          type="file"
-                          hidden
-                          onChange={(e) =>
-                            handleReplaceImage(index, e.target.files[0])
-                          }
-                        />
-                      </label>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -137,6 +160,7 @@ const handleReplaceImage = (index, file) => {
           </div>
         </div>
       )}
+
       {/* Dropzone for new images */}
       <div className="card mb-4 shadow-sm">
         <div
@@ -159,6 +183,7 @@ const handleReplaceImage = (index, file) => {
           )}
         </div>
       </div>
+
       {/* New Uploaded Images */}
       {files.length > 0 && (
         <div className="mb-4">
@@ -177,16 +202,14 @@ const handleReplaceImage = (index, file) => {
                     type="button"
                     onClick={() => handleRemoveImage(index)}
                     title="Remove image"
-                    className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                    className="p-1 shadow-sm position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center"
                     style={{
-                      zIndex: 1,
-                      background: "none",
-                      border: "none",
-                      padding: "2px",
-                      color: "black",
+                      borderRadius: "50%",
+                      background: "white",
+                      cursor: "pointer",
                     }}
                   >
-                    <X size={30} />
+                    <X size={18} color="red" />
                   </button>
                   <div className="card-body p-2">
                     <input
@@ -205,6 +228,7 @@ const handleReplaceImage = (index, file) => {
           </div>
         </div>
       )}
+
       {/* Action Buttons */}
       <div className="d-flex gap-3">
         <button
