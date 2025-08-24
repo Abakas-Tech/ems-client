@@ -9,8 +9,8 @@ import PropertyDetailsForm from "./components/admin/Properties/PropertyDetailsFo
 function App() {
   return (
     <div>
-      {/* <PropertyList isPublicPage={false} /> */}
-      <PropertyFormPage/>
+      <PropertyList isPublicPage={false} />
+      {/* <PropertyFormPage/> */}
       <Loader />
       <Response />
     </div>

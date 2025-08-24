@@ -170,7 +170,7 @@ const PropertyList = ({ isPublicPage = true }) => {
                         />
                       </div>
                     ) : (
-                      <div className="col-12 mb-0" key={property.id}>
+                      <div className="bg-white col-12 " key={property.id}>
                         <SinglePropertyAdmin
                           property={property}
                           images={images[property.id] || []}
