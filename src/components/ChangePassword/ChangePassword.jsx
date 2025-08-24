@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { changePassword } from "../../api/admin/auth.api";
 import useLoader from "../../context/Loader/useLoader";
 import useResponse from "../../context/response/UseResponse";
-
+console.log("Hi");
 const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");

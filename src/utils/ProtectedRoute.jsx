@@ -1,20 +1,27 @@
-import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { AuthContext } from "../context/auth/AuthContext";
 import useAuth from "../context/auth/UseAuth";
-// import useLoader from "../context/Loader/useLoader";
 
 const ProtectedRoute = () => {
   const { user } = useAuth();
-  // const { showLoader, hideLoader } = useLoader();
+  const location = useLocation();
 
-  // Show loader while auth is being checked
-  if (user === undefined) return <div>Loading...</div>; 
+  // Check if user is authenticated
+  const isAuthenticated = user === true; // Matches AuthProvider's setUser(true) on success
 
-  // If not authenticated, redirect to login
-  if (!user) return <Navigate to="/login" replace />;
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated && location.pathname !== "/admin/login") {
+      // Optional: You can add a message or redirect with state
+    }
+  }, [isAuthenticated, location.pathname]);
 
-  // If authenticated, render nested routes
-  return <Outlet />;
+  return isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/admin/login" replace state={{ from: location }} />
+  );
 };
 
 export default ProtectedRoute;

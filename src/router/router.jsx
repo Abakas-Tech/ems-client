@@ -11,7 +11,7 @@ import Login from "../pages/admin/Login/Login.jsx";
 import ScrollToTop from "../components/ScrollToTop/ScrollToTop.jsx";
 import ForgotPassword from "../pages/admin/ForgotPassword/ForgotPassword.jsx";
 import ResetPassword from "../pages/admin/ResetPassword/ResetPassword.jsx";
-import ChangePassword from "../components/ChangePassword/ChangePassword.jsx";
+import ChangePassword from "../pages/admin/ChangePassword/ChangePassword.jsx";
 
 function AppRouter() {
   return (
