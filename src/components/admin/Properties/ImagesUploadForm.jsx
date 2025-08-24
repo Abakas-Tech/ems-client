@@ -4,6 +4,7 @@ import { X, RefreshCw, Trash2 } from "lucide-react";
 import useResponse from "./../../../context/response/UseResponse";
 
 const ImagesUploadForm = ({
+  propertyTitle,
   propertyId,
   files,
   setFiles,
@@ -87,8 +88,8 @@ const ImagesUploadForm = ({
   return (
     <div className="container my-4">
       <h3 className="mb-4">
-        {isEditMode ? "Update Images" : "Upload Images"} for Property #
-        {propertyId}
+        {isEditMode ? "Update Images" : "Upload Images"} for {""}
+        {propertyTitle}
       </h3>
 
       {/* Existing Images */}

@@ -446,6 +446,7 @@ const PropertyFormPage = () => {
                   </>
                 ) : (
                   <ImagesUploadForm
+                    propertyTitle={initialValues.title}
                     propertyId={propertyId}
                     files={files}
                     setFiles={setFiles}
@@ -457,7 +458,6 @@ const PropertyFormPage = () => {
                     onCancel={handleCancel}
                     isEditMode={isEditMode}
                     onDeleteImage={handleDeleteImage}
-                  
                   />
                 )}
               </div>
