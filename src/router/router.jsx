@@ -14,6 +14,7 @@ import ResetPassword from "../pages/admin/ResetPassword/ResetPassword.jsx";
 import ChangePassword from "../pages/admin/ChangePassword/ChangePassword.jsx";
 import MyProfile from "../pages/admin/MyProfile/MyProfile.jsx";
 import ProtecteRoute from "../utils/ProtectedRoute.jsx";
+import Dashboard from "../pages/admin/Dashboard/Dashboard.jsx";
 
 function AppRouter() {
   return (
@@ -72,19 +73,27 @@ function AppRouter() {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route
+        {/* <Route
           path="/admin/dashboard"
           element={
             <ProtecteRoute>
               <ChangePassword />
             </ProtecteRoute>
           }
-        />
+        /> */}
         <Route
           path="/admin/my-profile"
           element={
             <ProtectedRoute>
               <MyProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
             </ProtectedRoute>
           }
         />
