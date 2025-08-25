@@ -1,12 +1,23 @@
 import React from "react";
-import Layout from "../../../components/Layout/Layout";
 import Sidebar from "../../../components/Admin/Sidebar/Sidebar";
+import { Outlet } from "react-router-dom";
 
 function Dashboard() {
   return (
-    <Layout>
-      <Sidebar />
-    </Layout>
+    <div className="container-fluid">
+      <div className="row" style={{ height: "100vh" }}>
+        {/* Sidebar */}
+        <Sidebar />
+
+        {/* Right-side content */}
+        <div
+          className="col-lg-9 col-md-12"
+          style={{ overflowY: "auto", padding: "20px" }}
+        >
+          <Outlet /> {/* This will render the page/component for each route */}
+        </div>
+      </div>
+    </div>
   );
 }
 
