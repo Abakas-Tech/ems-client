@@ -50,16 +50,16 @@ const Sidebar = () => {
     {
       label: "Appointments",
       path: "/admin/appointments",
-      icon: "bi bi-calendar-range",
+      icon: "bi bi-calendar",
     },
     {
       label: "My Listings",
-      path: "/admin/my-property",
+      path: "/admin/my-listings",
       icon: "bi-house-door",
     },
     {
       label: "Featured Properties",
-      path: "/admin/bookmarks",
+      path: "/admin/featured-properties",
       icon: "bi-suit-heart",
     },
     {
