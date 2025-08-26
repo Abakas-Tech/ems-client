@@ -11,6 +11,7 @@ import {
 import useLoader from "../../../context/Loader/UseLoader";
 import useResponse from "../../../context/response/UseResponse";
 import { useNavigate } from "react-router-dom";
+import { FaHome, FaCalendarAlt, FaFileAlt } from "react-icons/fa";
 
 const Analytics = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -107,7 +108,7 @@ const Analytics = () => {
             title="Properties"
             count={propertyCount?.propertyCount}
             lastAction={propertyCount?.lastCreatedAt}
-            iconClass="lni-home"
+            icon={FaHome}
             onClick={handlePageChange}
           />
         </div>
@@ -116,7 +117,7 @@ const Analytics = () => {
             title="Appointments"
             count={appointmentData?.appointmentCount}
             lastAction={appointmentData?.lastScheduledAt}
-            iconClass="lni-calendar"
+            icon={FaCalendarAlt}
             onClick={handlePageChange}
           />
         </div>
@@ -125,7 +126,7 @@ const Analytics = () => {
             title="Files"
             count={fileData?.uploadCount}
             lastAction={fileData?.lastUploadedAt}
-            iconClass="lni-files"
+            icon={FaFileAlt}
             onClick={handlePageChange}
           />
         </div>

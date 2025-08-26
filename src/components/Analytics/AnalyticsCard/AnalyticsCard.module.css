@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #7290e3; /* subtle background */
+  background: hsl(209, 60%, 84%); /* subtle background */
   color: #007bff;
   flex-shrink: 0;
 }

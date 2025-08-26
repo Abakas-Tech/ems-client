@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import styles from "./AnalyticsCard.module.css";
 
-const AnalyticsCard = ({ title, count, lastAction, iconClass, onClick }) => {
+const AnalyticsCard = ({ title, count, lastAction, icon: Icon, onClick }) => {
   return (
     <div
       role="button"
@@ -14,7 +14,8 @@ const AnalyticsCard = ({ title, count, lastAction, iconClass, onClick }) => {
       <div className="card-body d-flex align-items-center p-4">
         {/* Icon */}
         <div className={`${styles.iconWrapper} me-4`}>
-          <i className={`lni ${iconClass} fs-3`}></i>
+          {Icon && <Icon size={32} className="text-primary" />}{" "}
+          {/* 👈 dynamic icon */}
         </div>
 
         {/* Text */}
@@ -35,7 +36,7 @@ AnalyticsCard.propTypes = {
   title: PropTypes.string.isRequired,
   count: PropTypes.number,
   lastAction: PropTypes.string,
-  iconClass: PropTypes.string.isRequired,
+  icon: PropTypes.elementType, // 👈 now expects a component, not string
   onClick: PropTypes.func,
 };
 
