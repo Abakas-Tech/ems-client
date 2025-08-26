@@ -7,6 +7,7 @@ import PropertyList from "./pages/public/propertiesList/properties.list";
 import PropertyDetailsForm from "./components/admin/Properties/PropertyDetailsForm";
 import { Route, Routes } from "react-router-dom";
 import PropertyDetails from "./pages/public/propertiesDetail/PropertiesDetail";
+import ChatBot from "./components/chat/chatBot";
 
 function App() {
   return (
@@ -18,9 +19,12 @@ function App() {
         />
         <Route path="/admin/properties/:id" element={<PropertyFormPage />} />
         <Route path="/admin/addProperties" element={<PropertyFormPage />} />
-        <Route path="/admin/properties/veiw/:id" element={<PropertyDetails isPublicPage={false} />} />
+        <Route
+          path="/admin/properties/veiw/:id"
+          element={<PropertyDetails isPublicPage={false} />}
+        />
       </Routes>
-
+      <ChatBot />
       <Loader />
       <Response />
     </div>

@@ -176,8 +176,8 @@ const PropertyList = ({ isPublicPage = true }) => {
                     <span className="visually-hidden">Loading...</span>
                   </div>
                 </div>
-              ) : properties.length > 0 ? (
-                properties.map((property) => (
+              ) : properties?.length > 0 ? (
+                properties?.map((property) => (
                   <>
                     {isPublicPage ? (
                       <div className="col-12 mb-4" key={property.id}>
