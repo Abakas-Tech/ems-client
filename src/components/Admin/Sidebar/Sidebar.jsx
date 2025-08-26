@@ -1,8 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { getProfile } from "../../../api/admin/auth.api";
 
 const Sidebar = () => {
   const location = useLocation();
+  const [agentData, setAgentData] = useState({
+    image: "https://placehold.co/500x500",
+    name: "Loading...",
+    location: "Loading...",
+  });
+
+  useEffect(() => {
+    const fetchAgentData = async () => {
+      try {
+        const response = await getProfile();
+        console.log("Fetched agent data:", response);
+        const { data } = response;
+        setAgentData({
+          image: data.profile_image_url || "https://placehold.co/500x500",
+          name: data.agent_name,
+          location: `${data.address || ""}, ${data.city || ""}, ${
+            data.country || ""
+          }`,
+        });
+      } catch (error) {
+        console.error("Failed to fetch agent data:", error);
+      }
+    };
+
+    fetchAgentData();
+  }, []);
 
   const menuItems = [
     {
@@ -48,12 +75,12 @@ const Sidebar = () => {
           <div className="dashboard-navbar">
             <div className="d-user-avater">
               <img
-                src="https://placehold.co/500x500"
+                src={agentData.image}
                 className="img-fluid avater"
-                alt="User Avatar"
+                alt={`${agentData.name}'s Avatar`}
               />
-              <h4>Adam Harshvardhan</h4>
-              <span>Canada USA</span>
+              <h4>{agentData.name}</h4>
+              <span>{agentData.location}</span>
             </div>
 
             {/* Navigation Links */}
