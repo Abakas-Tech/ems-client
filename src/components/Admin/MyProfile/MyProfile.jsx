@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { getProfile, updateProfile } from "../../api/admin/auth.api";
-import useLoader from "../../context/Loader/useLoader";
-import useResponse from "../../context/response/UseResponse";
+import { getProfile, updateProfile } from "../../../api/admin/auth.api";
+import useLoader from "../../../context/Loader/useLoader";
+import useResponse from "../../../context/response/UseResponse";
 
 const MyProfile = () => {
   const [profileData, setProfileData] = useState({
     agent_name: "",
-    profile_image_url: null,
     agent_email: "",
     agent_phone: "",
     country: "",
@@ -18,104 +16,84 @@ const MyProfile = () => {
     facebook_username: "",
     telegram_username: "",
     whatsapp_username: "",
+    profile_image_url: "",
   });
+
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
-  const navigate = useNavigate();
-  const [isHovering, setIsHovering] = useState(false);
   const fileInputRef = useRef(null);
-  const [profileFile, setProfileFile] = useState(null);
+  const [isHovering, setIsHovering] = useState(false);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      showLoader();
-      try {
-        const response = await getProfile();
-        const data = response.data;
-        setProfileData({
-          agent_name: data.agent_name || "",
-          profile_image_url: data.profile_image_url || null,
-          agent_email: data.agent_email || "",
-          agent_phone: data.agent_phone || "",
-          country: data.country || "",
-          city: data.city || "",
-          address: data.address || "",
-          bio: data.bio || "",
-          title: data.title || "",
-          facebook_username: data.facebook_username || "",
-          telegram_username: data.telegram_username || "",
-          whatsapp_username: data.whatsapp_username || "",
-        });
-      } catch (error) {
-        addMessage("error", "Failed to fetch profile.", error);
-      } finally {
-        hideLoader();
-      }
-    };
-    fetchProfile();
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProfileData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("profile_image", file); 
-    Object.keys(profileData).forEach((key) => {
-      if (key !== "profile_image_url") {
-        formData.append(key, profileData[key]);
-      }
-    });
-
+  // Reusable fetch function
+  const fetchProfile = async () => {
     showLoader();
     try {
-      const response = await updateProfile(formData);
-      addMessage(
-        "success",
-        response.message || "Profile updated successfully!"
-      );
-      // Refresh profile data
-      const newData = await getProfile();
+      const { data } = await getProfile();
       setProfileData({
-        agent_name: newData.data.agent_name || "",
-        profile_image_url: newData.data.profile_image_url || null,
-        agent_email: newData.data.agent_email || "",
-        agent_phone: newData.data.agent_phone || "",
-        country: newData.data.country || "",
-        city: newData.data.city || "",
-        address: newData.data.address || "",
-        bio: newData.data.bio || "",
-        title: newData.data.title || "",
-        facebook_username: newData.data.facebook_username || "",
-        telegram_username: newData.data.telegram_username || "",
-        whatsapp_username: newData.data.whatsapp_username || "",
+        agent_name: data.agent_name || "",
+        agent_email: data.agent_email || "",
+        agent_phone: data.agent_phone || "",
+        country: data.country || "",
+        city: data.city || "",
+        address: data.address || "",
+        bio: data.bio || "",
+        title: data.title || "",
+        facebook_username: data.facebook_username || "",
+        telegram_username: data.telegram_username || "",
+        whatsapp_username: data.whatsapp_username || "",
+        profile_image_url: data.profile_image_url || "",
       });
-    } catch (error) {
-      addMessage("error", error.message || "Failed to update profile.");
+    } catch {
+      addMessage("error", "Failed to fetch profile.");
     } finally {
       hideLoader();
     }
   };
 
-  const handleImageClick = () => {
-    fileInputRef.current.click();
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  // Handle text inputs
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfileData((prev) => ({ ...prev, [name]: value }));
   };
+
+  // Upload profile image
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+    Object.entries(profileData).forEach(([key, value]) => {
+      if (key !== "profile_image_url") formData.append(key, value);
+    });
+
+    showLoader();
+    try {
+      await updateProfile(formData);
+      await fetchProfile();
+      addMessage("success", "Profile image updated successfully!");
+    } catch (error) {
+      addMessage("error", error.message || "Failed to update profile image.");
+    } finally {
+      hideLoader();
+    }
+  };
+
+  const handleImageClick = () => fileInputRef.current.click();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
+    Object.entries(profileData).forEach(([key, value]) => {
+      if (key !== "profile_image_url") formData.append(key, value);
+    });
+
     showLoader();
     try {
-      const formData = new FormData();
-      Object.keys(profileData).forEach((key) => {
-        if (key !== "profile_image_url") {
-          formData.append(key, profileData[key]);
-        }
-      });
       const response = await updateProfile(formData);
       addMessage(
         "success",
@@ -130,12 +108,12 @@ const MyProfile = () => {
 
   return (
     <div className="dashboard-wraper">
-      {/* Basic Information */}
       <div className="form-submit">
         <h4>My Account</h4>
         <div className="submit-section">
           <form onSubmit={handleSubmit}>
             <div className="row">
+              {/* Basic Information  */}
               <div className="form-group col-md-6 position-relative">
                 <label>Profile Image</label>
                 <div
@@ -167,6 +145,8 @@ const MyProfile = () => {
                   />
                 </div>
               </div>
+
+              {/* Name */}
               <div className="form-group col-md-6">
                 <label>Your Name</label>
                 <input
@@ -177,6 +157,8 @@ const MyProfile = () => {
                   onChange={handleChange}
                 />
               </div>
+
+              {/* Email */}
               <div className="form-group col-md-6">
                 <label>Email</label>
                 <input
@@ -188,6 +170,7 @@ const MyProfile = () => {
                 />
               </div>
 
+              {/* Phone */}
               <div className="form-group col-md-6">
                 <label>Phone</label>
                 <input
@@ -199,6 +182,7 @@ const MyProfile = () => {
                 />
               </div>
 
+              {/* Title */}
               <div className="form-group col-md-6">
                 <label>Your Title</label>
                 <input
@@ -210,6 +194,7 @@ const MyProfile = () => {
                 />
               </div>
 
+              {/* Address */}
               <div className="form-group col-md-6">
                 <label>Address</label>
                 <input
@@ -221,6 +206,7 @@ const MyProfile = () => {
                 />
               </div>
 
+              {/* City */}
               <div className="form-group col-md-6">
                 <label>City</label>
                 <input
@@ -232,6 +218,7 @@ const MyProfile = () => {
                 />
               </div>
 
+              {/* Country */}
               <div className="form-group col-md-6">
                 <label>Country</label>
                 <input
@@ -243,6 +230,7 @@ const MyProfile = () => {
                 />
               </div>
 
+              {/* Bio */}
               <div className="form-group col-md-12">
                 <label>About</label>
                 <textarea
@@ -252,51 +240,46 @@ const MyProfile = () => {
                   onChange={handleChange}
                 />
               </div>
-            </div>
-          </form>
-        </div>
-      </div>
 
-      {/* Social Accounts */}
-      <div className="form-submit">
-        <h4>Social Accounts</h4>
-        <div className="submit-section">
-          <form onSubmit={handleSubmit}>
-            <div className="row">
-              <div className="form-group col-md-6">
-                <label>Facebook</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="facebook_username"
-                  value={profileData.facebook_username}
-                  onChange={handleChange}
-                />
+              {/* social accounts  */}
+              <div className="form-submit mt-4">
+                <h4>Social Accounts</h4>
+                <div className="row">
+                  <div className="form-group col-md-6">
+                    <label>Facebook</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="facebook_username"
+                      value={profileData.facebook_username}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="form-group col-md-6">
+                    <label>Telegram</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="telegram_username"
+                      value={profileData.telegram_username}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="form-group col-md-6">
+                    <label>WhatsApp</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="whatsapp_username"
+                      value={profileData.whatsapp_username}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
               </div>
-
-              <div className="form-group col-md-6">
-                <label>Telegram</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="telegram_username"
-                  value={profileData.telegram_username}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group col-md-6">
-                <label>WhatsApp</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="whatsapp_username"
-                  value={profileData.whatsapp_username}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group col-lg-12 col-md-12">
+              <div className="form-group col-lg-12 col-md-12 mt-3">
                 <button className="btn btn-main px-5 rounded" type="submit">
                   Save Changes
                 </button>

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { resetPassword } from "../../api/admin/auth.api";
-import useLoader from "../../context/Loader/useLoader";
-import useResponse from "../../context/response/UseResponse";
-import logo from "../../assets/img/logo.svg";
+import { resetPassword } from "../../../api/admin/auth.api";
+import useLoader from "../../../context/Loader/UseLoader";
+import useResponse from "../../../context/response/UseResponse";
+import logo from "../../../assets/img/logo.svg";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");

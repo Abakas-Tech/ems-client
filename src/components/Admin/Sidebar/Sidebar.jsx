@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { getProfile } from "../../../api/admin/auth.api";
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, closeSidebar }) => {
   const location = useLocation();
   const [agentData, setAgentData] = useState({
     image: "https://placehold.co/500x500",
@@ -76,11 +76,13 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="col-lg-3 col-md-12 pe-xl-4">
+    <div
+      className={`col-lg-3 col-md-12 pe-xl-4 ${
+        isOpen ? "d-block" : "d-none d-lg-block"
+      }`}
+    >
       <div className="simple-sidebar sm-sidebar" id="filter_search">
         {/* Sidebar Header */}
-
-        {/* Sidebar Widgets */}
         <div className="sidebar-widgets">
           <div className="dashboard-navbar">
             <div className="d-user-avater">
@@ -100,6 +102,7 @@ const Sidebar = () => {
                   <li
                     key={item.path}
                     className={location.pathname === item.path ? "active" : ""}
+                    onClick={closeSidebar} // Close sidebar when a menu item is clicked
                   >
                     <Link to={item.path}>
                       <i className={`bi ${item.icon} me-2`}></i>

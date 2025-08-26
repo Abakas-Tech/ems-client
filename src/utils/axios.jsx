@@ -7,9 +7,9 @@ const python_server_url = import.meta.env.VITE_AXIOS_PYTHON_BASE_URL;
 // Node backend instance
 const axiosInstance = axios.create({
   baseURL: backend_server_url,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // headers: {
+  //   "Content-Type": "application/json",
+  // },
   withCredentials: true, // send cookies
 });
 

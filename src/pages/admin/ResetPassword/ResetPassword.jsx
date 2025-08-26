@@ -1,6 +1,6 @@
 import React from "react";
 import Layout from "../../../components/Layout/Layout";
-import ResetPassword from "../../../components/ResetPassword/ResetPassword";
+import ResetPassword from "../../../components/Admin/ResetPassword/ResetPassword";
 
 function Password() {
   return (

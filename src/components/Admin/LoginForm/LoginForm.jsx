@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginAdmin } from "../../api/admin/auth.api";
-import useLoader from "../../context/Loader/useLoader";
-import useResponse from "../../context/response/UseResponse";
-import logo from "../../assets/img/logo.svg";
+import { loginAdmin } from "../../../api/admin/auth.api";
+import useLoader from "../../../context/Loader/UseLoader";
+import useResponse from "../../../context/response/UseResponse";
+import logo from "../../../assets/img/logo.svg";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -33,7 +33,7 @@ const LoginForm = () => {
       const response = await loginAdmin({ email, password });
       localStorage.setItem("authToken", response.data.data.token);
       addMessage("success", "Login successful!");
-      navigate("/admin/dashboard");
+      navigate("/admin");
     } catch (error) {
       addMessage("error", error.message || "Login failed.");
     } finally {

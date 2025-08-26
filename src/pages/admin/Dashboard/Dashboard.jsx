@@ -3,13 +3,25 @@ import Sidebar from "../../../components/Admin/Sidebar/Sidebar";
 import { Outlet } from "react-router-dom";
 import Layout from "../../../components/Layout/Layout";
 import { getProfile } from "../../../api/admin/auth.api";
+
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileData, setProfileData] = useState({
     agent_name: "",
   });
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-  const closeSidebar = () => setSidebarOpen(false);
+
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => {
+      console.log("Toggling sidebar, new state:", !prev); // Debug state change
+      return !prev;
+    });
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+    console.log("Sidebar closed"); // Debug close action
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -19,7 +31,7 @@ function Dashboard() {
           agent_name: data.agent_name || "",
         });
       } catch (error) {
-        "error", "Failed to fetch profile.", error;
+        console.error("Failed to fetch profile:", error);
       }
     };
     fetchProfile();
@@ -46,7 +58,10 @@ function Dashboard() {
           <div className="col-12">
             <div className="filter_search_opt">
               <button
-                onClick={toggleSidebar}
+                onClick={() => {
+                  console.log("Dashboard Navigation button clicked"); // Debug button click
+                  toggleSidebar();
+                }}
                 className="btn btn-dark w-100 mb-4"
               >
                 Dashboard Navigation
