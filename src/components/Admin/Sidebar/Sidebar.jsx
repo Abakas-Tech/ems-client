@@ -42,13 +42,6 @@ const Sidebar = () => {
     <div className="col-lg-3 col-md-12 pe-xl-4">
       <div className="simple-sidebar sm-sidebar" id="filter_search">
         {/* Sidebar Header */}
-        <div className="search-sidebar_header">
-          <h4 className="ssh_heading">Close Filter</h4>
-          {/* You can add toggle functionality if needed */}
-          <button className="w3-bar-item w3-button w3-large">
-            <i className="fa-regular fa-circle-xmark fs-5 text-muted-2"></i>
-          </button>
-        </div>
 
         {/* Sidebar Widgets */}
         <div className="sidebar-widgets">

@@ -3,11 +3,7 @@ import Layout from "../../../components/Layout/Layout";
 import ChangePassword from "../../../components/ChangePassword/ChangePassword";
 
 function Password() {
-  return (
-    <Layout>
-      <ChangePassword />
-    </Layout>
-  );
+  return <ChangePassword />;
 }
 
 export default Password;

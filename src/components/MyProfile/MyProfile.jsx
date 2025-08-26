@@ -74,151 +74,149 @@ const MyProfile = () => {
   };
 
   return (
-    <div className="col-lg-9 col-md-12">
-      <div className="dashboard-wraper">
-        {/* Basic Information */}
-        <div className="form-submit">
-          <h4>My Account</h4>
-          <div className="submit-section">
-            <form onSubmit={handleSubmit}>
-              <div className="row">
-                <div className="form-group col-md-6">
-                  <label>Your Name</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="agent_name"
-                    value={profileData.agent_name}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="form-group col-md-6">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    name="agent_email"
-                    value={profileData.agent_email}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group col-md-6">
-                  <label>Phone</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="agent_phone"
-                    value={profileData.agent_phone}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group col-md-6">
-                  <label>Your Title</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="title"
-                    value={profileData.title}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group col-md-6">
-                  <label>Address</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="address"
-                    value={profileData.address}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group col-md-6">
-                  <label>City</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="city"
-                    value={profileData.city}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group col-md-6">
-                  <label>Country</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="country"
-                    value={profileData.country}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group col-md-12">
-                  <label>About</label>
-                  <textarea
-                    className="form-control"
-                    name="bio"
-                    value={profileData.bio}
-                    onChange={handleChange}
-                  />
-                </div>
+    <div className="dashboard-wraper">
+      {/* Basic Information */}
+      <div className="form-submit">
+        <h4>My Account</h4>
+        <div className="submit-section">
+          <form onSubmit={handleSubmit}>
+            <div className="row">
+              <div className="form-group col-md-6">
+                <label>Your Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="agent_name"
+                  value={profileData.agent_name}
+                  onChange={handleChange}
+                />
               </div>
-            </form>
-          </div>
+              <div className="form-group col-md-6">
+                <label>Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  name="agent_email"
+                  value={profileData.agent_email}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group col-md-6">
+                <label>Phone</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="agent_phone"
+                  value={profileData.agent_phone}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group col-md-6">
+                <label>Your Title</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="title"
+                  value={profileData.title}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group col-md-6">
+                <label>Address</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="address"
+                  value={profileData.address}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group col-md-6">
+                <label>City</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="city"
+                  value={profileData.city}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group col-md-6">
+                <label>Country</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="country"
+                  value={profileData.country}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group col-md-12">
+                <label>About</label>
+                <textarea
+                  className="form-control"
+                  name="bio"
+                  value={profileData.bio}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </form>
         </div>
+      </div>
 
-        {/* Social Accounts */}
-        <div className="form-submit">
-          <h4>Social Accounts</h4>
-          <div className="submit-section">
-            <form onSubmit={handleSubmit}>
-              <div className="row">
-                <div className="form-group col-md-6">
-                  <label>Facebook</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="facebook_username"
-                    value={profileData.facebook_username}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group col-md-6">
-                  <label>Telegram</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="telegram_username"
-                    value={profileData.telegram_username}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group col-md-6">
-                  <label>WhatsApp</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="whatsapp_username"
-                    value={profileData.whatsapp_username}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group col-lg-12 col-md-12">
-                  <button className="btn btn-main px-5 rounded" type="submit">
-                    Save Changes
-                  </button>
-                </div>
+      {/* Social Accounts */}
+      <div className="form-submit">
+        <h4>Social Accounts</h4>
+        <div className="submit-section">
+          <form onSubmit={handleSubmit}>
+            <div className="row">
+              <div className="form-group col-md-6">
+                <label>Facebook</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="facebook_username"
+                  value={profileData.facebook_username}
+                  onChange={handleChange}
+                />
               </div>
-            </form>
-          </div>
+
+              <div className="form-group col-md-6">
+                <label>Telegram</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="telegram_username"
+                  value={profileData.telegram_username}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group col-md-6">
+                <label>WhatsApp</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="whatsapp_username"
+                  value={profileData.whatsapp_username}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group col-lg-12 col-md-12">
+                <button className="btn btn-main px-5 rounded" type="submit">
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>

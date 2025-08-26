@@ -9,6 +9,7 @@ export const checkUser = async () => {
     },
   });
 };
+
 // Admin login function
 export const loginAdmin = async (credentials) => {
   try {
@@ -70,3 +71,4 @@ export const updateProfile = async (data) => {
     throw new Error(error.response?.data?.message || "Profile update error");
   }
 };
+

@@ -52,7 +52,7 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="col-lg-9 col-md-12">
+    
       <div className="dashboard-wraper">
         <div className="form-submit">
           <h4>Change Your Password</h4>
@@ -106,7 +106,7 @@ const ChangePassword = () => {
           </form>
         </div>
       </div>
-    </div>
+    
   );
 };
 

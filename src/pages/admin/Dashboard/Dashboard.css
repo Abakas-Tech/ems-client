@@ -1,0 +1,123 @@
+/* Sidebar Styling */
+.sidebar {
+  background-color: #f8f9fa;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  padding: 20px;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+/* Sidebar Header */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sidebar-header h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+/* Close Button (Visible on Mobile) */
+.close-filter {
+  display: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #333;
+}
+
+/* User Avatar Section */
+.d-user-avater {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.d-user-avater img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.d-user-avater h4 {
+  font-size: 1.2rem;
+  margin: 10px 0 5px;
+}
+
+.d-user-avater span {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Navigation Links */
+.nav-link {
+  color: #333;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  border-radius: 5px;
+  transition: background 0.2s;
+}
+
+.nav-link i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+.nav-link:hover {
+  background-color: #e9ecef;
+}
+
+.nav-item.active .nav-link {
+  background-color: #e9ecef;
+  font-weight: bold;
+}
+
+/* Main Content */
+.dashboard-content {
+  margin-left: 250px;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+/* Hamburger Toggle (Visible on Mobile) */
+.hamburger {
+  position: fixed !important;
+  top: 20px;
+  left: 20px;
+  z-index: 1100;
+  padding: 8px 12px;
+  font-size: 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .close-filter {
+    display: block;
+  }
+
+  .dashboard-content {
+    margin-left: 0;
+  }
+
+  .hamburger {
+    display: flex !important;
+    align-items: center;
+  }
+}

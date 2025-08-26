@@ -3,11 +3,7 @@ import Layout from "../../../components/Layout/Layout";
 import MyProfile from "../../../components/MyProfile/MyProfile";
 
 function Profile() {
-  return (
-    <Layout>
-      <MyProfile />
-    </Layout>
-  );
+  return <MyProfile />;
 }
 
 export default Profile;

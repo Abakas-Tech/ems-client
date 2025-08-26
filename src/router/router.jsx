@@ -1,27 +1,30 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import Layout from "../components/Layout/Layout.jsx";
+import ProtectedRoute from "../utils/ProtectedRoute.jsx";
+import ScrollToTop from "../components/ScrollToTop/ScrollToTop.jsx";
+
+// Public pages
 import LandingPage from "../pages/public/Landing/landingpage.jsx";
 import AboutDetail from "../pages/public/AboutDetail/AboutDetail.jsx";
 import PropertyList from "../pages/public/propertiesList/properties.list.jsx";
 import PropertyDetails from "../pages/public/propertiesDetail/PropertiesDetail.jsx";
-import Layout from "../components/Layout/Layout.jsx";
 import Contact from "../pages/public/Contact/Contact.jsx";
-import ProtectedRoute from "../utils/ProtectedRoute.jsx";
+
+// Admin pages
 import Login from "../pages/admin/Login/Login.jsx";
-import ScrollToTop from "../components/ScrollToTop/ScrollToTop.jsx";
 import ForgotPassword from "../pages/admin/ForgotPassword/ForgotPassword.jsx";
 import ResetPassword from "../pages/admin/ResetPassword/ResetPassword.jsx";
-import ChangePassword from "../pages/admin/ChangePassword/ChangePassword.jsx";
-import MyProfile from "../pages/admin/MyProfile/MyProfile.jsx";
-import ProtecteRoute from "../utils/ProtectedRoute.jsx";
 import Dashboard from "../pages/admin/Dashboard/Dashboard.jsx";
+import MyProfile from "../pages/admin/MyProfile/MyProfile.jsx";
+import ChangePassword from "../pages/admin/ChangePassword/ChangePassword.jsx";
 
 function AppRouter() {
   return (
     <>
       <ScrollToTop />
       <Routes>
-        {/* Landing Page */}
+        {/* Public Routes */}
         <Route
           path="/"
           element={
@@ -30,8 +33,6 @@ function AppRouter() {
             </Layout>
           }
         />
-
-        {/* Properties List */}
         <Route
           path="/properties"
           element={
@@ -40,8 +41,6 @@ function AppRouter() {
             </Layout>
           }
         />
-
-        {/* Property Details */}
         <Route
           path="/properties/:id"
           element={
@@ -50,8 +49,6 @@ function AppRouter() {
             </Layout>
           }
         />
-
-        {/* About */}
         <Route
           path="/about"
           element={
@@ -60,7 +57,6 @@ function AppRouter() {
             </Layout>
           }
         />
-        {/* Contact */}
         <Route
           path="/contact"
           element={
@@ -69,34 +65,21 @@ function AppRouter() {
             </Layout>
           }
         />
-
+        {/* Admin Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        {/* <Route
-          path="/admin/dashboard"
-          element={
-            <ProtecteRoute>
-              <ChangePassword />
-            </ProtecteRoute>
-          }
-        /> */}
         <Route
-          path="/admin/my-profile"
-          element={
-            <ProtectedRoute>
-              <MyProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/dashboard"
+          path="/admin"
           element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="my-profile" element={<MyProfile />} />
+          <Route path="settings" element={<ChangePassword />} />
+        </Route>
       </Routes>
     </>
   );
