@@ -50,7 +50,7 @@ const Sidebar = () => {
     {
       label: "Appointments",
       path: "/admin/appointments",
-      icon: "bi-person-bounding-box",
+      icon: "bi bi-calendar-range",
     },
     {
       label: "My Listings",
