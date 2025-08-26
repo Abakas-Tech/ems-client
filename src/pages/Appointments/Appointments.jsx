@@ -10,7 +10,7 @@ import {
 import useLoader from "../../context/Loader/UseLoader";
 import useResponse from "../../context/response/UseResponse";
 
-import AppointmentsTable from "../../components/Appointments/AppointmentsTable";
+import AppointmentsTable from "../../components/Appointments/AppointmentsTable/AppointmentsTable";
 import AppointmentsFilters from "../../components/Appointments/AppointmentsFilters";
 import AppointmentsModal from "../../components/Appointments/AppointmentsModal";
 import AppointmentsDeleteModal from "../../components/Appointments/AppointmentsDeleteModal";
@@ -33,8 +33,6 @@ const Appointments = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-  const firstLoad = useRef(true);
-
   // Fetch data
   const loadAppointments = async () => {
     showLoader();
@@ -46,11 +44,7 @@ const Appointments = () => {
 
       const { data } = await fetchAppointments(cleanFilters);
       setAppointments(data.appointments || []);
-      setPagination({
-        page: filters.page,
-        limit: filters.limit,
-        total: data.total,
-      });
+      setPagination(data.pagination || {});
     } catch (err) {
       addMessage("error", err.message || "Failed to load appointments");
     } finally {
@@ -80,7 +74,7 @@ const Appointments = () => {
       setShowModal(false);
       loadAppointments();
     } catch (err) {
-        console.log(err);
+      console.log(err);
       addMessage("error", err.message || "Failed to save appointment");
     } finally {
       hideLoader();
