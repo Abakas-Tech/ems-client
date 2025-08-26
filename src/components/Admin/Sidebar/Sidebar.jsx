@@ -43,6 +43,16 @@ const Sidebar = () => {
       icon: "bi-person-bounding-box",
     },
     {
+      label: "My Files",
+      path: "/admin/my-files",
+      icon: "bi bi-files",
+    },
+    {
+      label: "Appointments",
+      path: "/admin/appointments",
+      icon: "bi-person-bounding-box",
+    },
+    {
       label: "My Listings",
       path: "/admin/my-property",
       icon: "bi-house-door",

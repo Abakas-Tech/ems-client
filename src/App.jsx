@@ -8,9 +8,9 @@ function App() {
     <div>
       <AppRouter />
       {/* Global components */}
-      <Logout />
+      {/* <Logout />
       <Response />
-      <Loader />
+      <Loader /> */}
     </div>
   );
 }

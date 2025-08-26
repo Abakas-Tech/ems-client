@@ -24,6 +24,7 @@ const MyProfile = () => {
   const navigate = useNavigate();
   const [isHovering, setIsHovering] = useState(false);
   const fileInputRef = useRef(null);
+  const [profileFile, setProfileFile] = useState(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -64,7 +65,7 @@ const MyProfile = () => {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("profile_image_url", file); // Match backend field name
+    formData.append("profile_image", file); 
     Object.keys(profileData).forEach((key) => {
       if (key !== "profile_image_url") {
         formData.append(key, profileData[key]);
