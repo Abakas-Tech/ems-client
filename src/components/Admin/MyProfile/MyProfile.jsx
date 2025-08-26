@@ -23,10 +23,13 @@ const MyProfile = () => {
   const { addMessage } = useResponse();
   const fileInputRef = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedFileName, setSelectedFileName] = useState("");
 
   // Reusable fetch function
   const fetchProfile = async () => {
     showLoader();
+
     try {
       const { data } = await getProfile();
       setProfileData({
@@ -64,7 +67,7 @@ const MyProfile = () => {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
+    setSelectedFileName(file.name);
     const formData = new FormData();
     formData.append("image", file);
     Object.entries(profileData).forEach(([key, value]) => {
@@ -87,6 +90,7 @@ const MyProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData();
     Object.entries(profileData).forEach(([key, value]) => {
       if (key !== "profile_image_url") formData.append(key, value);
@@ -103,6 +107,7 @@ const MyProfile = () => {
       addMessage("error", error.message || "Update failed.");
     } finally {
       hideLoader();
+      setLoading(false);
     }
   };
 
@@ -144,6 +149,11 @@ const MyProfile = () => {
                     onChange={handleImageChange}
                   />
                 </div>
+                {selectedFileName && (
+                  <small className="text-muted mt-1 d-block">
+                    Selected file: {selectedFileName}
+                  </small>
+                )}
               </div>
 
               {/* Name */}
@@ -280,8 +290,19 @@ const MyProfile = () => {
                 </div>
               </div>
               <div className="form-group col-lg-12 col-md-12 mt-3">
-                <button className="btn btn-main px-5 rounded" type="submit">
-                  Save Changes
+                <button
+                  className="btn btn-main px-5 rounded"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span></span>
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
                 </button>
               </div>
             </div>
