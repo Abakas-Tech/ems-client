@@ -7,6 +7,8 @@ import PropertyDetails from "../pages/public/propertiesDetail/PropertiesDetail.j
 import Layout from "../components/Layout/Layout.jsx";
 import Contact from "../pages/public/Contact/Contact.jsx";
 import ProtecteRoute from "../utils/ProtectRoute.jsx";
+import Analytics from "../pages/admin/Analytics/Analytics.jsx";
+import FileManager from "../pages/admin/FileManager/FileManager.jsx";
 
 function AppRouter() {
   return (
@@ -63,9 +65,17 @@ function AppRouter() {
       <Route
         path="/dashboard"
         element={
-          <ProtecteRoute>
-            {/* <DashboardPage /> */}
-          </ProtecteRoute>
+          <Layout>
+            <Analytics />
+          </Layout>
+        }
+      />
+      <Route
+        path="/files"
+        element={
+          <Layout>
+            <FileManager />
+          </Layout>
         }
       />
     </Routes>

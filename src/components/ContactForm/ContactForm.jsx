@@ -1,15 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { sendContactMessage } from "../../api/public/contact.api"; // external API function
 
-const ContactForm = ({ profile }) => {
+const ContactForm = ({ profile, id }) => {
+
   const [contactForm, setContactForm] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
+    propertyId: "", // start empty
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  //  Set propertyId 
+  useEffect(() => {
+    if (id) {
+      setContactForm((prev) => ({ ...prev, propertyId: id }));
+    }
+  }, [id]);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -36,10 +45,16 @@ const ContactForm = ({ profile }) => {
     setLoading(true);
 
     try {
-      // Pass to external API function
+      console.log("Submitting form:", contactForm);
       await sendContactMessage(contactForm);
       alert("Message sent successfully!");
-      setContactForm({ name: "", email: "", phone: "", message: "" }); // reset
+      setContactForm({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+        propertyId: id, // keep propertyId intact after reset
+      });
     } catch (error) {
       console.error(error);
       alert("Something went wrong!");
@@ -78,6 +93,7 @@ const ContactForm = ({ profile }) => {
             onChange={handleChange}
           />
         </div>
+
         <div className="form-group">
           <label>Email *</label>
           <input

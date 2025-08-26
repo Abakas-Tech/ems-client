@@ -1,7 +1,7 @@
 .blurOverlay {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 10000;
 
 
   pointer-events: none;
@@ -10,7 +10,7 @@
 .loaderContainer {
   position: fixed;
   inset: 0;
-  z-index: 1001;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
   align-items: center;
