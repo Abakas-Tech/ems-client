@@ -1,13 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../../../components/Admin/Sidebar/Sidebar";
 import { Outlet } from "react-router-dom";
 import Layout from "../../../components/Layout/Layout";
-
+import { getProfile } from "../../../api/admin/auth.api";
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const [profileData, setProfileData] = useState({
+    agent_name: "",
+  });
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getProfile();
+        const data = response.data;
+        setProfileData({
+          agent_name: data.agent_name || "",
+        });
+      } catch (error) {
+        "error", "Failed to fetch profile.", error;
+      }
+    };
+    fetchProfile();
+  }, []);
 
   return (
     <Layout>
@@ -18,7 +34,7 @@ function Dashboard() {
             <div className="col-lg-12 col-md-12">
               <h2 className="ipt-title">Welcome back,</h2>
               <span className="ipn-subtitle">
-                Kasim — your account is ready.
+                {profileData.agent_name} — your account is ready.
               </span>
             </div>
           </div>
