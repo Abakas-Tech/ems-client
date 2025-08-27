@@ -14,21 +14,12 @@ function App() {
     <div>
       <Routes>
         <Route
-          path="/admin/properties"
+          path="/"
           element={<PropertyList />}
         />
-        <Route
-          path="/admin/properties"
-          element={<PropertyList isPublicPage={false} />}
-        />
-        <Route path="/admin/properties/:id" element={<PropertyFormPage />} />
-        <Route path="/admin/addProperties" element={<PropertyFormPage />} />
-        <Route
-          path="/admin/properties/veiw/:id"
-          element={<PropertyDetails isPublicPage={false} />}
-        />
+       
       </Routes>
-      <ChatBot />
+ 
       <Loader />
       <Response />
     </div>
