@@ -1,5 +1,5 @@
 import React from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import BottomPagination from "../../../components/properties/bottomPagination";
 import styles from "./AppointmentsTable.module.css";
 
@@ -9,13 +9,8 @@ const AppointmentsTable = ({
   onPageChange,
   onEdit,
   onDelete,
+  onView, // 🔹 NEW handler for detail view
 }) => {
-  const truncateText = (text, maxLength = 50) => {
-    if (!text) return "-";
-    return text.length > maxLength
-      ? text.substring(0, maxLength) + "..."
-      : text;
-  };
   return (
     <div>
       <div className="table-responsive">
@@ -28,14 +23,13 @@ const AppointmentsTable = ({
               <th>Start</th>
               <th>End</th>
               <th>Status</th>
-              <th>Description</th>
               <th className="text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
             {data?.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center text-muted py-5">
+                <td colSpan="5" className="text-center text-muted py-5">
                   <i className="lni lni-calendar fs-2 d-block mb-2"></i>
                   No appointments found
                 </td>
@@ -59,9 +53,13 @@ const AppointmentsTable = ({
                       {row.status}
                     </span>
                   </td>
-                  <td>{truncateText(row.description, 60)}</td>
                   <td className={`text-center ${styles.actionsCell}`}>
                     <div className={styles.actionsIcons}>
+                      <FaEye
+                        className={`${styles.actionIcon} text-info`}
+                        title="View Details"
+                        onClick={() => onView(row)}
+                      />
                       <FaEdit
                         className={`${styles.actionIcon} text-primary`}
                         title="Edit"

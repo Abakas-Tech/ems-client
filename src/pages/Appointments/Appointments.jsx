@@ -1,4 +1,3 @@
-// src/pages/Appointments/Appointments.jsx
 import React, { useEffect, useState } from "react";
 import {
   fetchAppointments,
@@ -33,8 +32,12 @@ const Appointments = () => {
     endDate: "",
   });
 
-  const [view, setView] = useState("table"); // "table" | "calendar"
-  const [selected, setSelected] = useState(null);
+  const [view, setView] = useState("calendar"); // "table" | "calendar"
+
+  // 🔹 separate states
+  const [selected, setSelected] = useState(null); // for edit/delete
+  const [detail, setDetail] = useState(null); // for detail view
+
   const [showModal, setShowModal] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
@@ -76,6 +79,7 @@ const Appointments = () => {
         addMessage("success", "Appointment created");
       }
       setShowModal(false);
+      setSelected(null);
       loadAppointments();
     } catch (err) {
       addMessage("error", err.message || "Failed to save appointment");
@@ -90,6 +94,7 @@ const Appointments = () => {
       await deleteAppointment(selected.id);
       addMessage("success", "Appointment deleted");
       setShowDelete(false);
+      setSelected(null);
       loadAppointments();
     } catch (err) {
       addMessage("error", err.message || "Failed to delete appointment");
@@ -101,27 +106,39 @@ const Appointments = () => {
   return (
     <div className="container py-5">
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold text-primary">📅 Appointments</h2>
-        <div className="d-flex gap-2">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        {/* Title */}
+        <h2 className="fw-bold text-dark m-0">📅 Appointments</h2>
+
+        {/* Actions */}
+        <div className="d-flex flex-wrap gap-2">
+          {/* View Switcher */}
+          <div className="btn-group" role="group" aria-label="View Switcher">
+            <button
+              className={`btn btn-sm ${
+                view === "table"
+                  ? "btn-outline-primary active"
+                  : "btn-outline-primary"
+              }`}
+              onClick={() => setView("table")}
+            >
+              📋 Table
+            </button>
+            <button
+              className={`btn btn-sm ${
+                view === "calendar"
+                  ? "btn-outline-primary active"
+                  : "btn-outline-primary"
+              }`}
+              onClick={() => setView("calendar")}
+            >
+              📆 Calendar
+            </button>
+          </div>
+
+          {/* Add New */}
           <button
-            className={`btn btn-sm ${
-              view === "table" ? "btn-primary" : "btn-outline-primary"
-            }`}
-            onClick={() => setView("table")}
-          >
-            📋 Table View
-          </button>
-          <button
-            className={`btn btn-sm ${
-              view === "calendar" ? "btn-primary" : "btn-outline-primary"
-            }`}
-            onClick={() => setView("calendar")}
-          >
-            📆 Calendar View
-          </button>
-          <button
-            className="btn btn-success"
+            className="btn btn-primary btn-sm"
             onClick={() => {
               setSelected(null);
               setShowModal(true);
@@ -154,28 +171,28 @@ const Appointments = () => {
           data={appointments}
           pagination={pagination}
           onPageChange={(page) => setFilters((f) => ({ ...f, page }))}
+          onView={(row) => setDetail(row)} // 👁 detail
           onEdit={(row) => {
-            setSelected(row);
+            setSelected(row); // ✏️ edit
             setShowModal(true);
           }}
           onDelete={(row) => {
-            setSelected(row);
+            setSelected(row); // 🗑 delete
             setShowDelete(true);
           }}
-          onSelect={(row) => setSelected(row)}
         />
       ) : (
         <AppointmentsCalendar
           events={appointments}
-          onSelectEvent={(event) => setSelected(event)}
+          onSelectEvent={(event) => setDetail(event)} // 👁 calendar also opens detail
         />
       )}
 
       {/* Appointment Detail */}
-      {selected && (
+      {detail && (
         <AppointmentDetail
-          appointment={selected}
-          onClose={() => setSelected(null)}
+          appointment={detail}
+          onClose={() => setDetail(null)}
         />
       )}
 
