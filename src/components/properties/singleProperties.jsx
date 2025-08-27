@@ -39,24 +39,23 @@ const SingleProperty = ({ property, images }) => {
       <div className="d-flex flex-column flex-lg-row">
         {/* Image Carousel */}
         <div className="listing-img-wrapper w-100 w-lg-50 mb-2 mb-lg-0 me-lg-3 position-relative">
-          {/* property_type Badge */}
-          {property_type && (
-            <span
-              className="badge bg-success position-absolute top-0 start-0 m-2 p-2"
-              style={{ zIndex: 10 }}
+          {/* Badges container */}
+          {(property_type || category) && (
+            <div
+              className="d-flex position-absolute top-0 start-0 m-2"
+              style={{ gap: "0.5rem", zIndex: 10 }}
             >
-              {capitalizeFirstLetter(property_type)}
-            </span>
-          )}
-
-          {/* category Badge */}
-          {category && (
-            <span
-              className="badge bg-primary position-absolute top-0 start-20 translate-middle-x m-2 p-2"
-              style={{ zIndex: 10 }}
-            >
-              For {capitalizeFirstLetter(category)}
-            </span>
+              {property_type && (
+                <span className="badge bg-success p-2">
+                  {capitalizeFirstLetter(property_type)}
+                </span>
+              )}
+              {category && (
+                <span className="badge bg-primary p-2">
+                  {capitalizeFirstLetter(category)}
+                </span>
+              )}
+            </div>
           )}
 
           <Carousel
@@ -99,7 +98,7 @@ const SingleProperty = ({ property, images }) => {
                   {is_urgent ? "Urgent" : "Normal"}
                 </span>
 
-                {is_featured === true && (
+                {Number(is_featured) === 1 && (
                   <span className="label featured d-inline-flex mb-1 ms-1">
                     Featured
                   </span>
@@ -201,13 +200,17 @@ const SingleProperty = ({ property, images }) => {
           width: 6px;
           height: 6px;
           border-radius: 50%;
-          background-color: #fff; 
+          background-color: #fff;
         }
         .carousel-indicators .active {
           width: 6px;
           height: 6px;
           border-radius: 50%;
           background-color: #439062ff;
+        }
+        .label.featured {
+          z-index: 1050; /* higher than carousel images */
+          position: relative;
         }
       `}</style>
     </div>
