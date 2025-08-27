@@ -2,6 +2,7 @@ import { axiosInstance } from "../../utils/axios";
 
 // Get all properties (with optional query params)
 export const getAllProperties = async (params = {}) => {
+  console.log(params)
   try {
     const response = await axiosInstance.get("/properties", {
       params,

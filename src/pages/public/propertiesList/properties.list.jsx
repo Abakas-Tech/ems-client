@@ -25,40 +25,38 @@ const PropertyList = ({ isPublicPage = true }) => {
   const [showSidebar, setShowSidebar] = useState(false);
 
   // Fetch properties
-  const fetchProperties = async (params = {}) => {
-    setLoading(true);
-    try {
-      const response = await getAllProperties({
-        page: pagination.page,
-        limit: pagination.limit,
-        ...filters,
-        ...params,
-      });
-      if (response.success === true) {
-        if (response.success) {
-          const { properties, pagination: pg } = response.data;
+ const fetchProperties = async (params = {}) => {
+   setLoading(true);
+   try {
+     const response = await getAllProperties({
+       page: pagination.page,
+       limit: pagination.limit,
+       ...filters, // this now includes title if user typed
+       ...params,
+     });
 
-          setProperties(properties);
-          setPagination(pg);
+     if (response.success) {
+       const { properties, pagination: pg } = response.data;
 
-          // Fetch images for each property
-          const imageResults = {};
-          for (const property of properties) {
-            const imgRes = await getPropertyImages(property.id);
-            if (imgRes.success) {
-              imageResults[property.id] = imgRes.data.data;
-            }
-          }
-          setImages(imageResults);
-        }
-      }
-    } catch (err) {
-      console.error("Error fetching properties:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+       setProperties(properties);
+       setPagination(pg);
 
+       // Fetch images for each property
+       const imageResults = {};
+       for (const property of properties) {
+         const imgRes = await getPropertyImages(property.id);
+         if (imgRes.success) {
+           imageResults[property.id] = imgRes.data.data;
+         }
+       }
+       setImages(imageResults);
+     }
+   } catch (err) {
+     console.error("Error fetching properties:", err);
+   } finally {
+     setLoading(false);
+   }
+ };
   const handleDeleteProperty = async (id) => {
     try {
       const response = await deleteProperty(id);
@@ -111,7 +109,12 @@ const PropertyList = ({ isPublicPage = true }) => {
               onPageChange={(page) =>
                 setPagination((prev) => ({ ...prev, page }))
               }
-              onSortChange={(sort) => setFilters((prev) => ({ ...prev, sort }))}
+              onSortChange={(sort) =>
+                setFilters((prev) => ({ ...prev, sort, page: 1 }))
+              }
+              onTitleSearch={(title) =>
+                setFilters((prev) => ({ ...prev, title, page: 1 }))
+              }
               total={pagination.total}
             />
           </Col>
