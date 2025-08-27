@@ -1,20 +1,24 @@
 import React from "react";
-import { Carousel, Button } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  FaShieldAlt,
-  FaBed,
-  FaBath,
-  FaClone,
-  FaMapMarkerAlt,
-} from "react-icons/fa";
+import { Carousel } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const SingleProperty = ({ property, images }) => {
-  const navigate = useNavigate();
-
-  const handleNavigate = () => {
-    navigate(`/properties/${property.id}`);
-  };
+  const {
+    id,
+    title,
+    location,
+    is_featured,
+    status,
+    is_urgent,
+    area_size,
+    bedrooms,
+    tags,
+    bathrooms,
+    halls,
+    kitchens,
+    property_type,
+    category,
+  } = property;
 
   const propertyImages =
     images && images.length > 0
@@ -26,153 +30,184 @@ const SingleProperty = ({ property, images }) => {
           },
         ];
 
+  // Helper to capitalize first letter
+  const capitalizeFirstLetter = (str) =>
+    str.charAt(0).toUpperCase() + str.slice(1);
+
   return (
-    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-      <div className="property-listing list_view style_new">
-        <div className="listing-img-wrapper position-relative flex-shrink-0">
-          {/* Badges */}
-          <div className="position-absolute top-0 start-0 ms-3 mt-3 z-1">
-            {property.category && (
-              <div className="label verified-listing d-inline-flex align-items-center justify-content-center bg-info text-light me-1 px-2 py-1">
-                For {property.category}
-              </div>
-            )}
-          </div>
+    <div className="property-listing property-1 bg-white p-2 rounded">
+      <div className="d-flex flex-column flex-lg-row">
+        {/* Image Carousel */}
+        <div className="listing-img-wrapper w-100 w-lg-50 mb-2 mb-lg-0 me-lg-3 position-relative">
+          {/* property_type Badge */}
+          {property_type && (
+            <span
+              className="badge bg-success position-absolute top-0 start-0 m-2 p-2"
+              style={{ zIndex: 10 }}
+            >
+              {capitalizeFirstLetter(property_type)}
+            </span>
+          )}
+
+          {/* category Badge */}
+          {category && (
+            <span
+              className="badge bg-primary position-absolute top-0 start-20 translate-middle-x m-2 p-2"
+              style={{ zIndex: 10 }}
+            >
+              For {capitalizeFirstLetter(category)}
+            </span>
+          )}
 
           <Carousel
             indicators={propertyImages.length > 1}
             controls={false}
             interval={3000}
-            className="list-img-slide"
           >
             {propertyImages.map((img, idx) => (
               <Carousel.Item key={idx}>
-                <div className="clior">
-                  <div>
-                    <a href="#" onClick={handleNavigate}>
-                      <img
-                        src={img.image_url}
-                        alt={img.alt_text}
-                        className="img-fluid mx-auto"
-                        style={{
-                          width: "100%",
-                          height: "250px",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </a>
-                  </div>
-                </div>
+                <Link to={`/properties/${id}`}>
+                  <img
+                    src={img.image_url}
+                    alt={img.alt_text || title}
+                    className="img-fluid mx-auto rounded"
+                    style={{
+                      maxHeight: "210px",
+                      objectFit: "cover",
+                      width: "100%",
+                    }}
+                  />
+                </Link>
               </Carousel.Item>
             ))}
           </Carousel>
         </div>
 
-        <div className="list_view_flex">
-          <div className="listing-detail-wrapper mt-1">
-            <div className="listing-short-detail-wrap">
-              <div className="_card_list_flex mb-2">
-                <div className="_card_flex_01 d-flex align-items-center">
-                  {Boolean(property.is_urgent) && (
-                    <span className="label for-sale me-2 text-light px-2 py-1">
-                      urgent
-                    </span>
-                  )}
-                  {property.property_type && (
-                    <span className="label property-type text-light px-2 py-1">
-                      {property.property_type}
-                    </span>
-                  )}
-                </div>
+        {/* Content */}
+        <div className="listing-content w-100 w-lg-50">
+          {/* Header */}
+          <div className="listing-detail-wrapper-box">
+            <div className="listing-detail-wrapper d-flex align-items-center justify-content-between">
+              <div className="listing-short-detail">
+                <span
+                  className={`label d-inline-flex mb-1 ${
+                    is_urgent
+                      ? "bg-danger text-white"
+                      : "label for-sale d-inline-flex mb-1"
+                  }`}
+                >
+                  {is_urgent ? "Urgent" : "Normal"}
+                </span>
+
+                {is_featured === true && (
+                  <span className="label featured d-inline-flex mb-1 ms-1">
+                    Featured
+                  </span>
+                )}
+
+                <h4 className="listing-name mb-0">
+                  <Link to={`/properties/${id}`}>{title}</Link>
+                </h4>
+
+                {tags && tags.length > 0 && (
+                  <div className="fr-can-rating text-muted-2 fs-sm">
+                    {tags.join(", ")}
+                  </div>
+                )}
               </div>
-              <div className="_card_list_flex">
-                <div className="_card_flex_01">
-                  <h4 className="listing-name mb-2">
-                    <Link
-                      href="#"
-                      className="prt-link-detail"
-                      onClick={handleNavigate}
-                    >
-                      {property.title}
-                    </Link>
-                  </h4>
-                </div>
+
+              <div className="list-price">
+                <h6
+                  className={`listing-card-info-price ${
+                    status === "available" ? "text-success" : "text-danger"
+                  }`}
+                >
+                  {status}
+                </h6>
               </div>
             </div>
           </div>
 
-          <div className="price-features-wrapper">
-            <div className="list-fx-features d-flex align-items-center justify-content-between gap-4">
-              {property.bhk && (
-                <div className="listing-card d-flex align-items-center">
-                  <div className="square--30 text-muted-2 fs-sm circle gray-simple me-2">
-                    <FaShieldAlt className="fs-sm" />
-                  </div>
-                  <span className="text-muted-2">{property.bhk}</span>
+          {/* Features */}
+          <div className="price-features-wrapper mt-2">
+            <div className="list-fx-features d-flex align-items-center justify-content-between mt-3 mb-1">
+              {/* BHK with tooltip */}
+              <div className="listing-card d-flex align-items-center position-relative bhk-card">
+                <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
+                  <i className="fa-solid fa-building-shield fs-xs"></i>
                 </div>
-              )}
-              {property.bedrooms && (
-                <div className="listing-card d-flex align-items-center">
-                  <div className="square--30 text-muted-2 fs-sm circle gray-simple me-2">
-                    <FaBed className="fs-sm" />
+                <span className="text-muted-2 fs-sm">{bathrooms}BHK</span>
+
+                <div className="tooltip-details position-absolute bg-white border rounded shadow p-2">
+                  <div className="d-flex align-items-center mb-1">
+                    <i className="fa-solid fa-bath me-1"></i>
+                    <span>{bathrooms} Bathrooms</span>
                   </div>
-                  <span className="text-muted-2">{property.bedrooms} Beds</span>
-                </div>
-              )}
-              {property.bathrooms && (
-                <div className="listing-card d-flex align-items-center">
-                  <div className="square--30 text-muted-2 fs-sm circle gray-simple me-2">
-                    <FaBath className="fs-sm" />
+                  <div className="d-flex align-items-center mb-1">
+                    <i className="fa-solid fa-utensils me-1"></i>
+                    <span>{kitchens} Kitchens</span>
                   </div>
-                  <span className="text-muted-2">
-                    {property.bathrooms} Bath
-                  </span>
-                </div>
-              )}
-              {property.area_size && (
-                <div className="listing-card d-flex align-items-center">
-                  <div className="square--30 text-muted-2 fs-sm circle gray-simple me-2">
-                    <FaClone className="fs-sm" />
+                  <div className="d-flex align-items-center">
+                    <i className="fa-solid fa-couch me-1"></i>
+                    <span>{halls} Halls</span>
                   </div>
-                  <span className="text-muted-2">
-                    {property.area_size} SQFT
-                  </span>
                 </div>
-              )}
+              </div>
+
+              {/* Bedrooms */}
+              <div className="listing-card d-flex align-items-center">
+                <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
+                  <i className="fa-solid fa-bed fs-xs"></i>
+                </div>
+                <span className="text-muted-2 fs-sm">{bedrooms} Beds</span>
+              </div>
+
+              {/* Area size */}
+              <div className="listing-card d-flex align-items-center">
+                <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
+                  <i className="fa-solid fa-clone fs-xs"></i>
+                </div>
+                <span className="text-muted-2 fs-sm">{area_size} SQFT</span>
+              </div>
             </div>
           </div>
 
-          <div className="listing-detail-footer d-flex align-items-center justify-content-between">
-            <div className="footer-first">
-              {property.location && (
-                <div className="foot-rates">
-                  <FaMapMarkerAlt className="text-danger" size={18} />
-                  <span className="text-muted-2">{property.location}</span>
-                </div>
-              )}
-            </div>
-            <div className="footer-flex">
-              <Button
-                className="btn btn-md btn-main fw-medium"
-                onClick={handleNavigate}
-              >
-                View Detail
-              </Button>
+          {/* Footer */}
+          <div className="listing-footer-wrapper mt-2">
+            <hr />
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="listing-locate">
+                <span className="listing-location text-muted-2">
+                  <i className="fa-solid fa-location-pin me-1"></i>
+                  {location}
+                </span>
+              </div>
+              <div className="listing-detail-btn">
+                <Link
+                  to={`/properties/${id}`}
+                  className="btn btn-sm px-4 fw-medium btn-main"
+                >
+                  View Detail
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Custom CSS */}
       <style jsx>{`
         .carousel-indicators [data-bs-target] {
-          background-color: #6c757d; /* Default dot color (Bootstrap secondary) */
-          width: 8px;
-          height: 8px;
+          width: 6px;
+          height: 6px;
           border-radius: 50%;
-          margin: 0 4px;
+          background-color: #fff; 
         }
         .carousel-indicators .active {
-          background-color: #0d6efd; /* Highlight color (Bootstrap primary) */
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: #439062ff;
         }
       `}</style>
     </div>
