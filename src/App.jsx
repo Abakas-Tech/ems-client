@@ -15,6 +15,10 @@ function App() {
       <Routes>
         <Route
           path="/admin/properties"
+          element={<PropertyList />}
+        />
+        <Route
+          path="/admin/properties"
           element={<PropertyList isPublicPage={false} />}
         />
         <Route path="/admin/properties/:id" element={<PropertyFormPage />} />
