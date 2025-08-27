@@ -16,7 +16,6 @@ const AppointmentsTable = ({
       ? text.substring(0, maxLength) + "..."
       : text;
   };
-console.log(pagination)
   return (
     <div>
       <div className="table-responsive">

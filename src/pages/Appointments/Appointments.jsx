@@ -1,5 +1,4 @@
-// src/pages/Appointments/Appointments.jsx
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   fetchAppointments,
   createAppointment,
@@ -11,20 +10,21 @@ import useLoader from "../../context/Loader/UseLoader";
 import useResponse from "../../context/response/UseResponse";
 
 import AppointmentsTable from "../../components/Appointments/AppointmentsTable/AppointmentsTable";
-import AppointmentsFilters from "../../components/Appointments/AppointmentsFilters";
+import AppointmentsFilters from "../../components/Appointments/AppointmentsFilters/AppointmentsFilters";
 import AppointmentsModal from "../../components/Appointments/AppointmentsModal";
 import AppointmentsDeleteModal from "../../components/Appointments/AppointmentsDeleteModal";
 
 const Appointments = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
-
+  
   const [appointments, setAppointments] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 5, total: 0 });
   const [filters, setFilters] = useState({
     page: 1,
     limit: 5,
     status: "",
+    title: "",
     startDate: "",
     endDate: "",
   });
@@ -37,7 +37,6 @@ const Appointments = () => {
   const loadAppointments = async () => {
     showLoader();
     try {
-      // remove empty fields before sending
       const cleanFilters = Object.fromEntries(
         Object.entries(filters).filter(([_, v]) => v !== "")
       );
@@ -61,6 +60,17 @@ const Appointments = () => {
     setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
   };
 
+  const handleClearFilters = () => {
+    setFilters({
+      page: 1,
+      limit: 5,
+      status: "",
+      title: "",
+      startDate: "",
+      endDate: "",
+    });
+  };
+
   const handleSave = async (formData) => {
     showLoader();
     try {
@@ -74,7 +84,6 @@ const Appointments = () => {
       setShowModal(false);
       loadAppointments();
     } catch (err) {
-      console.log(err);
       addMessage("error", err.message || "Failed to save appointment");
     } finally {
       hideLoader();
@@ -111,7 +120,11 @@ const Appointments = () => {
       </div>
 
       {/* Filters */}
-      <AppointmentsFilters filters={filters} onChange={handleFilterChange} />
+      <AppointmentsFilters
+        filters={filters}
+        onChange={handleFilterChange}
+        onClear={handleClearFilters}
+      />
 
       {/* Table */}
       <AppointmentsTable
