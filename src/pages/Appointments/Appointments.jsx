@@ -1,3 +1,4 @@
+// src/pages/Appointments/Appointments.jsx
 import React, { useEffect, useState } from "react";
 import {
   fetchAppointments,
@@ -10,6 +11,9 @@ import useLoader from "../../context/Loader/UseLoader";
 import useResponse from "../../context/response/UseResponse";
 
 import AppointmentsTable from "../../components/Appointments/AppointmentsTable/AppointmentsTable";
+import AppointmentsCalendar from "../../components/Appointments/AppointmentsCalendar/AppointmentsCalendar";
+import AppointmentDetail from "../../components/Appointments/AppointmentDetail/AppointmentDetail";
+
 import AppointmentsFilters from "../../components/Appointments/AppointmentsFilters/AppointmentsFilters";
 import AppointmentsModal from "../../components/Appointments/AppointmentsModal";
 import AppointmentsDeleteModal from "../../components/Appointments/AppointmentsDeleteModal";
@@ -17,7 +21,7 @@ import AppointmentsDeleteModal from "../../components/Appointments/AppointmentsD
 const Appointments = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
-  
+
   const [appointments, setAppointments] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 5, total: 0 });
   const [filters, setFilters] = useState({
@@ -29,6 +33,7 @@ const Appointments = () => {
     endDate: "",
   });
 
+  const [view, setView] = useState("table"); // "table" | "calendar"
   const [selected, setSelected] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -58,17 +63,6 @@ const Appointments = () => {
   // Handlers
   const handleFilterChange = (name, value) => {
     setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
-  };
-
-  const handleClearFilters = () => {
-    setFilters({
-      page: 1,
-      limit: 5,
-      status: "",
-      title: "",
-      startDate: "",
-      endDate: "",
-    });
   };
 
   const handleSave = async (formData) => {
@@ -106,40 +100,84 @@ const Appointments = () => {
 
   return (
     <div className="container py-5">
+      {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="fw-bold text-primary">📅 Appointments</h2>
-        <button
-          className="btn btn-primary"
-          onClick={() => {
-            setSelected(null);
-            setShowModal(true);
-          }}
-        >
-          + New Appointment
-        </button>
+        <div className="d-flex gap-2">
+          <button
+            className={`btn btn-sm ${
+              view === "table" ? "btn-primary" : "btn-outline-primary"
+            }`}
+            onClick={() => setView("table")}
+          >
+            📋 Table View
+          </button>
+          <button
+            className={`btn btn-sm ${
+              view === "calendar" ? "btn-primary" : "btn-outline-primary"
+            }`}
+            onClick={() => setView("calendar")}
+          >
+            📆 Calendar View
+          </button>
+          <button
+            className="btn btn-success"
+            onClick={() => {
+              setSelected(null);
+              setShowModal(true);
+            }}
+          >
+            + New Appointment
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
       <AppointmentsFilters
         filters={filters}
         onChange={handleFilterChange}
-        onClear={handleClearFilters}
+        onClear={() =>
+          setFilters({
+            page: 1,
+            limit: 5,
+            status: "",
+            title: "",
+            startDate: "",
+            endDate: "",
+          })
+        }
       />
 
-      {/* Table */}
-      <AppointmentsTable
-        data={appointments}
-        pagination={pagination}
-        onPageChange={(page) => setFilters((f) => ({ ...f, page }))}
-        onEdit={(row) => {
-          setSelected(row);
-          setShowModal(true);
-        }}
-        onDelete={(row) => {
-          setSelected(row);
-          setShowDelete(true);
-        }}
-      />
+      {/* Views */}
+      {view === "table" ? (
+        <AppointmentsTable
+          data={appointments}
+          pagination={pagination}
+          onPageChange={(page) => setFilters((f) => ({ ...f, page }))}
+          onEdit={(row) => {
+            setSelected(row);
+            setShowModal(true);
+          }}
+          onDelete={(row) => {
+            setSelected(row);
+            setShowDelete(true);
+          }}
+          onSelect={(row) => setSelected(row)}
+        />
+      ) : (
+        <AppointmentsCalendar
+          events={appointments}
+          onSelectEvent={(event) => setSelected(event)}
+        />
+      )}
+
+      {/* Appointment Detail */}
+      {selected && (
+        <AppointmentDetail
+          appointment={selected}
+          onClose={() => setSelected(null)}
+        />
+      )}
 
       {/* Modals */}
       {showModal && (
