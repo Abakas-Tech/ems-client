@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { getProfile } from "../../../api/admin/auth.api";
+import useLogout from "../../../context/Logout/UseLogout";
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
+  const { logout } = useLogout();
   const location = useLocation();
   const [agentData, setAgentData] = useState({
     image: "https://placehold.co/500x500",
@@ -74,7 +76,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
               className="img-fluid avater"
               alt={`${agentData.name}'s Avatar`}
             />
-            <h4>{agentData.name}</h4>
+            <h3>{agentData.name}</h3>
             <span>{agentData.location}</span>
           </div>
 
@@ -84,12 +86,23 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                 <li
                   key={item.path}
                   className={location.pathname === item.path ? "active" : ""}
-                  onClick={closeSidebar} // close after navigation on mobile/tablet
+                  onClick={closeSidebar}
                 >
-                  <Link to={item.path}>
-                    <i className={`bi ${item.icon} me-2`}></i>
-                    {item.label}
-                  </Link>
+                  {item.label === "Log Out" ? (
+                    <Link
+                      onClick={() => {
+                        logout();
+                      }}
+                    >
+                      <i className={`bi ${item.icon} me-2`}></i>
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <Link to={item.path}>
+                      <i className={`bi ${item.icon} me-2`}></i>
+                      {item.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -127,15 +140,13 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           <SidebarContent />
         </div>
       </div>
-
-      {/* Backdrop for Offcanvas (since we're not using Bootstrap JS) */}
+      {/* Backdrop for Offcanvas */}
       {isOpen && (
         <div
           className="offcanvas-backdrop fade show d-lg-none"
           onClick={closeSidebar}
         />
       )}
-
       {/* Desktop: static sidebar */}
       <div className="col-lg-3 pe-xl-4 d-none d-lg-block">
         <SidebarContent />

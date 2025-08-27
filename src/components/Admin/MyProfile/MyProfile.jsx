@@ -123,7 +123,7 @@ const MyProfile = () => {
                 <label>Profile Image</label>
                 <div
                   className="form-control position-relative"
-                  style={{ height: "55px", cursor: "pointer" }}
+                  style={{ height: "56px", cursor: "pointer" }}
                   onMouseEnter={() => setIsHovering(true)}
                   onMouseLeave={() => setIsHovering(false)}
                   onClick={handleImageClick}

@@ -12,14 +12,14 @@ function Dashboard() {
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => {
-      console.log("Toggling sidebar, new state:", !prev); // Debug state change
+      // console.log("Toggling sidebar, new state:", !prev); 
       return !prev;
     });
   };
 
   const closeSidebar = () => {
     setSidebarOpen(false);
-    console.log("Sidebar closed"); // Debug close action
+    // console.log("Sidebar closed"); 
   };
 
   useEffect(() => {
