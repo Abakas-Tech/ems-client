@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { LogoutContext } from "./LogoutContext.jsx";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../auth/UseAuth.jsx";
-import Logout from './../../components/global/Logout/Logout';
+import Logout from "./../../components/global/Logout/Logout";
 
 const LogoutProvider = ({ children }) => {
   const navigate = useNavigate();
