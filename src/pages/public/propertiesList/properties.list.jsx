@@ -34,7 +34,6 @@ const PropertyList = ({ isPublicPage = true }) => {
         ...filters,
         ...params,
       });
-
       if (response.success === true) {
         if (response.success) {
           const { properties, pagination: pg } = response.data;

@@ -6,7 +6,6 @@ export const getAllProperties = async (params = {}) => {
     const response = await axiosInstance.get("/properties", {
       params,
     });
-    console.log(response);
     return response.data;
   } catch (error) {
     return {
