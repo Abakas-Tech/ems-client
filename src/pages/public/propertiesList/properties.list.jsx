@@ -11,6 +11,7 @@ import {
 import { getPropertyImages } from "../../../api/public/PropertiesImage.api";
 import BottomPagination from "../../../components/properties/bottomPagination";
 import SinglePropertyAdmin from "./../../../components/admin/Properties/SingleProperyAdmin";
+import useLoader from "../../../context/Loader/UseLoader";
 
 const PropertyList = ({ isPublicPage = true }) => {
   const [properties, setProperties] = useState([]);
@@ -19,58 +20,59 @@ const PropertyList = ({ isPublicPage = true }) => {
     limit: 10,
     total: 0,
   });
-  const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({});
   const [images, setImages] = useState({}); // { propertyId: [images] }
   const [showSidebar, setShowSidebar] = useState(false);
+  const { showLoader, hideLoader } = useLoader();
 
-  // Fetch properties
- const fetchProperties = async (params = {}) => {
-   setLoading(true);
-   try {
-     const response = await getAllProperties({
-       page: pagination.page,
-       limit: pagination.limit,
-       ...filters, // this now includes title if user typed
-       ...params,
-     });
-
-     if (response.success) {
-       const { properties, pagination: pg } = response.data;
-
-       setProperties(properties);
-       setPagination(pg);
-
-       // Fetch images for each property
-       const imageResults = {};
-       for (const property of properties) {
-         const imgRes = await getPropertyImages(property.id);
-         if (imgRes.success) {
-           imageResults[property.id] = imgRes.data.data;
-         }
-       }
-       setImages(imageResults);
-     }
-   } catch (err) {
-     console.error("Error fetching properties:", err);
-   } finally {
-     setLoading(false);
-   }
- };
-  const handleDeleteProperty = async (id) => {
+  const fetchProperties = async (params = {}) => {
+    showLoader(); // show global loader
     try {
-      const response = await deleteProperty(id);
+      const response = await getAllProperties({
+        page: pagination.page,
+        limit: pagination.limit,
+        ...filters,
+        ...params,
+      });
 
       if (response.success) {
-        // remove deleted property from state
+        const { properties, pagination: pg } = response.data;
+        setProperties(properties);
+        setPagination(pg);
+
+        // Fetch images for each property
+        const imageResults = {};
+        for (const property of properties) {
+          const imgRes = await getPropertyImages(property.id);
+          if (imgRes.success) {
+            imageResults[property.id] = imgRes.data.data;
+          }
+        }
+        setImages(imageResults);
+      }
+    } catch (err) {
+      console.error("Error fetching properties:", err);
+    } finally {
+      hideLoader(); // hide global loader
+    }
+  };
+
+  const handleDeleteProperty = async (id) => {
+    showLoader();
+    try {
+      const response = await deleteProperty(id);
+      if (response.success) {
         setProperties((prev) => prev.filter((property) => property.id !== id));
       } else {
         console.error("Delete failed:", response.message);
       }
     } catch (error) {
       console.error("Error deleting property:", error);
+    } finally {
+      hideLoader();
     }
   };
+
   useEffect(() => {
     setProperties(null);
     fetchProperties();
@@ -83,7 +85,6 @@ const PropertyList = ({ isPublicPage = true }) => {
         setShowSidebar(false);
       }
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -122,15 +123,11 @@ const PropertyList = ({ isPublicPage = true }) => {
 
         {/* Sidebar + Property List */}
         <Row>
-          {/* Sidebar for large screens */}
           {isPublicPage && (
             <Col
               lg={4}
               className="d-none d-lg-block"
-              style={{
-                overflowY: "auto",
-                paddingRight: "15px",
-              }}
+              style={{ overflowY: "auto", paddingRight: "15px" }}
             >
               <FilterSidebar
                 className="w-100"
@@ -141,7 +138,6 @@ const PropertyList = ({ isPublicPage = true }) => {
             </Col>
           )}
 
-          {/* Sidebar for smaller screens with smooth open/close */}
           {isPublicPage && (
             <Col lg={4} md={12} className="d-lg-none position-relative">
               <FilterSidebar
@@ -153,10 +149,8 @@ const PropertyList = ({ isPublicPage = true }) => {
               />
             </Col>
           )}
-          {/* Main content */}
 
           <Col className="mb-4">
-            {/* Toggle button for sidebar on smaller screens */}
             {isPublicPage && (
               <Row className="d-lg-none mb-3">
                 <Col xs={12}>
@@ -170,26 +164,20 @@ const PropertyList = ({ isPublicPage = true }) => {
                 </Col>
               </Row>
             )}
-            {/* Property List */}
+
             <Row>
-              {loading ? (
-                <div className="col-12 text-center my-5">
-                  <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              ) : properties?.length > 0 ? (
-                properties?.map((property) => (
-                  <>
+              {properties?.length > 0 ? (
+                properties.map((property) => (
+                  <React.Fragment key={property.id}>
                     {isPublicPage ? (
-                      <div className="col-12 mb-4" key={property.id}>
+                      <div className="col-12 mb-4">
                         <SingleProperty
                           property={property}
                           images={images[property.id] || []}
                         />
                       </div>
                     ) : (
-                      <div className="bg-white col-12 " key={property.id}>
+                      <div className="bg-white col-12">
                         <SinglePropertyAdmin
                           property={property}
                           images={images[property.id] || []}
@@ -197,7 +185,7 @@ const PropertyList = ({ isPublicPage = true }) => {
                         />
                       </div>
                     )}
-                  </>
+                  </React.Fragment>
                 ))
               ) : (
                 <div className="d-flex justify-content-center align-items-center vh-100">
@@ -209,6 +197,7 @@ const PropertyList = ({ isPublicPage = true }) => {
             </Row>
           </Col>
         </Row>
+
         <Row>
           <div className="col-12 mb-4">
             <BottomPagination
