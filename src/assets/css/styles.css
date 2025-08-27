@@ -4880,7 +4880,11 @@ label {
     opacity: 1;
   }
 }
-
+.offcanvas .simple-sidebar.sm-sidebar {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
 /*---------------- Sidebar Search Style 2 --------------*/
 .search-styles-2 {
   border-radius: 0.4rem;

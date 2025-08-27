@@ -58,11 +58,11 @@ function Dashboard() {
           <div className="col-12">
             <div className="filter_search_opt">
               <button
-                onClick={() => {
-                  console.log("Dashboard Navigation button clicked"); // Debug button click
-                  toggleSidebar();
-                }}
-                className="btn btn-dark w-100 mb-4"
+                onClick={toggleSidebar}
+                className="btn btn-dark w-100 mb-4 d-lg-none"
+                type="button"
+                aria-expanded={sidebarOpen}
+                aria-controls="sidebarOffcanvas"
               >
                 Dashboard Navigation
                 <i className="fa-solid fa-bars ms-2"></i>
