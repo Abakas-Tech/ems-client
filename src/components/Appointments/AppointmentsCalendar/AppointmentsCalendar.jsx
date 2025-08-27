@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
-import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import React, { useMemo, useState } from "react";
+import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import styles from "./AppointmentsCalendar.module.css";
 
 const locales = { "en-US": enUS };
 
@@ -26,6 +27,9 @@ const statusColor = (status) => {
 };
 
 const AppointmentsCalendar = ({ events = [], onSelectEvent }) => {
+  const [view, setView] = useState(Views.MONTH); // Default to Month view
+  const [date, setDate] = useState(new Date()); // Current calendar date
+
   const mappedEvents = useMemo(
     () =>
       events.map((a) => ({
@@ -40,13 +44,17 @@ const AppointmentsCalendar = ({ events = [], onSelectEvent }) => {
   );
 
   return (
-    <div className="card shadow-sm p-3" style={{ height: 600 }}>
+    <div className={`${styles.calendarContainer} card shadow-sm p-3`}>
       <Calendar
         localizer={localizer}
         events={mappedEvents}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 540 }}
+        view={view}
+        onView={setView}
+        date={date}
+        onNavigate={setDate}
+        className={styles.calendar}
         popup
         onSelectEvent={(evt) => onSelectEvent?.(evt.resource)}
         eventPropGetter={(event) => {
@@ -56,6 +64,7 @@ const AppointmentsCalendar = ({ events = [], onSelectEvent }) => {
               backgroundColor: bg,
               borderColor: bg,
               color: "#fff",
+              cursor: "pointer", // Pointer cursor for clickable events
             },
           };
         }}

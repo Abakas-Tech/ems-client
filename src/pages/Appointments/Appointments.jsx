@@ -193,6 +193,14 @@ const Appointments = () => {
         <AppointmentDetail
           appointment={detail}
           onClose={() => setDetail(null)}
+          onEdit={(row) => {
+            setSelected(row); // ✏️ edit
+            setShowModal(true);
+          }}
+          onDelete={(row) => {
+            setSelected(row); // 🗑 delete
+            setShowDelete(true);
+          }}
         />
       )}
 

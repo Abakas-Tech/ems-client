@@ -1,0 +1,59 @@
+.calendarContainer {
+  height: 600px;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  padding: 1rem;
+}
+
+.calendar {
+  height: 540px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+.calendar .rbc-event {
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer; /* Pointer cursor for all views */
+}
+
+.calendar .rbc-event-label {
+  font-size: 0.85rem;
+}
+
+.calendar .rbc-time-slot {
+  border-top: 1px solid #e9ecef;
+}
+
+.calendar .rbc-day-slot .rbc-event {
+  margin: 2px 0;
+}
+
+.calendar .rbc-agenda-view table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar .rbc-agenda-view th,
+.calendar .rbc-agenda-view td {
+  padding: 0.5rem;
+  border: 1px solid #e9ecef;
+  background-color: #fff; /* Clear background for Agenda view */
+  color: #333; /* Dark text for clarity */
+}
+
+.calendar .rbc-agenda-view .rbc-agenda-event-cell {
+  cursor: pointer; /* Pointer cursor for clickable events */
+}
+
+@media (max-width: 576px) {
+  .calendarContainer {
+    height: 500px;
+  }
+
+  .calendar {
+    height: 460px;
+  }
+}
