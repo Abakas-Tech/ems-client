@@ -63,6 +63,7 @@ export const updateProperty = async (id, data) => {
 
 // Delete a property by ID
 export const deleteProperty = async (id) => {
+  console.log(id)
   try {
     const response = await axiosInstance.delete(`/properties/${id}`);
     return response.data;

@@ -4,3 +4,14 @@
 .theme-bg.call-to-act-wrap {
     background: #2196F3;
 }
+
+:root {
+  --modal-bg: #fff;
+  --modal-overlay-bg: rgba(0,0,0,0.5);
+  --modal-text-color: #333;
+  --modal-title-color: #111;
+  --btn-success-bg: #4caf50;
+  --btn-success-color: #fff;
+  --btn-danger-bg: #f44336;
+  --btn-danger-color: #fff;
+}

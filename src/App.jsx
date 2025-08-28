@@ -8,6 +8,7 @@ import PropertyDetailsForm from "./components/admin/Properties/PropertyDetailsFo
 import { Route, Routes } from "react-router-dom";
 import PropertyDetails from "./pages/public/propertiesDetail/PropertiesDetail";
 import ChatBot from "./components/chat/chatBot";
+import ConfirmDeleteModal from './components/admin/Delete/ConfirmDeleteModal';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
       <ChatBot />
       <Loader />
       <Response />
+      <ConfirmDeleteModal/>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { getPropertyImages } from "../../../api/public/PropertiesImage.api";
 import BottomPagination from "../../../components/properties/bottomPagination";
 import SinglePropertyAdmin from "./../../../components/admin/Properties/SingleProperyAdmin";
 import useLoader from "../../../context/Loader/UseLoader";
+import { useConfirmDelete } from './../../../context/Delete/UseDelete';
 
 const PropertyList = ({ isPublicPage = true }) => {
   const [properties, setProperties] = useState([]);
@@ -24,6 +25,7 @@ const PropertyList = ({ isPublicPage = true }) => {
   const [images, setImages] = useState({}); // { propertyId: [images] }
   const [showSidebar, setShowSidebar] = useState(false);
   const { showLoader, hideLoader } = useLoader();
+  const { openModal } = useConfirmDelete();
 
   const fetchProperties = async (params = {}) => {
     showLoader(); // show global loader
@@ -189,7 +191,14 @@ const PropertyList = ({ isPublicPage = true }) => {
                         <SinglePropertyAdmin
                           property={property}
                           images={images[property.id] || []}
-                          onDelete={handleDeleteProperty}
+                          onDelete={() => {
+                            openModal(
+                              `Delete property ${property.title}?`,
+                              async () => {
+                                await handleDeleteProperty(property.id);
+                              }
+                            );
+                          }}
                         />
                       </div>
                     )}
