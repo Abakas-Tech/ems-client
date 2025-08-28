@@ -4,18 +4,18 @@ import {
   createAppointment,
   updateAppointment,
   deleteAppointment,
-} from "../../api/admin/appointments.api";
+} from "../../../api/admin/appointments.api";
 
-import useLoader from "../../context/Loader/UseLoader";
-import useResponse from "../../context/response/UseResponse";
+import useLoader from "../../../context/Loader/UseLoader";
+import useResponse from "../../../context/response/UseResponse";
 
-import AppointmentsTable from "../../components/Appointments/AppointmentsTable/AppointmentsTable";
-import AppointmentsCalendar from "../../components/Appointments/AppointmentsCalendar/AppointmentsCalendar";
-import AppointmentDetail from "../../components/Appointments/AppointmentDetail/AppointmentDetail";
+import AppointmentsTable from "../../../components/Appointments/AppointmentsTable/AppointmentsTable";
+import AppointmentsCalendar from "../../../components/Appointments/AppointmentsCalendar/AppointmentsCalendar";
+import AppointmentDetail from "../../../components/Appointments/AppointmentDetail/AppointmentDetail";
 
-import AppointmentsFilters from "../../components/Appointments/AppointmentsFilters/AppointmentsFilters";
-import AppointmentsModal from "../../components/Appointments/AppointmentsModal";
-import AppointmentsDeleteModal from "../../components/Appointments/AppointmentsDeleteModal";
+import AppointmentsFilters from "../../../components/Appointments/AppointmentsFilters/AppointmentsFilters";
+import AppointmentsModal from "../../../components/Appointments/AppointmentsModal";
+import AppointmentsDeleteModal from "../../../components/Appointments/AppointmentsDeleteModal";
 
 const Appointments = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -72,6 +72,7 @@ const Appointments = () => {
     showLoader();
     try {
       if (selected) {
+        console.log(selected);
         await updateAppointment(selected.id, formData);
         addMessage("success", "Appointment updated");
       } else {
