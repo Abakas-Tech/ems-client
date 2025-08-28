@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../../components/Admin/Sidebar/Sidebar";
 import { Outlet } from "react-router-dom";
 import Layout from "../../../components/Layout/Layout";
-import { getProfile } from "../../../api/admin/auth.api";
+import { getProfile } from "../../../api/admin/agent.api";
 
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -12,14 +12,14 @@ function Dashboard() {
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => {
-      // console.log("Toggling sidebar, new state:", !prev); 
+      // console.log("Toggling sidebar, new state:", !prev);
       return !prev;
     });
   };
 
   const closeSidebar = () => {
     setSidebarOpen(false);
-    // console.log("Sidebar closed"); 
+    // console.log("Sidebar closed");
   };
 
   useEffect(() => {

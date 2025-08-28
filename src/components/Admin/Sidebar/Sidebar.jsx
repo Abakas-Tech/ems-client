@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { getProfile } from "../../../api/admin/auth.api";
+import { getProfile } from "../../../api/admin/agent.api";
 import useLogout from "../../../context/Logout/UseLogout";
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
@@ -60,7 +60,10 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
   ];
 
   const SidebarContent = () => (
-    <div className="simple-sidebar sm-sidebar">
+    <div
+      className="simple-sidebar sm-sidebar"
+      style={{ width: "100%", height: "100%" }}
+    >
       <div className="sidebar-widgets">
         <div className="dashboard-navbar">
           <button
@@ -125,17 +128,6 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
         aria-modal={isOpen ? "true" : undefined}
         aria-labelledby="sidebarOffcanvasLabel"
       >
-        <div className="offcanvas-header">
-          <h5 className="offcanvas-title" id="sidebarOffcanvasLabel">
-            Dashboard Navigation
-          </h5>
-          <button
-            type="button"
-            className="btn-close text-reset"
-            aria-label="Close"
-            onClick={closeSidebar}
-          ></button>
-        </div>
         <div className="offcanvas-body">
           <SidebarContent />
         </div>

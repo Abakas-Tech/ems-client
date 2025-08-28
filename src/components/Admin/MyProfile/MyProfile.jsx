@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getProfile, updateProfile } from "../../../api/admin/auth.api";
+import { getProfile, updateProfile } from "../../../api/admin/agent.api";
 import useLoader from "../../../context/Loader/useLoader";
 import useResponse from "../../../context/response/UseResponse";
 

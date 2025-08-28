@@ -6,7 +6,7 @@ const Logout = ({ show, onClose, onConfirm }) => {
 
   return (
     <div className="modal-backdrop">
-      <div className="modal">
+      <div className="modal"> 
         <div className="modal-header">
           <h5>Confirm Logout</h5>
         </div>
