@@ -4880,14 +4880,6 @@ label {
     opacity: 1;
   }
 }
-/* Only apply when offcanvas is active */
-.offcanvas.show .simple-sidebar.sm-sidebar {
-  display: block;
-  width: 100%;
-  height: 100%;
-  visibility: visible;
-  opacity: 1;
-}
 
 /*---------------- Sidebar Search Style 2 --------------*/
 .search-styles-2 {

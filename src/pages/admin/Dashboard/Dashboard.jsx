@@ -72,7 +72,9 @@ function Dashboard() {
         </div>
 
         <div className="row">
-          <Sidebar isOpen={sidebarOpen} closeSidebar={closeSidebar} />
+          <div className="col-lg-3">
+            <Sidebar isOpen={sidebarOpen} closeSidebar={closeSidebar} />
+          </div>
           <div
             className="col-lg-9 col-md-12 dashboard-content"
             style={{ overflowY: "auto" }}
