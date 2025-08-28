@@ -166,6 +166,14 @@ const PropertyList = ({ isPublicPage = true }) => {
             )}
 
             <Row>
+              {!isPublicPage ? (
+                <div className="bg-white  ps-4 pt-4 rounded-top ">
+                  {" "}
+                  <h4>My Properties</h4>
+                </div>
+              ) : (
+                <></>
+              )}
               {properties?.length > 0 ? (
                 properties.map((property) => (
                   <React.Fragment key={property.id}>

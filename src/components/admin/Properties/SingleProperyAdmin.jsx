@@ -22,7 +22,7 @@ const SinglePropertyAdmin = ({ property, images, onDelete }) => {
   return (
     <div className="col-md-12 col-sm-12 ps-2 pe-2">
       {/* Single Property */}
-      <div className="singles-dashboard-list d-flex flex-column flex-md-row">
+      <div className="singles-dashboard-list d-flex flex-column flex-md-row align-items-start">
         {/* Image Left */}
         <div className="sd-list-left flex-shrink-0">
           <img
@@ -33,15 +33,14 @@ const SinglePropertyAdmin = ({ property, images, onDelete }) => {
               width: "100%",
               height: "200px",
               objectFit: "cover",
-              borderRadius: "6px",
             }}
           />
         </div>
 
         {/* Details Right */}
-        <div className="sd-list-right flex-grow-1 d-flex flex-column">
+        <div className="sd-list-right flex-grow-1 d-flex flex-column mt-3 mt-md-0">
           <div className="sd-list-left">
-            <h4 className="listing_dashboard_title">
+            <h4 className="listing_dashboard_title mt-0">
               <Link
                 to={`/admin/properties/${property.id}`}
                 className="text-decoration-none"
@@ -49,7 +48,6 @@ const SinglePropertyAdmin = ({ property, images, onDelete }) => {
                 {property.title}
               </Link>
             </h4>
-
             {property.price && (
               <div className="user_dashboard_listed mb-1">
                 Price: from{" "}
@@ -81,7 +79,7 @@ const SinglePropertyAdmin = ({ property, images, onDelete }) => {
           </div>
 
           {/* Actions */}
-          <div className="action mt-2 d-flex gap-3">
+          <div className="action mt-2 d-flex gap-1">
             <a
               href="#"
               onClick={(e) => {
