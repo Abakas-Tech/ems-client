@@ -16,7 +16,7 @@ const ImagesUploadForm = ({
   onCancel,
   isEditMode = false,
   onDeleteImage,
-  fetchPropertyImages, // 🔹 new
+  fetchPropertyImages, // new
 }) => {
   const { addMessage } = useResponse();
   const maxFiles = 10;
@@ -27,7 +27,7 @@ const ImagesUploadForm = ({
     "image/gif": [],
   };
 
-  // 🔹 refetch on mount
+  //  refetch on mount
   useEffect(() => {
     if (propertyId && typeof fetchPropertyImages === "function") {
       fetchPropertyImages();

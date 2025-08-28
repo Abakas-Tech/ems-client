@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import PropertyDetailsForm from "./PropertyDetailsForm";
 import ImagesUploadForm from "./ImagesUploadForm";
 import useLoader from "../../../context/Loader/UseLoader";
@@ -211,7 +211,7 @@ const PropertyFormPage = () => {
     })();
   }, [propertyIdParam]);
 
-  // ✅ Updated: stays on page, renders image form instead of navigating
+  //   stays on page, renders image form instead of navigating
   const handlePropertySubmit = async (data) => {
     showLoader();
     const propertyData = {
@@ -260,7 +260,7 @@ const PropertyFormPage = () => {
         }
         addMessage("success", "Property added successfully!");
 
-        // ✅ Instead of navigating, render Images form
+        //  Instead of navigating, render Images form
         setPropertyId(propertyResponse.data.id);
         setIsNewProperty(true);
         setFormStage("images");
@@ -278,7 +278,7 @@ const PropertyFormPage = () => {
   const handleImagesSubmit = async () => {
     showLoader();
     try {
-      // 1️⃣ File-replaced images (with or without alt change)
+      // 1️ File-replaced images (with or without alt change)
       const fileChangedImages = existingImages.filter((img) => img.file);
 
       if (fileChangedImages.length > 0) {
@@ -303,7 +303,7 @@ const PropertyFormPage = () => {
         }
       }
 
-      // 2️⃣ Alt-only changes
+      // 2️ Alt-only changes
       const altOnlyImages = existingImages.filter(
         (img) => !img.file && img.altText !== img.originalAltText
       );
@@ -322,7 +322,7 @@ const PropertyFormPage = () => {
         }
       }
 
-      // 3️⃣ New images
+      // 3️ New images
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach((file) => formData.append("images", file));
@@ -372,7 +372,7 @@ const PropertyFormPage = () => {
     }
   };
 
-  // 🔹 Add inside PropertyFormPage component
+  // Add inside PropertyFormPage component
   const handleDeleteImage = async (imageId) => {
     if (!propertyId || !imageId) return;
 
