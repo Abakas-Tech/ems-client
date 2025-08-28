@@ -40,7 +40,13 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
   };
 
   return (
-    <Modal show={show} onHide={onClose} centered>
+    <Modal
+      show={show}
+      onHide={onClose}
+      centered
+      backdrop={false}
+      style={{ zIndex: 1000 }}
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           {appointment ? "Edit Appointment" : "New Appointment"}
