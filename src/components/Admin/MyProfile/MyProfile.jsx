@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getProfile, updateProfile } from "../../../api/admin/agent.api";
-import useLoader from "../../../context/Loader/useLoader";
+import useLoader from "../../../context/Loader/UseLoader";
 import useResponse from "../../../context/response/UseResponse";
 
 const MyProfile = () => {
@@ -23,7 +23,6 @@ const MyProfile = () => {
   const { addMessage } = useResponse();
   const fileInputRef = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState("");
 
   // Reusable fetch function
@@ -90,7 +89,6 @@ const MyProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     const formData = new FormData();
     Object.entries(profileData).forEach(([key, value]) => {
       if (key !== "profile_image_url") formData.append(key, value);
@@ -107,7 +105,6 @@ const MyProfile = () => {
       addMessage("error", error.message || "Update failed.");
     } finally {
       hideLoader();
-      setLoading(false);
     }
   };
 
@@ -290,19 +287,8 @@ const MyProfile = () => {
                 </div>
               </div>
               <div className="form-group col-lg-12 col-md-12 mt-3">
-                <button
-                  className="btn btn-main px-5 rounded"
-                  type="submit"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span></span>
-                      Saving...
-                    </>
-                  ) : (
-                    "Save Changes"
-                  )}
+                <button className="btn btn-main px-5 rounded" type="submit">
+                  Save Changes
                 </button>
               </div>
             </div>
