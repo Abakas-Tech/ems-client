@@ -294,7 +294,7 @@ const PropertyDetails = () => {
             <div className="col-lg-4 col-md-12 col-sm-12">
               <div className="details-sidebar">
                 <div className="sides-widget">
-                  <ContactForm profile={profile} />
+                  <ContactForm profile={profile} id={property.id} />
                 </div>
                 {/* Featured Properties */}
                 <div className="sidebar-widgets">

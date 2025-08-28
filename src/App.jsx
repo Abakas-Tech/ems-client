@@ -6,11 +6,11 @@ import AppRouter from "./router/router";
 function App() {
   return (
     <div>
+      <Loader />
       <AppRouter />
       {/* Global components */}
-      <Logout />
-      <Response />
-      <Loader />
+
+      {/* <Logout /> */}
     </div>
   );
 }

@@ -8,6 +8,8 @@ import Layout from "../components/Layout/Layout.jsx";
 import Contact from "../pages/public/Contact/Contact.jsx";
 import ProtecteRoute from "../utils/ProtectRoute.jsx";
 import Appointments from "../pages/admin/Appointments/Appointments.jsx";
+import Analytics from "../pages/admin/Analytics/Analytics.jsx";
+import FileManager from "../pages/admin/FileManager/FileManager.jsx";
 
 function AppRouter() {
   return (
@@ -63,7 +65,20 @@ function AppRouter() {
       {/* Protected route */}
       <Route
         path="/dashboard"
-        element={<ProtecteRoute>{/* <DashboardPage /> */}</ProtecteRoute>}
+        element={
+          <Layout>
+            <Analytics />
+          </Layout>
+        }
+      />
+      {/* File Manager */}
+      <Route
+        path="/files"
+        element={
+          <Layout>
+            <FileManager />
+          </Layout>
+        }
       />
       {/* Appointments page */}
       <Route path="/appointments" element={<Appointments />} />

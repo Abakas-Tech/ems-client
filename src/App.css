@@ -1,0 +1,17 @@
+.card {
+  border-radius: 12px !important;
+}
+
+.card h5 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.card .recharts-wrapper {
+  font-family: "Inter", sans-serif;
+}
+
+input.form-control {
+  border-radius: 8px;
+  padding: 10px 12px;
+}
