@@ -1,4 +1,4 @@
-import {axiosInstance} from "../../utils/axios";
+import { axiosInstance } from "../../utils/axios";
 
 //  Check current logged-in user with Bearer token
 export const checkUser = async () => {
