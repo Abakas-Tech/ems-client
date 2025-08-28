@@ -405,20 +405,7 @@ const PropertyFormPage = () => {
 
   return (
     <div>
-      {/* Page Title */}
-      <div className="page-title">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12 col-md-12">
-              <h2 className="ipt-title">
-                {isEditMode ? "Edit Property" : "Submit Property"}
-              </h2>
-              <span className="ipn-subtitle">Just Submit Your Property</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
+     
       {/* Main Section */}
       <section className="gray-simple">
         <div className="container">

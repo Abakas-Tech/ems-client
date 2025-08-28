@@ -13,6 +13,7 @@ const PaginationAndSort = ({
   onSortChange,
   onTitleSearch,
   total,
+  isPublicPage = true,
 }) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -55,28 +56,29 @@ const PaginationAndSort = ({
       style={{ backgroundColor: "#fff", borderRadius: "5px" }}
     >
       {/* Title Search - on top for small screens, left for md+ */}
-      <div
-        className="position-relative mb-2 mb-md-0 order-1 order-md-0"
-        style={{ minWidth: "180px" }}
-      >
-        <input
-          type="text"
-          className="form-control rounded-3 ps-4 "
-          placeholder="Search by title…"
-          value={title}
-          onChange={handleTitleChange}
-        />
-        <FaSearch
-          className="position-absolute mx-2"
-          style={{
-            left: "0",
-            top: "50%",
-            transform: "translateY(-50%)",
-            color: "#0987F5",
-          }}
-        />
-      </div>
-
+      {isPublicPage == false && (
+        <div
+          className="position-relative mb-2 mb-md-0 order-1 order-md-0"
+          style={{ minWidth: "180px" }}
+        >
+          <input
+            type="text"
+            className="form-control rounded-3 ps-4 "
+            placeholder="Search by title…"
+            value={title}
+            onChange={handleTitleChange}
+          />
+          <FaSearch
+            className="position-absolute mx-1"
+            style={{
+              left: "0",
+              top: "50%",
+              transform: "translateY(-50%)",
+              color: "#0987F5",
+            }}
+          />
+        </div>
+      )}
       {/* Left: Results text */}
       <div
         className="d-flex align-items-center mb-2 mb-md-0 order-0 order-md-1"

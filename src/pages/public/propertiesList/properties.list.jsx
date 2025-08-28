@@ -119,6 +119,7 @@ const PropertyList = ({ isPublicPage = true }) => {
                 setFilters((prev) => ({ ...prev, title, page: 1 }))
               }
               total={pagination.total}
+               isPublicPage = {(isPublicPage)}
             />
           </Col>
         </Row>
