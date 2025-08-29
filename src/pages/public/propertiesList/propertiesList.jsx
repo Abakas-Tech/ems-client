@@ -7,12 +7,12 @@ import SingleProperty from "../../../components/properties/singleProperties";
 import {
   deleteProperty,
   getAllProperties,
-} from "../../../api/Public/properties.api";
+} from "../../../api/public/properties.api";
 import { getPropertyImages } from "../../../api/public/PropertiesImage.api";
 import BottomPagination from "../../../components/properties/bottomPagination";
 import SinglePropertyAdmin from "./../../../components/admin/Properties/SingleProperyAdmin";
 import useLoader from "../../../context/Loader/UseLoader";
-import { useConfirmDelete } from './../../../context/Delete/UseDelete';
+// import { useConfirmDelete } from "./../../../context/Delete/UseDelete";
 
 const PropertyList = ({ isPublicPage = true }) => {
   const [properties, setProperties] = useState([]);
@@ -25,7 +25,7 @@ const PropertyList = ({ isPublicPage = true }) => {
   const [images, setImages] = useState({}); // { propertyId: [images] }
   const [showSidebar, setShowSidebar] = useState(false);
   const { showLoader, hideLoader } = useLoader();
-  const { openModal } = useConfirmDelete();
+  // const { openModal } = useConfirmDelete();
 
   const fetchProperties = async (params = {}) => {
     showLoader(); // show global loader
@@ -119,7 +119,7 @@ const PropertyList = ({ isPublicPage = true }) => {
                 setFilters((prev) => ({ ...prev, title, page: 1 }))
               }
               total={pagination.total}
-               isPublicPage = {(isPublicPage)}
+              isPublicPage={isPublicPage}
             />
           </Col>
         </Row>

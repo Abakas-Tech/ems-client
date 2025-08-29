@@ -18,7 +18,7 @@ const FeaturedCard = ({ property, images }) => {
   } = property;
 
   return (
-    <div className="property-listing property-1 bg-white p-2 rounded">
+    <div className="property-listing property-1 bg-white p-2 rounded" id="featured">
       <div className="listing-img-wrapper">
         <Link to={`/properties/${id}`}>
           <img

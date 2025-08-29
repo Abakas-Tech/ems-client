@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
-import { checkUser } from "../../api/Public/auth.api";
+import { checkUser } from "../../api/admin/auth.api";
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(false);
+  const [user, setUser] = useState(undefined);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const navigate = useNavigate();
@@ -30,8 +29,21 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    checkUserAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const publicPaths = [
+      "/",
+      "/login",
+      "/about",
+      "/properties",
+      "/contact",
+      "/forgot-password",
+      "/reset-password",
+    ];
+    if (!publicPaths.includes(location.pathname)) {
+      checkUserAuth();
+    } else {
+      setUser(localStorage.getItem("authToken") ? true : null);
+      setIsCheckingAuth(false);
+    }
   }, [location.pathname]);
 
   if (isCheckingAuth) return null;

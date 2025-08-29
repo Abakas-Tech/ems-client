@@ -2,7 +2,6 @@ import { axiosInstance } from "../../utils/axios";
 
 // Get all properties (with optional query params)
 export const getAllProperties = async (params = {}) => {
-  console.log(params)
   try {
     const response = await axiosInstance.get("/properties", {
       params,
@@ -21,7 +20,6 @@ export const getAllProperties = async (params = {}) => {
 export const getPropertyById = async (id) => {
   try {
     const response = await axiosInstance.get(`/properties/${id}`);
-    console.log(response.data.success);
     return response.data;
   } catch (error) {
     return {
@@ -34,7 +32,7 @@ export const getPropertyById = async (id) => {
 
 // Create a property
 export const createProperty = async (data) => {
-  console.log(data);
+
   try {
     const response = await axiosInstance.post("/properties", data, {});
     return response.data;

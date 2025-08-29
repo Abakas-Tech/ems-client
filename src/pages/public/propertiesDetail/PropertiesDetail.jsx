@@ -291,25 +291,24 @@ const PropertyDetails = ({ isPublicPage = true }) => {
               </div>
             </div>
             {/* Sidebar Section */}
- 
+
             <div className="col-lg-4 col-md-12 col-sm-12">
               <div className="details-sidebar">
-                  {isPublicPage && (
-                <div className="sides-widget">
-                  <ContactForm profile={profile} />
-                </div>
-                  )}
-                {/* Featured Properties */}
-             
-                  <div className="sidebar-widgets">
-                    <h4>Featured Property</h4>
-                    <div className="sidebar_featured_property mt-3">
-                      {featuredProperties.map((property) => (
-                        <PropertyCard property={property} key={property.id} />
-                      ))}
-                    </div>
+                {isPublicPage && (
+                  <div className="sides-widget">
+                    <ContactForm profile={profile} id={property.id} />
                   </div>
-              
+                )}
+                {/* Featured Properties */}
+
+                <div className="sidebar-widgets">
+                  <h4>Featured Property</h4>
+                  <div className="sidebar_featured_property mt-3">
+                    {featuredProperties.map((property) => (
+                      <PropertyCard property={property} key={property.id} />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 

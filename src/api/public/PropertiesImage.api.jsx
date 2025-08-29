@@ -6,7 +6,6 @@ export const getPropertyImages = async (propertyId) => {
     const response = await axiosInstance.get(
       `/properties/${propertyId}/images`
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     return {
@@ -27,7 +26,6 @@ export const getPropertyImageById = async (propertyId, imageId) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     return {
@@ -50,7 +48,6 @@ export const addPropertyImages = async (propertyId, formData) => {
         },
       }
     );
-    console.log("Response from server:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error in addPropertyImages:", error);
@@ -65,7 +62,6 @@ export const addPropertyImages = async (propertyId, formData) => {
 // Update multiple images for a property
 // Update multiple images for a property
 export const updatePropertyImages = async (propertyId, formData) => {
-  console.log(propertyId, formData);
   try {
     const response = await axiosInstance.put(
       `/properties/${propertyId}/images`,
@@ -133,7 +129,6 @@ export const deletePropertyImagesAltText = async (propertyId, payload) => {
         data: payload,
       }
     );
-    console.log("Deleted altText response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error deleting altText:", error);

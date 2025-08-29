@@ -8,7 +8,7 @@ import { deletePropertyImage, updatePropertyImagesAltText } from "../../../api/p
 
 // Lazy-load API functions
 const createProperty = async (...args) => {
-  const module = await import("../../../api/Public/properties.api");
+  const module = await import("../../../api/public/properties.api");
   return module.createProperty(...args);
 };
 const addPropertyImages = async (...args) => {
@@ -16,11 +16,11 @@ const addPropertyImages = async (...args) => {
   return module.addPropertyImages(...args);
 };
 const getPropertyById = async (...args) => {
-  const module = await import("../../../api/Public/properties.api");
+  const module = await import("../../../api/public/properties.api");
   return module.getPropertyById(...args);
 };
 const updateProperty = async (...args) => {
-  const module = await import("../../../api/Public/properties.api");
+  const module = await import("../../../api/public/properties.api");
   return module.updateProperty(...args);
 };
 const getPropertyImages = async (...args) => {
