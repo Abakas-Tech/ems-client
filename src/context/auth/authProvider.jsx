@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
-import { checkUser } from "../../api/admin/auth.api";
+import { checkUser } from "../../domains/admin/api/auth.api";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(undefined);

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ResponseContext } from "./ResponseContext";
-import Response from "./../../components/global/Response/Response";
+import Response from "./../../shared/global/Response/Response";
 
 let messageId = 0;
 
