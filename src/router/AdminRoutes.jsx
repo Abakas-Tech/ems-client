@@ -30,7 +30,7 @@ const AdminRoutes = () => (
         element={<PropertyList isPublicPage={false} />}
       />
       <Route
-        path="properties/view/:id"
+        path="properties/veiw/:id"
         element={<PropertyDetails isPublicPage={false} />}
       />
       <Route path="featured-properties" element={<Featured />} />
