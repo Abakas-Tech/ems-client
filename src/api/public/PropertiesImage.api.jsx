@@ -39,37 +39,35 @@ export const getPropertyImageById = async (propertyId, imageId) => {
 // Add multiple images to a property
 export const addPropertyImages = async (propertyId, formData) => {
   try {
-    const token = localStorage.getItem("authToken");
     const response = await axiosInstance.post(
       `/properties/${propertyId}/images`,
       formData,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       }
     );
     return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.message || error.message || "Unknown error",
-    };
+    console.error("Error in addPropertyImages:", error);
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to upload images";
+    return { success: false, message };
   }
 };
 
-// Update a single image for a property
-export const updatePropertyImage = async (propertyId, imageId, formData) => {
+// Update multiple images for a property
+// Update multiple images for a property
+export const updatePropertyImages = async (propertyId, formData) => {
   try {
-    const token = localStorage.getItem("authToken");
     const response = await axiosInstance.put(
-      `/properties/${propertyId}/images/${imageId}`,
+      `/properties/${propertyId}/images`,
       formData,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       }
@@ -83,7 +81,6 @@ export const updatePropertyImage = async (propertyId, imageId, formData) => {
     };
   }
 };
-
 // Delete a single image for a property
 export const deletePropertyImage = async (propertyId, imageId) => {
   try {
@@ -100,6 +97,47 @@ export const deletePropertyImage = async (propertyId, imageId) => {
       success: false,
       message:
         error.response?.data?.message || error.message || "Unknown error",
+    };
+  }
+};
+
+export const updatePropertyImagesAltText = async (propertyId, payload) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/properties/${propertyId}/images/altText`,
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating altText:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update altText",
+    };
+  }
+};
+// Bulk delete altText for multiple images
+// payload: { imageIds: [...] }
+export const deletePropertyImagesAltText = async (propertyId, payload) => {
+  try {
+    const response = await axiosInstance.delete(
+      `/properties/${propertyId}/images/altText`,
+      {
+        data: payload,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting altText:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to delete altText",
     };
   }
 };
