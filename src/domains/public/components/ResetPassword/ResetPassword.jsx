@@ -45,7 +45,7 @@ const ResetPassword = () => {
     try {
       const response = await resetPassword({ token, newPassword });
       addMessage("success", response.message || "Password reset successful!");
-      navigate("/login");
+      navigate("/auth/login");
     } catch (error) {
       addMessage("error", error.message || "Reset failed.");
     } finally {

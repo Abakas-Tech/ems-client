@@ -122,10 +122,10 @@ const Header = () => {
                 </li>
                 <li className="nav-menu-social add-listing">
                   <Link
-                    to={user ? "/admin/dashboard" : "/login"}
+                    to={user ? "/admin/dashboard" : "/auth/login"}
                     className={
                       location.pathname ===
-                      (user ? "/admin/dashboard" : "/login")
+                      (user ? "/admin/dashboard" : "/auth/login")
                         ? "active"
                         : ""
                     }
@@ -201,10 +201,10 @@ const Header = () => {
                   </li>
                   <li>
                     <Link
-                      to={user ? "/admin/dashboard" : "/login"}
+                      to={user ? "/admin/dashboard" : "/auth/login"}
                       className={
                         location.pathname ===
-                        (user ? "/admin/dashboard" : "/login")
+                        (user ? "/admin/dashboard" : "/auth/login")
                           ? "active"
                           : ""
                       }

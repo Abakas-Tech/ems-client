@@ -12,7 +12,7 @@ const LogoutProvider = ({ children }) => {
   const logoutNow = () => {
     localStorage.removeItem("authToken");
     setUser(false);
-    navigate("/login");
+    navigate("/");
   };
   const logout = () => {
     setShowLogoutModal(true);

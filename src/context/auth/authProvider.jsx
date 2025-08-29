@@ -13,36 +13,39 @@ export const AuthProvider = ({ children }) => {
   const checkUserAuth = async () => {
     try {
       const response = await checkUser();
-
       if (response.data.success) {
         setUser(true);
       } else {
         setUser(null);
-        navigate("/login");
+        navigate("/auth/login", { state: { from: location.pathname } });
       }
     } catch {
       setUser(null);
-      navigate("/login");
+      navigate("/auth/login", { state: { from: location.pathname } });
     } finally {
       setIsCheckingAuth(false);
     }
   };
 
   useEffect(() => {
-    const publicPaths = [
+    const publicPathPrefixes = [
       "/",
-      "/login",
+      "/auth/",
       "/about",
-      "/properties",
+      "/properties/",
       "/contact",
-      "/forgot-password",
-      "/reset-password",
     ];
-    if (!publicPaths.includes(location.pathname)) {
-      checkUserAuth();
-    } else {
+
+    const isPublicPath = publicPathPrefixes.some(
+      (prefix) =>
+        location.pathname === prefix || location.pathname.startsWith(prefix)
+    );
+
+    if (isPublicPath) {
       setUser(localStorage.getItem("authToken") ? true : null);
       setIsCheckingAuth(false);
+    } else {
+      checkUserAuth();
     }
   }, [location.pathname]);
 

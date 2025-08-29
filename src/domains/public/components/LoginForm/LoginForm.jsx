@@ -83,7 +83,7 @@ const LoginForm = () => {
           </div>
 
           <div className="text-end mb-3 fw-medium">
-            <Link to="/forgot-password" className="link-primary">
+            <Link to="/auth/forgot-password" className="link-primary">
               Forgot Password?
             </Link>
           </div>

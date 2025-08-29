@@ -77,7 +77,7 @@ const ForgotPassword = () => {
             Submit
           </button>
           <div className="text-center mt-3 fw-medium">
-            <Link to="/login" className="link-primary">
+            <Link to="/auth/login" className="link-primary">
               Back to Login
             </Link>
           </div>
