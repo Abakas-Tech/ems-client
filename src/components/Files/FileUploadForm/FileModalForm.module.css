@@ -1,0 +1,226 @@
+.onboarding-modal__content {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px 30px;
+  width: 100%;
+  max-width: 887px;
+  box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* Form type specific styles */
+.form-type-personal .onboarding-modal__content {
+  min-height: 450px;
+}
+
+.form-type-education .onboarding-modal__content,
+.form-type-experience .onboarding-modal__content {
+  min-height: 500px;
+}
+
+.form-type-certification .onboarding-modal__content {
+  min-height: 550px;
+}
+
+.form-type-about .onboarding-modal__content {
+  min-height: 400px;
+}
+
+.onboarding-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.onboarding-modal__body-text {
+  color: #667085;
+  font-family: Inter !important;
+  font-size: 16px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  white-space: wrap;
+  text-align: center;
+}
+
+.onboarding-modal__close {
+  position: absolute;
+  top: 0;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #000;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.onboarding-modal__close:hover {
+  color: #d92d20; /* Optional hover color */
+}
+
+.onboarding-modal__confirm-btn {
+  border-radius: 8px;
+  border: none !important;
+  color: #fff !important;
+  background: #0b5fd9 !important;
+}
+.onboarding-modal__cancel-btn {
+  border-radius: 8px;
+  border: none !important;
+  color: #fff !important;
+  margin-right: 20px;
+}
+.onboarding-modal__textarea-label {
+  color: #667085;
+  font-family: var(--font-primary);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  padding-bottom: 8px;
+}
+
+.onboarding-modal__textarea-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  color: #1f2937;
+  background: #ffffff;
+  resize: none;
+  min-height: 150px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.onboarding-modal__textarea-input:focus {
+  outline: none;
+  border-color: #ff8c00;
+}
+
+.onboarding-modal__checkbox-group {
+  display: flex;
+  gap: 30px;
+}
+
+.onboarding-modal__checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.onboarding-modal__checkbox-input {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.onboarding-modal__checkbox-input:checked {
+  background-color: #ff9500;
+  border-color: #ffffff;
+}
+
+.onboarding-modal__checkbox-input:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 6px;
+  height: 11px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.onboarding-modal__checkbox-label {
+  font-size: 16px;
+  color: #667085;
+  cursor: pointer;
+}
+
+.onboarding-modal__field--error {
+  border-color: #dc3545 !important;
+}
+
+.onboarding-modal__input input {
+  padding: 5px 14px;
+}
+.onboarding-modal__input--read-only input {
+  background-color: #f0f0f0;
+  color: #a0a0a0;
+}
+.onboarding-modal__input--read-only input:is(:focus) {
+  border: 1px solid #d0d5dd;
+  outline: 0.8px solid transparent;
+}
+.onboarding-modal__input,
+.onboarding-modal__dropdown {
+  text-align: start !important;
+}
+.onboarding-modal__dropdown select {
+  padding-block: 8px;
+}
+.onboarding-modal__dropdown label {
+  font-size: 14px !important;
+  padding-bottom: 8px;
+  font-weight: 600;
+}
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 20px 16px;
+  border-top: 1px solid #eee;
+  background: #fff;
+}
+/* Dynamic order for dropdowns and input fields */
+.order-1 {
+  order: 1;
+}
+.order-2 {
+  order: 2;
+}
+@media (min-width: 280px) {
+  .onboarding-modal {
+    padding: 12px;
+  }
+}
+@media (min-width: 576px) {
+  .onboarding-modal__title {
+    font-size: 24px !important;
+    line-height: 39.379px;
+  }
+
+  .onboarding-modal__header-flex {
+    gap: 20px !important;
+    flex-direction: row;
+    justify-content: start; /* Center the icon and title horizontally */
+  }
+  .onboarding-modal__body-text {
+    font-size: 20px !important;
+    padding: 1rem 0.5rem;
+    text-align: start;
+  }
+
+  .onboarding-modal__confirm-btn {
+    padding: 12px 24px;
+    width: 141px;
+  }
+}
+@media (min-width: 768px) {
+  .onboarding-modal__content {
+    padding: 20px;
+  }
+}

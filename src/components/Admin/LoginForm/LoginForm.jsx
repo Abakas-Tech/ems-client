@@ -36,7 +36,7 @@ const LoginForm = () => {
       localStorage.setItem("authToken", response.data.data.token);
       addMessage("success", "Login successful!");
       setUser(true);
-      navigate("/admin");
+      navigate("/admin/dashboard");
     } catch (error) {
       addMessage("error", error.message || "Login failed.");
     } finally {
