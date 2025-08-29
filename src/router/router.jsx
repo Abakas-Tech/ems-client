@@ -12,7 +12,7 @@ function AppRouter() {
     <>
       <ScrollToTop />
       <Routes>
-        {/* Public Routes (with Layout) */}
+        {/* Public Routes (with Layout) */} 
         <Route path="/*" element={<PublicRoutes />} />
 
         {/* Auth Routes (no Layout, no protection) */}
