@@ -1,11 +1,12 @@
 .modalContent {
-  background-color: var(--modal-bg);
-  color: var(--modal-text-color);
+  background-color: white;
+  color: #333; /* dark text */
   padding: 1.5rem;
+  border-radius: 1rem;
 }
 
 .title {
-  color: var(--modal-title-color);
+  color: #222; /* dark title */
   text-align: center;
   font-size: 1.25rem;
   font-weight: 500;
@@ -19,9 +20,9 @@
 }
 
 .cancelBtn {
- background-color: transparent;
-  color: var(--btn-success-bg);
-  border: 2px solid var(--btn-success-bg);
+  background-color: transparent;
+  color: #28a745; /* green text */
+  border: 2px solid #28a745;
   border-radius: 1rem;
   font-weight: 500;
   padding: 8px 16px;
@@ -29,14 +30,14 @@
 }
 
 .cancelBtn:hover {
- background-color: var(--btn-success-bg);
-  color: var(--btn-success-color);
+  background-color: #28a745;
+  color: white;
 }
 
 .logoutBtn {
-   background-color: transparent !important;
-  color: var(--btn-danger-bg) !important;
-  border: 2px solid var(--btn-danger-bg) !important;
+  background-color: transparent !important;
+  color: #dc3545 !important; /* red text */
+  border: 2px solid #dc3545 !important;
   padding: 8px 16px;
   border-radius: 1rem;
   font-weight: 500;
@@ -44,10 +45,6 @@
 }
 
 .logoutBtn:hover {
-   background-color: var(--btn-danger-bg) !important;
-  color: var(--btn-danger-color) !important;
+  background-color: #dc3545 !important;
+  color: white !important;
 }
-
-
-
-

@@ -18,7 +18,9 @@ import ResetPassword from "../pages/admin/ResetPassword/ResetPassword.jsx";
 import Dashboard from "../pages/admin/Dashboard/Dashboard.jsx";
 import MyProfile from "../pages/admin/MyProfile/MyProfile.jsx";
 import ChangePassword from "../pages/admin/ChangePassword/ChangePassword.jsx";
-
+import Analytics from "../pages/admin/Analytics/Analytics.jsx";
+import FileManager from "../pages/admin/FileManager/FileManager.jsx";
+import Appointments from "../pages/admin/Appointments/Appointments.jsx";
 function AppRouter() {
   return (
     <>
@@ -77,6 +79,9 @@ function AppRouter() {
             </ProtectedRoute>
           }
         >
+          <Route path="/admin/dashboard" element={<Analytics />} />
+          <Route path="/admin/my-files" element={<FileManager />} />
+          <Route path="/admin/appointments" element={<Appointments />} />
           <Route path="my-profile" element={<MyProfile />} />
           <Route path="settings" element={<ChangePassword />} />
         </Route>

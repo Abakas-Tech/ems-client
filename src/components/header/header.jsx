@@ -4,8 +4,10 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 
 import logo from "../../assets/img/logo.svg";
+import useAuth from "../../context/auth/UseAuth";
 
 const Header = () => {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -120,10 +122,15 @@ const Header = () => {
                 </li>
                 <li className="nav-menu-social add-listing">
                   <Link
-                    to="/signin"
-                    className={location.pathname === "/signin" ? "active" : ""}
+                    to={user ? "/admin/dashboard" : "/login"}
+                    className={
+                      location.pathname ===
+                      (user ? "/admin/dashboard" : "/login")
+                        ? "active"
+                        : ""
+                    }
                   >
-                    Sign In
+                    {user ? "Dashboard" : "Sign In"}
                   </Link>
                 </li>
               </ul>
@@ -194,13 +201,16 @@ const Header = () => {
                   </li>
                   <li>
                     <Link
-                      to="/signin"
+                      to={user ? "/admin/dashboard" : "/login"}
                       className={
-                        location.pathname === "/signin" ? "active" : ""
+                        location.pathname ===
+                        (user ? "/admin/dashboard" : "/login")
+                          ? "active"
+                          : ""
                       }
                       onClick={toggleMenu}
                     >
-                      Sign In
+                      {user ? "Dashboard" : "Sign In"}
                     </Link>
                   </li>
                 </ul>

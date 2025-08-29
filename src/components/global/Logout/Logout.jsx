@@ -9,20 +9,20 @@ const Logout = ({ show, onClose, onConfirm }) => {
         <Modal.Body>
           <h5 className={styles.title}>Are you sure you want to logout?</h5>
           <div className={styles.actions}>
-            <Button
+            <button
               variant="secondary"
               onClick={onClose}
               className={styles.cancelBtn}
             >
               Cancel
-            </Button>
-            <Button
+            </button>
+            <button
               variant="danger"
               onClick={onConfirm}
               className={styles.logoutBtn}
             >
               Logout
-            </Button>
+            </button>
           </div>
         </Modal.Body>
       </div>
