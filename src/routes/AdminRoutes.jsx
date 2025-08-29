@@ -11,7 +11,7 @@ import Featured from "../domains/public/pages/Featured/Featured.jsx";
 import PropertyFormPage from "../domains/admin/components/Properties/PropertyFormPage.jsx";
 import MyProfile from "../domains/admin/pages/MyProfile/MyProfile.jsx";
 import ChangePassword from "../domains/admin/pages/ChangePassword/ChangePassword.jsx";
-import NotFound from "../shared/pages/NotFound/NotFound.jsx";
+import NotFound from "../shared/components/NotFound/NotFound.jsx";
 
 const AdminRoutes = () => (
   <Routes>

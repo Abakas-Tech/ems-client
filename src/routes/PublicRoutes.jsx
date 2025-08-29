@@ -6,7 +6,7 @@ import PropertyList from "../domains/public/pages/propertiesList/propertiesList.
 import PropertyDetails from "../domains/public/pages/propertiesDetail/PropertiesDetail.jsx";
 import AboutDetail from "../domains/public/pages/AboutDetail/AboutDetail.jsx";
 import Contact from "../domains/public/pages/Contact/Contact.jsx";
-import NotFound from "../shared/pages/NotFound/NotFound.jsx";
+import NotFound from "../shared/components/NotFound/NotFound.jsx";
 
 const PublicRoutes = () => (
   <Routes>

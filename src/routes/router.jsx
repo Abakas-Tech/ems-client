@@ -4,7 +4,7 @@ import ScrollToTop from "../shared/components/ScrollToTop/ScrollToTop.jsx";
 import PublicRoutes from "./PublicRoutes.jsx";
 import AdminRoutes from "./AdminRoutes.jsx";
 import AuthRoutes from "./AuthRoutes.jsx";
-import NotFound from "../shared/pages/NotFound/NotFound.jsx";
+import NotFound from "../shared/components/NotFound/NotFound.jsx";
 
 function AppRouter() {
   return (

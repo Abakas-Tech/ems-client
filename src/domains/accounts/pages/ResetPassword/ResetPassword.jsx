@@ -1,11 +1,11 @@
 import React from "react";
 import Layout from "../../../../shared/Layout/Layout";
-import ForgotPassword from "../../../public/components/ForgotPassword/ForgotPassword";
+import ResetPassword from "../../components/ResetPassword/ResetPassword";
 
 function Password() {
   return (
     <Layout>
-      <ForgotPassword />
+      <ResetPassword />
     </Layout>
   );
 }
