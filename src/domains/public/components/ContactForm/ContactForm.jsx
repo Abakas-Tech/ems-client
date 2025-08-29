@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { sendContactMessage } from "../../api/contact.api"; // external API function
+import { sendContactRequest } from "../../api/contact.api"; // external API function
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+const MySwal = withReactContent(Swal);
 
 const ContactForm = ({ profile, id }) => {
-
   const [contactForm, setContactForm] = useState({
     name: "",
     email: "",
@@ -13,7 +15,7 @@ const ContactForm = ({ profile, id }) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  //  Set propertyId 
+  //  Set propertyId
   useEffect(() => {
     if (id) {
       setContactForm((prev) => ({ ...prev, propertyId: id }));
@@ -26,28 +28,29 @@ const ContactForm = ({ profile, id }) => {
     setContactForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Validate form
-  const validate = () => {
-    const newErrors = {};
-    if (!contactForm.email) newErrors.email = "Email is required";
-    if (!contactForm.message) newErrors.message = "Message is required";
-    return newErrors;
-  };
-
   const submitForm = async (e) => {
     e.preventDefault();
-    const newErrors = validate();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!contactForm.message || !contactForm.email) {
+      MySwal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Email and message are required!",
+      });
       return;
     }
+
     setErrors({});
     setLoading(true);
 
     try {
-      console.log("Submitting form:", contactForm);
-      await sendContactMessage(contactForm);
-      alert("Message sent successfully!");
+      await sendContactRequest(contactForm);
+      MySwal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Form submitted successfully!",
+        // timer: 2000,
+        showConfirmButton: true,
+      });
       setContactForm({
         name: "",
         email: "",
@@ -56,8 +59,12 @@ const ContactForm = ({ profile, id }) => {
         propertyId: id, // keep propertyId intact after reset
       });
     } catch (error) {
-      console.error(error);
-      alert("Something went wrong!");
+      console.error("Submission failed:", error);
+      MySwal.fire({
+        icon: "error",
+        title: "Failed!",
+        text: "Form submission failed. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -95,7 +102,9 @@ const ContactForm = ({ profile, id }) => {
         </div>
 
         <div className="form-group">
-          <label>Email *</label>
+          <label>
+            Email <span className="text-danger fw-bold">*</span>
+          </label>
           <input
             type="text"
             name="email"
@@ -120,7 +129,9 @@ const ContactForm = ({ profile, id }) => {
         </div>
 
         <div className="form-group">
-          <label>Message *</label>
+          <label>
+            Message <span className="text-danger fw-bold">*</span>
+          </label>
           <textarea
             name="message"
             className="form-control"

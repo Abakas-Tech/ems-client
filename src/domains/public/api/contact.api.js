@@ -11,12 +11,6 @@ export const sendContactRequest = async (formData) => {
   }
 };
 
-// Function to send contact message
-export const sendContactMessage = async (contactForm) => {
-  const res = await axiosInstance.post("/contact", contactForm);
-  return res.data.data;
-};
-
 // Function to fetch agent profile
 export const fetchAgentProfile = async () => {
   try {
