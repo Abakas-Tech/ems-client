@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaFacebook, FaTelegram, FaWhatsapp } from "react-icons/fa";
 import { BiMap } from "react-icons/bi";
-import { getAgentProfile } from "../../api/profile.api";
+import { fetchAgentProfile } from './../../api/profile.api';
 
 const AboutSnippet = ({ showButton  }) => {
   const [agentData, setAgentData] = useState({
@@ -16,25 +16,25 @@ const AboutSnippet = ({ showButton  }) => {
   });
 
   useEffect(() => {
-    const fetchAgentProfile = async () => {
-      const response = await getAgentProfile();
+    const getAgentProfile = async () => {
+      const response = await fetchAgentProfile();
       if (response.success) {
         setAgentData({
-          agent_name: response.data.agent_name || "Adam D. Okraar",
-          agent_address: response.data.address || "3599 Huntz Lane",
+          agent_name: response.agent_name || "Adam D. Okraar",
+          agent_address: response.address || "3599 Huntz Lane",
           profile_image_url:
-            response.data.profile_image_url || "https://placehold.co/500x500",
+            response.profile_image_url || "https://placehold.co/500x500",
           bio:
-            response.data.bio ||
+            response.bio ||
             "Professional real estate agent with experience.",
-          facebook_username: response.data.facebook_username || "",
-          telegram_username: response.data.telegram_username || "",
-          whatsapp_username: response.data.whatsapp_username || "",
+          facebook_username: response.facebook_username || "",
+          telegram_username: response.telegram_username || "",
+          whatsapp_username: response.whatsapp_username || "",
         });
       }
     };
 
-    fetchAgentProfile();
+    getAgentProfile();
   }, []);
 
   // Dynamic social links
