@@ -56,7 +56,7 @@ const ChatBot = () => {
           setIsBotTyping(false);
         })
         .catch((err) => {
-          addMessage("error", err.message || "somthing went wrong please try");
+          addMessage("error", err.message);
           setIsBotTyping(false);
         });
     }
@@ -82,8 +82,8 @@ const ChatBot = () => {
         setMenus(res.flag === 1 ? res.menus || [] : []);
         setIsBotTyping(false);
       })
+      // eslint-disable-next-line no-unused-vars
       .catch((err) => {
-        console.error(err);
         setIsBotTyping(false);
       });
   };
@@ -104,8 +104,8 @@ const ChatBot = () => {
         setMenus(res.flag === 1 ? res.menus || [] : []);
         setIsBotTyping(false);
       })
+      // eslint-disable-next-line no-unused-vars
       .catch((err) => {
-        console.error(err);
         setIsBotTyping(false);
       });
   };
