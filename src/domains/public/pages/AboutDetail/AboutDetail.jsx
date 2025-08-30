@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
 import img from "../../../../assets/img/img.jpg";
-import { fetchAgentProfile } from "../../api/contact.api";
+import { fetchAgentProfile } from "../../api/profile.api";
 import ContactForm from "../../components/ContactForm/ContactForm";
 
 const AboutDetail = () => {
