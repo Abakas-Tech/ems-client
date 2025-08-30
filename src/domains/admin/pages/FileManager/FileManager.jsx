@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect} from "react";
 import FileList from "../../components/Files/FileList/FileList";
 import FileModalForm from "../../components/Files/FileUploadForm/FileUploadForm";
 import {
@@ -29,34 +29,35 @@ const FileManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
 
-  const isFirstLoad = useRef(true); // 👈 only show success once
 
-  // 🔹 Fetch files
+
+  //  Fetch files
   useEffect(() => {
     const fetchData = async () => {
       showLoader();
       try {
-        const files = await fetchFiles(filters);
-        setFilesData(files);
+        // Prepare filters for API
+        const cleanFilters = {};
+        if (filters.page) cleanFilters.page = parseInt(filters.page, 10);
+        if (filters.limit) cleanFilters.limit = parseInt(filters.limit, 10);
+        if (filters.fileType) cleanFilters.fileType = filters.fileType;
+        if (filters.category) cleanFilters.category = filters.category;
+        if (filters.file_name) cleanFilters.file_name = filters.file_name;
 
-        if (isFirstLoad.current) {
-          addMessage("success", files?.message || "Files loaded successfully!");
-          isFirstLoad.current = false;
-        }
+        const files = await fetchFiles(cleanFilters);
+        setFilesData(files);
       } catch (err) {
-        const message =
-          typeof err.message === "string"
-            ? err.message
-            : "Failed to load files!";
-        addMessage("error", message);
+        addMessage("error", err.message);
       } finally {
         hideLoader();
       }
     };
+
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
-  // 🔹 Filters
+  //  Filters
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
@@ -72,35 +73,38 @@ const FileManager = () => {
     });
   };
 
-  // 🔹 Pagination
+  //  Pagination
   const handlePageChange = (newPage) => {
     setFilters((prev) => ({ ...prev, page: newPage }));
   };
 
-  // 🔹 CRUD Handlers
+  //  CRUD Handlers
   const handleSubmit = async (fileData) => {
     showLoader();
     try {
+      let response;
+
       if (editingFile) {
-        const updatedFile = await updateFile(editingFile.id, fileData);
+        response = await updateFile(editingFile.id, fileData);
         addMessage(
           "success",
-          updatedFile?.message || "File updated successfully!"
+          response?.message || "File updated successfully!"
         );
       } else {
-        const uploadedFile = await uploadFile(fileData);
+        response = await uploadFile(fileData);
         addMessage(
           "success",
-          uploadedFile?.message || "File uploaded successfully!"
+          response?.message || "File uploaded successfully!"
         );
       }
+
       setEditingFile(null);
       setIsModalOpen(false);
 
       const updatedFiles = await fetchFiles(filters);
       setFilesData(updatedFiles);
     } catch (err) {
-      addMessage("error", err.message || "File operation failed!");
+      addMessage("error", err.message);
     } finally {
       hideLoader();
     }
@@ -114,12 +118,12 @@ const FileManager = () => {
   const handleRename = async (id, newFileName) => {
     showLoader();
     try {
-      const renamed = await renameFile(id, newFileName);
-      addMessage("success", renamed?.message || "File renamed successfully!");
+      const response = await renameFile(id, newFileName);
+      addMessage("success", response?.message || "File renamed successfully!");
       const updatedFiles = await fetchFiles(filters);
       setFilesData(updatedFiles);
     } catch (err) {
-      addMessage("error", err.message || "Failed to rename file!");
+      addMessage("error", err.message);
     } finally {
       hideLoader();
     }
@@ -132,12 +136,12 @@ const FileManager = () => {
   const confirmDeleteFile = async () => {
     showLoader();
     try {
-      const deleted = await deleteFile(confirmDelete.id);
-      addMessage("success", deleted?.message || "File deleted successfully!");
+      const response = await deleteFile(confirmDelete.id);
+      addMessage("success", response?.message || "File deleted successfully!");
       const updatedFiles = await fetchFiles(filters);
       setFilesData(updatedFiles);
     } catch (err) {
-      addMessage("error", err.message || "Failed to delete file!");
+      addMessage("error", err.message);
     } finally {
       hideLoader();
       setConfirmDelete({ show: false, id: null });
