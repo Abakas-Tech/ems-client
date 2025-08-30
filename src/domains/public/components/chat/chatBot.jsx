@@ -6,6 +6,7 @@ import {
   selectMenu,
 } from "../../api/chatBot.api";
 import styles from "./chatBot.module.css";
+import useResponse from './../../../../context/response/UseResponse';
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +18,7 @@ const ChatBot = () => {
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [showNotification, setShowNotification] = useState(true);
   const messagesEndRef = useRef(null);
+  const {addMessage}=useResponse
 
   // Handle window resize
   useEffect(() => {
@@ -54,10 +56,11 @@ const ChatBot = () => {
           setIsBotTyping(false);
         })
         .catch((err) => {
-          console.error(err);
+          addMessage("error", err.message || "somthing went wrong please try");
           setIsBotTyping(false);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, sessionId]);
 
   // Send user message
