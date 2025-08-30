@@ -14,7 +14,6 @@ export const checkUser = async () => {
 export const loginAdmin = async (credentials) => {
   try {
     const response = await axiosInstance.post("/auth/login", credentials);
-    console.log(response.data);
     return response;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Login error");
