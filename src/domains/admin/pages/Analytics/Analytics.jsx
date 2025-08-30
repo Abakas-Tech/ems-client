@@ -92,7 +92,7 @@ const Analytics = () => {
   };
 
   return (
-    <div className="container py-5">
+    <div className="dashboard-wraper container py-5">
       {/* Header */}
       <div className="text-center mb-4">
         <h2 className="fw-bold text-primary">📊 Analytics Dashboard</h2>

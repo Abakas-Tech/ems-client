@@ -25,7 +25,7 @@ const Appointments = () => {
   const [pagination, setPagination] = useState({ page: 1, limit: 5, total: 0 });
   const [filters, setFilters] = useState({
     page: 1,
-    limit: 5,
+    limit: 10,
     status: "",
     title: "",
     startDate: "",
@@ -105,7 +105,7 @@ const Appointments = () => {
   };
 
   return (
-    <div className="container py-5">
+    <div className="dashboard-wraper container py-5">
       {/* Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         {/* Title */}

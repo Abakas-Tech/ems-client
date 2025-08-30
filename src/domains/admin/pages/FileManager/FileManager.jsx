@@ -145,7 +145,7 @@ const FileManager = () => {
   };
 
   return (
-    <div className="container py-5">
+    <div className="dashboard-wraper container py-5">
       {/* Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
         <div>
