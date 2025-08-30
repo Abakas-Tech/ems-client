@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { getAllProperties } from "../../api/properties.api";
 import { getPropertyImages } from "../../api/PropertiesImage.api";
 import FeaturedCard from "./FeaturedCard";
-import Loader from "../../../../shared/components/Loader/Loader";
-import useLoader from './../../../../context/Loader/UseLoader';
+import useLoader from "../../../../context/Loader/UseLoader";
+
 
 function Featured() {
   const [properties, setProperties] = useState([]);

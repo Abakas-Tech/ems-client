@@ -13,6 +13,7 @@ import LoaderProvider from "./context/Loader/LoaderProvider";
 import LogoutProvider from "./context/logout/LogoutProvider.jsx";
 import ResponseProvider from "./context/response/ResponseProvider.jsx";
 import { AuthProvider } from "./context/auth/authProvider.jsx";
+import ConfirmDeleteProvider from './context/Delete/DeleteProvider';
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

@@ -1,4 +1,4 @@
-import { axiosPythonInstance } from "../../utils/axios";
+import { axiosPythonInstance } from "../../../utils/axios";
 
 // Send a user message to chatbot with session_id
 export const sendMessage = async (sessionId, message) => {

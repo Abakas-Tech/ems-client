@@ -9,8 +9,8 @@ import { getPropertyImages } from "../../api/PropertiesImage.api";
 import BottomPagination from "../../../public/components/properties/bottomPagination";
 import SinglePropertyAdmin from "./../../../admin/components/Properties/SingleProperyAdmin";
 import useLoader from "../../../../context/Loader/UseLoader";
-import { useConfirmDelete } from "./../../../context/Delete/UseDelete";
 import useResponse from './../../../../context/response/UseResponse';
+import { useConfirmDelete } from './../../../../context/Delete/UseDelete';
 
 const PropertyList = ({ isPublicPage = true }) => {
   const [properties, setProperties] = useState([]);

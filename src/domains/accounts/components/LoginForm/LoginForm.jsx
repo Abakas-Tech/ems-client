@@ -34,7 +34,7 @@ const LoginForm = () => {
     try {
       const response = await loginAdmin({ email, password });
       localStorage.setItem("authToken", response.data.data.token);
-      addMessage("success", response.message);
+      addMessage("success", "user loggin sucessfull");
       setUser(true);
       navigate("/admin/dashboard");
     } catch (error) {
