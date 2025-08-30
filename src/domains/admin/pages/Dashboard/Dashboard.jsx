@@ -3,23 +3,25 @@ import Sidebar from "../.././components/Sidebar/Sidebar";
 import { Outlet } from "react-router-dom";
 import Layout from "../../../../shared/Layout/Layout";
 import { getProfile } from "../../api/agent.api";
+import useResponse from "../../../../context/response/UseResponse";
 
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const {addMessage}=useResponse()
   const [profileData, setProfileData] = useState({
     agent_name: "",
   });
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => {
-      // console.log("Toggling sidebar, new state:", !prev);
+    
       return !prev;
     });
   };
 
   const closeSidebar = () => {
     setSidebarOpen(false);
-    // console.log("Sidebar closed");
+   
   };
 
   useEffect(() => {
@@ -31,10 +33,11 @@ function Dashboard() {
           agent_name: data.agent_name || "",
         });
       } catch (error) {
-        console.error("Failed to fetch profile:", error);
+        addMessage("error", error.message);
       }
     };
     fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
