@@ -4,26 +4,24 @@ import {
   getAllProperties,
 } from "../../../api/properties.api.js";
 import { getPropertyImages } from "../../../api/PropertiesImage.api.js";
-import { fetchAgentProfile } from "../../../api/contact.api.js";
+import { fetchAgentProfile } from "../../../api/profile.api.js";
 import { useParams } from "react-router-dom";
 import ContactForm from "../../../components/ContactForm/ContactForm.jsx";
 import PropertyCard from "../PropertyCard/PropertyCard.jsx";
 import PropertyGallery from "../PropertyGallery/PropertyGallery.jsx";
+import useLoader from "../../../../../context/Loader/UseLoader.jsx";
 const PropertyDetails = ({ isPublicPage = true }) => {
   const [property, setProperty] = useState({});
   const [images, setImages] = useState([]);
   const [profile, setProfile] = useState({});
   const [featuredProperties, setFeaturedProperties] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { showLoader, hideLoader } = useLoader();
 
   const { id } = useParams();
 
   const fetchProperty = async (id) => {
     try {
-      setLoading(true);
-      setError(null);
+      showLoader(); // use global loader
 
       // 1. Fetch main property
       const propertyRes = await getPropertyById(id);
@@ -53,16 +51,14 @@ const PropertyDetails = ({ isPublicPage = true }) => {
       }));
 
       setFeaturedProperties(featuredWithImages);
-    } catch (err) {
-      console.error("Error fetching property details:", err);
-      setError("Failed to load property details. Please try again later.");
     } finally {
-      setLoading(false);
+      hideLoader(); // stop global loader
     }
   };
 
   useEffect(() => {
     fetchProperty(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
   return (
     <>
