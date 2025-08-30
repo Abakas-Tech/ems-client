@@ -16,7 +16,7 @@ export const sendContactRequest = async (formData) => {
 export const fetchAgentProfile = async () => {
   try {
     const response = await axiosInstance.get("/agent-profile");
-    return response.data; // only response.data
+    return response.data.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message || "Failed to fetch agent profile"

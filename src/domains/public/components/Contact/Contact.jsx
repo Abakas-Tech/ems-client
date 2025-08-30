@@ -65,8 +65,7 @@ const Contact = () => {
         showConfirmButton: true,
       });
       setFormData({ name: "", email: "", phone: "", message: "" });
-    } catch (error) {
-      console.error("Submission failed:", error);
+    } catch {
       MySwal.fire({
         icon: "error",
         title: "Failed!",
