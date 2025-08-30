@@ -87,12 +87,14 @@ const Analytics = () => {
     setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
   };
 
-  const handlePageChange = () => {
-    navigate(`/dashboard`);
+  const handlePageChange = (page) => {
+    if (page === "properties") page = "my-listings";
+    if (page === "files") page = "my-files";
+    navigate(`/admin/${page}`);
   };
 
   return (
-    <div className="container py-5">
+    <div className="dashboard-wraper container py-5">
       {/* Header */}
       <div className="text-center mb-4">
         <h2 className="fw-bold text-primary">📊 Analytics Dashboard</h2>

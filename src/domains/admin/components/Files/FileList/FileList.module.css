@@ -1,3 +1,15 @@
+.fileTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.fileTable th,
+.fileTable td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
 .fileTable .actionsCell {
   position: relative;
 }

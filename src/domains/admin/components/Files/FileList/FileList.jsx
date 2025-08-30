@@ -1,11 +1,6 @@
 // FileList.jsx
 import React, { useState } from "react";
-import {
-  FaEdit,
-  FaTrash,
-  FaPencilAlt,
-  FaDownload,
-} from "react-icons/fa";
+import { FaEdit, FaTrash, FaPencilAlt, FaDownload } from "react-icons/fa";
 import BottomPagination from "../../../../public/components/properties/bottomPagination";
 import styles from "./FileList.module.css";
 
