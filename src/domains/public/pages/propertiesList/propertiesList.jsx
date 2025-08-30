@@ -196,12 +196,9 @@ const handleToggleSidebar = () => {
                           property={property}
                           images={images[property.id] || []}
                           onDelete={() => {
-                            openModal(
-                              `Delete property ${property.title}?`,
-                              async () => {
-                                await handleDeleteProperty(property.id);
-                              }
-                            );
+                            openModal(async () => {
+                              await handleDeleteProperty(property.id);
+                            });
                           }}
                         />
                       </div>

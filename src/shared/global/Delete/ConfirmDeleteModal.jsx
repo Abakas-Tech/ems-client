@@ -16,13 +16,12 @@ const shakeVariants = {
 };
 
 const ConfirmDeleteModal = () => {
-  const { isOpen, itemName, closeModal, confirmAndClose } = useConfirmDelete();
+  const { isOpen, closeModal, confirmAndClose } = useConfirmDelete();
 
   const modalRef = useRef(null);
   const [shake, setShake] = useState("idle");
 
   const handleOverlayClick = (e) => {
-    // If the user clicks outside the modal content
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       setShake("shake");
       setTimeout(() => setShake("idle"), 500);
@@ -37,7 +36,6 @@ const ConfirmDeleteModal = () => {
       className={styles.modal}
       overlayClassName={styles.overlay}
       closeTimeoutMS={200}
-      // 💡 This adds the overlay click listener
       overlayRef={(node) => {
         if (node) {
           node.onclick = handleOverlayClick;
@@ -51,11 +49,9 @@ const ConfirmDeleteModal = () => {
         initial="idle"
         className={styles.modalInner}
       >
-        <h4 className={styles.modalTitle}>Are you sure?</h4>
-        <p className={styles.modalText}>
-          Do you really want to delete <strong>{itemName}</strong>? This action
-          cannot be undone.
-        </p>
+        <h4 className={styles.modalTitle}>
+          Are you sure you want to delete this item?
+        </h4>
         <div className={styles.modalActions}>
           <button className={styles.cancelBtn} onClick={closeModal}>
             Cancel
