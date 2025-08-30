@@ -40,7 +40,7 @@ const ForgotPassword = () => {
       }
       navigate("/admin/login");
     } catch (error) {
-      addMessage("error", error.message || "Failed to send reset link.");
+      addMessage("error", error.message);
     } finally {
       hideLoader();
     }
