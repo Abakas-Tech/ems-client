@@ -30,14 +30,10 @@ const ForgotPassword = () => {
     showLoader();
     try {
       const response = await forgotPassword({ email });
-      if (response.status === "success") {
-        addMessage(
-          "success",
-          response.message || "Reset link sent to your email"
-        );
-      } else {
-        addMessage("error", response.message || "Failed to send reset link.");
-      }
+      addMessage(
+        "success",
+        response.message || "Reset link sent to your email"
+      );
       navigate("/admin/login");
     } catch (error) {
       addMessage("error", error.message);
