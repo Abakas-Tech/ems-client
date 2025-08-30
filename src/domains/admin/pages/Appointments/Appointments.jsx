@@ -15,10 +15,11 @@ import AppointmentDetail from "../../components/Appointments/AppointmentDetail/A
 
 import AppointmentsFilters from "../../components/Appointments/AppointmentsFilters/AppointmentsFilters";
 import AppointmentsModal from "../../components/Appointments/AppointmentsModal";
-import AppointmentsDeleteModal from "../../components/Appointments/AppointmentsDeleteModal";
+import { useConfirmDelete } from './../../../../context/Delete/UseDelete';
 
 const Appointments = () => {
   const { showLoader, hideLoader } = useLoader();
+    const { openModal } = useConfirmDelete();
   const { addMessage } = useResponse();
 
   const [appointments, setAppointments] = useState([]);
@@ -39,7 +40,7 @@ const Appointments = () => {
   const [detail, setDetail] = useState(null); // for detail view
 
   const [showModal, setShowModal] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
+
 
   // Fetch data
   const loadAppointments = async () => {
@@ -98,7 +99,6 @@ const handleDelete = async () => {
   try {
     const response = await deleteAppointment(selected.id);
     addMessage("success", response?.message || "Appointment deleted");
-    setShowDelete(false);
     setSelected(null);
     loadAppointments();
   } catch (err) {
@@ -181,9 +181,10 @@ const handleDelete = async () => {
             setSelected(row); //  edit
             setShowModal(true);
           }}
-          onDelete={(row) => {
-            setSelected(row); //  delete
-            setShowDelete(true);
+          onDelete={() => {
+            openModal(async () => {
+              await handleDelete();
+            });
           }}
         />
       ) : (
@@ -203,8 +204,9 @@ const handleDelete = async () => {
             setShowModal(true);
           }}
           onDelete={(row) => {
-            setSelected(row); //  delete
-            setShowDelete(true);
+            openModal(async () => {
+              await handleDelete(row.id);
+            });
           }}
         />
       )}
@@ -216,14 +218,6 @@ const handleDelete = async () => {
           onClose={() => setShowModal(false)}
           onSave={handleSave}
           appointment={selected}
-        />
-      )}
-
-      {showDelete && (
-        <AppointmentsDeleteModal
-          show={showDelete}
-          onClose={() => setShowDelete(false)}
-          onConfirm={handleDelete}
         />
       )}
     </div>
