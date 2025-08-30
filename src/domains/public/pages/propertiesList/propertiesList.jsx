@@ -9,7 +9,8 @@ import { getPropertyImages } from "../../api/PropertiesImage.api";
 import BottomPagination from "../../../public/components/properties/bottomPagination";
 import SinglePropertyAdmin from "./../../../admin/components/Properties/SingleProperyAdmin";
 import useLoader from "../../../../context/Loader/UseLoader";
-// import { useConfirmDelete } from "./../../../context/Delete/UseDelete";
+import { useConfirmDelete } from "./../../../context/Delete/UseDelete";
+import useResponse from './../../../../context/response/UseResponse';
 
 const PropertyList = ({ isPublicPage = true }) => {
   const [properties, setProperties] = useState([]);
@@ -19,78 +20,83 @@ const PropertyList = ({ isPublicPage = true }) => {
     total: 0,
   });
   const [filters, setFilters] = useState({});
-  const [images, setImages] = useState({}); // { propertyId: [images] }
+  const [images, setImages] = useState({});
   const [showSidebar, setShowSidebar] = useState(false);
   const { showLoader, hideLoader } = useLoader();
-  // const { openModal } = useConfirmDelete();
+  const { openModal } = useConfirmDelete();
+  const {addMessage}=useResponse()
 
-  const fetchProperties = async (params = {}) => {
-    showLoader(); // show global loader
-    try {
-      const response = await getAllProperties({
-        page: pagination.page,
-        limit: pagination.limit,
-        ...filters,
-        ...params,
-      });
+const fetchProperties = async (params = {}) => {
+  showLoader(); // show global loader
+  try {
+    const response = await getAllProperties({
+      page: pagination.page,
+      limit: pagination.limit,
+      ...filters,
+      ...params,
+    });
 
-      if (response.success) {
-        const { properties, pagination: pg } = response.data;
-        setProperties(properties);
-        setPagination(pg);
+    if (response.success) {
+      const { properties, pagination: pg } = response.data;
+      setProperties(properties);
+      setPagination(pg);
 
-        // Fetch images for each property
-        const imageResults = {};
-        for (const property of properties) {
-          const imgRes = await getPropertyImages(property.id);
-          if (imgRes.success) {
-            imageResults[property.id] = imgRes.data.data;
-          }
+      // Fetch images for each property
+      const imageResults = {};
+      for (const property of properties) {
+        const imgRes = await getPropertyImages(property.id);
+        if (imgRes.success) {
+          imageResults[property.id] = imgRes.data.data;
         }
-        setImages(imageResults);
       }
-    } catch (err) {
-      console.error("Error fetching properties:", err);
-    } finally {
-      hideLoader(); // hide global loader
+      setImages(imageResults);
+    } else {
+      addMessage("error", response.message );
+    }
+  } catch (err) {
+    addMessage("error", err.message);
+  } finally {
+    hideLoader(); // hide global loader
+  }
+};
+
+const handleDeleteProperty = async (id) => {
+  showLoader();
+  try {
+    const response = await deleteProperty(id);
+    if (response.success) {
+      setProperties((prev) => prev.filter((property) => property.id !== id));
+      addMessage("success", response.message);
+    } else {
+      addMessage("error", response.message);
+    }
+  } catch (error) {
+    addMessage("error", error.message);
+  } finally {
+    hideLoader();
+  }
+};
+
+useEffect(() => {
+  setProperties(null);
+  fetchProperties();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [filters, pagination.page, pagination.limit]);
+
+useEffect(() => {
+  const handleResize = () => {
+    if (window.innerWidth >= 992) {
+      setShowSidebar(false);
     }
   };
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
 
-  const handleDeleteProperty = async (id) => {
-    showLoader();
-    try {
-      const response = await deleteProperty(id);
-      if (response.success) {
-        setProperties((prev) => prev.filter((property) => property.id !== id));
-      } else {
-        console.error("Delete failed:", response.message);
-      }
-    } catch (error) {
-      console.error("Error deleting property:", error);
-    } finally {
-      hideLoader();
-    }
-  };
+const handleToggleSidebar = () => {
+  setShowSidebar(!showSidebar);
+};
 
-  useEffect(() => {
-    setProperties(null);
-    fetchProperties();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, pagination.page, pagination.limit]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 992) {
-        setShowSidebar(false);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const handleToggleSidebar = () => {
-    setShowSidebar(!showSidebar);
-  };
 
   return (
     <div
