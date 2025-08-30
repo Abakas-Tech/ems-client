@@ -58,27 +58,28 @@ const Contact = () => {
       return;
     }
 
-   try {
-     setLoading(true);
-     await sendContactRequest(formData);
+    try {
+      setLoading(true);
 
-     MySwal.fire({
-       icon: "success",
-       title: "Success!",
-       text: "Form submitted successfully!",
-       showConfirmButton: true,
-     });
+      const response = await sendContactRequest(formData);
 
-     setFormData({ name: "", email: "", phone: "", message: "" });
-   } catch (error) {
-     MySwal.fire({
-       icon: "error",
-       title: "Failed!",
-       text: error.message,
-     });
-   } finally {
-     setLoading(false);
-   }
+      MySwal.fire({
+        icon: "success",
+        title: "Success!",
+        text: response.message || "Form submitted successfully!",
+        showConfirmButton: true,
+      });
+
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    } catch (error) {
+      MySwal.fire({
+        icon: "error",
+        title: "Failed!",
+        text: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
