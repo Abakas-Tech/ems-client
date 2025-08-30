@@ -8,11 +8,9 @@ export const getPropertyImages = async (propertyId) => {
     );
     return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.message || error.message || "Unknown error",
-    };
+    throw new Error(
+      error.response?.data?.message || error.message || "Unknown error"
+    );
   }
 };
 
@@ -28,11 +26,9 @@ export const getPropertyImageById = async (propertyId, imageId) => {
     );
     return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.message || error.message || "Unknown error",
-    };
+    throw new Error(
+      error.response?.data?.message || error.message || "Unknown error"
+    );
   }
 };
 
@@ -50,16 +46,14 @@ export const addPropertyImages = async (propertyId, formData) => {
     );
     return response.data;
   } catch (error) {
-    console.error("Error in addPropertyImages:", error);
-    const message =
+    throw new Error(
       error.response?.data?.message ||
-      error.message ||
-      "Failed to upload images";
-    return { success: false, message };
+        error.message ||
+        "Failed to upload images"
+    );
   }
 };
 
-// Update multiple images for a property
 // Update multiple images for a property
 export const updatePropertyImages = async (propertyId, formData) => {
   try {
@@ -74,13 +68,12 @@ export const updatePropertyImages = async (propertyId, formData) => {
     );
     return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.message || error.message || "Unknown error",
-    };
+    throw new Error(
+      error.response?.data?.message || error.message || "Unknown error"
+    );
   }
 };
+
 // Delete a single image for a property
 export const deletePropertyImage = async (propertyId, imageId) => {
   try {
@@ -93,14 +86,13 @@ export const deletePropertyImage = async (propertyId, imageId) => {
     );
     return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.message || error.message || "Unknown error",
-    };
+    throw new Error(
+      error.response?.data?.message || error.message || "Unknown error"
+    );
   }
 };
 
+// Update altText for property images
 export const updatePropertyImagesAltText = async (propertyId, payload) => {
   try {
     const response = await axiosInstance.patch(
@@ -109,18 +101,15 @@ export const updatePropertyImagesAltText = async (propertyId, payload) => {
     );
     return response.data;
   } catch (error) {
-    console.error("Error updating altText:", error);
-    return {
-      success: false,
-      message:
-        error.response?.data?.message ||
+    throw new Error(
+      error.response?.data?.message ||
         error.message ||
-        "Failed to update altText",
-    };
+        "Failed to update altText"
+    );
   }
 };
+
 // Bulk delete altText for multiple images
-// payload: { imageIds: [...] }
 export const deletePropertyImagesAltText = async (propertyId, payload) => {
   try {
     const response = await axiosInstance.delete(
@@ -131,13 +120,10 @@ export const deletePropertyImagesAltText = async (propertyId, payload) => {
     );
     return response.data;
   } catch (error) {
-    console.error("Error deleting altText:", error);
-    return {
-      success: false,
-      message:
-        error.response?.data?.message ||
+    throw new Error(
+      error.response?.data?.message ||
         error.message ||
-        "Failed to delete altText",
-    };
+        "Failed to delete altText"
+    );
   }
 };
