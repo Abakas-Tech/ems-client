@@ -45,10 +45,7 @@ const LoginForm = () => {
         addMessage("error", response.message || "Login failed.");
       }
     } catch (error) {
-      addMessage(
-        "error",
-        error.response?.data?.message || error.message || "Login failed."
-      );
+      addMessage("error", error.message);
     } finally {
       hideLoader();
     }
