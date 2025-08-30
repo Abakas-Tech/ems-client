@@ -6,7 +6,7 @@ import {
   selectMenu,
 } from "../../api/chatBot.api";
 import styles from "./chatBot.module.css";
-import useResponse from './../../../../context/response/UseResponse';
+import useResponse from "./../../../../context/response/UseResponse";
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,7 +18,7 @@ const ChatBot = () => {
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [showNotification, setShowNotification] = useState(true);
   const messagesEndRef = useRef(null);
-  const {addMessage}=useResponse
+  const { addMessage } = useResponse();
 
   // Handle window resize
   useEffect(() => {
