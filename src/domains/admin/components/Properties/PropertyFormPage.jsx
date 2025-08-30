@@ -203,12 +203,12 @@ const PropertyFormPage = () => {
           }
         }
       } catch (err) {
-        console.error(err);
-        addMessage("error", "Failed to fetch property details.");
+        addMessage("error", err.message);
       } finally {
         hideLoader();
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propertyIdParam]);
 
   //   stays on page, renders image form instead of navigating

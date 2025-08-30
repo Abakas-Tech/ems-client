@@ -28,7 +28,7 @@ const PropertyDetailsForm = ({
 
     const statusLabel = (s) =>
       s === "available" ? "Available" : s === "sold" ? "Sold" : "Rented";
-
+    // eslint-disable-next-line no-unused-vars
     const toSelect = (value, labelFn, specialLabels) => {
       if (value === undefined || value === null) return null;
       return {
@@ -205,7 +205,7 @@ const PropertyDetailsForm = ({
         setValidationError("status");
         return;
       }
-      // ✅ All good → submit
+      //  All good → submit
       onSubmit(values);
     },
   });
