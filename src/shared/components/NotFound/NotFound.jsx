@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import errorImage from "../../../assets/img/404.png"; // Adjust path based on your structure
+import errorImage from "../../../assets/img/404.png"; 
 
 const NotFound = () => (
   <section className="error-wrap">
