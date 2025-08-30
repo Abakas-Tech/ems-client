@@ -87,8 +87,10 @@ const Analytics = () => {
     setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
   };
 
-  const handlePageChange = () => {
-    navigate(`/dashboard`);
+  const handlePageChange = (page) => {
+    if (page === "properties") page = "my-listings";
+    if (page === "files") page = "my-files";
+    navigate(`/admin/${page}`);
   };
 
   return (
