@@ -33,7 +33,7 @@ const ForgotPassword = () => {
       if (response.status === "success") {
         addMessage(
           "success",
-          response.message || "Reset link sent to your email!"
+          response.message || "Reset link sent to your email"
         );
       } else {
         addMessage("error", response.message || "Failed to send reset link.");
