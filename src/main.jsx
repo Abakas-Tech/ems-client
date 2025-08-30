@@ -21,7 +21,9 @@ createRoot(document.getElementById("root")).render(
         <LoaderProvider>
           <LogoutProvider>
             <ResponseProvider>
-              <App />
+              <ConfirmDeleteProvider>
+                <App />
+              </ConfirmDeleteProvider>
             </ResponseProvider>
           </LogoutProvider>
         </LoaderProvider>
