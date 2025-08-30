@@ -42,32 +42,32 @@ const ContactForm = ({ profile, id }) => {
     setErrors({});
     setLoading(true);
 
-    try {
-      await sendContactRequest(contactForm);
-      MySwal.fire({
-        icon: "success",
-        title: "Success!",
-        text: "Form submitted successfully!",
-        // timer: 2000,
-        showConfirmButton: true,
-      });
-      setContactForm({
-        name: "",
-        email: "",
-        phone: "",
-        message: "",
-        propertyId: id, // keep propertyId intact after reset
-      });
-    } catch (error) {
-      console.error("Submission failed:", error);
-      MySwal.fire({
-        icon: "error",
-        title: "Failed!",
-        text: "Form submission failed. Please try again.",
-      });
-    } finally {
-      setLoading(false);
-    }
+   try {
+     await sendContactRequest(contactForm);
+
+     MySwal.fire({
+       icon: "success",
+       title: "Success!",
+       text: "Form submitted successfully!",
+       showConfirmButton: true,
+     });
+
+     setContactForm({
+       name: "",
+       email: "",
+       phone: "",
+       message: "",
+       propertyId: id, // keep propertyId intact after reset
+     });
+   } catch (error) {
+     MySwal.fire({
+       icon: "error",
+       title: "Failed!",
+       text: error.message,
+     });
+   } finally {
+     setLoading(false);
+   }
   };
 
   return (
