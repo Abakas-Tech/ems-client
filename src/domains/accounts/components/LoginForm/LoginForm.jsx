@@ -33,23 +33,17 @@ const LoginForm = () => {
     showLoader();
     try {
       const response = await loginAdmin({ email, password });
-
-      if (response.status === "success") {
-        localStorage.setItem("authToken", response.data.token);
-
-        addMessage("success", response.message || "Login successful!");
-
-        setUser(true);
-        navigate("/admin/dashboard");
-      } else {
-        addMessage("error", response.message || "Login failed.");
-      }
+      localStorage.setItem("authToken", response.data.data.token);
+      addMessage("success", response.message);
+      setUser(true);
+      navigate("/admin/dashboard");
     } catch (error) {
       addMessage("error", error.message);
     } finally {
       hideLoader();
     }
   };
+
   return (
     <div
       className="login-page d-flex justify-content-center align-items-center rounded  "
