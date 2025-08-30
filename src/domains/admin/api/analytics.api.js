@@ -1,36 +1,12 @@
 import { axiosInstance } from "../../../utils/axios";
 
-export const fetchPropertiesAnalytics = async (filters = {}) => {
+export const fetchPropertiesAnalytics = async (params = {}) => {
   try {
-    const params = {};
-
-    if (filters.page) params.page = parseInt(filters.page, 10);
-    if (filters.limit) params.limit = parseInt(filters.limit, 10);
-
-    if (filters.startDate && !isNaN(Date.parse(filters.startDate))) {
-      params.startDate = new Date(filters.startDate).toISOString();
-    }
-
-    // ✅ Ensure title is a string, trim spaces, keep spaces in query
-    if (filters.title !== undefined && filters.title !== null) {
-      params.title = String(filters.title).trim();
-    }
-
-    if (filters.endDate && !isNaN(Date.parse(filters.endDate))) {
-      params.endDate = new Date(filters.endDate).toISOString();
-    }
-
-    if (filters.sortBy) params.sortBy = filters.sortBy; // ✅ pass sortBy
-
     const response = await axiosInstance.get(`/analytics/properties`, {
       params: Object.keys(params).length > 0 ? params : undefined,
     });
-
-    return response.data.data;
+    return response?.data?.data;
   } catch (error) {
-    if (error.response?.status === 400) {
-      throw new Error(JSON.stringify(error.response.data.message));
-    }
     throw new Error(
       error.response?.data?.message || "Failed to fetch property analytics"
     );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import AnalyticsChart from "../../components/Analytics/AnalyticsChart/AnalyticsChart";
 import AnalyticsCard from "../../components/Analytics/AnalyticsCard/AnalyticsCard";
 import AnalyticsFilters from "../../components/Analytics/AnalyticsFilters/AnalyticsFilters";
@@ -34,18 +34,35 @@ const Analytics = () => {
   });
 
   const navigate = useNavigate();
-  const isFirstLoad = useRef(true); // 👈 show success only once
-
+ 
   useEffect(() => {
     const fetchData = async () => {
       showLoader();
       try {
+        //  Prepare filters here
+        const cleanFilters = {};
+
+        if (filters.page) cleanFilters.page = parseInt(filters.page, 10);
+        if (filters.limit) cleanFilters.limit = parseInt(filters.limit, 10);
+
+        if (filters.startDate && !isNaN(Date.parse(filters.startDate))) {
+          cleanFilters.startDate = new Date(filters.startDate).toISOString();
+        }
+
+        if (filters.endDate && !isNaN(Date.parse(filters.endDate))) {
+          cleanFilters.endDate = new Date(filters.endDate).toISOString();
+        }
+
+        if (filters.title !== undefined && filters.title !== null) {
+          cleanFilters.title = String(filters.title).trim();
+        }
+
+        if (filters.sortBy) cleanFilters.sortBy = filters.sortBy;
+
+        //  Call APIs in parallel
         const [properties, appointments, files, propertyCount] =
           await Promise.all([
-            fetchPropertiesAnalytics({
-              ...filters,
-              title: filters.title || undefined,
-            }),
+            fetchPropertiesAnalytics(cleanFilters),
             fetchAppointmentAnalytics(),
             fetchFileAnalytics(),
             fetchPropertiesCount(),
@@ -56,25 +73,14 @@ const Analytics = () => {
         setFileData(files);
         setPropertyCount(propertyCount);
 
-        if (isFirstLoad.current) {
-          addMessage(
-            "success",
-            properties?.message || "Analytics data loaded successfully!"
-          );
-          isFirstLoad.current = false;
-        }
       } catch (err) {
-        const message =
-          typeof err.message === "string"
-            ? err.message
-            : "Failed to load analytics data!";
-        addMessage("error", message);
+        addMessage("error", err.message);
       } finally {
         hideLoader();
       }
     };
-
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const handleFilterChange = (e) => {
