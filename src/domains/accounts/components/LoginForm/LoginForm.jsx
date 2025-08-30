@@ -33,17 +33,26 @@ const LoginForm = () => {
     showLoader();
     try {
       const response = await loginAdmin({ email, password });
-      localStorage.setItem("authToken", response.data.token);
-      addMessage("success", "Login successful!");
-      setUser(true);
-      navigate("/admin/dashboard");
+
+      if (response.status === "success") {
+        localStorage.setItem("authToken", response.data.token);
+
+        addMessage("success", response.message || "Login successful!");
+
+        setUser(true);
+        navigate("/admin/dashboard");
+      } else {
+        addMessage("error", response.message || "Login failed.");
+      }
     } catch (error) {
-      addMessage("error", error.message || "Login failed.");
+      addMessage(
+        "error",
+        error.response?.data?.message || error.message || "Login failed."
+      );
     } finally {
       hideLoader();
     }
   };
-
   return (
     <div
       className="login-page d-flex justify-content-center align-items-center rounded  "
