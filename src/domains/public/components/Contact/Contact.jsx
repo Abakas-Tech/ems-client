@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { sendContactRequest, fetchAgentProfile } from "../../api/contact.api";
+import { sendContactRequest} from "../../api/contact.api";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import useResponse from "../../../../context/response/UseResponse";
+import { fetchAgentProfile } from './../../api/profile.api';
 
 const MySwal = withReactContent(Swal);
 
