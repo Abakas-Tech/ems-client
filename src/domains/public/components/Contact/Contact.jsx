@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  sendContactRequest,
-  fetchAgentProfile,
-} from "../../api/contact.api";
+import { sendContactRequest, fetchAgentProfile } from "../../api/contact.api";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import useResponse from "../../../../context/response/UseResponse";
 
 const MySwal = withReactContent(Swal);
 
@@ -16,6 +14,7 @@ const Contact = () => {
     message: "",
   });
   const [loading, setLoading] = useState(false);
+  const { addMessage } = useResponse();
   const [agentData, setAgentData] = useState({
     agent_name: "Hussen Agent",
     agent_email: "support@agent.com",
@@ -25,17 +24,22 @@ const Contact = () => {
 
   useEffect(() => {
     const loadAgentProfile = async () => {
-      const profile = await fetchAgentProfile();
-      if (profile) {
+      try {
+        const profile = await fetchAgentProfile();
         setAgentData({
           agent_name: profile.agent_name,
           agent_email: profile.agent_email,
           agent_phone: profile.agent_phone,
           address: profile.address,
         });
+      } catch (error) {
+        // Handle error safely (show message to user)
+        addMessage("error", error.message);
       }
     };
+
     loadAgentProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {
