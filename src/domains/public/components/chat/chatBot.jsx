@@ -1,48 +1,56 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
-import { getWelcomeMessage, sendMessage } from "../../api/chatBot.api"; 
-import styles from "./chatBot.module.css"; 
+import {
+  getWelcomeMessage,
+  sendMessage,
+  selectMenu,
+} from "../../api/chatBot.api";
+import styles from "./chatBot.module.css";
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [menus, setMenus] = useState([]);
   const [input, setInput] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [showNotification, setShowNotification] = useState(true);
   const messagesEndRef = useRef(null);
 
-  // Handle window resize for responsive design
+  // Handle window resize
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Show notification for 3 seconds on page load
+  // Show initial notification
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowNotification(false);
-    }, 3000);
+    const timer = setTimeout(() => setShowNotification(false), 3000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Scroll to bottom smoothly when messages or typing indicator change
+  // Scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isBotTyping]);
 
-  // Fetch welcome message and set temporary session ID when chat opens
+  // Initialize session and fetch welcome message
   useEffect(() => {
     if (isOpen && !sessionId) {
-      // Generate temporary random session ID as a string
-      const newSessionId = Math.random().toString(36).substring(2, 10);
-      setSessionId(newSessionId);
+      let storedSession = localStorage.getItem("chatSessionId");
+      if (!storedSession) {
+        storedSession = Math.random().toString(36).substring(2, 10);
+        localStorage.setItem("chatSessionId", storedSession);
+      }
+      setSessionId(storedSession);
+
       setIsBotTyping(true);
       getWelcomeMessage()
         .then((res) => {
           setMessages([{ type: "bot", text: res.reply, flag: res.flag }]);
+          setMenus(res.menus || []); // show menus for first welcome
           setIsBotTyping(false);
         })
         .catch((err) => {
@@ -52,7 +60,7 @@ const ChatBot = () => {
     }
   }, [isOpen, sessionId]);
 
-  // Handle sending user message with session ID
+  // Send user message
   const handleSend = () => {
     if (!input.trim()) return;
     const userMessage = { type: "user", text: input };
@@ -60,13 +68,15 @@ const ChatBot = () => {
     setInput("");
     setIsBotTyping(true);
 
-    // Send message with session_id as string in body
-    sendMessage( sessionId,  input )
+    sendMessage(sessionId, input)
       .then((res) => {
         setMessages((prev) => [
           ...prev,
           { type: "bot", text: res.reply, flag: res.flag },
         ]);
+
+        // Update menus only if flag is 1, otherwise hide
+        setMenus(res.flag === 1 ? res.menus || [] : []);
         setIsBotTyping(false);
       })
       .catch((err) => {
@@ -75,8 +85,56 @@ const ChatBot = () => {
       });
   };
 
-  // Toggle chat window
+  // Handle menu selection using dedicated API
+  const handleMenuClick = (menuId) => {
+    if (!sessionId) return;
+    setIsBotTyping(true);
+
+    selectMenu({ session_id: sessionId, menu_flag: menuId })
+      .then((res) => {
+        setMessages((prev) => [
+          ...prev,
+          { type: "bot", text: res.reply, flag: res.flag },
+        ]);
+
+        // Update menus only if flag is 1
+        setMenus(res.flag === 1 ? res.menus || [] : []);
+        setIsBotTyping(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsBotTyping(false);
+      });
+  };
+
   const toggleOpen = () => setIsOpen(!isOpen);
+
+  const renderMenus = () => {
+    if (!menus || menus.length === 0) return null;
+    return (
+      <div
+        className="d-flex flex-wrap mb-1"
+        style={{ gap: "10px", justifyContent: "flex-start" }}
+      >
+        {menus.map((menu) => (
+          <button
+            key={menu.id}
+            className={`btn btn-outline-primary ${styles.menuButton}`}
+            onClick={() => handleMenuClick(menu.id)}
+            style={{
+              borderRadius: "5px",
+              fontSize: "0.75rem",
+              padding: "0px 5px",
+              whiteSpace: "nowrap",
+              height: "25px",
+            }}
+          >
+            {menu.name}
+          </button>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <>
@@ -89,24 +147,25 @@ const ChatBot = () => {
           )}
           <button
             onClick={toggleOpen}
-            className="btn btn-primary rounded-circle p-3 shadow-lg"
+            className={`btn rounded-circle p-2 shadow-lg ${styles.floatingBtn}`}
             style={{
               position: "fixed",
               bottom: "30px",
               right: "30px",
-              width: "60px",
-              height: "60px",
-              fontSize: "24px",
+              width: "50px",
+              height: "50px",
+              fontSize: "18px",
               zIndex: 1050,
             }}
           >
-            <i className="bi bi-chat-dots"></i>
+            <i className="fas fa-comments"></i>
           </button>
         </>
       )}
+
       {isOpen && (
         <div
-          className={`card shadow-lg  ${styles.chatContainer} ${
+          className={`${styles.chatContainer} ${
             isOpen ? styles.slideIn : styles.slideOut
           }`}
           style={{
@@ -114,112 +173,147 @@ const ChatBot = () => {
             bottom: 0,
             right: 0,
             width: isMobile ? "100%" : "400px",
-            height: isMobile ? "100%" : "550px",
+            height: isMobile ? "100%" : "500px",
             zIndex: 1050,
-
           }}
         >
-          <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center px-4 py-3">
-            <h5 className="mb-0 text-white">Assistant Bot</h5>
-            <button
-              className="btn-close btn-close-white "
-              onClick={toggleOpen}
-            ></button>
-          </div>
-          <div
-            className={`card-body d-flex flex-column p-4 ${styles.chatBody}`}
-            style={{ height: "calc(100% - 140px)", backgroundColor: "#f8f9fa" }}
-          >
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`mb-4 d-flex ${
-                  msg.type === "user"
-                    ? "justify-content-end"
-                    : "justify-content-start"
-                }`}
-              >
-                <div
-                  className={`d-flex align-items-start ${
-                    msg.type === "user" ? "flex-row-reverse" : "flex-row"
-                  } ${styles.messageBubble}`}
-                  style={{ maxWidth: "90%" }}
-                >
-                  <i
-                    className={`bi ${
-                      msg.type === "user" ? "bi-person-circle" : "bi-robot"
-                    } ${msg.type === "user" ? "ms-3" : "me-3"}`}
-                    style={{
-                      fontSize: "28px",
-                      color: msg.type === "user" ? "#007bff" : "#6c757d",
-                    }}
-                  ></i>
-                  <div
-                    className={`${styles.messageBox} ${
-                      msg.type === "user" ? styles.user : styles.bot
-                    }`}
-                    style={{
-                      padding: "10px 20px",
-                      lineHeight: "1.5",
-                    }}
-                  >
+          <div className="card shadow-lg" style={{ height: "100%" }}>
+            <div
+              className="card-header d-flex justify-content-between align-items-center p-3"
+              style={{ borderTop: "4px solid #0987F5" }}
+            >
+              <h5 className="mb-0">Assistant Bot</h5>
+              <div className="d-flex flex-row align-items-center">
+                <i
+                  className="fas fa-times text-muted fa-xs"
+                  onClick={toggleOpen}
+                  style={{ cursor: "pointer" }}
+                ></i>
+              </div>
+            </div>
+
+            <div
+              className={`card-body ${styles.chatBody}`}
+              style={{
+                height: "400px",
+                position: "relative",
+                overflowY: "auto",
+              }}
+            >
+              {messages.map((msg, index) => {
+                const time = new Date().toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                return (
+                  <div key={index}>
                     {msg.type === "bot" ? (
-                      <>
-                        <ReactMarkdown>{msg.text}</ReactMarkdown>
-                        {msg.flag === 1 && (
-                          <button
-                            className="btn btn-outline-primary mt-3"
-                            onClick={() => (window.location.href = "/contact")}
-                            style={{ borderRadius: "20px" }}
-                          >
-                            Contact Support
-                          </button>
-                        )}
-                      </>
+                      <div className="d-flex justify-content-start align-items-center mb-1">
+                        <p className="small mb-0">Assistant Bot</p>
+                        <p className="small mb-0 text-muted ms-2">{time}</p>
+                      </div>
                     ) : (
-                      msg.text
+                      <div className="d-flex justify-content-end align-items-center mb-1">
+                        <p className="small mb-0 text-muted me-2">{time}</p>
+                        <p className="small mb-0">You</p>
+                      </div>
                     )}
+
+                    <div
+                      className={`d-flex flex-row ${
+                        msg.type === "user"
+                          ? "justify-content-end mb-4 pt-1"
+                          : "justify-content-start"
+                      } ${styles.messageBubble}`}
+                    >
+                      {msg.type === "user" ? (
+                        <>
+                          <div>
+                            <p
+                              className={`small p-2 me-3 mb-3 text-white ${styles.messageBox} ${styles.user}`}
+                            >
+                              {msg.text}
+                            </p>
+                          </div>
+                          <i
+                            className="fas fa-user-circle"
+                            style={{ fontSize: "30px", color: "#6C757D" }}
+                          ></i>
+                        </>
+                      ) : (
+                        <>
+                          <i
+                            className="fas fa-robot"
+                            style={{ fontSize: "30px", color: "#6c757d" }}
+                          ></i>
+                          <div>
+                            <p
+                              className={`small p-2 ms-3 mb-3 ${styles.messageBox} ${styles.bot}`}
+                            >
+                              <ReactMarkdown>{msg.text}</ReactMarkdown>
+                              {msg.flag === 1 && (
+                                <button
+                                  className="btn btn-outline-primary mt-2"
+                                  onClick={() =>
+                                    (window.location.href = "/contact")
+                                  }
+                                  style={{
+                                    borderRadius: "5px",
+                                    fontSize: "0.8rem",
+                                    height: "35px",
+                                  }}
+                                >
+                                  Contact Support
+                                </button>
+                              )}
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {menus.length > 0 && renderMenus()}
+
+              {isBotTyping && (
+                <div className="d-flex justify-content-start">
+                  <i
+                    className="fas fa-robot"
+                    style={{ fontSize: "30px", color: "#6c757d" }}
+                  ></i>
+                  <div className={styles.typingIndicator}>
+                    <div className={styles.typingDot}></div>
+                    <div className={styles.typingDot}></div>
+                    <div className={styles.typingDot}></div>
                   </div>
                 </div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+
+            <div className="card-footer text-muted d-flex justify-content-start align-items-center p-3">
+              <div className="input-group mb-0">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Type message"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                  style={{ borderRadius: "15px 0 0 15px", padding: "10px" }}
+                />
+                <button
+                  className={`btn btn-primary ${styles.sendBtn}`}
+                  type="button"
+                  onClick={handleSend}
+                  style={{ borderRadius: "0 15px 15px 0", padding: "10px" }}
+                >
+                  Send
+                </button>
               </div>
-            ))}
-            {isBotTyping && (
-              <div className={`mb-4 d-flex justify-content-start`}>
-                <div className={styles.typingIndicator}>
-                  <i
-                    className="bi bi-robot me-3"
-                    style={{ fontSize: "28px", color: "#6c757d" }}
-                  ></i>
-                  <div className={styles.typingDot}></div>
-                  <div className={styles.typingDot}></div>
-                  <div className={styles.typingDot}></div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-          <div className="card-footer p-3">
-            <div className="input-group">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Ask something..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                style={{ borderRadius: "20px 0 0 20px", padding: "12px" }}
-              />
-              <button
-                className={`btn btn-primary ${styles.sendBtn}`}
-                onClick={handleSend}
-                style={{
-                  borderRadius: "0 20px 20px 0",
-                  padding: "12px 15px",
-                  width: "80px",
-                }}
-              >
-                Message
-              </button>
             </div>
           </div>
         </div>
