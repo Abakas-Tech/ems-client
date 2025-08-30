@@ -3,16 +3,14 @@ import { axiosInstance } from "../../../utils/axios";
 // Get all properties (with optional query params)
 export const getAllProperties = async (params = {}) => {
   try {
-    const response = await axiosInstance.get("/properties", {
-      params,
-    });
+    const response = await axiosInstance.get("/properties", { params });
     return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.message || error.message || "Unknown error",
-    };
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch properties"
+    );
   }
 };
 
@@ -22,25 +20,25 @@ export const getPropertyById = async (id) => {
     const response = await axiosInstance.get(`/properties/${id}`);
     return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.message || error.message || "Unknown error",
-    };
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch property"
+    );
   }
 };
 
 // Create a property
 export const createProperty = async (data) => {
   try {
-    const response = await axiosInstance.post("/properties", data, {});
+    const response = await axiosInstance.post("/properties", data);
     return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.message || error.message || "Unknown error",
-    };
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to create property"
+    );
   }
 };
 
@@ -50,25 +48,24 @@ export const updateProperty = async (id, data) => {
     const response = await axiosInstance.put(`/properties/${id}`, data);
     return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.message || error.message || "Unknown error",
-    };
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update property"
+    );
   }
 };
 
 // Delete a property by ID
 export const deleteProperty = async (id) => {
-  console.log(id);
   try {
     const response = await axiosInstance.delete(`/properties/${id}`);
     return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message:
-        error.response?.data?.message || error.message || "Unknown error",
-    };
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete property"
+    );
   }
 };
