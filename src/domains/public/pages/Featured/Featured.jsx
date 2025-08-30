@@ -4,17 +4,19 @@ import { getAllProperties } from "../../api/properties.api";
 import { getPropertyImages } from "../../api/PropertiesImage.api";
 import FeaturedCard from "./FeaturedCard";
 import Loader from "../../../../shared/components/Loader/Loader";
+import useLoader from './../../../../context/Loader/UseLoader';
 
 function Featured() {
   const [properties, setProperties] = useState([]);
   const [images, setImages] = useState({});
-  const [loading, setLoading] = useState(true);
+  const { showLoader, hideLoader } = useLoader();
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        setLoading(true);
+        showLoader(); // start global loader
+        setError(null);
 
         // Fetch featured properties
         const params = { isFeatured: true };
@@ -34,19 +36,16 @@ function Featured() {
         }, {});
 
         setImages(imagesMap);
-
-        // Debug: Log the images data
-        // console.log("Images data:", imagesMap);
-      } catch (err) {
+      } catch {
         setError("Failed to fetch properties or images.");
-        console.error(err);
       } finally {
-        setLoading(false);
+        hideLoader(); // stop global loader
       }
     };
-    loadData();
-  }, []);
 
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <section className="bg-light">
       <div className="container">
@@ -64,11 +63,7 @@ function Featured() {
         </div>
 
         <div className="row list-layout">
-          {loading ? (
-            <div className="d-flex justify-content-center py-5">
-              <Loader />
-            </div>
-          ) : error ? (
+          {error ? (
             <p className="text-danger text-center">{error}</p>
           ) : properties.length === 0 ? (
             <p className="text-center">No featured properties found.</p>
@@ -84,15 +79,13 @@ function Featured() {
           )}
         </div>
 
-        {!loading && (
-          <div className="row">
-            <div className="col-lg-12 col-md-12 col-sm-12 text-center mt-4">
-              <Link to="/properties" className="btn btn-main px-lg-5 rounded">
-                Browse More Properties
-              </Link>
-            </div>
+        <div className="row">
+          <div className="col-lg-12 col-md-12 col-sm-12 text-center mt-4">
+            <Link to="/properties" className="btn btn-main px-lg-5 rounded">
+              Browse More Properties
+            </Link>
           </div>
-        )}
+        </div>
       </div>
     </section>
   );
