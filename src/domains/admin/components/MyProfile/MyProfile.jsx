@@ -45,8 +45,8 @@ const MyProfile = () => {
         whatsapp_username: data.whatsapp_username || "",
         profile_image_url: data.profile_image_url || "",
       });
-    } catch {
-      addMessage("error", "Failed to fetch profile.");
+    } catch(err) {
+      addMessage("error", err.message);
     } finally {
       hideLoader();
     }
@@ -54,6 +54,7 @@ const MyProfile = () => {
 
   useEffect(() => {
     fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Handle text inputs
@@ -74,15 +75,18 @@ const MyProfile = () => {
     });
 
     showLoader();
-    try {
-      await updateProfile(formData);
-      await fetchProfile();
-      addMessage("success", "Profile image updated successfully!");
-    } catch (error) {
-      addMessage("error", error.message || "Failed to update profile image.");
-    } finally {
-      hideLoader();
-    }
+   try {
+     const response = await updateProfile(formData);
+     await fetchProfile();
+     addMessage(
+       "success",
+       response?.message || "Profile image updated successfully!"
+     );
+   } catch (error) {
+     addMessage("error", error.message);
+   } finally {
+     hideLoader();
+   }
   };
 
   const handleImageClick = () => fileInputRef.current.click();
@@ -102,7 +106,7 @@ const MyProfile = () => {
         response.message || "Profile updated successfully!"
       );
     } catch (error) {
-      addMessage("error", error.message || "Update failed.");
+      addMessage("error", error.message);
     } finally {
       hideLoader();
     }
