@@ -44,7 +44,7 @@ const ChangePassword = () => {
         addMessage("error", response.message || "Change failed.");
       }
     } catch (error) {
-      addMessage("error", error.message || "Change failed.");
+      addMessage("error", error.message);
     } finally {
       hideLoader();
     }
