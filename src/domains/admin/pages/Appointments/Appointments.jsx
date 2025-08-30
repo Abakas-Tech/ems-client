@@ -46,6 +46,7 @@ const Appointments = () => {
     showLoader();
     try {
       const cleanFilters = Object.fromEntries(
+        // eslint-disable-next-line no-unused-vars
         Object.entries(filters).filter(([_, v]) => v !== "")
       );
 
@@ -53,7 +54,7 @@ const Appointments = () => {
       setAppointments(data.appointments || []);
       setPagination(data.pagination || {});
     } catch (err) {
-      addMessage("error", err.message || "Failed to load appointments");
+      addMessage("error", err.message );
     } finally {
       hideLoader();
     }
@@ -61,6 +62,7 @@ const Appointments = () => {
 
   useEffect(() => {
     loadAppointments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   // Handlers
@@ -68,41 +70,43 @@ const Appointments = () => {
     setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
   };
 
-  const handleSave = async (formData) => {
-    showLoader();
-    try {
-      if (selected) {
-        console.log(selected);
-        await updateAppointment(selected.id, formData);
-        addMessage("success", "Appointment updated");
-      } else {
-        await createAppointment(formData);
-        addMessage("success", "Appointment created");
-      }
-      setShowModal(false);
-      setSelected(null);
-      loadAppointments();
-    } catch (err) {
-      addMessage("error", err.message || "Failed to save appointment");
-    } finally {
-      hideLoader();
-    }
-  };
+ const handleSave = async (formData) => {
+   showLoader();
+   try {
+     let response;
 
-  const handleDelete = async () => {
-    showLoader();
-    try {
-      await deleteAppointment(selected.id);
-      addMessage("success", "Appointment deleted");
-      setShowDelete(false);
-      setSelected(null);
-      loadAppointments();
-    } catch (err) {
-      addMessage("error", err.message || "Failed to delete appointment");
-    } finally {
-      hideLoader();
-    }
-  };
+     if (selected) {
+       response = await updateAppointment(selected.id, formData);
+       addMessage("success", response?.message || "Appointment updated");
+     } else {
+       response = await createAppointment(formData);
+       addMessage("success", response?.message || "Appointment created");
+     }
+
+     setShowModal(false);
+     setSelected(null);
+     loadAppointments();
+   } catch (err) {
+     addMessage("error", err.message);
+   } finally {
+     hideLoader();
+   }
+ };
+
+const handleDelete = async () => {
+  showLoader();
+  try {
+    const response = await deleteAppointment(selected.id);
+    addMessage("success", response?.message || "Appointment deleted");
+    setShowDelete(false);
+    setSelected(null);
+    loadAppointments();
+  } catch (err) {
+    addMessage("error", err.message);
+  } finally {
+    hideLoader();
+  }
+};
 
   return (
     <div className="dashboard-wraper container py-5">
@@ -172,20 +176,20 @@ const Appointments = () => {
           data={appointments}
           pagination={pagination}
           onPageChange={(page) => setFilters((f) => ({ ...f, page }))}
-          onView={(row) => setDetail(row)} // 👁 detail
+          onView={(row) => setDetail(row)} // detail
           onEdit={(row) => {
-            setSelected(row); // ✏️ edit
+            setSelected(row); //  edit
             setShowModal(true);
           }}
           onDelete={(row) => {
-            setSelected(row); // 🗑 delete
+            setSelected(row); //  delete
             setShowDelete(true);
           }}
         />
       ) : (
         <AppointmentsCalendar
           events={appointments}
-          onSelectEvent={(event) => setDetail(event)} // 👁 calendar also opens detail
+          onSelectEvent={(event) => setDetail(event)} // calendar also opens detail
         />
       )}
 
@@ -195,11 +199,11 @@ const Appointments = () => {
           appointment={detail}
           onClose={() => setDetail(null)}
           onEdit={(row) => {
-            setSelected(row); // ✏️ edit
+            setSelected(row); //  edit
             setShowModal(true);
           }}
           onDelete={(row) => {
-            setSelected(row); // 🗑 delete
+            setSelected(row); //  delete
             setShowDelete(true);
           }}
         />
