@@ -1,4 +1,4 @@
-import { axiosPythonInstance } from "../../../utils/axios";
+import { axiosPythonInstance } from "../../utils/axios";
 
 // Send a user message to chatbot with session_id
 export const sendMessage = async (sessionId, message) => {
@@ -7,7 +7,6 @@ export const sendMessage = async (sessionId, message) => {
       session_id: sessionId,
       message: message,
     });
-
     return res.data;
   } catch (err) {
     // Throw sanitized error for frontend
@@ -25,5 +24,19 @@ export const getWelcomeMessage = async () => {
     throw new Error(
       err.response?.data?.message || "Failed to get welcome message"
     );
+  }
+};
+
+// Send menu selection only
+export const selectMenu = async ({ session_id, menu_flag }) => {
+  try {
+    const res = await axiosPythonInstance.post("/chat/menu", {
+      session_id: session_id,
+      menu_flag: menu_flag,
+    });
+    return res.data;
+  } catch (err) {
+    // Throw sanitized error for frontend
+    throw new Error(err.response?.data?.message || "Failed to select menu");
   }
 };
