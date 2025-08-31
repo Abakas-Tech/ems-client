@@ -8,7 +8,6 @@ const ResponseProvider = ({ children }) => {
   const [responseMessages, setResponseMessages] = useState([]);
 
   const addMessage = (type, text) => {
-    console.log(type, text);
     const id = ++messageId;
     setResponseMessages((prev) => [...prev, { id, type, text }]);
     setTimeout(() => removeMessage(id), 5000);
