@@ -467,13 +467,20 @@ const FilterSidebar = ({
             </Accordion>
           </div>
 
-          <div className="form-group filter_button">
+          <div className="form-group filter_button d-flex gap-2">
             <Button
               type="button"
-              className="btn btn-main rounded full-width fw-normal fs-6"
+              className="btn btn-main rounded flex-fill fw-normal fs-6"
               onClick={() => show !== undefined && onHide()}
             >
               {total || 0} Results show
+            </Button>
+            <Button
+              type="button"
+              className="btn btn-outline-secondary rounded flex-fill fw-normal fs-6 text-white"
+              onClick={() => onFilterChange({})} // Clear all filters
+            >
+              Clear
             </Button>
           </div>
         </div>
