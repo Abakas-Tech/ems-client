@@ -29,8 +29,6 @@ const FileManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
 
-
-
   //  Fetch files
   useEffect(() => {
     const fetchData = async () => {
@@ -42,7 +40,7 @@ const FileManager = () => {
         if (filters.limit) cleanFilters.limit = parseInt(filters.limit, 10);
         if (filters.fileType) cleanFilters.fileType = filters.fileType;
         if (filters.category) cleanFilters.category = filters.category;
-        if (filters.file_name) cleanFilters.file_name = filters.file_name;
+        if (filters.file_name) cleanFilters.fileName = filters.file_name; // match API param
 
         const files = await fetchFiles(cleanFilters);
         setFilesData(files);
@@ -83,15 +81,22 @@ const FileManager = () => {
     showLoader();
     try {
       let response;
+      // Prepare FormData before sending to API
+      const formData = new FormData();
+      if (fileData.file) formData.append("file", fileData.file);
+      if (fileData.category) formData.append("category", fileData.category);
+      if (fileData.file_name) formData.append("filename", fileData.file_name);
+      if (fileData.description)
+        formData.append("description", JSON.stringify(fileData.description));
 
       if (editingFile) {
-        response = await updateFile(editingFile.id, fileData);
+        response = await updateFile(editingFile.id, formData);
         addMessage(
           "success",
           response?.message || "File updated successfully!"
         );
       } else {
-        response = await uploadFile(fileData);
+        response = await uploadFile(formData);
         addMessage(
           "success",
           response?.message || "File uploaded successfully!"
