@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { sendContactRequest} from "../../api/contact.api";
+import { sendContactRequest } from "../../api/contact.api";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import useResponse from "../../../../context/response/UseResponse";
-import { fetchAgentProfile } from './../../api/profile.api';
+import { fetchAgentProfile } from "./../../api/profile.api";
 
 const MySwal = withReactContent(Swal);
 
@@ -146,7 +146,7 @@ const Contact = () => {
 
               <div className="form-group">
                 <button
-                  className="btn btn-main px-5 rounded"
+                  className="btn btn-light-main  px-5 rounded"
                   type="submit"
                   disabled={loading}
                 >
@@ -163,11 +163,8 @@ const Contact = () => {
               <p>
                 Hello I'm{" "}
                 <span
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: "1.2rem",
-                    color: "#FF5722",
-                  }}
+                  className="fw-bold"
+                  style={{ fontSize: "1.2rem", color: "#FF5722" }}
                 >
                   {agentData.agent_name}
                 </span>
@@ -177,33 +174,60 @@ const Contact = () => {
                 free to reach out anytime.
               </p>
 
-              <div className="cn-info-detail">
-                <div className="cn-info-icon">
-                  <i className="fa-solid fa-house"></i>
+              {/* Location */}
+              <div className="d-flex align-items-center mb-3 mt-4">
+                <div
+                  className="d-flex align-items-center justify-content-center rounded-circle me-3"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    backgroundColor: "#ECF4FE",
+                    color: "#0987f5",
+                  }}
+                >
+                  <i className="fa-solid fa-location-dot"></i>
                 </div>
-                <div className="cn-info-content">
-                  <h4 className="cn-info-title">Reach Me</h4>
-                  {agentData.address}
+                <div>
+                  <h5 className="mb-0">Reach Me</h5>
+                  <p className="mb-0">{agentData.address}</p>
                 </div>
               </div>
 
-              <div className="cn-info-detail">
-                <div className="cn-info-icon">
-                  <i className="fa-solid fa-envelope-circle-check"></i>
+              {/* Email */}
+              <div className="d-flex align-items-center mb-3">
+                <div
+                  className="d-flex align-items-center justify-content-center rounded-circle me-3"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    backgroundColor: "#ECF4FE",
+                    color: "#0987f5",
+                  }}
+                >
+                  <i className="fa-solid fa-envelope"></i>
                 </div>
-                <div className="cn-info-content">
-                  <h4 className="cn-info-title">Drop A Mail</h4>
-                  {agentData.agent_email}
+                <div>
+                  <h5 className="mb-0">Drop A Mail</h5>
+                  <p className="mb-0">{agentData.agent_email}</p>
                 </div>
               </div>
 
-              <div className="cn-info-detail">
-                <div className="cn-info-icon">
-                  <i className="fa-solid fa-phone-volume"></i>
+              {/* Phone */}
+              <div className="d-flex align-items-center mb-3">
+                <div
+                  className="d-flex align-items-center justify-content-center rounded-circle me-3"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    backgroundColor: "#ECF4FE",
+                    color: "#0987f5",
+                  }}
+                >
+                  <i className="fa-solid fa-phone"></i>
                 </div>
-                <div className="cn-info-content">
-                  <h4 className="cn-info-title">Call Me</h4>
-                  {agentData.agent_phone}
+                <div>
+                  <h5 className="mb-0">Call Me</h5>
+                  <p className="mb-0">{agentData.agent_phone}</p>
                 </div>
               </div>
             </div>

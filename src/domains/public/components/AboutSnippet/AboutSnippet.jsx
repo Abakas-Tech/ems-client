@@ -49,7 +49,7 @@ const AboutSnippet = ({ showButton  }) => {
     : null;
 
   return (
-    <section className="agent-page p-0 gray-simple mt-5">
+    <section className="agent-page p-0 gray-simple mt-5 ">
       <div className="container">
         <div className="row">
           <div className="col-lg-12 col-md-12">
@@ -71,8 +71,6 @@ const AboutSnippet = ({ showButton  }) => {
                 <div className="agency-desc">
                   <p>{agentData.bio}</p>
                 </div>
-
-               
 
                 <ul className="social-icons mt-3">
                   {facebookUrl && (
@@ -116,7 +114,10 @@ const AboutSnippet = ({ showButton  }) => {
                 {/* Conditionally render button */}
                 {showButton && (
                   <div className="mt-3 d-flex justify-content-end ">
-                    <Link to="/about" className="btn btn-md btn-main fw-medium">
+                    <Link
+                      to="/about"
+                      className="btn btn-light-main btn-md btn-main fw-medium"
+                    >
                       Learn More
                     </Link>
                   </div>

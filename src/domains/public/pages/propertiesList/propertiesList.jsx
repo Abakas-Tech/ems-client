@@ -184,7 +184,7 @@ const handleToggleSidebar = () => {
                 properties.map((property) => (
                   <React.Fragment key={property.id}>
                     {isPublicPage ? (
-                      <div className="col-12 mb-4">
+                      <div className="col-12 mb-4 ">
                         <SingleProperty
                           property={property}
                           images={images[property.id] || []}

@@ -8,9 +8,9 @@ const ContactPage = () => {
         <div class="container">
           <div class="row">
             <div class="col-lg-12 col-md-12">
-              <h2 class="ipt-title">Contact Us</h2>
+              <h2 class="ipt-title">Send Me a Message</h2>
               <span class="ipn-subtitle">
-                Lists of our all Popular agencies
+                Get in touch for advice, viewings, or property details.
               </span>
             </div>
           </div>

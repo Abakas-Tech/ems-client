@@ -46,12 +46,12 @@ const SingleProperty = ({ property, images }) => {
               style={{ gap: "0.5rem", zIndex: 10 }}
             >
               {property_type && (
-                <span className="badge bg-success p-2">
+                <span className="badge bg-success p-2 mt-1">
                   {capitalizeFirstLetter(property_type)}
                 </span>
               )}
               {category && (
-                <span className="badge bg-primary p-2">
+                <span className="badge bg-primary p-2 mt-1">
                   {capitalizeFirstLetter(category)}
                 </span>
               )}
@@ -69,7 +69,7 @@ const SingleProperty = ({ property, images }) => {
                   <img
                     src={img.image_url}
                     alt={img.alt_text || title}
-                    className="img-fluid mx-auto rounded"
+                    className="img-fluid mx-auto rounded my-1"
                     style={{
                       maxHeight: "210px",
                       objectFit: "cover",
@@ -83,13 +83,13 @@ const SingleProperty = ({ property, images }) => {
         </div>
 
         {/* Content */}
-        <div className="listing-content w-100 w-lg-50">
+        <div className="listing-content w-100 w-lg-50 pe-2">
           {/* Header */}
-          <div className="listing-detail-wrapper-box">
+          <div className="listing-detail-wrapper-box ">
             <div className="listing-detail-wrapper d-flex align-items-center justify-content-between">
-              <div className="listing-short-detail">
+              <div className="listing-short-detail ">
                 <span
-                  className={`label d-inline-flex mb-1 ${
+                  className={`label d-inline-flex mb-1 mt-2 ${
                     is_urgent
                       ? "bg-danger text-white"
                       : "label for-sale d-inline-flex mb-1"
@@ -128,7 +128,7 @@ const SingleProperty = ({ property, images }) => {
           </div>
 
           {/* Features */}
-          <div className="price-features-wrapper mt-2">
+          <div className="price-features-wrapper mt-2 ">
             <div className="list-fx-features d-flex align-items-center justify-content-between mt-3 mb-1">
               {/* BHK with tooltip */}
               <div className="listing-card d-flex align-items-center position-relative bhk-card">
@@ -184,7 +184,7 @@ const SingleProperty = ({ property, images }) => {
               <div className="listing-detail-btn">
                 <Link
                   to={`/properties/${id}`}
-                  className="btn btn-sm px-4 fw-medium btn-main"
+                  className="btn btn-sm px-4 fw-medium btn-main btn-light-main "
                 >
                   View Detail
                 </Link>

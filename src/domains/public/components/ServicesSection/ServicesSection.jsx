@@ -48,16 +48,24 @@ const services = [
 const ServicesSection = () => {
   return (
     <>
-      <div className="sec-heading center mt-5 mb-5">
-        <h2>Our Services</h2>
-        <p>
-          We offer a wide range of services to help you find, buy, sell, and
-          manage properties.
-        </p>
-      </div>
-      <section id="services" className="services section">
+      <section className=" mt-6 ">
         <div className="container">
-          <div className="row gy-4">
+          {/* Heading */}
+          <div className="row justify-content-center">
+            <div className="col-lg-7 col-md-10 text-center">
+              <div className="sec-heading center">
+                <h2>My Services</h2>
+                <p>
+                  As your trusted real estate agent, I guide you through buying,
+                  selling, renting, or valuing property—making the process
+                  smooth and stress-free.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Services Cards */}
+          <div className="row gy-4 ">
             {services.map((service, index) => (
               <div
                 key={index}
@@ -65,8 +73,8 @@ const ServicesSection = () => {
                 data-aos="fade-up"
                 data-aos-delay={(index + 1) * 100}
               >
-                <div className="service-item position-relative h-100 shadow-sm p-4 rounded">
-                  <div className="icon mb-3">
+                <div className="service-item position-relative h-100 shadow p-4 rounded hover-up text-center bg-white">
+                  <div className="icon mb-3 ">
                     <i className={`${service.icon} fs-1 text-primary`}></i>
                   </div>
                   <a href={service.link} className="stretched-link">

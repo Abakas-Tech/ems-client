@@ -81,7 +81,10 @@ function Featured() {
 
         <div className="row">
           <div className="col-lg-12 col-md-12 col-sm-12 text-center mt-4">
-            <Link to="/properties" className="btn btn-main px-lg-5 rounded">
+            <Link
+              to="/properties"
+              className="btn btn-main px-lg-5 rounded btn-light-main "
+            >
               Browse More Properties
             </Link>
           </div>

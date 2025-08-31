@@ -7,7 +7,7 @@ import {
   faTelegram,
   faWhatsapp,
 } from "@fortawesome/free-brands-svg-icons";
-import { Link } from "react-router-dom";
+import { data, Link } from "react-router-dom";
 import img from "../../../../assets/img/img.jpg";
 import { fetchAgentProfile } from "../../api/profile.api";
 import ContactForm from "../../components/ContactForm/ContactForm";
@@ -23,7 +23,8 @@ const AboutDetail = () => {
     city: "Addis Ababa",
     country: "Ethiopia",
     experience_description:
-      "experience_description: `Abdurehman Ahmed has been a leading real estate agent in Ethiopia for over 12 years. He has extensive experience in residential, commercial, and luxury properties. His expertise includes market analysis, property valuation, client relationship management, and seamless property transactions. Abdurehman is committed to providing personalized guidance, ensuring his clients make informed decisions and achieve their property goals efficiently.",
+      "Abdurehman Ahmed has been a leading real estate agent in Ethiopia for over 12 years. He has extensive experience in residential, commercial, and luxury properties. His expertise includes market analysis, property valuation, client relationship management, and seamless property transactions. Abdurehman is committed to providing personalized guidance, ensuring his clients make informed decisions and achieve their property goals efficiently.",
+
     facebook_username: "#",
     whatsapp_username: "#",
   });
@@ -47,7 +48,7 @@ const AboutDetail = () => {
             <div className="col-lg-12 col-md-12">
               <h2 className="ipt-title">Agent Detail</h2>
               <span className="ipn-subtitle">
-                {agent.agent_name} From Ethiopia
+                {agent.agent_name} From {agent.city}, {agent.country}
               </span>
             </div>
           </div>
@@ -71,8 +72,8 @@ const AboutDetail = () => {
                     </h4>
                     <p>
                       <span>
-                        <FontAwesomeIcon icon={faLocationDot} />{" "}
-                        {agent.agent_address}
+                        <FontAwesomeIcon icon={faLocationDot} /> {agent.address}
+                        , {agent.city}
                       </span>
                     </p>
                   </div>
@@ -127,7 +128,7 @@ const AboutDetail = () => {
               style={{ alignItems: "stretch" }}
             >
               {/* Agent Info */}
-              <div className="block-wrap mb-4 flex-fill">
+              <div className="block-wrap mb-4 ">
                 <div className="block-header">
                   <h4 className="block-title">Agent Info</h4>
                 </div>
@@ -146,7 +147,7 @@ const AboutDetail = () => {
                       <strong>Telegram</strong> {agent.telegram_username}
                     </li>
                     <li>
-                      <strong>Address</strong> {agent.agent_address}
+                      <strong>Address</strong> {agent.address}
                     </li>
                     <li>
                       <strong>City</strong> {agent.city}
@@ -159,13 +160,13 @@ const AboutDetail = () => {
               </div>
 
               {/* Agent Experience */}
-              <div className="block-wrap mb-4 flex-fill">
+              <div className="block-wrap mb-4 ">
                 <div className="block-header">
                   <h4 className="block-title">Agent Experience</h4>
                 </div>
                 <div className="block-body">
                   <div className="agent-experience">
-                    <p>{agent.experience_description}</p>
+                    <p>{agent?.experience_description}</p>
                   </div>
                 </div>
               </div>
