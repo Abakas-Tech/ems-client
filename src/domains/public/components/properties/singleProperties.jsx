@@ -177,7 +177,7 @@ const SingleProperty = ({ property, images }) => {
             <div className="d-flex justify-content-between align-items-center">
               <div className="listing-locate">
                 <span className="listing-location text-muted-2">
-                  <i className="fa-solid fa-location-pin me-1"></i>
+                  <i className="bi bi-geo-alt me-1"></i>
                   {location}
                 </span>
               </div>

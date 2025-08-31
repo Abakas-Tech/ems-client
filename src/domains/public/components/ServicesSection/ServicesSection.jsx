@@ -73,7 +73,10 @@ const ServicesSection = () => {
                 data-aos="fade-up"
                 data-aos-delay={(index + 1) * 100}
               >
-                <div className="service-item position-relative h-100 shadow p-4 rounded hover-up text-center bg-white">
+                <div
+                  className="service-item position-relative h-100 shadow p-4 rounded hover-up text-center bg-white custom-shadow"
+                  style={{ border: "1px solid #f0f0f0" }}
+                >
                   <div className="icon mb-3 ">
                     <i className={`${service.icon} fs-1 text-primary`}></i>
                   </div>

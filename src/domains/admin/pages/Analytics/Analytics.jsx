@@ -34,7 +34,7 @@ const Analytics = () => {
   });
 
   const navigate = useNavigate();
- 
+
   useEffect(() => {
     const fetchData = async () => {
       showLoader();
@@ -72,7 +72,6 @@ const Analytics = () => {
         setAppointmentData(appointments);
         setFileData(files);
         setPropertyCount(propertyCount);
-
       } catch (err) {
         addMessage("error", err.message);
       } finally {
@@ -100,10 +99,10 @@ const Analytics = () => {
   };
 
   return (
-    <div className="dashboard-wraper container py-5">
+    <div className="dashboard-wraper  ">
       {/* Header */}
-      <div className="text-center mb-4">
-        <h2 className="fw-bold text-primary">📊 Analytics Dashboard</h2>
+      <div className=" mb-4 text-start">
+        <h2 className="fw-bold ">📊 Analytics </h2>
         <p className="text-muted">
           Track properties, appointments & file usage
         </p>

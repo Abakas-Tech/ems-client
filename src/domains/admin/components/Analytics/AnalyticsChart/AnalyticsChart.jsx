@@ -40,7 +40,7 @@ const AnalyticsChart = ({ data, pagination, onPageChange }) => {
       {/* Views Pie Chart */}
       <div className="col-md-6">
         <div className={`card shadow-sm p-4 h-100 ${styles.chartCard}`}>
-          <h5 className={styles.chartTitle}>🏆 Most Viewed</h5>
+          <h5 className={styles.chartTitle}>Most Viewed</h5>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -67,7 +67,7 @@ const AnalyticsChart = ({ data, pagination, onPageChange }) => {
       {/* Inquiries Pie Chart */}
       <div className="col-md-6">
         <div className={`card shadow-sm p-4 h-100 ${styles.chartCard}`}>
-          <h5 className={styles.chartTitle}>📩 Most Inquired</h5>
+          <h5 className={styles.chartTitle}>Most Inquired</h5>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie

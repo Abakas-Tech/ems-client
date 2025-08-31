@@ -115,7 +115,7 @@ const MyProfile = () => {
   return (
     <div className="dashboard-wraper">
       <div className="form-submit">
-        <h4>My Account</h4>
+        <h2>My Account</h2>
         <div className="submit-section">
           <form onSubmit={handleSubmit}>
             <div className="row">

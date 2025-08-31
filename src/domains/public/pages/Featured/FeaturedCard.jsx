@@ -121,7 +121,7 @@ const FeaturedCard = ({ property, images }) => {
         <div className="listing-footer-wrapper d-flex justify-content-between align-items-center">
           <div className="listing-locate">
             <span className="listing-location text-muted-2">
-              <i className="fa-solid fa-location-pin me-1"></i>
+              <i className="bi bi-geo-alt me-1"></i>
               {location}
             </span>
           </div>

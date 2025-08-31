@@ -81,7 +81,7 @@ const PropertyGallery = ({ images }) => {
               <img
                 src={image.image_url}
                 alt={`property-${i}`}
-                className="img-fluid mx-auto"
+                className="img-fluid mx-auto mt-2"
                 style={{ cursor: "pointer" }}
               />
             </a>
