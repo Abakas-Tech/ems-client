@@ -405,53 +405,51 @@ const PropertyFormPage = () => {
 
   return (
     <div>
-     
       {/* Main Section */}
-      <section className="gray-simple">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12 col-md-12">
-              <div className="submit-page">
-                {formStage === "property" ? (
-                  <>
-                    <PropertyDetailsForm
-                      initialValues={initialValues}
-                      onSubmit={handlePropertySubmit}
-                      isEditMode={isEditMode}
-                    />
-                    {isEditMode && (
-                      <div className="form-group col-lg-12 col-md-12 mt-3">
-                        <button
-                          type="button"
-                          className="btn btn-secondary fw-medium px-5"
-                          onClick={() => setFormStage("images")}
-                        >
-                          Update Images
-                        </button>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <ImagesUploadForm
-                    propertyTitle={initialValues.title}
-                    propertyId={propertyId}
-                    files={files}
-                    setFiles={setFiles}
-                    altTexts={altTexts}
-                    setAltTexts={setAltTexts}
-                    existingImages={existingImages}
-                    setExistingImages={setExistingImages}
-                    onSubmit={handleImagesSubmit}
-                    onCancel={handleCancel}
+
+      <div className="container dashboard-wraper ">
+        <div className="row">
+          <div className="col-lg-12 col-md-12">
+            <div className="submit-page p-0">
+              {formStage === "property" ? (
+                <>
+                  <PropertyDetailsForm
+                    initialValues={initialValues}
+                    onSubmit={handlePropertySubmit}
                     isEditMode={isEditMode}
-                    onDeleteImage={handleDeleteImage}
                   />
-                )}
-              </div>
+                  {isEditMode && (
+                    <div className="form-group col-lg-12 col-md-12 mt-3">
+                      <button
+                        type="button"
+                        className="btn btn-secondary fw-medium px-5"
+                        onClick={() => setFormStage("images")}
+                      >
+                        Update Images
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <ImagesUploadForm
+                  propertyTitle={initialValues.title}
+                  propertyId={propertyId}
+                  files={files}
+                  setFiles={setFiles}
+                  altTexts={altTexts}
+                  setAltTexts={setAltTexts}
+                  existingImages={existingImages}
+                  setExistingImages={setExistingImages}
+                  onSubmit={handleImagesSubmit}
+                  onCancel={handleCancel}
+                  isEditMode={isEditMode}
+                  onDeleteImage={handleDeleteImage}
+                />
+              )}
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

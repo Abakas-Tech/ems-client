@@ -213,7 +213,7 @@ const PropertyDetailsForm = ({
   return (
     <form onSubmit={formik.handleSubmit}>
       {/* Basic Information */}
-      <div className="form-submit">
+      <div className="form-submit" >
         <h3>Basic Information</h3>
         <div className="submit-section">
           <div className="row">
