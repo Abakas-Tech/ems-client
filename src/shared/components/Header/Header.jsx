@@ -62,7 +62,7 @@ const Header = () => {
         isPortrait ? "navigation-portrait" : "navigation-landscape"
       } ${isFixed ? "header-fixed" : ""}`}
     >
-      <div className="container px-0 ">
+      <div className="container custom-container px-0 ">
         <nav
           id="navigation"
           className={`navigation ${
@@ -93,7 +93,6 @@ const Header = () => {
                   >
                     Home
                   </Link>
-                  
                 </li>
                 <li>
                   <Link
@@ -121,7 +120,7 @@ const Header = () => {
                     Contact
                   </Link>
                 </li>
-                
+
                 <li className="nav-menu-social add-listing">
                   <Link
                     to={user ? "/admin/dashboard" : "/auth/login"}
