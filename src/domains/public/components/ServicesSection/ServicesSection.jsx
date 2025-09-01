@@ -80,9 +80,9 @@ const ServicesSection = () => {
                   <div className="icon mb-3 ">
                     <i className={`${service.icon} fs-1 text-primary`}></i>
                   </div>
-                  <a href={service.link} className="stretched-link">
+                  <div className="stretched-link">
                     <h3 className="fw-semibold">{service.title}</h3>
-                  </a>
+                  </div>
                   <p className="text-muted">{service.description}</p>
                 </div>
               </div>

@@ -115,7 +115,7 @@ const ImagesUploadForm = ({
   };
 
   return (
-    <div className="container dashboard-wraper">
+    <div className=" dashboard-wraper">
       {/* Header */}
       <div className="mb-4 text-start">
         <h2 className="fw-bold">
@@ -136,7 +136,7 @@ const ImagesUploadForm = ({
           <div className="row g-3">
             {existingImages.map((img, index) => (
               <div key={index} className="col-6 col-md-4 col-lg-3">
-                <div className="card shadow-sm position-relative">
+                <div className="card shadow-sm position-relative  ">
                   <img
                     src={img.file ? URL.createObjectURL(img.file) : img.url}
                     alt={img.altText || "Existing image"}
@@ -279,7 +279,7 @@ const ImagesUploadForm = ({
         </button>
         <button
           type="button"
-          className="btn btn-dark fw-medium px-4"
+          className="btn btn-secondary fw-medium px-4"
           onClick={onCancel}
         >
           Cancel

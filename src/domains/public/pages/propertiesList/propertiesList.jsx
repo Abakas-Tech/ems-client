@@ -1,11 +1,13 @@
-import PropertyList from "../../components/propertiesList/propertiesList";
-
-const propertiesList = () => {
+import React from "react";
+import PropertiesList from "../../components/propertiesList/propertiesList";
+import SEOHelmet from "../../../../shared/components/SEOHelmet/SEOHelmet";
+const propertiesListPage = () => {
   return (
     <>
-      <PropertyList />
+      <SEOHelmet />
+      <PropertiesList />
     </>
   );
 };
 
-export default propertiesList;
+export default propertiesListPage;
