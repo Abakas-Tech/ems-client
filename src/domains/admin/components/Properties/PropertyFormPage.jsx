@@ -8,6 +8,7 @@ import {
   deletePropertyImage,
   updatePropertyImagesAltText,
 } from "../../../public/api/PropertiesImage.api";
+import { useConfirmDelete } from "../../../../context/Delete/UseDelete";
 
 // Lazy-load API functions
 const createProperty = async (...args) => {
@@ -46,6 +47,7 @@ const PropertyFormPage = () => {
   );
   const [propertyId, setPropertyId] = useState(propertyIdParam || null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const { openModal } = useConfirmDelete();
   const [isNewProperty, setIsNewProperty] = useState(
     !!location.state?.isNewProperty
   );
@@ -374,25 +376,32 @@ const PropertyFormPage = () => {
     }
   };
 
-  // Add inside PropertyFormPage component
-  const handleDeleteImage = async (imageId) => {
+  const handleDeleteImage = (imageId) => {
     if (!propertyId || !imageId) return;
 
-    showLoader();
     try {
-      const res = await deletePropertyImage(propertyId, imageId);
-      if (!res.success) {
-        addMessage("error", res.message || "Failed to delete image.");
-        hideLoader();
-        return;
-      }
+      openModal(async () => {
+        try {
+          showLoader();
+          const res = await deletePropertyImage(propertyId, imageId);
 
-      // remove from local state
-      setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
-      addMessage("success", "Image deleted successfully!");
+          if (!res.success) {
+            addMessage("error", res.message || "Failed to delete image.");
+            hideLoader();
+            return;
+          }
+
+          // remove from local state
+          setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
+          addMessage("success", res.message);
+        } catch (err) {
+          addMessage("error", err.message);
+        } finally {
+          hideLoader();
+        }
+      });
     } catch (err) {
       addMessage("error", err.message);
-    } finally {
       hideLoader();
     }
   };
