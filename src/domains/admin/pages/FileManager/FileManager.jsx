@@ -9,7 +9,6 @@ import {
   deleteFile,
 } from "../../api/file.api";
 import FileFilters from "../../components/Files/FileFilters/FileFilters";
-import ConfirmDialog from "../../../../shared/components/ConfirmDialog/ConfirmDialog";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useConfirmDelete } from './../../../../context/Delete/UseDelete';
