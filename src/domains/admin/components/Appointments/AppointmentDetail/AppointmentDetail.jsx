@@ -44,14 +44,28 @@ const AppointmentDetail = ({ appointment, onClose }) => {
             <div className="mb-3">
               <span className={styles.label}>Start:</span>
               <span className={styles.value}>
-                {new Date(appointment.start_time).toLocaleString()}
+                {new Date(appointment.start_time).toLocaleString("en-GB", {
+                  year: "numeric",
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true, // or false if you prefer 24h
+                })}
               </span>
             </div>
 
             <div className="mb-3">
               <span className={styles.label}>End:</span>
               <span className={styles.value}>
-                {new Date(appointment.end_time).toLocaleString()}
+                {new Date(appointment.end_time).toLocaleString("en-GB", {
+                  year: "numeric",
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true, // or false if you prefer 24h
+                })}
               </span>
             </div>
 

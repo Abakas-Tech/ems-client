@@ -37,9 +37,32 @@ const AppointmentsTable = ({
             ) : (
               data.map((row) => (
                 <tr key={row.id} className={styles.appointmentRow}>
-                  <td className="fw-bold">{row.title}</td>
-                  <td>{new Date(row.start_time).toLocaleString()}</td>
-                  <td>{new Date(row.end_time).toLocaleString()}</td>
+                  <td
+                    className={`fw-bold ${styles.truncateCell}`}
+                    title={row.title}
+                  >
+                    {row.title}
+                  </td>
+                  <td>
+                    {new Date(row.start_time).toLocaleString("en-GB", {
+                      year: "numeric",
+                      month: "short",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true, // or false if you prefer 24h
+                    })}
+                  </td>
+                  <td>
+                    {new Date(row.end_time).toLocaleString("en-GB", {
+                      year: "numeric",
+                      month: "short",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                  </td>
                   <td>
                     <span
                       className={`badge ${

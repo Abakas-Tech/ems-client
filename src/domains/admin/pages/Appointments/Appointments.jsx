@@ -15,11 +15,11 @@ import AppointmentDetail from "../../components/Appointments/AppointmentDetail/A
 
 import AppointmentsFilters from "../../components/Appointments/AppointmentsFilters/AppointmentsFilters";
 import AppointmentsModal from "../../components/Appointments/AppointmentsModal";
-import { useConfirmDelete } from './../../../../context/Delete/UseDelete';
+import { useConfirmDelete } from "./../../../../context/Delete/UseDelete";
 
 const Appointments = () => {
   const { showLoader, hideLoader } = useLoader();
-    const { openModal } = useConfirmDelete();
+  const { openModal } = useConfirmDelete();
   const { addMessage } = useResponse();
 
   const [appointments, setAppointments] = useState([]);
@@ -41,7 +41,6 @@ const Appointments = () => {
 
   const [showModal, setShowModal] = useState(false);
 
-
   // Fetch data
   const loadAppointments = async () => {
     showLoader();
@@ -55,7 +54,7 @@ const Appointments = () => {
       setAppointments(data.appointments || []);
       setPagination(data.pagination || {});
     } catch (err) {
-      addMessage("error", err.message );
+      addMessage("error", err.message);
     } finally {
       hideLoader();
     }
@@ -71,42 +70,45 @@ const Appointments = () => {
     setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
   };
 
- const handleSave = async (formData) => {
-   showLoader();
-   try {
-     let response;
+  const handleSave = async (formData) => {
+    showLoader();
+    try {
+      let response;
+      // Convert startTime to UTC
+      const startUtc = new Date(formData.startTime).toISOString();
+      const updatedForm = { ...formData, startTime: startUtc };
+      if (selected) {
+        response = await updateAppointment(selected.id, updatedForm);
+        addMessage("success", response?.message || "Appointment updated");
+      } else {
+        response = await createAppointment(updatedForm);
+        addMessage("success", response?.message || "Appointment created");
+      }
 
-     if (selected) {
-       response = await updateAppointment(selected.id, formData);
-       addMessage("success", response?.message || "Appointment updated");
-     } else {
-       response = await createAppointment(formData);
-       addMessage("success", response?.message || "Appointment created");
-     }
+      setShowModal(false);
+      setSelected(null);
+      loadAppointments();
+    } catch (err) {
+      addMessage("error", err.message);
+    } finally {
+      hideLoader();
+    }
+  };
 
-     setShowModal(false);
-     setSelected(null);
-     loadAppointments();
-   } catch (err) {
-     addMessage("error", err.message);
-   } finally {
-     hideLoader();
-   }
- };
-
-const handleDelete = async () => {
-  showLoader();
-  try {
-    const response = await deleteAppointment(selected.id);
-    addMessage("success", response?.message || "Appointment deleted");
-    setSelected(null);
-    loadAppointments();
-  } catch (err) {
-    addMessage("error", err.message);
-  } finally {
-    hideLoader();
-  }
-};
+  const handleDelete = async (id) => {
+    showLoader();
+    try {
+      console.log(id);
+      const response = await deleteAppointment(id);
+      addMessage("success", response?.message || "Appointment deleted");
+      setSelected(null);
+      loadAppointments();
+    } catch (err) {
+      addMessage("error", err.message);
+    } finally {
+      hideLoader();
+    }
+  };
 
   return (
     <div className="dashboard-wraper container py-5">
@@ -181,9 +183,10 @@ const handleDelete = async () => {
             setSelected(row); //  edit
             setShowModal(true);
           }}
-          onDelete={() => {
+          onDelete={(row) => {
+            setSelected(null);
             openModal(async () => {
-              await handleDelete();
+              await handleDelete(row?.id);
             });
           }}
         />

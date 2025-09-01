@@ -5,10 +5,12 @@ import Testimonials from "../../../public/components/Testimonials/Testimonials";
 import Contact from "../../../public/components/Contact/Contact";
 import ServicesSection from "../../../public/components/ServicesSection/ServicesSection";
 import AboutSnippet from "../../../public/components/AboutSnippet/AboutSnippet";
+import SEOHelmet from "../../../../shared/components/SEOHelmet/SEOHelmet";
 
 function landingpage() {
   return (
     <>
+      <SEOHelmet />
       <Hero />
       <ServicesSection />
       <AboutSnippet showButton={true} />
