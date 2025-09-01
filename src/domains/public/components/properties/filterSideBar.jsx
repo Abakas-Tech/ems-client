@@ -87,12 +87,10 @@ const FilterSidebar = ({
                   type="text"
                   className="form-control rounded-3 ps-5"
                   placeholder="Search by space name…"
-                  value={filterState?.location}
+                  value={filterState?.location || ""} // empty string if undefined
                   onChange={handleSearchChange}
                 />
-                <div className="position-absolute top-50 start-0 translate-middle-y ms-2">
-                
-                </div>
+                <div className="position-absolute top-50 start-0 translate-middle-y ms-2"></div>
               </div>
             </div>
           </div>
@@ -478,7 +476,7 @@ const FilterSidebar = ({
             <Button
               type="button"
               className="btn btn-outline-secondary rounded flex-fill fw-normal fs-6 text-white"
-              onClick={() => onFilterChange({})} // Clear all filters
+              onClick={() => onFilterChange({ location: undefined })}
             >
               Clear
             </Button>
