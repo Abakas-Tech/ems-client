@@ -62,7 +62,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
   }, [id]);
   return (
     <>
-      <PropertyGallery images={images} />
+      <PropertyGallery images={images}  />
       <section className="gray-simple">
         <div className="container">
           <div className="row">
