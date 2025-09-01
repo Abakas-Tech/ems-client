@@ -5,8 +5,7 @@ import { getPropertyImages } from "../../api/PropertiesImage.api";
 import FeaturedCard from "./FeaturedCard";
 import useLoader from "../../../../context/Loader/UseLoader";
 
-
-function Featured() {
+function Featured({ isAdmin = false }) {
   const [properties, setProperties] = useState([]);
   const [images, setImages] = useState({});
   const { showLoader, hideLoader } = useLoader();
@@ -15,21 +14,18 @@ function Featured() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        showLoader(); // start global loader
+        showLoader();
         setError(null);
 
-        // Fetch featured properties
         const params = { isFeatured: true };
         const data = await getAllProperties(params);
         const featuredList = data?.data?.properties || [];
         setProperties(featuredList);
 
-        // Fetch images for each featured property
         const imagesResponses = await Promise.all(
           featuredList.map((prop) => getPropertyImages(prop.id))
         );
 
-        // Create images object with property IDs as keys
         const imagesMap = featuredList.reduce((acc, prop, index) => {
           acc[prop.id] = imagesResponses[index]?.data?.data || [];
           return acc;
@@ -39,24 +35,34 @@ function Featured() {
       } catch {
         setError("Failed to fetch properties or images.");
       } finally {
-        hideLoader(); // stop global loader
+        hideLoader();
       }
     };
 
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
-    <section className="bg-light">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-lg-7 col-md-10 text-center">
-            <div className="sec-heading center">
-              <h2>Featured Properties For Sale</h2>
-              <p>
-                Discover the finest properties curated just for you. I am
-                dedicated to helping you find your dream home with ease and
-                confidence, offering personalized service every step of the way.
+    <section className={isAdmin ? "dashboard-wraper" : "bg-light"}>
+      <div className={isAdmin ? "" : "container"}>
+        <div className={isAdmin ? "" : "row justify-content-center"}>
+          <div className={isAdmin ? "" : "col-lg-7 col-md-10 text-center"}>
+            <div className={isAdmin ? "" : "sec-heading center"}>
+              <h2
+                className={
+                  isAdmin
+                    ? "fw-bold text-dark mb-2 d-flex align-items-center"
+                    : ""
+                }
+              >
+                {isAdmin
+                  ? "Featured Properties"
+                  : "Featured Properties For Sale"}
+              </h2>
+              <p className={isAdmin ? "text-muted mb-0" : ""}>
+                {isAdmin
+                  ? "Manage your featured properties here."
+                  : "Discover the finest properties curated just for you. I am dedicated to helping you find your dream home with ease and confidence, offering personalized service every step of the way."}
               </p>
             </div>
           </div>
@@ -79,16 +85,18 @@ function Featured() {
           )}
         </div>
 
-        <div className="row">
-          <div className="col-lg-12 col-md-12 col-sm-12 text-center mt-4">
-            <Link
-              to="/properties"
-              className="btn btn-main px-lg-5 rounded btn-light-main "
-            >
-              Browse More Properties
-            </Link>
+        {!isAdmin && (
+          <div className="row">
+            <div className="col-lg-12 col-md-12 col-sm-12 text-center mt-4">
+              <Link
+                to="/properties"
+                className="btn btn-main px-lg-5 rounded btn-light-main"
+              >
+                Browse More Properties
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

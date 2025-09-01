@@ -16,9 +16,11 @@
 }
 
 .clearBtn {
-  font-weight: 500;
   border-radius: 8px;
   transition: all 0.2s ease;
+  width: 70px;
+  height: 42px;
+  border: 1px solid #e0e0e0;
 }
 
 .clearBtn:hover {

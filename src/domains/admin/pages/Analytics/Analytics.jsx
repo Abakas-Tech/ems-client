@@ -34,7 +34,6 @@ const Analytics = () => {
   });
 
   const navigate = useNavigate();
-
   useEffect(() => {
     const fetchData = async () => {
       showLoader();
@@ -53,7 +52,12 @@ const Analytics = () => {
           cleanFilters.endDate = new Date(filters.endDate).toISOString();
         }
 
-        if (filters.title !== undefined && filters.title !== null) {
+        //  Only include title if it's not empty after trimming
+        if (
+          filters.title !== undefined &&
+          filters.title !== null &&
+          String(filters.title).trim() !== ""
+        ) {
           cleanFilters.title = String(filters.title).trim();
         }
 
@@ -102,7 +106,7 @@ const Analytics = () => {
     <div className="dashboard-wraper  ">
       {/* Header */}
       <div className=" mb-4 text-start">
-        <h2 className="fw-bold ">📊 Analytics </h2>
+        <h2 className="fw-bold ">Analytics </h2>
         <p className="text-muted">
           Track properties, appointments & file usage
         </p>

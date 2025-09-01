@@ -1,16 +1,8 @@
 // AboutDetail component (with Title, Info, Experience, Contact Form)
 import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import {
-  faFacebook,
-  faTelegram,
-  faWhatsapp,
-} from "@fortawesome/free-brands-svg-icons";
-import { data, Link } from "react-router-dom";
-import img from "../../../../assets/img/img.jpg";
 import { fetchAgentProfile } from "../../api/profile.api";
 import ContactForm from "../../components/ContactForm/ContactForm";
+import AboutSnippet from './../../components/AboutSnippet/AboutSnippet';
 
 const AboutDetail = () => {
   const [agent, setAgent] = useState({
@@ -24,7 +16,6 @@ const AboutDetail = () => {
     country: "Ethiopia",
     experience_description:
       "Abdurehman Ahmed has been a leading real estate agent in Ethiopia for over 12 years. He has extensive experience in residential, commercial, and luxury properties. His expertise includes market analysis, property valuation, client relationship management, and seamless property transactions. Abdurehman is committed to providing personalized guidance, ensuring his clients make informed decisions and achieve their property goals efficiently.",
-
     facebook_username: "#",
     whatsapp_username: "#",
   });
@@ -59,64 +50,9 @@ const AboutDetail = () => {
       <section className="agent-page p-0 gray-simple">
         <div className="container">
           <div className="row">
-            {/* Agent Profile Card */}
-            <div className="col-lg-12 col-md-12">
-              <div className="agency agency-list overlio-40">
-                <div className="agency-avatar">
-                  <img src={agent.profile_image_url || img} alt="img avatar" />
-                </div>
-                <div className="agency-content">
-                  <div className="agency-name">
-                    <h4>
-                      <Link to="/agency-page">{agent.agent_name} </Link>
-                    </h4>
-                    <p>
-                      <span>
-                        <FontAwesomeIcon icon={faLocationDot} /> {agent.address}
-                        , {agent.city}
-                      </span>
-                    </p>
-                  </div>
-                  <div className="agency-desc">
-                    <p>{agent.bio}</p>
-                  </div>
-
-                  {/* Social Icons */}
-                  <ul className="social-icons mt-5 d-flex gap-3">
-                    <li>
-                      <a
-                        className="facebook"
-                        href={agent.facebook_username || "#"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <FontAwesomeIcon icon={faFacebook} />
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="telegram"
-                        href={agent.telegram_username || "#"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <FontAwesomeIcon icon={faTelegram} />
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="whatsapp"
-                        href={agent.whatsapp_username || "#"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <FontAwesomeIcon icon={faWhatsapp} />
-                      </a>
-                    </li>
-                  </ul>
-                  <div className="clearfix"></div>
-                </div>
-              </div>
+            {/*  Replaced duplicated agent profile card */}
+            <div className="col-lg-12 col-md-12 ">
+              <AboutSnippet showButton={false} />
             </div>
           </div>
 

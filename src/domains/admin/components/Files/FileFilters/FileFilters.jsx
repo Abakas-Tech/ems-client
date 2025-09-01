@@ -19,10 +19,10 @@ const FileFilters = ({ filters, onFilterChange, onClear }) => {
           </div>
 
           {/* File type dropdown */}
-          <div className="col-md-4">
+          <div className="col-md-3">
             <select
               name="fileType"
-              className={`form-select ${styles.input}`}
+              className={`form-select dropend  ${styles.input}`}
               value={filters.fileType}
               onChange={onFilterChange}
             >

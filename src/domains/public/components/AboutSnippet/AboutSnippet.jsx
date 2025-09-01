@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaFacebook, FaTelegram, FaWhatsapp } from "react-icons/fa";
 import { BiMap } from "react-icons/bi";
-import { fetchAgentProfile } from './../../api/profile.api';
+import { fetchAgentProfile } from "./../../api/profile.api";
 
-const AboutSnippet = ({ showButton  }) => {
+const AboutSnippet = ({ showButton }) => {
   const [agentData, setAgentData] = useState({
     agent_name: "Adam D. Okraar",
     agent_address: "3599 Huntz Lane",
@@ -18,18 +18,32 @@ const AboutSnippet = ({ showButton  }) => {
   useEffect(() => {
     const getAgentProfile = async () => {
       const response = await fetchAgentProfile();
-      if (response.success) {
+
+
+      if (response) {
+        const {
+          agent_name,
+          address,
+          city,
+          country,
+          profile_image_url,
+          bio,
+          facebook_username,
+          telegram_username,
+          whatsapp_username,
+        } = response;
+
         setAgentData({
-          agent_name: response.agent_name || "Adam D. Okraar",
-          agent_address: response.address || "3599 Huntz Lane",
+          agent_name: agent_name || "Adam D. Okraar",
+          agent_address:
+            [address, city, country].filter(Boolean).join(", ") ||
+            "3599 Huntz Lane",
           profile_image_url:
-            response.profile_image_url || "https://placehold.co/500x500",
-          bio:
-            response.bio ||
-            "Professional real estate agent with experience.",
-          facebook_username: response.facebook_username || "",
-          telegram_username: response.telegram_username || "",
-          whatsapp_username: response.whatsapp_username || "",
+            profile_image_url || "https://placehold.co/500x500",
+          bio: bio || "Professional real estate agent with experience.",
+          facebook_username: facebook_username || "",
+          telegram_username: telegram_username || "",
+          whatsapp_username: whatsapp_username || "",
         });
       }
     };
@@ -55,7 +69,7 @@ const AboutSnippet = ({ showButton  }) => {
           <div className="col-lg-12 col-md-12">
             <div className="agency agency-list overlio-40">
               <div className="agency-avatar">
-                <img src={agentData.profile_image_url} alt="" />
+                <img src={agentData.profile_image_url} alt="agent" />
               </div>
 
               <div className="agency-content m-0">

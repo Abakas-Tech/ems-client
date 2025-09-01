@@ -6,6 +6,7 @@
   background: #fff;
   transition: all 0.3s ease;
   margin-bottom: 20px; /* spacing between charts */
+  cursor: pointer;
 }
 
 .chartCard:hover {
