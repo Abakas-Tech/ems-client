@@ -279,7 +279,7 @@ const ImagesUploadForm = ({
         </button>
         <button
           type="button"
-          className="btn btn-dark fw-medium px-4"
+          className="btn btn-secondary fw-medium px-4"
           onClick={onCancel}
         >
           Cancel
