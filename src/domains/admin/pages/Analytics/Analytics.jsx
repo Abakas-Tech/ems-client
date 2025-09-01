@@ -34,57 +34,57 @@ const Analytics = () => {
   });
 
   const navigate = useNavigate();
-useEffect(() => {
-  const fetchData = async () => {
-    showLoader();
-    try {
-      //  Prepare filters here
-      const cleanFilters = {};
+  useEffect(() => {
+    const fetchData = async () => {
+      showLoader();
+      try {
+        //  Prepare filters here
+        const cleanFilters = {};
 
-      if (filters.page) cleanFilters.page = parseInt(filters.page, 10);
-      if (filters.limit) cleanFilters.limit = parseInt(filters.limit, 10);
+        if (filters.page) cleanFilters.page = parseInt(filters.page, 10);
+        if (filters.limit) cleanFilters.limit = parseInt(filters.limit, 10);
 
-      if (filters.startDate && !isNaN(Date.parse(filters.startDate))) {
-        cleanFilters.startDate = new Date(filters.startDate).toISOString();
+        if (filters.startDate && !isNaN(Date.parse(filters.startDate))) {
+          cleanFilters.startDate = new Date(filters.startDate).toISOString();
+        }
+
+        if (filters.endDate && !isNaN(Date.parse(filters.endDate))) {
+          cleanFilters.endDate = new Date(filters.endDate).toISOString();
+        }
+
+        //  Only include title if it's not empty after trimming
+        if (
+          filters.title !== undefined &&
+          filters.title !== null &&
+          String(filters.title).trim() !== ""
+        ) {
+          cleanFilters.title = String(filters.title).trim();
+        }
+
+        if (filters.sortBy) cleanFilters.sortBy = filters.sortBy;
+
+        //  Call APIs in parallel
+        const [properties, appointments, files, propertyCount] =
+          await Promise.all([
+            fetchPropertiesAnalytics(cleanFilters),
+            fetchAppointmentAnalytics(),
+            fetchFileAnalytics(),
+            fetchPropertiesCount(),
+          ]);
+
+        setPropertiesData(properties);
+        setAppointmentData(appointments);
+        setFileData(files);
+        setPropertyCount(propertyCount);
+      } catch (err) {
+        addMessage("error", err.message);
+      } finally {
+        hideLoader();
       }
-
-      if (filters.endDate && !isNaN(Date.parse(filters.endDate))) {
-        cleanFilters.endDate = new Date(filters.endDate).toISOString();
-      }
-
-      //  Only include title if it's not empty after trimming
-      if (
-        filters.title !== undefined &&
-        filters.title !== null &&
-        String(filters.title).trim() !== ""
-      ) {
-        cleanFilters.title = String(filters.title).trim();
-      }
-
-      if (filters.sortBy) cleanFilters.sortBy = filters.sortBy;
-
-      //  Call APIs in parallel
-      const [properties, appointments, files, propertyCount] =
-        await Promise.all([
-          fetchPropertiesAnalytics(cleanFilters),
-          fetchAppointmentAnalytics(),
-          fetchFileAnalytics(),
-          fetchPropertiesCount(),
-        ]);
-
-      setPropertiesData(properties);
-      setAppointmentData(appointments);
-      setFileData(files);
-      setPropertyCount(propertyCount);
-    } catch (err) {
-      addMessage("error", err.message);
-    } finally {
-      hideLoader();
-    }
-  };
-  fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [filters]);
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -103,10 +103,10 @@ useEffect(() => {
   };
 
   return (
-    <div className="dashboard-wraper container py-5">
+    <div className="dashboard-wraper  ">
       {/* Header */}
-      <div className="text-center mb-4">
-        <h2 className="fw-bold text-primary">📊 Analytics Dashboard</h2>
+      <div className=" mb-4 text-start">
+        <h2 className="fw-bold ">Analytics </h2>
         <p className="text-muted">
           Track properties, appointments & file usage
         </p>

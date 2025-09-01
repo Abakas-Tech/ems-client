@@ -56,7 +56,7 @@ const AnalyticsFilters = ({
           </div>
 
           {/* Sort By */}
-          <div className="col-md-2">
+          <div className="col-auto">
             <label htmlFor="sortBy" className="form-label fw-semibold">
               Sort By
             </label>
@@ -72,7 +72,7 @@ const AnalyticsFilters = ({
           </div>
 
           {/* Clear Button */}
-          <div className="col-md-1 d-grid">
+          <div className="col-md-1 d-grid fw-semibold">
             <button
               className={`btn btn-outline-secondary ${styles.clearBtn}`}
               onClick={onClear}

@@ -7,7 +7,7 @@ const AppointmentsFilters = ({ filters, onChange, onClear }) => {
       <div className="card-body">
         <div className="row g-3 align-items-center">
           {/* Search by title */}
-          <div className="col-md-4">
+          <div className="col-md-3">
             <input
               type="text"
               name="title"

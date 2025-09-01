@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import FileList from "../../components/Files/FileList/FileList";
 import FileModalForm from "../../components/Files/FileUploadForm/FileUploadForm";
 import {
@@ -154,12 +154,11 @@ const FileManager = () => {
   };
 
   return (
-    <div className="dashboard-wraper container py-5">
+    <div className="dashboard-wraper  ">
       {/* Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
         <div>
           <h2 className="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
-            <span className="text-primary fs-3">📂</span>
             File Manager
           </h2>
           <p className="text-muted mb-0">

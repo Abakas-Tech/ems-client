@@ -4799,6 +4799,10 @@ label {
 .location-property-wrap:focus .location-property-thumb img {
   transform: scale(1.5);
 }
+/* custome shadow  */
+.custom-shadow {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2); /* slightly bigger than Bootstrap's shadow */
+}
 /*--------------- Sidebar Search -------------*/
 .filter-sidebar {
   height: 100vh;

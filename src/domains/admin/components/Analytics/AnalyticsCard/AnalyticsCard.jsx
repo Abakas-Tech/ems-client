@@ -13,13 +13,13 @@ const AnalyticsCard = ({ title, count, lastAction, icon: Icon, onClick }) => {
     >
       <div className="card-body d-flex align-items-center p-4">
         {/* Icon */}
-        <div className={`${styles.iconWrapper} me-4`}>
+        <div className={`${styles.iconWrapper} me-4 `}>
           {Icon && <Icon size={32} className="text-primary" />}{" "}
           {/* 👈 dynamic icon */}
         </div>
 
         {/* Text */}
-        <div>
+        <div className="flex-grow-1 ">
           <h6 className="text-muted mb-1">{title}</h6>
           <h3 className="fw-bold mb-1 text-primary">{count || 0}</h3>
           <small className="text-muted">

@@ -14,7 +14,8 @@ function landingpage() {
       <Hero />
       <ServicesSection />
       <AboutSnippet showButton={true} />
-      <Featured />
+      <Featured isAdmin={false} />
+
       <Testimonials />
       <Contact />
     </>

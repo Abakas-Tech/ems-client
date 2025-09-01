@@ -35,7 +35,7 @@ const AboutDetail = () => {
     <>
       <SEOHelmet />
       {/* Page Title */}
-      <div className="image-cover page-title">
+      <div className="image-cover page-title ">
         <div className="container">
           <div className="row">
             <div className="col-lg-12 col-md-12">
@@ -49,11 +49,11 @@ const AboutDetail = () => {
       </div>
 
       {/* Main Content */}
-      <section className="agent-page p-0 gray-simple">
+      <section className="agent-page gray-simple">
         <div className="container">
           <div className="row">
             {/*  Replaced duplicated agent profile card */}
-            <div className="col-lg-12 col-md-12 ">
+            <div className="col-lg-12 col-md-12 px-0">
               <AboutSnippet showButton={false} />
             </div>
           </div>

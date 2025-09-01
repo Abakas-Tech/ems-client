@@ -51,15 +51,16 @@ const PaginationAndSort = ({
   for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
 
   return (
+ 
     <div
-      className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center my-2 p-2"
+      className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center my-2 p-2 w-100 border"
       style={{ backgroundColor: "#fff", borderRadius: "5px" }}
     >
       {/* Title Search - on top for small screens, left for md+ */}
       {isPublicPage == false && (
         <div
           className="position-relative mb-2 mb-md-0 order-1 order-md-0"
-          style={{ minWidth: "180px" }}
+          style={{ minWidth: "280px" }}
         >
           <input
             type="text"

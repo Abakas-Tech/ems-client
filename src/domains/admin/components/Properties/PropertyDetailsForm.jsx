@@ -71,7 +71,9 @@ const PropertyDetailsForm = ({
         d.is_featured !== undefined ? !!Number(d.is_featured) : !!d.isFeatured,
       // status select
       status: d.status
-        ? { value: d.status, label: statusLabel(d.status) }
+        ? typeof d.status === "object"
+          ? d.status // already {value, label} → use as-is
+          : { value: d.status, label: statusLabel(d.status) } // string → map
         : null,
       // optional numeric/selects (we keep them as the same select object shape you used)
       areaSize:
@@ -164,6 +166,7 @@ const PropertyDetailsForm = ({
     },
     onSubmit: (values) => {
       setValidationError(null);
+
       // Top-to-bottom sequential validation
       if (!values.title.trim()) {
         addMessage("error", "Property Title is required");
@@ -185,36 +188,71 @@ const PropertyDetailsForm = ({
         setValidationError("address");
         return;
       }
+
+      // Latitude validation
       if (values.latitude === "" || isNaN(values.latitude)) {
         addMessage("error", "Latitude is required and must be a number");
         setValidationError("latitude");
         return;
       }
+      if (Number(values.latitude) < -90 || Number(values.latitude) > 90) {
+        addMessage("error", "Latitude must be between -90 and +90");
+        setValidationError("latitude");
+        return;
+      }
+
+      // Longitude validation
       if (values.longitude === "" || isNaN(values.longitude)) {
         addMessage("error", "Longitude is required and must be a number");
         setValidationError("longitude");
         return;
       }
+      if (Number(values.longitude) < -180 || Number(values.longitude) > 180) {
+        addMessage("error", "Longitude must be between -180 and +180");
+        setValidationError("longitude");
+        return;
+      }
+
+      // Description validation
       if (!values.description.trim()) {
         addMessage("error", "Description is required");
         setValidationError("description");
         return;
       }
+      if (values.description.trim().length <= 10) {
+        addMessage("error", "Description must be more than 10 characters");
+        setValidationError("description");
+        return;
+      }
+
       if (!values.status) {
         addMessage("error", "Status is required");
         setValidationError("status");
         return;
       }
+
       //  All good → submit
       onSubmit(values);
     },
   });
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form onSubmit={formik.handleSubmit} className="dashboard-wraper">
+      {/* Header */}
+      <div className="mb-4 text-start">
+        <h2 className="fw-bold">
+          {isEditMode ? "Edit Property" : "Submit Property"}
+        </h2>
+        <p className="text-muted">
+          {isEditMode
+            ? "Update details to keep your property listing accurate and up to date."
+            : "Add a new property with all the key details to attract potential clients."}
+        </p>
+      </div>
+
       {/* Basic Information */}
-      <div className="form-submit" >
-        <h3>Basic Information</h3>
+      <div className="form-submit  ">
+        <h5>Basic Information</h5>
         <div className="submit-section">
           <div className="row">
             {/* Property Title */}
@@ -312,7 +350,7 @@ const PropertyDetailsForm = ({
       </div>
       {/* Location */}
       <div className="form-submit">
-        <h3>Location</h3>
+        <h5>Location</h5>
         <div className="submit-section">
           <div className="row">
             <div className="form-group col-md-12">
@@ -355,7 +393,7 @@ const PropertyDetailsForm = ({
       </div>
       {/* Detailed Information */}
       <div className="form-submit">
-        <h3>Detailed Information</h3>
+        <h5>Detailed Information</h5>
         <div className="submit-section">
           <div className="row">
             <div className="form-group col-md-12">

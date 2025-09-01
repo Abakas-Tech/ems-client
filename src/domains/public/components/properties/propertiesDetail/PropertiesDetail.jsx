@@ -72,12 +72,12 @@ const PropertyDetails = ({ isPublicPage = true }) => {
               <div className="property_block_wrap style-2 p-4">
                 {property && (
                   <div className="prt-detail-title-desc">
-                    <span className="label text-white bg-green fs-6">
+                    <span className="label text-white bg-green fw-semibold">
                       For {property.category}
                     </span>
-                    <h3>{property.title}</h3>
+                    <h3 className="mt-2">{property.title}</h3>
                     <span>
-                      <h3 className="prt=price-fix text-main">
+                      {/* <h3 className="prt=price-fix text-main">
                         {property.is_urgent ? (
                           <span>Urgent</span>
                         ) : property.is_featured ? (
@@ -85,26 +85,26 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                         ) : (
                           <span>Regular</span>
                         )}
-                      </h3>
-                      <i className="bi bi-geo-alt"></i>
+                      </h3> */}
+                      <i className="bi bi-geo-alt me-1"></i>
                       {property.location}
                     </span>
                     <div className="list-fx-features">
                       <div className="listing-card-info-icon">
-                        <div className="inc-fleat-icon me-1">
-                          <img src="assets/img/bed.svg" width="13" alt="" />
+                        <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
+                          <i className="fa-solid fa-bed fs-xs"></i>
                         </div>
                         {property.bedrooms} Beds
                       </div>
                       <div className="listing-card-info-icon">
-                        <div className="inc-fleat-icon me-1">
-                          <img src="assets/img/bathtub.svg" width="13" alt="" />
+                        <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
+                          <i className="fa-solid fa-bath me-1"></i>
                         </div>
                         {property.bathrooms} Bath
                       </div>
                       <div className="listing-card-info-icon">
-                        <div className="inc-fleat-icon me-1">
-                          <img src="assets/img/move.svg" width="13" alt="" />
+                        <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
+                          <i className="fa-solid fa-clone fs-xs"></i>
                         </div>
                         {property.area_size} sqft
                       </div>

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const PropertyCard = ({ property }) => {
   return (
-    <div className="sides_list_property">
+    <div className="sides_list_property ">
       <div className="sides_list_property_thumb">
         <img
           src={property?.images[0]?.image_url}
@@ -14,10 +14,22 @@ const PropertyCard = ({ property }) => {
         <h4>
           <a href="single-property-1.html">{property.title}</a>
         </h4>
-        <span>
-          <i className="fa-solid fa-location-dot"></i>
+        <span class="text-muted-2">
+          <i class="bi bi-geo-alt me-1"></i>
           {property.location}
         </span>
+
+        <div class="lists_property_types">
+          <div
+            className={
+              property.category === "sale"
+                ? "property_types_vlix buy"
+                : "property_types_vlix"
+            }
+          >
+            For {property.category}
+          </div>
+        </div>
       </div>
     </div>
   );
