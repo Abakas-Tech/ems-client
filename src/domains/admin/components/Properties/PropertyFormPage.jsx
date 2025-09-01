@@ -4,7 +4,10 @@ import PropertyDetailsForm from "./PropertyDetailsForm";
 import ImagesUploadForm from "./ImagesUploadForm";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
-import { deletePropertyImage, updatePropertyImagesAltText } from "../../../public/api/PropertiesImage.api";
+import {
+  deletePropertyImage,
+  updatePropertyImagesAltText,
+} from "../../../public/api/PropertiesImage.api";
 
 // Lazy-load API functions
 const createProperty = async (...args) => {
@@ -33,7 +36,7 @@ const updatePropertyImages = async (...args) => {
 };
 
 const PropertyFormPage = () => {
-  const {id:propertyIdParam} = useParams();
+  const { id: propertyIdParam } = useParams();
   const location = useLocation();
   const [files, setFiles] = useState([]);
   const [altTexts, setAltTexts] = useState([]);
@@ -250,7 +253,10 @@ const PropertyFormPage = () => {
           hideLoader();
           return;
         }
-        addMessage("success", "Property updated successfully!");
+        addMessage(
+          "success",
+          propertyResponse.message || "property updated sueccessfully"
+        );
       } else {
         propertyResponse = await createProperty(propertyData);
         if (!propertyResponse.success) {
@@ -258,7 +264,10 @@ const PropertyFormPage = () => {
           hideLoader();
           return;
         }
-        addMessage("success", "Property added successfully!");
+        addMessage(
+          "success",
+          propertyResponse.message || "property added sueccessfully"
+        );
 
         //  Instead of navigating, render Images form
         setPropertyId(propertyResponse.data.id);
@@ -266,11 +275,8 @@ const PropertyFormPage = () => {
         setFormStage("images");
       }
       hideLoader();
-    } catch {
-      addMessage(
-        "error",
-        "An error occurred during property submission. Please try again."
-      );
+    } catch (err) {
+      addMessage("error", err.message);
       hideLoader();
     }
   };
@@ -362,11 +368,7 @@ const PropertyFormPage = () => {
       setIsNewProperty(false);
       setFormStage("property");
     } catch (err) {
-      console.error(err);
-      addMessage(
-        "error",
-        "An error occurred during image submission. Please try again."
-      );
+      addMessage("error", err.message);
     } finally {
       hideLoader();
     }
@@ -389,8 +391,7 @@ const PropertyFormPage = () => {
       setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
       addMessage("success", "Image deleted successfully!");
     } catch (err) {
-      console.error(err);
-      addMessage("error", "An error occurred while deleting image.");
+      addMessage("error", err.message);
     } finally {
       hideLoader();
     }
