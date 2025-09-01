@@ -1,0 +1,5 @@
+# Dev Environment robots.txt file
+User-agent: *
+# ✅ Allow all public-facing frontend pages to be indexed
+Allow: /
+Sitemap: https://abakas.net/sitemap.xml

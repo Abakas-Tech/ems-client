@@ -1,9 +1,11 @@
 import React from "react";
 import Contact from "../../components/Contact/Contact";
+import SEOHelmet from "../../../../shared/components/SEOHelmet/SEOHelmet";
 
 const ContactPage = () => {
   return (
-    <div>
+    <>
+      <SEOHelmet />
       <div class="page-title">
         <div class="container">
           <div class="row">
@@ -17,7 +19,7 @@ const ContactPage = () => {
         </div>
       </div>
       <Contact />
-    </div>
+    </>
   );
 };
 

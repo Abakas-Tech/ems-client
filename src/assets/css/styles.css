@@ -3163,7 +3163,7 @@ nav a {
 .header {
   background: #fff;
   position: relative;
-  padding: 1rem 0;
+  /* padding: 8px 0; */
 }
 
 .header-top {

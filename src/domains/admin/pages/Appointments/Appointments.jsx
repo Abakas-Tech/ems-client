@@ -74,12 +74,14 @@ const Appointments = () => {
     showLoader();
     try {
       let response;
-
+      // Convert startTime to UTC
+      const startUtc = new Date(formData.startTime).toISOString();
+      const updatedForm = { ...formData, startTime: startUtc };
       if (selected) {
-        response = await updateAppointment(selected.id, formData);
+        response = await updateAppointment(selected.id, updatedForm);
         addMessage("success", response?.message || "Appointment updated");
       } else {
-        response = await createAppointment(formData);
+        response = await createAppointment(updatedForm);
         addMessage("success", response?.message || "Appointment created");
       }
 
@@ -93,10 +95,11 @@ const Appointments = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (id) => {
     showLoader();
     try {
-      const response = await deleteAppointment(selected.id);
+      console.log(id);
+      const response = await deleteAppointment(id);
       addMessage("success", response?.message || "Appointment deleted");
       setSelected(null);
       loadAppointments();
@@ -108,20 +111,19 @@ const Appointments = () => {
   };
 
   return (
-    <div className="dashboard-wraper">
+    <div className="dashboard-wraper ">
       {/* Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        {/* Title */}
         <div>
-          {/* Title */}
           <h2 className="fw-bold text-dark ">Appointments</h2>
           <p className="text-muted mb-0">
-            View and manage your appointments, track upcoming and past meetings.
-            
+            Keep track of your property appointments and meetings.
           </p>
         </div>
 
         {/* Actions */}
-        <div className="d-flex align-items-center gap-2">
+        <div className="d-flex  gap-2">
           {/* View Switcher */}
           <div className="btn-group" role="group" aria-label="View Switcher">
             <button
@@ -148,7 +150,7 @@ const Appointments = () => {
 
           {/* Add New */}
           <button
-            className="btn btn-primary btn-md fs-5 py-3"
+            className="btn btn-primary btn-md fs-6 py-3"
             onClick={() => {
               setSelected(null);
               setShowModal(true);
@@ -186,9 +188,10 @@ const Appointments = () => {
             setSelected(row); //  edit
             setShowModal(true);
           }}
-          onDelete={() => {
+          onDelete={(row) => {
+            setSelected(null);
             openModal(async () => {
-              await handleDelete();
+              await handleDelete(row?.id);
             });
           }}
         />

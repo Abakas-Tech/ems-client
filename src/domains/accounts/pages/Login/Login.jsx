@@ -1,12 +1,16 @@
 import React from "react";
 import Layout from "../../../../shared/Layout/Layout";
 import LoginForm from "../../components/LoginForm/LoginForm";
+import SEOHelmet from "../../../../shared/components/SEOHelmet/SEOHelmet";
 
 function Login() {
   return (
-    <Layout>
-      <LoginForm />
-    </Layout>
+    <>
+      <SEOHelmet />
+      <Layout>
+        <LoginForm />
+      </Layout>
+    </>
   );
 }
 

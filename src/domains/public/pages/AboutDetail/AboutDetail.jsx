@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchAgentProfile } from "../../api/profile.api";
 import ContactForm from "../../components/ContactForm/ContactForm";
-import AboutSnippet from './../../components/AboutSnippet/AboutSnippet';
+import AboutSnippet from "./../../components/AboutSnippet/AboutSnippet";
+import SEOHelmet from "../../../../shared/components/SEOHelmet/SEOHelmet";
 
 const AboutDetail = () => {
   const [agent, setAgent] = useState({
@@ -31,7 +32,8 @@ const AboutDetail = () => {
   }, []);
 
   return (
-    <div>
+    <>
+      <SEOHelmet />
       {/* Page Title */}
       <div className="image-cover page-title ">
         <div className="container">
@@ -117,7 +119,7 @@ const AboutDetail = () => {
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 };
 

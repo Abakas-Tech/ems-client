@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Modal } from "react-bootstrap";
 
+const DEFAULT_DURATION_MINUTES = 60; // you can change this to 30, 90, etc.
+
 const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
   const [form, setForm] = useState({
     title: "",
     startTime: "",
-    endTime: "",
     status: "pending",
     description: "",
   });
@@ -15,7 +16,6 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
       setForm({
         title: appointment.title || "",
         startTime: appointment.start_time?.slice(0, 16) || "",
-        endTime: appointment.end_time?.slice(0, 16) || "",
         status: appointment.status || "pending",
         description: appointment.description || "",
       });
@@ -23,7 +23,6 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
       setForm({
         title: "",
         startTime: "",
-        endTime: "",
         status: "pending",
         description: "",
       });
@@ -36,7 +35,22 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(form);
+    if (!form.startTime) return;
+
+    // Add 3 hours to startTime
+    const start = new Date(form.startTime);
+    start.setHours(start.getHours() + 3);
+    const end = new Date(
+      start.getTime() + DEFAULT_DURATION_MINUTES * 60 * 1000
+    );
+
+    const payload = {
+      ...form,
+      startTime: start.toISOString(), // stored as UTC
+      endTime: end.toISOString(), // stored as UTC
+    };
+
+    onSave(payload);
   };
 
   return (
@@ -66,24 +80,12 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
             />
           </div>
 
-          <div className="col-md-6">
+          <div className="col-md-12">
             <label className="form-label">Start Time</label>
             <input
               type="datetime-local"
               name="startTime"
               value={form.startTime}
-              onChange={handleChange}
-              className="form-control"
-              required
-            />
-          </div>
-
-          <div className="col-md-6">
-            <label className="form-label">End Time</label>
-            <input
-              type="datetime-local"
-              name="endTime"
-              value={form.endTime}
               onChange={handleChange}
               className="form-control"
               required
