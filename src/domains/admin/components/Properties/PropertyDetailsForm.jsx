@@ -13,6 +13,8 @@ const PropertyDetailsForm = ({
   const { addMessage } = useResponse();
   const [validationError, setValidationError] = React.useState(null);
 
+  console.log(initialValues);
+
   // Normalize incoming initialValues to the shape this form expects
   const normalizedInitial = useMemo(() => {
     const d = initialValues || {};
@@ -71,7 +73,9 @@ const PropertyDetailsForm = ({
         d.is_featured !== undefined ? !!Number(d.is_featured) : !!d.isFeatured,
       // status select
       status: d.status
-        ? { value: d.status, label: statusLabel(d.status) }
+        ? typeof d.status === "object"
+          ? d.status // already {value, label} → use as-is
+          : { value: d.status, label: statusLabel(d.status) } // string → map
         : null,
       // optional numeric/selects (we keep them as the same select object shape you used)
       areaSize:
@@ -237,7 +241,7 @@ const PropertyDetailsForm = ({
   return (
     <form onSubmit={formik.handleSubmit}>
       {/* Basic Information */}
-      <div className="form-submit" >
+      <div className="form-submit">
         <h3>Basic Information</h3>
         <div className="submit-section">
           <div className="row">
