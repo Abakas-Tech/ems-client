@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getAllProperties } from "../../api/properties.api";
@@ -59,9 +60,9 @@ function Featured({ isAdmin = false }) {
                   ? "Featured Properties"
                   : "Featured Properties For Sale"}
               </h2>
-              <p className={isAdmin ? "text-muted mb-0" : ""}>
+              <p className={isAdmin ? "text-muted mb-2" : ""}>
                 {isAdmin
-                  ? "Manage your featured properties here."
+                  ? "Keep an overview of the properties you’ve marked as featured."
                   : "Discover the finest properties curated just for you. I am dedicated to helping you find your dream home with ease and confidence, offering personalized service every step of the way."}
               </p>
             </div>
@@ -75,8 +76,16 @@ function Featured({ isAdmin = false }) {
             <p className="text-center">No featured properties found.</p>
           ) : (
             properties.map((property) => (
-              <div className="col-xl-6 col-lg-6 col-md-12" key={property.id}>
+              <div
+                className={`${
+                  !isAdmin
+                    ? "col-xl-6 col-lg-6 col-md-12"
+                    : "border my-3 rounded w-75 py-0 ms-2 p-0 "
+                }`}
+                key={property.id}
+              >
                 <FeaturedCard
+                  className={isAdmin && "bg-light"}
                   property={property}
                   images={images[property.id] || []}
                 />
