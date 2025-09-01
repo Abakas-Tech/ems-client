@@ -12,7 +12,7 @@ const AppointmentsFilters = ({ filters, onChange, onClear }) => {
               type="text"
               name="title"
               className={`form-control ${styles.input}`}
-              placeholder="🔍 Search by Title"
+              placeholder="Search by Title"
               value={filters.title}
               onChange={(e) => onChange("title", e.target.value)}
             />

@@ -417,7 +417,7 @@ const PropertyFormPage = () => {
     <div>
       {/* Main Section */}
 
-      <div className="container">
+      <div className="dashboard-wrapper">
         <div className="row">
           <div className="col-lg-12 col-md-12">
             <div className="submit-page p-0">

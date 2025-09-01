@@ -111,41 +111,46 @@ const Appointments = () => {
   };
 
   return (
-    <div className="dashboard-wraper container py-5">
+    <div className="dashboard-wraper ">
       {/* Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         {/* Title */}
-        <h2 className="fw-bold text-dark m-0">📅 Appointments</h2>
+        <div>
+          <h2 className="fw-bold text-dark ">Appointments</h2>
+          <p className="text-muted mb-0">
+            Keep track of your property appointments and meetings.
+          </p>
+        </div>
 
         {/* Actions */}
-        <div className="d-flex flex-wrap gap-2">
+        <div className="d-flex  gap-2">
           {/* View Switcher */}
           <div className="btn-group" role="group" aria-label="View Switcher">
             <button
-              className={`btn btn-sm ${
+              className={`btn btn-md py-3 fw-semibold fs-6 ${
                 view === "table"
                   ? "btn-outline-primary active"
                   : "btn-outline-primary"
               }`}
               onClick={() => setView("table")}
             >
-              📋 Table
+              Table
             </button>
             <button
-              className={`btn btn-sm ${
+              className={`btn btn-md py-3 fw-semibold fs-6  ${
                 view === "calendar"
                   ? "btn-outline-primary active"
                   : "btn-outline-primary"
               }`}
               onClick={() => setView("calendar")}
             >
-              📆 Calendar
+              Calendar
             </button>
           </div>
 
           {/* Add New */}
           <button
-            className="btn btn-primary btn-sm"
+            className="btn btn-primary btn-md fs-6 py-3"
             onClick={() => {
               setSelected(null);
               setShowModal(true);

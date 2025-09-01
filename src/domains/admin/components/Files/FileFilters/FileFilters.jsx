@@ -12,7 +12,7 @@ const FileFilters = ({ filters, onFilterChange, onClear }) => {
               type="text"
               name="fileName"
               className={`form-control ${styles.input}`}
-              placeholder="🔍 Search by File Name"
+              placeholder="Search by File Name"
               value={filters.fileName}
               onChange={onFilterChange}
             />

@@ -2,7 +2,12 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaPen, FaEye, FaTrash, FaStar } from "react-icons/fa";
 
-const SinglePropertyAdmin = ({ property, images, onDelete }) => {
+const SinglePropertyAdmin = ({
+  property,
+  images,
+  onDelete,
+  onToggleFeatured,
+}) => {
   const navigate = useNavigate();
 
   const handleView = () => navigate(`/admin/properties/veiw/${property.id}`);
@@ -12,12 +17,19 @@ const SinglePropertyAdmin = ({ property, images, onDelete }) => {
     onDelete(property.id);
   };
 
-  const handleFeatured = () => alert(`"${property.title}" is now featured!`);
+  const handleFeatured = () => {
+    if (onToggleFeatured) {
+      const newValue = property.is_featured == "1" ? "0" : "1";
+      onToggleFeatured(property.id, newValue);
+    }
+  };
 
   const propertyImage =
     images && images.length > 0
       ? images[0].image_url
       : "https://placehold.co/1280x850";
+
+  const isFeatured = property.is_featured == "1";
 
   return (
     <div className="col-md-12 col-sm-12 ps-2 pe-2">
@@ -117,7 +129,17 @@ const SinglePropertyAdmin = ({ property, images, onDelete }) => {
                 e.preventDefault();
                 handleFeatured();
               }}
-              title="Make Featured"
+              title={isFeatured ? "Unmark Featured" : "Make Featured"}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "30px",
+                height: "30px",
+                backgroundColor: isFeatured ? "green" : "transparent",
+                color: isFeatured ? "white" : "inherit",
+                borderRadius: "0", // square shape
+              }}
             >
               <FaStar />
             </a>
