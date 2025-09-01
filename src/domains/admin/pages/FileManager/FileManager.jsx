@@ -11,7 +11,7 @@ import {
 import FileFilters from "../../components/Files/FileFilters/FileFilters";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
-import { useConfirmDelete } from './../../../../context/Delete/UseDelete';
+import { useConfirmDelete } from "./../../../../context/Delete/UseDelete";
 
 const FileManager = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -29,7 +29,6 @@ const FileManager = () => {
   const [editingFile, setEditingFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-
   //  Fetch files
   useEffect(() => {
     const fetchData = async () => {
@@ -41,7 +40,7 @@ const FileManager = () => {
         if (filters.limit) cleanFilters.limit = parseInt(filters.limit, 10);
         if (filters.fileType) cleanFilters.fileType = filters.fileType;
         if (filters.category) cleanFilters.category = filters.category;
-        if (filters.file_name) cleanFilters.fileName = filters.file_name; // match API param
+        if (filters.fileName) cleanFilters.fileName = filters.fileName; // match API param
 
         const files = await fetchFiles(cleanFilters);
         setFilesData(files);
@@ -154,10 +153,6 @@ const FileManager = () => {
     });
   };
 
-
-     
-  
-
   return (
     <div className="dashboard-wraper  ">
       {/* Header */}
@@ -227,8 +222,6 @@ const FileManager = () => {
           </button>
         </div>
       )}
-
-    
 
       {/* Modal for Upload / Update */}
       {isModalOpen && (
