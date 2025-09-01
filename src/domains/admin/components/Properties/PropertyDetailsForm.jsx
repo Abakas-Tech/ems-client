@@ -13,8 +13,6 @@ const PropertyDetailsForm = ({
   const { addMessage } = useResponse();
   const [validationError, setValidationError] = React.useState(null);
 
-  console.log(initialValues);
-
   // Normalize incoming initialValues to the shape this form expects
   const normalizedInitial = useMemo(() => {
     const d = initialValues || {};
@@ -239,10 +237,22 @@ const PropertyDetailsForm = ({
   });
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form onSubmit={formik.handleSubmit} className="dashboard-wraper">
+      {/* Header */}
+      <div className="mb-4 text-start">
+        <h2 className="fw-bold">
+          {isEditMode ? "Edit Property" : "Submit Property"}
+        </h2>
+        <p className="text-muted">
+          {isEditMode
+            ? "Update details to keep your property listing accurate and up to date."
+            : "Add a new property with all the key details to attract potential clients."}
+        </p>
+      </div>
+
       {/* Basic Information */}
-      <div className="form-submit">
-        <h3>Basic Information</h3>
+      <div className="form-submit  ">
+        <h5>Basic Information</h5>
         <div className="submit-section">
           <div className="row">
             {/* Property Title */}
@@ -340,7 +350,7 @@ const PropertyDetailsForm = ({
       </div>
       {/* Location */}
       <div className="form-submit">
-        <h3>Location</h3>
+        <h5>Location</h5>
         <div className="submit-section">
           <div className="row">
             <div className="form-group col-md-12">
@@ -383,7 +393,7 @@ const PropertyDetailsForm = ({
       </div>
       {/* Detailed Information */}
       <div className="form-submit">
-        <h3>Detailed Information</h3>
+        <h5>Detailed Information</h5>
         <div className="submit-section">
           <div className="row">
             <div className="form-group col-md-12">

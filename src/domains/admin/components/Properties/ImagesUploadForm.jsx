@@ -115,16 +115,24 @@ const ImagesUploadForm = ({
   };
 
   return (
-    <div className="container my-4">
-      <h3 className="mb-4">
-        {isEditMode ? "Update Images" : "Upload Images"} for {""}
-        {propertyTitle}
-      </h3>
-
+    <div className="container dashboard-wraper">
+      {/* Header */}
+      <div className="mb-4 text-start">
+        <h2 className="fw-bold">
+          {isEditMode
+            ? `Update Images - ${propertyTitle}`
+            : `Submit Images - ${propertyTitle}`}
+        </h2>
+        <p className="text-muted">
+          {isEditMode
+            ? `Modify or replace existing images for ${propertyTitle}.`
+            : `Upload images to showcase ${propertyTitle} in the best light.`}
+        </p>
+      </div>
       {/* Existing Images */}
       {existingImages.length > 0 && (
         <div className="mb-4">
-          <h4 className="mb-3">Existing Images</h4>
+          <h5 className="mb-3">Existing Images</h5>
           <div className="row g-3">
             {existingImages.map((img, index) => (
               <div key={index} className="col-6 col-md-4 col-lg-3">
