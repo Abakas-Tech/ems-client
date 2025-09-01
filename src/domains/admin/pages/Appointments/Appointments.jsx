@@ -125,30 +125,30 @@ const Appointments = () => {
           {/* View Switcher */}
           <div className="btn-group" role="group" aria-label="View Switcher">
             <button
-              className={`btn btn-md py-3 fw-semibold ${
+              className={`btn btn-md py-3 fw-semibold fs-6 ${
                 view === "table"
                   ? "btn-outline-primary active"
                   : "btn-outline-primary"
               }`}
               onClick={() => setView("table")}
             >
-              📋 Table
+              Table
             </button>
             <button
-              className={`btn btn-md py-3 fw-semibold  ${
+              className={`btn btn-md py-3 fw-semibold fs-6  ${
                 view === "calendar"
                   ? "btn-outline-primary active"
                   : "btn-outline-primary"
               }`}
               onClick={() => setView("calendar")}
             >
-              📆 Calendar
+              Calendar
             </button>
           </div>
 
           {/* Add New */}
           <button
-            className="btn btn-primary btn-md fs-6 py-3"
+            className="btn btn-primary btn-md fs-5 py-3"
             onClick={() => {
               setSelected(null);
               setShowModal(true);
