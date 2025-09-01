@@ -12,10 +12,12 @@ import FileFilters from "../../components/Files/FileFilters/FileFilters";
 import ConfirmDialog from "../../../../shared/components/ConfirmDialog/ConfirmDialog";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
+import { useConfirmDelete } from './../../../../context/Delete/UseDelete';
 
 const FileManager = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
+  const { openModal } = useConfirmDelete();
 
   const [filesData, setFilesData] = useState({ data: [], total: 0 });
   const [filters, setFilters] = useState({
@@ -27,7 +29,7 @@ const FileManager = () => {
   });
   const [editingFile, setEditingFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
+
 
   //  Fetch files
   useEffect(() => {
@@ -135,23 +137,27 @@ const FileManager = () => {
   };
 
   const handleDelete = (id) => {
-    setConfirmDelete({ show: true, id });
+    openModal(async () => {
+      showLoader();
+      try {
+        const response = await deleteFile(id); // use id passed to function
+        addMessage(
+          "success",
+          response?.message || "File deleted successfully!"
+        );
+        const updatedFiles = await fetchFiles(filters);
+        setFilesData(updatedFiles);
+      } catch (err) {
+        addMessage("error", err.message);
+      } finally {
+        hideLoader();
+      }
+    });
   };
 
-  const confirmDeleteFile = async () => {
-    showLoader();
-    try {
-      const response = await deleteFile(confirmDelete.id);
-      addMessage("success", response?.message || "File deleted successfully!");
-      const updatedFiles = await fetchFiles(filters);
-      setFilesData(updatedFiles);
-    } catch (err) {
-      addMessage("error", err.message);
-    } finally {
-      hideLoader();
-      setConfirmDelete({ show: false, id: null });
-    }
-  };
+
+     
+  
 
   return (
     <div className="dashboard-wraper  ">
@@ -223,14 +229,7 @@ const FileManager = () => {
         </div>
       )}
 
-      {/* Confirm Delete */}
-      <ConfirmDialog
-        show={confirmDelete.show}
-        onCancel={() => setConfirmDelete({ show: false, id: null })}
-        onConfirm={confirmDeleteFile}
-        title="Delete File"
-        message="Are you sure you want to delete this file?"
-      />
+    
 
       {/* Modal for Upload / Update */}
       {isModalOpen && (
