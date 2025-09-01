@@ -9,6 +9,7 @@ const PropertyDetailsForm = ({
   initialValues = {},
   onSubmit,
   isEditMode = false,
+  onUpdateImages,
 }) => {
   const { addMessage } = useResponse();
   const [validationError, setValidationError] = React.useState(null);
@@ -522,10 +523,20 @@ const PropertyDetailsForm = ({
           </div>
         </div>
       </div>
-      <div className="form-group col-lg-12 col-md-12">
+      <div className="form-group col-lg-12 col-md-12 d-flex gap-2">
         <button type="submit" className="btn btn-main fw-medium px-5">
           {isEditMode ? "Update Property" : "Submit Property"}
         </button>
+
+        {isEditMode && (
+          <button
+            type="button"
+            className="btn btn-secondary fw-medium px-5"
+            onClick={() => onUpdateImages && onUpdateImages()}
+          >
+            Update Images
+          </button>
+        )}
       </div>
     </form>
   );

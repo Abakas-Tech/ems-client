@@ -53,7 +53,7 @@ const PaginationAndSort = ({
   return (
  
     <div
-      className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center my-2 p-2 w-100 border"
+      className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center p-2  w-100 border dashboard-wraper"
       style={{ backgroundColor: "#fff", borderRadius: "5px" }}
     >
       {/* Title Search - on top for small screens, left for md+ */}
@@ -69,15 +69,8 @@ const PaginationAndSort = ({
             value={title}
             onChange={handleTitleChange}
           />
-          <FaSearch
-            className="position-absolute mx-1"
-            style={{
-              left: "0",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "#0987F5",
-            }}
-          />
+         
+        
         </div>
       )}
       {/* Left: Results text */}
