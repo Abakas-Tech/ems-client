@@ -55,6 +55,22 @@ export const updateProperty = async (id, data) => {
     );
   }
 };
+// Toggle property featured status
+export const togglePropertyFeatured = async (id, isFeatured) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/properties/${id}/feature/${isFeatured}`
+    );
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to toggle featured status"
+    );
+  }
+};
 
 // Delete a property by ID
 export const deleteProperty = async (id) => {

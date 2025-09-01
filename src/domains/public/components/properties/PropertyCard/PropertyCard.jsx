@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const PropertyCard = ({ property }) => {
   return (
-    <div className="sides_list_property ">
+    <Link to={`/properties/${property.id}`} className="sides_list_property ">
       <div className="sides_list_property_thumb">
         <img
           src={property?.images[0]?.image_url}
@@ -31,7 +31,7 @@ const PropertyCard = ({ property }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

@@ -4,7 +4,11 @@ import { FaFilter } from "react-icons/fa";
 import FilterSidebar from "../properties/filterSideBar";
 import PaginationAndSort from "../properties/paginationAndSort";
 import SingleProperty from "../properties/singleProperties";
-import { deleteProperty, getAllProperties } from "../../api/properties.api";
+import {
+  deleteProperty,
+  getAllProperties,
+  togglePropertyFeatured,
+} from "../../api/properties.api";
 import { getPropertyImages } from "../../api/PropertiesImage.api";
 import BottomPagination from "../properties/bottomPagination";
 import SinglePropertyAdmin from "./../../../admin/components/Properties/SingleProperyAdmin.jsx";
@@ -60,6 +64,26 @@ const PropertyList = ({ isPublicPage = true }) => {
     }
   };
 
+  // Handler function to toggle featured status
+  const handleToggleFeatured = async (propertyId, currentFeatured) => {
+    try {
+      // Toggle the featured status
+      const newFeatured =
+        currentFeatured === "1" || currentFeatured == true ? true : false;
+
+      const response = await togglePropertyFeatured(propertyId, newFeatured);
+      addMessage("success", response.message);
+
+      // Update local state so UI reflects change immediately
+      setProperties((prev) =>
+        prev.map((prop) =>
+          prop.id === propertyId ? { ...prop, is_featured: newFeatured } : prop
+        )
+      );
+    } catch (error) {
+      addMessage("error", error.message);
+    }
+  };
   const handleDeleteProperty = async (id) => {
     showLoader();
     try {
@@ -210,6 +234,7 @@ const PropertyList = ({ isPublicPage = true }) => {
                               await handleDeleteProperty(property.id);
                             });
                           }}
+                          onToggleFeatured={handleToggleFeatured}
                         />
                       </div>
                     )}
