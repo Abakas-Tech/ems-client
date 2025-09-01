@@ -164,6 +164,7 @@ const PropertyDetailsForm = ({
     },
     onSubmit: (values) => {
       setValidationError(null);
+
       // Top-to-bottom sequential validation
       if (!values.title.trim()) {
         addMessage("error", "Property Title is required");
@@ -185,26 +186,49 @@ const PropertyDetailsForm = ({
         setValidationError("address");
         return;
       }
+
+      // Latitude validation
       if (values.latitude === "" || isNaN(values.latitude)) {
         addMessage("error", "Latitude is required and must be a number");
         setValidationError("latitude");
         return;
       }
+      if (Number(values.latitude) < -90 || Number(values.latitude) > 90) {
+        addMessage("error", "Latitude must be between -90 and +90");
+        setValidationError("latitude");
+        return;
+      }
+
+      // Longitude validation
       if (values.longitude === "" || isNaN(values.longitude)) {
         addMessage("error", "Longitude is required and must be a number");
         setValidationError("longitude");
         return;
       }
+      if (Number(values.longitude) < -180 || Number(values.longitude) > 180) {
+        addMessage("error", "Longitude must be between -180 and +180");
+        setValidationError("longitude");
+        return;
+      }
+
+      // Description validation
       if (!values.description.trim()) {
         addMessage("error", "Description is required");
         setValidationError("description");
         return;
       }
+      if (values.description.trim().length <= 10) {
+        addMessage("error", "Description must be more than 10 characters");
+        setValidationError("description");
+        return;
+      }
+
       if (!values.status) {
         addMessage("error", "Status is required");
         setValidationError("status");
         return;
       }
+
       //  All good → submit
       onSubmit(values);
     },
