@@ -427,18 +427,9 @@ const PropertyFormPage = () => {
                     initialValues={initialValues}
                     onSubmit={handlePropertySubmit}
                     isEditMode={isEditMode}
+                    onUpdateImages={() => setFormStage("images")} // New prop for update images
                   />
-                  {isEditMode && (
-                    <div className="form-group col-lg-12 col-md-12 mt-3">
-                      <button
-                        type="button"
-                        className="btn btn-secondary fw-medium px-5"
-                        onClick={() => setFormStage("images")}
-                      >
-                        Update Images
-                      </button>
-                    </div>
-                  )}
+                 
                 </>
               ) : (
                 <ImagesUploadForm

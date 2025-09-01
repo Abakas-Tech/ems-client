@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Container, Button } from "react-bootstrap";
 import { FaFilter } from "react-icons/fa";
-import FilterSidebar from "../../../public/components/properties/filterSideBar";
-import PaginationAndSort from "../../../public/components/properties/paginationAndSort";
-import SingleProperty from "../../../public/components/properties/singleProperties";
+import FilterSidebar from "../properties/filterSideBar";
+import PaginationAndSort from "../properties/paginationAndSort";
+import SingleProperty from "../properties/singleProperties";
 import { deleteProperty, getAllProperties } from "../../api/properties.api";
 import { getPropertyImages } from "../../api/PropertiesImage.api";
-import BottomPagination from "../../../public/components/properties/bottomPagination";
-import SinglePropertyAdmin from "./../../../admin/components/Properties/SingleProperyAdmin";
-import useLoader from "../../../../context/Loader/UseLoader";
-import useResponse from './../../../../context/response/UseResponse';
-import { useConfirmDelete } from './../../../../context/Delete/UseDelete';
+import BottomPagination from "../properties/bottomPagination";
+import SinglePropertyAdmin from "./../../../admin/components/Properties/SingleProperyAdmin.jsx";
+import useLoader from "../../../../context/Loader/UseLoader.jsx";
+import useResponse from "./../../../../context/response/UseResponse";
+import { useConfirmDelete } from "./../../../../context/Delete/UseDelete";
 
 const PropertyList = ({ isPublicPage = true }) => {
   const [properties, setProperties] = useState([]);
@@ -24,93 +24,96 @@ const PropertyList = ({ isPublicPage = true }) => {
   const [showSidebar, setShowSidebar] = useState(false);
   const { showLoader, hideLoader } = useLoader();
   const { openModal } = useConfirmDelete();
-  const {addMessage}=useResponse()
+  const { addMessage } = useResponse();
 
-const fetchProperties = async (params = {}) => {
-  showLoader(); // show global loader
-  try {
-    const response = await getAllProperties({
-      page: pagination.page,
-      limit: pagination.limit,
-      ...filters,
-      ...params,
-    });
+  const fetchProperties = async (params = {}) => {
+    showLoader(); // show global loader
+    try {
+      const response = await getAllProperties({
+        page: pagination.page,
+        limit: pagination.limit,
+        ...filters,
+        ...params,
+      });
 
-    if (response.success) {
-      const { properties, pagination: pg } = response.data;
-      setProperties(properties);
-      setPagination(pg);
+      if (response.success) {
+        const { properties, pagination: pg } = response.data;
+        setProperties(properties);
+        setPagination(pg);
 
-      // Fetch images for each property
-      const imageResults = {};
-      for (const property of properties) {
-        const imgRes = await getPropertyImages(property.id);
-        if (imgRes.success) {
-          imageResults[property.id] = imgRes.data.data;
+        // Fetch images for each property
+        const imageResults = {};
+        for (const property of properties) {
+          const imgRes = await getPropertyImages(property.id);
+          if (imgRes.success) {
+            imageResults[property.id] = imgRes.data.data;
+          }
         }
+        setImages(imageResults);
+      } else {
+        addMessage("error", response.message);
       }
-      setImages(imageResults);
-    } else {
-      addMessage("error", response.message );
-    }
-  } catch (err) {
-    addMessage("error", err.message);
-  } finally {
-    hideLoader(); // hide global loader
-  }
-};
-
-const handleDeleteProperty = async (id) => {
-  showLoader();
-  try {
-    const response = await deleteProperty(id);
-    if (response.success) {
-      setProperties((prev) => prev.filter((property) => property.id !== id));
-      addMessage("success", response.message);
-    } else {
-      addMessage("error", response.message);
-    }
-  } catch (error) {
-    addMessage("error", error.message);
-  } finally {
-    hideLoader();
-  }
-};
-
-useEffect(() => {
-  setProperties(null);
-  fetchProperties();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [filters, pagination.page, pagination.limit]);
-
-useEffect(() => {
-  const handleResize = () => {
-    if (window.innerWidth >= 992) {
-      setShowSidebar(false);
+    } catch (err) {
+      addMessage("error", err.message);
+    } finally {
+      hideLoader(); // hide global loader
     }
   };
-  window.addEventListener("resize", handleResize);
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
 
-const handleToggleSidebar = () => {
-  setShowSidebar(!showSidebar);
-};
+  const handleDeleteProperty = async (id) => {
+    showLoader();
+    try {
+      const response = await deleteProperty(id);
+      if (response.success) {
+        setProperties((prev) => prev.filter((property) => property.id !== id));
+        addMessage("success", response.message);
+      } else {
+        addMessage("error", response.message);
+      }
+    } catch (error) {
+      addMessage("error", error.message);
+    } finally {
+      hideLoader();
+    }
+  };
 
+  useEffect(() => {
+    setProperties(null);
+    fetchProperties();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, pagination.page, pagination.limit]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 992) {
+        setShowSidebar(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleToggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+  };
 
   return (
     <div
-     
       style={{
+        padding: isPublicPage ? "25px" : "0",
         backgroundColor: "#ECF3FA",
-        minHeight: "100vh",
-        padding: "20px 0",
       }}
+      className="dashboard-wraper"
     >
-      <Container className="px-3">
+      <Container>
         {/* Pagination at top */}
-        <Row className="mb-4">
-          <Col xs={12}>
+        <Row className="mb-3 ">
+          <Col
+            xs={12}
+            style={{
+              padding: !isPublicPage ? "0" : "12px",
+            }}
+          >
             <PaginationAndSort
               pagination={pagination}
               onPageChange={(page) =>
@@ -175,8 +178,14 @@ const handleToggleSidebar = () => {
             <Row>
               {!isPublicPage ? (
                 <div className="bg-white  ps-4 pt-4 rounded-top ">
-                  {" "}
-                  <h4>My Properties</h4>
+                  {/* Header */}
+                  <div className="mb-4 text-start">
+                    <h2 className="fw-bold">My Listings</h2>
+                    <p className="text-muted">
+                      View all your properties, edit details, delete listings,
+                      or mark as featured
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <></>
@@ -218,7 +227,7 @@ const handleToggleSidebar = () => {
         </Row>
 
         <Row>
-          <div className="col-12 mb-4">
+          <div className="col-12 ">
             <BottomPagination
               pagination={pagination}
               onPageChange={(page) =>
