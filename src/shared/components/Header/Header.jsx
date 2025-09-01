@@ -48,7 +48,7 @@ const Header = () => {
   useEffect(() => {
     const isFixed = isScrolled || location.pathname !== "/";
     if (isFixed && !isPortrait) {
-      document.body.style.paddingTop = "80px";
+      document.body.style.paddingTop = "60px";
     } else {
       document.body.style.paddingTop = "";
     }

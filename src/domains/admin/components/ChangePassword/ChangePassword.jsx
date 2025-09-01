@@ -53,7 +53,9 @@ const ChangePassword = () => {
   return (
     <div className="dashboard-wraper">
       <div className="form-submit">
-        <h4>Change Your Password</h4>
+        <h2 className="fw-bold text-dark mb-3 d-flex align-items-center">
+          Change Your Password
+        </h2>
         <form onSubmit={handleSubmit}>
           <div className="submit-section">
             <div className="row">

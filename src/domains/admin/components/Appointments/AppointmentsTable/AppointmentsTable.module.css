@@ -1,7 +1,12 @@
 .appointmentsTable .actionsCell {
   position: relative;
 }
-
+.truncateCell {
+  max-width: 200px; /* adjust width as needed */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .actionsIcons {
   display: flex;
   justify-content: center;

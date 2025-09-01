@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchAgentProfile } from "../../api/profile.api";
 import ContactForm from "../../components/ContactForm/ContactForm";
-import AboutSnippet from './../../components/AboutSnippet/AboutSnippet';
+import AboutSnippet from "./../../components/AboutSnippet/AboutSnippet";
+import SEOHelmet from "../../../../shared/components/SEOHelmet/SEOHelmet";
 
 const AboutDetail = () => {
   const [agent, setAgent] = useState({
@@ -31,9 +32,10 @@ const AboutDetail = () => {
   }, []);
 
   return (
-    <div>
+    <>
+      <SEOHelmet />
       {/* Page Title */}
-      <div className="image-cover page-title">
+      <div className="image-cover page-title ">
         <div className="container">
           <div className="row">
             <div className="col-lg-12 col-md-12">
@@ -47,11 +49,11 @@ const AboutDetail = () => {
       </div>
 
       {/* Main Content */}
-      <section className="agent-page p-0 gray-simple">
+      <section className="agent-page gray-simple">
         <div className="container">
           <div className="row">
             {/*  Replaced duplicated agent profile card */}
-            <div className="col-lg-12 col-md-12 ">
+            <div className="col-lg-12 col-md-12 px-0">
               <AboutSnippet showButton={false} />
             </div>
           </div>
@@ -117,7 +119,7 @@ const AboutDetail = () => {
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 };
 
