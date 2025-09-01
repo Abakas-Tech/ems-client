@@ -1,14 +1,11 @@
+import PropertyList from "../../components/propertiesList/propertiesList";
 
-import React from 'react'
-import PropertyList from '../../components/propertiesList/propertiesList'
-
-const propertiesListPage = () => {
+const propertiesList = () => {
   return (
     <>
-    <PropertyList />
+      <PropertyList />
     </>
-  )
-}
+  );
+};
 
-export default propertiesListPage
-
+export default propertiesList;
