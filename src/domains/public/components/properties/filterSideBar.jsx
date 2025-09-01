@@ -91,7 +91,7 @@ const FilterSidebar = ({
                   onChange={handleSearchChange}
                 />
                 <div className="position-absolute top-50 start-0 translate-middle-y ms-2">
-                  <FaSearch className="text-main fs-5" />
+                
                 </div>
               </div>
             </div>

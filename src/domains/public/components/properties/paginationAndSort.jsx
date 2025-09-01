@@ -69,15 +69,8 @@ const PaginationAndSort = ({
             value={title}
             onChange={handleTitleChange}
           />
-          <FaSearch
-            className="position-absolute mx-1"
-            style={{
-              left: "0",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "#0987F5",
-            }}
-          />
+         
+        
         </div>
       )}
       {/* Left: Results text */}
