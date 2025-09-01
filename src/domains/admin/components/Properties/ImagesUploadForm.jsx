@@ -16,7 +16,7 @@ const ImagesUploadForm = ({
   onCancel,
   isEditMode = false,
   onDeleteImage,
-  fetchPropertyImages, // new
+  fetchPropertyImages,
 }) => {
   const { addMessage } = useResponse();
   const maxFiles = 10;
@@ -27,7 +27,6 @@ const ImagesUploadForm = ({
     "image/gif": [],
   };
 
-  //  refetch on mount
   useEffect(() => {
     if (propertyId && typeof fetchPropertyImages === "function") {
       fetchPropertyImages();
@@ -85,6 +84,36 @@ const ImagesUploadForm = ({
     setAltTexts((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleSubmit = () => {
+    // Validation: check if anything changed
+    const hasNewFiles = files.length > 0;
+    const hasAltTextChanges = existingImages.some(
+      (img) => img.altText !== img.originalAltText
+    );
+    const hasReplacedImages = existingImages.some(
+      (img) => img.file && !img.originalUrl
+    );
+    const hasDeletedImages = existingImages.some(
+      (img) => img.toBeDeleted === true
+    );
+
+    if (
+      !hasNewFiles &&
+      !hasAltTextChanges &&
+      !hasReplacedImages &&
+      !hasDeletedImages
+    ) {
+      addMessage(
+        "error",
+        "No changes detected"
+      );
+      return;
+    }
+
+    // Call parent submit if validation passes
+    onSubmit();
+  };
+
   return (
     <div className="container my-4">
       <h3 className="mb-4">
@@ -109,7 +138,6 @@ const ImagesUploadForm = ({
 
                   {/* Replace + Delete icons */}
                   <div className="position-absolute top-0 end-0 m-2 d-flex gap-2">
-                    {/* Replace */}
                     <label
                       className="p-1 d-flex align-items-center justify-content-center shadow-sm"
                       style={{
@@ -128,10 +156,12 @@ const ImagesUploadForm = ({
                         }
                       />
                     </label>
-                    {/* Delete */}
                     <button
                       type="button"
-                      onClick={() => onDeleteImage?.(img.id)}
+                      onClick={() => {
+                        img.toBeDeleted = true;
+                        onDeleteImage?.(img.id);
+                      }}
                       className="p-1 d-flex align-items-center justify-content-center shadow-sm"
                       style={{
                         borderRadius: "50%",
@@ -235,7 +265,7 @@ const ImagesUploadForm = ({
         <button
           type="button"
           className="btn btn-primary fw-medium px-4"
-          onClick={onSubmit}
+          onClick={handleSubmit}
         >
           {isEditMode ? "Update Images" : "Submit Images"}
         </button>
