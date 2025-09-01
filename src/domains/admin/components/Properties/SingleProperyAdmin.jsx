@@ -136,7 +136,7 @@ const SinglePropertyAdmin = ({
                 justifyContent: "center",
                 width: "30px",
                 height: "30px",
-                backgroundColor: isFeatured ? "green" : "transparent",
+                backgroundColor: isFeatured ? "green" : "blue",
                 color: isFeatured ? "white" : "inherit",
                 borderRadius: "0", // square shape
               }}
