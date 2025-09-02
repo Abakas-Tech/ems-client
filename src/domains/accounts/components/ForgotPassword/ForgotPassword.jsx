@@ -51,7 +51,7 @@ const ForgotPassword = () => {
         className="login-container p-4 rounded shadow-lg my-4"
         style={{ maxWidth: "500px", width: "90%", minHeight: "400px" }}
       >
-        <h1 className="text-center mb-3 fw-bolder pt-0">Forgot Password</h1>
+        <h2 className="text-center mb-3 fw-bold pt-0">Forgot Password</h2>
         <img src={logo} className="mx-auto d-block mb-4 img-fluid" />
         <form onSubmit={handleSubmit}>
           <div className="form-floating mb-3">
