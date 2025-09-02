@@ -124,12 +124,12 @@ const PropertyList = ({ isPublicPage = true }) => {
   return (
     <div
       style={{
-        padding: isPublicPage ? "25px" : "0",
+        padding: isPublicPage ? "73px 25px" : "0",
         backgroundColor: "#ECF3FA",
       }}
       className="dashboard-wraper"
     >
-      <Container>
+      <div className={isPublicPage ? "container" : "container-fluid"}>
         {/* Pagination at top */}
         <Row className="mb-3 ">
           <Col
@@ -201,7 +201,10 @@ const PropertyList = ({ isPublicPage = true }) => {
 
             <Row>
               {!isPublicPage ? (
-                <div className="bg-white   pt-4 rounded-top " style={{paddingLeft:"27px"}}>
+                <div
+                  className="bg-white   pt-4 rounded-top "
+                  style={{ paddingLeft: "27px" }}
+                >
                   {/* Header */}
                   <div className="mb-4 text-start">
                     <h2 className="fw-bold">My Listings</h2>
@@ -261,7 +264,7 @@ const PropertyList = ({ isPublicPage = true }) => {
             />
           </div>
         </Row>
-      </Container>
+      </div>
     </div>
   );
 };
