@@ -28,11 +28,11 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           }`,
         });
       } catch (error) {
-        console.error("Failed to fetch agent data:", error);
+        // console.error("Failed to fetch agent data:", error);
       }
     };
     fetchAgentData();
-  }, []);
+  }, [agentData]);
 
   // Auto-close drawer on window resize
   useEffect(() => {
