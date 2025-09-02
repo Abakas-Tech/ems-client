@@ -80,7 +80,7 @@ function Featured({ isAdmin = false }) {
                 className={`${
                   !isAdmin
                     ? "col-xl-6 col-lg-6 col-md-12"
-                    : "border my-3 rounded w-75 py-0 ms-2 p-0 "
+                    : "border my-3 rounded col-md-9 col-sm-12 py-0 ms-2 p-0 "
                 }`}
                 key={property.id}
               >
