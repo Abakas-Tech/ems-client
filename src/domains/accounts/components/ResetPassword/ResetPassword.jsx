@@ -8,6 +8,8 @@ import logo from "../../../../assets/img/logo.svg";
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
@@ -64,10 +66,12 @@ const ResetPassword = () => {
       >
         <h1 className="text-center mb-3 fw-bolder pt-0">Reset Password</h1>
         <img src={logo} className="mx-auto d-block mb-4 img-fluid" alt="logo" />
+
         <form onSubmit={handleSubmit}>
-          <div className="form-floating mb-3">
+          {/* New Password */}
+          <div className="form-floating mb-3 position-relative">
             <input
-              type="password"
+              type={showNew ? "text" : "password"}
               className="form-control"
               id="newPassword"
               placeholder="New Password"
@@ -76,10 +80,21 @@ const ResetPassword = () => {
               required
             />
             <label htmlFor="newPassword">New Password</label>
+            <button
+              type="button"
+              className="btn position-absolute top-50 end-0 translate-middle-y me-2"
+              style={{ border: "none", background: "transparent" }}
+              onClick={() => setShowNew((prev) => !prev)}
+              tabIndex={-1}
+            >
+              <i className={`bi ${showNew ? "bi-eye-slash" : "bi-eye"}`}></i>
+            </button>
           </div>
-          <div className="form-floating mb-3">
+
+          {/* Confirm Password */}
+          <div className="form-floating mb-3 position-relative">
             <input
-              type="password"
+              type={showConfirm ? "text" : "password"}
               className="form-control"
               id="confirmPassword"
               placeholder="Confirm New Password"
@@ -88,7 +103,19 @@ const ResetPassword = () => {
               required
             />
             <label htmlFor="confirmPassword">Confirm New Password</label>
+            <button
+              type="button"
+              className="btn position-absolute top-50 end-0 translate-middle-y me-2"
+              style={{ border: "none", background: "transparent" }}
+              onClick={() => setShowConfirm((prev) => !prev)}
+              tabIndex={-1}
+            >
+              <i
+                className={`bi ${showConfirm ? "bi-eye-slash" : "bi-eye"}`}
+              ></i>
+            </button>
           </div>
+
           <button
             type="submit"
             className="btn btn-main fw-medium w-100 rounded-2"
