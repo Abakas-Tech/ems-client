@@ -93,4 +93,27 @@
 }
 
 
+/* Slide down + fade for the modal container */
+@keyframes fadeSlideDown {
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 
+.modal {
+  background: var(--modal-bg);
+  color: var(--modal-text-color);
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 450px;
+  width: 90%;
+  outline: none;
+  
+  /* Animation applied here */
+  animation: fadeSlideDown 0.3s ease-out;
+}
