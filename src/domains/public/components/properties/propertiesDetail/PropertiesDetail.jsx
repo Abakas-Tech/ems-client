@@ -62,7 +62,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
   }, [id]);
   return (
     <>
-      <PropertyGallery images={images}  />
+      <PropertyGallery images={images} />
       <section className="gray-simple">
         <div className="container">
           <div className="row">
@@ -301,7 +301,11 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                   <h4>Featured Property</h4>
                   <div className="sidebar_featured_property mt-3">
                     {featuredProperties.map((property) => (
-                      <PropertyCard property={property} key={property.id} />
+                      <PropertyCard
+                        property={property}
+                        key={property.id}
+                        isPublicPage={(isPublicPage)}
+                      />
                     ))}
                   </div>
                 </div>

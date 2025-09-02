@@ -1,8 +1,15 @@
 import { Link } from "react-router-dom";
 
-const PropertyCard = ({ property }) => {
+const PropertyCard = ({ property, isPublicPage }) => {
   return (
-    <Link to={`/properties/${property.id}`} className="sides_list_property ">
+    <Link
+      to={
+        isPublicPage
+          ? `/properties/${property.id}`
+          : `/admin/properties/veiw/${property.id}`
+      }
+      className="sides_list_property "
+    >
       <div className="sides_list_property_thumb">
         <img
           src={property?.images[0]?.image_url}
