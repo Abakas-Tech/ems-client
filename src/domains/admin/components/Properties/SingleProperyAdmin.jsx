@@ -46,7 +46,7 @@ const SinglePropertyAdmin = ({
             className="img-fluid"
             style={{
               width: "100%",
-              height: "164px",
+              height: "200px",
               objectFit: "cover",
             }}
           />
