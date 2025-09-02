@@ -16,10 +16,12 @@ export const AuthProvider = ({ children }) => {
       if (response.data.success) {
         setUser(true);
       } else {
+        sessionStorage.removeItem("authToken"); // remove invalid token
         setUser(null);
         navigate("/auth/login", { state: { from: location.pathname } });
       }
     } catch {
+      sessionStorage.removeItem("authToken");
       setUser(null);
       navigate("/auth/login", { state: { from: location.pathname } });
     } finally {
@@ -41,15 +43,25 @@ export const AuthProvider = ({ children }) => {
         location.pathname === prefix || location.pathname.startsWith(prefix)
     );
 
+    const token = sessionStorage.getItem("authToken");
+
     if (isPublicPath) {
-      setUser(localStorage.getItem("authToken") ? true : null);
+      // For public pages, allow access but still set user if token exists
+      setUser(token ? true : null);
       setIsCheckingAuth(false);
     } else {
-      checkUserAuth();
+      // Protected pages → must verify token
+      if (!token) {
+        setUser(null);
+        setIsCheckingAuth(false);
+        navigate("/auth/login", { state: { from: location.pathname } });
+      } else {
+        checkUserAuth();
+      }
     }
   }, [location.pathname]);
 
-  if (isCheckingAuth) return null;
+  if (isCheckingAuth) return null; // or show loader
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>
