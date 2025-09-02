@@ -103,10 +103,7 @@ const ImagesUploadForm = ({
       !hasReplacedImages &&
       !hasDeletedImages
     ) {
-      addMessage(
-        "error",
-        "No changes detected"
-      );
+      addMessage("error", "No changes detected");
       return;
     }
 
@@ -272,8 +269,13 @@ const ImagesUploadForm = ({
       <div className="d-flex gap-3">
         <button
           type="button"
-          className="btn btn-primary fw-medium px-4"
+          className="btn  fw-medium px-4"
           onClick={handleSubmit}
+          style={{
+            backgroundColor: "var(--maincolor)",
+            color: "white",
+            border: "1px solid var(--maincolor)",
+          }}
         >
           {isEditMode ? "Update Images" : "Submit Images"}
         </button>
