@@ -6,7 +6,7 @@ const ContactPage = () => {
   return (
     <>
       <SEOHelmet />
-      <div class="page-title">
+      <div class="page-title" style={{ marginTop: "50px" }}>
         <div class="container">
           <div class="row">
             <div class="col-lg-12 col-md-12">

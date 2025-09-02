@@ -61,8 +61,8 @@ const PropertyDetails = ({ isPublicPage = true }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
   return (
-    <>
-      <PropertyGallery images={images}  />
+    <div style={{ marginTop: "50px" }}>
+      <PropertyGallery images={images} />
       <section className="gray-simple">
         <div className="container">
           <div className="row">
@@ -312,7 +312,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 };
 

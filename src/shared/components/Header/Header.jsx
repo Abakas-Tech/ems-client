@@ -45,14 +45,14 @@ const Header = () => {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   // Body padding
-  useEffect(() => {
-    const isFixed = isScrolled || location.pathname !== "/";
-    if (isFixed && !isPortrait) {
-      document.body.style.paddingTop = "60px";
-    } else {
-      document.body.style.paddingTop = "";
-    }
-  }, [isScrolled, location.pathname, isPortrait]);
+  // useEffect(() => {
+  //   const isFixed = isScrolled || location.pathname !== "/";
+  //   if (isFixed && !isPortrait) {
+  //     document.body.style.paddingTop = "60px";
+  //   } else {
+  //     document.body.style.paddingTop = "";
+  //   }
+  // }, [isScrolled, location.pathname, isPortrait]);
 
   const isFixed = isScrolled || location.pathname !== "/";
 
