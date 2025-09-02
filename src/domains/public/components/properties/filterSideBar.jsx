@@ -475,7 +475,7 @@ const FilterSidebar = ({
             </Button>
             <Button
               type="button"
-              className="btn btn-outline-secondary rounded flex-fill fw-normal fs-6 text-white"
+              className="btn btn-main btn-light-main rounded flex-fill fw-normal fs-6 "
               onClick={() => onFilterChange({ location: undefined })}
             >
               Clear

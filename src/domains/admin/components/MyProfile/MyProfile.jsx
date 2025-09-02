@@ -45,7 +45,7 @@ const MyProfile = () => {
         whatsapp_username: data.whatsapp_username || "",
         profile_image_url: data.profile_image_url || "",
       });
-    } catch(err) {
+    } catch (err) {
       addMessage("error", err.message);
     } finally {
       hideLoader();
@@ -75,18 +75,18 @@ const MyProfile = () => {
     });
 
     showLoader();
-   try {
-     const response = await updateProfile(formData);
-     await fetchProfile();
-     addMessage(
-       "success",
-       response?.message || "Profile image updated successfully!"
-     );
-   } catch (error) {
-     addMessage("error", error.message);
-   } finally {
-     hideLoader();
-   }
+    try {
+      const response = await updateProfile(formData);
+      await fetchProfile();
+      addMessage(
+        "success",
+        response?.message || "Profile image updated successfully!"
+      );
+    } catch (error) {
+      addMessage("error", error.message);
+    } finally {
+      hideLoader();
+    }
   };
 
   const handleImageClick = () => fileInputRef.current.click();
@@ -116,6 +116,10 @@ const MyProfile = () => {
     <div className="dashboard-wraper">
       <div className="form-submit">
         <h2>My Account</h2>
+        <p className="text-muted ">
+          Manage and update your account details to keep your profile up to
+          date.
+        </p>
         <div className="submit-section">
           <form onSubmit={handleSubmit}>
             <div className="row">

@@ -16,7 +16,7 @@ const FeaturedCard = ({ property, images }) => {
     halls,
     kitchens,
   } = property;
-
+  console.log(tags);
   return (
     <div
       className="property-listing property-1 bg-white p-2 rounded"
