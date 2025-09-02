@@ -69,11 +69,15 @@ const PropertyList = ({ isPublicPage = true }) => {
     try {
       // Toggle the featured status
       const newFeatured =
-        currentFeatured === "1" || currentFeatured == true ? true : false;
+        currentFeatured == "1" || currentFeatured == true ? true : false;
 
       const response = await togglePropertyFeatured(propertyId, newFeatured);
-      addMessage("success", response.message);
-
+      if (response.success) {
+        addMessage("success", response.message);
+      } else {
+        addMessage("error", response.message);
+      }
+      fetchProperties();
       // Update local state so UI reflects change immediately
       setProperties((prev) =>
         prev.map((prop) =>

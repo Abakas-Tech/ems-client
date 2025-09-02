@@ -9,7 +9,7 @@ const AppointmentsTable = ({
   onPageChange,
   onEdit,
   onDelete,
-  onView, // 🔹 NEW handler for detail view
+  onView, //  NEW handler for detail view
 }) => {
   return (
     <div>
