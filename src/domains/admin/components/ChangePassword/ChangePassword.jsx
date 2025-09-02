@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { changePassword } from "../../../accounts/api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
+import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
 const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -39,7 +40,7 @@ const ChangePassword = () => {
           "success",
           response.message || "Password changed successfully!"
         );
-        navigate("/admin/profile");
+        navigate("/admin/my-profile");
       } else {
         addMessage("error", response.message || "Change failed.");
       }
@@ -67,37 +68,40 @@ const ChangePassword = () => {
             <div className="row">
               {/* Old Password */}
               <div className="form-group col-lg-12 col-md-6 mb-3">
-                <label>Old Password</label>
-                <input
-                  type="password"
-                  className="form-control"
+                <PasswordInput
+                  label="Old Password"
+                  id="oldPassword"
                   value={oldPassword}
-                  onChange={(e) => setOldPassword(e.target.value)}
+                  onChange={setOldPassword}
                   required
+                  align="right"
+                  variant="standard"
                 />
               </div>
 
               {/* New Password */}
               <div className="form-group col-md-6 mb-3">
-                <label>New Password</label>
-                <input
-                  type="password"
-                  className="form-control"
+                <PasswordInput
+                  label="New Password"
+                  id="newPassword"
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={setNewPassword}
                   required
+                  align="right"
+                  variant="standard"
                 />
               </div>
 
               {/* Confirm Password */}
               <div className="form-group col-md-6 mb-3">
-                <label>Confirm Password</label>
-                <input
-                  type="password"
-                  className="form-control"
+                <PasswordInput
+                  label="Confirm Password"
+                  id="confirmPassword"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={setConfirmPassword}
                   required
+                  align="right"
+                  variant="standard"
                 />
               </div>
 

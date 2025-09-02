@@ -69,16 +69,18 @@
 }
 
 .prev {
-  left: 6px;
+  left: 12px;
 }
 
 .next {
-  right: 6px;
+  right: 12px;
 }
 
 /* View photos button (bottom corner) */
 .viewBtn {
   margin: 8px;
+  margin-left: auto !important;
+  display: block;
 }
 
 /* Small screen adjustments */

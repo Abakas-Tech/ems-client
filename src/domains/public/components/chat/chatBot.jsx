@@ -7,6 +7,7 @@ import {
 } from "../../api/chatBot.api";
 import styles from "./chatBot.module.css";
 import useResponse from "./../../../../context/response/UseResponse";
+import { Link, useNavigate } from "react-router-dom";
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +20,7 @@ const ChatBot = () => {
   const [showNotification, setShowNotification] = useState(true);
   const messagesEndRef = useRef(null);
   const { addMessage } = useResponse();
+  const navigate = useNavigate();
 
   // Handle window resize
   useEffect(() => {
@@ -122,7 +124,7 @@ const ChatBot = () => {
         {menus.map((menu) => (
           <button
             key={menu.id}
-            className={`btn btn-outline-primary ${styles.menuButton}`}
+            className={`btn btn-light-main  btn-main fw-medium" ${styles.menuButton}`}
             onClick={() => handleMenuClick(menu.id)}
             style={{
               borderRadius: "5px",
@@ -158,10 +160,10 @@ const ChatBot = () => {
               width: "50px",
               height: "50px",
               fontSize: "18px",
-              zIndex: 1050,
+              zIndex: 100050,
             }}
           >
-            <i className="fas fa-comments"></i>
+            <i className="bi bi-chat-dots"></i>
           </button>
         </>
       )}
@@ -183,15 +185,14 @@ const ChatBot = () => {
           <div className="card shadow-lg" style={{ height: "100%" }}>
             <div
               className="card-header d-flex justify-content-between align-items-center p-3"
-              style={{ borderTop: "4px solid #0987F5" }}
+              style={{ background: "#00A0C2", color: "#fff" }}
             >
-              <h5 className="mb-0">Assistant Bot</h5>
+              <h5 className="mb-0 text-white fs-5">Assistant Bot</h5>
               <div className="d-flex flex-row align-items-center">
-                <i
-                  className="fas fa-times text-muted fa-xs"
+                <button
+                  className="btn-close btn-close-white fw-bold fs-5"
                   onClick={toggleOpen}
-                  style={{ cursor: "pointer" }}
-                ></i>
+                ></button>
               </div>
             </div>
 
@@ -239,15 +240,15 @@ const ChatBot = () => {
                             </p>
                           </div>
                           <i
-                            className="fas fa-user-circle"
-                            style={{ fontSize: "30px", color: "#6C757D" }}
+                            className="bi bi-person-circle ms-3"
+                            style={{ fontSize: "28px", color: "#00A0C2" }}
                           ></i>
                         </>
                       ) : (
                         <>
                           <i
-                            className="fas fa-robot"
-                            style={{ fontSize: "30px", color: "#6c757d" }}
+                            className="bi bi-robot me-3"
+                            style={{ fontSize: "28px", color: "#00A0C2" }}
                           ></i>
                           <div>
                             <p
@@ -256,10 +257,11 @@ const ChatBot = () => {
                               <ReactMarkdown>{msg.text}</ReactMarkdown>
                               {msg.flag === 1 && (
                                 <button
-                                  className="btn btn-outline-primary mt-2"
-                                  onClick={() =>
-                                    (window.location.href = "/contact")
-                                  }
+                                  className="btn btn-light-main btn-md btn-main fw-medium"
+                                  onClick={() => {
+                                    navigate("/contact");
+                                    toggleOpen();
+                                  }}
                                   style={{
                                     borderRadius: "5px",
                                     fontSize: "0.8rem",
@@ -309,12 +311,12 @@ const ChatBot = () => {
                   style={{ borderRadius: "15px 0 0 15px", padding: "10px" }}
                 />
                 <button
-                  className={`btn btn-primary ${styles.sendBtn}`}
+                  className={` btn btn-light-main  btn-main fw-medium${styles.sendBtn}`}
                   type="button"
                   onClick={handleSend}
                   style={{ borderRadius: "0 15px 15px 0", padding: "10px" }}
                 >
-                  Send
+                  Message
                 </button>
               </div>
             </div>

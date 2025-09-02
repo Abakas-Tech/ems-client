@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { X, RefreshCw, Trash2 } from "lucide-react";
+import { FaEdit } from "react-icons/fa";
 import useResponse from "./../../../../context/response/UseResponse";
 
 const ImagesUploadForm = ({
@@ -180,15 +181,32 @@ const ImagesUploadForm = ({
                   </div>
 
                   <div className="card-body p-2">
-                    <input
-                      type="text"
-                      placeholder="Image title"
-                      value={img.altText}
-                      onChange={(e) =>
-                        handleExistingAltTextChange(index, e.target.value)
-                      }
-                      className="form-control form-control-sm"
-                    />
+                    <div className="position-relative">
+                      <input
+                        type="text"
+                        placeholder="Image title"
+                        value={img.altText}
+                        onChange={(e) =>
+                          handleExistingAltTextChange(index, e.target.value)
+                        }
+                        className="form-control form-control-sm pe-4" // add padding to the right for the icon
+                      />
+                      <FaEdit
+                        size={16}
+                        color="blue"
+                        title="Edit Alt Text"
+                        style={{
+                          position: "absolute",
+                          right: "8px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          cursor: "pointer",
+                        }}
+                        onClick={() =>
+                          document.getElementById(`altText-${index}`)?.focus()
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

@@ -47,7 +47,7 @@ const ConfirmDeleteModal = () => {
         variants={shakeVariants}
         animate={shake}
         initial="idle"
-        className={styles.modalInner}
+        className={styles.modalInner} // <- CSS animation applied here
       >
         <h4 className={styles.modalTitle}>
           Are you sure you want to delete this item?

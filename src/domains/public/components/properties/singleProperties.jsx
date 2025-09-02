@@ -99,7 +99,7 @@ const SingleProperty = ({ property, images }) => {
                 </span>
 
                 {Number(is_featured) === 1 && (
-                  <span className="label featured d-inline-flex mb-1 ms-1">
+                  <span className="label featured d-inline-flex mb-1 ms-1 bg-warning  text-white">
                     Featured
                   </span>
                 )}

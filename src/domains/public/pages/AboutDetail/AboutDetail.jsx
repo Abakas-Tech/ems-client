@@ -35,7 +35,7 @@ const AboutDetail = () => {
     <>
       <SEOHelmet />
       {/* Page Title */}
-      <div className="image-cover page-title ">
+      <div className="image-cover page-title" style={{ marginTop: "50px" }}>
         <div className="container">
           <div className="row">
             <div className="col-lg-12 col-md-12">
