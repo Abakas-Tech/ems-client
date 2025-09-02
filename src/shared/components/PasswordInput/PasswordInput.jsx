@@ -12,7 +12,7 @@ const PasswordInput = ({
   align = "right", // "right" or "left"
   variant = "",
 }) => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   return (
     <div
       className={`position-relative ${
@@ -22,7 +22,7 @@ const PasswordInput = ({
       {variant === "standard" && <label htmlFor={id}>{label}</label>}
       <input
         id={id}
-        type={show ? "text" : "password"}
+        type={show ? "password" : "text"}
         className="form-control"
         value={value}
         onChange={(e) => onChange(e.target.value)}
