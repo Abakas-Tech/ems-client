@@ -7,6 +7,7 @@ const SingleProperty = ({ property, images }) => {
     id,
     title,
     location,
+    is_featured,
     status,
     is_urgent,
     area_size,
@@ -96,6 +97,12 @@ const SingleProperty = ({ property, images }) => {
                 >
                   {is_urgent ? "Urgent" : "Normal"}
                 </span>
+
+                {Number(is_featured) === 1 && (
+                  <span className="label featured d-inline-flex mb-1 ms-1 bg-warning  text-white">
+                    Featured
+                  </span>
+                )}
 
                 <h4 className="listing-name mb-0">
                   <Link to={`/properties/${id}`}>{title}</Link>
