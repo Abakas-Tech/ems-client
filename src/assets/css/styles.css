@@ -1315,6 +1315,11 @@ blockquote:not(:last-child) {
 .imagebg .container {
   z-index: 2;
 }
+/* custome container  */
+.custom-container {
+  max-width: 1200px; 
+  margin: 0 auto;
+}
 .imagebg .container:not(.pos-absolute) {
   position: relative;
 }
