@@ -1315,6 +1315,11 @@ blockquote:not(:last-child) {
 .imagebg .container {
   z-index: 2;
 }
+/* custome container  */
+.custom-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
 .imagebg .container:not(.pos-absolute) {
   position: relative;
 }
@@ -8722,6 +8727,7 @@ footer.dark-footer {
   border-top: 1px solid var(--formborder);
   border-bottom: 1px solid var(--formborder);
 }
+
 .nav-footer-logo {
   display: inline-flex;
   align-items: center;
@@ -8781,7 +8787,7 @@ footer.skin-light-footer .footer-add {
   max-width: 185px;
 }
 .footer-widget {
-  padding: 70px 0;
+  padding: 25px 0;
 }
 h4.widget-title {
   margin-bottom: 20px;
@@ -11864,4 +11870,21 @@ th.next.available,
   background: color-mix(in srgb, var(--maincolor), transparent 90%);
   border-color: color-mix(in srgb, var(--maincolor), transparent 80%);
   color: var(--maincolor);
+}
+
+/* custom footer styles  */
+.brand-link {
+  color: #ff5722;
+  text-decoration: none;
+  transition: color 0.3s ease, font-size 0.3s ease;
+}
+
+.brand-link:hover {
+  color: #ff8c42; /* lighter shade on hover */
+  font-size: 1rem;
+}
+/* custom footer  */
+.custom-footer {
+  max-width: 1200px;
+  margin: 0 auto;
 }

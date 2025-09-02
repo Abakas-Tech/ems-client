@@ -45,14 +45,14 @@ const Header = () => {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   // Body padding
-  useEffect(() => {
-    const isFixed = isScrolled || location.pathname !== "/";
-    if (isFixed && !isPortrait) {
-      document.body.style.paddingTop = "60px";
-    } else {
-      document.body.style.paddingTop = "";
-    }
-  }, [isScrolled, location.pathname, isPortrait]);
+  // useEffect(() => {
+  //   const isFixed = isScrolled || location.pathname !== "/";
+  //   if (isFixed && !isPortrait) {
+  //     document.body.style.paddingTop = "60px";
+  //   } else {
+  //     document.body.style.paddingTop = "";
+  //   }
+  // }, [isScrolled, location.pathname, isPortrait]);
 
   const isFixed = isScrolled || location.pathname !== "/";
 
@@ -62,7 +62,7 @@ const Header = () => {
         isPortrait ? "navigation-portrait" : "navigation-landscape"
       } ${isFixed ? "header-fixed" : ""}`}
     >
-      <div className="container">
+      <div className="container custom-container px-0 ">
         <nav
           id="navigation"
           className={`navigation ${
@@ -120,6 +120,7 @@ const Header = () => {
                     Contact
                   </Link>
                 </li>
+
                 <li className="nav-menu-social add-listing">
                   <Link
                     to={user ? "/admin/dashboard" : "/auth/login"}
