@@ -32,7 +32,7 @@ const SinglePropertyAdmin = ({
   const isFeatured = property.is_featured == "1";
 
   return (
-    <div className="col-md-9 col-sm-12 ps-2 pe-2 ">
+    <div className="col-md-9 col-sm-12 ps-3 pe-2 ">
       {/* Single Property */}
       <div className="singles-dashboard-list d-flex flex-column flex-md-row align-items-start">
         {/* Image Left */}
@@ -43,7 +43,7 @@ const SinglePropertyAdmin = ({
             className="img-fluid"
             style={{
               width: "100%",
-              height: "165px",
+              height: "164px",
               objectFit: "cover",
             }}
           />
