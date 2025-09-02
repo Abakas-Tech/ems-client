@@ -46,7 +46,7 @@
 ------------------------------------*/
 :root,
 [data-bs-theme="light"] {
-  --maincolor: #00A0C2;
+  --maincolor: #00a0c2;
   --graycolor: #edf1fb;
   --navcolor: #00305c;
   --darkcolor: #13293d;
@@ -172,7 +172,6 @@ body {
   margin: 0;
   overflow-x: hidden !important;
   font-weight: 400;
-  padding-top: 60px;
 }
 .modal-open {
   overflow: hidden !important;
