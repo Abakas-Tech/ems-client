@@ -40,8 +40,8 @@
 }
 
 .modalTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 500;
   color: var(--modal-title-color);
   margin-bottom: 1rem;
   text-align: center;
