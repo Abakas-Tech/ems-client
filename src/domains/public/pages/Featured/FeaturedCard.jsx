@@ -36,21 +36,21 @@ const FeaturedCard = ({ property, images }) => {
         <div className="listing-detail-wrapper-box">
           <div className="listing-detail-wrapper d-flex align-items-center justify-content-between">
             <div className="listing-short-detail">
-              <span
-                className={`label d-inline-flex mb-1 ${
-                  is_urgent
-                    ? "bg-danger text-white"
-                    : "label for-sale d-inline-flex mb-1"
-                }`}
-              >
-                {is_urgent ? "Urgent" : "Normal"}
-              </span>
-
-              {is_featured && (
-                <span className="label featured d-inline-flex mb-1 ms-1">
-                  Featured
+              <div className="d-flex justify-content-between align-items-center">
+                <span
+                  className={`label d-inline-flex mb-1 ${
+                    is_urgent ? "bg-danger text-white" : "for-sale"
+                  }`}
+                >
+                  {is_urgent ? "Urgent" : "Normal"}
                 </span>
-              )}
+
+                {is_featured && (
+                  <span className="label d-inline-flex mb-1 ms-2 bg-warning text-white">
+                    Featured
+                  </span>
+                )}
+              </div>
 
               <h4 className="listing-name mb-0">
                 <Link to={`/properties/${id}`}>{title}</Link>
