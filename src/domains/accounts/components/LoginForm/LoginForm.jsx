@@ -9,7 +9,7 @@ import logo from "../../../../assets/img/logo.svg";
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ const LoginForm = () => {
     showLoader();
     try {
       const response = await loginAdmin({ email, password });
-      localStorage.setItem("authToken", response.data.data.token);
+      sessionStorage.setItem("authToken", response.data.data.token);
       addMessage("success", "User login successful");
       setUser(true);
       navigate("/admin/dashboard");

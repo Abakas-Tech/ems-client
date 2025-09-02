@@ -10,10 +10,13 @@ const LogoutProvider = ({ children }) => {
   const { setUser } = useAuth();
 
   const logoutNow = () => {
-    localStorage.removeItem("authToken");
-    setUser(false);
-    navigate("/");
+    sessionStorage.removeItem("authToken");
+    setTimeout(() => {
+      setUser(null);
+      navigate("/");
+    }, 50); // 50ms delay can make the transition feel smoother
   };
+
   const logout = () => {
     setShowLogoutModal(true);
   };
