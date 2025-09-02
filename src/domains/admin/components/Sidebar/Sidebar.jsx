@@ -32,7 +32,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
       }
     };
     fetchAgentData();
-  }, [agentData]);
+  }, []);
 
   // Auto-close drawer on window resize
   useEffect(() => {

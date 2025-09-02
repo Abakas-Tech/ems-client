@@ -273,6 +273,7 @@ const PropertyFormPage = () => {
 
         //  Instead of navigating, render Images form
         setPropertyId(propertyResponse.data.id);
+        getPropertyById(propertyIdParam), getPropertyImages(propertyIdParam);
         setIsNewProperty(true);
         setFormStage("images");
       }
@@ -350,7 +351,7 @@ const PropertyFormPage = () => {
           ? "Images submitted successfully!"
           : "Images updated successfully!"
       );
-
+      getPropertyById(propertyIdParam), getPropertyImages(propertyIdParam);
       // Refresh images
       const imagesRes = await getPropertyImages(propertyId);
       if (imagesRes.success) {
@@ -416,6 +417,12 @@ const PropertyFormPage = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [formStage]);
 
+  useEffect(() => {
+    if (propertyIdParam) {
+      setPropertyId(propertyIdParam);
+      getPropertyById(propertyIdParam), getPropertyImages(propertyIdParam);
+    }
+  }, [propertyIdParam, formStage]);
   return (
     <div>
       {/* Main Section */}
@@ -432,7 +439,6 @@ const PropertyFormPage = () => {
                     isEditMode={isEditMode}
                     onUpdateImages={() => setFormStage("images")} // New prop for update images
                   />
-                 
                 </>
               ) : (
                 <ImagesUploadForm
