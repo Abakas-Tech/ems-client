@@ -79,6 +79,8 @@
 /* View photos button (bottom corner) */
 .viewBtn {
   margin: 8px;
+  margin-left: auto !important;
+  display: block;
 }
 
 /* Small screen adjustments */
