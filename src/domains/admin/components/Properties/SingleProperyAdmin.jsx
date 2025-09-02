@@ -32,18 +32,18 @@ const SinglePropertyAdmin = ({
   const isFeatured = property.is_featured == "1";
 
   return (
-    <div className="col-md-12 col-sm-12 ps-2 pe-2">
+    <div className="col-md-9 col-sm-12 ps-2 pe-2 ">
       {/* Single Property */}
       <div className="singles-dashboard-list d-flex flex-column flex-md-row align-items-start">
         {/* Image Left */}
-        <div className="sd-list-left flex-shrink-0">
+        <div className="sd-list-left flex-shrink-0 p-2">
           <img
             src={propertyImage}
             alt={property.title || "Property Image"}
             className="img-fluid"
             style={{
               width: "100%",
-              height: "200px",
+              height: "165px",
               objectFit: "cover",
             }}
           />
