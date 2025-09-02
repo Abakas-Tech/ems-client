@@ -127,22 +127,26 @@ const Appointments = () => {
           {/* View Switcher */}
           <div className="btn-group" role="group" aria-label="View Switcher">
             <button
-              className={`btn btn-md py-3 fw-semibold fs-6 ${
-                view === "table"
-                  ? "btn-outline-primary active"
-                  : "btn-outline-primary"
-              }`}
+              className="btn btn-md py-3 fw-semibold fs-6"
               onClick={() => setView("table")}
+              style={{
+                backgroundColor:
+                  view === "table" ? "var(--maincolor)" : "transparent",
+                color: view === "table" ? "#fff" : "var(--maincolor)",
+                border: `1px solid var(--maincolor)`, // keeps the outline when not active
+              }}
             >
               Table
             </button>
             <button
-              className={`btn btn-md py-3 fw-semibold fs-6  ${
-                view === "calendar"
-                  ? "btn-outline-primary active"
-                  : "btn-outline-primary"
-              }`}
+              className="btn btn-md py-3 fw-semibold fs-6"
               onClick={() => setView("calendar")}
+              style={{
+                backgroundColor:
+                  view === "calendar" ? "var(--maincolor)" : "transparent",
+                color: view === "calendar" ? "#fff" : "var(--maincolor)",
+                border: `1px solid var(--maincolor)`,
+              }}
             >
               Calendar
             </button>
@@ -150,10 +154,15 @@ const Appointments = () => {
 
           {/* Add New */}
           <button
-            className="btn btn-primary btn-md fs-6 py-3"
+            className="btn  btn-md fs-6 py-3"
             onClick={() => {
               setSelected(null);
               setShowModal(true);
+            }}
+            style={{
+              color: "white",
+              border: `1px solid var(--maincolor)`,
+              backgroundColor: "var(--maincolor)",
             }}
           >
             + New Appointment

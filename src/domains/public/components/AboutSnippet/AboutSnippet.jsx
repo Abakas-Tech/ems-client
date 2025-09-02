@@ -74,9 +74,9 @@ const AboutSnippet = ({ showButton }) => {
 
               <div className="agency-content m-0">
                 <div className="agency-name">
-                  <h4>
+                  <h2 className="fw-bold">
                     <Link to="/agency-page">{agentData.agent_name}</Link>
-                  </h4>
+                  </h2>
                   <span>
                     <BiMap /> {agentData.agent_address}
                   </span>

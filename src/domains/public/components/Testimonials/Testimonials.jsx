@@ -82,7 +82,7 @@ const Testimonials = () => {
         <div className="row justify-content-center">
           <div className="col-lg-7 col-md-10 text-center">
             <div className="sec-heading center">
-              <h2>Good Reviews by Customers</h2>
+              <h2 className="fw-bold">Good Reviews by Customers</h2>
               <p>
                 Hear from my satisfied clients who found their dream homes and
                 profitable investments with me. Their trust is my greatest

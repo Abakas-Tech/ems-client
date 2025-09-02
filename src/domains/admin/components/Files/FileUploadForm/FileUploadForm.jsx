@@ -61,7 +61,10 @@ const FileModalForm = ({ show, handleClose, handleSubmit, initialData }) => {
 
         {/* Header */}
         <div className={styles["onboarding-modal__header"]}>
-          <h4 className="fw-bold text-start text-primary">
+          <h4
+            className="fw-bold text-start"
+            style={{ color: "var(--maincolor)" }}
+          >
             {initialData ? "Update File" : "Upload File"}
           </h4>
         </div>
@@ -179,7 +182,14 @@ const FileModalForm = ({ show, handleClose, handleSubmit, initialData }) => {
             <Button variant="secondary" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" className="ms-2 btn btn-primary">
+            <Button
+              type="submit"
+              className="ms-2 btn "
+              style={{
+                backgroundColor: "var(--maincolor)",
+                borderColor: "var(--maincolor)",
+              }}
+            >
               {initialData ? "Update" : "Upload"}
             </Button>
           </div>

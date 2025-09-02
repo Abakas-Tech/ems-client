@@ -54,7 +54,7 @@ const ServicesSection = () => {
           <div className="row justify-content-center">
             <div className="col-lg-7 col-md-10 text-center">
               <div className="sec-heading center">
-                <h2>My Services</h2>
+                <h2 className="fw-bold">My Services</h2>
                 <p>
                   As your trusted real estate agent, I guide you through buying,
                   selling, renting, or valuing property—making the process
@@ -77,8 +77,8 @@ const ServicesSection = () => {
                   className="service-item position-relative h-100 shadow p-4 rounded hover-up text-center bg-white custom-shadow"
                   style={{ border: "1px solid #f0f0f0" }}
                 >
-                  <div className="icon mb-3 ">
-                    <i className={`${service.icon} fs-1 text-primary`}></i>
+                  <div className="icon mb-3 " style={{ color: "var(--maincolor"}}>
+                    <i className={`${service.icon} fs-1 `}></i>
                   </div>
                   <div className="stretched-link">
                     <h3 className="fw-semibold">{service.title}</h3>

@@ -62,7 +62,7 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
       style={{ zIndex: 1000 }}
     >
       <Modal.Header closeButton>
-        <Modal.Title>
+        <Modal.Title style={{ color: "var(--maincolor)" }}>
           {appointment ? "Edit Appointment" : "New Appointment"}
         </Modal.Title>
       </Modal.Header>
@@ -125,7 +125,15 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
             >
               Cancel
             </button>
-            <button type="submit" className="btn btn-primary">
+            <button
+              type="submit"
+              className="btn"
+              style={{
+                color: "white",
+                backgroundColor: "var(--maincolor)",
+                border: `1px solid var(--maincolor)`,
+              }}
+            >
               Save
             </button>
           </div>
