@@ -301,7 +301,11 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                   <h4>Featured Property</h4>
                   <div className="sidebar_featured_property mt-3">
                     {featuredProperties.map((property) => (
-                      <PropertyCard property={property} key={property.id} />
+                      <PropertyCard
+                        property={property}
+                        key={property.id}
+                        isPublicPage={(isPublicPage)}
+                      />
                     ))}
                   </div>
                 </div>
