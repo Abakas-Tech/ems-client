@@ -77,7 +77,7 @@ const ServicesSection = () => {
                   className="service-item position-relative h-100 shadow p-4 rounded hover-up text-center bg-white custom-shadow"
                   style={{ border: "1px solid #f0f0f0" }}
                 >
-                  <div className="icon mb-3 " style={{ color: "#00A0C2" }}>
+                  <div className="icon mb-3 " style={{ color: "var(--maincolor"}}>
                     <i className={`${service.icon} fs-1 `}></i>
                   </div>
                   <div className="stretched-link">

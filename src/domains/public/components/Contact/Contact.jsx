@@ -164,7 +164,7 @@ const Contact = () => {
                 Hello I'm{" "}
                 <span
                   className="fw-bold"
-                  style={{ fontSize: "1.2rem", color: "#00A0C2" }}
+                  style={{ fontSize: "1.2rem", color: "var(--maincolor)" }}
                 >
                   {agentData.agent_name}
                 </span>
@@ -182,7 +182,7 @@ const Contact = () => {
                     width: "40px",
                     height: "40px",
                     backgroundColor: "#ECF4FE",
-                    color: "#00A0C2",
+                    color: "var(--maincolor)",
                   }}
                 >
                   <i className="fa-solid fa-location-dot"></i>
@@ -201,7 +201,7 @@ const Contact = () => {
                     width: "40px",
                     height: "40px",
                     backgroundColor: "#ECF4FE",
-                    color: "#00A0C2",
+                    color: "var(--maincolor)",
                   }}
                 >
                   <i className="fa-solid fa-envelope"></i>
@@ -220,7 +220,7 @@ const Contact = () => {
                     width: "40px",
                     height: "40px",
                     backgroundColor: "#ECF4FE",
-                    color: "#00A0C2",
+                    color: "var(--maincolor)",
                   }}
                 >
                   <i className="fa-solid fa-phone"></i>
