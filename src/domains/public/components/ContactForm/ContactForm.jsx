@@ -42,32 +42,32 @@ const ContactForm = ({ profile, id }) => {
     setErrors({});
     setLoading(true);
 
-try {
-  const response = await sendContactRequest(contactForm);
+    try {
+      const response = await sendContactRequest(contactForm);
 
-  MySwal.fire({
-    icon: "success",
-    title: "Success!",
-    text: response.message || "Form submitted successfully!",
-    showConfirmButton: true,
-  });
+      MySwal.fire({
+        icon: "success",
+        title: "Success!",
+        text: response.message || "Form submitted successfully!",
+        showConfirmButton: true,
+      });
 
-  setContactForm({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-    propertyId: id, // keep propertyId intact after reset
-  });
-} catch (error) {
-  MySwal.fire({
-    icon: "error",
-    title: "Failed!",
-    text: error.message,
-  });
-} finally {
-  setLoading(false);
-}
+      setContactForm({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+        propertyId: id, // keep propertyId intact after reset
+      });
+    } catch (error) {
+      MySwal.fire({
+        icon: "error",
+        title: "Failed!",
+        text: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,10 +80,10 @@ try {
           <h4>
             <a href="#">{profile.agent_name}</a>
           </h4>
-          <span>
+          <p>
             <i className="lni-phone-handset"></i>
             {profile.agent_phone}
-          </span>
+          </p>
         </div>
         <div className="clearfix"></div>
       </div>

@@ -39,7 +39,7 @@ const AboutDetail = () => {
         <div className="container">
           <div className="row">
             <div className="col-lg-12 col-md-12">
-              <h2 className="ipt-title">Agent Detail</h2>
+              <h2 className="ipt-title fw-bold">Agent Detail</h2>
               <span className="ipn-subtitle">
                 {agent.agent_name} From {agent.city}, {agent.country}
               </span>

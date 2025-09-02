@@ -53,7 +53,7 @@ function Featured({ isAdmin = false }) {
                 className={
                   isAdmin
                     ? "fw-bold text-dark mb-2 d-flex align-items-center"
-                    : ""
+                    : "fw-bold"
                 }
               >
                 {isAdmin

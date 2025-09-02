@@ -126,7 +126,7 @@ const Footer = () => {
                 <a
                   href="https://abakas.net"
                   className="brand-link"
-                  style={{ color: "#ff5722" }}
+                  style={{ color: "#00C090" }}
                 >
                   Abakas
                 </a>
