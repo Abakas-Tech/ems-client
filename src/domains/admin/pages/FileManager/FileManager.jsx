@@ -168,10 +168,15 @@ const FileManager = () => {
         </div>
         <div className="mt-3 mt-md-0">
           <button
-            className="sm-py-2 btn btn-primary px-4 py-2 rounded-3 shadow-sm fw-semibold"
+            className="sm-py-2 btn  px-4 py-2 rounded-3 shadow-sm fw-semibold"
             onClick={() => {
               setEditingFile(null);
               setIsModalOpen(true);
+            }}
+            style={{
+              backgroundColor: "var(--maincolor)",
+              borderColor: "var(--maincolor)",
+              color: "#fff",
             }}
           >
             + Upload File

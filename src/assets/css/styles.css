@@ -46,7 +46,7 @@
 ------------------------------------*/
 :root,
 [data-bs-theme="light"] {
-  --maincolor: #0987f5;
+  --maincolor: #00a0c2;
   --graycolor: #edf1fb;
   --navcolor: #00305c;
   --darkcolor: #13293d;
@@ -167,7 +167,7 @@ html {
 body {
   background: #ffffff;
   color: var(--bodycolor);
-  font-size: 15px;
+  font-size: 17px;
   font-family: var(--primaryfont);
   margin: 0;
   overflow-x: hidden !important;
@@ -220,7 +220,7 @@ section.min {
   padding: 50px 0 50px;
 }
 p {
-  line-height: 1.8;
+  line-height: 1.5;
 }
 
 .gray-bg {

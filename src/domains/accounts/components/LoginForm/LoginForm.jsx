@@ -5,11 +5,11 @@ import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import useAuth from "../../../../context/auth/UseAuth";
 import logo from "../../../../assets/img/logo.svg";
+import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ const LoginForm = () => {
         className="login-container p-4 rounded shadow-lg my-4"
         style={{ maxWidth: "500px", width: "90%", minHeight: "400px" }}
       >
-        <h1 className="text-center mb-3 fw-bolder pt-0">Log In</h1>
+        <h2 className="text-center mb-3 fw-bold pt-0">Log In</h2>
         <img src={logo} className="mx-auto d-block mb-4 img-fluid" alt="Logo" />
 
         <form onSubmit={handleSubmit}>
@@ -72,31 +72,18 @@ const LoginForm = () => {
             <label htmlFor="email">Email address</label>
           </div>
 
-          {/* Password with toggle */}
-          <div className="form-floating mb-3 position-relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              className="form-control"
+          {/* Password with reusable toggle */}
+          <div className="form-floating mb-3">
+            <PasswordInput
               id="password"
-              placeholder="Password"
+              label="Password"
+              icon_input={true}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={setPassword}
               required
+              align="right"
+              variant="floating"
             />
-            <label htmlFor="password">Password</label>
-
-            {/* Toggle icon button */}
-            <button
-              type="button"
-              className="btn position-absolute top-50 end-0 translate-middle-y me-2"
-              style={{ border: "none", background: "transparent" }}
-              onClick={() => setShowPassword((prev) => !prev)}
-              tabIndex={-1} // not focusable with Tab
-            >
-              <i
-                className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
-              ></i>
-            </button>
           </div>
 
           {/* Forgot password */}
