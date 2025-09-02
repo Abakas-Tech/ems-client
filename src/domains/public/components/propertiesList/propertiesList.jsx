@@ -201,7 +201,7 @@ const PropertyList = ({ isPublicPage = true }) => {
 
             <Row>
               {!isPublicPage ? (
-                <div className="bg-white  ps-4 pt-4 rounded-top ">
+                <div className="bg-white   pt-4 rounded-top " style={{paddingLeft:"27px"}}>
                   {/* Header */}
                   <div className="mb-4 text-start">
                     <h2 className="fw-bold">My Listings</h2>
