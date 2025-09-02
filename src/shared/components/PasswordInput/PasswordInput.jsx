@@ -17,7 +17,7 @@ const PasswordInput = ({
     <div
       className={`position-relative ${
         variant === "floating" ? "form-floating" : "form-group"
-      } ${styles.icon_input}`}
+      } ${icon_input && styles.icon_input}`}
     >
       {variant === "standard" && <label htmlFor={id}>{label}</label>}
       <input
