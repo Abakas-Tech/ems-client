@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
+import { FaBars } from "react-icons/fa";
 
 import logo from "../../../assets/img/logo.svg";
 import useAuth from "../../../context/auth/UseAuth";
@@ -48,7 +49,7 @@ const Header = () => {
   useEffect(() => {
     const isFixed = location.pathname !== "/" && !isPortrait;
     if (isFixed) {
-      document.body.style.paddingTop = "60px";
+      document.body.style.paddingTop = "10px";
     } else {
       document.body.style.paddingTop = "";
     }
@@ -78,7 +79,17 @@ const Header = () => {
 
             {/* Mobile toggle */}
             {isPortrait && (
-              <div className="nav-toggle" onClick={toggleMenu}></div>
+              <div
+                className="pe-2"
+                onClick={toggleMenu}
+                style={{
+                  fontSize: "24px",
+                  cursor: "pointer",
+                  color: "var(--maincolor)",
+                }}
+              >
+                <FaBars />
+              </div>
             )}
           </div>
 
