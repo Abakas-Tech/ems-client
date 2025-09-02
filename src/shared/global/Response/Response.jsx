@@ -4,7 +4,6 @@ import useResponse from './../../../context/response/UseResponse';
 
 const Response = () => {
   const { responseMessages, removeMessage } = useResponse();
-  console.log(responseMessages)
   return (
     <div className={styles.container}>
       {responseMessages.map((msg) => (

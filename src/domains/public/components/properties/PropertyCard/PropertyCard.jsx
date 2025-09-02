@@ -12,7 +12,7 @@ const PropertyCard = ({ property }) => {
       </div>
       <div className="sides_list_property_detail">
         <h4>
-          <a href="single-property-1.html">{property.title}</a>
+          <a>{property.title}</a>
         </h4>
         <span class="text-muted-2">
           <i class="bi bi-geo-alt me-1"></i>
