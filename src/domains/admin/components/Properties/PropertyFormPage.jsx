@@ -412,6 +412,9 @@ const PropertyFormPage = () => {
     setAltTexts([]);
     if (!isEditMode) setPropertyId(null);
   };
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [formStage]);
 
   return (
     <div>
