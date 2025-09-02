@@ -4,6 +4,7 @@ import { resetPassword } from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import logo from "../../../../assets/img/logo.svg";
+import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -69,51 +70,31 @@ const ResetPassword = () => {
 
         <form onSubmit={handleSubmit}>
           {/* New Password */}
-          <div className="form-floating mb-3 position-relative">
-            <input
-              type={showNew ? "text" : "password"}
-              className="form-control"
+          <div className="form-floating mb-3">
+            <PasswordInput
               id="newPassword"
-              placeholder="New Password"
+              label="New Password"
+              icon_input={true}
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={setNewPassword}
               required
+              align="right"
+              variant="floating"
             />
-            <label htmlFor="newPassword">New Password</label>
-            <button
-              type="button"
-              className="btn position-absolute top-50 end-0 translate-middle-y me-2"
-              style={{ border: "none", background: "transparent" }}
-              onClick={() => setShowNew((prev) => !prev)}
-              tabIndex={-1}
-            >
-              <i className={`bi ${showNew ? "bi-eye-slash" : "bi-eye"}`}></i>
-            </button>
           </div>
 
           {/* Confirm Password */}
-          <div className="form-floating mb-3 position-relative">
-            <input
-              type={showConfirm ? "text" : "password"}
-              className="form-control"
+          <div className="form-floating mb-3">
+            <PasswordInput
               id="confirmPassword"
-              placeholder="Confirm New Password"
+              label="Confirm Password"
+              icon_input={true}
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={setConfirmPassword}
               required
+              align="right"
+              variant="floating"
             />
-            <label htmlFor="confirmPassword">Confirm New Password</label>
-            <button
-              type="button"
-              className="btn position-absolute top-50 end-0 translate-middle-y me-2"
-              style={{ border: "none", background: "transparent" }}
-              onClick={() => setShowConfirm((prev) => !prev)}
-              tabIndex={-1}
-            >
-              <i
-                className={`bi ${showConfirm ? "bi-eye-slash" : "bi-eye"}`}
-              ></i>
-            </button>
           </div>
 
           <button

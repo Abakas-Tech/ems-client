@@ -48,7 +48,7 @@ const LoginForm = () => {
   return (
     <div
       className="login-page d-flex justify-content-center align-items-center rounded"
-      style={{ minHeight: "80vh" }}
+      style={{ minHeight: "80vh", marginTop: "30px" }}
     >
       <div
         className="login-container p-4 rounded shadow-lg my-4"

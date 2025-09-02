@@ -35,7 +35,7 @@ const Header = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Handle scroll
+  // Handle scroll just for header styling (background/shadow)
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener("scroll", handleScroll);
@@ -44,15 +44,15 @@ const Header = () => {
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  // Body padding
+  // Only update body padding when route or viewport changes
   useEffect(() => {
-    const isFixed = isScrolled || location.pathname !== "/";
-    if (isFixed && !isPortrait) {
+    const isFixed = location.pathname !== "/" && !isPortrait;
+    if (isFixed) {
       document.body.style.paddingTop = "60px";
     } else {
       document.body.style.paddingTop = "";
     }
-  }, [isScrolled, location.pathname, isPortrait]);
+  }, [location.pathname, isPortrait]);
 
   const isFixed = isScrolled || location.pathname !== "/";
 

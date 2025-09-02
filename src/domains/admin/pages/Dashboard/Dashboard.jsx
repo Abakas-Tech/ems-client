@@ -7,21 +7,19 @@ import useResponse from "../../../../context/response/UseResponse";
 
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const {addMessage}=useResponse()
+  const { addMessage } = useResponse();
   const [profileData, setProfileData] = useState({
     agent_name: "",
   });
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => {
-    
       return !prev;
     });
   };
 
   const closeSidebar = () => {
     setSidebarOpen(false);
-   
   };
 
   useEffect(() => {
@@ -43,7 +41,7 @@ function Dashboard() {
   return (
     <Layout>
       {/* Page header */}
-      <div className="page-title">
+      <div className="page-title" style={{ marginTop: "50px" }}>
         <div className="container">
           <div className="row">
             <div className="col-lg-12 col-md-12">
