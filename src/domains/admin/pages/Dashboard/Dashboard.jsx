@@ -36,7 +36,7 @@ function Dashboard() {
     };
     fetchProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [addMessage]);
 
   return (
     <Layout>

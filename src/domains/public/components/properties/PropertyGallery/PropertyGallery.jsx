@@ -107,7 +107,7 @@ const PropertyGallery = ({ images = [] }) => {
 
       <button
         type="button"
-        className={`${styles.viewBtn} btn bg-white`}
+        className={`${styles.viewBtn} btn-view-pic top`}
         onClick={() => {
           setIndex(0);
           setOpen(true);
