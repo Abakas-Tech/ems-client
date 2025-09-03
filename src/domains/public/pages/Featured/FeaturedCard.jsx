@@ -36,7 +36,7 @@ const FeaturedCard = ({ property, images }) => {
         <div className="listing-detail-wrapper-box">
           <div className="listing-detail-wrapper d-flex align-items-center justify-content-between">
             <div className="listing-short-detail">
-              <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex flex-wrap align-items-center">
                 <span
                   className={`label d-inline-flex mb-1 ${
                     is_urgent ? "bg-danger text-white" : "for-sale"
@@ -52,9 +52,9 @@ const FeaturedCard = ({ property, images }) => {
                 )}
               </div>
 
-              <h4 className=" mb-0">
+              <h5 className="mb-0">
                 <Link to={`/properties/${id}`}>{title}</Link>
-              </h4>
+              </h5>
               <div className="fr-can-rating text-muted-2 fs-sm">
                 {tags.join(", ")}
               </div>
