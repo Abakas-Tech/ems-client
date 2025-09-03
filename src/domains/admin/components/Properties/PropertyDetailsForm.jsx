@@ -59,11 +59,8 @@ const PropertyDetailsForm = ({
         (d.coordinates && (d.coordinates.longitude ?? "")) ?? d.longitude ?? "",
       // description / tags / features
       description: d.description ?? "",
-      tags: Array.isArray(d.tags)
-        ? d.tags.join(", ")
-        : typeof d.tags === "string"
-        ? d.tags
-        : "",
+      tags: Array.isArray(d.tags) ? d.tags.join(", ") : d.tags ?? "",
+
       features: Array.isArray(d.features)
         ? d.features
         : typeof d.features === "string" && d.features.length
