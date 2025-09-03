@@ -74,7 +74,11 @@ function Dashboard() {
 
         <div className="row">
           <div className="col-lg-3">
-            <Sidebar isOpen={sidebarOpen} closeSidebar={closeSidebar} />
+            <Sidebar
+              isOpen={sidebarOpen}
+              closeSidebar={closeSidebar}
+              refresh={addMessage}
+            />
           </div>
           <div
             className="col-lg-9 col-md-12 dashboard-content"
