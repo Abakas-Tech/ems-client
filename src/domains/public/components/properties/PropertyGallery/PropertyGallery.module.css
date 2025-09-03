@@ -77,10 +77,23 @@
 }
 
 /* View photos button (bottom corner) */
+/* View photos button (top-right corner) */
 .viewBtn {
-  margin: 8px;
-  margin-left: auto !important;
-  display: block;
+  position: absolute;
+  top: 30px;
+  right: 20px;
+  padding: 6px 14px;
+  font-size: 15px;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.viewBtn:hover {
+  color: var(--maincolor);
 }
 
 /* Small screen adjustments */
@@ -89,5 +102,20 @@
     left: 6px;
     right: 6px;
     bottom: 6px;
+  }
+  .viewBtn {
+    top: 20px;
+    right: 20px;
+    padding: 4px 10px;
+    font-size: 13px;
+    max-width: 110px;
+  }
+}
+
+@media (max-width: 576px) {
+  .viewBtn {
+    padding: 3px 8px;
+    font-size: 12px;
+    max-width: 95px;
   }
 }
