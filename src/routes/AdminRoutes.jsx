@@ -30,10 +30,7 @@ const AdminRoutes = () => (
         path="my-listings"
         element={<PropertyList isPublicPage={false} />}
       />
-      <Route
-        path="properties/veiw/:id"
-        element={<PropertyDetails isPublicPage={false} />}
-      />
+    
       <Route path="featured-properties" element={<Featured isAdmin={true} />} />
       <Route path="submit-property" element={<PropertyFormPage />} />
       <Route path="properties/:id" element={<PropertyFormPage />} />
