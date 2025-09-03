@@ -424,12 +424,12 @@ const PropertyDetailsForm = ({
               <div className="o-features">
                 <ul className="no-ul-list third-row">
                   {[
-                    "Air Condition",
+                    "Air Conditioning",
                     "Bedding",
                     "Heating",
                     "Internet",
-                    "Microwave",
-                    "Smoking Allow",
+                    "Playground",
+                    "Green Area",
                     "Balcony",
                     "Wi-Fi",
                     "Parking",
