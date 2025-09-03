@@ -56,7 +56,7 @@ const FeaturedCard = ({ property, images }) => {
                 <Link to={`/properties/${id}`}>{title}</Link>
               </h5>
               <div className="fr-can-rating text-muted-2 fs-sm">
-                {tags.join(", ")}
+                {Array.isArray(tags) ? tags.join(", ") : tags}
               </div>
             </div>
 
