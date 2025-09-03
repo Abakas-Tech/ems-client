@@ -11888,3 +11888,6 @@ th.next.available,
   max-width: 1200px;
   margin: 0 auto;
 }
+.header{
+  z-index: 99999999999999 !important;
+}

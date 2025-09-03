@@ -52,7 +52,7 @@ const FeaturedCard = ({ property, images }) => {
                 )}
               </div>
 
-              <h4 className="listing-name mb-0">
+              <h4 className=" mb-0">
                 <Link to={`/properties/${id}`}>{title}</Link>
               </h4>
               <div className="fr-can-rating text-muted-2 fs-sm">

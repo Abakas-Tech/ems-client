@@ -10,7 +10,7 @@ const SinglePropertyAdmin = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleView = () => navigate(`/admin/properties/veiw/${property.id}`);
+  const handleView = () => navigate(`/properties/${property.id}`);
   const handleEdit = () => navigate(`/admin/properties/${property.id}`);
   const handleDeleteClick = () => onDelete(property.id);
 

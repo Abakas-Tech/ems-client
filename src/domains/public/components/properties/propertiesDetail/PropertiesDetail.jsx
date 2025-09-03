@@ -189,7 +189,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                 </div>
                 <div id="clTwo" className="panel-collapse collapse show">
                   <div className="block-body">
-                    <p>{property.description}...</p>
+                    <p>{property.description}</p>
                   </div>
                 </div>
               </div>
