@@ -28,7 +28,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           }`,
         });
       } catch (error) {
-        console.error("Failed to fetch agent data:", error);
+        // console.error("Failed to fetch agent data:", error);
       }
     };
     fetchAgentData();
