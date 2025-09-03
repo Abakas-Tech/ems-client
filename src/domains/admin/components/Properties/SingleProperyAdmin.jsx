@@ -35,11 +35,14 @@ const SinglePropertyAdmin = ({
   };
 
   return (
-    <div className="col-md-9 col-sm-12 ps-3 pe-2 ">
+    <div className="col-md-10 col-sm-12 ps-3 pe-2 ">
       {/* Single Property */}
       <div className="singles-dashboard-list d-flex flex-column flex-md-row align-items-start">
         {/* Image Left */}
-        <div className="sd-list-left flex-shrink-0 p-2">
+        <div
+          className="sd-list-left flex-shrink-0 p-2 col-12"
+          
+        >
           <img
             src={propertyImage}
             alt={property.title || "Property Image"}
@@ -53,7 +56,7 @@ const SinglePropertyAdmin = ({
         </div>
 
         {/* Details Right */}
-        <div className="sd-list-right flex-grow-1 d-flex flex-column mt-3 mt-md-0">
+        <div className="sd-list-right flex-grow-1 d-flex flex-column mt-3 mt-md-0 ">
           <div className="sd-list-left">
             <h4 className="listing_dashboard_title mt-0">
               <Link

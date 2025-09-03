@@ -5,7 +5,7 @@ import useLogout from "../../../../context/logout/UseLogout";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 
-const Sidebar = ({ isOpen, closeSidebar }) => {
+const Sidebar = ({ isOpen, closeSidebar, refresh }) => {
   const { logout } = useLogout();
   const location = useLocation();
 
@@ -32,7 +32,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
       }
     };
     fetchAgentData();
-  }, []);
+  }, [refresh]);
 
   // Auto-close drawer on window resize
   useEffect(() => {
