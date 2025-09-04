@@ -60,6 +60,7 @@ const PropertyDetailsForm = ({
       // description / tags / features
       description: d.description ?? "",
       tags: Array.isArray(d.tags) ? d.tags.join(", ") : d.tags ?? "",
+
       features: Array.isArray(d.features)
         ? d.features
         : typeof d.features === "string" && d.features.length
