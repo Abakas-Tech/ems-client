@@ -9,6 +9,7 @@
   padding: 8px;
   outline: none;
 }
+/* Push Lightbox close button down a bit */
 
 /* Image */
 .img {
@@ -116,6 +117,7 @@
   .viewBtn {
     padding: 3px 8px;
     font-size: 12px;
-    max-width: 95px;
+    top: 10px;
+    right: 10px;
   }
 }

@@ -104,17 +104,18 @@ const PropertyGallery = ({ images = [] }) => {
         }))}
         plugins={[Thumbnails]}
       />
-
-      <button
-        type="button"
-        className={`${styles.viewBtn} btn-view-pic top`}
-        onClick={() => {
-          setIndex(0);
-          setOpen(true);
-        }}
-      >
-        View photos
-      </button>
+      {images.length > 0 && (
+        <button
+          type="button"
+          className={`${styles.viewBtn} btn-view-pic top`}
+          onClick={() => {
+            setIndex(0);
+            setOpen(true);
+          }}
+        >
+          View photos
+        </button>
+      )}
     </div>
   );
 };
