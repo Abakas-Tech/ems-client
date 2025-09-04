@@ -1,17 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Sidebar from "../.././components/Sidebar/Sidebar";
 import { Outlet } from "react-router-dom";
 import Layout from "../../../../shared/Layout/Layout";
-import { getProfile } from "../../api/agent.api";
-import useResponse from "../../../../context/response/UseResponse";
-
+import { useProfile } from "../../../../context/Profile/ProfileProvider";
 function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { addMessage } = useResponse();
-  const [profileData, setProfileData] = useState({
-    agent_name: "",
-  });
-
+  const { profile } = useProfile();
   const toggleSidebar = () => {
     setSidebarOpen((prev) => {
       return !prev;
@@ -22,22 +16,6 @@ function Dashboard() {
     setSidebarOpen(false);
   };
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await getProfile();
-        const data = response.data;
-        setProfileData({
-          agent_name: data.agent_name || "",
-        });
-      } catch (error) {
-        addMessage("error", error.message);
-      }
-    };
-    fetchProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addMessage]);
-
   return (
     <Layout>
       {/* Page header */}
@@ -47,7 +25,7 @@ function Dashboard() {
             <div className="col-lg-12 col-md-12">
               <h2 className="ipt-title">Welcome back,</h2>
               <span className="ipn-subtitle">
-                {profileData.agent_name} — your account is ready.
+                {profile?.agent_name} — your account is ready.
               </span>
             </div>
           </div>
@@ -74,11 +52,7 @@ function Dashboard() {
 
         <div className="row">
           <div className="col-lg-3">
-            <Sidebar
-              isOpen={sidebarOpen}
-              closeSidebar={closeSidebar}
-              refresh={addMessage}
-            />
+            <Sidebar isOpen={sidebarOpen} closeSidebar={closeSidebar} />
           </div>
           <div
             className="col-lg-9 col-md-12 dashboard-content"

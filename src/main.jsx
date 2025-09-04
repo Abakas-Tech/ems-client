@@ -14,6 +14,7 @@ import LogoutProvider from "./context/logout/LogoutProvider.jsx";
 import ResponseProvider from "./context/response/ResponseProvider.jsx";
 import { AuthProvider } from "./context/auth/authProvider.jsx";
 import ConfirmDeleteProvider from "./context/Delete/DeleteProvider";
+import { ProfileProvider } from "./context/Profile/ProfileProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -22,9 +23,11 @@ createRoot(document.getElementById("root")).render(
         <AuthProvider>
           <LoaderProvider>
             <ResponseProvider>
-              <ConfirmDeleteProvider>
-                <App />
-              </ConfirmDeleteProvider>
+              <ProfileProvider>
+                <ConfirmDeleteProvider>
+                  <App />
+                </ConfirmDeleteProvider>
+              </ProfileProvider>
             </ResponseProvider>
           </LoaderProvider>
         </AuthProvider>

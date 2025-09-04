@@ -1,38 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { getProfile } from "../../api/agent.api";
 import useLogout from "../../../../context/logout/UseLogout";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
-
-const Sidebar = ({ isOpen, closeSidebar, refresh }) => {
+import { useProfile } from "../../../../context/Profile/ProfileProvider";
+const Sidebar = ({ isOpen, closeSidebar }) => {
   const { logout } = useLogout();
   const location = useLocation();
+  const { profile } = useProfile();
 
-  const [agentData, setAgentData] = useState({
-    image: "https://placehold.co/500x500",
-    name: "Loading...",
-    location: "Loading...",
-  });
-
-  useEffect(() => {
-    const fetchAgentData = async () => {
-      try {
-        const response = await getProfile();
-        const { data } = response;
-        setAgentData({
-          image: data.profile_image_url || "https://placehold.co/500x500",
-          name: data.agent_name,
-          location: `${data.address || ""}, ${data.city || ""}, ${
-            data.country || ""
-          }`,
-        });
-      } catch (error) {
-        // console.error("Failed to fetch agent data:", error);
-      }
-    };
-    fetchAgentData();
-  }, [refresh]);
+  const agentData = {
+    image: profile?.profile_image_url || "https://placehold.co/500x500",
+    name: profile?.agent_name || "Loading...",
+    location:
+      `${profile?.address || ""}, ${profile?.city || ""}, ${
+        profile?.country || ""
+      }` || "Loading...",
+  };
 
   // Auto-close drawer on window resize
   useEffect(() => {

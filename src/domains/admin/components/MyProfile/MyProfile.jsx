@@ -1,23 +1,30 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getProfile, updateProfile } from "../../api/agent.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
-
+import { useProfile } from "../../../../context/Profile/ProfileProvider";
+import { updateProfile } from "../../api/agent.api";
 const MyProfile = () => {
-  const [profileData, setProfileData] = useState({
-    agent_name: "",
-    agent_email: "",
-    agent_phone: "",
-    country: "",
-    city: "",
-    address: "",
-    bio: "",
-    title: "",
-    facebook_username: "",
-    telegram_username: "",
-    whatsapp_username: "",
-    profile_image_url: "",
-  });
+  const { profile, fetchProfile } = useProfile();
+  const [profileData, setProfileData] = useState({});
+  // Update profileData when profile changes
+  useEffect(() => {
+    if (profile) {
+      setProfileData({
+        agent_name: profile.agent_name || "",
+        agent_email: profile.agent_email || "",
+        agent_phone: profile.agent_phone || "",
+        country: profile.country || "",
+        city: profile.city || "",
+        address: profile.address || "",
+        bio: profile.bio || "",
+        title: profile.title || "",
+        facebook_username: profile.facebook_username || "",
+        telegram_username: profile.telegram_username || "",
+        whatsapp_username: profile.whatsapp_username || "",
+        profile_image_url: profile.profile_image_url || "",
+      });
+    }
+  }, [profile]);
 
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -26,31 +33,31 @@ const MyProfile = () => {
   const [selectedFileName, setSelectedFileName] = useState("");
 
   // Reusable fetch function
-  const fetchProfile = async () => {
-    showLoader();
+  // const fetchProfile = async () => {
+  //   showLoader();
 
-    try {
-      const { data } = await getProfile();
-      setProfileData({
-        agent_name: data.agent_name || "",
-        agent_email: data.agent_email || "",
-        agent_phone: data.agent_phone || "",
-        country: data.country || "",
-        city: data.city || "",
-        address: data.address || "",
-        bio: data.bio || "",
-        title: data.title || "",
-        facebook_username: data.facebook_username || "",
-        telegram_username: data.telegram_username || "",
-        whatsapp_username: data.whatsapp_username || "",
-        profile_image_url: data.profile_image_url || "",
-      });
-    } catch (err) {
-      addMessage("error", err.message);
-    } finally {
-      hideLoader();
-    }
-  };
+  //   try {
+  //     const { data } = await getProfile();
+  //     setProfileData({
+  //       agent_name: data.agent_name || "",
+  //       agent_email: data.agent_email || "",
+  //       agent_phone: data.agent_phone || "",
+  //       country: data.country || "",
+  //       city: data.city || "",
+  //       address: data.address || "",
+  //       bio: data.bio || "",
+  //       title: data.title || "",
+  //       facebook_username: data.facebook_username || "",
+  //       telegram_username: data.telegram_username || "",
+  //       whatsapp_username: data.whatsapp_username || "",
+  //       profile_image_url: data.profile_image_url || "",
+  //     });
+  //   } catch (err) {
+  //     addMessage("error", err.message);
+  //   } finally {
+  //     hideLoader();
+  //   }
+  // };
 
   useEffect(() => {
     fetchProfile();
@@ -105,6 +112,9 @@ const MyProfile = () => {
         "success",
         response.message || "Profile updated successfully!"
       );
+
+      // Update global profile context immediately
+      await fetchProfile();
     } catch (error) {
       addMessage("error", error.message);
     } finally {

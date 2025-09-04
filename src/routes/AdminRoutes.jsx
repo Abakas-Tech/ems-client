@@ -6,7 +6,6 @@ import Analytics from "../domains/admin/pages/Analytics/Analytics.jsx";
 import FileManager from "../domains/admin/pages/FileManager/FileManager.jsx";
 import Appointments from "../domains/admin/pages/Appointments/Appointments.jsx";
 import PropertyList from "../domains/public/components/propertiesList/propertiesList.jsx";
-import PropertyDetails from "../domains/public/pages/propertiesDetail/PropertiesDetail.jsx";
 import Featured from "../domains/public/pages/Featured/Featured.jsx";
 import PropertyFormPage from "../domains/admin/components/Properties/PropertyFormPage.jsx";
 import MyProfile from "../domains/admin/pages/MyProfile/MyProfile.jsx";
