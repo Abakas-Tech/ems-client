@@ -250,8 +250,8 @@ useEffect(() => {
                 </div>
               </div>
               {/* Single Block Wrap For Location */}
-              {property?.coordinates?.latitude &&
-                property?.coordinates?.longitude && (
+              {property?.coordinates?.latitude != null &&
+                property?.coordinates?.longitude != null && (
                   <div className="property_block_wrap style-2">
                     <div className="property_block_wrap_header">
                       <a
@@ -259,7 +259,7 @@ useEffect(() => {
                         data-parent="#loca"
                         data-bs-target="#clSix"
                         aria-controls="clSix"
-                        href="javascript:void(0);"
+                        href="#!"
                         aria-expanded="true"
                         className="collapsed"
                       >
@@ -270,11 +270,11 @@ useEffect(() => {
                     <div id="clSix" className="panel-collapse collapse">
                       <div className="block-body">
                         <div className="map-container">
-                          {/* Add Google Map with longitude and latitude coordinates */}
                           <iframe
                             src={`https://maps.google.com/maps?q=${property.coordinates.latitude},${property.coordinates.longitude}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
                             width="100%"
                             height="450"
+                            title="Property Location"
                           ></iframe>
                         </div>
                       </div>
