@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useLogout from "../../../../context/logout/UseLogout";
 import Drawer from "react-modern-drawer";
@@ -12,7 +12,9 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
   const agentData = {
     image: profile?.profile_image_url || "https://placehold.co/500x500",
     name: profile?.agent_name || "Loading...",
+
     location:
+      // eslint-disable-next-line no-constant-binary-expression
       `${profile?.address || ""}, ${profile?.city || ""}, ${
         profile?.country || ""
       }` || "Loading...",

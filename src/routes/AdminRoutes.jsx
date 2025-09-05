@@ -29,10 +29,16 @@ const AdminRoutes = () => (
         path="my-listings"
         element={<PropertyList isPublicPage={false} />}
       />
-    
+
       <Route path="featured-properties" element={<Featured isAdmin={true} />} />
-      <Route path="submit-property" element={<PropertyFormPage />} />
-      <Route path="properties/:id" element={<PropertyFormPage />} />
+      <Route
+        path="submit-property"
+        element={<PropertyFormPage isDefault={true} />}
+      />
+      <Route
+        path="properties/:id"
+        element={<PropertyFormPage isDefault={true} />}
+      />
       <Route path="my-profile" element={<MyProfile />} />
       <Route path="settings" element={<ChangePassword />} />
       <Route path="*" element={<NotFound />} />
