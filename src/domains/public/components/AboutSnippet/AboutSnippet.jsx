@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaFacebook, FaTelegram, FaWhatsapp } from "react-icons/fa";
-import { BiMap } from "react-icons/bi";
+import { BiMap, BiPhone } from "react-icons/bi";
 import { fetchAgentProfile } from "./../../api/profile.api";
 
 const AboutSnippet = ({ showButton }) => {
@@ -19,10 +19,10 @@ const AboutSnippet = ({ showButton }) => {
     const getAgentProfile = async () => {
       const response = await fetchAgentProfile();
 
-
       if (response) {
         const {
           agent_name,
+          agent_phone,
           address,
           city,
           country,
@@ -35,6 +35,7 @@ const AboutSnippet = ({ showButton }) => {
 
         setAgentData({
           agent_name: agent_name || "Adam D. Okraar",
+          agent_phone: agent_phone,
           agent_address:
             [address, city, country].filter(Boolean).join(", ") ||
             "3599 Huntz Lane",
@@ -77,9 +78,12 @@ const AboutSnippet = ({ showButton }) => {
                   <h2 className="fw-bold">
                     <Link to="/about">{agentData.agent_name}</Link>
                   </h2>
-                  <span>
+                  <p className="fw-bold" style={{color: "var(--maincolor)"}}>
+                    <BiPhone /> {agentData.agent_phone}
+                  </p>
+                  <p>
                     <BiMap /> {agentData.agent_address}
-                  </span>
+                  </p>
                 </div>
 
                 <div className="agency-desc">

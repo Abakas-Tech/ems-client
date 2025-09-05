@@ -106,7 +106,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                         <div className="square--25 text-muted-2 fs-sm circle gray-simple me-1">
                           <i className="fa-solid fa-clone fs-xs"></i>
                         </div>
-                        {property.area_size} sqft
+                        {property.area_size} SQFT
                       </div>
                     </div>
                   </div>
@@ -136,15 +136,15 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                     <ul className="deatil_features">
                       <li>
                         <strong>Bedrooms:</strong>
-                        {property.bedrooms} Beds
+                        {property.bedrooms} 
                       </li>
                       <li>
                         <strong>Bathrooms:</strong>
-                        {property.bathrooms} Bath
+                        {property.bathrooms} 
                       </li>
                       <li>
                         <strong>Areas:</strong>
-                        {property.area_size} sq ft
+                        {property.area_size} SQFT
                       </li>
 
                       <li>
