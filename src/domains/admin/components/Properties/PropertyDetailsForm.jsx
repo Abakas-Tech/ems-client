@@ -399,7 +399,7 @@ const PropertyDetailsForm = ({
             </div>
             <div className="form-group col-md-6">
               <label>
-                Latitude <span className="text-danger">*</span>
+                Latitude 
               </label>
               <input
                 type="number"
@@ -411,7 +411,7 @@ const PropertyDetailsForm = ({
             </div>
             <div className="form-group col-md-6">
               <label>
-                Longitude <span className="text-danger">*</span>
+                Longitude
               </label>
               <input
                 type="number"
