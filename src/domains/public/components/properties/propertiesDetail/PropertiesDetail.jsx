@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   getPropertyById,
   getAllProperties,
@@ -18,7 +18,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
   const { showLoader, hideLoader } = useLoader();
 
   const { id } = useParams();
-  const hasFetched = useRef(false);
+
 
   const fetchProperty = async (id) => {
     try {
@@ -57,13 +57,36 @@ const PropertyDetails = ({ isPublicPage = true }) => {
     }
   };
 
-  // Fecth property when id changes
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    fetchProperty(id);
-  }, [id]);
 
+const prevIdRef = useRef();
+
+useEffect(() => {
+  if (!id) return;
+
+  // If id changed or first render
+  if (prevIdRef.current !== id) {
+    prevIdRef.current = id;
+
+    // Clear all states
+    setProperty({ coordinates: {} });
+    setImages([]);
+    setProfile({});
+    setFeaturedProperties([]);
+
+    // Optional: reset other fields if you have them
+    // setOtherState(...);
+
+    // Fetch new property data
+    (async () => {
+      try {
+        showLoader();
+        await fetchProperty(id);
+      } finally {
+        hideLoader();
+      }
+    })();
+  }
+}, [id]);
   return (
     <div style={{ marginTop: "50px" }}>
       <PropertyGallery images={images} />
@@ -227,34 +250,38 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                 </div>
               </div>
               {/* Single Block Wrap For Location */}
-              <div className="property_block_wrap style-2">
-                <div className="property_block_wrap_header">
-                  <a
-                    data-bs-toggle="collapse"
-                    data-parent="#loca"
-                    data-bs-target="#clSix"
-                    aria-controls="clSix"
-                    href="javascript:void(0);"
-                    aria-expanded="true"
-                    className="collapsed"
-                  >
-                    <h4 className="property_block_title">Location</h4>
-                  </a>
-                </div>
+              {property?.coordinates?.latitude &&
+                property?.coordinates?.longitude && (
+                  <div className="property_block_wrap style-2">
+                    <div className="property_block_wrap_header">
+                      <a
+                        data-bs-toggle="collapse"
+                        data-parent="#loca"
+                        data-bs-target="#clSix"
+                        aria-controls="clSix"
+                        href="javascript:void(0);"
+                        aria-expanded="true"
+                        className="collapsed"
+                      >
+                        <h4 className="property_block_title">Location</h4>
+                      </a>
+                    </div>
 
-                <div id="clSix" className="panel-collapse collapse">
-                  <div className="block-body">
-                    <div className="map-container">
-                      {/* Add Google Map with longitude and latitude coordinates */}
-                      <iframe
-                        src={`https://maps.google.com/maps?q=${property?.coordinates?.latitude},${property?.coordinates?.longitude}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-                        width="100%"
-                        height="450"
-                      ></iframe>
+                    <div id="clSix" className="panel-collapse collapse">
+                      <div className="block-body">
+                        <div className="map-container">
+                          {/* Add Google Map with longitude and latitude coordinates */}
+                          <iframe
+                            src={`https://maps.google.com/maps?q=${property.coordinates.latitude},${property.coordinates.longitude}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                            width="100%"
+                            height="450"
+                          ></iframe>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                )}
+
               {/* Single Block Wrap  For Gallery*/}
               <div className="property_block_wrap style-2">
                 <div className="property_block_wrap_header">
