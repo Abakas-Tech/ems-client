@@ -1,15 +1,19 @@
+
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { forgotPassword } from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import logo from "../../../../assets/img/logo.svg";
+import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
+  const { openModal } = useDemoInfo();
 
   const validateEmail = () => {
     if (!email) {
@@ -27,19 +31,20 @@ const ForgotPassword = () => {
     e.preventDefault();
     if (!validateEmail()) return;
 
-    showLoader();
-    try {
-      const response = await forgotPassword({ email });
-      addMessage(
-        "success",
-        response.message || "Reset link sent to your email"
-      );
-      navigate("/admin/login");
-    } catch (error) {
-      addMessage("error", error.message);
-    } finally {
-      hideLoader();
-    }
+    // showLoader();
+    // try {
+    //   const response = await forgotPassword({ email });
+    //   addMessage(
+    //     "success",
+    //     response.message || "Reset link sent to your email"
+    //   );
+    //   navigate("/admin/login");
+    // } catch (error) {
+    //   addMessage("error", error.message);
+    // } finally {
+    //   hideLoader();
+    // }
+      openModal("resetPassword");
   };
 
   return (
