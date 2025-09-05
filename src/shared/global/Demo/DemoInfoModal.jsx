@@ -25,10 +25,11 @@ const DemoInfoModal = ({ isOpen, onClose, type }) => {
     }
   };
 
-  const message =
-    type === "changePassword"
-      ? "This is a demo website, so you cannot change the password. When you get your own live web app, you’ll be able to change it."
-      : "This is a demo website, so reset password emails are only sent to our server. On your own web app, this feature will work normally.";
+const message =
+  type === "changePassword"
+    ? "Password changes are disabled on this demo. In your own live app, you’ll be able to update it."
+    : "Password reset emails are disabled on this demo. In your live app, they’ll work normally.";
+
 
   return (
     <Modal
