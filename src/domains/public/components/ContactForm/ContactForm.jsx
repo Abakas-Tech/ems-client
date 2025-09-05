@@ -1,49 +1,63 @@
-import { useState, useEffect } from "react";
-import { sendContactRequest } from "../../api/contact.api"; // external API function
+import React, { useState, useEffect } from "react";
+import { sendContactRequest } from "../../api/contact.api";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { useProfile } from "../../../../context/Profile/ProfileProvider";
+
 const MySwal = withReactContent(Swal);
 
-const ContactForm = ({ profile, id }) => {
-  const [contactForm, setContactForm] = useState({
+const ContactForm = ({ id }) => {
+  const { profile } = useProfile();
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
-    propertyId: "", // start empty
   });
-  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  //  Set propertyId
-  useEffect(() => {
-    if (id) {
-      setContactForm((prev) => ({ ...prev, propertyId: id }));
-    }
-  }, [id]);
+  // Defaults in case profile context is empty
+  const [agentData, setAgentData] = useState({
+    agent_name: "Hussen Agent",
+    agent_email: "support@agent.com",
+    agent_phone: "0918241535",
+    address: "Addis Ababa, Ethiopia",
+  });
 
-  // Handle input changes
+  useEffect(() => {
+    if (profile?.agent_name) {
+      setAgentData({
+        agent_name: profile?.agent_name || "Hussen Agent",
+        agent_email: profile?.agent_email || "support@agent.com",
+        agent_phone: profile?.agent_phone || "0918241535",
+        address: profile?.address || "Addis Ababa, Ethiopia",
+      });
+    }
+  }, [profile]);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setContactForm((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const submitForm = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!contactForm.message || !contactForm.email) {
+
+    // ✅ Phone required, Email optional
+    if (!formData.phone || !formData.message) {
       MySwal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Email and message are required!",
+        text: "Phone and message are required!",
       });
       return;
     }
 
-    setErrors({});
-    setLoading(true);
-
     try {
-      const response = await sendContactRequest(contactForm);
+      setLoading(true);
+      // add id as a propertyId to formData
+      formData.propertyId = id;
+
+      const response = await sendContactRequest(formData);
 
       MySwal.fire({
         icon: "success",
@@ -52,13 +66,7 @@ const ContactForm = ({ profile, id }) => {
         showConfirmButton: true,
       });
 
-      setContactForm({
-        name: "",
-        email: "",
-        phone: "",
-        message: "",
-        propertyId: id, // keep propertyId intact after reset
-      });
+      setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error) {
       MySwal.fire({
         icon: "error",
@@ -69,26 +77,25 @@ const ContactForm = ({ profile, id }) => {
       setLoading(false);
     }
   };
-
   return (
     <>
       <div className="sides-widget-header bg-main">
         <div className="agent-photo">
-          <img src={profile.profile_image_url} alt="" />
+          <img src={agentData?.profile_image_url} alt="" />
         </div>
         <div className="sides-widget-details">
           <h4>
-            <a href="#">{profile.agent_name}</a>
+            <a href="#">{agentData?.agent_name}</a>
           </h4>
           <p>
             <i className="lni-phone-handset"></i>
-            {profile.agent_phone}
+            {agentData?.agent_phone}
           </p>
         </div>
         <div className="clearfix"></div>
       </div>
 
-      <form className="sides-widget-body simple-form" onSubmit={submitForm}>
+      <form className="sides-widget-body simple-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Name</label>
           <input
@@ -96,34 +103,33 @@ const ContactForm = ({ profile, id }) => {
             name="name"
             className="form-control"
             placeholder="Your Name"
-            value={contactForm.name}
+            value={formData.name}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Email (optional)</label>
+          <input
+            type="text"
+            name="email"
+            className="form-control"
+            placeholder="Your Email"
+            value={formData.email}
             onChange={handleChange}
           />
         </div>
 
         <div className="form-group">
           <label>
-            Email <span className="text-danger fw-bold">*</span>
+            Phone No.<span className="text-danger fw-bold">*</span>
           </label>
-          <input
-            type="text"
-            name="email"
-            className="form-control"
-            placeholder="Your Email"
-            value={contactForm.email}
-            onChange={handleChange}
-          />
-          {errors.email && <p className="text-danger">{errors.email}</p>}
-        </div>
-
-        <div className="form-group">
-          <label>Phone No.</label>
           <input
             type="text"
             name="phone"
             className="form-control"
             placeholder="Your Phone"
-            value={contactForm.phone}
+            value={formData.phone}
             onChange={handleChange}
           />
         </div>
@@ -136,10 +142,9 @@ const ContactForm = ({ profile, id }) => {
             name="message"
             className="form-control"
             placeholder="Your message"
-            value={contactForm.message}
+            value={formData.message}
             onChange={handleChange}
           />
-          {errors.message && <p className="text-danger">{errors.message}</p>}
         </div>
 
         <button
