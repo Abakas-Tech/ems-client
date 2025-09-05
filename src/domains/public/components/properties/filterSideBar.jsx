@@ -99,7 +99,7 @@ const FilterSidebar = ({
             <div className="urgent-block flex-fill full-width my-1 ms-1">
               <div className="d-flex align-items-center justify-content-center justify-content-between border rounded-3 px-2 py-3">
                 <div className="eliok-cliops d-flex align-items-center">
-                  <FaCheckCircle className="text-success fs-5 me-1" />
+                  <FaCheckCircle className="text-danger fs-5 me-1" />
                   <span className="text-muted-2 fw-normal fs-6 ms-1">
                     Urgent
                   </span>
