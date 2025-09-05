@@ -182,7 +182,7 @@ const ChatBot = () => {
             zIndex: 1050,
           }}
         >
-          <div className="card shadow-lg" style={{ height: "100%" }}>
+          <div className="card shadow-lg mt-5" style={{ height: "100%" }}>
             <div
               className="card-header d-flex justify-content-between align-items-center p-3"
               style={{ background: "#00A0C2", color: "#fff" }}
