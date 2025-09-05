@@ -26,7 +26,7 @@ const SinglePropertyAdmin = ({
       ? images[0].image_url
       : "https://placehold.co/1280x850";
 
-  const isFeatured = property.is_featured ;
+  const isFeatured = property.is_featured;
 
   const iconStyle = {
     cursor: "pointer",
@@ -35,117 +35,149 @@ const SinglePropertyAdmin = ({
   };
 
   return (
-    <div className="col-md-10 col-sm-12 ps-3 pe-2 ">
-      {/* Single Property */}
-      <div className="singles-dashboard-list d-flex flex-column flex-md-row align-items-start">
-        {/* Image Left */}
+    <div className="col-md-9 col-sm-12 my-3 p-0 ms-2">
+      <div className="property_card shadow-sm rounded overflow-hidden bg-white d-flex flex-column flex-md-row">
+        {/* Image Section - Clickable */}
         <div
-          className="sd-list-left flex-shrink-0 p-2 col-12"
-          
+          className="property_image col-md-5 col-12 p-2"
+          style={{ cursor: "pointer" }}
+          onClick={handleView}
         >
           <img
             src={propertyImage}
             alt={property.title || "Property Image"}
-            className="img-fluid"
+            className="img-fluid w-100 h-100"
             style={{
-              width: "100%",
-              height: "200px",
               objectFit: "cover",
+              minHeight: "200px",
+              maxHeight: "220px",
             }}
           />
         </div>
 
-        {/* Details Right */}
-        <div className="sd-list-right flex-grow-1 d-flex flex-column mt-3 mt-md-0 ">
-          <div className="sd-list-left">
-            <h4 className="listing_dashboard_title mt-0">
-              <Link
-                to={`/admin/properties/${property.id}`}
-                className="text-decoration-none"
-                title={property.title}
-                style={{
-                  maxWidth: "200px",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {property.title}
-              </Link>
-            </h4>
+        {/* Details Section */}
+        <div className="property_details flex-grow-1 p-3 d-flex flex-column justify-content-between">
+          {/* Title */}
+          <h5 className="fw-bold text-dark mb-1">
+            <Link
+              to={`/admin/properties/${property.id}`}
+              className="text-decoration-none text-dark"
+              title={property.title}
+              style={{
+                maxWidth: "240px",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {property.title}
+            </Link>
+          </h5>
 
-            {property.price && (
-              <div className="user_dashboard_listed mb-1">
-                Price: from{" "}
-                <span className="text-primary">${property.price}</span>
-                {property.price_type ? ` / ${property.price_type}` : ""}
-              </div>
-            )}
-
-            {property.tags && Array.isArray(property.tags) && (
-              <div className="user_dashboard_listed mb-1">
-                Listed in{" "}
-                <span className="text-success">{property.property_type}</span>{" "}
-                and <span className="text-danger">{property.status}</span>
-              </div>
-            )}
-
-            <div className="user_dashboard_listed">
-              {property.location && (
-                <>
-                  City: <span className="text-dark">{property.location}</span>
-                </>
-              )}
-              {property.area_size && (
-                <>
-                  {" , "}Area: <span>{property.area_size} sq ft</span>
-                </>
-              )}
+          {/* Price */}
+          {property.price && (
+            <div className="mb-1 text-muted">
+              Price:{" "}
+              <span className="text-primary fw-semibold">
+                ${property.price}
+              </span>
+              {property.price_type ? ` / ${property.price_type}` : ""}
             </div>
+          )}
+
+          {/* Type and Status */}
+          {property.tags && Array.isArray(property.tags) && (
+            <div className="mb-1 text-muted">
+              Listed in{" "}
+              <span className="text-success">{property.property_type}</span> and{" "}
+              <span className="text-danger">{property.status}</span>
+            </div>
+          )}
+
+          {/* Location & Size */}
+          <div className="mb-2 text-muted small">
+            {property.location && (
+              <>
+                City: <span className="text-dark">{property.location}</span>
+              </>
+            )}
+            {property.area_size && (
+              <>
+                {" , "}Area:{" "}
+                <span className="fw-semibold">{property.area_size} sq ft</span>
+              </>
+            )}
           </div>
 
           {/* Actions */}
-          <div className="action mt-3 d-flex justify-content-start gap-3">
-            <FaEdit
-              style={iconStyle}
-              className="text-primary"
+          <div className="mt-2 d-flex gap-2">
+            <div
+              className="d-flex align-items-center justify-content-center bg-light p-2 rounded shadow-sm"
               title="Edit"
               onClick={handleEdit}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "scale(1.2)")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            />
-            <FaEye
-              style={iconStyle}
-              className="text-info"
+            >
+              <FaEdit
+                style={iconStyle}
+                className="text-primary"
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.transform = "scale(1.2)")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.transform = "scale(1)")
+                }
+              />
+            </div>
+
+            <div
+              className="d-flex align-items-center justify-content-center bg-light p-2 rounded shadow-sm"
               title="View"
               onClick={handleView}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "scale(1.2)")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            />
-            <FaTrash
-              style={iconStyle}
-              className="text-danger"
+            >
+              <FaEye
+                style={iconStyle}
+                className="text-info"
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.transform = "scale(1.2)")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.transform = "scale(1)")
+                }
+              />
+            </div>
+
+            <div
+              className="d-flex align-items-center justify-content-center bg-light p-2 rounded shadow-sm"
               title="Delete Property"
               onClick={handleDeleteClick}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "scale(1.2)")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            />
-            <FaStar
-              style={iconStyle}
-              className={isFeatured ? "text-warning" : "text-secondary"}
+            >
+              <FaTrash
+                style={iconStyle}
+                className="text-danger"
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.transform = "scale(1.2)")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.transform = "scale(1)")
+                }
+              />
+            </div>
+
+            <div
+              className="d-flex align-items-center justify-content-center bg-light p-2 rounded shadow-sm"
               title={isFeatured ? "Unmark Featured" : "Make Featured"}
               onClick={handleFeatured}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "scale(1.2)")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            />
+            >
+              <FaStar
+                style={iconStyle}
+                className={isFeatured ? "text-warning" : "text-secondary"}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.transform = "scale(1.2)")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.transform = "scale(1)")
+                }
+              />
+            </div>
           </div>
         </div>
       </div>

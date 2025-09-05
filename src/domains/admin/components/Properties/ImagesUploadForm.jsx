@@ -119,7 +119,7 @@ const ImagesUploadForm = ({
         <h2 className="fw-bold">
           {isEditMode
             ? `Update Images - ${propertyTitle}`
-            : `Submit Images - ${propertyTitle}`}
+            : `Submit Images `}
         </h2>
         <p className="text-muted">
           {isEditMode

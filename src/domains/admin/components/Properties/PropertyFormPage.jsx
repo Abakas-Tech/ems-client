@@ -75,6 +75,37 @@ const PropertyFormPage = () => {
   const { addMessage } = useResponse();
 
   useEffect(() => {
+    if (!propertyIdParam) {
+      // No propertyId → submit mode
+      setIsEditMode(false);
+      setPropertyId(null);
+      setInitialValues({
+        title: "",
+        category: null,
+        propertyType: null,
+        address: "",
+        latitude: "",
+        longitude: "",
+        description: "",
+        tags: "",
+        features: [],
+        isUrgent: false,
+        isFeatured: false,
+        status: null,
+        areaSize: "",
+        bedrooms: null,
+        bathrooms: null,
+        halls: null,
+        kitchens: null,
+      });
+      setExistingImages([]);
+      setFiles([]);
+      setAltTexts([]);
+      setFormStage("property");
+    }
+  }, [propertyIdParam]);
+
+  useEffect(() => {
     if (!propertyIdParam) return;
 
     setIsEditMode(true);
@@ -216,35 +247,46 @@ const PropertyFormPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propertyIdParam]);
 
+   
+
   //   stays on page, renders image form instead of navigating
   const handlePropertySubmit = async (data) => {
     showLoader();
-    const propertyData = {
-      title: data.title,
-      description: data.description,
-      location: data.address,
-      propertyType: data.propertyType?.value,
-      bedrooms: data.bedrooms?.value,
-      bathrooms: data.bathrooms?.value,
-      halls: data.halls?.value,
-      kitchens: data.kitchens?.value,
-      areaSize: data.areaSize ? parseInt(data.areaSize) : undefined,
-      category: data.category?.value,
-      isUrgent: !!data.isUrgent,
-      isFeatured: !!data.isFeatured,
-      features: Array.isArray(data.features)
-        ? data.features.filter(Boolean)
-        : [],
-      tags: data.tags
-        ? data.tags
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter(Boolean)
-        : [],
-      latitude: parseFloat(data.latitude),
-      longitude: parseFloat(data.longitude),
-      status: data.status?.value,
-    };
+ 
+  const propertyData = {
+    title: data.title,
+    description: data.description,
+    location: data.address,
+    propertyType: data.propertyType?.value,
+    bedrooms: data.bedrooms?.value,
+    bathrooms: data.bathrooms?.value,
+    halls: data.halls?.value,
+    kitchens: data.kitchens?.value,
+    areaSize: data.areaSize ? parseInt(data.areaSize) : undefined,
+    category: data.category?.value,
+    isUrgent: !!data.isUrgent,
+    isFeatured: !!data.isFeatured,
+    features: Array.isArray(data.features) ? data.features.filter(Boolean) : [],
+    tags: data.tags
+      ? data.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean)
+      : [],
+    status: data.status?.value,
+  };
+
+  // Handle coordinates: allow both null, ignore if only one is provided
+  const lat = data.latitude != null ? parseFloat(data.latitude) : null;
+  const lon = data.longitude != null ? parseFloat(data.longitude) : null;
+
+  if (lat != null && lon != null && !isNaN(lat) && !isNaN(lon)) {
+    propertyData.latitude = lat;
+    propertyData.longitude = lon;
+  } else {
+    propertyData.latitude = null;
+    propertyData.longitude = null;
+  }
 
     try {
       let propertyResponse;

@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   getPropertyById,
   getAllProperties,
 } from "../../../api/properties.api.js";
 import { getPropertyImages } from "../../../api/PropertiesImage.api.js";
-import { fetchAgentProfile } from "../../../api/profile.api.js";
 import { useParams } from "react-router-dom";
 import ContactForm from "../../../components/ContactForm/ContactForm.jsx";
 import PropertyCard from "../PropertyCard/PropertyCard.jsx";
@@ -13,7 +12,6 @@ import useLoader from "../../../../../context/Loader/UseLoader.jsx";
 const PropertyDetails = ({ isPublicPage = true }) => {
   const [property, setProperty] = useState({});
   const [images, setImages] = useState([]);
-  const [profile, setProfile] = useState({});
   const [featuredProperties, setFeaturedProperties] = useState([]);
   const { showLoader, hideLoader } = useLoader();
 
@@ -31,20 +29,16 @@ const PropertyDetails = ({ isPublicPage = true }) => {
       const imagesRes = await getPropertyImages(id);
       setImages(imagesRes?.data?.data || []);
 
-      // 3. Fetch agent profile
-      const profileRes = await fetchAgentProfile();
-      setProfile(profileRes || {});
-
-      // 4. Fetch featured properties
+      // 3. Fetch featured properties
       const featuredRes = await getAllProperties({ isFeatured: true });
       const featuredList = featuredRes?.data?.properties || [];
 
-      // 5. Fetch images for all featured properties in parallel
+      // 4. Fetch images for all featured properties in parallel
       const imagesResponses = await Promise.all(
         featuredList.map((prop) => getPropertyImages(prop.id))
       );
 
-      // 6. Merge images into each featured property
+      // 5. Merge images into each featured property
       const featuredWithImages = featuredList.map((prop, index) => ({
         ...prop,
         images: imagesResponses[index]?.data?.data || [],
@@ -56,9 +50,33 @@ const PropertyDetails = ({ isPublicPage = true }) => {
     }
   };
 
+  const prevIdRef = useRef();
+
   useEffect(() => {
-    fetchProperty(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!id) return;
+
+    // If id changed or first render
+    if (prevIdRef.current !== id) {
+      prevIdRef.current = id;
+
+      // Clear all states
+      setProperty({ coordinates: {} });
+      setImages([]);
+      setFeaturedProperties([]);
+
+      // Optional: reset other fields if you have them
+      // setOtherState(...);
+
+      // Fetch new property data
+      (async () => {
+        try {
+          showLoader();
+          await fetchProperty(id);
+        } finally {
+          hideLoader();
+        }
+      })();
+    }
   }, [id]);
   return (
     <div style={{ marginTop: "50px" }}>
@@ -223,34 +241,38 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                 </div>
               </div>
               {/* Single Block Wrap For Location */}
-              <div className="property_block_wrap style-2">
-                <div className="property_block_wrap_header">
-                  <a
-                    data-bs-toggle="collapse"
-                    data-parent="#loca"
-                    data-bs-target="#clSix"
-                    aria-controls="clSix"
-                    href="javascript:void(0);"
-                    aria-expanded="true"
-                    className="collapsed"
-                  >
-                    <h4 className="property_block_title">Location</h4>
-                  </a>
-                </div>
+              {property?.coordinates?.latitude != null &&
+                property?.coordinates?.longitude != null && (
+                  <div className="property_block_wrap style-2">
+                    <div className="property_block_wrap_header">
+                      <a
+                        data-bs-toggle="collapse"
+                        data-parent="#loca"
+                        data-bs-target="#clSix"
+                        aria-controls="clSix"
+                        href="#!"
+                        aria-expanded="true"
+                        className="collapsed"
+                      >
+                        <h4 className="property_block_title">Location</h4>
+                      </a>
+                    </div>
 
-                <div id="clSix" className="panel-collapse collapse">
-                  <div className="block-body">
-                    <div className="map-container">
-                      {/* Add Google Map with longitude and latitude coordinates */}
-                      <iframe
-                        src={`https://maps.google.com/maps?q=${property?.coordinates?.latitude},${property?.coordinates?.longitude}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-                        width="100%"
-                        height="450"
-                      ></iframe>
+                    <div id="clSix" className="panel-collapse collapse">
+                      <div className="block-body">
+                        <div className="map-container">
+                          <iframe
+                            src={`https://maps.google.com/maps?q=${property.coordinates.latitude},${property.coordinates.longitude}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                            width="100%"
+                            height="450"
+                            title="Property Location"
+                          ></iframe>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                )}
+
               {/* Single Block Wrap  For Gallery*/}
               <div className="property_block_wrap style-2">
                 <div className="property_block_wrap_header">
@@ -292,7 +314,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
               <div className="details-sidebar">
                 {isPublicPage && (
                   <div className="sides-widget">
-                    <ContactForm profile={profile} id={property.id} />
+                    <ContactForm id={property.id} />
                   </div>
                 )}
                 {/* Featured Properties */}
@@ -304,7 +326,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                       <PropertyCard
                         property={property}
                         key={property.id}
-                        isPublicPage={(isPublicPage)}
+                        isPublicPage={isPublicPage}
                       />
                     ))}
                   </div>
