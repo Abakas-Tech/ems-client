@@ -57,11 +57,13 @@ const PropertyDetails = ({ isPublicPage = true }) => {
     }
   };
 
+  // Fecth property when id changes
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
     fetchProperty(id);
   }, [id]);
+
   return (
     <div style={{ marginTop: "50px" }}>
       <PropertyGallery images={images} />
