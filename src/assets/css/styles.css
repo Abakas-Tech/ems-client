@@ -10642,13 +10642,15 @@ a.edlio_btn_block i {
   margin-top: -13px !important;
 }
 }
-
+.recharts-default-legend{
+  padding-top: 15px !important;
+}
 /*---------- Datepicker ---------*/
 .daterangepicker {
   border: 1px solid #dee3ea;
 }
 .daterangepicker {
-  font-size: 15px;
+  font-size: 18px;
 }
 .daterangepicker .calendar-table td,
 .daterangepicker .calendar-table th {

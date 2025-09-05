@@ -10,9 +10,7 @@ import {
 import BottomPagination from "../../../../public/components/properties/bottomPagination";
 import styles from "./AnalyticsChart.module.css";
 
-// const COLORS = ["#6FA8DC", "#93C47D", "#FFD966", "#E06666", "#8E7CC3"];
 const COLORS = ["#00A0C2", "#28a745", "#ffc107", "#dc3545", "#6610f2"];
-// const COLORS = ["#A8D5BA", "#FFDAC1", "#FFB3C6", "#C7CEEA", "#E2F0CB"];
 
 const AnalyticsChart = ({ data, pagination, onPageChange }) => {
   if (!data || data.length === 0) {
