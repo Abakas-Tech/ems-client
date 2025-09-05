@@ -3,9 +3,17 @@ import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useProfile } from "../../../../context/Profile/ProfileProvider";
 import { updateProfile } from "../../api/agent.api";
+
 const MyProfile = () => {
   const { profile, fetchProfile } = useProfile();
   const [profileData, setProfileData] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const { showLoader, hideLoader } = useLoader();
+  const { addMessage } = useResponse();
+  const fileInputRef = useRef(null);
+  const [isHovering, setIsHovering] = useState(false);
+
   // Update profileData when profile changes
   useEffect(() => {
     if (profile) {
@@ -26,39 +34,6 @@ const MyProfile = () => {
     }
   }, [profile]);
 
-  const { showLoader, hideLoader } = useLoader();
-  const { addMessage } = useResponse();
-  const fileInputRef = useRef(null);
-  const [isHovering, setIsHovering] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState("");
-
-  // Reusable fetch function
-  // const fetchProfile = async () => {
-  //   showLoader();
-
-  //   try {
-  //     const { data } = await getProfile();
-  //     setProfileData({
-  //       agent_name: data.agent_name || "",
-  //       agent_email: data.agent_email || "",
-  //       agent_phone: data.agent_phone || "",
-  //       country: data.country || "",
-  //       city: data.city || "",
-  //       address: data.address || "",
-  //       bio: data.bio || "",
-  //       title: data.title || "",
-  //       facebook_username: data.facebook_username || "",
-  //       telegram_username: data.telegram_username || "",
-  //       whatsapp_username: data.whatsapp_username || "",
-  //       profile_image_url: data.profile_image_url || "",
-  //     });
-  //   } catch (err) {
-  //     addMessage("error", err.message);
-  //   } finally {
-  //     hideLoader();
-  //   }
-  // };
-
   useEffect(() => {
     fetchProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,40 +45,28 @@ const MyProfile = () => {
     setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Upload profile image
-  const handleImageChange = async (e) => {
+  // Handle profile image selection
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    setSelectedFile(file);
     setSelectedFileName(file.name);
-    const formData = new FormData();
-    formData.append("image", file);
-    Object.entries(profileData).forEach(([key, value]) => {
-      if (key !== "profile_image_url") formData.append(key, value);
-    });
-
-    showLoader();
-    try {
-      const response = await updateProfile(formData);
-      await fetchProfile();
-      addMessage(
-        "success",
-        response?.message || "Profile image updated successfully!"
-      );
-    } catch (error) {
-      addMessage("error", error.message);
-    } finally {
-      hideLoader();
-    }
   };
 
   const handleImageClick = () => fileInputRef.current.click();
 
+  // Submit all data (inputs + image) together
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
+
     Object.entries(profileData).forEach(([key, value]) => {
       if (key !== "profile_image_url") formData.append(key, value);
     });
+
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
 
     showLoader();
     try {
@@ -112,9 +75,7 @@ const MyProfile = () => {
         "success",
         response.message || "Profile updated successfully!"
       );
-
-      // Update global profile context immediately
-      await fetchProfile();
+      await fetchProfile(); // refresh global profile context
     } catch (error) {
       addMessage("error", error.message);
     } finally {
@@ -133,7 +94,7 @@ const MyProfile = () => {
         <div className="submit-section">
           <form onSubmit={handleSubmit}>
             <div className="row">
-              {/* Basic Information  */}
+              {/* Profile Image */}
               <div className="form-group col-md-6 position-relative">
                 <label>Profile Image</label>
                 <div
@@ -171,7 +132,7 @@ const MyProfile = () => {
                 )}
               </div>
 
-              {/* Name */}
+              {/* Text Inputs */}
               <div className="form-group col-md-6">
                 <label>Your Name</label>
                 <input
@@ -183,7 +144,6 @@ const MyProfile = () => {
                 />
               </div>
 
-              {/* Email */}
               <div className="form-group col-md-6">
                 <label>Email</label>
                 <input
@@ -195,7 +155,6 @@ const MyProfile = () => {
                 />
               </div>
 
-              {/* Phone */}
               <div className="form-group col-md-6">
                 <label>Phone</label>
                 <input
@@ -207,7 +166,6 @@ const MyProfile = () => {
                 />
               </div>
 
-              {/* Title */}
               <div className="form-group col-md-6">
                 <label>Your Title</label>
                 <input
@@ -219,7 +177,6 @@ const MyProfile = () => {
                 />
               </div>
 
-              {/* Address */}
               <div className="form-group col-md-6">
                 <label>Address</label>
                 <input
@@ -231,7 +188,6 @@ const MyProfile = () => {
                 />
               </div>
 
-              {/* City */}
               <div className="form-group col-md-6">
                 <label>City</label>
                 <input
@@ -243,7 +199,6 @@ const MyProfile = () => {
                 />
               </div>
 
-              {/* Country */}
               <div className="form-group col-md-6">
                 <label>Country</label>
                 <input
@@ -255,7 +210,6 @@ const MyProfile = () => {
                 />
               </div>
 
-              {/* Bio */}
               <div className="form-group col-md-12">
                 <label>About</label>
                 <textarea
@@ -266,7 +220,7 @@ const MyProfile = () => {
                 />
               </div>
 
-              {/* social accounts  */}
+              {/* Social Accounts */}
               <div className="form-submit mt-4">
                 <h4>Social Accounts</h4>
                 <div className="row">
@@ -276,6 +230,7 @@ const MyProfile = () => {
                       type="text"
                       className="form-control"
                       name="facebook_username"
+                      placeholder="e.g. kasim.nurlgn"
                       value={profileData.facebook_username}
                       onChange={handleChange}
                     />
@@ -287,6 +242,7 @@ const MyProfile = () => {
                       type="text"
                       className="form-control"
                       name="telegram_username"
+                      placeholder="e.g. @kasim_nurlgn"
                       value={profileData.telegram_username}
                       onChange={handleChange}
                     />
@@ -298,12 +254,14 @@ const MyProfile = () => {
                       type="text"
                       className="form-control"
                       name="whatsapp_username"
+                      placeholder="e.g. +251968301664"
                       value={profileData.whatsapp_username}
                       onChange={handleChange}
                     />
                   </div>
                 </div>
               </div>
+
               <div className="form-group col-lg-12 col-md-12 mt-3">
                 <button className="btn btn-main px-5 rounded" type="submit">
                   Save Changes
