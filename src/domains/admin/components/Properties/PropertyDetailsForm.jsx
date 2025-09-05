@@ -169,9 +169,14 @@ const PropertyDetailsForm = ({
     onSubmit: (values) => {
       setValidationError(null);
 
-      // Top-to-bottom sequential validation
+      // --- Basic validations ---
       if (!values.title.trim()) {
         addMessage("error", "Property Title is required");
+        setValidationError("title");
+        return;
+      }
+      if (values.title.trim().length < 3) {
+        addMessage("error", "Property Title must be more than 3 characters");
         setValidationError("title");
         return;
       }
@@ -190,32 +195,6 @@ const PropertyDetailsForm = ({
         setValidationError("address");
         return;
       }
-
-      // Latitude validation
-      if (values.latitude === "" || isNaN(values.latitude)) {
-        addMessage("error", "Latitude is required and must be a number");
-        setValidationError("latitude");
-        return;
-      }
-      if (Number(values.latitude) < -90 || Number(values.latitude) > 90) {
-        addMessage("error", "Latitude must be between -90 and +90");
-        setValidationError("latitude");
-        return;
-      }
-
-      // Longitude validation
-      if (values.longitude === "" || isNaN(values.longitude)) {
-        addMessage("error", "Longitude is required and must be a number");
-        setValidationError("longitude");
-        return;
-      }
-      if (Number(values.longitude) < -180 || Number(values.longitude) > 180) {
-        addMessage("error", "Longitude must be between -180 and +180");
-        setValidationError("longitude");
-        return;
-      }
-
-      // Description validation
       if (!values.description.trim()) {
         addMessage("error", "Description is required");
         setValidationError("description");
@@ -226,15 +205,67 @@ const PropertyDetailsForm = ({
         setValidationError("description");
         return;
       }
-
       if (!values.status) {
         addMessage("error", "Status is required");
         setValidationError("status");
         return;
       }
 
-      //  All good → submit
-      onSubmit(values);
+      // --- Latitude & Longitude logic ---
+      const latEmpty = values.latitude === "" || values.latitude === null;
+      const lonEmpty = values.longitude === "" || values.longitude === null;
+
+      if (!latEmpty && !lonEmpty) {
+        // Both provided → validate
+        if (isNaN(values.latitude)) {
+          addMessage("error", "Latitude must be a number");
+          setValidationError("latitude");
+          return;
+        }
+        if (Number(values.latitude) < -90 || Number(values.latitude) > 90) {
+          addMessage("error", "Latitude must be between -90 and +90");
+          setValidationError("latitude");
+          return;
+        }
+
+        if (isNaN(values.longitude)) {
+          addMessage("error", "Longitude must be a number");
+          setValidationError("longitude");
+          return;
+        }
+        if (Number(values.longitude) < -180 || Number(values.longitude) > 180) {
+          addMessage("error", "Longitude must be between -180 and +180");
+          setValidationError("longitude");
+          return;
+        }
+      } else if (!latEmpty || !lonEmpty) {
+        // Only one provided → show error
+        addMessage(
+          "error",
+          "Both Latitude and Longitude must be provided together"
+        );
+        setValidationError(!latEmpty ? "longitude" : "latitude");
+        return;
+      }
+      // --- Build payload ---
+      const payload = { ...values };
+
+      // Only keep latitude & longitude if BOTH are provided
+      if (
+        values.latitude !== "" &&
+        values.latitude !== null &&
+        values.longitude !== "" &&
+        values.longitude !== null
+      ) {
+        payload.latitude = Number(values.latitude);
+        payload.longitude = Number(values.longitude);
+      } else {
+        // Remove latitude & longitude keys entirely
+        delete payload.latitude;
+        delete payload.longitude;
+      }
+
+      onSubmit(payload);
     },
   });
 

@@ -219,33 +219,38 @@ const PropertyFormPage = () => {
   //   stays on page, renders image form instead of navigating
   const handlePropertySubmit = async (data) => {
     showLoader();
-    const propertyData = {
-      title: data.title,
-      description: data.description,
-      location: data.address,
-      propertyType: data.propertyType?.value,
-      bedrooms: data.bedrooms?.value,
-      bathrooms: data.bathrooms?.value,
-      halls: data.halls?.value,
-      kitchens: data.kitchens?.value,
-      areaSize: data.areaSize ? parseInt(data.areaSize) : undefined,
-      category: data.category?.value,
-      isUrgent: !!data.isUrgent,
-      isFeatured: !!data.isFeatured,
-      features: Array.isArray(data.features)
-        ? data.features.filter(Boolean)
-        : [],
-      tags: data.tags
-        ? data.tags
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter(Boolean)
-        : [],
-      latitude: parseFloat(data.latitude),
-      longitude: parseFloat(data.longitude),
-      status: data.status?.value,
-    };
+   const propertyData = {
+     title: data.title,
+     description: data.description,
+     location: data.address,
+     propertyType: data.propertyType?.value,
+     bedrooms: data.bedrooms?.value,
+     bathrooms: data.bathrooms?.value,
+     halls: data.halls?.value,
+     kitchens: data.kitchens?.value,
+     areaSize: data.areaSize ? parseInt(data.areaSize) : undefined,
+     category: data.category?.value,
+     isUrgent: !!data.isUrgent,
+     isFeatured: !!data.isFeatured,
+     features: Array.isArray(data.features)
+       ? data.features.filter(Boolean)
+       : [],
+     tags: data.tags
+       ? data.tags
+           .split(",")
+           .map((tag) => tag.trim())
+           .filter(Boolean)
+       : [],
+     status: data.status?.value,
+   };
 
+   // Only include latitude/longitude if both are provided
+   const lat = parseFloat(data.latitude);
+   const lon = parseFloat(data.longitude);
+   if (!isNaN(lat) && !isNaN(lon)) {
+     propertyData.latitude = lat;
+     propertyData.longitude = lon;
+   }
     try {
       let propertyResponse;
       if (isEditMode) {
