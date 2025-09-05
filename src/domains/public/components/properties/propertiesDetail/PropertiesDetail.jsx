@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   getPropertyById,
   getAllProperties,
@@ -18,6 +18,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
   const { showLoader, hideLoader } = useLoader();
 
   const { id } = useParams();
+  const hasFetched = useRef(false);
 
   const fetchProperty = async (id) => {
     try {
@@ -57,8 +58,9 @@ const PropertyDetails = ({ isPublicPage = true }) => {
   };
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     fetchProperty(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
   return (
     <div style={{ marginTop: "50px" }}>
@@ -304,7 +306,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                       <PropertyCard
                         property={property}
                         key={property.id}
-                        isPublicPage={(isPublicPage)}
+                        isPublicPage={isPublicPage}
                       />
                     ))}
                   </div>
