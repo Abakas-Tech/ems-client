@@ -19,19 +19,21 @@ import { ProfileProvider } from "./context/Profile/ProfileProvider.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <LogoutProvider>
-        <AuthProvider>
-          <LoaderProvider>
-            <ResponseProvider>
-              <ProfileProvider>
-                <ConfirmDeleteProvider>
-                  <App />
-                </ConfirmDeleteProvider>
-              </ProfileProvider>
-            </ResponseProvider>
-          </LoaderProvider>
-        </AuthProvider>
-      </LogoutProvider>
+      <DemoInfoProvider>
+        <LogoutProvider>
+          <AuthProvider>
+            <LoaderProvider>
+              <ResponseProvider>
+                <ProfileProvider>
+                  <ConfirmDeleteProvider>
+                    <App />
+                  </ConfirmDeleteProvider>
+                </ProfileProvider>
+              </ResponseProvider>
+            </LoaderProvider>
+          </AuthProvider>
+        </LogoutProvider>
+      </DemoInfoProvider>
     </BrowserRouter>
   </StrictMode>
 );
