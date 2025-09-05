@@ -145,6 +145,7 @@ const PropertyList = ({ isPublicPage = true }) => {
             <PaginationAndSort
               pagination={pagination}
               onPageChange={(page) =>
+                setFilters((prev) => ({ ...prev, page })) ||
                 setPagination((prev) => ({ ...prev, page }))
               }
               onSortChange={(sort) =>
@@ -263,6 +264,7 @@ const PropertyList = ({ isPublicPage = true }) => {
             <BottomPagination
               pagination={pagination}
               onPageChange={(page) =>
+                setFilters((prev) => ({ ...prev, page })) ||
                 setPagination((prev) => ({ ...prev, page }))
               }
             />
