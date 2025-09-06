@@ -19,7 +19,6 @@ const SingleProperty = ({ property, images }) => {
     property_type,
     category,
   } = property;
-
   const propertyImages =
     images && images.length > 0
       ? images
