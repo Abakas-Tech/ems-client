@@ -33,7 +33,28 @@ const SingleProperty = ({ property, images }) => {
   // Helper to capitalize first letter
   const capitalizeFirstLetter = (str) =>
     str.charAt(0).toUpperCase() + str.slice(1);
+  // Helper function to safely parse and join tags
+  const parseAndFormatTags = (tags) => {
+    // Case 1: Already an array
+    if (Array.isArray(tags)) {
+      return tags.join(", ");
+    }
 
+    // Case 2: A string that looks like an array
+    if (typeof tags === "string") {
+      try {
+        const parsedTags = JSON.parse(tags);
+        if (Array.isArray(parsedTags)) {
+          return parsedTags.join(", ");
+        }
+      } catch (error) {
+        // Ignore parsing errors, return empty string
+      }
+    }
+
+    // Fallback for null, undefined, or empty arrays/strings
+    return "";
+  };
   return (
     <div className="property-listing property-1 bg-white p-2 rounded">
       <div className="d-flex flex-column flex-lg-row">
@@ -108,9 +129,9 @@ const SingleProperty = ({ property, images }) => {
                   <Link to={`/properties/${id}`}>{title}</Link>
                 </h4>
 
-                {tags && tags.length > 0 && (
+                {tags && tags?.length > 0 && (
                   <div className="fr-can-rating text-muted-2 fs-sm">
-                    {tags.join(", ")}
+                    {parseAndFormatTags(tags)}
                   </div>
                 )}
               </div>

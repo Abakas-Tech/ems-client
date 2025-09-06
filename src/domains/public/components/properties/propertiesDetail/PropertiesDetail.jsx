@@ -78,6 +78,13 @@ const PropertyDetails = ({ isPublicPage = true }) => {
       })();
     }
   }, [id]);
+  // Safely get a features array, handling both array and string formats from the API
+  const amenities = Array.isArray(property?.features)
+    ? property.features
+    : typeof property?.features === "string"
+    ? JSON.parse(property.features || "[]")
+    : [];
+
   return (
     <div style={{ marginTop: "50px" }}>
       <PropertyGallery images={images} />
@@ -154,11 +161,11 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                     <ul className="deatil_features">
                       <li>
                         <strong>Bedrooms:</strong>
-                        {property.bedrooms} 
+                        {property.bedrooms}
                       </li>
                       <li>
                         <strong>Bathrooms:</strong>
-                        {property.bathrooms} 
+                        {property.bathrooms}
                       </li>
                       <li>
                         <strong>Areas:</strong>
@@ -230,8 +237,8 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                 <div id="clThree" className="panel-collapse collapse show">
                   <div className="block-body">
                     <ul className="avl-features third color">
-                      {property?.features?.map((amenity) => (
-                        <li key={amenity}>
+                      {amenities.map((amenity, index) => (
+                        <li key={index}>
                           <i className="bi bi-check"></i>
                           <span>{amenity}</span>
                         </li>

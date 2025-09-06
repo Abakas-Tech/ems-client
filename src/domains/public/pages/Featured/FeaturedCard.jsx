@@ -16,7 +16,29 @@ const FeaturedCard = ({ property, images }) => {
     halls,
     kitchens,
   } = property;
-  console.log(tags);
+  // Helper function to parse and format tags
+  const parseAndFormatTags = (tags) => {
+    // Check if it's already a valid array
+    if (Array.isArray(tags) && tags.length > 0) {
+      return tags.join(", ");
+    }
+
+    // Check if it's a string and try to parse it
+    if (typeof tags === "string") {
+      try {
+        const parsedTags = JSON.parse(tags);
+        if (Array.isArray(parsedTags) && parsedTags.length > 0) {
+          return parsedTags.join(", ");
+        }
+      } catch (error) {
+        // If parsing fails, it's not valid JSON, so return an empty string.
+        return "";
+      }
+    }
+
+    // Fallback for null, undefined, or empty arrays/strings
+    return "";
+  };
   return (
     <div
       className="property-listing property-1 bg-white p-2 rounded"
@@ -56,7 +78,7 @@ const FeaturedCard = ({ property, images }) => {
                 <Link to={`/properties/${id}`}>{title}</Link>
               </h5>
               <div className="fr-can-rating text-muted-2 fs-sm">
-                {Array.isArray(tags) ? tags.join(", ") : tags}
+                <div>{parseAndFormatTags(tags)}</div>
               </div>
             </div>
 

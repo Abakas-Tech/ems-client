@@ -39,7 +39,28 @@ const PropertyDetailsForm = ({
           : specialLabels?.[value] ?? String(value),
       };
     };
+    // Helper function to safely parse and join tags
+    const parseAndFormatTags = (tags) => {
+      // Case 1: Already an array
+      if (Array.isArray(tags)) {
+        return tags.join(", ");
+      }
 
+      // Case 2: A string that looks like an array
+      if (typeof tags === "string") {
+        try {
+          const parsedTags = JSON.parse(tags);
+          if (Array.isArray(parsedTags)) {
+            return parsedTags.join(", ");
+          }
+        } catch (error) {
+          // Ignore parsing errors, return empty string
+        }
+      }
+
+      // Fallback for null, undefined, or empty arrays/strings
+      return "";
+    };
     return {
       // basic
       title: d.title ?? "",
@@ -59,7 +80,7 @@ const PropertyDetailsForm = ({
         (d.coordinates && (d.coordinates.longitude ?? "")) ?? d.longitude ?? "",
       // description / tags / features
       description: d.description ?? "",
-      tags: Array.isArray(d.tags) ? d.tags.join(", ") : d.tags ?? "",
+      tags: parseAndFormatTags(d?.tags),
 
       features: Array.isArray(d.features)
         ? d.features
@@ -398,9 +419,7 @@ const PropertyDetailsForm = ({
               />
             </div>
             <div className="form-group col-md-6">
-              <label>
-                Latitude 
-              </label>
+              <label>Latitude</label>
               <input
                 type="number"
                 name="latitude"
@@ -410,9 +429,7 @@ const PropertyDetailsForm = ({
               />
             </div>
             <div className="form-group col-md-6">
-              <label>
-                Longitude
-              </label>
+              <label>Longitude</label>
               <input
                 type="number"
                 name="longitude"
