@@ -19,7 +19,6 @@ const SingleProperty = ({ property, images }) => {
     property_type,
     category,
   } = property;
-
   const propertyImages =
     images && images.length > 0
       ? images
@@ -110,7 +109,7 @@ const SingleProperty = ({ property, images }) => {
 
                 {tags && tags.length > 0 && (
                   <div className="fr-can-rating text-muted-2 fs-sm">
-                    {tags.join(", ")}
+                    {tags}
                   </div>
                 )}
               </div>
