@@ -75,9 +75,7 @@ const AboutDetail = () => {
                     <li>
                       <strong>CEO</strong> {agent.agent_name}
                     </li>
-                    <li>
-                      <strong>Email</strong> {agent.agent_email}
-                    </li>
+
                     <li>
                       <strong>Phone</strong> {agent.agent_phone}
                     </li>
@@ -92,6 +90,9 @@ const AboutDetail = () => {
                     </li>
                     <li>
                       <strong>Country</strong> {agent.country}
+                    </li>
+                    <li>
+                      <strong>Email</strong> {agent.agent_email}
                     </li>
                   </ul>
                 </div>

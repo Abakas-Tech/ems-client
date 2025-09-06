@@ -206,7 +206,7 @@ const FileManager = () => {
       </div>
 
       {/* Pagination */}
-      {filesData.total > filters.limit && (
+      {filesData?.total > filters?.limit && (
         <div className="d-flex justify-content-center align-items-center gap-3">
           <button
             className="btn btn-outline-primary fw-bold px-4"
