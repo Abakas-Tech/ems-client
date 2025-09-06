@@ -2,14 +2,14 @@ import React from "react";
 import { Helmet } from "react-helmet";
 
 const SEOHelmet = ({
-  title = "Resido - Your Real Estate Partner | Find Properties",
-  description = "Discover top properties with Resido. Find homes, apartments, and commercial spaces with expert real estate agents in Ethiopia.",
-  keywords = "real estate, properties, houses, apartments, commercial spaces, rentals, sales, Addis Ababa, Ethiopia real estate ",
-  canonical = "https://resido.com",
-  ogTitle = "Resido - Your Real Estate Partner",
-  ogDescription = "Find your dream home with Resido's expert real estate agents in Addis Ababa, Ethiopia.",
-  ogUrl = "https://resido.com",
-  ogImage = "https://resido.com/assets/img/og-image.jpg",
+  title = "Abakas | Real Estate Agent Web App",
+  description = "Abakas Real Estate Agent Web App helps property agents manage listings, track property views, handle inquiries, organize files, and schedule appointments. Demo available at agent.abakas.net.",
+  keywords = "real estate agent app, property management software, real estate CRM, property listings, client inquiries, real estate dashboard, file management, appointment scheduling, real estate analytics, Abakas",
+  canonical = "https://agent.abakas.net",
+  ogTitle = "Abakas | Real Estate Agent Web App",
+  ogDescription = "A powerful web app for property agents: manage listings, track views, handle inquiries, organize files, and schedule appointments. Explore the demo at agent.abakas.net.",
+  ogUrl = "https://agent.abakas.net",
+  ogImage = "/image.png", // replace with actual logo/preview image URL
   structuredData = null,
 }) => (
   <Helmet>
