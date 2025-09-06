@@ -46,7 +46,7 @@ const SingleProperty = ({ property, images }) => {
         if (Array.isArray(parsedTags)) {
           return parsedTags.join(", ");
         }
-      } catch (error) {
+      } catch {
         // Ignore parsing errors, return empty string
       }
     }
