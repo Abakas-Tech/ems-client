@@ -59,7 +59,7 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
       onHide={onClose}
       centered
       backdrop={false}
-      style={{ zIndex: 1000 }}
+      style={{ zIndex: 1000, marginTop: "18px" }}
     >
       <Modal.Header closeButton>
         <Modal.Title style={{ color: "var(--maincolor)" }}>
