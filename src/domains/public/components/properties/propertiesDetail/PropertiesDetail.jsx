@@ -85,6 +85,12 @@ const PropertyDetails = ({ isPublicPage = true }) => {
     ? JSON.parse(property.features || "[]")
     : [];
 
+  // Safely get the coordinates object, handling string format
+  const safeCoordinates =
+    typeof property?.coordinates === "string"
+      ? JSON.parse(property.coordinates || "{}")
+      : property?.coordinates;
+
   return (
     <div style={{ marginTop: "50px" }}>
       <PropertyGallery images={images} />
@@ -248,8 +254,8 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                 </div>
               </div>
               {/* Single Block Wrap For Location */}
-              {property?.coordinates?.latitude != null &&
-                property?.coordinates?.longitude != null && (
+              {safeCoordinates?.latitude != null &&
+                safeCoordinates?.longitude != null && (
                   <div className="property_block_wrap style-2">
                     <div className="property_block_wrap_header">
                       <a
@@ -269,7 +275,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                       <div className="block-body">
                         <div className="map-container">
                           <iframe
-                            src={`https://maps.google.com/maps?q=${property.coordinates.latitude},${property.coordinates.longitude}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                            src={`https://maps.google.com/maps?q=${safeCoordinates.latitude},${safeCoordinates.longitude}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
                             width="100%"
                             height="450"
                             title="Property Location"
