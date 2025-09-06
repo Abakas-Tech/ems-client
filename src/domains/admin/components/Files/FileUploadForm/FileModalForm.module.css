@@ -196,13 +196,18 @@
   .onboarding-modal {
     padding: 12px;
   }
+  .onboarding-modal {
+    margin-top: 25px;
+  }
 }
 @media (min-width: 576px) {
   .onboarding-modal__title {
     font-size: 24px !important;
     line-height: 39.379px;
   }
-
+  .onboarding-modal {
+    margin-top: 25px;
+  }
   .onboarding-modal__header-flex {
     gap: 20px !important;
     flex-direction: row;
@@ -222,5 +227,8 @@
 @media (min-width: 768px) {
   .onboarding-modal__content {
     padding: 20px;
+  }
+  .onboarding-modal {
+    margin-top: 25px;
   }
 }
