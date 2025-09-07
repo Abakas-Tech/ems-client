@@ -74,7 +74,7 @@ const FeaturedCard = ({ property, images }) => {
                 )}
               </div>
 
-              <h5 className="mb-0">
+              <h5 className="mt-0">
                 <Link to={`/properties/${id}`}>{title}</Link>
               </h5>
               <div className="fr-can-rating text-muted-2 fs-sm">
