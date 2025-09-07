@@ -38,6 +38,7 @@ const Footer = () => {
        telegram_username: "",
        whatsapp_username: "",
      });
+
    }
     };
 
@@ -121,12 +122,12 @@ const Footer = () => {
           </div>
         </div>
       </div>
-
       {/* Footer Bottom */}
       <div className="footer-bottom">
         <div className="container">
           <div className="row align-items-center">
-            <div className="col-lg-6 col-md-6">
+            {/* Left side text */}
+            <div className="col-lg-6 col-md-6 text-center text-md-start mb-2 mb-md-0">
               <p className="mb-0">
                 © 2025 Resido. Developed by{" "}
                 <a
@@ -140,10 +141,11 @@ const Footer = () => {
               </p>
             </div>
 
-            <div className="col-lg-6 col-md-6 text-right">
-              <ul className="footer-bottom-social">
+            {/* Right side social icons */}
+            <div className="col-lg-6 col-md-6 text-center text-md-end ">
+              <ul className="d-inline-flex d-md-flex justify-content-center justify-content-md-end flex-wrap mb-0 me-4">
                 {facebookUrl && (
-                  <li>
+                  <li className="me-3 mb-2 mb-md-0">
                     <a
                       href={facebookUrl}
                       target="_blank"
@@ -154,7 +156,7 @@ const Footer = () => {
                   </li>
                 )}
                 {whatsappUrl && (
-                  <li>
+                  <li className="me-3 mb-2 mb-md-0">
                     <a
                       href={whatsappUrl}
                       target="_blank"
@@ -165,7 +167,7 @@ const Footer = () => {
                   </li>
                 )}
                 {telegramUrl && (
-                  <li>
+                  <li className="mb-2 mb-md-0">
                     <a
                       href={telegramUrl}
                       target="_blank"
