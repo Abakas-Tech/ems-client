@@ -30,7 +30,7 @@ const FeaturedCard = ({ property, images }) => {
         if (Array.isArray(parsedTags) && parsedTags.length > 0) {
           return parsedTags.join(", ");
         }
-      } catch (error) {
+      } catch {
         // If parsing fails, it's not valid JSON, so return an empty string.
         return "";
       }
@@ -57,8 +57,8 @@ const FeaturedCard = ({ property, images }) => {
       <div className="listing-content">
         <div className="listing-detail-wrapper-box">
           <div className="listing-detail-wrapper d-flex align-items-center justify-content-between">
-            <div className="listing-short-detail">
-              <div className="d-flex flex-wrap align-items-center">
+            <div className="listing-short-detail mb-0">
+              <div className="d-flex flex-wrap align-items-center mt-0">
                 <span
                   className={`label d-inline-flex mb-1 ${
                     is_urgent ? "bg-danger text-white" : "for-sale"
