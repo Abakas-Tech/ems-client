@@ -6,7 +6,6 @@ import {
   selectMenu,
 } from "../../api/chatBot.api";
 import styles from "./chatBot.module.css";
-import useResponse from "./../../../../context/response/UseResponse";
 import { Link, useNavigate } from "react-router-dom";
 
 const ChatBot = () => {
@@ -19,7 +18,6 @@ const ChatBot = () => {
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [showNotification, setShowNotification] = useState(true);
   const messagesEndRef = useRef(null);
-  const { addMessage } = useResponse();
   const navigate = useNavigate();
 
   // Handle window resize
@@ -57,12 +55,10 @@ const ChatBot = () => {
           setMenus(res.menus || []); // show menus for first welcome
           setIsBotTyping(false);
         })
-        .catch((err) => {
-          addMessage("error", err.message);
+        .catch(() => {
           setIsBotTyping(false);
         });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, sessionId]);
 
   // Send user message
