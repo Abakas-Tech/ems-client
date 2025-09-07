@@ -15,8 +15,8 @@ const AboutDetail = () => {
     telegram_username: "-",
     city: "Addis Ababa",
     country: "Ethiopia",
-    experience_description:
-      "Abdurehman Ahmed has been a leading real estate agent in Ethiopia for over 12 years. He has extensive experience in residential, commercial, and luxury properties. His expertise includes market analysis, property valuation, client relationship management, and seamless property transactions. Abdurehman is committed to providing personalized guidance, ensuring his clients make informed decisions and achieve their property goals efficiently.",
+  experience_description: 
+  "I have been working as a real estate agent in Ethiopia for over 12 years, specializing in residential, commercial, and luxury properties. My expertise includes market analysis, property valuation, client relationship management, and smooth property transactions. I am dedicated to providing personalized guidance, helping my clients make informed decisions and achieve their property goals with confidence.",
     facebook_username: "#",
     whatsapp_username: "#",
   });

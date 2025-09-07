@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../../assets/img/logo.svg";
 import { fetchAgentProfile } from "../../../domains/public/api/profile.api";
-import useResponse from "../../../context/response/UseResponse";
 
 const Footer = () => {
-  const { addMessage } = useResponse();
   const [agentData, setAgentData] = useState({
     agent_name: "Hussen Agent",
     agent_email: "support@agent.com",
@@ -18,24 +16,32 @@ const Footer = () => {
 
   useEffect(() => {
     const loadAgentProfile = async () => {
-      try {
-        const profile = await fetchAgentProfile();
-        setAgentData({
-          agent_name: profile.agent_name,
-          agent_email: profile.agent_email,
-          agent_phone: profile.agent_phone,
-          address: profile.address,
-          facebook_username: profile.facebook_username || "",
-          telegram_username: profile.telegram_username || "",
-          whatsapp_username: profile.whatsapp_username || "",
-        });
-      } catch (error) {
-        addMessage("error", error.message);
-      }
+   try {
+     const profile = await fetchAgentProfile();
+     setAgentData({
+       agent_name: profile.agent_name,
+       agent_email: profile.agent_email,
+       agent_phone: profile.agent_phone,
+       address: profile.address,
+       facebook_username: profile.facebook_username || "",
+       telegram_username: profile.telegram_username || "",
+       whatsapp_username: profile.whatsapp_username || "",
+     });
+   } catch {
+     // fallback to safe empty values in case of failure
+     setAgentData({
+       agent_name: "",
+       agent_email: "",
+       agent_phone: "",
+       address: "",
+       facebook_username: "",
+       telegram_username: "",
+       whatsapp_username: "",
+     });
+   }
     };
 
     loadAgentProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Dynamic social links

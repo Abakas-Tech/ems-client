@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { sendContactRequest } from "../../api/contact.api";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import useResponse from "../../../../context/response/UseResponse";
 import { useProfile } from "../../../../context/Profile/ProfileProvider";
 
 const MySwal = withReactContent(Swal);
@@ -16,7 +15,6 @@ const Contact = () => {
     message: "",
   });
   const [loading, setLoading] = useState(false);
-  const { addMessage } = useResponse();
 
   // Defaults in case profile context is empty
   const [agentData, setAgentData] = useState({

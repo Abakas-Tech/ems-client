@@ -55,10 +55,10 @@ const PropertyList = ({ isPublicPage = true }) => {
         }
         setImages(imageResults);
       } else {
-        addMessage("error", response.message);
+        isPublicPage == false && addMessage("error", response.message);
       }
     } catch (err) {
-      addMessage("error", err.message);
+        isPublicPage == false && addMessage("error", err.message);
     } finally {
       hideLoader(); // hide global loader
     }
@@ -73,9 +73,9 @@ const PropertyList = ({ isPublicPage = true }) => {
 
       const response = await togglePropertyFeatured(propertyId, newFeatured);
       if (response.success) {
-        addMessage("success", response.message);
+         isPublicPage == false && addMessage("success", response.message);
       } else {
-        addMessage("error", response.message);
+         isPublicPage == false && addMessage("error", response.message);
       }
       fetchProperties();
       // Update local state so UI reflects change immediately
@@ -85,7 +85,7 @@ const PropertyList = ({ isPublicPage = true }) => {
         )
       );
     } catch (error) {
-      addMessage("error", error.message);
+       isPublicPage == false && addMessage("error", error.message);
     }
   };
   const handleDeleteProperty = async (id) => {
@@ -94,12 +94,12 @@ const PropertyList = ({ isPublicPage = true }) => {
       const response = await deleteProperty(id);
       if (response.success) {
         setProperties((prev) => prev.filter((property) => property.id !== id));
-        addMessage("success", response.message);
+         isPublicPage == false && addMessage("success", response.message);
       } else {
-        addMessage("error", response.message);
+         isPublicPage == false && addMessage("error", response.message);
       }
     } catch (error) {
-      addMessage("error", error.message);
+       isPublicPage == false && addMessage("error", error.message);
     } finally {
       hideLoader();
     }

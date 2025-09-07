@@ -35,7 +35,7 @@ const SinglePropertyAdmin = ({
   };
 
   return (
-    <div className="col-md-9 col-sm-12 my-3 p-0 ms-2">
+    <div className="col-md-9 col-sm-12 my-3 p-0 ms-2 border">
       <div className="property_card shadow-sm rounded overflow-hidden bg-white d-flex flex-column flex-md-row">
         {/* Image Section - Clickable */}
         <div
@@ -61,14 +61,7 @@ const SinglePropertyAdmin = ({
           <h5 className="fw-bold text-dark mb-1">
             <Link
               to={`/admin/properties/${property.id}`}
-              className="text-decoration-none text-dark"
               title={property.title}
-              style={{
-                maxWidth: "240px",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
             >
               {property.title}
             </Link>
@@ -86,7 +79,7 @@ const SinglePropertyAdmin = ({
           )}
 
           {/* Type and Status */}
-          {property.tags && Array.isArray(property.tags) && (
+          {property.tags && (
             <div className="mb-1 text-muted">
               Listed in{" "}
               <span className="text-success">{property.property_type}</span> and{" "}

@@ -114,7 +114,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     <>
       {/* Mobile/Tablet: Drawer */}
       <Drawer open={isOpen} onClose={closeSidebar} direction="left" size="100%">
-        <div style={{ height: "100vh", overflowY: "auto" }} className="p-3">
+        <div style={{ height: "100vh", overflowY: "auto" }} className="p-3  mt-3 mt-md-0">
           <SidebarContent />
         </div>
       </Drawer>
