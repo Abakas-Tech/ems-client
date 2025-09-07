@@ -12,13 +12,25 @@ const FileModalForm = ({ show, handleClose, handleSubmit, initialData }) => {
     formState: { errors },
   } = useForm();
 
+  // Improved function to extract clean description from escaped strings
+  const extractDescription = (description) => {
+    if (!description || typeof description !== "string") {
+      return "";
+    }
+    // Remove leading/trailing quotes and escaped quotes/slashes
+    return description
+      .replace(/^"|"$/g, "") // Remove leading/trailing quotes
+      .replace(/\\"/g, "") // Remove escaped quotes
+      .replace(/\\\\/g, "\\"); // Handle escaped slashes
+  };
+
   useEffect(() => {
     if (initialData) {
-      // ✅ Normalize keys for consistency
+      // Normalize keys and clean description
       reset({
         file_name: initialData.file_name || initialData.filename || "",
         category: initialData.category || "",
-        description: initialData.description || "",
+        description: extractDescription(initialData.description) || "",
         file_url: initialData.file_url || "",
       });
     } else {
@@ -33,9 +45,9 @@ const FileModalForm = ({ show, handleClose, handleSubmit, initialData }) => {
 
   const onSubmit = (data) => {
     if (data.file && data.file.length > 0) {
-      data.file = data.file[0]; // single File object
+      data.file = data.file[0]; // Single File object
     } else {
-      delete data.file; // don’t send if not changed
+      delete data.file; // Don’t send if not changed
     }
     handleSubmit(data);
   };
@@ -152,8 +164,6 @@ const FileModalForm = ({ show, handleClose, handleSubmit, initialData }) => {
           <div className="row gx-5 mt-4">
             <div className="col-md-12">
               <label className="fw-bold fs-6 text-start">Upload File</label>
-
-              {/* ✅ Show preview if file_url exists */}
               {initialData?.file_url && (
                 <div className="mb-2">
                   <a
@@ -165,11 +175,11 @@ const FileModalForm = ({ show, handleClose, handleSubmit, initialData }) => {
                   </a>
                 </div>
               )}
-
               <input
                 type="file"
                 {...register("file")}
                 className="form-control"
+                accept=".pdf,.jpg,.jpeg,.png"
               />
               {errors.file && (
                 <small className="text-danger">{errors.file.message}</small>
@@ -184,7 +194,7 @@ const FileModalForm = ({ show, handleClose, handleSubmit, initialData }) => {
             </Button>
             <Button
               type="submit"
-              className="ms-2 btn "
+              className="ms-2 btn"
               style={{
                 backgroundColor: "var(--maincolor)",
                 borderColor: "var(--maincolor)",
