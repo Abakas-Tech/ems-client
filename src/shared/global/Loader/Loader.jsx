@@ -56,7 +56,6 @@ const Loader = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
             >
-              Loading, please wait...
             </motion.p>
           </motion.div>
         </>
