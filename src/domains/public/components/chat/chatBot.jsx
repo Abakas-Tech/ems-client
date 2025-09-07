@@ -39,6 +39,7 @@ const ChatBot = () => {
   }, [messages, isBotTyping]);
 
   // Initialize session and fetch welcome message
+  // Initialize session and fetch welcome message
   useEffect(() => {
     if (isOpen && !sessionId) {
       let storedSession = localStorage.getItem("chatSessionId");
@@ -52,11 +53,19 @@ const ChatBot = () => {
       getWelcomeMessage()
         .then((res) => {
           setMessages([{ type: "bot", text: res.reply, flag: res.flag }]);
-          setMenus(res.menus || []); // show menus for first welcome
+          setMenus(res.menus || []);
           setIsBotTyping(false);
         })
         .catch(() => {
           setIsBotTyping(false);
+          setMessages((prev) => [
+            ...prev,
+            {
+              type: "bot",
+              text: "Ooops! Connection error. Please try again.",
+              flag: 0,
+            },
+          ]);
         });
     }
   }, [isOpen, sessionId]);
@@ -75,18 +84,23 @@ const ChatBot = () => {
           ...prev,
           { type: "bot", text: res.reply, flag: res.flag },
         ]);
-
-        // Update menus only if flag is 1, otherwise hide
         setMenus(res.flag === 1 ? res.menus || [] : []);
         setIsBotTyping(false);
       })
-      // eslint-disable-next-line no-unused-vars
-      .catch((err) => {
+      .catch(() => {
         setIsBotTyping(false);
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: "bot",
+            text: "Ooops! Connection error. Please try again.",
+            flag: 0,
+          },
+        ]);
       });
   };
 
-  // Handle menu selection using dedicated API
+  // Handle menu selection
   const handleMenuClick = (menuId) => {
     if (!sessionId) return;
     setIsBotTyping(true);
@@ -97,14 +111,19 @@ const ChatBot = () => {
           ...prev,
           { type: "bot", text: res.reply, flag: res.flag },
         ]);
-
-        // Update menus only if flag is 1
         setMenus(res.flag === 1 ? res.menus || [] : []);
         setIsBotTyping(false);
       })
-      // eslint-disable-next-line no-unused-vars
-      .catch((err) => {
+      .catch(() => {
         setIsBotTyping(false);
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: "bot",
+            text: "Ooops! Connection error. Please try again.",
+            flag: 0,
+          },
+        ]);
       });
   };
 
@@ -279,7 +298,10 @@ const ChatBot = () => {
               {menus.length > 0 && renderMenus()}
 
               {isBotTyping && (
-                <div className="d-flex justify-content-start">
+                <div
+                  className="d-flex justify-content-start"
+                  style={{ backgroundColor: "transparent" }}
+                >
                   <i
                     className="fas fa-robot"
                     style={{ fontSize: "30px", color: "#6c757d" }}
