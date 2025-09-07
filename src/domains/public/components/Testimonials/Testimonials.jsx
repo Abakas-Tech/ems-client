@@ -1,7 +1,10 @@
 import React from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/pagination";
+
 import image1 from "./img/image-1.png";
 import image2 from "./img/image-2.png";
 import image3 from "./img/image-3.png";
@@ -47,35 +50,9 @@ const testimonialData = [
       "Cicero famously orated against his political opponent Lucius Sergius Catilina. Occasionally the first Oration against Catiline is taken specimens.",
     color: "bg-warning",
   },
-  
 ];
 
 const Testimonials = () => {
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 600,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    arrows: false,
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-      {
-        breakpoint: 992,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-    ],
-  };
-
   return (
     <section className="gray-bg">
       <div className="container">
@@ -94,9 +71,19 @@ const Testimonials = () => {
 
         <div className="row justify-content-center">
           <div className="col-lg-12 col-md-12">
-            <Slider {...settings} className="smart-textimonials smart-center">
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              spaceBetween={30}
+              autoplay={{ delay: 4000 }}
+              breakpoints={{
+                0: { slidesPerView: 1 }, // phones
+                768: { slidesPerView: 2 }, // tablets
+                992: { slidesPerView: 3 }, // desktops
+              }}
+              className="smart-textimonials smart-center"
+            >
               {testimonialData.map((item, index) => (
-                <div className="item" key={index}>
+                <SwiperSlide key={index}>
                   <div className="item-box">
                     <div className="smart-tes-author">
                       <div className="st-author-box">
@@ -124,9 +111,9 @@ const Testimonials = () => {
                       </span>
                     </div>
                   </div>
-                </div>
+                </SwiperSlide>
               ))}
-            </Slider>
+            </Swiper>
           </div>
         </div>
       </div>
