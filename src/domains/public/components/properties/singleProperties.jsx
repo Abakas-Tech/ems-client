@@ -55,10 +55,10 @@ const SingleProperty = ({ property, images }) => {
     return "";
   };
   return (
-    <div className="property-listing property-1 bg-white p-2 rounded">
+    <div className="property-listing property-1 bg-white py-1 px-2 rounded">
       <div className="d-flex flex-column flex-lg-row">
         {/* Image Carousel */}
-        <div className="listing-img-wrapper w-100 w-lg-50 mb-2 mb-lg-0 me-lg-3 position-relative">
+        <div className="listing-img-wrapper w-100 w-lg-50 mb-2 mb-lg-0 me-lg-2 position-relative">
           {/* Badges container */}
           {(property_type || category) && (
             <div
@@ -109,7 +109,7 @@ const SingleProperty = ({ property, images }) => {
             <div className="listing-detail-wrapper d-flex align-items-center justify-content-between">
               <div className="listing-short-detail ">
                 <span
-                  className={`label d-inline-flex mb-1 mt-2 ${
+                  className={`label d-inline-flex mb-1 mt-1 ${
                     is_urgent
                       ? "bg-danger text-white"
                       : "label for-sale d-inline-flex mb-1"
@@ -119,12 +119,12 @@ const SingleProperty = ({ property, images }) => {
                 </span>
 
                 {Number(is_featured) === 1 && (
-                  <span className="label featured d-inline-flex mb-1 ms-1 bg-warning  text-white">
+                  <span className="label featured d-inline-flex mb-1 ms-2 bg-warning  text-white">
                     Featured
                   </span>
                 )}
 
-                <h4 className="listing-name mb-0">
+                <h4 className="listing-name mt-2">
                   <Link to={`/properties/${id}`}>{title}</Link>
                 </h4>
 
