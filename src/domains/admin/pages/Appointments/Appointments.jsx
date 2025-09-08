@@ -123,7 +123,7 @@ const Appointments = () => {
         </div>
 
         {/* Actions */}
-        <div className="d-flex  gap-2">
+        <div className="d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-center">
           {/* View Switcher */}
           <div className="btn-group" role="group" aria-label="View Switcher">
             <button
@@ -133,7 +133,7 @@ const Appointments = () => {
                 backgroundColor:
                   view === "table" ? "var(--maincolor)" : "transparent",
                 color: view === "table" ? "#fff" : "var(--maincolor)",
-                border: `1px solid var(--maincolor)`, // keeps the outline when not active
+                border: `1px solid var(--maincolor)`,
               }}
             >
               Table
@@ -154,7 +154,7 @@ const Appointments = () => {
 
           {/* Add New */}
           <button
-            className="btn  btn-md fs-6 py-3"
+            className="btn btn-md fs-6 py-3"
             onClick={() => {
               setSelected(null);
               setShowModal(true);
