@@ -98,7 +98,6 @@ const Appointments = () => {
   const handleDelete = async (id) => {
     showLoader();
     try {
-      console.log(id);
       const response = await deleteAppointment(id);
       addMessage("success", response?.message || "Appointment deleted");
       setSelected(null);
