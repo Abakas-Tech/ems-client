@@ -194,12 +194,12 @@ const ChatBot = () => {
             right: 0,
             width: isMobile ? "100%" : "400px",
             height: isMobile ? "100%" : "500px",
-            zIndex: 1050,
+            zIndex: 9999999999,
           }}
         >
           <div className="card shadow-lg " style={{ height: "100%" }}>
             <div
-              className="card-header d-flex justify-content-between align-items-center p-3 mt-5 mt-md-0 "
+              className="card-header d-flex justify-content-between align-items-center p-2  "
               style={{ background: "#00A0C2", color: "#fff" }}
             >
               <h5 className="mb-0 text-white fs-5">Assistant Bot</h5>

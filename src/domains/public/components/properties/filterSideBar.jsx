@@ -68,7 +68,7 @@ const FilterSidebar = ({
   const SidebarContent = () => (
     <>
       {show !== undefined && (
-        <div className="search-sidebar_header d-flex align-items-center justify-content-between">
+        <div className="search-sidebar_header d-flex align-items-center justify-content-between p-1">
           <h4 className="ssh_heading fw-normal fs-6 m-0">Close Filter</h4>
           <button
             onClick={onHide}
@@ -487,7 +487,7 @@ const FilterSidebar = ({
   );
 
   return show !== undefined ? (
-    <Modal show={show} onHide={onHide} fullscreen={true}>
+    <Modal show={show} onHide={onHide} fullscreen={true}  style={{ zIndex: 20000000000 }}>
       <Modal.Body>{SidebarContent()}</Modal.Body>
     </Modal>
   ) : (
