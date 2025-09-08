@@ -72,7 +72,7 @@ const SingleProperty = ({ property, images }) => {
               )}
               {category && (
                 <span className="badge bg-primary p-2 mt-1">
-                  {capitalizeFirstLetter(category)}
+                  For {capitalizeFirstLetter(category)}
                 </span>
               )}
             </div>
