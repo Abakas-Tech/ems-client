@@ -123,7 +123,7 @@ const Appointments = () => {
         </div>
 
         {/* Actions */}
-        <div className="d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-center">
+        <div className="d-flex flex-column flex-end flex-md-row gap-2 align-items-stretch align-items-md-center">
           {/* View Switcher */}
           <div className="btn-group" role="group" aria-label="View Switcher">
             <button

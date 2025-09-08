@@ -44,7 +44,7 @@ const AppointmentsCalendar = ({ events = [], onSelectEvent }) => {
   );
 
   return (
-    <div className={`${styles.calendarContainer} card shadow-sm p-3`}>
+    <div className={`${styles.calendarContainer} card shadow-sm py-4 px-0`}>
       <Calendar
         localizer={localizer}
         events={mappedEvents}
