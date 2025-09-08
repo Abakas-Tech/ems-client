@@ -64,17 +64,15 @@
   border-bottom: 1px solid rgba(229, 231, 235, 0.5);
 }
 
-/* Event bar styling */
-.eventBar {
-  height: 6px;
-  border-radius: 3px;
-  margin: 2px 4px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.eventBar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+/* Event title styling for large/medium screens */
+.eventTitle {
+  font-size: 0.85rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 20px; 
+  /* Add top spacing to avoid overlap with day number  */
 }
 
 /* Toolbar styling */
@@ -104,22 +102,82 @@
   background: #1e3a8a;
 }
 
-/* Agenda view (unchanged from original) */
-.rbc-agenda-view table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.rbc-agenda-view th,
-.rbc-agenda-view td {
+/* Small screen popup styling */
+.dayPopup {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  width: 90%;
+  z-index: 2000;
   padding: 0.5rem;
-  border: 1px solid #e9ecef;
-  background-color: #fff;
-  color: #333;
 }
 
-.rbc-agenda-view .rbc-agenda-event-cell {
+.popupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.popupHeader h6 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.popupClose {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #6b7280;
   cursor: pointer;
+  padding: 0;
+}
+
+.popupClose:hover {
+  color: #1f2937;
+}
+
+.popupContent {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.eventList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.eventItem {
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.eventItem:hover {
+  background-color: #f1f5f9;
+}
+
+.eventTitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.eventTime {
+  font-size: 0.8rem;
+  color: #6b7280;
 }
 
 /* Responsive design */
@@ -140,10 +198,6 @@
 
   .rbc-header {
     font-size: 0.9rem;
-  }
-
-  .eventBar {
-    height: 5px;
   }
 
   .rbc-toolbar {

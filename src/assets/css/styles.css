@@ -46,7 +46,7 @@
 ------------------------------------*/
 :root,
 [data-bs-theme="light"] {
-  --maincolor: #33B5CE;
+  --maincolor: #33b5ce;
   --graycolor: #edf1fb;
   --navcolor: #00305c;
   --darkcolor: #13293d;
@@ -8406,6 +8406,12 @@ h3.pa-name {
   align-items: center;
   justify-content: center;
 }
+@media (max-width: 576px) {
+  .rbc-event {
+    display: none !important;
+  }
+}
+
 /*------------ pricing Box ----------------*/
 .pricing-wrap {
   width: 100%;
@@ -10634,15 +10640,15 @@ a.edlio_btn_block i {
   color: #ffffff !important;
 }
 
-.yarl__thumbnails_wrapper{
+.yarl__thumbnails_wrapper {
   margin-top: 55px !important;
 }
-@media screen and (max-width: 992px){
- .yarl__button{
-  margin-top: -13px !important;
+@media screen and (max-width: 992px) {
+  .yarl__button {
+    margin-top: -13px !important;
+  }
 }
-}
-.recharts-default-legend{
+.recharts-default-legend {
   padding-top: 15px !important;
 }
 /*---------- Datepicker ---------*/
@@ -11900,6 +11906,6 @@ th.next.available,
   max-width: 1200px;
   margin: 0 auto;
 }
-.header{
+.header {
   z-index: 99999999999999 !important;
 }
