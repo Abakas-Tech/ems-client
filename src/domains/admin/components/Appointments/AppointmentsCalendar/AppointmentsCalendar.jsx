@@ -22,13 +22,14 @@ const statusColor = (status) => {
     case "cancelled":
       return "#dc3545"; // red
     default:
-      return "#0d6efd"; // blue (pending/other)
+      return "#0d6efd"; // blue
   }
 };
 
 const AppointmentsCalendar = ({ events = [], onSelectEvent }) => {
-  const [view, setView] = useState(Views.MONTH); // Default to Month view
-  const [date, setDate] = useState(new Date()); // Current calendar date
+  const [view, setView] = useState(Views.MONTH);
+  const [date, setDate] = useState(new Date());
+  const [selectedDayEvents, setSelectedDayEvents] = useState(null);
 
   const mappedEvents = useMemo(
     () =>
@@ -42,6 +43,57 @@ const AppointmentsCalendar = ({ events = [], onSelectEvent }) => {
       })),
     [events]
   );
+
+  // Custom Date Cell for small screens (≤576px)
+  const DateCellWrapper = ({ value, children }) => {
+    const isSmallScreen = window.innerWidth <= 576;
+    if (!isSmallScreen) {
+      return children; // Large/medium screens: Use default event rendering
+    }
+
+    // Small screen: Show appointment count badge
+    const dayEvents = mappedEvents.filter(
+      (evt) => evt.start.toDateString() === value.toDateString()
+    );
+    if (dayEvents.length === 0) return children;
+
+    return (
+      <div
+        style={{
+          textAlign: "center",
+          cursor: "pointer",
+          fontWeight: "bold",
+          color: "#fff",
+          backgroundColor: "#0d6efd",
+          borderRadius: "50%",
+          width: "28px",
+          height: "28px",
+          lineHeight: "28px",
+          margin: "0 auto",
+          marginTop: "30px",
+          marginRight: "14px",
+
+        }}
+        onClick={() => setSelectedDayEvents(dayEvents)}
+      >
+        {dayEvents.length}
+      </div>
+    );
+  };
+
+  // Custom Event Component for large/medium screens
+  const EventWrapper = ({ event }) => {
+    return (
+      <div
+        className={styles.eventTitle}
+        style={{
+          marginTop: "2px",
+        }}
+      >
+        {event.title.length > 12 ? event.title.slice(0, 12) + "…" : event.title}
+      </div>
+    );
+  };
 
   return (
     <div className={`${styles.calendarContainer} card shadow-sm p-3`}>
@@ -57,6 +109,10 @@ const AppointmentsCalendar = ({ events = [], onSelectEvent }) => {
         className={styles.calendar}
         popup
         onSelectEvent={(evt) => onSelectEvent?.(evt.resource)}
+        components={{
+          dateCellWrapper: DateCellWrapper,
+          event: EventWrapper,
+        }}
         eventPropGetter={(event) => {
           const bg = statusColor(event.resource?.status);
           return {
@@ -64,16 +120,65 @@ const AppointmentsCalendar = ({ events = [], onSelectEvent }) => {
               backgroundColor: bg,
               borderColor: bg,
               color: "#fff",
-              cursor: "pointer", // Pointer cursor for clickable events
+              cursor: "pointer",
+              borderRadius: "3px",
+              padding: "2px 4px",
+              fontSize: "0.85rem",
             },
           };
         }}
-        tooltipAccessor={(e) =>
-          `${e.title}\n${new Date(e.start).toLocaleString()} → ${new Date(
-            e.end
-          ).toLocaleString()}`
-        }
       />
+
+      {/* Small screen popup with compact event list */}
+      {selectedDayEvents && (
+        <div className={styles.dayPopup}>
+          <div className={styles.popupContent}>
+            <div className={styles.popupHeader}>
+              <h6 className="fw-bold">Appointments</h6>
+              <button
+                className={styles.popupClose}
+                onClick={() => setSelectedDayEvents(null)}
+              >
+                &times;
+              </button>
+            </div>
+            <ul className={styles.eventList}>
+              {selectedDayEvents.map((evt) => (
+                <li
+                  key={evt.id}
+                  className={styles.eventItem}
+                  style={{
+                    borderLeft: `3px solid ${statusColor(
+                      evt.resource?.status
+                    )}`,
+                  }}
+                  onClick={() => {
+                    onSelectEvent?.(evt.resource);
+                    setSelectedDayEvents(null);
+                  }}
+                >
+                  <div className={styles.eventTitle}>
+                    {evt.title.length > 20
+                      ? evt.title.slice(0, 20) + "…"
+                      : evt.title}
+                  </div>
+                  <div className={styles.eventTime}>
+                    {new Date(evt.start).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    -{" "}
+                    {new Date(evt.end).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
