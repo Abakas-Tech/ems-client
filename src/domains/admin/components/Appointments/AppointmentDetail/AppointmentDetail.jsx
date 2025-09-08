@@ -1,5 +1,3 @@
-// src/components/Appointments/AppointmentDetail/AppointmentDetail.jsx
-import React from "react";
 import styles from "./AppointmentDetail.module.css";
 
 const AppointmentDetail = ({ appointment, onClose }) => {

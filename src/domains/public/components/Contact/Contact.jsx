@@ -37,7 +37,7 @@ const Contact = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value.trim() }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -127,7 +127,6 @@ const Contact = () => {
                   value={formData.phone}
                   onChange={handleChange}
                   className="form-control simple"
-                  required
                 />
               </div>
 
@@ -141,7 +140,6 @@ const Contact = () => {
                   onChange={handleChange}
                   className="form-control simple"
                   rows="4"
-                  required
                 ></textarea>
               </div>
 
