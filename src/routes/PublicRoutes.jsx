@@ -13,7 +13,7 @@ const PublicRoutes = () => (
     <Route
       path="/"
       element={
-        <Layout>
+        <Layout showChatBot={true}>
           <LandingPage />
         </Layout>
       }
@@ -21,7 +21,7 @@ const PublicRoutes = () => (
     <Route
       path="/properties"
       element={
-        <Layout>
+        <Layout showChatBot={true}>
           <PropertyList />
         </Layout>
       }
@@ -29,7 +29,7 @@ const PublicRoutes = () => (
     <Route
       path="/properties/:id"
       element={
-        <Layout>
+        <Layout showChatBot={true}>
           <PropertyDetails />
         </Layout>
       }
@@ -37,7 +37,7 @@ const PublicRoutes = () => (
     <Route
       path="/about"
       element={
-        <Layout>
+        <Layout showChatBot={true}>
           <AboutDetail />
         </Layout>
       }
@@ -45,7 +45,7 @@ const PublicRoutes = () => (
     <Route
       path="/contact"
       element={
-        <Layout>
+        <Layout showChatBot={true}>
           <Contact />
         </Layout>
       }

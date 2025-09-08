@@ -68,17 +68,17 @@ const FilterSidebar = ({
   const SidebarContent = () => (
     <>
       {show !== undefined && (
-        <div className="search-sidebar_header d-flex align-items-center justify-content-between">
+        <div className="search-sidebar_header d-flex align-items-center justify-content-between px-1 py-0">
           <h4 className="ssh_heading fw-normal fs-6 m-0">Close Filter</h4>
           <button
             onClick={onHide}
-            className="d-flex align-items-center justify-content-center border rounded-circle p-2"
+            className="d-flex align-items-center justify-content-center border rounded-circle p-1"
           >
             <FaTimesCircle className="fs-4 text-muted-2" />
           </button>
         </div>
       )}
-      <div className="sidebar-widgets">
+      <div className="sidebar-widgets mt-2">
         <div className="search-inner p-0">
           <div className="filter-search-box">
             <div className="form-group">
@@ -487,7 +487,7 @@ const FilterSidebar = ({
   );
 
   return show !== undefined ? (
-    <Modal show={show} onHide={onHide} fullscreen={true}>
+    <Modal show={show} onHide={onHide} fullscreen={true}  style={{ zIndex: 20000000000 }}>
       <Modal.Body>{SidebarContent()}</Modal.Body>
     </Modal>
   ) : (

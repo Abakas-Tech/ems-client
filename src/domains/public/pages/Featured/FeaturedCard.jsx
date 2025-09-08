@@ -55,10 +55,10 @@ const FeaturedCard = ({ property, images }) => {
       </div>
 
       <div className="listing-content">
-        <div className="listing-detail-wrapper-box">
-          <div className="listing-detail-wrapper d-flex align-items-center justify-content-between">
-            <div className="listing-short-detail mb-0">
-              <div className="d-flex flex-wrap align-items-center mt-0">
+        <div className="listing-detail-wrapper-box m-0">
+          <div className="listing-detail-wrapper d-flex align-items-center justify-content-between m-0 px-2 py-0">
+            <div className="listing-short-detail mb-0 p-0">
+              <div className="d-flex flex-wrap align-items-center mt-2 mt-lg-0">
                 <span
                   className={`label d-inline-flex mb-1 ${
                     is_urgent ? "bg-danger text-white" : "for-sale"
@@ -74,7 +74,7 @@ const FeaturedCard = ({ property, images }) => {
                 )}
               </div>
 
-              <h5 className="mt-0">
+              <h5 className="mt-2">
                 <Link to={`/properties/${id}`}>{title}</Link>
               </h5>
               <div className="fr-can-rating text-muted-2 fs-sm">

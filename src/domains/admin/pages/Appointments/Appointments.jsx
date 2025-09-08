@@ -98,7 +98,6 @@ const Appointments = () => {
   const handleDelete = async (id) => {
     showLoader();
     try {
-      console.log(id);
       const response = await deleteAppointment(id);
       addMessage("success", response?.message || "Appointment deleted");
       setSelected(null);
@@ -123,7 +122,7 @@ const Appointments = () => {
         </div>
 
         {/* Actions */}
-        <div className="d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-center">
+        <div className="d-flex flex-column flex-end flex-md-row gap-2 align-items-stretch align-items-md-center">
           {/* View Switcher */}
           <div className="btn-group" role="group" aria-label="View Switcher">
             <button

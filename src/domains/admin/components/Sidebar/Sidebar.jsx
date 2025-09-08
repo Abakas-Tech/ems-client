@@ -65,7 +65,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
         {/* Close button only on mobile */}
         <button
           type="button"
-          className="btn btn-sm btn-outline-secondary d-lg-none position-absolute top-0 end-0 m-2"
+          className="btn btn-sm btn-outline-secondary d-lg-none position-absolute top-0 end-0 mx-2 my-0"
           onClick={closeSidebar}
         >
           <i className="bi bi-x-lg p-2"></i>
@@ -113,8 +113,17 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
   return (
     <>
       {/* Mobile/Tablet: Drawer */}
-      <Drawer open={isOpen} onClose={closeSidebar} direction="left" size="100%">
-        <div style={{ height: "100vh", overflowY: "auto" }} className="p-3  mt-3 mt-md-0">
+      <Drawer
+        open={isOpen}
+        onClose={closeSidebar}
+        direction="left"
+        size="100%"
+        style={{ zIndex: 999999999999 }}
+      >
+        <div
+          style={{ height: "100vh", overflowY: "auto" }}
+          className="px-1 m-0"
+        >
           <SidebarContent />
         </div>
       </Drawer>
