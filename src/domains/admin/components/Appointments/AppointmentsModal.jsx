@@ -13,9 +13,16 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
 
   useEffect(() => {
     if (appointment) {
+      const localStart = new Date(appointment.start_time);
+      const startLocalStr = new Date(
+        localStart.getTime() - localStart.getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .slice(0, 16);
+
       setForm({
         title: appointment.title || "",
-        startTime: appointment.start_time?.slice(0, 16) || "",
+        startTime: startLocalStr,
         status: appointment.status || "pending",
         description: appointment.description || "",
       });
@@ -37,17 +44,20 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
     e.preventDefault();
     if (!form.startTime) return;
 
-    // Add 3 hours to startTime
-    const start = new Date(form.startTime);
-    start.setHours(start.getHours() + 3);
+    // Convert local datetime-local → UTC ISO string
+    const localStart = new Date(form.startTime);
+    const start = new Date(
+      localStart.getTime() - localStart.getTimezoneOffset() * 60000
+    );
+
     const end = new Date(
       start.getTime() + DEFAULT_DURATION_MINUTES * 60 * 1000
     );
 
     const payload = {
       ...form,
-      startTime: start.toISOString(), // stored as UTC
-      endTime: end.toISOString(), // stored as UTC
+      startTime: start.toISOString(),
+      endTime: end.toISOString(),
     };
 
     onSave(payload);
