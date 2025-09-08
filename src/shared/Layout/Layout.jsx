@@ -3,12 +3,13 @@ import React from "react";
 import Header from "../components/header/header";
 import Footer from "../components/Footer/Footer";
 import ChatBot from "../../domains/public/components/chat/chatBot";
-const Layout = ({ children }) => {
+
+const Layout = ({ children, showChatBot = false }) => {
   return (
     <>
       <Header />
       <main>{children}</main>
-      <ChatBot />
+      {showChatBot && <ChatBot />} 
       <Footer />
     </>
   );
