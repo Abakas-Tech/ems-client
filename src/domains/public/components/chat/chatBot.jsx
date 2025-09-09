@@ -211,7 +211,7 @@ const ChatBot = () => {
               <h5 className="mb-0 text-white fs-5">Assistant Bot</h5>
               <div className="d-flex flex-row align-items-center">
                 <button
-                  className="btn-close btn-close-white fw-bold fs-6 p-1"
+                  className="btn-close btn-close-white fw-bold fs-6 p-1 me-2"
                   onClick={toggleOpen}
                 ></button>
               </div>
