@@ -31,20 +31,20 @@ const ForgotPassword = () => {
     e.preventDefault();
     if (!validateEmail()) return;
 
-    showLoader();
-    try {
-      const response = await forgotPassword({ email });
-      addMessage(
-        "success",
-        response.message || "Reset link sent to your email"
-      );
-      navigate("/admin/login");
-    } catch (error) {
-      addMessage("error", error.message);
-    } finally {
-      hideLoader();
-    }
-      // openModal("resetPassword");
+    // showLoader();
+    // try {
+    //   const response = await forgotPassword({ email });
+    //   addMessage(
+    //     "success",
+    //     response.message || "Reset link sent to your email"
+    //   );
+    //   navigate("/admin/login");
+    // } catch (error) {
+    //   addMessage("error", error.message);
+    // } finally {
+    //   hideLoader();
+    // }
+      openModal("resetPassword");
   };
 
   return (
