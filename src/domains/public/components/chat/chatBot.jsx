@@ -204,7 +204,7 @@ const ChatBot = () => {
             <div
               className="d-flex justify-content-between align-items-center p-2  "
               style={{
-                background: "#00A0C2",
+                background: "#33B5CE",
                 color: "#fff",
               }}
             >
