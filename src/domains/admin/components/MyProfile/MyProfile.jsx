@@ -29,6 +29,8 @@ const MyProfile = () => {
         facebook_username: profile.facebook_username || "",
         telegram_username: profile.telegram_username || "",
         whatsapp_username: profile.whatsapp_username || "",
+        youtube_username: profile.youtube_username || "",
+        instagram_username: profile.instagram_username || "",
         profile_image_url: profile.profile_image_url || "",
       });
     }
@@ -257,6 +259,30 @@ const MyProfile = () => {
                       name="whatsapp_username"
                       placeholder="e.g. +251968301664"
                       value={profileData.whatsapp_username}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="form-group col-md-6">
+                    <label>Instagram</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="instagram_username"
+                      placeholder="e.g. kasim_nurlgn"
+                      value={profileData.instagram_username}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="form-group col-md-6">
+                    <label>Youtube</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="youtube_username"
+                      placeholder="e.g. kasim_nurlgn"
+                      value={profileData.youtube_username}
                       onChange={handleChange}
                     />
                   </div>
