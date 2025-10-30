@@ -183,11 +183,6 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                         {property.property_type}
                       </li>
                       <li>
-                        <strong>Year:</strong>
-                        {/* {property.created_at} change it to normal format */}
-                        {new Date(property.created_at).getFullYear()}
-                      </li>
-                      <li>
                         <strong>Status:</strong>
                         {property.status}
                       </li>
@@ -198,6 +193,14 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                       <li>
                         <strong>Kitchens:</strong>
                         {property.kitchens}
+                      </li>
+                      <li>
+                        <strong>Blocks:</strong>
+                        {property.block_number}
+                      </li>
+                      <li>
+                        <strong>Floors:</strong>
+                        {property.floor_number}
                       </li>
                     </ul>
                   </div>

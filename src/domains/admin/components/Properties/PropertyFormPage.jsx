@@ -263,6 +263,8 @@ const PropertyFormPage = () => {
     halls: data.halls?.value,
     kitchens: data.kitchens?.value,
     areaSize: data.areaSize ? parseInt(data.areaSize) : undefined,
+    blocks: data.blocks ? parseInt(data.blocks?.value) : undefined,
+    floors: data.floors ? parseInt(data.floors?.value) : undefined,
     category: data.category?.value,
     isUrgent: !!data.isUrgent,
     isFeatured: !!data.isFeatured,
