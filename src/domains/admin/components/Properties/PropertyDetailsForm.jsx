@@ -11,6 +11,7 @@ const PropertyDetailsForm = ({
   isEditMode = false,
   onUpdateImages,
 }) => {
+  console.log(initialValues);
   const { addMessage } = useResponse();
   const [validationError, setValidationError] = React.useState(null);
 
@@ -111,6 +112,14 @@ const PropertyDetailsForm = ({
           : d.areaSize !== undefined && d.areaSize !== null
           ? String(d.areaSize)
           : "",
+      blocks:
+        d.blocks !== undefined && d.blocks !== null
+          ? { value: d.blocks, label: String(d.blocks) }
+          : null,
+      floors:
+        d.floors !== undefined && d.floors !== null
+          ? { value: d.floors, label: String(d.floors) }
+          : null,
       bedrooms: d.bedrooms ?? null,
       bathrooms: d.bathrooms ?? null,
       halls: d.halls ?? null,
@@ -188,6 +197,8 @@ const PropertyDetailsForm = ({
       isFeatured: false,
       status: null,
       areaSize: "",
+      blocks: null,
+      floors: null,
       bedrooms: null,
       bathrooms: null,
       halls: null,

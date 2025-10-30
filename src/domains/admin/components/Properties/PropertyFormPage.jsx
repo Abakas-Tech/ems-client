@@ -65,6 +65,8 @@ const PropertyFormPage = () => {
     isFeatured: false,
     status: null,
     areaSize: "",
+    blocks: null,
+    floors: null,
     bedrooms: null,
     bathrooms: null,
     halls: null,
@@ -93,6 +95,8 @@ const PropertyFormPage = () => {
         isFeatured: false,
         status: null,
         areaSize: "",
+        blocks: null,
+        floors: null,
         bedrooms: null,
         bathrooms: null,
         halls: null,
@@ -177,6 +181,8 @@ const PropertyFormPage = () => {
               ? { value: data.status, label: statusLabel(data.status) }
               : null,
             areaSize: data.area_size ?? "",
+            blocks: data.block_number ?? "",
+            floors: data.floor_number ?? "",
             bedrooms: data.bedrooms
               ? { value: data.bedrooms, label: String(data.bedrooms) }
               : null,
