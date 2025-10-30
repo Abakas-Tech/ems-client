@@ -119,6 +119,7 @@ const MyProfile = () => {
                       <i className="bi bi-pencil me-1"></i> Change Profile
                     </div>
                   )}
+
                   <input
                     type="file"
                     ref={fileInputRef}
