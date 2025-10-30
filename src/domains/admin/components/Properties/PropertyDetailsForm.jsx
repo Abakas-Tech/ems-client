@@ -61,7 +61,7 @@ const PropertyDetailsForm = ({
           if (Array.isArray(parsedTags)) {
             return parsedTags.join(", ");
           }
-        } catch (error) {
+        } catch {
           // Ignore parsing errors, return empty string
         }
       }
@@ -204,8 +204,6 @@ const PropertyDetailsForm = ({
       bathrooms: null,
       halls: null,
       kitchens: null,
-      blocks: null,
-      floors: null,
       ...normalizedInitial,
     },
     onSubmit: (values) => {
