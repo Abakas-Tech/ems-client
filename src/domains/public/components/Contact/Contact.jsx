@@ -8,6 +8,7 @@ const MySwal = withReactContent(Swal);
 
 const Contact = () => {
   const { profile } = useProfile();
+  const [isFreelancer, setIsFreelancer] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -61,6 +62,7 @@ const Contact = () => {
         email: formData.email || undefined, // Explicitly send undefined if empty
         phone: formData.phone,
         message: formData.message,
+        type: isFreelancer ? "freelancer" : "customer",
       });
 
       MySwal.fire({
@@ -86,8 +88,24 @@ const Contact = () => {
     <section>
       <div className="container">
         <div className="row">
-          {/* Contact Form */}
-          <h2 className="fw-bold">Contact Me</h2>
+          {/* Header with toggle */}
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h2 className="fw-bold">
+              Contact Me{" "}
+              {isFreelancer && (
+                <span style={{ color: "var(--maincolor)" }}>(Freelancer)</span>
+              )}
+            </h2>
+
+            <button
+              type="button"
+              onClick={() => setIsFreelancer((prev) => !prev)}
+              className="btn btn-light-main rounded-pill"
+              style={{ minWidth: "150px" }}
+            >
+              {isFreelancer ? "Customer?" : "Freelancer?"}
+            </button>
+          </div>
           <div className="col-lg-7 col-md-7">
             <form onSubmit={handleSubmit}>
               <div className="row">
@@ -149,7 +167,11 @@ const Contact = () => {
                   type="submit"
                   disabled={loading}
                 >
-                  {loading ? "Sending..." : "Submit Request"}
+                  {loading
+                    ? "Sending..."
+                    : isFreelancer
+                    ? "Submit as Freelancer"
+                    : "Submit Request"}
                 </button>
               </div>
             </form>

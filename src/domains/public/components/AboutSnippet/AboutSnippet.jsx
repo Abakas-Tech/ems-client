@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaFacebook, FaTelegram, FaWhatsapp } from "react-icons/fa";
+import {
+  FaFacebook,
+  FaTelegram,
+  FaWhatsapp,
+  FaYoutube,
+  FaInstagram,
+} from "react-icons/fa";
 import { BiMap, BiPhone } from "react-icons/bi";
 import { fetchAgentProfile } from "./../../api/profile.api";
 
@@ -13,12 +19,14 @@ const AboutSnippet = ({ showButton }) => {
     facebook_username: "",
     telegram_username: "",
     whatsapp_username: "",
+    youtube_username: "",
+    instagram_username: "",
   });
 
   useEffect(() => {
     const getAgentProfile = async () => {
       const response = await fetchAgentProfile();
-
+      console.log(response);
       if (response) {
         const {
           agent_name,
@@ -31,6 +39,8 @@ const AboutSnippet = ({ showButton }) => {
           facebook_username,
           telegram_username,
           whatsapp_username,
+          youtube_username,
+          instagram_username,
         } = response;
 
         setAgentData({
@@ -45,6 +55,8 @@ const AboutSnippet = ({ showButton }) => {
           facebook_username: facebook_username || "",
           telegram_username: telegram_username || "",
           whatsapp_username: whatsapp_username || "",
+          youtube_username: youtube_username || "",
+          instagram_username: instagram_username || "",
         });
       }
     };
@@ -62,6 +74,12 @@ const AboutSnippet = ({ showButton }) => {
   const whatsappUrl = agentData.whatsapp_username
     ? `https://wa.me/${agentData.whatsapp_username.replace(/\D/g, "")}`
     : null;
+  const youtubeUrl = agentData.youtube_username
+    ? `https://www.youtube.com/${agentData.youtube_username}`
+    : null;
+  const instagramUrl = agentData.instagram_username
+    ? `https://www.instagram.com/${agentData.instagram_username}`
+    : null;
 
   return (
     <section className="agent-page p-0 gray-simple mt-5 ">
@@ -78,7 +96,7 @@ const AboutSnippet = ({ showButton }) => {
                   <h2 className="fw-bold">
                     <Link to="/about">{agentData.agent_name}</Link>
                   </h2>
-                  <p className="fw-bold" style={{color: "var(--maincolor)"}}>
+                  <p className="fw-bold" style={{ color: "var(--maincolor)" }}>
                     <BiPhone /> {agentData.agent_phone}
                   </p>
                   <p>
@@ -124,6 +142,30 @@ const AboutSnippet = ({ showButton }) => {
                         className="whatsapp"
                       >
                         <FaWhatsapp />
+                      </a>
+                    </li>
+                  )}
+                  {youtubeUrl && (
+                    <li>
+                      <a
+                        href={youtubeUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="youtube"
+                      >
+                        <FaYoutube />
+                      </a>
+                    </li>
+                  )}
+                  {instagramUrl && (
+                    <li>
+                      <a
+                        href={instagramUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="instagram"
+                      >
+                        <FaInstagram />
                       </a>
                     </li>
                   )}
