@@ -11,7 +11,6 @@ const PropertyDetailsForm = ({
   isEditMode = false,
   onUpdateImages,
 }) => {
-  console.log(initialValues);
   const { addMessage } = useResponse();
   const [validationError, setValidationError] = React.useState(null);
 
@@ -26,7 +25,9 @@ const PropertyDetailsForm = ({
         ? "House"
         : pt === "villa"
         ? "Villa"
-        : "Land";
+        : pt === "land"
+        ? "Land"
+        : "Commercial";
 
     const statusLabel = (s) =>
       s === "available"
@@ -35,7 +36,7 @@ const PropertyDetailsForm = ({
         ? "Sold"
         : s === "rented"
         ? "Rented"
-        : (s = "CPO-Pending");
+        : "CPO-Pending";
     // eslint-disable-next-line no-unused-vars
     const toSelect = (value, labelFn, specialLabels) => {
       if (value === undefined || value === null) return null;
