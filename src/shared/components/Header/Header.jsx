@@ -86,6 +86,7 @@ const Header = () => {
                   fontSize: "24px",
                   cursor: "pointer",
                   color: "var(--maincolor)",
+                  marginRight:"10px"
                 }}
               >
                 <FaBars />

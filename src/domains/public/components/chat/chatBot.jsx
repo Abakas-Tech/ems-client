@@ -197,15 +197,21 @@ const ChatBot = () => {
             zIndex: 9999999999,
           }}
         >
-          <div className="card shadow-lg " style={{ height: "100%" }}>
+          <div
+            className="card shadow-lg "
+            style={{ height: "100%", borderRadius: "0" }}
+          >
             <div
-              className="card-header d-flex justify-content-between align-items-center p-2  "
-              style={{ background: "#00A0C2", color: "#fff" }}
+              className="d-flex justify-content-between align-items-center p-2  "
+              style={{
+                background: "#33B5CE",
+                color: "#fff",
+              }}
             >
               <h5 className="mb-0 text-white fs-5">Assistant Bot</h5>
               <div className="d-flex flex-row align-items-center">
                 <button
-                  className="btn-close btn-close-white fw-bold fs-3"
+                  className="btn-close btn-close-white fw-bold fs-6 p-1 me-2"
                   onClick={toggleOpen}
                 ></button>
               </div>

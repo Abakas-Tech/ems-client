@@ -4,17 +4,17 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Abakas Realstate Agent Website</title>
+    <title>Abakas Real Estate Agent Website</title>
+
+    <!-- Basic Meta -->
     <meta
       name="description"
       content="Abakas Real Estate Agent Web App helps property agents manage listings, track property views, handle client inquiries, organize files, and schedule appointments with ease. Demo available at agent.abakas.net."
     />
-
     <meta
       name="keywords"
       content="real estate agent app, property management software, real estate CRM, property listings, client inquiries, real estate dashboard, file management, appointment scheduling, real estate analytics, Abakas"
     />
-
     <meta
       name="subject"
       content="Abakas Real Estate Agent Web App is a modern platform designed for property agents to manage listings, track insights, handle appointments, and streamline communication with clients."
@@ -26,8 +26,11 @@
       property="og:description"
       content="A powerful web app for property agents: manage listings, track views, handle inquiries, organize files, and schedule appointments. Explore the demo at agent.abakas.net."
     />
-    <meta property="og:image" content="/image.png" />
-    <meta property="og:url" content="/image.png" />
+    <meta property="og:image" content="https://agent.abakas.net/image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Abakas Real Estate Agent Web App Demo" />
+    <meta property="og:url" content="https://agent.abakas.net/" />
     <meta property="og:type" content="website" />
 
     <!-- Twitter -->
@@ -37,7 +40,18 @@
       name="twitter:description"
       content="All-in-one real estate agent web app: listings, analytics, files, and appointments. Designed by Abakas. Demo at agent.abakas.net."
     />
-    <meta name="twitter:image" content="/image.png" />
+    <meta name="twitter:image" content="https://agent.abakas.net/image.jpg" />
+
+    <!-- PWA Support -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#33B5CE" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="apple-touch-icon" href="/icons/192.png" />
+
+    <!-- Force HTTPS for scrapers -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
   </head>
   <body>
     <div id="root"></div>

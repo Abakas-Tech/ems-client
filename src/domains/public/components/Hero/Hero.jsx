@@ -10,6 +10,7 @@ const Hero = () => {
         backgroundImage: `url(${bannerImage})`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
+        height: "100vh", 
       }}
       data-overlay="6"
     >
