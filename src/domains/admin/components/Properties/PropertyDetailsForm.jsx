@@ -154,6 +154,7 @@ const PropertyDetailsForm = ({
     { value: "house", label: "House" },
     { value: "villa", label: "Villa" },
     { value: "land", label: "Land" },
+    { value: "commercial", label: "Commercial" },
   ];
 
   const selectStyles = {
@@ -388,7 +389,7 @@ const PropertyDetailsForm = ({
               />
             </div>
             <div className="form-group col-md-6">
-              <label>Halls (optional)</label>
+              <label>Leaving & Dining (optional)</label>
               <Select
                 name="halls"
                 value={formik.values.halls}

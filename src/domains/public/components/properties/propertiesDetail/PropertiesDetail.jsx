@@ -187,7 +187,7 @@ const PropertyDetails = ({ isPublicPage = true }) => {
                         {property.status}
                       </li>
                       <li>
-                        <strong>Halls:</strong>
+                        <strong>Leaving & Dining:</strong>
                         {property.halls}
                       </li>
                       <li>
