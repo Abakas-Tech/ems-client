@@ -1,18 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
-import {
-  getWelcomeMessage,
-  sendMessage,
-  selectMenu,
-} from "../../api/chatBot.api";
+import { getWelcomeMessage, sendMessage } from "../../api/chatBot.api";
 import styles from "./chatBot.module.css";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [menus, setMenus] = useState([]);
   const [input, setInput] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isBotTyping, setIsBotTyping] = useState(false);
@@ -39,7 +34,6 @@ const ChatBot = () => {
   }, [messages, isBotTyping]);
 
   // Initialize session and fetch welcome message
-  // Initialize session and fetch welcome message
   useEffect(() => {
     if (isOpen && !sessionId) {
       let storedSession = localStorage.getItem("chatSessionId");
@@ -53,7 +47,6 @@ const ChatBot = () => {
       getWelcomeMessage()
         .then((res) => {
           setMessages([{ type: "bot", text: res.reply, flag: res.flag }]);
-          setMenus(res.menus || []);
           setIsBotTyping(false);
         })
         .catch(() => {
@@ -84,34 +77,6 @@ const ChatBot = () => {
           ...prev,
           { type: "bot", text: res.reply, flag: res.flag },
         ]);
-        setMenus(res.flag === 1 ? res.menus || [] : []);
-        setIsBotTyping(false);
-      })
-      .catch(() => {
-        setIsBotTyping(false);
-        setMessages((prev) => [
-          ...prev,
-          {
-            type: "bot",
-            text: "Ooops! Connection error. Please try again.",
-            flag: 0,
-          },
-        ]);
-      });
-  };
-
-  // Handle menu selection
-  const handleMenuClick = (menuId) => {
-    if (!sessionId) return;
-    setIsBotTyping(true);
-
-    selectMenu({ session_id: sessionId, menu_flag: menuId })
-      .then((res) => {
-        setMessages((prev) => [
-          ...prev,
-          { type: "bot", text: res.reply, flag: res.flag },
-        ]);
-        setMenus(res.flag === 1 ? res.menus || [] : []);
         setIsBotTyping(false);
       })
       .catch(() => {
@@ -128,33 +93,6 @@ const ChatBot = () => {
   };
 
   const toggleOpen = () => setIsOpen(!isOpen);
-
-  const renderMenus = () => {
-    if (!menus || menus.length === 0) return null;
-    return (
-      <div
-        className="d-flex flex-wrap mb-1"
-        style={{ gap: "10px", justifyContent: "flex-start" }}
-      >
-        {menus.map((menu) => (
-          <button
-            key={menu.id}
-            className={`btn btn-light-main  btn-main fw-medium" ${styles.menuButton}`}
-            onClick={() => handleMenuClick(menu.id)}
-            style={{
-              borderRadius: "5px",
-              fontSize: "0.75rem",
-              padding: "0px 5px",
-              whiteSpace: "nowrap",
-              height: "25px",
-            }}
-          >
-            {menu.name}
-          </button>
-        ))}
-      </div>
-    );
-  };
 
   return (
     <>
@@ -198,23 +136,18 @@ const ChatBot = () => {
           }}
         >
           <div
-            className="card shadow-lg "
-            style={{ height: "100%", borderRadius: "0" }}
+            className="card shadow-lg"
+            style={{ height: "100%", borderRadius: 0 }}
           >
             <div
-              className="d-flex justify-content-between align-items-center p-2  "
-              style={{
-                background: "#33B5CE",
-                color: "#fff",
-              }}
+              className="d-flex justify-content-between align-items-center p-2"
+              style={{ background: "#33B5CE", color: "#fff" }}
             >
               <h5 className="mb-0 text-white fs-5">Assistant Bot</h5>
-              <div className="d-flex flex-row align-items-center">
-                <button
-                  className="btn-close btn-close-white fw-bold fs-6 p-1 me-2"
-                  onClick={toggleOpen}
-                ></button>
-              </div>
+              <button
+                className="btn-close btn-close-white fw-bold fs-6 p-1 me-2"
+                onClick={toggleOpen}
+              ></button>
             </div>
 
             <div
@@ -272,13 +205,13 @@ const ChatBot = () => {
                             style={{ fontSize: "28px", color: "#00A0C2" }}
                           ></i>
                           <div>
-                            <p
+                            <div
                               className={`small p-2 ms-3 mb-3 ${styles.messageBox} ${styles.bot}`}
                             >
                               <ReactMarkdown>{msg.text}</ReactMarkdown>
                               {msg.flag === 1 && (
                                 <button
-                                  className="btn btn-light-main btn-md btn-main fw-medium"
+                                  className="btn btn-light-main btn-md btn-main fw-medium mt-2"
                                   onClick={() => {
                                     navigate("/contact");
                                     toggleOpen();
@@ -292,7 +225,7 @@ const ChatBot = () => {
                                   Contact Support
                                 </button>
                               )}
-                            </p>
+                            </div>
                           </div>
                         </>
                       )}
@@ -300,8 +233,6 @@ const ChatBot = () => {
                   </div>
                 );
               })}
-
-              {menus.length > 0 && renderMenus()}
 
               {isBotTyping && (
                 <div
@@ -335,7 +266,7 @@ const ChatBot = () => {
                   style={{ borderRadius: "15px 0 0 15px", padding: "10px" }}
                 />
                 <button
-                  className={` btn btn-light-main  btn-main fw-medium${styles.sendBtn}`}
+                  className={`btn btn-light-main btn-main fw-medium${styles.sendBtn}`}
                   type="button"
                   onClick={handleSend}
                   style={{ borderRadius: "0 15px 15px 0", padding: "10px" }}
