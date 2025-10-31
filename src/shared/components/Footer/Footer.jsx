@@ -77,7 +77,7 @@ const Footer = () => {
               <div className="footer-widget">
                 <Link className="nav-footer-logo" to="/">
                   <span className="svg-icon text-light svg-icon-2hx">
-                    <img src={logo} alt="Mager Logo" />
+                    <img src={logo} alt="Mager Logo" className="footer-logo" />
                   </span>
                   {/* <h5 className="fs-2 fw-bold text-light ms-1 my-0">Resido</h5> */}
                 </Link>
