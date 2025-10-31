@@ -16,7 +16,7 @@ const AboutDetail = () => {
     city: "Addis Ababa",
     country: "Ethiopia",
   experience_description: 
-  "I have been working as a real estate agent in Ethiopia for over 12 years, specializing in residential, commercial, and luxury properties. My expertise includes market analysis, property valuation, client relationship management, and smooth property transactions. I am dedicated to providing personalized guidance, helping my clients make informed decisions and achieve their property goals with confidence.",
+  "We have been working as real estate agents in Ethiopia for over 12 years, specializing in residential, commercial, and luxury properties. Our expertise includes market analysis, property valuation, client relationship management, and smooth property transactions. We are dedicated to providing personalized guidance, helping our clients make informed decisions and achieve their property goals with confidence.",
     facebook_username: "#",
     whatsapp_username: "#",
   });
@@ -39,7 +39,7 @@ const AboutDetail = () => {
         <div className="container">
           <div className="row">
             <div className="col-lg-12 col-md-12">
-              <h2 className="ipt-title fw-bold">Agent Detail</h2>
+              <h2 className="ipt-title fw-bold">Who We Are</h2>
               <span className="ipn-subtitle">
                 {agent.agent_name} From {agent.city}, {agent.country}
               </span>

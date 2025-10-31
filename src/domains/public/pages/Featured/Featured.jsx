@@ -63,7 +63,7 @@ function Featured({ isAdmin = false }) {
               <p className={isAdmin ? "text-muted mb-2" : ""}>
                 {isAdmin
                   ? "Keep an overview of the properties you’ve marked as featured."
-                  : "Discover the finest properties curated just for you. I am dedicated to helping you find your dream home with ease and confidence, offering personalized service every step of the way."}
+                  : "Discover the finest properties curated just for you. We are dedicated to helping you find your dream home with ease and confidence, offering personalized service every step of the way."}
               </p>
             </div>
           </div>

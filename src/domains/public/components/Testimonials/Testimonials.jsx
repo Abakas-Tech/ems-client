@@ -61,8 +61,8 @@ const Testimonials = () => {
             <div className="sec-heading center">
               <h2 className="fw-bold">Good Reviews by Customers</h2>
               <p>
-                Hear from my satisfied clients who found their dream homes and
-                profitable investments with me. Their trust is my greatest
+                Hear from our satisfied clients who found their dream homes and
+                profitable investments with us. Their trust is our greatest
                 reward.
               </p>
             </div>

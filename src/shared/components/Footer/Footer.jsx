@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import logo from "../../../assets/img/logo.svg";
+import logo from "../../../assets/css/img/mager2.png";
 import { fetchAgentProfile } from "../../../domains/public/api/profile.api";
 
 const Footer = () => {
@@ -16,30 +16,29 @@ const Footer = () => {
 
   useEffect(() => {
     const loadAgentProfile = async () => {
-   try {
-     const profile = await fetchAgentProfile();
-     setAgentData({
-       agent_name: profile.agent_name,
-       agent_email: profile.agent_email,
-       agent_phone: profile.agent_phone,
-       address: profile.address,
-       facebook_username: profile.facebook_username || "",
-       telegram_username: profile.telegram_username || "",
-       whatsapp_username: profile.whatsapp_username || "",
-     });
-   } catch {
-     // fallback to safe empty values in case of failure
-     setAgentData({
-       agent_name: "",
-       agent_email: "",
-       agent_phone: "",
-       address: "",
-       facebook_username: "",
-       telegram_username: "",
-       whatsapp_username: "",
-     });
-
-   }
+      try {
+        const profile = await fetchAgentProfile();
+        setAgentData({
+          agent_name: profile.agent_name,
+          agent_email: profile.agent_email,
+          agent_phone: profile.agent_phone,
+          address: profile.address,
+          facebook_username: profile.facebook_username || "",
+          telegram_username: profile.telegram_username || "",
+          whatsapp_username: profile.whatsapp_username || "",
+        });
+      } catch {
+        // fallback to safe empty values in case of failure
+        setAgentData({
+          agent_name: "",
+          agent_email: "",
+          agent_phone: "",
+          address: "",
+          facebook_username: "",
+          telegram_username: "",
+          whatsapp_username: "",
+        });
+      }
     };
 
     loadAgentProfile();
@@ -66,9 +65,9 @@ const Footer = () => {
               <div className="footer-widget">
                 <Link className="nav-footer-logo" to="/">
                   <span className="svg-icon text-light svg-icon-2hx">
-                    <img src={logo} alt="Resido Logo" className="img-fluid" />
+                    <img src={logo} alt="Mager Logo" />
                   </span>
-                  <h5 className="fs-2 fw-bold text-light ms-1 my-0">Resido</h5>
+                  {/* <h5 className="fs-2 fw-bold text-light ms-1 my-0">Resido</h5> */}
                 </Link>
                 <div className="footer-add">
                   <p>{agentData.address}</p>
@@ -129,7 +128,7 @@ const Footer = () => {
             {/* Left side text */}
             <div className="col-lg-6 col-md-6 text-center text-md-start mb-2 mb-md-0">
               <p className="mb-0">
-                © 2025 Resido. Developed by{" "}
+                © 2025 Mager Properties. Developed by{" "}
                 <a
                   href="https://abakas.net"
                   className="brand-link"

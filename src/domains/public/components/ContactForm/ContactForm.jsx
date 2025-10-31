@@ -13,6 +13,7 @@ const ContactForm = ({ id }) => {
     email: "",
     phone: "",
     message: "",
+    type: "customer",
   });
   const [loading, setLoading] = useState(false);
 

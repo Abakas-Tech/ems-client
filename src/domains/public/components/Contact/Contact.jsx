@@ -91,7 +91,7 @@ const Contact = () => {
           {/* Header with toggle */}
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h2 className="fw-bold">
-              Contact Me{" "}
+              Contact Us{" "}
               {isFreelancer && (
                 <span style={{ color: "var(--maincolor)" }}>(Freelancer)</span>
               )}
@@ -182,14 +182,14 @@ const Contact = () => {
             <div className="contact-info">
               <h2>Get In Touch</h2>
               <p>
-                Hello, I'm{" "}
+                Hello, we're{" "}
                 <span
                   className="fw-bold"
                   style={{ fontSize: "1.2rem", color: "var(--maincolor)" }}
                 >
                   {agentData?.agent_name}
                 </span>
-                , I'm here to help you with any questions about buying, selling,
+                , we're here to help you with any questions about buying, selling,
                 or renting properties. Whether you're looking for advice,
                 scheduling a viewing, or need more details about a listing, feel
                 free to reach out anytime.
@@ -209,7 +209,7 @@ const Contact = () => {
                   <i className="fa-solid fa-location-dot"></i>
                 </div>
                 <div>
-                  <h5 className="mb-0">Reach Me</h5>
+                  <h5 className="mb-0">Reach Us</h5>
                   <p className="mb-0">{agentData?.address}</p>
                 </div>
               </div>
@@ -247,7 +247,7 @@ const Contact = () => {
                   <i className="fa-solid fa-phone"></i>
                 </div>
                 <div>
-                  <h5 className="mb-0">Call Me</h5>
+                  <h5 className="mb-0">Call Us</h5>
                   <p className="mb-0">{agentData?.agent_phone}</p>
                 </div>
               </div>

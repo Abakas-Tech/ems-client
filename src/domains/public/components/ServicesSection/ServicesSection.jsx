@@ -54,9 +54,9 @@ const ServicesSection = () => {
           <div className="row justify-content-center">
             <div className="col-lg-7 col-md-10 text-center">
               <div className="sec-heading center">
-                <h2 className="fw-bold">My Services</h2>
+                <h2 className="fw-bold">Our Services</h2>
                 <p>
-                  As your trusted real estate agent, I guide you through buying,
+                  As your trusted real estate agents, We guide you through buying,
                   selling, renting, or valuing property—making the process
                   smooth and stress-free.
                 </p>
