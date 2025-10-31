@@ -25,10 +25,18 @@ const PropertyDetailsForm = ({
         ? "House"
         : pt === "villa"
         ? "Villa"
-        : "Land";
+        : pt === "land"
+        ? "Land"
+        : "Commercial";
 
     const statusLabel = (s) =>
-      s === "available" ? "Available" : s === "sold" ? "Sold" : "Rented";
+      s === "available"
+        ? "Available"
+        : s === "sold"
+        ? "Sold"
+        : s === "rented"
+        ? "Rented"
+        : "CPO-Pending";
     // eslint-disable-next-line no-unused-vars
     const toSelect = (value, labelFn, specialLabels) => {
       if (value === undefined || value === null) return null;
@@ -53,7 +61,7 @@ const PropertyDetailsForm = ({
           if (Array.isArray(parsedTags)) {
             return parsedTags.join(", ");
           }
-        } catch (error) {
+        } catch {
           // Ignore parsing errors, return empty string
         }
       }
@@ -105,6 +113,14 @@ const PropertyDetailsForm = ({
           : d.areaSize !== undefined && d.areaSize !== null
           ? String(d.areaSize)
           : "",
+      blocks:
+        d.blocks !== undefined && d.blocks !== null
+          ? { value: d.blocks, label: String(d.blocks) }
+          : null,
+      floors:
+        d.floors !== undefined && d.floors !== null
+          ? { value: d.floors, label: String(d.floors) }
+          : null,
       bedrooms: d.bedrooms ?? null,
       bathrooms: d.bathrooms ?? null,
       halls: d.halls ?? null,
@@ -148,6 +164,7 @@ const PropertyDetailsForm = ({
     { value: "house", label: "House" },
     { value: "villa", label: "Villa" },
     { value: "land", label: "Land" },
+    { value: "commercial", label: "Commercial" },
   ];
 
   const selectStyles = {
@@ -181,6 +198,8 @@ const PropertyDetailsForm = ({
       isFeatured: false,
       status: null,
       areaSize: "",
+      blocks: null,
+      floors: null,
       bedrooms: null,
       bathrooms: null,
       halls: null,
@@ -380,7 +399,7 @@ const PropertyDetailsForm = ({
               />
             </div>
             <div className="form-group col-md-6">
-              <label>Halls (optional)</label>
+              <label>Leaving & Dining (optional)</label>
               <Select
                 name="halls"
                 value={formik.values.halls}
@@ -396,6 +415,26 @@ const PropertyDetailsForm = ({
                 value={formik.values.kitchens}
                 onChange={(val) => formik.setFieldValue("kitchens", val)}
                 options={buildNumberOptions(formik.values.kitchens, 10)}
+                styles={selectStyles}
+              />
+            </div>
+            <div className="form-group col-md-6">
+              <label>Blocks (optional)</label>
+              <Select
+                name="blocks"
+                value={formik.values.blocks}
+                onChange={(val) => formik.setFieldValue("blocks", val)}
+                options={buildNumberOptions(formik.values.blocks, 10)}
+                styles={selectStyles}
+              />
+            </div>
+            <div className="form-group col-md-6">
+              <label>Floors (optional)</label>
+              <Select
+                name="floors"
+                value={formik.values.floors}
+                onChange={(val) => formik.setFieldValue("floors", val)}
+                options={buildNumberOptions(formik.values.floors, 10)}
                 styles={selectStyles}
               />
             </div>
@@ -482,6 +521,12 @@ const PropertyDetailsForm = ({
                     "Balcony",
                     "Wi-Fi",
                     "Parking",
+                    "Swimming Pool",
+                    "Spa",
+                    "Ground Water",
+                    "Backup Generator",
+                    "Security Camera",
+                    "Water Purifier",
                   ].map((feature, index) => (
                     <li key={index}>
                       <input
@@ -565,8 +610,13 @@ const PropertyDetailsForm = ({
                   { value: "available", label: "Available" },
                   { value: "sold", label: "Sold" },
                   { value: "rented", label: "Rented" },
+                  { value: "CPO-Pending", label: "CPO-Pending" },
                 ]}
-                styles={selectStyles}
+                styles={{
+                  ...selectStyles,
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                }}
+                menuPortalTarget={document.body} // render outside parent container
               />
             </div>
           </div>

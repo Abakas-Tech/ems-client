@@ -116,7 +116,7 @@ const FeaturedCard = ({ property, images }) => {
                 </div>
                 <div className="d-flex align-items-center">
                   <i className="fa-solid fa-couch me-1"></i>
-                  <span>{halls} Halls</span>
+                  <span>{halls} Leaving & Dining</span>
                 </div>
               </div>
             </div>

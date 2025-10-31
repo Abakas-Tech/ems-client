@@ -12,6 +12,8 @@ const Footer = () => {
     facebook_username: "",
     telegram_username: "",
     whatsapp_username: "",
+    youtube_username: "",
+    instagram_username: "",
   });
 
   useEffect(() => {
@@ -26,6 +28,8 @@ const Footer = () => {
           facebook_username: profile.facebook_username || "",
           telegram_username: profile.telegram_username || "",
           whatsapp_username: profile.whatsapp_username || "",
+          youtube_username: profile.youtube_username || "",
+          instagram_username: profile.instagram_username || "",
         });
       } catch {
         // fallback to safe empty values in case of failure
@@ -37,6 +41,8 @@ const Footer = () => {
           facebook_username: "",
           telegram_username: "",
           whatsapp_username: "",
+          youtube_username: "",
+          instagram_username: "",
         });
       }
     };
@@ -53,6 +59,12 @@ const Footer = () => {
     : null;
   const whatsappUrl = agentData.whatsapp_username
     ? `https://wa.me/${agentData.whatsapp_username.replace(/\D/g, "")}`
+    : null;
+  const youtubeUrl = agentData.youtube_username
+    ? `https://youtube.com/${agentData.youtube_username}`
+    : null;
+  const instagramUrl = agentData.instagram_username
+    ? `https://instagram.com/${agentData.instagram_username}`
     : null;
 
   return (
@@ -166,13 +178,35 @@ const Footer = () => {
                   </li>
                 )}
                 {telegramUrl && (
-                  <li className="mb-2 mb-md-0">
+                  <li className="me-3 mb-2 mb-md-0">
                     <a
                       href={telegramUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <i className="fa-brands fa-telegram"></i>
+                    </a>
+                  </li>
+                )}
+                {instagramUrl && (
+                  <li className="me-3 mb-2 mb-md-0">
+                    <a
+                      href={instagramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <i className="fa-brands fa-instagram"></i>
+                    </a>
+                  </li>
+                )}
+                {youtubeUrl && (
+                  <li className="mb-2 mb-md-0">
+                    <a
+                      href={youtubeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <i className="fa-brands fa-youtube"></i>
                     </a>
                   </li>
                 )}
