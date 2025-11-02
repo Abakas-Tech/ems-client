@@ -15,8 +15,8 @@ const AboutDetail = () => {
     telegram_username: "-",
     city: "Addis Ababa",
     country: "Ethiopia",
-  experience_description: 
-  "We have been working as real estate agents in Ethiopia for over 12 years, specializing in residential, commercial, and luxury properties. Our expertise includes market analysis, property valuation, client relationship management, and smooth property transactions. We are dedicated to providing personalized guidance, helping our clients make informed decisions and achieve their property goals with confidence.",
+    experience_description:
+      "We have been working as real estate consultants in Ethiopia for over 12 years, specializing in residential, commercial, and luxury properties. Our expertise includes market analysis, property valuation, client relationship management, and smooth property transactions. We are dedicated to providing personalized guidance, helping our clients make informed decisions and achieve their property goals with confidence.",
     facebook_username: "#",
     whatsapp_username: "#",
   });

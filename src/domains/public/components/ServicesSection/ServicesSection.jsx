@@ -56,9 +56,9 @@ const ServicesSection = () => {
               <div className="sec-heading center">
                 <h2 className="fw-bold">Our Services</h2>
                 <p>
-                  As your trusted real estate agents, We guide you through buying,
-                  selling, renting, or valuing property—making the process
-                  smooth and stress-free.
+                  As your trusted real estate consultants, We guide you through
+                  buying, selling, renting, or valuing property—making the
+                  process smooth and stress-free.
                 </p>
               </div>
             </div>
@@ -77,7 +77,10 @@ const ServicesSection = () => {
                   className="service-item position-relative h-100 shadow p-4 rounded hover-up text-center bg-white custom-shadow"
                   style={{ border: "1px solid #f0f0f0" }}
                 >
-                  <div className="icon mb-3 " style={{ color: "var(--maincolor"}}>
+                  <div
+                    className="icon mb-3 "
+                    style={{ color: "var(--maincolor" }}
+                  >
                     <i className={`${service.icon} fs-1 `}></i>
                   </div>
                   <div className="stretched-link">
