@@ -1,16 +1,16 @@
 {
-  "name": "Abakas Real Estate Agent Web App",
- "short_name": "AgentPro",
-  "description": "Abakas Real Estate Agent Web App helps property agents manage listings, track property views, handle client inquiries, organize files, and schedule appointments with ease. Demo available at agent.abakas.net.",
+  "name": "Mager Properties Real Estate Web App",
+  "short_name": "MagerPro",
+  "description": "Mager Properties Real Estate Web App helps property consultants and agents manage listings, track client inquiries, and organize property sales efficiently. Visit https://magerproperty.com for more information.",
   "lang": "en",
   "dir": "ltr",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#33B5CE",
-  "theme_color": "#33B5CE",
-  "categories": ["business", "productivity", "utilities"],
+  "background_color": "#004aad",
+  "theme_color": "#00305c",
+  "categories": ["business", "productivity", "real-estate"],
   "icons": [
     {
       "src": "/icons/192.png",
@@ -41,7 +41,7 @@
     {
       "name": "Dashboard",
       "short_name": "Dashboard",
-      "description": "Open the property dashboard",
+      "description": "Open the property management dashboard",
       "url": "/dashboard",
       "icons": [
         {
@@ -52,8 +52,8 @@
       ]
     },
     {
-      "name": "New Listing",
-      "short_name": "Listing",
+      "name": "Add Property",
+      "short_name": "Add",
       "description": "Quickly create a new property listing",
       "url": "/admin/submit-property",
       "icons": [
