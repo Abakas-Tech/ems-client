@@ -400,7 +400,7 @@ const PropertyDetailsForm = ({
               />
             </div>
             <div className="form-group col-md-6">
-              <label>Leaving & Dining (optional)</label>
+              <label>Living & Dining (optional)</label>
               <Select
                 name="halls"
                 value={formik.values.halls}
