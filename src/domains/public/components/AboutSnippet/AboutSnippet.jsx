@@ -12,10 +12,10 @@ import { fetchAgentProfile } from "./../../api/profile.api";
 
 const AboutSnippet = ({ showButton }) => {
   const [agentData, setAgentData] = useState({
-    agent_name: "Adam D. Okraar",
-    agent_address: "3599 Huntz Lane",
+    agent_name: "Mager Properties",
+    agent_address: "Addis Ababa, Ethiopia",
     profile_image_url: "https://placehold.co/500x500",
-    bio: "Professional real estate agent.",
+    bio: "Professional real estate consultants.",
     facebook_username: "",
     telegram_username: "",
     whatsapp_username: "",
@@ -44,14 +44,14 @@ const AboutSnippet = ({ showButton }) => {
         } = response;
 
         setAgentData({
-          agent_name: agent_name || "Adam D. Okraar",
+          agent_name: agent_name || "Mager Properties",
           agent_phone: agent_phone,
           agent_address:
             [address, city, country].filter(Boolean).join(", ") ||
             "3599 Huntz Lane",
           profile_image_url:
             profile_image_url || "https://placehold.co/500x500",
-          bio: bio || "Professional real estate agent with experience.",
+          bio: bio || "Professional real estate consultants with experience.",
           facebook_username: facebook_username || "",
           telegram_username: telegram_username || "",
           whatsapp_username: whatsapp_username || "",

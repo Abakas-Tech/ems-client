@@ -19,18 +19,18 @@ const Contact = () => {
 
   // Defaults in case profile context is empty
   const [agentData, setAgentData] = useState({
-    agent_name: "Hussen Agent",
-    agent_email: "support@agent.com",
-    agent_phone: "0918241535",
+    agent_name: "Mager Properties",
+    agent_email: "contact@magerproperty.com",
+    agent_phone: "0908111113",
     address: "Addis Ababa, Ethiopia",
   });
 
   useEffect(() => {
     if (profile?.agent_name) {
       setAgentData({
-        agent_name: profile.agent_name || "Hussen Agent",
-        agent_email: profile.agent_email || "support@agent.com",
-        agent_phone: profile.agent_phone || "0918241535",
+        agent_name: profile.agent_name || "Mager Properties",
+        agent_email: profile.agent_email || "contact@magerproperty.com",
+        agent_phone: profile.agent_phone || "0908111113",
         address: profile.address || "Addis Ababa, Ethiopia",
       });
     }
@@ -248,7 +248,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h5 className="mb-0">Call Us</h5>
-                  <p className="mb-0">{agentData?.agent_phone}</p>
+                  <p className="mb-0">{agentData?.agent_phone} / 0908222229</p>
                 </div>
               </div>
             </div>
