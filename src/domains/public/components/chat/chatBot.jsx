@@ -141,7 +141,7 @@ const ChatBot = () => {
           >
             <div
               className="d-flex justify-content-between align-items-center p-2"
-              style={{ background: "#33B5CE", color: "#fff" }}
+              style={{ background: "#004AAD", color: "#fff" }}
             >
               <h5 className="mb-0 text-white fs-5">Assistant Bot</h5>
               <button
@@ -195,14 +195,14 @@ const ChatBot = () => {
                           </div>
                           <i
                             className="bi bi-person-circle ms-3"
-                            style={{ fontSize: "28px", color: "#00A0C2" }}
+                            style={{ fontSize: "28px", color: "#004AAD" }}
                           ></i>
                         </>
                       ) : (
                         <>
                           <i
                             className="bi bi-robot me-3"
-                            style={{ fontSize: "28px", color: "#00A0C2" }}
+                            style={{ fontSize: "28px", color: "#004AAD" }}
                           ></i>
                           <div>
                             <div
@@ -241,9 +241,10 @@ const ChatBot = () => {
                 >
                   <i
                     className="fas fa-robot"
-                    style={{ fontSize: "30px", color: "#6c757d" }}
+                    style={{ fontSize: "30px", color: "#115189ff" }}
                   ></i>
                   <div className={styles.typingIndicator}>
+                    <div className={styles.typingDot}></div>
                     <div className={styles.typingDot}></div>
                     <div className={styles.typingDot}></div>
                     <div className={styles.typingDot}></div>
