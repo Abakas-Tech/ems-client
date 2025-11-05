@@ -46,8 +46,11 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
 
     // Convert local datetime-local → UTC ISO string
     const localStart = new Date(form.startTime);
+    // Subtract 3 hours to get local timezone offset
     const start = new Date(
-      localStart.getTime() - localStart.getTimezoneOffset() * 60000
+      localStart.getTime() -
+        localStart.getTimezoneOffset() * 60000 -
+        3 * 60 * 60 * 1000
     );
 
     const end = new Date(
