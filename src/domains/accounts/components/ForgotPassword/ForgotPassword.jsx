@@ -1,11 +1,10 @@
-
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { forgotPassword } from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
-import logo from "../../../../assets/img/logo.svg";
+import logo from "../../../../assets/css/img/mager2.png";
 import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 
 const ForgotPassword = () => {
@@ -31,33 +30,37 @@ const ForgotPassword = () => {
     e.preventDefault();
     if (!validateEmail()) return;
 
-    // showLoader();
-    // try {
-    //   const response = await forgotPassword({ email });
-    //   addMessage(
-    //     "success",
-    //     response.message || "Reset link sent to your email"
-    //   );
-    //   navigate("/admin/login");
-    // } catch (error) {
-    //   addMessage("error", error.message);
-    // } finally {
-    //   hideLoader();
-    // }
-      openModal("resetPassword");
+    showLoader();
+    try {
+      const response = await forgotPassword({ email });
+      addMessage(
+        "success",
+        response.message || "Reset link sent to your email"
+      );
+      navigate("/admin/login");
+    } catch (error) {
+      addMessage("error", error.message);
+    } finally {
+      hideLoader();
+    }
+      // openModal("resetPassword");
   };
 
   return (
     <div
       className="login-page d-flex justify-content-center align-items-center rounded"
-      style={{ minHeight: "80vh" }}
+      style={{ minHeight: "90vh" }}
     >
       <div
         className="login-container p-4 rounded shadow-lg my-4"
         style={{ maxWidth: "500px", width: "90%", minHeight: "400px" }}
       >
         <h2 className="text-center mb-3 fw-bold pt-0">Forgot Password</h2>
-        <img src={logo} className="mx-auto d-block mb-4 img-fluid" />
+        <img
+          src={logo}
+          className="mx-auto d-block mb-4 img-fluid"
+          style={{ maxWidth: "160px", height: "auto" }}
+        />
         <form onSubmit={handleSubmit}>
           <div className="form-floating mb-3">
             <input

@@ -11928,3 +11928,23 @@ th.next.available,
   opacity: 1;
   transform: scale(1.05); /* subtle hover pop effect */
 }
+
+/* Custome Header styles */
+
+/* Keep it transparent initially */
+.header.header-transparent {
+  background: transparent;
+}
+
+/* When scrolled (header-fixed) → change to blue */
+.header.header-transparent.header-fixed {
+  background: #004aad; 
+  
+}
+
+
+.header.header-transparent.header-fixed .nav-brand.text-logo.exchange,
+.header.header-transparent.header-fixed .nav-brand.text-logo.exchange h5,
+.header.header-transparent.header-fixed .nav-menu > li > a {
+  color: #ffffff !important;
+}

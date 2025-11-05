@@ -4,7 +4,7 @@ import { loginAdmin } from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import useAuth from "../../../../context/auth/UseAuth";
-import logo from "../../../../assets/img/logo.svg";
+import logo from "../../../../assets/css/img/mager2.png";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
 
 const LoginForm = () => {
@@ -48,14 +48,20 @@ const LoginForm = () => {
   return (
     <div
       className="login-page d-flex justify-content-center align-items-center rounded"
-      style={{ minHeight: "80vh", marginTop: "30px" }}
+      style={{ minHeight: "90vh", marginTop: "30px" }}
     >
       <div
         className="login-container p-4 rounded shadow-lg my-4"
         style={{ maxWidth: "500px", width: "90%", minHeight: "400px" }}
       >
         <h2 className="text-center mb-3 fw-bold pt-0">Log In</h2>
-        <img src={logo} className="mx-auto d-block mb-4 img-fluid" alt="Logo" />
+
+        <img
+          src={logo}
+          className="mx-auto d-block mb-4 img-fluid"
+          alt="Logo"
+          style={{ maxWidth: "160px", height: "auto" }}
+        />
 
         <form onSubmit={handleSubmit}>
           {/* Email */}
