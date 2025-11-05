@@ -129,7 +129,7 @@ const PropertyDetailsForm = ({
   }, [initialValues]);
 
   // helper: build numeric select options and ensure the current selection is included
-  const buildNumberOptions = (selectedObj, max = 10) => {
+  const buildNumberOptions = (selectedObj, max = 1000) => {
     const selectedVal =
       selectedObj && typeof selectedObj === "object"
         ? Number(selectedObj.value)
@@ -137,10 +137,11 @@ const PropertyDetailsForm = ({
         ? selectedObj
         : null;
 
-    const base = Array.from({ length: max }, (_, i) => i + 1);
-    if (selectedVal && !base.includes(selectedVal)) base.push(selectedVal);
-    const sorted = base.sort((a, b) => a - b);
-    return sorted.map((n) => ({ value: n, label: String(n) }));
+    // If user selected 120 floors, extend options automatically up to that
+    const upperLimit = selectedVal && selectedVal > max ? selectedVal : max;
+
+    const base = Array.from({ length: upperLimit }, (_, i) => i + 1);
+    return base.map((n) => ({ value: n, label: String(n) }));
   };
 
   // category options ensure current selection (sale/rent) is present
@@ -399,7 +400,7 @@ const PropertyDetailsForm = ({
               />
             </div>
             <div className="form-group col-md-6">
-              <label>Leaving & Dining (optional)</label>
+              <label>Living & Dining (optional)</label>
               <Select
                 name="halls"
                 value={formik.values.halls}
@@ -424,7 +425,7 @@ const PropertyDetailsForm = ({
                 name="blocks"
                 value={formik.values.blocks}
                 onChange={(val) => formik.setFieldValue("blocks", val)}
-                options={buildNumberOptions(formik.values.blocks, 10)}
+                options={buildNumberOptions(formik.values.blocks)}
                 styles={selectStyles}
               />
             </div>
@@ -434,7 +435,7 @@ const PropertyDetailsForm = ({
                 name="floors"
                 value={formik.values.floors}
                 onChange={(val) => formik.setFieldValue("floors", val)}
-                options={buildNumberOptions(formik.values.floors, 10)}
+                options={buildNumberOptions(formik.values.floors, 100)}
                 styles={selectStyles}
               />
             </div>

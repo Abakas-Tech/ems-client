@@ -155,7 +155,7 @@ const MyProfile = () => {
                   name="agent_email"
                   value={profileData.agent_email}
                   onChange={handleChange}
-                  readOnly
+                  // readOnly
                 />
               </div>
 
