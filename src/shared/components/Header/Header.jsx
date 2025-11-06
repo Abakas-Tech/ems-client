@@ -85,7 +85,7 @@ const Header = () => {
                 style={{
                   fontSize: "24px",
                   cursor: "pointer",
-                  color: "var(--maincolor)",
+                  color: "#ffffff",
                   marginRight: "10px",
                 }}
               >

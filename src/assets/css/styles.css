@@ -11934,17 +11934,28 @@ th.next.available,
 /* Keep it transparent initially */
 .header.header-transparent {
   background: transparent;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* When scrolled (header-fixed) → change to blue */
 .header.header-transparent.header-fixed {
-  background: #004aad; 
-  
+  background: #004aad;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Make hamburger icon visible (white when scrolled, black initially) */
+.header.header-transparent .nav-toggle span,
+.header.header-transparent .nav-toggle span::before,
+.header.header-transparent .nav-toggle span::after {
+  background-color: #000; /* black when transparent */
+}
 
-.header.header-transparent.header-fixed .nav-brand.text-logo.exchange,
-.header.header-transparent.header-fixed .nav-brand.text-logo.exchange h5,
-.header.header-transparent.header-fixed .nav-menu > li > a {
-  color: #ffffff !important;
+.header.header-transparent.header-fixed .nav-toggle span,
+.header.header-transparent.header-fixed .nav-toggle span::before,
+.header.header-transparent.header-fixed .nav-toggle span::after {
+  background-color: #fff !important;
 }
