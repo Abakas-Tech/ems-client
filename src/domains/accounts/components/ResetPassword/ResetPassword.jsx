@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { resetPassword } from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
-import logo from "../../../../assets/img/logo.svg";
+import logo from "../../../../assets/css/img/mager2.png";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
 
 const ResetPassword = () => {
