@@ -11934,17 +11934,26 @@ th.next.available,
 /* Keep it transparent initially */
 .header.header-transparent {
   background: transparent;
-  position: fixed;
+  position: fixed; /* make it sticky again */
   top: 0;
   width: 100%;
-  z-index: 9999;
+  z-index: 9999; /* ensure it stays above everything */
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* When scrolled (header-fixed) → change to blue */
 .header.header-transparent.header-fixed {
   background: #004aad;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* optional subtle shadow */
+}
+
+/* Text and menu links turn white on scroll */
+@media (min-width: 992px) {
+  .header.header-transparent.header-fixed .nav-brand.text-logo.exchange,
+  .header.header-transparent.header-fixed .nav-brand.text-logo.exchange h5,
+  .header.header-transparent.header-fixed .nav-menu > li > a {
+    color: #ffffff !important;
+  }
 }
 
 /* Make hamburger icon visible (white when scrolled, black initially) */
@@ -11957,5 +11966,5 @@ th.next.available,
 .header.header-transparent.header-fixed .nav-toggle span,
 .header.header-transparent.header-fixed .nav-toggle span::before,
 .header.header-transparent.header-fixed .nav-toggle span::after {
-  background-color: #fff !important;
+  background-color: #fff !important; 
 }
