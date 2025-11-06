@@ -26,7 +26,6 @@ const AboutSnippet = ({ showButton }) => {
   useEffect(() => {
     const getAgentProfile = async () => {
       const response = await fetchAgentProfile();
-      console.log(response);
       if (response) {
         const {
           agent_name,

@@ -46,9 +46,15 @@ const AppointmentsModal = ({ show, onClose, onSave, appointment }) => {
 
     // Convert local datetime-local → UTC ISO string
     const localStart = new Date(form.startTime);
+
+    // If the form is to add a new appointment subtract 3 hours otherwise go with the start time
     const start = new Date(
       localStart.getTime() - localStart.getTimezoneOffset() * 60000
     );
+
+    if (!appointment) {
+      start.setHours(start.getHours() - 3);
+    }
 
     const end = new Date(
       start.getTime() + DEFAULT_DURATION_MINUTES * 60 * 1000
