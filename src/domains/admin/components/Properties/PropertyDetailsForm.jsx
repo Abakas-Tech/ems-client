@@ -37,38 +37,52 @@ const PropertyDetailsForm = ({
         : s === "rented"
         ? "Rented"
         : "CPO-Pending";
-    // eslint-disable-next-line no-unused-vars
-    const toSelect = (value, labelFn, specialLabels) => {
-      if (value === undefined || value === null) return null;
-      return {
-        value,
-        label: labelFn
-          ? labelFn(value)
-          : specialLabels?.[value] ?? String(value),
-      };
-    };
-    // Helper function to safely parse and join tags
-    const parseAndFormatTags = (tags) => {
-      // Case 1: Already an array
-      if (Array.isArray(tags)) {
-        return tags.join(", ");
-      }
 
-      // Case 2: A string that looks like an array
-      if (typeof tags === "string") {
+    // ✅ Helper: safely parse JSON-like strings that may have slashes
+    const safeJSONParse = (value, fallback) => {
+      if (typeof value === "string") {
         try {
-          const parsedTags = JSON.parse(tags);
-          if (Array.isArray(parsedTags)) {
-            return parsedTags.join(", ");
-          }
+          // clean out extra slashes before parsing
+          const cleaned = value.replace(/^\/+|\/+$/g, "").trim();
+          return JSON.parse(cleaned);
         } catch {
-          // Ignore parsing errors, return empty string
+          return fallback;
         }
       }
-
-      // Fallback for null, undefined, or empty arrays/strings
-      return "";
+      return value ?? fallback;
     };
+
+    // ✅ Helper: convert features into a clean array
+    const parseFeatures = (features) => {
+      if (Array.isArray(features)) return features;
+      if (typeof features === "string") {
+        const parsed = safeJSONParse(features, null);
+        if (Array.isArray(parsed)) return parsed;
+        return features
+          .split(",")
+          .map((f) => f.trim())
+          .filter(Boolean);
+      }
+      return [];
+    };
+
+    // ✅ Helper: safely handle coordinates (string or object)
+    const safeCoordinates = safeJSONParse(d.coordinates, {});
+
+    // ✅ Helper for tags to extract from arrays or strings
+    const parseAndFormatTags = (tags) => {
+      if (Array.isArray(tags)) return tags;
+      if (typeof tags === "string") {
+        const parsed = safeJSONParse(tags, null);
+        if (Array.isArray(parsed)) return parsed;
+        return tags
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean);
+      }
+      return [];
+    };
+
     return {
       // basic
       title: d.title ?? "",
@@ -80,33 +94,31 @@ const PropertyDetailsForm = ({
       propertyType: d.property_type
         ? { value: d.property_type, label: propertyTypeLabel(d.property_type) }
         : d.propertyType ?? null,
-      // location (coordinates may be nested)
+
+      // location
       address: d.location ?? d.address ?? "",
-      latitude:
-        (d.coordinates && (d.coordinates.latitude ?? "")) ?? d.latitude ?? "",
-      longitude:
-        (d.coordinates && (d.coordinates.longitude ?? "")) ?? d.longitude ?? "",
+      latitude: safeCoordinates.latitude ?? d.latitude ?? "",
+      longitude: safeCoordinates.longitude ?? d.longitude ?? "",
+
       // description / tags / features
       description: d.description ?? "",
       tags: parseAndFormatTags(d?.tags),
+      features: parseFeatures(d.features),
 
-      features: Array.isArray(d.features)
-        ? d.features
-        : typeof d.features === "string" && d.features.length
-        ? d.features.split(",").map((t) => t.trim())
-        : [],
-      // booleans (API may use 0/1 or true/false)
+      // booleans
       isUrgent:
         d.is_urgent !== undefined ? !!Number(d.is_urgent) : !!d.isUrgent,
       isFeatured:
         d.is_featured !== undefined ? !!Number(d.is_featured) : !!d.isFeatured,
+
       // status select
       status: d.status
         ? typeof d.status === "object"
-          ? d.status // already {value, label} → use as-is
-          : { value: d.status, label: statusLabel(d.status) } // string → map
+          ? d.status
+          : { value: d.status, label: statusLabel(d.status) }
         : null,
-      // optional numeric/selects (we keep them as the same select object shape you used)
+
+      // numeric / select fields
       areaSize:
         d.area_size !== undefined && d.area_size !== null
           ? String(d.area_size)
