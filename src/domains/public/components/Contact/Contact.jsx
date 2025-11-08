@@ -21,7 +21,7 @@ const Contact = () => {
   const [agentData, setAgentData] = useState({
     agent_name: "Mager Properties",
     agent_email: "contact@magerproperty.com",
-    agent_phone: "0908111113",
+    agent_phone: "0908222229",
     address: "Addis Ababa, Ethiopia",
   });
 
@@ -248,7 +248,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h5 className="mb-0">Call Us</h5>
-                  <p className="mb-0">{agentData?.agent_phone} / 0908222229</p>
+                  <p className="mb-0">{agentData?.agent_phone}</p>
                 </div>
               </div>
             </div>

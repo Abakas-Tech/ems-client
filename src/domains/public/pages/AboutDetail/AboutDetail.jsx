@@ -11,7 +11,7 @@ const AboutDetail = () => {
     agent_address: "3599 Huntz Lane",
     profile_image_url: "https://placehold.co/500x500",
     agent_email: "agent@realestate.com",
-    agent_phone: "0968301661",
+    agent_phone: "0908222229",
     telegram_username: "-",
     city: "Addis Ababa",
     country: "Ethiopia",
@@ -77,19 +77,31 @@ const AboutDetail = () => {
                     </li>
 
                     <li>
-                      <strong>Phone</strong> {agent.agent_phone}
+                      <strong>Address</strong> {agent.address}
                     </li>
                     <li>
                       <strong>Telegram</strong> {agent.telegram_username}
                     </li>
-                    <li>
-                      <strong>Address</strong> {agent.address}
-                    </li>
+
                     <li>
                       <strong>City</strong> {agent.city}
                     </li>
+
                     <li>
-                      <strong>Country</strong> {agent.country}
+                      <strong>Phone</strong>{" "}
+                      {agent.agent_phone.includes("/") ? (
+                        <>
+                          {agent.agent_phone.split(/\/(.+)/)[0]}
+                          <br />
+                          {agent.agent_phone.split(/\/(.+)/)[1]}
+                        </>
+                      ) : (
+                        agent.agent_phone
+                      )}
+                    </li>
+                    <li>
+                      <strong>Country</strong>
+                      {agent.country}
                     </li>
                     <li>
                       <strong>Email</strong> {agent.agent_email}
