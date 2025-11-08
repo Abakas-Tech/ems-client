@@ -167,6 +167,8 @@ const MyProfile = () => {
                   name="agent_phone"
                   value={profileData.agent_phone}
                   onChange={handleChange}
+                  placeholder="1234567890/1234567890"
+                  maxLength="21" // includes the slash
                 />
               </div>
 
