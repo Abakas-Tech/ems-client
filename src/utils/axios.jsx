@@ -19,4 +19,19 @@ const axiosPythonInstance = axios.create({
   withCredentials: false, // usually chatbot APIs don’t need cookies
 });
 
+// Request interceptor to attach token
+const attachAuthToken = (config) => {
+  const token = localStorage.getItem("authToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+};
+
+// Error handler
+const handleRequestError = (error) => Promise.reject(error);
+
+// Attach interceptors
+axiosInstance.interceptors.request.use(attachAuthToken, handleRequestError);
+
 export { axiosInstance, axiosPythonInstance };
