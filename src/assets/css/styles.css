@@ -8730,17 +8730,16 @@ footer.dark-footer {
   background: var(--footerbg);
 }
 .footer-logo {
-  padding: 20px 0;
+  margin-left: -10px;
   display: inline-block;
   width: 100%;
-  border-top: 1px solid var(--formborder);
-  border-bottom: 1px solid var(--formborder);
 }
 
 .nav-footer-logo {
   display: inline-flex;
   align-items: center;
   margin-bottom: 1rem;
+  margin-left: -13px;
 }
 footer.footer-small {
   padding: 50px 0 0 0;
@@ -8793,7 +8792,7 @@ footer.skin-light-footer .footer-add {
   margin-bottom: 0;
 }
 .footer-logo img {
-  max-width: 185px;
+  max-width: 200px;
 }
 .footer-widget {
   padding: 25px 0;
@@ -11966,5 +11965,5 @@ th.next.available,
 .header.header-transparent.header-fixed .nav-toggle span,
 .header.header-transparent.header-fixed .nav-toggle span::before,
 .header.header-transparent.header-fixed .nav-toggle span::after {
-  background-color: #fff !important; 
+  background-color: #fff !important;
 }

@@ -5,8 +5,8 @@ import { fetchAgentProfile } from "../../../domains/public/api/profile.api";
 
 const Footer = () => {
   const [agentData, setAgentData] = useState({
-    agent_name: "Hussen Agent",
-    agent_email: "support@agent.com",
+    agent_name: "Mager property",
+    agent_email: "support@magerproperty.com",
     agent_phone: "0918241535",
     address: "Addiss Ababa, Ethiopia",
     facebook_username: "",
@@ -77,7 +77,7 @@ const Footer = () => {
               <div className="footer-widget">
                 <Link className="nav-footer-logo" to="/">
                   <span className="svg-icon text-light svg-icon-2hx">
-                    <img src={logo} alt="Mager Logo" className="footer-logo" />
+                    <img src={logo} alt="Mager Logo " className="footer-logo" />
                   </span>
                   {/* <h5 className="fs-2 fw-bold text-light ms-1 my-0">Resido</h5> */}
                 </Link>
