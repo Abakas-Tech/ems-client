@@ -150,6 +150,7 @@ const PropertyFormPage = () => {
             : "CPO-Pending";
 
         if (data && (data.id || data.title)) {
+          const coords = safeParseCoordinates(data.coordinates);
           setInitialValues({
             title: data.title || "",
             category: data.category
@@ -170,19 +171,11 @@ const PropertyFormPage = () => {
                 }
               : null,
             address: data.location || "",
-            latitude:
-              (data.coordinates && data.coordinates.latitude) ??
-              data.latitude ??
-              "",
-            longitude:
-              (data.coordinates && data.coordinates.longitude) ??
-              data.longitude ??
-              "",
+            latitude: coords.latitude || data.latitude || "",
+            longitude: coords.longitude || data.longitude || "",
             description: data.description || "",
-            tags: Array.isArray(data.tags)
-              ? data.tags.join(", ")
-              : data.tags || "",
-            features: Array.isArray(data.features) ? data.features : [],
+            tags: safeParseArray(data.tags).join(", "),
+            features: safeParseArray(data.features),
             isUrgent: !!data.is_urgent,
             isFeatured: !!data.is_featured,
             status: data.status
@@ -260,6 +253,61 @@ const PropertyFormPage = () => {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propertyIdParam]);
+
+  // Parse stringified array
+  const safeParseArray = (value) => {
+    if (!value) return [];
+
+    // If backend already sent an array
+    if (Array.isArray(value)) return value;
+
+    if (typeof value === "string") {
+      try {
+        // Remove escaped characters
+        const cleaned = value.replace(/\\+/g, "");
+
+        const parsed = JSON.parse(cleaned);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (err) {
+        // fallback: manual split
+        return value
+          .replace(/\\+/g, "")
+          .replace(/[\[\]"]+/g, "")
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean);
+      }
+    }
+
+    return [];
+  };
+  // Parse stringified coordinates
+  const safeParseCoordinates = (value) => {
+    if (!value) return { latitude: "", longitude: "" };
+
+    if (typeof value === "object") {
+      return {
+        latitude: value.latitude ?? "",
+        longitude: value.longitude ?? "",
+      };
+    }
+
+    if (typeof value === "string") {
+      try {
+        const cleaned = value.replace(/\\+/g, "");
+        const parsed = JSON.parse(cleaned);
+
+        return {
+          latitude: parsed.latitude ?? "",
+          longitude: parsed.longitude ?? "",
+        };
+      } catch {
+        return { latitude: "", longitude: "" };
+      }
+    }
+
+    return { latitude: "", longitude: "" };
+  };
 
   //   stays on page, renders image form instead of navigating
   const handlePropertySubmit = async (data) => {

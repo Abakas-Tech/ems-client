@@ -38,50 +38,59 @@ const PropertyDetailsForm = ({
         ? "Rented"
         : "CPO-Pending";
 
-    // ✅ Helper: safely parse JSON-like strings that may have slashes
+    // Safe JSON parser: fixes escaped values from production
     const safeJSONParse = (value, fallback) => {
       if (typeof value === "string") {
         try {
-          // clean out extra slashes before parsing
-          const cleaned = value.replace(/^\/+|\/+$/g, "").trim();
+          const cleaned = value
+            .replace(/\\+/g, "") // remove ALL backslashes
+            .trim();
           return JSON.parse(cleaned);
-        } catch {
+        } catch (err) {
           return fallback;
         }
       }
       return value ?? fallback;
     };
 
-    // ✅ Helper: convert features into a clean array
+    // Features → always array
     const parseFeatures = (features) => {
       if (Array.isArray(features)) return features;
+
       if (typeof features === "string") {
+        // Try JSON parse first
         const parsed = safeJSONParse(features, null);
         if (Array.isArray(parsed)) return parsed;
+
+        // If still not parsed → fallback to manual split
         return features
+          .replace(/\\+/g, "") // remove backslashes
+          .replace(/[\[\]"]+/g, "") // remove brackets and quotes
           .split(",")
           .map((f) => f.trim())
           .filter(Boolean);
       }
+
       return [];
     };
 
-    // ✅ Helper: safely handle coordinates (string or object)
-    const safeCoordinates = safeJSONParse(d.coordinates, {});
-
-    // ✅ Helper for tags to extract from arrays or strings
+    // Tags → always STRING for input
     const parseAndFormatTags = (tags) => {
-      if (Array.isArray(tags)) return tags;
+      if (Array.isArray(tags)) return tags.join(", ");
       if (typeof tags === "string") {
         const parsed = safeJSONParse(tags, null);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) return parsed.join(", ");
         return tags
           .split(",")
           .map((t) => t.trim())
-          .filter(Boolean);
+          .filter(Boolean)
+          .join(", ");
       }
-      return [];
+      return "";
     };
+
+    // Coordinates
+    const safeCoordinates = safeJSONParse(d.coordinates, {});
 
     return {
       // basic
