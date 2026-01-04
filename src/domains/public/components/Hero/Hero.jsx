@@ -19,9 +19,8 @@ const Hero = () => {
           <div className="col-lg-9 col-md-11 col-sm-12">
             <div className="inner-banner-text text-center">
               <h2>
-                <span className="font-normal">Mager </span> Properties.
+                <span className="font-normal">Find Your </span> Dream Home.
               </h2>
-              <h2 className=" mt-4 font-normal">ህልማችሁ የመጨረሻ ግባችን ነው!</h2>
             </div>
           </div>
         </div>

@@ -46,7 +46,7 @@
 ------------------------------------*/
 :root,
 [data-bs-theme="light"] {
-  --maincolor: #004aad;
+  --maincolor: #33b5ce;
   --graycolor: #edf1fb;
   --navcolor: #00305c;
   --darkcolor: #13293d;
@@ -2664,7 +2664,7 @@ nav a {
 }
 
 .navigation-portrait .nav-brand {
-  font-size: 100px;
+  font-size: 18px;
   line-height: 48px;
 }
 
@@ -3429,12 +3429,9 @@ nav a {
   color: #ffffff !important;
 }
 .nav-brand img {
-  width: 80px;
+  max-width: 135px;
   position: relative;
   height: 50px;
-  /* object-fit: contain; */
-  padding: 0;
-  margin: 0;
 }
 .nav-menu.nav-menu-social .text-invers {
   color: #ffffff;
@@ -5729,10 +5726,10 @@ span.tag_t {
   background: var(--maincolor);
 }
 .page-title .ipt-title {
-  color: #fad957;
+  color: #ffffff;
 }
 .ipn-subtitle {
-  color: #fad957;
+  color: rgba(255, 255, 255, 0.7);
 }
 .overlio-40 {
   margin-top: -40px;
@@ -8730,16 +8727,17 @@ footer.dark-footer {
   background: var(--footerbg);
 }
 .footer-logo {
-  margin-left: -10px;
+  padding: 20px 0;
   display: inline-block;
   width: 100%;
+  border-top: 1px solid var(--formborder);
+  border-bottom: 1px solid var(--formborder);
 }
 
 .nav-footer-logo {
   display: inline-flex;
   align-items: center;
   margin-bottom: 1rem;
-  margin-left: -13px;
 }
 footer.footer-small {
   padding: 50px 0 0 0;
@@ -8792,7 +8790,7 @@ footer.skin-light-footer .footer-add {
   margin-bottom: 0;
 }
 .footer-logo img {
-  max-width: 200px;
+  max-width: 185px;
 }
 .footer-widget {
   padding: 25px 0;
@@ -11910,60 +11908,4 @@ th.next.available,
 }
 .header {
   z-index: 99999999999999 !important;
-}
-/* custom footer styles  */
-.footer-logo {
-  width: 80px;
-  height: auto;
-  padding: 0;
-  margin: 0;
-  object-fit: contain;
-  display: block;
-  opacity: 0.9;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.footer-logo:hover {
-  opacity: 1;
-  transform: scale(1.05); /* subtle hover pop effect */
-}
-
-/* Custome Header styles */
-
-/* Keep it transparent initially */
-.header.header-transparent {
-  background: transparent;
-  position: fixed; /* make it sticky again */
-  top: 0;
-  width: 100%;
-  z-index: 9999; /* ensure it stays above everything */
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* When scrolled (header-fixed) → change to blue */
-.header.header-transparent.header-fixed {
-  background: #004aad;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* optional subtle shadow */
-}
-
-/* Text and menu links turn white on scroll */
-@media (min-width: 992px) {
-  .header.header-transparent.header-fixed .nav-brand.text-logo.exchange,
-  .header.header-transparent.header-fixed .nav-brand.text-logo.exchange h5,
-  .header.header-transparent.header-fixed .nav-menu > li > a {
-    color: #ffffff !important;
-  }
-}
-
-/* Make hamburger icon visible (white when scrolled, black initially) */
-.header.header-transparent .nav-toggle span,
-.header.header-transparent .nav-toggle span::before,
-.header.header-transparent .nav-toggle span::after {
-  background-color: #000; /* black when transparent */
-}
-
-.header.header-transparent.header-fixed .nav-toggle span,
-.header.header-transparent.header-fixed .nav-toggle span::before,
-.header.header-transparent.header-fixed .nav-toggle span::after {
-  background-color: #fff !important;
 }

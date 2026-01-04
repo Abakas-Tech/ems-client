@@ -5,7 +5,7 @@ import { changePassword } from "../../../accounts/api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
-import { useDemoInfo } from './../../../../context/Demo/useDemoInfo';
+import { useDemoInfo } from "./../../../../context/Demo/useDemoInfo";
 const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -35,25 +35,25 @@ const ChangePassword = () => {
     e.preventDefault();
     if (!validateFields()) return;
 
-    showLoader();
-    try {
-      const response = await changePassword({ oldPassword, newPassword });
-      if (response.status === "success") {
-        addMessage(
-          "success",
-          response.message || "Password changed successfully!"
-        );
-        navigate("/admin/my-profile");
-      } else {
-        addMessage("error", response.message || "Change failed.");
-      }
-    } catch (error) {
-      addMessage("error", error.message);
-    } finally {
-      hideLoader();
-    }
+    // showLoader();
+    // try {
+    //   const response = await changePassword({ oldPassword, newPassword });
+    //   if (response.status === "success") {
+    //     addMessage(
+    //       "success",
+    //       response.message || "Password changed successfully!"
+    //     );
+    //     navigate("/admin/my-profile");
+    //   } else {
+    //     addMessage("error", response.message || "Change failed.");
+    //   }
+    // } catch (error) {
+    //   addMessage("error", error.message);
+    // } finally {
+    //   hideLoader();
+    // }
     // Instead of API call, show demo modal
-    // openModal("changePassword");
+    openModal("changePassword");
   };
 
   return (

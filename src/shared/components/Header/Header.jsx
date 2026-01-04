@@ -4,7 +4,7 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import { FaBars } from "react-icons/fa";
 
-import logo from "../../../assets/css/img/mager2.png";
+import logo from "../../../assets/img/logo.svg";
 import useAuth from "../../../context/auth/UseAuth";
 
 const Header = () => {
@@ -72,9 +72,9 @@ const Header = () => {
         >
           {/* Nav Header */}
           <div className="nav-header">
-            <Link className="nav-brand text-logo exchange img-fluid" to="/">
+            <Link className="nav-brand text-logo exchange" to="/">
               <img src={logo} alt="Logo" />
-              {/* <h5 className="m-0">Resido</h5> */}
+              <h5 className="m-0">Resido</h5>
             </Link>
 
             {/* Mobile toggle */}
@@ -85,7 +85,7 @@ const Header = () => {
                 style={{
                   fontSize: "24px",
                   cursor: "pointer",
-                  color: "#ffffff",
+                  color: "var(--maincolor)",
                   marginRight: "10px",
                 }}
               >
