@@ -2,20 +2,20 @@ import React from "react";
 import { Helmet } from "react-helmet";
 
 const SEOHelmet = ({
-  title = "Mager Properties | Real Estate Consultants",
-  description = "Mager Properties Real Estate Web App helps consultants and agents manage listings, track client inquiries, and organize property sales efficiently. Visit https://magerproperty.com for more information.",
-  keywords = "Mager Properties, real estate, property consultants, real estate agents, property management, house for sale, buy property, property investment, magerproperty.com",
-  canonical = "https://magerproperty.com",
-  ogTitle = "Mager Properties | Real Estate Consultants",
-  ogDescription = "Professional real estate consultancy offering property management, listings, and sales insights. Visit https://magerproperty.com to explore opportunities.",
-  ogUrl = "https://magerproperty.com",
-  ogImage = "https://magerproperty.com/og-image.png", // ✅ replace with your hosted image (recommended 1200x630)
+  title = "Abakas | Real Estate Agent Web App",
+  description = "Abakas | Real Estate Agent Web App Real Estate Web App helps consultants and agents manage listings, track client inquiries, and organize property sales efficiently. Visit https://agent.abakastech.com for more information.",
+  keywords = "Abakas | Real Estate Agent Web App, real estate, property consultants, real estate agents, property management, house for sale, buy property, property investment, magerproperty.com",
+  canonical = "https://agent.abakastech.com",
+  ogTitle = "Abakas | Real Estate Agent Web App | Real Estate Consultants",
+  ogDescription = "Professional real estate consultancy offering property management, listings, and sales insights. Visit https://agent.abakastech.com to explore opportunities.",
+  ogUrl = "https://agent.abakastech.com",
+  ogImage = "https://agent.abakastech.com/og-image.png", // ✅ replace with your hosted image (recommended 1200x630)
   structuredData = {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
-    name: "Mager Properties",
-    url: "https://magerproperty.com",
-    logo: "https://magerproperty.com/logo.png",
+    name: "Abakas | Real Estate Agent Web App",
+    url: "https://agent.abakastech.com",
+    logo: "https://agent.abakastech.com/logo.png",
     description:
       "Professional real estate consultancy offering property management, listings, and sales insights.",
     sameAs: [
@@ -37,7 +37,10 @@ const SEOHelmet = ({
     <meta property="og:type" content="website" />
     <meta property="og:url" content={ogUrl} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:site_name" content="Mager Properties" />
+    <meta
+      property="og:site_name"
+      content="Abakas | Real Estate Agent Web App"
+    />
 
     {/* Twitter Meta */}
     <meta name="twitter:card" content="summary_large_image" />

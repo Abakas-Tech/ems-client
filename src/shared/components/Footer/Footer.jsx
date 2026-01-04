@@ -130,7 +130,7 @@ const Footer = () => {
               <p className="mb-0">
                 © 2025 Resido. Developed by{" "}
                 <a
-                  href="https://abakas.net"
+                  href="https://abakastech.com/"
                   className="brand-link"
                   style={{ color: "#00C090" }}
                 >
