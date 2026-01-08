@@ -4,7 +4,7 @@ import { loginAdmin } from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import useAuth from "../../../../context/auth/UseAuth";
-import logo from "../../../../assets/css/img/mager2.png";
+import logo from "../../../../assets/img/logo.svg";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
 
 const LoginForm = () => {

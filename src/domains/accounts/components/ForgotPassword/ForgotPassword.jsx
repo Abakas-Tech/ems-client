@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { forgotPassword } from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
-import logo from "../../../../assets/css/img/mager2.png";
+import logo from "../../../../assets/img/logo.svg";
 import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 
 const ForgotPassword = () => {
