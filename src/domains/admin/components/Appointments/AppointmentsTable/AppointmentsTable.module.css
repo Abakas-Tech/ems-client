@@ -1,0 +1,30 @@
+.appointmentsTable .actionsCell {
+  position: relative;
+}
+.truncateCell {
+  max-width: 200px; /* adjust width as needed */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.actionsIcons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  opacity: 1; /* show by default */
+  transition: opacity 0.2s ease;
+}
+
+.appointmentRow:hover .actionsIcons {
+  opacity: 1; /* keep visible on hover too */
+}
+
+.actionIcon {
+  cursor: pointer;
+  font-size: 18px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.actionIcon:hover {
+  transform: scale(1.2);
+}

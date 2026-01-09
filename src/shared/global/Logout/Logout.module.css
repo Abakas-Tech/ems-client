@@ -1,0 +1,96 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--modal-overlay-bg);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999999999;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  15% { transform: translateX(-10px); }
+  30% { transform: translateX(10px); }
+  45% { transform: translateX(-8px); }
+  60% { transform: translateX(8px); }
+  75% { transform: translateX(-4px); }
+  90% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.5s ease;
+}
+
+.modalInner {
+  width: 100%;
+}
+
+/* Slide down + fade for the modal container */
+@keyframes fadeSlideDown {
+  0% { transform: translateY(-50px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.modal {
+  background: var(--modal-bg);
+  color: var(--modal-text-color);
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 450px;
+  width: 90%;
+  outline: none;
+  animation: fadeSlideDown 0.3s ease-out;
+}
+
+.modalTitle {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--modal-title-color);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Cancel Button */
+.cancelBtn {
+  background-color: transparent;
+  color: var(--btn-success-bg);
+  border: 2px solid var(--btn-success-bg);
+  border-radius: 1rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.cancelBtn:hover {
+  background-color: var(--btn-success-bg);
+  color: var(--btn-success-color);
+}
+
+/* Logout Button */
+.deleteBtn {
+  background-color: transparent !important;
+  color: var(--btn-danger-bg) !important;
+  border: 2px solid var(--btn-danger-bg) !important;
+  padding: 8px 16px;
+  border-radius: 1rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.deleteBtn:hover {
+  background-color: var(--btn-danger-bg) !important;
+  color: var(--btn-danger-color) !important;
+}
