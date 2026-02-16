@@ -14,25 +14,25 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
-const validateInputs = () => {
-  if (!email || !password) {
-    addMessage(false, "Email and password are required.");
-    return false;
-  }
+  const validateInputs = () => {
+    if (!email || !password) {
+      addMessage(false, "Email and password are required.");
+      return false;
+    }
 
-  if (!/\S+@\S+\.\S+/.test(email)) {
-    addMessage(false, "Invalid email format.");
-    return false;
-  }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      addMessage(false, "Invalid email format.");
+      return false;
+    }
 
-  // Password length validator: 8-30 characters
-  if (password.length < 8 || password.length > 30) {
-    addMessage(false, "Password must be between 8 and 30 characters.");
-    return false;
-  }
+    // Password length validator: 8-30 characters
+    if (password.length < 8 || password.length > 30) {
+      addMessage(false, "Password must be between 8 and 30 characters.");
+      return false;
+    }
 
-  return true;
-};
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,7 +55,7 @@ const validateInputs = () => {
   return (
     <div
       className="login-page d-flex justify-content-center align-items-center rounded"
-      style={{ minHeight: "90vh", marginTop: "30px" }}
+      style={{ marginTop: "30px" }}
     >
       <div
         className="login-container p-4 rounded shadow-lg my-4"
@@ -94,7 +94,7 @@ const validateInputs = () => {
 
           {/* Forgot password */}
           <div className="text-end mb-3 fw-medium">
-            <Link to="/auth/forgot-password" className="link-primary">
+            <Link to="/auth/request-otp" className="link-primary">
               Forgot Password?
             </Link>
           </div>

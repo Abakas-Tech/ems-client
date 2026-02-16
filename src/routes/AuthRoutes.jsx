@@ -1,16 +1,19 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Login from "../domains/account/pages/Login/Login";
-// import ForgotPassword from "../domains/accounts/pages/ForgotPassword/ForgotPassword.jsx";
-// import ResetPassword from "../domains/accounts/pages/ResetPassword/ResetPassword.jsx";
+import IdentifierLoginForm from "../domains/account/components/LoginForm/IdentifierLoginForm";
 // import NotFound from "../shared/components/NotFound/NotFound.jsx";
+import RequestOtp from './../domains/account/pages/ResetPassword/RequestOtp';
+
+import ConfirmPassword from "../domains/account/pages/ResetPassword/ConfirmPassword.jsx";
 
 const AuthRoutes = () => (
   <Routes>
     <Route path="/login" element={<Login />} />
-    {/* <Route path="/forgot-password" element={<ForgotPassword />} />
-    <Route path="/reset-password" element={<ResetPassword />} />
-    <Route path="*" element={<NotFound />} /> */}
+    <Route path="/login/identifier" element={<IdentifierLoginForm/>} />
+    <Route path="/request-otp" element={<RequestOtp/>} />
+    <Route path="/reset-password" element={<ConfirmPassword/>} />
+    {/* <Route path="*" element={<NotFound />} />  */}
   </Routes>
 );
 

@@ -1,6 +1,6 @@
 // context/profile/ProfileProvider.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { getProfile } from "../../domains/admin/api/agent.api";
+import { getProfile } from "../../domains/admin/api/profile.api";
 import useResponse from "../response/UseResponse";
 
 const ProfileContext = createContext();
@@ -11,10 +11,10 @@ export const ProfileProvider = ({ children }) => {
 
   const fetchProfile = async () => {
     try {
-      const { data } = await getProfile();
-      setProfile(data);
+      const response = await getProfile();
+      setProfile(response.data);
     } catch (error) {
-      addMessage("error", error.message);
+      addMessage(false, error.message);
     }
   };
 

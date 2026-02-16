@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import errorImage from "../../../assets/css/img/404.png";
+import errorImage from "../../../assets/img/404/404.png";
 import SEOHelmet from "../SEOHelmet/SEOHelmet";
 
 const NotFound = () => (

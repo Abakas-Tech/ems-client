@@ -21,3 +21,25 @@ export const loginWithPhone = async (credentials) => {
   }
 };
 
+// resert password request api for all users
+export const resetPasswordRequest = async (data) => {
+  try {
+    const response = await axiosInstance.post("/auth/password-reset/request", data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Forgot password error");
+  }
+};
+
+// Reset Password function
+export const resetPasswordConfirm = async (data) => {
+  try {
+    const response = await axiosInstance.post(
+      "/auth/password-reset/confirm",
+      data,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Reset password error");
+  }
+};
