@@ -4,7 +4,7 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import { FaBars } from "react-icons/fa";
 
-import logo from "../../../assets/img/logo.svg";
+// import logo from "../../../assets/img/logo.svg";
 import useAuth from "../../../context/auth/UseAuth";
 
 const Header = () => {
@@ -72,10 +72,10 @@ const Header = () => {
         >
           {/* Nav Header */}
           <div className="nav-header">
-            <Link className="nav-brand text-logo exchange" to="/">
+            {/* <Link className="nav-brand text-logo exchange" to="/">
               <img src={logo} alt="Logo" />
               <h5 className="m-0">Resido</h5>
-            </Link>
+            </Link> */}
 
             {/* Mobile toggle */}
             {isPortrait && (

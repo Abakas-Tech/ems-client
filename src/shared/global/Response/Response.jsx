@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import styles from "./response.module.css";
-import useResponse from './../../../context/response/UseResponse';
+import useResponse from "./../../../context/response/UseResponse";
 
 const Response = () => {
   const { responseMessages, removeMessage } = useResponse();
@@ -10,7 +10,7 @@ const Response = () => {
         <div
           key={msg.id}
           className={`${styles.messageBox} ${
-            msg.type === "success" ? styles.success : styles.error
+            msg.type ? styles.success : styles.error
           }`}
         >
           <span>{msg.text}</span>
