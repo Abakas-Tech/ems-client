@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createWorker } from "../../../api/worker.api";
 import useResponse from "../../../../../context/response/UseResponse";
+import useLoader from "../../../../../context/Loader/UseLoader";
 
 function WorkersRegistration() {
   const { addMessage } = useResponse();
@@ -43,7 +44,7 @@ function WorkersRegistration() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isValid()) return; 
+    if (!isValid()) return;
 
     setLoading(true);
     try {
@@ -92,7 +93,7 @@ function WorkersRegistration() {
                         className="form-control"
                         value={formData.full_name}
                         onChange={handleChange}
-                        disabled={loading}
+                        disabled={false}
                         required
                       />
                     </div>
@@ -107,7 +108,7 @@ function WorkersRegistration() {
                         className="form-control"
                         value={formData.phone_number}
                         onChange={handleChange}
-                        disabled={loading}
+                        disabled={false}
                         required
                       />
                     </div>
@@ -120,7 +121,7 @@ function WorkersRegistration() {
                         className="form-control"
                         value={formData.email}
                         onChange={handleChange}
-                        disabled={loading}
+                        disabled={false}
                       />
                     </div>
 
@@ -130,7 +131,7 @@ function WorkersRegistration() {
                         className="btn btn-main px-5 rounded"
                         disabled={loading}
                       >
-                        {loading ? "Creating..." : "Create Worker Account"}
+                        Create Worker Account
                       </button>
                     </div>
                   </div>
