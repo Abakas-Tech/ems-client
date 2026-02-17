@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function WorkerRegistrationForm() {
+function WorkerRegistration() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -207,4 +207,4 @@ function WorkerRegistrationForm() {
   );
 }
 
-export default WorkerRegistrationForm;
+export default WorkerRegistration;

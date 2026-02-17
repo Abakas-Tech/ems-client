@@ -2,7 +2,7 @@ import React from "react";
 import { FaUserPlus, FaUsers, FaUserSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-function Workers() {
+function WorkersDashboard() {
   return (
     <section className="gray-simple">
       <div className="container">
@@ -12,7 +12,7 @@ function Workers() {
             <div className="agents-grid card rounded-3 border p-4 text-center">
               <div className="mt-4 mb-3">
                 <Link to="/admin/workers/add">
-                  <FaUserPlus color="text-info" size={50} />
+                  <FaUserPlus className="text-info" size={50} />
                 </Link>
               </div>
               <h5 className="fr-can-name lh-base mb-2">
@@ -26,7 +26,7 @@ function Workers() {
             <div className="agents-grid card rounded-3 border p-4 text-center">
               <div className="mt-4 mb-3">
                 <Link to="/admin/workers/active">
-                  <FaUsers color="text-info" size={50} />
+                  <FaUsers className="text-info" size={50} />
                 </Link>
               </div>
               <h5 className="fr-can-name lh-base mb-2">
@@ -40,7 +40,7 @@ function Workers() {
             <div className="agents-grid card rounded-3 border p-4 text-center">
               <div className="mt-4 mb-3">
                 <Link to="/admin/workers/archived">
-                  <FaUserSlash color="text-info" size={50} />
+                  <FaUserSlash className="text-info" size={50} />
                 </Link>
               </div>
               <h5 className="fr-can-name lh-base mb-2">
@@ -54,4 +54,4 @@ function Workers() {
   );
 }
 
-export default Workers;
+export default WorkersDashboard;
