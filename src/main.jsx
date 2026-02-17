@@ -22,7 +22,7 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <DemoInfoProvider>
         <LogoutProvider>
-          <AuthProvider>
+          {/* <AuthProvider> */}
             <LoaderProvider>
               <ResponseProvider>
                 <ProfileProvider>
@@ -32,7 +32,7 @@ createRoot(document.getElementById("root")).render(
                 </ProfileProvider>
               </ResponseProvider>
             </LoaderProvider>
-          </AuthProvider>
+          {/* </AuthProvider> */}
         </LogoutProvider>
       </DemoInfoProvider>
     </BrowserRouter>

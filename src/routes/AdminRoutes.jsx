@@ -12,9 +12,9 @@ const AdminRoutes = () => (
     {/* Parent admin layout (Dashboard) */}
     <Route
       element={
-        <ProtectedRoute>
+        // <ProtectedRoute>
           <Dashboard />
-        </ProtectedRoute>
+        // </ProtectedRoute> 
       }
     >
       <Route path="settings" element={<ChangePasswordPage />} />
