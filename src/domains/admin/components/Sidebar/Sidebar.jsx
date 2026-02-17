@@ -7,7 +7,7 @@ import styles from "./Sidebar.module.css";
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard", icon: "bi-speedometer2" },
   { label: "My Profile", path: "/admin/my-profile", icon: "bi-person" },
-  { label: "Requests", path: "/admin/requests", icon: "bi-file-earmark-text" },
+  { label: "User Management", path: "/admin/user-management", icon: "bi-file-earmark-text" },
   { label: "Employees", path: "/admin/employees", icon: "bi-people" },
   { label: "Groups", path: "/admin/groups", icon: "bi-people-fill" },
   {

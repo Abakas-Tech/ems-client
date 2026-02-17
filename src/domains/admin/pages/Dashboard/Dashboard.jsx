@@ -8,7 +8,7 @@ import { useProfile } from "../../../../context/Profile/ProfileProvider";
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard" },
   { label: "My Profile", path: "/admin/my-profile" },
-  { label: "Requests", path: "/admin/requests" },
+  {label: "User Management",path: "/admin/user-management"},
   { label: "Employees", path: "/admin/employees" },
   { label: "Groups", path: "/admin/groups" },
   { label: "Contributors", path: "/admin/contributors" },
@@ -24,19 +24,19 @@ const Dashboard = () => {
   const { fetchProfile, profile } = useProfile();
   const location = useLocation();
   const { logout } = useLogout();
-  
-const fullName = profile?.full_name?.trim() || "";
-const nameParts = fullName.split(" ").filter(Boolean);
-const formattedName =
-  nameParts.length > 1
-    ? `${nameParts[0]} ${nameParts[1][0]}`
-    : nameParts[0] || "";
 
-const user = {
-  name: formattedName,
-  role: profile?.role,
-  avatar: profile?.profile_photo_url,
-};
+  const fullName = profile?.full_name?.trim() || "";
+  const nameParts = fullName.split(" ").filter(Boolean);
+  const formattedName =
+    nameParts.length > 1
+      ? `${nameParts[0]} ${nameParts[1][0]}`
+      : nameParts[0] || "";
+
+  const user = {
+    name: formattedName,
+    role: profile?.role,
+    avatar: profile?.profile_photo_url,
+  };
   useEffect(() => {
     fetchProfile();
   }, []);

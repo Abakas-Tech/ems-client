@@ -5,6 +5,7 @@ import Dashboard from "../domains/admin/pages/Dashboard/Dashboard.jsx";
 
 import NotFound from "../shared/components/NotFound/NotFound.jsx";
 import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePassword.jsx";
+import CreateUserPage from "../domains/admin/pages/Users/CreateUSerPage.jsx";
 
 const AdminRoutes = () => (
   <Routes>
@@ -18,6 +19,7 @@ const AdminRoutes = () => (
       }
     >
       <Route path="settings" element={<ChangePasswordPage />} />
+      <Route path="user-management" element={<CreateUserPage />} />
 
       <Route path="*" element={<NotFound />} />
     </Route>
