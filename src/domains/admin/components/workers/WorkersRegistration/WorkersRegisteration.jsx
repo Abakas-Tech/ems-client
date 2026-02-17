@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { createWorker } from "../../../api/worker.api";
+import useResponse from "../../../../../context/response/UseResponse";
 
 function WorkersRegistration() {
+  const { addMessage } = useResponse();
+
   const [formData, setFormData] = useState({
     full_name: "",
     phone_number: "",
@@ -9,8 +12,6 @@ function WorkersRegistration() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,22 +24,34 @@ function WorkersRegistration() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-    setSuccess(null);
 
     try {
-      // Payload includes is_active by default
-      const payload = { ...formData, is_active: true };
+      const payload = {
+        full_name: formData.full_name,
+        phone_number: formData.phone_number,
+        is_active: true,
+      };
+
+      if (formData.email) {
+        payload.email = formData.email;
+      }
+
       await createWorker(payload);
 
-      setSuccess("Worker account created successfully!");
+      addMessage(true, "Worker account created successfully!");
+
       setFormData({
         full_name: "",
         phone_number: "",
         email: "",
       });
     } catch (err) {
-      setError(err.message || "Failed to create worker account");
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to create worker account";
+
+      addMessage(false, message);
     } finally {
       setLoading(false);
     }
@@ -52,11 +65,6 @@ function WorkersRegistration() {
             <div className="dashboard-wraper">
               <form className="form-submit" onSubmit={handleSubmit}>
                 <h4>Worker Account Registration</h4>
-
-                {success && (
-                  <div className="alert alert-success">{success}</div>
-                )}
-                {error && <div className="alert alert-danger">{error}</div>}
 
                 <div className="submit-section">
                   <div className="row">
@@ -72,6 +80,7 @@ function WorkersRegistration() {
                         value={formData.full_name}
                         onChange={handleChange}
                         required
+                        disabled={loading}
                       />
                     </div>
 
@@ -87,6 +96,7 @@ function WorkersRegistration() {
                         value={formData.phone_number}
                         onChange={handleChange}
                         required
+                        disabled={loading}
                       />
                     </div>
 
@@ -99,6 +109,7 @@ function WorkersRegistration() {
                         className="form-control"
                         value={formData.email}
                         onChange={handleChange}
+                        disabled={loading}
                       />
                     </div>
 
