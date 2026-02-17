@@ -62,7 +62,9 @@ function WorkersRegistration() {
                   <div className="row">
                     {/* Full Name */}
                     <div className="form-group col-md-6">
-                      <label>Full Name *</label>
+                      <label>
+                        Full Name <span className="text-danger">*</span>
+                      </label>
                       <input
                         type="text"
                         name="full_name"
@@ -75,7 +77,9 @@ function WorkersRegistration() {
 
                     {/* Phone Number */}
                     <div className="form-group col-md-6">
-                      <label>Phone Number *</label>
+                      <label>
+                        Phone Number <span className="text-danger">*</span>
+                      </label>
                       <input
                         type="text"
                         name="phone_number"

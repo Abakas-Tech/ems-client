@@ -1,9 +1,9 @@
 import axiosInstance from "../../../utils/axios";
 
 // Create new worker account
-export const createWorker = async (formData) => {
+export const createWorker = async (payload) => {
   try {
-    const response = await axiosInstance.post("/workers", formData);
+    const response = await axiosInstance.post("/workers", payload);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -14,36 +14,25 @@ export const createWorker = async (formData) => {
   }
 };
 
-// List workers with pagination and filters
-export const getWorkers = async (params = {}) => {
+// Create worker personal information
+export const createWorkerPersonalInfo = async (workerId, formData) => {
   try {
-    const response = await axiosInstance.get("/workers", { params });
+    const response = await axiosInstance.post(
+      `/workers/${workerId}/personal-info`,
+      formData,
+    );
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to fetch workers list",
+        "Failed to create worker personal info",
     );
   }
 };
 
-// Get single worker profile (full aggregated)
-export const getWorker = async (workerId) => {
-  try {
-    const response = await axiosInstance.get(`/workers/${workerId}`);
-    return response.data;
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to fetch worker profile",
-    );
-  }
-};
-
-// List archived workers with pagination and filters
-export const getArchivedWorkers = async (params = {}) => {
+// List archived workers (paginated + filters)
+export const listArchivedWorkers = async (params = {}) => {
   try {
     const response = await axiosInstance.get("/workers/archived", { params });
     return response.data;
@@ -51,37 +40,57 @@ export const getArchivedWorkers = async (params = {}) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to fetch archived workers",
+        "Failed to list archived workers",
     );
   }
 };
 
-// Get single archived worker profile
-export const getArchivedWorker = async (workerId) => {
+// Delete archived worker (hard delete)
+export const deleteArchivedWorker = async (id) => {
   try {
-    const response = await axiosInstance.get(`/workers/archived/${workerId}`);
+    const response = await axiosInstance.delete(`/workers/archived/${id}`);
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to fetch archived worker profile",
+        "Failed to delete archived worker",
     );
   }
 };
 
-// Update worker profile with photos
-export const updateWorker = async (workerId, formData) => {
+// Get single archived worker profile
+export const getArchivedWorkerProfile = async (id) => {
   try {
-    const response = await axiosInstance.patch(
-      `/workers/${workerId}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+    const response = await axiosInstance.get(`/workers/archived/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get archived worker profile",
     );
+  }
+};
+
+// Restore archived worker 
+export const restoreWorker = async (id) => {
+  try {
+    const response = await axiosInstance.patch(`/workers/${id}/restore`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to restore worker",
+    );
+  }
+};
+
+// Update worker account info
+export const updateWorker = async (workerId, payload) => {
+  try {
+    const response = await axiosInstance.patch(`/workers/${workerId}`, payload);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -92,48 +101,61 @@ export const updateWorker = async (workerId, formData) => {
   }
 };
 
-// Archive worker (soft delete)
-export const archiveWorker = async (workerId) => {
+// UpdATE worker personal info
+export const updateWorkerPersonalInfo = async (workerId, formData) => {
   try {
-    const response = await axiosInstance.delete(`/workers/${workerId}`, {
-      params: { hard: "false" },
-    });
+    const response = await axiosInstance.patch(
+      `/workers/${workerId}/personal-info`,
+      formData,
+    );
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to archive worker",
+        "Failed to update worker personal info",
     );
   }
 };
 
-// Permanently delete archived worker (hard delete)
-export const deleteArchivedWorker = async (workerId) => {
+// Get single active worker profile
+export const getWorkerProfile = async (id) => {
   try {
-    const response = await axiosInstance.delete(
-      `/workers/archived/${workerId}`,
-    );
+    const response = await axiosInstance.get(`/workers/${id}`);
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to permanently delete archived worker",
+        "Failed to get worker profile",
     );
   }
 };
 
-// Restore archived worker (set is_active = 1)
-export const restoreWorker = async (workerId) => {
+// List workers with pagination and filters
+export const listWorkers = async (params = {}) => {
   try {
-    const response = await axiosInstance.patch(`/workers/${workerId}/restore`);
+    const response = await axiosInstance.get("/workers", { params });
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to restore worker",
+        "Failed to list workers",
+    );
+  }
+};
+
+// Delete / archive worker
+export const deleteWorker = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/workers/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete worker",
     );
   }
 };
