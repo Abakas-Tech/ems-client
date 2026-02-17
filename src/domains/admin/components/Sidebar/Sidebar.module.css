@@ -7,7 +7,7 @@
   --active-bg: #efffeb;
   --active-text: white;
   --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.08);
-    --transition: 0.3s ease;
+  --transition: 0.3s ease;
   --radius: 10px;
 }
 
@@ -40,12 +40,11 @@
 }
 
 .header {
-    margin-top: 50px;
+  margin-top: 50px;
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 0 1rem 1.5rem;
-
 }
 
 .expanded .header {
@@ -53,7 +52,6 @@
 }
 
 .avatar {
-
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -63,7 +61,7 @@
 }
 
 .userInfo {
-
+  margin-top: 0.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -107,8 +105,7 @@
   transition:
     background var(--transition),
     color var(--transition);
-    border-bottom: #dae3e4 solid 2px;
-
+  border-bottom: #dae3e4 solid 2px;
 }
 
 .navLink:hover {
@@ -130,7 +127,7 @@
 .toggle {
   position: absolute;
   top: 1.25rem;
-  right: 14px;
+  right: 22px;
   width: 32px;
   height: 32px;
   border-radius: 50%;

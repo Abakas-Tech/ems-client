@@ -4,6 +4,7 @@ import { loginWithPhone } from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import useAuth from "../../../../context/auth/UseAuth";
+import { setAccessToken } from "../../../../utils/axios";
 
 const IdentifierLoginForm = () => {
   const [role, setRole] = useState("employer");
@@ -70,7 +71,9 @@ const IdentifierLoginForm = () => {
 
       const response = await loginWithPhone(credentials);
 
-      sessionStorage.setItem("authToken", response.data.access_token);
+      const { access_token } = response.data;
+      setAccessToken(access_token); // store in memory
+
       addMessage(response.data.success, response.data.message);
       setUser(true);
       navigate("/admin/dashboard");

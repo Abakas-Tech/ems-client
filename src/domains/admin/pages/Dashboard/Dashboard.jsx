@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import styles from "./Dashboard.module.css";
+import useLogout from "./../../../../context/logout/UseLogout";
+import { useProfile } from "../../../../context/Profile/ProfileProvider";
 
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard" },
@@ -19,14 +21,25 @@ const Dashboard = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expanded, setExpanded] = useState(true);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 992);
+  const { fetchProfile, profile } = useProfile();
   const location = useLocation();
+  const { logout } = useLogout();
+  
+const fullName = profile?.full_name?.trim() || "";
+const nameParts = fullName.split(" ").filter(Boolean);
+const formattedName =
+  nameParts.length > 1
+    ? `${nameParts[0]} ${nameParts[1][0]}`
+    : nameParts[0] || "";
 
-  const user = {
-    name: "Abdulwasie",
-    role: "Admin",
-    avatar: "https://placehold.co/88x88/6366f1/white?text=A",
-  };
-
+const user = {
+  name: formattedName,
+  role: profile?.role,
+  avatar: profile?.profile_photo_url,
+};
+  useEffect(() => {
+    fetchProfile();
+  }, []);
   useEffect(() => {
     const handleResize = () => {
       const desktop = window.innerWidth >= 992;
@@ -52,7 +65,7 @@ const Dashboard = () => {
         expanded={expanded}
         onToggle={() => setExpanded(!expanded)}
         user={user}
-        onLogout={() => alert("Logging out...")}
+        onLogout={logout}
         isDesktop={isDesktop}
       />
 

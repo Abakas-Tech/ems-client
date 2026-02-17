@@ -5,6 +5,7 @@ import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import useAuth from "../../../../context/auth/UseAuth";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
+import { setAccessToken } from "../../../../utils/axios";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -41,7 +42,9 @@ const LoginForm = () => {
     showLoader();
     try {
       const response = await loginWithEmail({ email, password });
-      sessionStorage.setItem("authToken", response.data.access_token);
+      const { access_token } = response.data;
+      setAccessToken(access_token); // store in memory
+
       addMessage(response.success, response.message);
       setUser(true);
       navigate("/admin/dashboard");

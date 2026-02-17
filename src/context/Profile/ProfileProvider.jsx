@@ -12,15 +12,12 @@ export const ProfileProvider = ({ children }) => {
   const fetchProfile = async () => {
     try {
       const response = await getProfile();
+      console.log(response)
       setProfile(response.data);
     } catch (error) {
       addMessage(false, error.message);
     }
   };
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
 
   return (
     <ProfileContext.Provider value={{ profile, setProfile, fetchProfile }}>

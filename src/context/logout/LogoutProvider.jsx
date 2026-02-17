@@ -3,20 +3,38 @@ import { LogoutContext } from "./LogoutContext.jsx";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../auth/UseAuth.jsx";
 import Logout from "./../../shared/global/Logout/Logout.jsx";
+import { logoutApi } from './../../domains/admin/api/auth.api';
+import { setAccessToken } from "../../utils/axios.jsx";
 
 const LogoutProvider = ({ children }) => {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { setUser } = useAuth();
 
-  const logoutNow = () => {
-    sessionStorage.removeItem("authToken");
-    setTimeout(() => {
-      setUser(null);
-      navigate("/");
-    }, 50); // 50ms delay can make the transition feel smoother
-  };
 
+ const logoutNow = async () => {
+   try {
+     // Call backend logout to clear refresh token cookie
+     await logoutApi();
+
+     // Clear in-memory access token
+     setAccessToken(null);
+
+     // Smooth transition
+     setTimeout(() => {
+       setUser(null);
+       navigate("/"); // redirect to login/home
+     }, 50);
+   } catch (error) {
+     console.error("Logout failed:", error);
+     // Still clear in-memory token and redirect even if API fails
+     setAccessToken(null);
+     setTimeout(() => {
+       setUser(null);
+       navigate("/");
+     }, 50);
+   }
+ };
   const logout = () => {
     setShowLogoutModal(true);
   };
