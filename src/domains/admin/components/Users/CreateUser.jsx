@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { createUser } from "../../api/user.api";
+import React, { useState, useEffect } from "react";
+import { createUser, updateUser } from "../../api/user.api";
 import { grantPermissions } from "../../api/permission.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
@@ -14,7 +14,7 @@ const PERMISSIONS = [
   "manage_audit_logs",
 ];
 
-const CreateUser = () => {
+const CreateUser = ({ isEditMode = false, userData = null }) => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -27,6 +27,22 @@ const CreateUser = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
+  //  Prefill data in Update Mode
+  useEffect(() => {
+    if (isEditMode && userData) {
+      setFullName(userData.full_name || "");
+      setEmail(userData.email || "");
+      setPhoneNumber(userData.phone_number || "");
+      setRole(String(userData.role_id || ""));
+      setCountry(userData.country || "");
+
+      if (userData.permissions) {
+        setSelectedPermissions(userData.permissions);
+        setSelectAll(userData.permissions.length === PERMISSIONS.length);
+      }
+    }
+  }, [isEditMode, userData]);
+
   const resetForm = () => {
     setFullName("");
     setEmail("");
@@ -37,13 +53,11 @@ const CreateUser = () => {
     setSelectAll(false);
   };
 
-  // Allow only numbers in phone input
   const handlePhoneChange = (value) => {
     const numericValue = value.replace(/\D/g, "");
     setPhoneNumber(numericValue);
   };
 
-  // Toggle single permission
   const togglePermission = (permission) => {
     if (selectedPermissions.includes(permission)) {
       setSelectedPermissions(
@@ -54,7 +68,6 @@ const CreateUser = () => {
     }
   };
 
-  // Toggle check all
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedPermissions([]);
@@ -65,15 +78,9 @@ const CreateUser = () => {
     }
   };
 
-  // Validate fields
   const validateFields = () => {
     if (!fullName) {
       addMessage(false, "Full name is required.");
-      return false;
-    }
-
-    if (fullName.length < 2) {
-      addMessage(false, "Full name must be at least 2 characters.");
       return false;
     }
 
@@ -93,11 +100,6 @@ const CreateUser = () => {
       return false;
     }
 
-    if (phoneNumber.length < 7) {
-      addMessage(false, "Phone number must be at least 7 digits.");
-      return false;
-    }
-
     if (!role) {
       addMessage(false, "Role is required.");
       return false;
@@ -108,30 +110,38 @@ const CreateUser = () => {
       return false;
     }
 
-    if (role === "3" && country.length < 2) {
-      addMessage(false, "Country must be at least 2 characters.");
-      return false;
-    }
-
     return true;
   };
 
-  // Submit handler
+  //  Submit handler (Create + Update)
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateFields()) return;
 
     showLoader();
+
     try {
-      // Step 1: Create user
-      const response = await createUser({
-        full_name: fullName,
-        email,
-        phone_number: phoneNumber,
-        role: Number(role),
-        country: role === "3" ? country : undefined,
-      });
+      let response;
+
+      if (isEditMode) {
+        //  UPDATE MODE
+        response = await updateUser(userData.id, {
+          full_name: fullName,
+          email,
+          phone_number: phoneNumber,
+          role: Number(role),
+          country: role === "3" ? country : undefined,
+        });
+      } else {
+        //  CREATE MODE
+        response = await createUser({
+          full_name: fullName,
+          email,
+          phone_number: phoneNumber,
+          role: Number(role),
+          country: role === "3" ? country : undefined,
+        });
+      }
 
       if (!response.success) {
         addMessage(false, response.message);
@@ -139,23 +149,21 @@ const CreateUser = () => {
         return;
       }
 
-      const userId = response.data?.id;
+      const userId = isEditMode ? userData.id : response.data?.id;
 
-      // Step 2: Grant selected permissions in one call
-      if (role === 2 && selectedPermissions.length > 0) {
-        const permResponse = await grantPermissions({
+      //  Handle permissions only if Employee
+      if (role === "2") {
+        await grantPermissions({
           user_id: userId,
-          permissions: selectedPermissions, // send array directly
+          permissions: selectedPermissions,
         });
-
-        if (!permResponse.success) {
-          addMessage(permResponse.suce, permResponse.message);
-          hideLoader();
-          return;
-        }
       }
-      addMessage(true, "User created and permissions assigned successfully.");
-      resetForm();
+
+      addMessage(true, response.message);
+
+      if (!isEditMode) {
+        resetForm();
+      }
     } catch (error) {
       addMessage(false, error.message);
     } finally {
@@ -167,9 +175,13 @@ const CreateUser = () => {
     <div className="dashboard-wraper">
       <div className="form-submit">
         <div>
-          <h2 className="fw-bold text-dark mb-2">Create New User</h2>
+          <h2 className="fw-bold text-dark mb-2">
+            {isEditMode ? "Update User" : "Create New User"}
+          </h2>
           <p className="text-muted">
-            Add a new employee or partner and assign permissions.
+            {isEditMode
+              ? "Update user details and permissions."
+              : "Add a new employee or partner and assign permissions."}
           </p>
         </div>
 
@@ -275,7 +287,7 @@ const CreateUser = () => {
               {/* Submit */}
               <div className="form-group col-lg-12 text-start mt-4">
                 <button type="submit" className="btn btn-main px-5 rounded">
-                  Create User
+                  {isEditMode ? "Update User" : "Create User"}
                 </button>
               </div>
             </div>

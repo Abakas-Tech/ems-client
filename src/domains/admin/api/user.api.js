@@ -1,16 +1,18 @@
 import { axiosInstance } from "../../../utils/axios";
 
 
-// GET ALL USERS
-export const getUsers = async () => {
+// GET ALL USERS 
+export const getUsers = async (params = {}) => {
   try {
-    const response = await axiosInstance.get("/users");
+    const response = await axiosInstance.get("/users", {
+      params,
+    });
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Users fetch error");
   }
 };
-
 
 // GET USER BY ID
 export const getUserById = async (id) => {

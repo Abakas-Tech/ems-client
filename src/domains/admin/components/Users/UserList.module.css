@@ -1,0 +1,45 @@
+.userTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.userTable th,
+.userTable td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+/* Subtle row hover effect */
+.userRow {
+  transition: background-color 0.2s ease;
+}
+
+.userRow:hover {
+  background-color: #f8f9fa;
+}
+
+.userTable .actionsCell {
+  position: relative;
+}
+
+/* Always visible action icons */
+.actionsIcons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.actionIcon {
+  cursor: pointer;
+  font-size: 18px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* Smooth hover animation */
+.actionIcon:hover {
+  transform: scale(1.15);
+}
