@@ -1,13 +1,9 @@
-import axiosInstance from "../../../../utils/axios";
+import axiosInstance from "../../../utils/axios";
 
-// Create new worker with photos
+// Create new worker account
 export const createWorker = async (formData) => {
   try {
-    const response = await axiosInstance.post("/workers", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axiosInstance.post("/workers", formData);
     return response.data;
   } catch (error) {
     throw new Error(

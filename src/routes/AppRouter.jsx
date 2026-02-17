@@ -8,9 +8,8 @@ function AppRouter() {
   return (
     <>
       <ScrollToTop />
+      
       <Routes>
-       
-
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
 
