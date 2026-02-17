@@ -15,43 +15,57 @@ function WorkersRegistration() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Simple validation before submitting
+  const isValid = () => {
+    const { full_name, phone_number, email } = formData;
+
+    if (!full_name.trim() || full_name.trim().length < 3) {
+      addMessage(false, "Full name must be at least 3 characters.");
+      return false;
+    }
+
+    const phoneRegex = /^(?:\+251[79]\d{8}|09\d{8})$/;
+    if (!phoneRegex.test(phone_number.trim())) {
+      addMessage(false, "Phone number format is invalid");
+      return false;
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      addMessage(false, "Please enter a valid email address.");
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    if (!isValid()) return; 
 
+    setLoading(true);
     try {
       const payload = {
         full_name: formData.full_name,
         phone_number: formData.phone_number,
         is_active: true,
       };
-
-      if (formData.email) {
-        payload.email = formData.email;
-      }
+      if (formData.email) payload.email = formData.email;
 
       await createWorker(payload);
 
       addMessage(true, "Worker account created successfully!");
 
-      setFormData({
-        full_name: "",
-        phone_number: "",
-        email: "",
-      });
+      setFormData({ full_name: "", phone_number: "", email: "" });
     } catch (err) {
-      const message =
+      addMessage(
+        false,
         err?.response?.data?.message ||
-        err?.message ||
-        "Failed to create worker account";
-
-      addMessage(false, message);
+          err?.message ||
+          "Failed to create worker account",
+      );
     } finally {
       setLoading(false);
     }
@@ -68,7 +82,6 @@ function WorkersRegistration() {
 
                 <div className="submit-section">
                   <div className="row">
-                    {/* Full Name */}
                     <div className="form-group col-md-6">
                       <label>
                         Full Name <span className="text-danger">*</span>
@@ -79,12 +92,11 @@ function WorkersRegistration() {
                         className="form-control"
                         value={formData.full_name}
                         onChange={handleChange}
-                        required
                         disabled={loading}
+                        required
                       />
                     </div>
 
-                    {/* Phone Number */}
                     <div className="form-group col-md-6">
                       <label>
                         Phone Number <span className="text-danger">*</span>
@@ -95,12 +107,11 @@ function WorkersRegistration() {
                         className="form-control"
                         value={formData.phone_number}
                         onChange={handleChange}
-                        required
                         disabled={loading}
+                        required
                       />
                     </div>
 
-                    {/* Email */}
                     <div className="form-group col-md-6">
                       <label>Email</label>
                       <input
@@ -113,7 +124,6 @@ function WorkersRegistration() {
                       />
                     </div>
 
-                    {/* Submit Button */}
                     <div className="form-group col-lg-12 col-md-12 mt-4">
                       <button
                         type="submit"
