@@ -1,0 +1,167 @@
+:root {
+  --sidebar-bg: #ffffff;
+  --border: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --hover-bg: #f1f5f9;
+  --active-bg: #efffeb;
+  --active-text: white;
+  --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.08);
+    --transition: 0.3s ease;
+  --radius: 10px;
+}
+
+.sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: width var(--transition);
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.expanded {
+  width: 280px;
+  box-shadow: var(--shadow);
+}
+
+.collapsed {
+  width: 80px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 1.5rem;
+}
+
+.header {
+    margin-top: 50px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem 1.5rem;
+
+}
+
+.expanded .header {
+  justify-content: flex-start;
+}
+
+.avatar {
+
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  color: var(--text-primary);
+}
+
+.userInfo {
+
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.role {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.nav li {
+  margin: 0 0.75rem;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+
+  text-decoration: none;
+  color: var(--text-secondary);
+
+  background: transparent;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    color var(--transition);
+    border-bottom: #dae3e4 solid 2px;
+
+}
+
+.navLink:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.active {
+  background: var(--active-bg);
+  color: var(--active-text);
+}
+
+.icon {
+  font-size: 1.2rem;
+  width: 24px;
+  text-align: center;
+}
+
+.toggle {
+  position: absolute;
+  top: 1.25rem;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobileDrawer {
+  padding: 2rem 1rem;
+  height: 100%;
+}
+
+.drawerClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.navLink span {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.expanded .navLink span {
+  opacity: 1;
+}
