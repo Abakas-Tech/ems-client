@@ -16,7 +16,7 @@ export const grantPermissions = async (payload) => {
 
 
 // REVOKE PERMISSION 
-export const revokePermission = async (payload) => {
+export const revokePermissions = async (payload) => {
   try {
     const response = await axiosInstance.post("/permissions/revoke", payload);
     return response.data;

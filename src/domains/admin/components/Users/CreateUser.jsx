@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { createUser, updateUser } from "../../api/user.api";
-import { grantPermissions } from "../../api/permission.api";
+import { grantPermissions, revokePermissions } from "../../api/permission.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
+import { useNavigate } from "react-router-dom";
 
 const PERMISSIONS = [
   "manage_users",
@@ -20,12 +21,18 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [role, setRole] = useState("");
   const [country, setCountry] = useState("");
+  const [originalPermissions, setOriginalPermissions] = useState([]);
+  const navigate = useNavigate();
 
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
 
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
+
+  const handleBack = () => {
+    navigate("/admin/user-management");
+  };
 
   //  Prefill data in Update Mode
   useEffect(() => {
@@ -36,9 +43,15 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
       setRole(String(userData.role_id || ""));
       setCountry(userData.country || "");
 
-      if (userData.permissions) {
-        setSelectedPermissions(userData.permissions);
-        setSelectAll(userData.permissions.length === PERMISSIONS.length);
+      if (userData.permissions && userData.permissions.length > 0) {
+        const permissionObject = userData.permissions[0];
+
+        const activePermissions = PERMISSIONS.filter(
+          (perm) => permissionObject[perm] === 1,
+        );
+
+        setSelectedPermissions(activePermissions);
+        setOriginalPermissions(activePermissions); // 🔥 Track original
       }
     }
   }, [isEditMode, userData]);
@@ -77,6 +90,9 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
       setSelectAll(true);
     }
   };
+  useEffect(() => {
+    setSelectAll(selectedPermissions.length === PERMISSIONS.length);
+  }, [selectedPermissions]);
 
   const validateFields = () => {
     if (!fullName) {
@@ -108,6 +124,11 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
     if (role === "3" && !country) {
       addMessage(false, "Country is required for partner.");
       return false;
+    }
+    if (role === "2" && selectedPermissions.length === 0) {
+      addMessage(false, "At least one permission must be selected.");
+      hideLoader();
+      return;
     }
 
     return true;
@@ -153,14 +174,38 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
 
       //  Handle permissions only if Employee
       if (role === "2") {
-        await grantPermissions({
-          user_id: userId,
-          permissions: selectedPermissions,
-        });
+        //  Find permissions to grant
+        const permissionsToGrant = selectedPermissions.filter(
+          (perm) => !originalPermissions.includes(perm),
+        );
+
+        //  Find permissions to revoke
+        const permissionsToRevoke = originalPermissions.filter(
+          (perm) => !selectedPermissions.includes(perm),
+        );
+
+        // Grant new permissions
+        if (permissionsToGrant.length > 0) {
+          await grantPermissions({
+            user_id: userId,
+            permissions: permissionsToGrant,
+          });
+        }
+
+        // Revoke removed permissions
+        if (permissionsToRevoke.length > 0) {
+          await revokePermissions({
+            user_id: userId,
+            permissions: permissionsToRevoke,
+          });
+        }
+
+        // Update original state after success
+        setOriginalPermissions(selectedPermissions);
       }
 
       addMessage(true, response.message);
-
+      navigate("/admin/user-management");
       if (!isEditMode) {
         resetForm();
       }
@@ -174,15 +219,27 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
   return (
     <div className="dashboard-wraper">
       <div className="form-submit">
-        <div>
-          <h2 className="fw-bold text-dark mb-2">
-            {isEditMode ? "Update User" : "Create New User"}
-          </h2>
-          <p className="text-muted">
-            {isEditMode
-              ? "Update user details and permissions."
-              : "Add a new employee or partner and assign permissions."}
-          </p>
+        <div className="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h2 className="fw-bold text-dark mb-2">
+              {isEditMode ? "Update User" : "Create New User"}
+            </h2>
+            <p className="text-muted">
+              {isEditMode
+                ? "Update user details and permissions."
+                : "Add a new employee or partner and assign permissions."}
+            </p>
+          </div>
+
+          {/* Back Arrow */}
+          <button
+            type="button"
+            onClick={handleBack}
+            className=" border rounded-circle d-flex align-items-center justify-content-center btn btn-main "
+            style={{ width: "40px", height: "40px" }}
+          >
+            ←
+          </button>
         </div>
 
         <form onSubmit={handleSubmit}>

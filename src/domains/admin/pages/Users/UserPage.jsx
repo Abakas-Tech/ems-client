@@ -97,11 +97,11 @@ const UsersPage = () => {
     showLoader();
     try {
       const permResponse = await getPermission(user.id);
-      console.log(permResponse)
       const userDataWithPermissions = {
         ...user,
         permissions: permResponse?.data || [],
-      };
+      };  
+      ;
    
       navigate("/admin/create-user", {
         state: { isEditMode: true, userData: userDataWithPermissions },
