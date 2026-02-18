@@ -1,7 +1,7 @@
 import axiosInstance from "../../../utils/axios";
 
 // Create worker
-export const createWorker = async (formData) => {
+const createWorker = async (formData) => {
   try {
     const response = await axiosInstance.post("/workers", formData);
     return response.data;
@@ -15,7 +15,7 @@ export const createWorker = async (formData) => {
 };
 
 // List archived workers (paginated + filters)
-export const listArchivedWorkers = async (params = {}) => {
+const listArchivedWorkers = async (params = {}) => {
   try {
     const response = await axiosInstance.get("/workers/archived", { params });
     return response.data;
@@ -29,7 +29,7 @@ export const listArchivedWorkers = async (params = {}) => {
 };
 
 // Delete archived worker (hard delete)
-export const deleteArchivedWorker = async (id) => {
+const deleteArchivedWorker = async (id) => {
   try {
     const response = await axiosInstance.delete(`/workers/archived/${id}`);
     return response.data;
@@ -43,7 +43,7 @@ export const deleteArchivedWorker = async (id) => {
 };
 
 // Get single archived worker profile
-export const getArchivedWorkerProfile = async (id) => {
+const getArchivedWorkerProfile = async (id) => {
   try {
     const response = await axiosInstance.get(`/workers/archived/${id}`);
     return response.data;
@@ -57,7 +57,7 @@ export const getArchivedWorkerProfile = async (id) => {
 };
 
 // Restore archived worker
-export const restoreWorker = async (id) => {
+const restoreWorker = async (id) => {
   try {
     const response = await axiosInstance.patch(`/workers/${id}/restore`);
     return response.data;
@@ -71,7 +71,7 @@ export const restoreWorker = async (id) => {
 };
 
 // Update worker
-export const updateWorker = async (workerId, formData) => {
+const updateWorker = async (workerId, formData) => {
   try {
     const response = await axiosInstance.patch(
       `/workers/${workerId}`,
@@ -88,7 +88,7 @@ export const updateWorker = async (workerId, formData) => {
 };
 
 // Get single active worker profile
-export const getWorkerProfile = async (id) => {
+const getWorkerProfile = async (id) => {
   try {
     const response = await axiosInstance.get(`/workers/${id}`);
     return response.data;
@@ -102,7 +102,7 @@ export const getWorkerProfile = async (id) => {
 };
 
 // List workers with pagination and filters
-export const listWorkers = async (params = {}) => {
+const listWorkers = async (params = {}) => {
   try {
     const response = await axiosInstance.get("/workers", { params });
     console.log(response);
@@ -117,7 +117,7 @@ export const listWorkers = async (params = {}) => {
 };
 
 // Delete / archive worker
-export const deleteWorker = async (id) => {
+const deleteWorker = async (id) => {
   try {
     const response = await axiosInstance.delete(`/workers/${id}`);
     return response.data;
@@ -130,14 +130,14 @@ export const deleteWorker = async (id) => {
   }
 };
 
-// Get worker status
-export const getWorkerStatuses = async () => {
-  try {
-    const response = await axiosInstance.get("/workers/worker-statuses");
-    return response.data.data || [];
-  } catch (error) {
-    console.error("Failed to fetch statuses:", error);
-    throw error;
-  }
+export {
+  deleteWorker,
+  createWorker,
+  listArchivedWorkers,
+  deleteArchivedWorker,
+  updateWorker,
+  listWorkers,
+  getWorkerProfile,
+  getArchivedWorkerProfile,
+  restoreWorker,
 };
-

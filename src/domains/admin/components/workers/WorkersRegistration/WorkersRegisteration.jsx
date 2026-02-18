@@ -1,6 +1,6 @@
-// WorkersRegistration.jsx
 import React, { useState, useEffect } from "react";
-import { createWorker, getWorkerStatuses } from "../../../api/worker.api";
+import { createWorker } from "../../../api/worker.api";
+import { getWorkerStatuses } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 
