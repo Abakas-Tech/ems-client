@@ -71,7 +71,12 @@ function WorkersRegistration() {
     const { full_name, phone_number, personal_information, email } = formData;
 
     // Client-side validation
-    if (!full_name.trim()) return addMessage(false, "Full name is required");
+    const name = full_name.trim();
+
+    if (!/^[A-Za-z\s]+$/.test(name)) {
+      return addMessage(false, "Full name must contain letters only");
+    }
+
     const phonePattern = /^(?:\+251[79]\d{8}|09\d{8})$/;
     if (!phonePattern.test(phone_number.trim())) {
       return addMessage(
@@ -79,11 +84,6 @@ function WorkersRegistration() {
         "Phone number must be in Ethiopian format (+2519... or 09...)",
       );
     }
-    if (!phone_number.trim())
-      return addMessage(false, "Phone number is required");
-    if (!personal_information.sex) return addMessage(false, "Sex is required");
-    if (!personal_information.status_id)
-      return addMessage(false, "Please select a worker status");
 
     setSubmitLoading(true);
     showLoader();

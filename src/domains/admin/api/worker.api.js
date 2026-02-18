@@ -105,7 +105,8 @@ export const getWorkerProfile = async (id) => {
 export const listWorkers = async (params = {}) => {
   try {
     const response = await axiosInstance.get("/workers", { params });
-    return response.data;
+    console.log(response);
+    return response.data.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -133,7 +134,6 @@ export const deleteWorker = async (id) => {
 export const getWorkerStatuses = async () => {
   try {
     const response = await axiosInstance.get("/workers/worker-statuses");
-    console.log(response);
     return response.data.data || [];
   } catch (error) {
     console.error("Failed to fetch statuses:", error);
