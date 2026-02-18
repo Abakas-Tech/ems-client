@@ -76,3 +76,68 @@
     padding: 1.5rem;
   }
 }
+.avatarWrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.userAvatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.userAvatar:hover {
+  transform: scale(1.05);
+}
+
+.avatarMenu {
+  position: absolute;
+  right: -15px;
+  top: 45px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  padding: 10px;
+  display: flex;
+  gap: 20px;
+  z-index: 1000;
+}
+
+.avatarIconBtn {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  border: none;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.avatarIconBtn:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.disabledBtn {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

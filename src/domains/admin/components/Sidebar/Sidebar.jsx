@@ -40,7 +40,7 @@ const Sidebar = ({
       // wait for sidebar width transition to finish
       timer = setTimeout(() => {
         setShowLabels(true);
-      }, 100); // match CSS transition duration
+      }, 150); // match CSS transition duration
     } else {
       // hide immediately when collapsing
       setShowLabels(false);

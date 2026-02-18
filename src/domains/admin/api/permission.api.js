@@ -3,9 +3,6 @@ import { axiosInstance } from "../../../utils/axios";
 
 // GRANT PERMISSION 
 export const grantPermissions = async (payload) => {
-
-  console.log(payload)
-
   try {
     const response = await axiosInstance.post("/permissions/grant", payload);
     return response.data;
