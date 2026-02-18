@@ -8,6 +8,8 @@ import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePass
 import UsersPage from "../domains/admin/pages/Users/UserPage.jsx";
 import CreateUserPage from "../domains/admin/pages/Users/CreateUsersPage.jsx";
 import Profile from "../domains/admin/pages/Profile/Profile.jsx";
+import EmployersPage from './../domains/admin/pages/Employer/EmployersPage';
+import CreateEmployerPage from "../domains/admin/pages/Employer/CreateEmployerPage.jsx";
 
 const AdminRoutes = () => (
   <Routes>
@@ -16,15 +18,17 @@ const AdminRoutes = () => (
     <Route
       element={
         // <ProtectedRoute>
-          <Dashboard />
-        // </ProtectedRoute> 
+        <Dashboard />
+        // </ProtectedRoute>
       }
     >
       <Route path="settings" element={<ChangePasswordPage />} />
       <Route path="create-user" element={<CreateUserPage />} />
+      <Route path="create-employer" element={<CreateEmployerPage />} />
       <Route path="my-profile" element={<Profile />} />
 
       <Route path="user-management" element={<UsersPage />} />
+      <Route path="employer-management" element={<EmployersPage />} />
 
       <Route path="*" element={<NotFound />} />
     </Route>
