@@ -56,7 +56,7 @@ export const getArchivedWorkerProfile = async (id) => {
   }
 };
 
-// Restore archived worker 
+// Restore archived worker
 export const restoreWorker = async (id) => {
   try {
     const response = await axiosInstance.patch(`/workers/${id}/restore`);
@@ -126,5 +126,17 @@ export const deleteWorker = async (id) => {
         error.message ||
         "Failed to delete worker",
     );
+  }
+};
+
+// Get worker status
+export const getWorkerStatuses = async () => {
+  try {
+    const response = await axiosInstance.get("/workers/worker-statuses");
+    console.log(response);
+    return response.data.data || [];
+  } catch (error) {
+    console.error("Failed to fetch statuses:", error);
+    throw error;
   }
 };
