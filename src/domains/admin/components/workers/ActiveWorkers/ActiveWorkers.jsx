@@ -3,6 +3,7 @@ import { listWorkers } from "../../../api/worker.api";
 import ActiveWorkersFilters from "../WorkersFilter/WorkersFilter";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
+import BottomPagination from "../../../../../shared/components/BottomPagination/BottomPagination";
 
 const ActiveWorkers = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -10,7 +11,7 @@ const ActiveWorkers = () => {
 
   const [workers, setWorkers] = useState([]);
   const [filters, setFilters] = useState({});
-  const [meta, setMeta] = useState({ page: 1, limit: 10 });
+  const [meta, setMeta] = useState({ page: 1, limit: 10, total_items: 0 });
 
   const fetchWorkers = useCallback(async () => {
     showLoader();
@@ -21,8 +22,11 @@ const ActiveWorkers = () => {
         limit: meta.limit,
       });
 
-      setWorkers(res?.items || []);
-      setMeta((prev) => ({ ...prev, ...(res?.meta || {}) }));
+      // Extract items and meta from API response
+      const { items, meta: apiMeta } = res;
+
+      setWorkers(items || []);
+      setMeta((prev) => ({ ...prev, ...(apiMeta || {}) }));
     } catch (err) {
       addMessage(false, err.message || "Failed to load workers");
     } finally {
@@ -36,7 +40,7 @@ const ActiveWorkers = () => {
 
   const handleFilterChange = (f) => {
     setFilters((prev) => ({ ...prev, ...f }));
-    setMeta((prev) => ({ ...prev, page: 1 }));
+    setMeta((prev) => ({ ...prev, page: 1 })); // reset page on filter change
   };
 
   const handleClear = () => {
@@ -127,7 +131,7 @@ const ActiveWorkers = () => {
 
                         {/* Archive */}
                         <button
-                          className="btn btn-sm btn-outline-warning  "
+                          className="btn btn-sm btn-outline-warning"
                           onClick={() => handleArchive(w.id)}
                           title="Archive worker"
                           aria-label="Archive worker"
@@ -150,6 +154,20 @@ const ActiveWorkers = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* Pagination */}
+            {meta.total_items > meta.limit && (
+              <BottomPagination
+                pagination={{
+                  page: meta.page,
+                  limit: meta.limit,
+                  total: meta.total_items,
+                }}
+                onPageChange={(newPage) =>
+                  setMeta((prev) => ({ ...prev, page: newPage }))
+                }
+              />
+            )}
           </div>
         )}
       </div>
