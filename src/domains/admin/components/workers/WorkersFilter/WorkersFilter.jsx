@@ -1,42 +1,59 @@
 // src/components/workers/ActiveWorkersFilters.jsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getWorkerStatuses } from "../../../api/worker.api";
+import { getRegions } from "../../../api/meta.api";
+import useLoader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/response/UseResponse";
 import styles from "./WorkersFilter.module.css";
 
 const WorkersFilter = ({ filters, onFilterChange, onClear }) => {
+  const { showLoader, hideLoader } = useLoader();
+  const { addMessage } = useResponse();
+
   const [statuses, setStatuses] = useState([]);
-  const [loadingStatuses, setLoadingStatuses] = useState(true);
+  const [regions, setRegions] = useState([]);
 
   useEffect(() => {
-    const fetchStatuses = async () => {
+    let mounted = true;
+
+    const fetchMeta = async () => {
+      showLoader();
       try {
-        const data = await getWorkerStatuses();
-        setStatuses(data || []);
+        const [statusData, regionData] = await Promise.all([
+          getWorkerStatuses(),
+          getRegions(),
+        ]);
+
+        if (!mounted) return;
+
+        setStatuses(Array.isArray(statusData) ? statusData : []);
+        setRegions(Array.isArray(regionData) ? regionData : []);
       } catch (err) {
-        console.error("Failed to load statuses:", err);
+        addMessage(false, "Failed to load filters data");
         setStatuses([]);
+        setRegions([]);
       } finally {
-        setLoadingStatuses(false);
+        hideLoader();
       }
     };
 
-    fetchStatuses();
-  }, []);
+    fetchMeta();
+
+    return () => {
+      mounted = false;
+    };
+  }, [showLoader, hideLoader, addMessage]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    onFilterChange({ [name]: value });
-  };
-
-  const handleClear = () => {
-    onClear();
+    onFilterChange({ [name]: value || undefined });
   };
 
   return (
     <div className={`card shadow-sm mb-4 ${styles["filters-card"]}`}>
       <div className="card-body">
         <div className="row g-3 align-items-center">
-          {/* Search by name or phone */}
+          {/* Search */}
           <div className="col-md-4">
             <input
               type="text"
@@ -48,30 +65,24 @@ const WorkersFilter = ({ filters, onFilterChange, onClear }) => {
             />
           </div>
 
-          {/* Status dropdown */}
+          {/* Status */}
           <div className="col-md-3">
-            {loadingStatuses ? (
-              <div className={`form-control ${styles.input} text-muted`}>
-                Loading statuses...
-              </div>
-            ) : (
-              <select
-                name="status_id"
-                className={`form-select ${styles.input}`}
-                value={filters.status_id || ""}
-                onChange={handleChange}
-              >
-                <option value="">All Statuses</option>
-                {statuses.map((status) => (
-                  <option key={status.id} value={status.id}>
-                    {status.name}
-                  </option>
-                ))}
-              </select>
-            )}
+            <select
+              name="status_id"
+              className={`form-select ${styles.input}`}
+              value={filters.status_id || ""}
+              onChange={handleChange}
+            >
+              <option value="">All Statuses</option>
+              {statuses.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* Region dropdown (placeholder – expand later) */}
+          {/* Region */}
           <div className="col-md-3">
             <select
               name="region_id"
@@ -80,18 +91,19 @@ const WorkersFilter = ({ filters, onFilterChange, onClear }) => {
               onChange={handleChange}
             >
               <option value="">All Regions</option>
-              <option value="1">Addis Ababa</option>
-              <option value="2">Oromia</option>
-              <option value="3">Amhara</option>
-              {/* Fetch real regions dynamically in future */}
+              {regions.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* Clear button */}
+          {/* Clear */}
           <div className="col-md-2 d-grid">
             <button
               className={`btn btn-outline-secondary ${styles["clear-btn"]}`}
-              onClick={handleClear}
+              onClick={onClear}
               disabled={Object.values(filters).every((v) => !v)}
             >
               Clear Filters
