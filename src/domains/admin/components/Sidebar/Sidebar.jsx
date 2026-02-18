@@ -40,9 +40,9 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     },
     { label: "My Files", path: "/admin/my-files", icon: "bi bi-files" },
     {
-      label: "Appointments",
-      path: "/admin/appointments",
-      icon: "bi bi-calendar",
+      label: "Finances",
+      path: "/admin/finances",
+      icon: "bi-wallet2",
     },
     { label: "My Listings", path: "/admin/my-listings", icon: "bi-house-door" },
     {

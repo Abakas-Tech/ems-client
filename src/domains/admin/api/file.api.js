@@ -14,7 +14,6 @@ export const fetchFiles = async (params = {}) => {
 
 export const uploadFile = async (formData) => {
   try {
-    console.log(formData)
     delete formData["file_url"];
     const response = await axiosInstance.post(`/files`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
