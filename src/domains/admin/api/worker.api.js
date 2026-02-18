@@ -1,32 +1,15 @@
 import axiosInstance from "../../../utils/axios";
 
-// Create new worker account
-export const createWorker = async (payload) => {
+// Create worker
+export const createWorker = async (formData) => {
   try {
-    const response = await axiosInstance.post("/workers", payload);
+    const response = await axiosInstance.post("/workers", formData);
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
         "Failed to create worker",
-    );
-  }
-};
-
-// Create worker personal information
-export const createWorkerPersonalInfo = async (workerId, formData) => {
-  try {
-    const response = await axiosInstance.post(
-      `/workers/${workerId}/personal-info`,
-      formData,
-    );
-    return response.data;
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to create worker personal info",
     );
   }
 };
@@ -87,25 +70,11 @@ export const restoreWorker = async (id) => {
   }
 };
 
-// Update worker account info
-export const updateWorker = async (workerId, payload) => {
-  try {
-    const response = await axiosInstance.patch(`/workers/${workerId}`, payload);
-    return response.data;
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to update worker",
-    );
-  }
-};
-
-// UpdATE worker personal info
-export const updateWorkerPersonalInfo = async (workerId, formData) => {
+// Update worker
+export const updateWorker = async (workerId, formData) => {
   try {
     const response = await axiosInstance.patch(
-      `/workers/${workerId}/personal-info`,
+      `/workers/${workerId}`,
       formData,
     );
     return response.data;
@@ -113,7 +82,7 @@ export const updateWorkerPersonalInfo = async (workerId, formData) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to update worker personal info",
+        "Failed to update worker",
     );
   }
 };

@@ -1,75 +1,30 @@
 import React, { useState } from "react";
-import { createWorker } from "../../../api/worker.api";
-import useResponse from "../../../../../context/response/UseResponse";
-import useLoader from "../../../../../context/Loader/UseLoader";
 
 function WorkersRegistration() {
-  const { addMessage } = useResponse();
-
   const [formData, setFormData] = useState({
-    full_name: "",
-    phone_number: "",
+    name: "",
     email: "",
+    title: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+    about: "",
+    facebook: "",
+    twitter: "",
+    googlePlus: "",
+    linkedin: "",
   });
-
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Simple validation before submitting
-  const isValid = () => {
-    const { full_name, phone_number, email } = formData;
-
-    if (!full_name.trim() || full_name.trim().length < 3) {
-      addMessage(false, "Full name must be at least 3 characters.");
-      return false;
-    }
-
-    const phoneRegex = /^(?:\+251[79]\d{8}|09\d{8})$/;
-    if (!phoneRegex.test(phone_number.trim())) {
-      addMessage(false, "Phone number format is invalid");
-      return false;
-    }
-
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      addMessage(false, "Please enter a valid email address.");
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!isValid()) return;
-
-    setLoading(true);
-    try {
-      const payload = {
-        full_name: formData.full_name,
-        phone_number: formData.phone_number,
-        is_active: true,
-      };
-      if (formData.email) payload.email = formData.email;
-
-      await createWorker(payload);
-
-      addMessage(true, "Worker account created successfully!");
-
-      setFormData({ full_name: "", phone_number: "", email: "" });
-    } catch (err) {
-      addMessage(
-        false,
-        err?.response?.data?.message ||
-          err?.message ||
-          "Failed to create worker account",
-      );
-    } finally {
-      setLoading(false);
-    }
+    console.log("Worker Data:", formData);
   };
 
   return (
@@ -78,38 +33,20 @@ function WorkersRegistration() {
         <div className="row">
           <div className="col-lg-12 col-md-12">
             <div className="dashboard-wraper">
+              {/* Worker Information */}
               <form className="form-submit" onSubmit={handleSubmit}>
-                <h4>Worker Account Registration</h4>
+                <h4>Worker Registration</h4>
 
                 <div className="submit-section">
                   <div className="row">
                     <div className="form-group col-md-6">
-                      <label>
-                        Full Name <span className="text-danger">*</span>
-                      </label>
+                      <label>Your Name</label>
                       <input
                         type="text"
-                        name="full_name"
+                        name="name"
                         className="form-control"
-                        value={formData.full_name}
+                        value={formData.name}
                         onChange={handleChange}
-                        disabled={false}
-                        required
-                      />
-                    </div>
-
-                    <div className="form-group col-md-6">
-                      <label>
-                        Phone Number <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="phone_number"
-                        className="form-control"
-                        value={formData.phone_number}
-                        onChange={handleChange}
-                        disabled={false}
-                        required
                       />
                     </div>
 
@@ -121,17 +58,142 @@ function WorkersRegistration() {
                         className="form-control"
                         value={formData.email}
                         onChange={handleChange}
-                        disabled={false}
                       />
                     </div>
 
-                    <div className="form-group col-lg-12 col-md-12 mt-4">
+                    <div className="form-group col-md-6">
+                      <label>Your Title</label>
+                      <input
+                        type="text"
+                        name="title"
+                        className="form-control"
+                        value={formData.title}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="form-group col-md-6">
+                      <label>Phone</label>
+                      <input
+                        type="text"
+                        name="phone"
+                        className="form-control"
+                        value={formData.phone}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="form-group col-md-6">
+                      <label>Address</label>
+                      <input
+                        type="text"
+                        name="address"
+                        className="form-control"
+                        value={formData.address}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="form-group col-md-6">
+                      <label>City</label>
+                      <input
+                        type="text"
+                        name="city"
+                        className="form-control"
+                        value={formData.city}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="form-group col-md-6">
+                      <label>State</label>
+                      <input
+                        type="text"
+                        name="state"
+                        className="form-control"
+                        value={formData.state}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="form-group col-md-6">
+                      <label>Zip</label>
+                      <input
+                        type="text"
+                        name="zip"
+                        className="form-control"
+                        value={formData.zip}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="form-group col-md-12">
+                      <label>About</label>
+                      <textarea
+                        name="about"
+                        className="form-control"
+                        value={formData.about}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Social Accounts */}
+                <h4 className="mt-4">Social Accounts</h4>
+
+                <div className="submit-section">
+                  <div className="row">
+                    <div className="form-group col-md-6">
+                      <label>Facebook</label>
+                      <input
+                        type="text"
+                        name="facebook"
+                        className="form-control"
+                        value={formData.facebook}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="form-group col-md-6">
+                      <label>Twitter</label>
+                      <input
+                        type="text"
+                        name="twitter"
+                        className="form-control"
+                        value={formData.twitter}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="form-group col-md-6">
+                      <label>Google Plus</label>
+                      <input
+                        type="text"
+                        name="googlePlus"
+                        className="form-control"
+                        value={formData.googlePlus}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="form-group col-md-6">
+                      <label>LinkedIn</label>
+                      <input
+                        type="text"
+                        name="linkedin"
+                        className="form-control"
+                        value={formData.linkedin}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className="form-group col-lg-12 col-md-12">
                       <button
-                        type="submit"
                         className="btn btn-main px-5 rounded"
-                        disabled={loading}
+                        type="submit"
                       >
-                        Create Worker Account
+                        Register Worker
                       </button>
                     </div>
                   </div>
