@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { listWorkers } from "../../../api/worker.api";
-// import { archiveWorker, deleteWorker } from "../../../api/worker.api"; // ← add these when ready
 import ActiveWorkersFilters from "../WorkersFilter/WorkersFilter";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
@@ -12,73 +11,67 @@ const ActiveWorkers = () => {
   const [workers, setWorkers] = useState([]);
   const [filters, setFilters] = useState({});
   const [meta, setMeta] = useState({ page: 1, limit: 10 });
-  const [loading, setLoading] = useState(true);
 
-  const fetchWorkers = async () => {
-    setLoading(true);
+  const fetchWorkers = useCallback(async () => {
     showLoader();
-
     try {
       const res = await listWorkers({
         ...filters,
         page: meta.page,
         limit: meta.limit,
       });
+
       setWorkers(res?.items || []);
-      setMeta(res?.meta || meta);
+      setMeta((prev) => ({ ...prev, ...(res?.meta || {}) }));
     } catch (err) {
       addMessage(false, err.message || "Failed to load workers");
     } finally {
-      setLoading(false);
       hideLoader();
     }
-  };
+  }, [filters, meta.page, meta.limit]);
 
   useEffect(() => {
     fetchWorkers();
-  }, [filters, meta.page, meta.limit]);
+  }, [fetchWorkers]);
 
   const handleFilterChange = (f) => {
-    setFilters((p) => ({ ...p, ...f }));
-    setMeta((p) => ({ ...p, page: 1 }));
+    setFilters((prev) => ({ ...prev, ...f }));
+    setMeta((prev) => ({ ...prev, page: 1 }));
   };
 
   const handleClear = () => {
     setFilters({});
-    setMeta((p) => ({ ...p, page: 1 }));
+    setMeta((prev) => ({ ...prev, page: 1 }));
   };
 
-  // Action handlers (implement these with your API calls)
-  const handleView = (workerId) => {
-    // Example: navigate to detail page
-    // navigate(`/workers/${workerId}`);
-    addMessage(true, `Viewing worker ${workerId} (implement navigation)`);
+  const handleView = (id) => {
+    addMessage(true, `Viewing worker ${id} (implement navigation)`);
   };
 
-  const handleArchive = async (workerId) => {
+  const handleArchive = async (id) => {
     if (!window.confirm("Archive this worker?")) return;
 
     showLoader();
     try {
-      // await archiveWorker(workerId); // ← your API call
+      // await archiveWorker(id);
       addMessage(true, "Worker archived successfully");
-      fetchWorkers(); // refresh list
-    } catch (err) {
+      fetchWorkers();
+    } catch {
       addMessage(false, "Failed to archive worker");
     } finally {
       hideLoader();
     }
   };
 
-  const handleDelete = async (workerId) => {
+  const handleDelete = async (id) => {
     if (!window.confirm("Delete this worker permanently?")) return;
 
     showLoader();
     try {
-      // await deleteWorker(workerId); // ← your API call (hard delete)
+      // await deleteWorker(id);
       addMessage(true, "Worker deleted successfully");
-      fetchWorkers(); // refresh list
-    } catch (err) {
+      fetchWorkers();
+    } catch {
       addMessage(false, "Failed to delete worker");
     } finally {
       hideLoader();
@@ -96,11 +89,7 @@ const ActiveWorkers = () => {
         />
 
         {/* Table */}
-        {loading ? (
-          <div className="text-center mt-5">
-            <p className="text-muted">Loading active workers...</p>
-          </div>
-        ) : workers.length === 0 ? (
+        {workers.length === 0 ? (
           <div className="text-center mt-5">
             <p className="text-muted">No active workers found</p>
             <p className="text-muted small">
@@ -112,39 +101,48 @@ const ActiveWorkers = () => {
             <table className="table border-bottom">
               <thead className="table-light">
                 <tr>
-                  <th scope="col">Name</th>
-                  <th scope="col">Phone Number</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Action</th>
+                  <th>Name</th>
+                  <th>Phone Number</th>
+                  <th>Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {workers.map((worker) => (
-                  <tr key={worker.id}>
-                    <td>{worker.full_name || "—"}</td>
-                    <td>{worker.phone_number || "—"}</td>
-                    <td>{worker.status || "Unknown"}</td>
+                {workers.map((w) => (
+                  <tr key={w.id}>
+                    <td>{w.full_name || "—"}</td>
+                    <td>{w.phone_number || "—"}</td>
+                    <td>{w.status || "Unknown"}</td>
                     <td>
-                      <div className="d-flex gap-2 flex-wrap">
+                      <div className="d-flex gap-2 justify-content-start">
+                        {/* View */}
                         <button
                           className="btn btn-sm btn-outline-primary"
-                          onClick={() => handleView(worker.id)}
+                          onClick={() => handleView(w.id)}
+                          title="View worker"
+                          aria-label="View worker"
                         >
-                          View
+                          <i className="fa-solid fa-eye"></i>
                         </button>
 
+                        {/* Archive */}
                         <button
-                          className="btn btn-sm btn-outline-warning"
-                          onClick={() => handleArchive(worker.id)}
+                          className="btn btn-sm btn-outline-warning  "
+                          onClick={() => handleArchive(w.id)}
+                          title="Archive worker"
+                          aria-label="Archive worker"
                         >
-                          Archive
+                          <i className="fa-solid fa-folder-open"></i>
                         </button>
 
+                        {/* Delete */}
                         <button
                           className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDelete(worker.id)}
+                          onClick={() => handleDelete(w.id)}
+                          title="Delete worker"
+                          aria-label="Delete worker"
                         >
-                          Delete
+                          <i className="fa-solid fa-trash"></i>
                         </button>
                       </div>
                     </td>
