@@ -8,7 +8,6 @@ const ConfirmDeleteProvider = ({ children }) => {
   const [config, setConfig] = useState({
     title: "Are you sure?",
     confirmText: "Confirm",
-    type: "delete", 
   });
   // Open modal with confirm action only
   const openModal = (confirmAction, options = {}) => {
@@ -16,7 +15,6 @@ const ConfirmDeleteProvider = ({ children }) => {
     setConfig({
       title: options.title || "Are you sure?",
       confirmText: options.confirmText || "Confirm",
-      type: options.type || "delete",
     });
     setIsOpen(true);
   };

@@ -94,7 +94,6 @@ const ArchivedWorkers = () => {
       {
         title: "Are you sure you want to restore this worker?",
         confirmText: "Restore",
-        type: "archive",
       },
     );
   };
@@ -125,7 +124,6 @@ const ArchivedWorkers = () => {
       {
         title: "Are you sure you want to delete this worker permanently?",
         confirmText: "Delete",
-        type: "delete",
       },
     );
   };

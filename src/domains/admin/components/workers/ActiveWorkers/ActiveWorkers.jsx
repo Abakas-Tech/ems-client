@@ -84,7 +84,6 @@ const ActiveWorkers = () => {
       {
         title: "Are you sure you want to archive this worker?",
         confirmText: "Archive",
-        type: "archive",
       },
     );
   };
@@ -107,7 +106,6 @@ const ActiveWorkers = () => {
       {
         title: "Are you sure you want to delete this worker?",
         confirmText: "Delete",
-        type: "delete",
       },
     );
   };
