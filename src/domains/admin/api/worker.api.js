@@ -18,7 +18,8 @@ const createWorker = async (formData) => {
 const listArchivedWorkers = async (params = {}) => {
   try {
     const response = await axiosInstance.get("/workers/archived", { params });
-    return response.data;
+    console.log(response)
+    return response.data.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -117,9 +118,11 @@ const listWorkers = async (params = {}) => {
 };
 
 // Delete / archive worker
-const deleteWorker = async (id) => {
+const deleteWorker = async (id, hard = false) => {
   try {
-    const response = await axiosInstance.delete(`/workers/${id}`);
+    const response = await axiosInstance.delete(`/workers/${id}`, {
+      params: { hard },
+    });
     return response.data;
   } catch (error) {
     throw new Error(
