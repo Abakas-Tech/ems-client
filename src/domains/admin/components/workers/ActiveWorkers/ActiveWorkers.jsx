@@ -1,11 +1,17 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { listWorkers } from "../../../api/worker.api";
+import {
+  listWorkers,
+  getWorkerProfile,
+  deleteWorker,
+} from "../../../api/worker.api";
 import ActiveWorkersFilters from "../WorkersFilter/WorkersFilter";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 import BottomPagination from "../../../../../shared/components/BottomPagination/BottomPagination";
+import { useConfirmDelete } from "../../../../../context/Delete/useDelete";
 
 const ActiveWorkers = () => {
+  const { openModal } = useConfirmDelete();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
@@ -40,7 +46,7 @@ const ActiveWorkers = () => {
 
   const handleFilterChange = (f) => {
     setFilters((prev) => ({ ...prev, ...f }));
-    setMeta((prev) => ({ ...prev, page: 1 })); // reset page on filter change
+    setMeta((prev) => ({ ...prev, page: 1 }));
   };
 
   const handleClear = () => {
@@ -48,24 +54,41 @@ const ActiveWorkers = () => {
     setMeta((prev) => ({ ...prev, page: 1 }));
   };
 
-  const handleView = (id) => {
-    addMessage(true, `Viewing worker ${id} (implement navigation)`);
-  };
-
-  const handleArchive = async (id) => {
-    if (!window.confirm("Archive this worker?")) return;
-
+  const handleView = async (id) => {
     showLoader();
     try {
-      // await archiveWorker(id);
-      addMessage(true, "Worker archived successfully");
-      fetchWorkers();
-    } catch {
-      addMessage(false, "Failed to archive worker");
+      const workerProfile = await getWorkerProfile(id);
+
+      console.log("Worker profile:", workerProfile);
+
+      // Option 2 (recommended): navigate to a details page
+      // navigate(`/workers/${id}`, { state: workerProfile });
+
+      // Option 3: open a modal and pass workerProfile to it
+    } catch (err) {
+      addMessage(false, err.message || "Failed to load worker profile");
     } finally {
       hideLoader();
     }
   };
+
+ const handleArchive = (id) => {
+   openModal(
+     async () => {
+       showLoader();
+       await deleteWorker(id);
+       addMessage(true, "Worker archived successfully");
+       fetchWorkers();
+       hideLoader();
+     },
+     {
+       title: "Are you sure you want to archive this worker?",
+       confirmText: "Archive",
+       type: "archive",
+     },
+   );
+ };
+
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this worker permanently?")) return;
