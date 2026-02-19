@@ -14,7 +14,7 @@ function AdminRoutes() {
         <Route path="/workers/add" element={<WorkersRegistration />} />
         <Route path="/workers/active" element={<ActiveWorkers />} />
         <Route path="/workers/archived" element={<ArchivedWorkers />} />
-        <Route path="workers/modules/add" element={<WorkersModules />} />
+        <Route path="workers/modules/" element={<WorkersModules />} />
       </Routes>
     </>
   );

@@ -53,7 +53,7 @@ function WorkersDashboard() {
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <div className="agents-grid card rounded-3 border p-4 text-center">
               <div className="mt-4 mb-3">
-                <Link to="/admin/workers/modules/add">
+                <Link to="/admin/workers/modules">
                   <FaFolderPlus className="text-info" size={50} />
                 </Link>
               </div>

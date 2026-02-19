@@ -65,7 +65,7 @@ const WorkersModules = () => {
       console.log("Worker profile:", workerProfile);
 
       // Navigate to worker's page
-      navigate(`/admin/workers/active/${id}`, { state: workerProfile });
+      navigate(`/admin/workers/modules/${id}/add`, { state: workerProfile });
     } catch (err) {
       addMessage(false, err.message || "Failed to load worker profile");
     } finally {
@@ -73,43 +73,9 @@ const WorkersModules = () => {
     }
   };
 
-  const handleArchive = (id) => {
-    openModal(
-      async () => {
-        showLoader();
-        await deleteWorker(id, false);
-        addMessage(true, "Worker archived successfully");
-        fetchWorkers();
-        hideLoader();
-      },
-      {
-        title: "Are you sure you want to archive this worker?",
-        confirmText: "Archive",
-      },
-    );
-  };
 
-  const handleDelete = (id) => {
-    openModal(
-      async () => {
-        showLoader();
-        try {
-          await deleteWorker(id, true);
 
-          addMessage(true, "Worker deleted permanently");
-          fetchWorkers();
-        } catch (err) {
-          addMessage(false, err.message || "Failed to delete worker");
-        } finally {
-          hideLoader();
-        }
-      },
-      {
-        title: "Are you sure you want to delete this worker?",
-        confirmText: "Delete",
-      },
-    );
-  };
+
 
   return (
     <section>
