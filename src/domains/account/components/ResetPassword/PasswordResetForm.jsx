@@ -23,22 +23,33 @@ const PasswordResetForm = ({ email }) => {
       addMessage(false, "OTP is required.");
       return false;
     }
+
     if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
       addMessage(false, "OTP must be exactly 6 digits.");
       return false;
     }
+
     if (!password) {
       addMessage(false, "New password is required.");
       return false;
     }
+
+    //  Minimum length validation
+    if (password.length < 8) {
+      addMessage(false, "Password must be at least 8 characters.");
+      return false;
+    }
+
     if (!confirmPassword) {
       addMessage(false, "Confirm password is required.");
       return false;
     }
+
     if (password !== confirmPassword) {
       addMessage(false, "Passwords do not match.");
       return false;
     }
+
     return true;
   };
 
@@ -90,75 +101,70 @@ const PasswordResetForm = ({ email }) => {
   };
 
   return (
-        <div className="container">
-        <div className="row justify-content-center">
-          <div className="login-container p-5 rounded shadow-lg col-12 col-sm-10 col-md-6 col-lg-5">
-        <h2 className="text-center mb-3 fw-bold pt-0">Reset Password</h2>
+    <div className="container">
+      <div className="row justify-content-center">
+        <div className="login-container p-5 rounded shadow-lg col-12 col-sm-10 col-md-6 col-lg-5">
+          <h2 className="text-center mb-3 fw-bold pt-0">Reset Password</h2>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4 text-center">
-            <label className="form-label fw-medium d-block mb-2">
-              Enter OTP
-            </label>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4 text-center">
+              <label className="form-label fw-medium d-block mb-2">
+                Enter OTP
+              </label>
 
-            <div className="d-flex justify-content-center gap-2">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  className="form-control text-center fw-bold"
-                  style={{
-                    width: "50px",
-                    height: "55px",
-                    fontSize: "20px",
-                  }}
-                  value={otp[index] || ""}
-                  onChange={(e) => handleOtpChange(e, index)}
-                  onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                />
-              ))}
+              <div className="d-flex justify-content-center gap-2">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    className="form-control text-center fw-bold d-inline-block px-2 py-2 fs-4"
+                    value={otp[index] || ""}
+                    onChange={(e) => handleOtpChange(e, index)}
+                    onKeyDown={(e) => handleOtpKeyDown(e, index)}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="form-floating mb-3">
-            <PasswordInput
-              id="password"
-              label="New Password"
-              icon_input={true}
-              value={password}
-              onChange={setPassword}
-              required
-              align="right"
-              variant="floating"
-            />
-          </div>
+            <div className="form-floating mb-3">
+              <PasswordInput
+                id="password"
+                label="New Password"
+                icon_input={true}
+                value={password}
+                onChange={setPassword}
+                required
+                align="right"
+                variant="floating"
+              />
+            </div>
 
-          <div className="form-floating mb-3">
-            <PasswordInput
-              id="confirmPassword"
-              label="Confirm Password"
-              icon_input={true}
-              value={confirmPassword}
-              onChange={setConfirmPassword}
-              required
-              align="right"
-              variant="floating"
-            />
-          </div>
+            <div className="form-floating mb-3">
+              <PasswordInput
+                id="confirmPassword"
+                label="Confirm Password"
+                icon_input={true}
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+                required
+                align="right"
+                variant="floating"
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="btn btn-main fw-medium w-100 rounded-2"
-          >
-            Reset Password
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="btn btn-main fw-medium w-100 rounded-2"
+            >
+              Reset Password
+            </button>
+          </form>
+        </div>
       </div>
     </div>
-    </div>
   );
-};
+};;
 
 export default PasswordResetForm;
