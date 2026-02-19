@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { resetPasswordConfirm } from "../../api/auth.api";
+import { passwordResetConfirm } from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
 
-const ResetPasswordConfirm = ({ email }) => {
+const PasswordResetForm = ({ email }) => {
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,56 +18,55 @@ const ResetPasswordConfirm = ({ email }) => {
   const { openModal } = useDemoInfo();
 
   // Frontend validation
-const validateForm = () => {
-  if (!otp) {
-    addMessage(false, "OTP is required.");
-    return false;
-  }
-  if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
-    addMessage(false, "OTP must be exactly 6 digits.");
-    return false;
-  }
-  if (!password) {
-    addMessage(false, "New password is required.");
-    return false;
-  }
-  if (!confirmPassword) {
-    addMessage(false, "Confirm password is required.");
-    return false;
-  }
-  if (password !== confirmPassword) {
-    addMessage(false, "Passwords do not match.");
-    return false;
-  }
-  return true;
-};
+  const validateForm = () => {
+    if (!otp) {
+      addMessage(false, "OTP is required.");
+      return false;
+    }
+    if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+      addMessage(false, "OTP must be exactly 6 digits.");
+      return false;
+    }
+    if (!password) {
+      addMessage(false, "New password is required.");
+      return false;
+    }
+    if (!confirmPassword) {
+      addMessage(false, "Confirm password is required.");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      addMessage(false, "Passwords do not match.");
+      return false;
+    }
+    return true;
+  };
 
-const handleOtpChange = (e, index) => {
-  const value = e.target.value.replace(/\D/g, ""); // allow only numbers
-  if (!value) return;
+  const handleOtpChange = (e, index) => {
+    const value = e.target.value.replace(/\D/g, ""); // allow only numbers
+    if (!value) return;
 
-  const newOtp = otp.split("");
-  newOtp[index] = value;
-  const updatedOtp = newOtp.join("").slice(0, 6);
-  setOtp(updatedOtp);
-
-  // Move to next input automatically
-  const nextInput = e.target.nextSibling;
-  if (nextInput) nextInput.focus();
-};
-
-const handleOtpKeyDown = (e, index) => {
-  if (e.key === "Backspace") {
     const newOtp = otp.split("");
-    newOtp[index] = "";
-    setOtp(newOtp.join(""));
+    newOtp[index] = value;
+    const updatedOtp = newOtp.join("").slice(0, 6);
+    setOtp(updatedOtp);
 
-    // Move focus to previous input
-    const prevInput = e.target.previousSibling;
-    if (prevInput) prevInput.focus();
-  }
-};
+    // Move to next input automatically
+    const nextInput = e.target.nextSibling;
+    if (nextInput) nextInput.focus();
+  };
 
+  const handleOtpKeyDown = (e, index) => {
+    if (e.key === "Backspace") {
+      const newOtp = otp.split("");
+      newOtp[index] = "";
+      setOtp(newOtp.join(""));
+
+      // Move focus to previous input
+      const prevInput = e.target.previousSibling;
+      if (prevInput) prevInput.focus();
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,7 +74,7 @@ const handleOtpKeyDown = (e, index) => {
 
     showLoader();
     try {
-      const response = await resetPasswordConfirm({
+      const response = await passwordResetConfirm({
         email,
         otp,
         password,
@@ -91,14 +90,9 @@ const handleOtpKeyDown = (e, index) => {
   };
 
   return (
-    <div
-      className="login-page d-flex justify-content-center align-items-center rounded mt-4"
-      style={{ minHeight: "80vh" }}
-    >
-      <div
-        className="login-container p-4 rounded shadow-lg my-3"
-        style={{ maxWidth: "500px", width: "90%", minHeight: "400px" }}
-      >
+        <div className="container">
+        <div className="row justify-content-center">
+          <div className="login-container p-5 rounded shadow-lg col-12 col-sm-10 col-md-6 col-lg-5">
         <h2 className="text-center mb-3 fw-bold pt-0">Reset Password</h2>
 
         <form onSubmit={handleSubmit}>
@@ -160,16 +154,11 @@ const handleOtpKeyDown = (e, index) => {
           >
             Reset Password
           </button>
-
-          <div className="text-center mt-3 fw-medium">
-            <Link to="/auth/login" className="link-primary">
-              Back to Login
-            </Link>
-          </div>
         </form>
       </div>
+    </div>
     </div>
   );
 };
 
-export default ResetPasswordConfirm;
+export default PasswordResetForm;

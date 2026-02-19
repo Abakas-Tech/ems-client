@@ -1,7 +1,5 @@
 import { axiosInstance } from "../../../utils/axios";
 
-
-
 // email and password login api for admin employee and partner
 export const loginWithEmail = async (credentials) => {
   try {
@@ -22,7 +20,7 @@ export const loginWithPhone = async (credentials) => {
 };
 
 // resert password request api for all users
-export const resetPasswordRequest = async (data) => {
+export const passwordResetRequest = async (data) => {
   try {
     const response = await axiosInstance.post("/auth/password-reset/request", data);
     return response.data;
@@ -32,7 +30,7 @@ export const resetPasswordRequest = async (data) => {
 };
 
 // Reset Password function
-export const resetPasswordConfirm = async (data) => {
+export const passwordResetConfirm = async (data) => {
   try {
     const response = await axiosInstance.post(
       "/auth/password-reset/confirm",

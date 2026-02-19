@@ -6,7 +6,7 @@ import useResponse from "../../../../context/response/UseResponse";
 import useAuth from "../../../../context/auth/UseAuth";
 import { setAccessToken } from "../../../../utils/axios";
 
-const IdentifierLoginForm = () => {
+const LoginFormWithPhone = () => {
   const [role, setRole] = useState("employer");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [nationalId, setNationalId] = useState("");
@@ -85,13 +85,12 @@ const IdentifierLoginForm = () => {
   };
 
   return (
-    <div
-      className="login-page d-flex justify-content-center align-items-center rounded"
-      style={{ marginTop: "30px" }}
-    >
+   
+       <div className="container">
+        <div className="row justify-content-center">
+   
       <div
-        className="login-container p-4 rounded shadow-lg my-4"
-        style={{ maxWidth: "500px", width: "90%", minHeight: "400px" }}
+        className="login-container p-5 rounded shadow-lg col-12 col-sm-10 col-md-6 col-lg-5"
       >
         <h2 className="text-center mb-3 fw-bold pt-0">Log In</h2>
 
@@ -165,8 +164,11 @@ const IdentifierLoginForm = () => {
         </form>
       
       </div>
-    </div>
+      </div>
+      </div>
+      
+    
   );
 };
 
-export default IdentifierLoginForm;
+export default LoginFormWithPhone;

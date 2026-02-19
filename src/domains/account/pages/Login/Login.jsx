@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import Layout from "../../../../shared/Layouts/MainLayout";
-import LoginForm from "../../components/LoginForm/LoginForm";
-import IdentifierLoginForm from "../../components/LoginForm/IdentifierLoginForm";
 import SEOHelmet from "../../../../shared/components/SEOHelmet/SEOHelmet";
+import LoginFormWithPhone from "../../components/Login/LoginFormWithPhone";
+import LoginFormWithEmail from "../../components/Login/LoginFormWithEmail";
+import { Link } from "react-router-dom";
 
 function Login() {
   const [showIdentifierLogin, setShowIdentifierLogin] = useState(false);
@@ -11,56 +12,53 @@ function Login() {
     <>
       <SEOHelmet />
       <Layout>
-        <div  style={{ minHeight: "70vh", marginTop: "80px" }}>
+        <div>
           {showIdentifierLogin ? (
-            <>
-              <IdentifierLoginForm />
+            <div className="login-page d-flex flex-column justify-content-center align-items-center rounded min-vh-100">
+              <LoginFormWithPhone />
 
               {/* Back to Admin Login */}
-              <div className="text-center">
+              <div className="text-center mt-3 fw-medium">
                 <p className="mb-0">
                   Back to{" "}
-                  <span
-                    className="link-primary fw-medium"
-                    style={{ cursor: "pointer" }}
+                  <Link
+                    className="link-primary fw-medium text-decoration-none"
                     onClick={() => setShowIdentifierLogin(false)}
                   >
                     Admin Login
-                  </span>
+                  </Link>
                   ?
                 </p>
               </div>
-            </>
+            </div>
           ) : (
-            <>
-              <LoginForm />
+            <div className="login-page d-flex flex-column justify-content-center align-items-center rounded  min-vh-100">
+              <LoginFormWithEmail />
 
               {/* Navigation question to Worker/Employer login */}
-              <div className="text-center">
+              <div className="text-center mt-3 fw-medium">
                 <p className="mb-0">
                   Are you a{" "}
-                  <span
-                    className="link-primary fw-medium"
-                    style={{ cursor: "pointer" }}
+                  <Link 
+                    className="link-primary fw-medium text-decoration-none"
                     onClick={() => setShowIdentifierLogin(true)}
                   >
                     Worker
-                  </span>{" "}
+                  </Link>{" "}
                   or an{" "}
-                  <span
-                    className="link-primary fw-medium"
-                    style={{ cursor: "pointer" }}
+                  <Link
+                    className="link-primary fw-medium text-decoration-none"
                     onClick={() => setShowIdentifierLogin(true)}
                   >
                     Employer
-                  </span>
+                  </Link>
                   ?
                 </p>
                 <small className="text-muted">
                   Use your phone number and ID to access your account.
                 </small>
               </div>
-            </>
+            </div>
           )}
         </div>
       </Layout>
