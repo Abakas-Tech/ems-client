@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   listArchivedWorkers,
   deleteArchivedWorker,
@@ -12,6 +13,7 @@ import BottomPagination from "../../../../../shared/components/BottomPagination/
 import { useConfirmDelete } from "../../../../../context/Delete/useDelete";
 
 const ArchivedWorkers = () => {
+  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useConfirmDelete();
@@ -58,12 +60,10 @@ const ArchivedWorkers = () => {
     try {
       const workerProfile = await getArchivedWorkerProfile(id);
 
-      console.log("Worker profile:", workerProfile);
+      //   console.log("Worker profile:", workerProfile);
 
-      // Option 2 (recommended): navigate to a details page
-      // navigate(`/workers/${id}`, { state: workerProfile });
-
-      // Option 3: open a modal and pass workerProfile to it
+      // Navigate to worker's page
+      navigate(`/admin/workers/archived/${id}`, { state: workerProfile });
     } catch (err) {
       addMessage(false, err.message || "Failed to load worker profile");
     } finally {
