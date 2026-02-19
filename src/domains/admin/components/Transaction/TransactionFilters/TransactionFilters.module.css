@@ -12,6 +12,22 @@
     box-shadow 0.2s ease;
 }
 
+.dateLabel {
+  height: 42px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-right: none;
+}
+
+/* Fix for input group border radius */
+.input-group > .input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
 .input:focus {
   border-color: #007bff;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);

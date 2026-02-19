@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from "react";
 import TransactionList from "../../Transaction/TransactionList/TransactionList";
 import TransactionFilters from "../../Transaction/TransactionFilters/TransactionFilters";
-// This is now your normal Form component, not a modal
 import RecordTransaction from "../../Transaction/RecordTransaction/RecordTransaction.jsx";
+import TransactionDetail from "../../Transaction/TransactionDetail/TransactionDetail"; // Added this
 import { fetchTransactions } from "../../../api/finance.api";
 import useLoader from "../../../../../context/Loader/UseLoader";
 import useResponse from "../../../../../context/response/UseResponse";
-
 
 const FinancePage = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
   // --- View Control ---
-  // 'list' = Table + Filters + Summary
-  // 'create' = Add Form
-  // 'edit' = Edit Form
+  // 'list', 'create', 'edit', 'detail'
   const [view, setView] = useState("list");
 
   const [transactions, setTransactions] = useState({ data: [], meta: {} });
@@ -28,13 +25,14 @@ const FinancePage = () => {
   });
 
   const [editingTransaction, setEditingTransaction] = useState(null);
-  const [summary, setSummary] = useState(null);
+  const [selectedTransactionId, setSelectedTransactionId] = useState(null);
 
+  // Fetch list when filters change or when returning to list view
   useEffect(() => {
     if (view === "list") {
       loadTransactions();
-      loadSummary();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, view]);
 
   const loadTransactions = async () => {
@@ -49,88 +47,112 @@ const FinancePage = () => {
     }
   };
 
-  const loadSummary = async () => {
-    try {
-      const data = await fetchFinanceSummary(); // Standardized summary fetching
-      setSummary(data);
-    } catch (err) {
-      console.error("Summary failed:", err);
-    }
-  };
+  // --- Navigation Handlers ---
 
-  // Switch to Edit Mode
   const handleEdit = (transaction) => {
     setEditingTransaction(transaction);
     setView("edit");
   };
 
-  // Switch back to List
+  const handleViewDetails = (id) => {
+    setSelectedTransactionId(id);
+    setView("detail");
+  };
+
   const handleBackToList = () => {
     setEditingTransaction(null);
+    setSelectedTransactionId(null);
     setView("list");
   };
 
-  return (
-    <div className="container-fluid py-4">
-      {/* 1. RENDER FORM COMPONENT (Create/Edit) */}
-      {view !== "list" ? (
-        <RecordTransaction
-          isEditMode={view === "edit"}
-          initialData={editingTransaction}
-          onSuccess={() => {
-            setView("list");
-            loadTransactions();
-          }}
-          onCancel={handleBackToList}
-        />
-      ) : (
-        /* 2. RENDER LIST VIEW */
-        <>
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2 className="fw-bold">Finance Management</h2>
-            <button
-              className="btn btn-main px-4 text-white"
-              style={{ backgroundColor: "var(--maincolor)" }}
-              onClick={() => setView("create")}
-            >
-              + New Transaction
-            </button>
-          </div>
+  // --- Rendering Logic ---
 
-          {/* Filters */}
-          <TransactionFilters
-            filters={filters}
-            onFilterChange={(e) =>
-              setFilters({
-                ...filters,
-                [e.target.name]: e.target.value,
-                page: 1,
-              })
-            }
-            onClear={() =>
-              setFilters({
-                page: 1,
-                limit: 10,
-                category: "",
-                date_from: "",
-                date_to: "",
-              })
-            }
+  const renderContent = () => {
+    switch (view) {
+      case "create":
+      case "edit":
+        return (
+          <RecordTransaction
+            isEditMode={view === "edit"}
+            initialData={editingTransaction}
+            onSuccess={() => {
+              setView("list");
+              loadTransactions();
+            }}
+            onCancel={handleBackToList}
           />
+        );
 
-          {/* List Table */}
-          <div className="card shadow-sm border-0 mt-3">
-            <TransactionList
-              transactions={transactions.data}
-              pagination={transactions.meta}
-              onPageChange={(p) => setFilters({ ...filters, page: p })}
-              onEdit={handleEdit} // Pass the edit trigger to the table rows
+      case "detail":
+        return (
+          <TransactionDetail
+            transactionId={selectedTransactionId}
+            onBack={handleBackToList}
+          />
+        );
+
+      case "list":
+      default:
+        return (
+          <>
+            {/* Header */}
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+              <div>
+                <h2 className="fw-bold text-dark mb-2">Finance Management</h2>
+                <p className="text-muted mb-0">
+                  Track agency revenue, expenses, commissions, and VAT records.
+                </p>
+              </div>
+              <div className="mt-3 mt-md-0">
+                <button
+                  className="btn px-4 py-2 rounded-3 shadow-sm fw-semibold text-white"
+                  onClick={() => setView("create")}
+                  style={{ backgroundColor: "var(--maincolor)" }}
+                >
+                  + New Transaction
+                </button>
+              </div>
+            </div>
+
+            {/* Filters */}
+            <TransactionFilters
+              filters={filters}
+              onFilterChange={(e) =>
+                setFilters({
+                  ...filters,
+                  [e.target.name]: e.target.value,
+                  page: 1,
+                })
+              }
+              onClear={() =>
+                setFilters({
+                  page: 1,
+                  limit: 10,
+                  category: "",
+                  date_from: "",
+                  date_to: "",
+                })
+              }
             />
-          </div>
-        </>
-      )}
-    </div>
-  );
+
+            {/* List Table */}
+            <div className="card shadow-sm border-0 mb-4">
+              <div className="card-body p-0">
+                <TransactionList
+                  transactions={transactions.data}
+                  pagination={transactions.meta}
+                  onPageChange={(p) => setFilters({ ...filters, page: p })}
+                  onEdit={handleEdit}
+                  onView={handleViewDetails} // Passed to show eye icon
+                />
+              </div>
+            </div>
+          </>
+        );
+    }
+  };
+
+  return <div className="dashboard-wraper">{renderContent()}</div>;
 };
 
 export default FinancePage;

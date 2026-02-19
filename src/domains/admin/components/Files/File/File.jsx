@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import FileList from "../FileList/FileList";
-import FileModalForm from "../FileUploadForm/FileUploadForm";
+import UploadFile from "../UploadFile/UploadFile";
 import {
   fetchFiles,
   uploadFile,
@@ -17,44 +17,62 @@ const File = () => {
   const { addMessage } = useResponse();
   const { openModal } = useConfirmDelete();
 
-  const [filesData, setFilesData] = useState({ data: [], total: 0 });
+  // --- View Control ---
+  // 'list' = Table + Filters
+  // 'create' = Upload Form
+  // 'edit' = Update Form
+  const [view, setView] = useState("list");
+
+  const [filesData, setFilesData] = useState({
+    files: [],
+    total: 0,
+    pagination: {},
+  });
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
-    search: "",
+    fileName: "",
     category: "",
     file_type: "",
   });
   const [editingFile, setEditingFile] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  //  Fetch files
+  // Fetch files whenever filters change or we return to the list view
   useEffect(() => {
-    const fetchData = async () => {
-      showLoader();
-      try {
-        // Prepare filters for API
-        const cleanFilters = {};
-        if (filters.page) cleanFilters.page = parseInt(filters.page, 10);
-        if (filters.limit) cleanFilters.limit = parseInt(filters.limit, 10);
-        if (filters.file_type) cleanFilters.file_type = filters.file_type;
-        if (filters.category) cleanFilters.category = filters.category;
-        if (filters.fileName) cleanFilters.search = filters.fileName; // match API param
-
-        const files = await fetchFiles(cleanFilters);
-        setFilesData(files);
-      } catch (err) {
-        addMessage("error", err.message);
-      } finally {
-        hideLoader();
-      }
-    };
-
-    fetchData();
+    if (view === "list") {
+      fetchData();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, [filters, view]);
 
-  //  Filters
+  const fetchData = async () => {
+    showLoader();
+    try {
+      const cleanFilters = {
+        page: filters.page,
+        limit: filters.limit,
+        file_type: filters.file_type,
+        category: filters.category,
+        search: filters.fileName, // mapping state to API expected key
+      };
+
+      const response = await fetchFiles(cleanFilters);
+      
+      // Ensure we match the data structure returned by your API
+      setFilesData({
+        files: response.files || [],
+        total: response.pagination.total || 0,
+        pagination: response.pagination || {},
+      });
+    } catch (err) {
+      addMessage("error", err.message);
+    } finally {
+      hideLoader();
+    }
+  };
+
+  // --- Handlers ---
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
@@ -64,61 +82,29 @@ const File = () => {
     setFilters({
       page: 1,
       limit: 10,
-      fileType: "",
+      file_type: "",
       category: "",
-      search: "",
+      fileName: "",
     });
   };
 
-  //  Pagination
   const handlePageChange = (newPage) => {
     setFilters((prev) => ({ ...prev, page: newPage }));
   };
 
-  //  CRUD Handlers
-  const handleSubmit = async (fileData) => {
+  const handleFormSubmit = async (formData) => {
     showLoader();
     try {
       let response;
-
-      if (editingFile) {
-        response = await updateFile(editingFile.id, fileData);
-        addMessage(
-          "success",
-          response?.message || "File updated successfully!",
-        );
+      if (view === "edit") {
+        response = await updateFile(editingFile.id, formData);
+        addMessage("success", "File details updated successfully!");
       } else {
-        response = await uploadFile(fileData);
-        addMessage(
-          "success",
-          response?.message || "File uploaded successfully!",
-        );
+        response = await uploadFile(formData);
+        addMessage("success", "File uploaded successfully!");
       }
-
+      setView("list");
       setEditingFile(null);
-      setIsModalOpen(false);
-
-      const updatedFiles = await fetchFiles(filters);
-      setFilesData(updatedFiles);
-    } catch (err) {
-      addMessage("error", err.message);
-    } finally {
-      hideLoader();
-    }
-  };
-
-  const handleUpdate = (file) => {
-    setEditingFile(file);
-    setIsModalOpen(true);
-  };
-
-  const handleRename = async (id, newFileName) => {
-    showLoader();
-    try {
-      const response = await updateFile(id, newFileName);
-      addMessage("success", response?.message || "File renamed successfully!");
-      const updatedFiles = await fetchFiles(filters);
-      setFilesData(updatedFiles);
     } catch (err) {
       addMessage("error", err.message);
     } finally {
@@ -130,13 +116,9 @@ const File = () => {
     openModal(async () => {
       showLoader();
       try {
-        const response = await deleteFile(id); // use id passed to function
-        addMessage(
-          "success",
-          response?.message || "File deleted successfully!",
-        );
-        const updatedFiles = await fetchFiles(filters);
-        setFilesData(updatedFiles);
+        await deleteFile(id);
+        addMessage("success", "File deleted successfully!");
+        fetchData();
       } catch (err) {
         addMessage("error", err.message);
       } finally {
@@ -146,88 +128,67 @@ const File = () => {
   };
 
   return (
-    <div className="dashboard-wraper  ">
-      {/* Header */}
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-        <div>
-          <h2 className="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
-            File Manager
-          </h2>
-          <p className="text-muted mb-0">
-            Organize and manage your files — upload, update, delete, or
-            download.
-          </p>
-        </div>
-        <div className="mt-3 mt-md-0">
-          <button
-            className="sm-py-2 btn  px-4 py-2 rounded-3 shadow-sm fw-semibold"
-            onClick={() => {
-              setEditingFile(null);
-              setIsModalOpen(true);
-            }}
-            style={{
-              backgroundColor: "var(--maincolor)",
-              borderColor: "var(--maincolor)",
-              color: "#fff",
-            }}
-          >
-            + Upload File
-          </button>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <FileFilters
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onClear={handleClearFilters}
-      />
-
-      {/* File List */}
-      <div className="card shadow-sm mb-4">
-        <div className="card-body p-0">
-          <FileList
-            files={filesData?.files || []}
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-            onRename={handleRename}
-            pagination={filesData?.pagination || {}}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      </div>
-
-      {/* Pagination */}
-      {filesData?.total > filters?.limit && (
-        <div className="d-flex justify-content-center align-items-center gap-3">
-          <button
-            className="btn btn-outline-primary fw-bold px-4"
-            disabled={filters.page === 1}
-            onClick={() => handlePageChange(filters.page - 1)}
-          >
-            Previous
-          </button>
-          <span className="fw-bold">
-            Page {filters.page} of {Math.ceil(filesData.total / filters.limit)}
-          </span>
-          <button
-            className="btn btn-outline-primary fw-bold px-4"
-            disabled={filters.page * filters.limit >= filesData.total}
-            onClick={() => handlePageChange(filters.page + 1)}
-          >
-            Next
-          </button>
-        </div>
-      )}
-
-      {/* Modal for Upload / Update */}
-      {isModalOpen && (
-        <FileModalForm
-          show={isModalOpen}
-          handleClose={() => setIsModalOpen(false)}
-          handleSubmit={handleSubmit}
+    <div className="dashboard-wraper">
+      {view !== "list" ? (
+        /* Render Form View */
+        <UploadFile
+          isEditMode={view === "edit"}
           initialData={editingFile}
+          onSuccess={handleFormSubmit}
+          onCancel={() => {
+            setView("list");
+            setEditingFile(null);
+          }}
         />
+      ) : (
+        /* Render List View */
+        <>
+          {/* Header */}
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div>
+              <h2 className="fw-bold text-dark mb-2">File Manager</h2>
+              <p className="text-muted mb-0">
+                Organize and manage your files — upload, update, delete, or
+                download.
+              </p>
+            </div>
+            <div className="mt-3 mt-md-0">
+              <button
+                className="btn px-4 py-2 rounded-3 shadow-sm fw-semibold text-white"
+                onClick={() => {
+                  setEditingFile(null);
+                  setView("create");
+                }}
+                style={{ backgroundColor: "var(--maincolor)" }}
+              >
+                + Upload File
+              </button>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <FileFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClear={handleClearFilters}
+          />
+
+          {/* File List Table Container */}
+          <div className="card shadow-sm mb-4">
+            <div className="card-body p-0">
+              <FileList
+                files={filesData.files}
+                onUpdate={(file) => {
+                  setEditingFile(file);
+                  setView("edit");
+                }}
+                onDelete={handleDelete}
+                pagination={filesData.pagination}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

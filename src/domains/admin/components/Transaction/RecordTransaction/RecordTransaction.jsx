@@ -37,10 +37,6 @@ const RecordTransaction = ({
       const payload = {
         ...data,
         amount: parseFloat(data.amount),
-        // Logic: income & commission are 'income', others are 'expense'
-        type: ["income", "commission"].includes(data.category)
-          ? "income"
-          : "expense",
       };
 
       if (isEditMode) {
