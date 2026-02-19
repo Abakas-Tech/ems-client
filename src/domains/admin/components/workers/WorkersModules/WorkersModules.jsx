@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaUserPlus, FaUsers, FaUserSlash, FaFolderPlus } from "react-icons/fa";
 import {
-  listArchivedWorkers,
-  deleteArchivedWorker,
-  restoreWorker,
-  getArchivedWorkerProfile,
+  listWorkers,
+  getWorkerProfile,
+  deleteWorker,
 } from "../../../api/worker.api";
 import ActiveWorkersFilters from "../WorkersFilter/WorkersFilter";
 import useLoader from "../../../../../context/Loader/useLoader";
@@ -12,30 +12,32 @@ import useResponse from "../../../../../context/response/UseResponse";
 import BottomPagination from "../../../../../shared/components/BottomPagination/BottomPagination";
 import { useConfirmDelete } from "../../../../../context/Delete/useDelete";
 
-const ArchivedWorkers = () => {
+const WorkersModules = () => {
   const navigate = useNavigate();
+  const { openModal } = useConfirmDelete();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
-  const { openModal } = useConfirmDelete();
 
   const [workers, setWorkers] = useState([]);
-  const [filters, setFilters] = useState({ status: "archived" });
+  const [filters, setFilters] = useState({});
   const [meta, setMeta] = useState({ page: 1, limit: 10, total_items: 0 });
 
   const fetchWorkers = useCallback(async () => {
     showLoader();
     try {
-      const res = await listArchivedWorkers({
+      const res = await listWorkers({
         ...filters,
         page: meta.page,
         limit: meta.limit,
       });
 
+      // Extract items and meta from API response
       const { items, meta: apiMeta } = res;
+
       setWorkers(items || []);
       setMeta((prev) => ({ ...prev, ...(apiMeta || {}) }));
     } catch (err) {
-      addMessage(false, err.message || "Failed to load archived workers");
+      addMessage(false, err.message || "Failed to load workers");
     } finally {
       hideLoader();
     }
@@ -51,19 +53,19 @@ const ArchivedWorkers = () => {
   };
 
   const handleClear = () => {
-    setFilters({ status: "archived" });
+    setFilters({});
     setMeta((prev) => ({ ...prev, page: 1 }));
   };
 
   const handleView = async (id) => {
     showLoader();
     try {
-      const workerProfile = await getArchivedWorkerProfile(id);
+      const workerProfile = await getWorkerProfile(id);
 
-      //   console.log("Worker profile:", workerProfile);
+      console.log("Worker profile:", workerProfile);
 
       // Navigate to worker's page
-      navigate(`/admin/workers/archived/${id}`, { state: workerProfile });
+      navigate(`/admin/workers/active/${id}`, { state: workerProfile });
     } catch (err) {
       addMessage(false, err.message || "Failed to load worker profile");
     } finally {
@@ -71,50 +73,31 @@ const ArchivedWorkers = () => {
     }
   };
 
-  // Restore deleted workers
-  const handleRestore = (id) => {
+  const handleArchive = (id) => {
     openModal(
       async () => {
         showLoader();
-        try {
-          await restoreWorker(id);
-          addMessage(true, "Worker restored successfully");
-
-          // Remove the restored worker from the list instantly
-          setWorkers((prev) => prev.filter((w) => w.id !== id));
-
-          // Refresh pagination metadata
-          setMeta((prev) => ({ ...prev, total_items: prev.total_items - 1 }));
-        } catch (err) {
-          addMessage(false, err.message || "Failed to restore worker");
-        } finally {
-          hideLoader();
-        }
+        await deleteWorker(id, false);
+        addMessage(true, "Worker archived successfully");
+        fetchWorkers();
+        hideLoader();
       },
       {
-        title: "Are you sure you want to restore this worker?",
-        confirmText: "Restore",
+        title: "Are you sure you want to archive this worker?",
+        confirmText: "Archive",
       },
     );
   };
 
-  // Hard delete
   const handleDelete = (id) => {
     openModal(
       async () => {
         showLoader();
         try {
-          await deleteArchivedWorker(id);
+          await deleteWorker(id, true);
+
           addMessage(true, "Worker deleted permanently");
-
-          // Remove the worker from state immediately
-          setWorkers((prev) => prev.filter((w) => w.id !== id));
-
-          // Update total_items in meta
-          setMeta((prev) => ({
-            ...prev,
-            total_items: prev.total_items - 1,
-          }));
+          fetchWorkers();
         } catch (err) {
           addMessage(false, err.message || "Failed to delete worker");
         } finally {
@@ -122,7 +105,7 @@ const ArchivedWorkers = () => {
         }
       },
       {
-        title: "Are you sure you want to delete this worker permanently?",
+        title: "Are you sure you want to delete this worker?",
         confirmText: "Delete",
       },
     );
@@ -131,15 +114,20 @@ const ArchivedWorkers = () => {
   return (
     <section>
       <div className="container">
+        {/* Filters */}
         <ActiveWorkersFilters
           filters={filters}
           onFilterChange={handleFilterChange}
           onClear={handleClear}
         />
 
+        {/* Table */}
         {workers.length === 0 ? (
           <div className="text-center mt-5">
-            <p className="text-muted">No archived workers found</p>
+            <p className="text-muted">No active workers found</p>
+            <p className="text-muted small">
+              Try adjusting the filters above or check back later.
+            </p>
           </div>
         ) : (
           <div className="table-responsive mt-4">
@@ -157,34 +145,17 @@ const ArchivedWorkers = () => {
                   <tr key={w.id}>
                     <td>{w.full_name || "—"}</td>
                     <td>{w.phone_number || "—"}</td>
-                    <td>{w.status}</td>
+                    <td>{w.status || "Unknown"}</td>
                     <td>
-                      <div className="d-flex gap-2">
+                      <div className="d-flex gap-2 justify-content-start">
                         {/* View */}
                         <button
-                          className="btn btn-sm btn-outline-info"
+                          className="btn btn-md btn-outline-info"
                           onClick={() => handleView(w.id)}
-                          title="View worker"
+                          title="Add Module"
                           aria-label="View worker"
                         >
-                          <i className="fa-solid fa-eye"></i>
-                        </button>
-                        {/* Restore */}
-                        <button
-                          className="btn btn-sm btn-outline-success"
-                          onClick={() => handleRestore(w.id)}
-                          title="Restore worker"
-                        >
-                          <i className="fa-solid fa-rotate-left"></i>
-                        </button>
-
-                        {/* Delete */}
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDelete(w.id)}
-                          title="Delete permanently"
-                        >
-                          <i className="fa-solid fa-trash"></i>
+                          <FaFolderPlus />
                         </button>
                       </div>
                     </td>
@@ -193,6 +164,7 @@ const ArchivedWorkers = () => {
               </tbody>
             </table>
 
+            {/* Pagination */}
             {meta.total_items > meta.limit && (
               <BottomPagination
                 pagination={{
@@ -200,7 +172,9 @@ const ArchivedWorkers = () => {
                   limit: meta.limit,
                   total: meta.total_items,
                 }}
-                onPageChange={(page) => setMeta((prev) => ({ ...prev, page }))}
+                onPageChange={(newPage) =>
+                  setMeta((prev) => ({ ...prev, page: newPage }))
+                }
               />
             )}
           </div>
@@ -210,4 +184,4 @@ const ArchivedWorkers = () => {
   );
 };
 
-export default ArchivedWorkers;
+export default WorkersModules;

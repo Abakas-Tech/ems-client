@@ -149,7 +149,7 @@ const ActiveWorkers = () => {
                       <div className="d-flex gap-2 justify-content-start">
                         {/* View */}
                         <button
-                          className="btn btn-sm btn-outline-primary"
+                          className="btn btn-sm btn-outline-info"
                           onClick={() => handleView(w.id)}
                           title="View worker"
                           aria-label="View worker"

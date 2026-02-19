@@ -4,6 +4,7 @@ import WorkersDashboard from "../domains/admin/pages/workers/WorkersDashboard/Wo
 import WorkersRegistration from "../domains/admin/pages/workers/WorkersRegistration/WorkersRegistration.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import ArchivedWorkers from "../domains/admin/pages/workers/ArchivedWorkers/ArchivedWorkers.jsx";
+import WorkersModules from "../domains/admin/pages/workers/WorkersModules/WorkersModules.jsx";
 
 function AdminRoutes() {
   return (
@@ -13,6 +14,7 @@ function AdminRoutes() {
         <Route path="/workers/add" element={<WorkersRegistration />} />
         <Route path="/workers/active" element={<ActiveWorkers />} />
         <Route path="/workers/archived" element={<ArchivedWorkers />} />
+        <Route path="workers/modules/add" element={<WorkersModules />} />
       </Routes>
     </>
   );
