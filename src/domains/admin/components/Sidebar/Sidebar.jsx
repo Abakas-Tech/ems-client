@@ -48,6 +48,7 @@ const Sidebar = ({
 
     return () => clearTimeout(timer);
   }, [expanded]);
+  
 
   const filteredItems =
     user?.role === "Employee"
@@ -77,24 +78,23 @@ const Sidebar = ({
       <ul className={styles.nav}>
         {filteredItems.map((item) => {
           const isActive = location.pathname === item.path;
-          const className = `${styles.navLink} ${
-            isActive ? styles.active : ""
-          }`;
+
+          const liClass = isActive ? styles.active : "";
 
           if (item.isLogout) {
             return (
-              <li key={item.label}>
-                <button className={className} onClick={onLogout}>
+              <li key={item.label} className={liClass}>
+                <Link className={styles.navLink} onClick={onLogout}>
                   <i className={`bi ${item.icon} ${styles.icon}`} />
                   {showLabels && <span>{item.label}</span>}
-                </button>
+                </Link>
               </li>
             );
           }
 
           return (
-            <li key={item.label}>
-              <Link to={item.path} className={className} onClick={onClose}>
+            <li key={item.label} className={liClass}>
+              <Link to={item.path} className={styles.navLink} onClick={onClose}>
                 <i className={`bi ${item.icon} ${styles.icon}`} />
                 {showLabels && <span>{item.label}</span>}
               </Link>
@@ -112,7 +112,7 @@ const Sidebar = ({
         <div
           className={`${styles.sidebar} simpleSidebar smSidebar ${
             expanded ? styles.expanded : styles.collapsed
-          }`}
+          } d-navigation`}
         >
           <button className={styles.toggle} onClick={onToggle}>
             <i
@@ -126,13 +126,13 @@ const Sidebar = ({
 
       {/* Mobile Drawer */}
       {!isDesktop && (
-        <Drawer open={isOpen} onClose={onClose} direction="left" size="280px">
-          <div className={styles.mobileDrawer}>
+        <Drawer open={isOpen} onClose={onClose} direction="left" size="100%">
+          <div className={`${styles.mobileDrawer} d-navigation`}>
             <button className={styles.drawerClose} onClick={onClose}>
               <i className="bi bi-x-lg"></i>
             </button>
 
-            {renderMenu(showLabels)}
+            {renderMenu(true)}
           </div>
         </Drawer>
       )}
