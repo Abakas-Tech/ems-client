@@ -64,43 +64,43 @@ const Dashboard = () => {
       ? `${nameParts[0]} ${nameParts[1][0]}`
       : nameParts[0] || "";
 
-const handleAvatarChange = async (file) => {
-  if (!file) return;
+  const handleAvatarChange = async (file) => {
+    if (!file) return;
 
-  const previewUrl = URL.createObjectURL(file);
-  setAvatarPreview(previewUrl);
-  setShowAvatarMenu(false);
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreview(previewUrl);
+    setShowAvatarMenu(false);
 
-  showLoader();
-  try {
-    const response = await uploadProfilePhoto(file);
-    addMessage(response?.success, response?.message);
-    await fetchProfile();
-  } catch (err) {
-    addMessage(false, err.message);
-  } finally {
-    hideLoader();
-  }
-};
-
-const handleDeleteAvatar = () => {
-  openModal(async () => {
     showLoader();
     try {
-      const response = await deleteProfilePhoto();
-
+      const response = await uploadProfilePhoto(file);
       addMessage(response?.success, response?.message);
-
-      setAvatarPreview(null);
-      setShowAvatarMenu(false);
       await fetchProfile();
     } catch (err) {
       addMessage(false, err.message);
     } finally {
       hideLoader();
     }
-  });
-};
+  };
+
+  const handleDeleteAvatar = () => {
+    openModal(async () => {
+      showLoader();
+      try {
+        const response = await deleteProfilePhoto();
+
+        addMessage(response?.success, response?.message);
+
+        setAvatarPreview(null);
+        setShowAvatarMenu(false);
+        await fetchProfile();
+      } catch (err) {
+        addMessage(false, err.message);
+      } finally {
+        hideLoader();
+      }
+    });
+  };
 
   // ===== Avatar Source =====
   const avatarSrc =
@@ -132,13 +132,81 @@ const handleDeleteAvatar = () => {
       <div className={styles.main} style={{ marginLeft: sidebarWidth }}>
         {/* Mobile Header */}
         {!isDesktop && (
-          <header className={styles.header}>
-            <button
-              className={styles.menuBtn}
-              onClick={() => setMobileOpen(true)}
-            >
-              <i className="bi bi-list me-2"></i> Menu
-            </button>
+          <header className={styles.mobileHeader}>
+            <div className={styles.mobileLeft}>
+              <h5 className={styles.mobileTitle}>{activePage}</h5>
+            </div>
+
+            <div className={styles.mobileRight}>
+              <button className={styles.iconBtn}>
+                <i className="bi bi-bell"></i>
+              </button>
+              <div className={styles.avatarWrapper}>
+                <img
+                  src={user.avatar}
+                  alt="User"
+                  className={styles.mobileAvatar}
+                  onClick={() => setShowAvatarMenu(!showAvatarMenu)}
+                />
+                {showAvatarMenu && (
+                  <div className={styles.avatarMenu}>
+                    {/* If Image Exists → Show Edit + Delete */}
+                    {profile?.profile_photo_url || avatarPreview ? (
+                      <>
+                        <button
+                          className={styles.avatarIconBtn}
+                          onClick={() => fileInputRef.current.click()}
+                          title="Update Photo"
+                        >
+                          <i className="bi bi-pencil"></i>
+                        </button>
+
+                        <button
+                          className={styles.avatarIconBtn}
+                          onClick={handleDeleteAvatar}
+                          title="Delete Photo"
+                        >
+                          <i className="bi bi-trash text-danger"></i>
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {/* No Image → Upload + Disabled Delete */}
+                        <button
+                          className={styles.avatarIconBtn}
+                          onClick={() => fileInputRef.current.click()}
+                          title="Upload Photo"
+                        >
+                          <i className="bi bi-upload"></i>
+                        </button>
+
+                        <button
+                          className={`${styles.avatarIconBtn} ${styles.disabledBtn}`}
+                          disabled
+                          title="No photo to delete"
+                        >
+                          <i className="bi bi-trash text-muted"></i>
+                        </button>
+                      </>
+                    )}
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      ref={fileInputRef}
+                      onChange={(e) => handleAvatarChange(e.target.files[0])}
+                    />
+                  </div>
+                )}
+              </div>
+              <button
+                className={styles.iconBtn}
+                onClick={() => setMobileOpen(true)}
+              >
+                <i className="bi bi-list fw-bold"></i>
+              </button>
+            </div>
           </header>
         )}
 
