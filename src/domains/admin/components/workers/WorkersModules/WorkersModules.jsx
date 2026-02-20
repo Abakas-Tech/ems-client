@@ -61,21 +61,17 @@ const WorkersModules = () => {
     showLoader();
     try {
       const workerProfile = await getWorkerProfile(id);
-
-      console.log("Worker profile:", workerProfile);
+      // const id = workerProfile.data.id;
+      console.log(`"worker profile is :" ${workerProfile}`);
 
       // Navigate to worker's page
-      navigate(`/admin/workers/modules/${id}/add`, { state: workerProfile });
+      navigate(`/admin/workers/modules/${id}/add`);
     } catch (err) {
       addMessage(false, err.message || "Failed to load worker profile");
     } finally {
       hideLoader();
     }
   };
-
-
-
-
 
   return (
     <section>

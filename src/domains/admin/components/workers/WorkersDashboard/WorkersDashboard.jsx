@@ -58,7 +58,7 @@ function WorkersDashboard() {
                 </Link>
               </div>
               <h5 className="fr-can-name lh-base mb-2">
-                <Link to="/admin/workers/modules/add">Add Modules</Link>
+                <Link to="/admin/workers/modules">Add Modules</Link>
               </h5>
             </div>
           </div>

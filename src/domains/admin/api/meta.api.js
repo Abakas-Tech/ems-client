@@ -1,8 +1,39 @@
 import axiosInstance from "../../../utils/axios";
 // Get regions
 const getRegions = async () => {
-  const response = await axiosInstance.get("/meta/regions");
-  return response.data.data;
+  try {
+    const response = await axiosInstance.get("/meta/regions");
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch regions",
+    );
+  }
+};
+
+// Get cities
+const getCities = async (region_id, name = "") => {
+  if (!region_id) return [];
+
+  try {
+    const response = await axiosInstance.get("/meta/cities", {
+      params: {
+        region_id,
+        ...(name ? { name } : {}),
+      },
+    });
+
+    console.log("API response:", response);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch cities",
+    );
+  }
 };
 
 // Get worker status
@@ -11,12 +42,12 @@ const getWorkerStatuses = async () => {
     const response = await axiosInstance.get("/meta/worker-statuses");
     return response.data.data || [];
   } catch (error) {
-    console.error("Failed to fetch statuses:", error);
-    throw error;
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch status",
+    );
   }
 };
 
-export {
-    getRegions,
-    getWorkerStatuses
-}
+export { getRegions, getCities, getWorkerStatuses };
