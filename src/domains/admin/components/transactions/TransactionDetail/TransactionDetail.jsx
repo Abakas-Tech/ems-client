@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { fetchTransactionDetails } from "../../../api/finance.api";
 import useLoader from "../../../../../context/Loader/UseLoader";
 import useResponse from "../../../../../context/response/UseResponse";
-
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
 const TransactionDetail = ({ transactionId, onBack }) => {
   const [transaction, setTransaction] = useState(null);
   const { showLoader, hideLoader } = useLoader();
@@ -38,18 +38,7 @@ const TransactionDetail = ({ transactionId, onBack }) => {
           <h2 className="fw-bold text-dark mb-1">Transaction Receipt</h2>
           <p className="text-muted">ID: #{transaction.id}</p>
         </div>
-        <button
-          onClick={onBack}
-          className="btn btn-light border rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-          style={{
-            width: "45px",
-            height: "45px",
-            backgroundColor: "var(--maincolor)",
-            color: "#fff",
-          }}
-        >
-          ←
-        </button>
+        <BackButton onClick={onBack} />
       </div>
 
       <div className="card border-0 shadow-sm overflow-hidden">

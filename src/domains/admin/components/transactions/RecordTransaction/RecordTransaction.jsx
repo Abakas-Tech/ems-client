@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createTransaction } from "../../../api/finance.api";
 import useLoader from "../../../../../context/Loader/UseLoader";
 import useResponse from "../../../../../context/response/UseResponse";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 const RecordTransaction = ({
   isEditMode = false,
@@ -98,14 +99,7 @@ const RecordTransaction = ({
           <h3>
             {isEditMode ? "Update Transaction" : "Record New Transaction"}
           </h3>
-          <button
-            type="button"
-            className="btn btn-sm btn-secondary rounded-circle"
-            onClick={onCancel}
-            style={{ width: "32px", height: "32px" }}
-          >
-            <i className="bi bi-x-lg"></i>
-          </button>
+          <BackButton onClick={onCancel} />
         </div>
 
         <div className="submit-section">
