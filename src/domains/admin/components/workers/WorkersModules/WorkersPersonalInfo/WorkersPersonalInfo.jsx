@@ -49,7 +49,6 @@ function WorkersPersonalInfo() {
         const regions = await getRegions();
         setRegions(Array.isArray(regions) ? regions : []);
       } catch (err) {
-        console.error(err);
         setRegions([]);
         addMessage(false, "Could not load regions. Please try again.");
       } finally {
@@ -70,7 +69,6 @@ function WorkersPersonalInfo() {
         const data = await getCities(regionId);
         setCities(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("Failed to load cities:", err);
         addMessage(false, "Failed to load cities");
         setCities([]);
       } finally {
@@ -278,16 +276,6 @@ function WorkersPersonalInfo() {
         dataToSend.append("photo_standing_url", photoStanding);
       }
 
-      // Debug: log FormData entries
-      console.log("FormData being sent:");
-      for (let [key, value] of dataToSend.entries()) {
-        console.log(
-          key.padEnd(38),
-          "→",
-          value instanceof File ? `${value.name} (File)` : value,
-        );
-      }
-
       await updateWorker(dataToSend, id);
 
       addMessage(true, "Personal information added successfully!");
@@ -315,7 +303,6 @@ function WorkersPersonalInfo() {
       setPhoto3x4(null);
       setPhotoStanding(null);
     } catch (err) {
-      console.error("Submit error:", err);
 
       let errorMsg = "Failed to add personal information";
 

@@ -24,8 +24,6 @@ const getCities = async (region_id, name = "") => {
         ...(name ? { name } : {}),
       },
     });
-
-    console.log("API response:", response);
     return response.data.data;
   } catch (error) {
     throw new Error(

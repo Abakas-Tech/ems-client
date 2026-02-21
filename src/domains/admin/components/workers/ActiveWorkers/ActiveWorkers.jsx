@@ -61,8 +61,6 @@ const ActiveWorkers = () => {
     try {
       const workerProfile = await getWorkerProfile(id);
 
-      console.log("Worker profile:", workerProfile);
-
       // Navigate to worker's page
       navigate(`/admin/workers/active/${id}`, { state: workerProfile });
     } catch (err) {

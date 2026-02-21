@@ -18,7 +18,6 @@ const createWorker = async (formData) => {
 const listArchivedWorkers = async (params = {}) => {
   try {
     const response = await axiosInstance.get("/workers/archived", { params });
-    console.log(response);
     return response.data.data;
   } catch (error) {
     throw new Error(
@@ -106,7 +105,6 @@ const getWorkerProfile = async (id) => {
 const listWorkers = async (params = {}) => {
   try {
     const response = await axiosInstance.get("/workers", { params });
-    console.log(response);
     return response.data.data;
   } catch (error) {
     throw new Error(

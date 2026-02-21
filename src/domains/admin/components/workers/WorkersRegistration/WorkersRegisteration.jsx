@@ -36,7 +36,6 @@ function WorkersRegistration() {
         setStatuses(Array.isArray(data?.data) ? data.data : data || []);
         setStatusesError(null);
       } catch (err) {
-        console.error(err);
         setStatuses([]);
         setStatusesError("Could not load worker statuses");
         addMessage(false, "Could not load worker statuses. Please try again.");

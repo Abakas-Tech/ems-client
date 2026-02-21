@@ -60,8 +60,6 @@ const ArchivedWorkers = () => {
     try {
       const workerProfile = await getArchivedWorkerProfile(id);
 
-      //   console.log("Worker profile:", workerProfile);
-
       // Navigate to worker's page
       navigate(`/admin/workers/archived/${id}`, { state: workerProfile });
     } catch (err) {
