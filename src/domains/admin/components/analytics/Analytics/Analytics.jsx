@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import StatCard from "../StatCard/StatCard";
-import DashboardFilters from "../AnalyticsFilter/DashboardFilters"; // Externalized
+import AnalyticsFilter from "../AnalyticsFilter/AnalyticsFilter";
 import { fetchDashboardData } from "../../../api/analytics.api";
 import useLoader from "../../../../../context/Loader/UseLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 
-const Dashboard = () => {
+const Analytics = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
@@ -16,6 +16,7 @@ const Dashboard = () => {
     month: new Date().getMonth() + 1,
   });
 
+  // Months
   const months = [
     "January",
     "February",
@@ -36,6 +37,7 @@ const Dashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
+  // Fetch dashboard data
   const loadDashboard = async () => {
     showLoader();
     try {
@@ -48,14 +50,7 @@ const Dashboard = () => {
     }
   };
 
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Handles changes to the filter input fields.
-   * Updates the filter state with the new values.
-   * If the field is 'month', it parses the value as an integer.
-   * @param {Event} e - The event object from the input field's onChange event.
-   */
-  /*******  c493d79d-5575-484a-bf10-f8e18db863ae  *******/
+  //  Handle filter change
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({
@@ -64,6 +59,7 @@ const Dashboard = () => {
     }));
   };
 
+  // Handle clear
   const handleClear = () => {
     setFilters({
       period: "monthly",
@@ -86,7 +82,7 @@ const Dashboard = () => {
         </p>
       </div>
 
-      <DashboardFilters
+      <AnalyticsFilter
         filters={filters}
         onFilterChange={handleFilterChange}
         onClear={handleClear}
@@ -204,4 +200,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Analytics;

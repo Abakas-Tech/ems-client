@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import FileList from "../FileList/FileList";
-import UploadFile from "../UploadFile/UploadFile";
+import FileUpload from "../FileUpload/FileUpload";
 import {
   fetchFiles,
   uploadFile,
@@ -131,7 +131,7 @@ const File = () => {
     <div className="dashboard-wraper">
       {view !== "list" ? (
         /* Render Form View */
-        <UploadFile
+        <FileUpload
           isEditMode={view === "edit"}
           initialData={editingFile}
           onSuccess={handleFormSubmit}

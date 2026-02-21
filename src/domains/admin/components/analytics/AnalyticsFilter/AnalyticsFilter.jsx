@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "../../files/FileFilters/FileFilters.module.css"; // Reuse your existing styling
 
-const DashboardFilters = ({ filters, onFilterChange, onClear, months }) => {
+const AnalyticsFilters = ({ filters, onFilterChange, onClear, months }) => {
   return (
     <div className={`card shadow-sm mb-4 ${styles.filtersCard}`}>
       <div className="card-body">
@@ -64,4 +64,4 @@ const DashboardFilters = ({ filters, onFilterChange, onClear, months }) => {
   );
 };
 
-export default DashboardFilters;
+export default AnalyticsFilters;

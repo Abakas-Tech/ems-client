@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useResponse from "../../../../../context/response/UseResponse";
 
-const UploadFile = ({
+const FileUpload = ({
   isEditMode = false,
   initialData = null,
   onSuccess,
@@ -225,4 +225,4 @@ const UploadFile = ({
   );
 };
 
-export default UploadFile;
+export default FileUpload;

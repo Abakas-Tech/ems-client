@@ -6,8 +6,3 @@ export const fetchDashboardData = async (params) => {
   const response = await axiosInstance.get("/analytics/dashboard", { params });
   return response.data.data;
 };
-
-export const fetchFinanceSummary = async (params) => {
-  const response = await axiosInstance.get("/finance/summary", { params });
-  return response.data.data;
-};
