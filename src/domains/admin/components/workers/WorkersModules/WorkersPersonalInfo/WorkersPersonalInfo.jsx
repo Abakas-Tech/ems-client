@@ -27,7 +27,7 @@ function WorkersPersonalInfo() {
       nationality: "Ethiopian",
       address: "",
       education: "",
-      number_of_children: "0",
+      number_of_children: 0,
       height_cm: "",
       weight_kg: "",
     },
@@ -115,107 +115,123 @@ function WorkersPersonalInfo() {
     if (name === "photo_standing_url") setPhotoStanding(files[0]);
   };
 
-  // Simple frontend mirror of your Joi schema
-  const validatePersonalInfo = (personalInfo) => {
-    const errors = [];
-
-    // Region and City – must be positive integers if provided
-    if (personalInfo.region_id) {
-      const rid = Number(personalInfo.region_id);
-      if (!Number.isInteger(rid) || rid <= 0) {
-        errors.push("Region must be a valid positive number");
+  // Frontend validation function
+  const validatePersonalInfo = (pi) => {
+    // region_id
+    if (pi.region_id !== null && pi.region_id !== "") {
+      const v = Number(pi.region_id);
+      if (!Number.isInteger(v) || v <= 0) {
+        return "Region must be a positive integer";
       }
     }
 
-    if (personalInfo.city_id) {
-      const cid = Number(personalInfo.city_id);
-      if (!Number.isInteger(cid) || cid <= 0) {
-        errors.push("City must be a valid positive number");
+    // city_id
+    if (pi.city_id !== null && pi.city_id !== "") {
+      const v = Number(pi.city_id);
+      if (!Number.isInteger(v) || v <= 0) {
+        return "City must be a positive integer";
       }
     }
 
-    // Date of Birth – must be a valid date in the past
-    if (personalInfo.date_of_birth) {
-      const dob = new Date(personalInfo.date_of_birth);
-      const now = new Date();
+
+    // date_of_birth
+    if (pi.date_of_birth) {
+      const dob = new Date(pi.date_of_birth);
       if (isNaN(dob.getTime())) {
-        errors.push("Date of birth must be a valid date");
-      } else if (dob > now) {
-        errors.push("Date of birth cannot be in the future");
+        return "Date of birth must be a valid ISO date";
+      }
+      if (dob >= new Date()) {
+        return "Date of birth must be in the past";
       }
     }
 
-    // Text fields – check max lengths (you can adjust these based on your needs)
-    const maxLengths = {
-      place_of_birth: 100,
-      religion: 50,
-      address: 500,
-      education: 100,
-      nationality: 100,
-    };
-
-    for (const [field, max] of Object.entries(maxLengths)) {
-      const value = personalInfo[field]?.trim() || "";
-      if (value.length > max) {
-        errors.push(
-          `${field.replace(/_/g, " ")} must be at most ${max} characters`,
-        );
+    // place_of_birth
+    if (pi.place_of_birth) {
+      if (pi.place_of_birth.trim().length > 100) {
+        return "Place of birth must be at most 100 characters";
       }
     }
 
-    // Marital status – must be one of the allowed values
-    const allowedMarital = ["Single", "Married", "Divorced", "Widowed", ""];
-    if (
-      personalInfo.marital_status &&
-      !allowedMarital.includes(personalInfo.marital_status)
-    ) {
-      errors.push(
-        "Marital status must be one of: Single, Married, Divorced, Widowed",
-      );
-    }
-
-    // Number of children – must be 0 or a positive integer
-    if (
-      personalInfo.number_of_children !== "" &&
-      personalInfo.number_of_children !== null
-    ) {
-      const noc = Number(personalInfo.number_of_children);
-      if (!Number.isInteger(noc) || noc < 0) {
-        errors.push("Number of children must be 0 or a positive integer");
+    // religion
+    if (pi.religion) {
+      if (pi.religion.trim().length > 50) {
+        return "Religion must be at most 50 characters";
       }
     }
 
-    // Height and Weight – must be within reasonable ranges if provided
-    if (personalInfo.height_cm !== "" && personalInfo.height_cm !== null) {
-      const h = Number(personalInfo.height_cm);
-      if (isNaN(h) || h < 100 || h > 250) {
-        errors.push("Height must be between 100 and 250 cm");
+    // marital_status
+    if (pi.marital_status) {
+      const allowed = ["Single", "Married", "Divorced", "Widowed"];
+      if (!allowed.includes(pi.marital_status)) {
+        return "Marital status must be Single, Married, Divorced, or Widowed";
       }
     }
 
-    // Weight – must be within reasonable ranges if provided
-    if (personalInfo.weight_kg !== "" && personalInfo.weight_kg !== null) {
-      const w = Number(personalInfo.weight_kg);
-      if (isNaN(w) || w < 30 || w > 200) {
-        errors.push("Weight must be between 30 and 200 kg");
+    // sex
+    if (pi.sex) {
+      if (!["Male", "Female"].includes(pi.sex)) {
+        return "Sex must be Male or Female";
       }
     }
 
-    return errors;
+    // nationality
+    if (pi.nationality) {
+      if (typeof pi.nationality !== "string") {
+        return "Nationality must be a string";
+      }
+    }
+
+    // address
+    if (pi.address) {
+      if (pi.address.trim().length > 500) {
+        return "Address must be at most 500 characters";
+      }
+    }
+
+    // education
+    if (pi.education) {
+      if (pi.education.trim().length > 100) {
+        return "Education must be at most 100 characters";
+      }
+    }
+
+    // number_of_children
+    if (pi.number_of_children !== null && pi.number_of_children !== "") {
+      const v = Number(pi.number_of_children);
+      if (!Number.isInteger(v) || v < 0) {
+        return "Number of children must be 0 or a positive integer";
+      }
+    }
+
+    // height_cm
+    if (pi.height_cm !== null && pi.height_cm !== "") {
+      const v = Number(pi.height_cm);
+      if (isNaN(v) || v < 100 || v > 250) {
+        return "Height must be between 100 and 250 cm";
+      }
+    }
+
+    // weight_kg
+    if (pi.weight_kg !== null && pi.weight_kg !== "") {
+      const v = Number(pi.weight_kg);
+      if (isNaN(v) || v < 30 || v > 200) {
+        return "Weight must be between 30 and 200 kg";
+      }
+    }
+
+    return null;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const pi = formData.personal_information;
+   const pi = formData.personal_information;
 
-    // Frontend validation before sending
-    const validationErrors = validatePersonalInfo(pi);
-
-    if (validationErrors.length > 0) {
-      addMessage(false, validationErrors.join(" • "));
-      return;
-    }
+   const error = validatePersonalInfo(pi);
+   if (error) {
+     addMessage(false, error);
+     return;
+   }
 
     setSubmitLoading(true);
     showLoader();
@@ -303,7 +319,6 @@ function WorkersPersonalInfo() {
       setPhoto3x4(null);
       setPhotoStanding(null);
     } catch (err) {
-
       let errorMsg = "Failed to add personal information";
 
       if (err.response?.data?.message) {
@@ -497,8 +512,7 @@ function WorkersPersonalInfo() {
                         value={formData.personal_information.height_cm}
                         onChange={handleNumberChange}
                         step="0.01"
-                        min="100"
-                        max="250"
+                       
                         required
                       />
                     </div>
@@ -515,8 +529,7 @@ function WorkersPersonalInfo() {
                         value={formData.personal_information.weight_kg}
                         onChange={handleNumberChange}
                         step="0.01"
-                        min="30"
-                        max="200"
+                        
                         required
                       />
                     </div>
