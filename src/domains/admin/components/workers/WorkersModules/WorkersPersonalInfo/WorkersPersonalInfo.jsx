@@ -288,7 +288,7 @@ function WorkersPersonalInfo() {
     } catch (err) {
       console.error("Submit error:", err);
 
-      let errorMsg = "Failed to update personal information";
+      let errorMsg = "Failed to add personal information";
 
       if (err.response?.data?.message) {
         errorMsg = err.response.data.message;
@@ -316,7 +316,9 @@ function WorkersPersonalInfo() {
                   <div className="row">
                     {/* Region */}
                     <div className="form-group col-md-6">
-                      <label>Region</label>
+                      <label>
+                        Region <span className="text-danger">*</span>
+                      </label>
                       {regions.length === 0 ? (
                         <div className="form-control text-muted">
                           {regionsError
@@ -329,6 +331,7 @@ function WorkersPersonalInfo() {
                           className="form-control"
                           value={formData.personal_information.region_id}
                           onChange={handleTextChange}
+                          required
                         >
                           <option value="">Select region</option>
                           {regions.map((region) => (
@@ -349,7 +352,6 @@ function WorkersPersonalInfo() {
                         value={formData.personal_information.city_id}
                         onChange={handleTextChange}
                         disabled={!formData.personal_information.region_id}
-                        required
                       >
                         <option value="">
                           {formData.personal_information.region_id
@@ -390,7 +392,7 @@ function WorkersPersonalInfo() {
 
                     {/* Religion */}
                     <div className="form-group col-md-6">
-                      <label>Religion</label>
+                      <label>Religion </label>
                       <input
                         type="text"
                         name="personal_religion"
@@ -480,7 +482,7 @@ function WorkersPersonalInfo() {
                         step="0.01"
                         min="100"
                         max="250"
-                        
+                        required
                       />
                     </div>
 
@@ -498,6 +500,7 @@ function WorkersPersonalInfo() {
                         step="0.01"
                         min="30"
                         max="200"
+                        required
                       />
                     </div>
 
