@@ -291,6 +291,29 @@ function WorkersPersonalInfo() {
       await updateWorker(dataToSend, id);
 
       addMessage(true, "Personal information added successfully!");
+
+      // Clear form and photos after successful submission
+      setFormData({
+        personal_information: {
+          region_id: "",
+          city_id: "",
+          status_id: "",
+          date_of_birth: "",
+          place_of_birth: "",
+          religion: "",
+          marital_status: "",
+          nationality: "Ethiopian",
+          address: "",
+          education: "",
+          number_of_children: "",
+          height_cm: "",
+          weight_kg: "",
+        },
+        photo_3x4_url: null,
+        photo_standing_url: null,
+      });
+      setPhoto3x4(null);
+      setPhotoStanding(null);
     } catch (err) {
       console.error("Submit error:", err);
 
