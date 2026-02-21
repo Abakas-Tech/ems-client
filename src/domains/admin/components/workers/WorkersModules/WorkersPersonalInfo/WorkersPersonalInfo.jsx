@@ -480,7 +480,7 @@ function WorkersPersonalInfo() {
                         step="0.01"
                         min="100"
                         max="250"
-                        required
+                        
                       />
                     </div>
 

@@ -1,23 +1,12 @@
 import useResponse from "./../../../context/response/UseResponse";
-
+import styles from "./Response.module.css";
 const Response = () => {
   const { responseMessages, removeMessage } = useResponse();
 
   if (!responseMessages.length) return null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: "1rem",
-        right: "1rem",
-        zIndex: 1050,
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.5rem",
-        minWidth: "400px",
-      }}
-    >
+    <div className={styles["response-container"]}>
       {responseMessages.map((msg) => (
         <div
           key={msg.id}
