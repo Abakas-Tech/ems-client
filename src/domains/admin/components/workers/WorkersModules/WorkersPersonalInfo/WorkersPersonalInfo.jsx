@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { updateWorker } from "../../../../api/worker.api";
 import { getRegions, getCities } from "../../../../api/meta.api";
 import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/response/useResponse";
+import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 
 function WorkersPersonalInfo() {
+  const Navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { id } = useParams();
@@ -35,6 +37,10 @@ function WorkersPersonalInfo() {
   const [photo3x4, setPhoto3x4] = useState(null);
   const [photoStanding, setPhotoStanding] = useState(null);
 
+  // Go back to previous page
+  const goBack = () => {
+    Navigate(-1);
+  };
   // Load regions
   useEffect(() => {
     const loadRegions = async () => {
@@ -310,6 +316,7 @@ function WorkersPersonalInfo() {
         <div className="row">
           <div className="col-lg-12 col-md-12">
             <div className="dashboard-wraper">
+              <BackButton onClick={goBack} />
               <form className="form-submit" onSubmit={handleSubmit}>
                 <h4>Worker Personal Information</h4>
                 <div className="submit-section">

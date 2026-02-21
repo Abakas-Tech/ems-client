@@ -1,10 +1,11 @@
 // src/components/workers/ActiveWorkersFilters.jsx
 import React, { useEffect, useState } from "react";
-import { getWorkerStatuses } from "../../../api/meta.api"
+import { getWorkerStatuses } from "../../../api/meta.api";
 import { getRegions } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 import styles from "./WorkersFilter.module.css";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 const WorkersFilter = ({ filters, onFilterChange, onClear }) => {
   const { showLoader, hideLoader } = useLoader();

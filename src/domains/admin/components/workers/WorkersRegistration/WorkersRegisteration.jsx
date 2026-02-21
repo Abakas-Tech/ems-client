@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { createWorker } from "../../../api/worker.api";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 function WorkersRegistration() {
+  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
@@ -18,6 +21,11 @@ function WorkersRegistration() {
   const [statuses, setStatuses] = useState(null);
   const [statusesError, setStatusesError] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
+
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  };
 
   // Fetch worker statuses on mount
   useEffect(() => {
@@ -116,6 +124,7 @@ function WorkersRegistration() {
         <div className="row">
           <div className="col-lg-12 col-md-12">
             <div className="dashboard-wraper">
+              <BackButton onClick={goBack} />
               <form className="form-submit" onSubmit={handleSubmit}>
                 <h4>Worker Registration</h4>
 
