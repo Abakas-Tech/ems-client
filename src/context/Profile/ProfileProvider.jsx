@@ -1,5 +1,5 @@
 // context/profile/ProfileProvider.jsx
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { getProfile } from "../../domains/admin/api/profile.api";
 import useResponse from "../response/UseResponse";
 
@@ -16,8 +16,10 @@ export const ProfileProvider = ({ children }) => {
       setProfile(response.data);
     } catch (error) {
       addMessage(false, error.message);
+      setProfile(null);
     }
   };
+
 
   return (
     <ProfileContext.Provider value={{ profile, setProfile, fetchProfile }}>

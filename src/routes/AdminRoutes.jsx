@@ -10,6 +10,7 @@ import CreateUserPage from "../domains/admin/pages/Users/CreateUsersPage.jsx";
 import Profile from "../domains/admin/pages/Profile/Profile.jsx";
 import EmployersPage from './../domains/admin/pages/Employer/EmployersPage';
 import CreateEmployerPage from "../domains/admin/pages/Employer/CreateEmployerPage.jsx";
+import AdminLayout from "../shared/Layouts/AdminLayout.jsx";
 
 const AdminRoutes = () => (
   <Routes>
@@ -18,7 +19,7 @@ const AdminRoutes = () => (
     <Route
       element={
         // <ProtectedRoute>
-        <Dashboard />
+        <AdminLayout />
         // </ProtectedRoute>
       }
     >

@@ -6,8 +6,8 @@ import SEOHelmet from "../SEOHelmet/SEOHelmet";
 const NotFound = () => (
   <>
     <SEOHelmet />
-    <section className="error-wrap">
-      <div className="container">
+
+      <div className="container mt-5">
         <div className="row justify-content-center">
           <div className="col-lg-6 col-md-10">
             <div className="text-center">
@@ -24,7 +24,7 @@ const NotFound = () => (
           </div>
         </div>
       </div>
-    </section>
+
   </>
 );
 

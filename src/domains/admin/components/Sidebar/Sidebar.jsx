@@ -3,12 +3,21 @@ import { Link, useLocation } from "react-router-dom";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import styles from "./Sidebar.module.css";
+import { useProfile } from "../../../../context/Profile/ProfileProvider";
 
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard", icon: "bi-speedometer2" },
   { label: "My Profile", path: "/admin/my-profile", icon: "bi-person" },
-  { label: "User Management", path: "/admin/user-management", icon: "bi-file-earmark-text" },
-  { label: "Employer Management", path: "/admin/employer-management", icon: "bi-people" },
+  {
+    label: "User Management",
+    path: "/admin/user-management",
+    icon: "bi-file-earmark-text",
+  },
+  {
+    label: "Employer Management",
+    path: "/admin/employer-management",
+    icon: "bi-people",
+  },
   { label: "Groups", path: "/admin/groups", icon: "bi-people-fill" },
   {
     label: "Contributors",
@@ -19,36 +28,39 @@ const menuItems = [
   { label: "Payment History", path: "/admin/payments", icon: "bi-cash-stack" },
   { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
   { label: "Log Out", path: "#", icon: "bi-box-arrow-right", isLogout: true },
+  { label: "Collect Money", path: "/admin/collect-money", icon: "bi-wallet2" },
+  { label: "Payment History", path: "/admin/payments", icon: "bi-cash-stack" },
+  { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
+  { label: "Log Out", path: "#", icon: "bi-box-arrow-right", isLogout: true },
 ];
 
 const Sidebar = ({
   isOpen,
   onClose,
   expanded,
-  onToggle,
-  user,
   onLogout,
   isDesktop,
 }) => {
   const location = useLocation();
   const [showLabels, setShowLabels] = useState(expanded);
+  const { profile } = useProfile();
 
+  const user = profile;
+
+  // Handle label animation
   useEffect(() => {
     let timer;
 
     if (expanded) {
-      // wait for sidebar width transition to finish
       timer = setTimeout(() => {
         setShowLabels(true);
-      }, 150); // match CSS transition duration
+      }, 150);
     } else {
-      // hide immediately when collapsing
       setShowLabels(false);
     }
 
     return () => clearTimeout(timer);
   }, [expanded]);
-  
 
   const filteredItems =
     user?.role === "Employee"
@@ -60,33 +72,19 @@ const Sidebar = ({
 
   const renderMenu = (showLabels = true) => (
     <div className={styles.content}>
-      <div className={styles.header}>
-        <img
-          src={user?.avatar || "https://placehold.co/88x88"}
-          alt="User"
-          className={`${styles.avatar} ${expanded ? styles.expandedAvatar : styles.collapsedAvatar}`}
-        />
-
-        {showLabels && (
-          <div className={styles.userInfo}>
-            <h5 className={styles.name}>{user?.name || "User"}</h5>
-            <p className={styles.role}>{user?.role || "Member"}</p>
-          </div>
-        )}
-      </div>
-
       <ul className={styles.nav}>
         {filteredItems.map((item) => {
           const isActive = location.pathname === item.path;
-
-          const liClass = isActive ? styles.active : "";
+          const liClass = isActive ? "active" : "";
 
           if (item.isLogout) {
             return (
               <li key={item.label} className={liClass}>
                 <Link className={styles.navLink} onClick={onLogout}>
                   <i className={`bi ${item.icon} ${styles.icon}`} />
-                  {showLabels && <span>{item.label}</span>}
+                  {showLabels && (
+                    <span >{item.label}</span>
+                  )}
                 </Link>
               </li>
             );
@@ -96,7 +94,7 @@ const Sidebar = ({
             <li key={item.label} className={liClass}>
               <Link to={item.path} className={styles.navLink} onClick={onClose}>
                 <i className={`bi ${item.icon} ${styles.icon}`} />
-                {showLabels && <span>{item.label}</span>}
+                {showLabels && <span className={styles.label}>{item.label}</span>}
               </Link>
             </li>
           );
@@ -110,16 +108,11 @@ const Sidebar = ({
       {/* Desktop Sidebar */}
       {isDesktop && (
         <div
-          className={`${styles.sidebar} simpleSidebar smSidebar ${
+          className={`${styles.sidebar}  ${
             expanded ? styles.expanded : styles.collapsed
-          } d-navigation`}
+          } d-navigation `}
+        
         >
-          <button className={styles.toggle} onClick={onToggle}>
-            <i
-              className={`bi ${expanded ? "bi-chevron-left" : "bi-chevron-right"}`}
-            />
-          </button>
-
           {renderMenu(showLabels)}
         </div>
       )}

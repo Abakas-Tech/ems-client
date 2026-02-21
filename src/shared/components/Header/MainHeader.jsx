@@ -7,7 +7,7 @@ import { FaBars } from "react-icons/fa";
 // import logo from "../../../assets/img/logo.svg";
 import useAuth from "../../../context/auth/UseAuth";
 
-const Header = () => {
+const MainHeader = () => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
@@ -72,11 +72,7 @@ const Header = () => {
         >
           {/* Nav Header */}
           <div className="nav-header">
-            {/* <Link className="nav-brand text-logo exchange" to="/">
-              <img src={logo} alt="Logo" />
-              <h5 className="m-0">Resido</h5>
-            </Link> */}
-
+    
             {/* Mobile toggle */}
             {isPortrait && (
               <div
@@ -97,6 +93,19 @@ const Header = () => {
           {/* Desktop Nav */}
           {!isPortrait && (
             <div className="nav-menus-wrapper">
+              {/* Desktop Sidebar Toggle (Hamburger Only) */}
+              <div
+                style={{
+                  fontSize: "22px",
+                  cursor: "pointer",
+                  color: "var(--maincolor)",
+                  marginRight: "18px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <FaBars />
+              </div>
               <ul className="nav-menu align-to-right">
                 <li>
                   <Link
@@ -238,4 +247,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default MainHeader;

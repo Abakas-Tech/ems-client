@@ -10,52 +10,43 @@ import {
 import { useConfirmDelete } from "../../../../context/Delete/UseDelete";
 
 const MyProfile = () => {
-  const { profile, fetchProfile } = useProfile();
+  const { fetchProfile , profile} = useProfile();
   const [profileData, setProfileData] = useState({
     full_name: "",
     email: "",
     phone_number: "",
     country: "",
   });
-  const [avatarPreview, setAvatarPreview] = useState(null);
-  const [showAvatarMenu, setShowAvatarMenu] = useState(false);
+
   const fileInputRef = useRef(null);
 
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useConfirmDelete();
 
-  // Prefill form
   useEffect(() => {
     if (profile) {
       setProfileData({
-        full_name: profile.full_name || "",
-        email: profile.email || "",
-        phone_number: profile.phone_number || "",
-        country: profile.id === 4 ? profile.country || "" : "",
+        full_name: profile?.full_name || "",
+        email: profile?.email || "",
+        phone_number: profile?.phone_number || "",
+        country: profile?.role_id === 4 ? profile?.country || "" : "",
       });
-      setAvatarPreview(profile.profile_photo_url || null);
     }
   }, [profile]);
 
   useEffect(() => {
-    fetchProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+       fetchProfile();
   }, []);
 
-  // ===== Form input handler =====
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ===== Avatar upload =====
   const handleAvatarChange = async (file) => {
     if (!file) return;
 
-    const previewUrl = URL.createObjectURL(file);
-    setAvatarPreview(previewUrl);
-    setShowAvatarMenu(false);
 
     showLoader();
     try {
@@ -69,15 +60,13 @@ const MyProfile = () => {
     }
   };
 
-  // ===== Avatar delete =====
-  const handleDeleteAvatar = () => {
+  const handleDeleteAvatar = async () => {
     openModal(async () => {
       showLoader();
       try {
         const response = await deleteProfilePhoto();
         addMessage(response?.success, response?.message);
-        setAvatarPreview(null);
-        setShowAvatarMenu(false);
+  
         await fetchProfile();
       } catch (err) {
         addMessage(false, err.message);
@@ -87,54 +76,28 @@ const MyProfile = () => {
     });
   };
 
-  const handleFileClick = () => fileInputRef.current.click();
 
-  // ===== Custom Validation =====
+
   const validateFields = () => {
     const { full_name, email, phone_number, country } = profileData;
-
-    if (!full_name) {
-      addMessage(false, "Full name is required.");
-      return false;
-    }
-
-    if (!email) {
-      addMessage(false, "Email is required.");
-      return false;
-    }
-
+    if (!full_name) return addMessage(false, "Full name is required.");
+    if (!email) return addMessage(false, "Email is required.");
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-      addMessage(false, "Please enter a valid email address.");
-      return false;
-    }
-
-    if (!phone_number) {
-      addMessage(false, "Phone number is required.");
-      return false;
-    }
-
-    if (phone_number.length < 7 || phone_number.length > 20) {
-      addMessage(false, "invalid Phone number");
-      return false;
-    }
-
-    if (profile.id === 4 && !country) {
-      addMessage(false, "Country is required for this user.");
-      return false;
-    }
-
+    if (!emailPattern.test(email)) return addMessage(false, "Invalid email.");
+    if (!phone_number) return addMessage(false, "Phone number required.");
+    if (phone_number.length < 7 || phone_number.length > 20)
+      return addMessage(false, "Invalid phone number.");
+    if (profile?.role_id === 4 && !country)
+      return addMessage(false, "Country required.");
     return true;
   };
-
-  // ===== Submit handler =====
+const profilePhoto=profile?.profile_photo_url;
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateFields()) return;
 
-    // Prepare API payload
     const payload = { ...profileData };
-    if (profile.id !== 4) delete payload.country; // remove country if not allowed
+    if (profile?.role_id !== 4) delete payload.country;
 
     showLoader();
     try {
@@ -144,6 +107,7 @@ const MyProfile = () => {
         response?.message || "Profile updated successfully!",
       );
       await fetchProfile();
+
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -151,83 +115,41 @@ const MyProfile = () => {
     }
   };
 
-  const avatarSrc = avatarPreview || "https://placehold.co/120x120";
-
   return (
     <div className="dashboard-wraper">
       <div className="form-submit">
         <h2>My Account</h2>
         <p className="text-muted">Update your profile details.</p>
 
-        {/* Avatar */}
-        <div className="d-flex justify-content-center mb-4 position-relative">
-          <div
-            style={{
-              width: "120px",
-              height: "120px",
-              borderRadius: "50%",
-              overflow: "hidden",
-              cursor: "pointer",
-              position: "relative",
-            }}
-            onMouseEnter={() => setShowAvatarMenu(true)}
-            onMouseLeave={() => setShowAvatarMenu(false)}
-          >
-            <img
-              src={avatarSrc}
-              alt="Avatar"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              onClick={handleFileClick}
-            />
-
-            {showAvatarMenu && (
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  backgroundColor: "rgba(0,0,0,0.35)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "10px",
-                }}
-              >
-                <button
-                  type="button"
-                  className="btn btn-sm btn-light"
-                  onClick={handleFileClick}
-                  title="Upload / Edit"
-                >
-                  <i className="bi bi-pencil"></i>
-                </button>
-                {avatarPreview && (
+        {/* Profile Form */}
+        <form onSubmit={handleSubmit}>
+          <div className="row g-3">
+            {/* File Upload Input */}
+            <div className="col-md-6">
+              <label>Profile Image</label>
+              <div className="input-group">
+                <input
+                  type="file"
+                  className="form-control w-75 pt-3 px-3"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={(e) => handleAvatarChange(e.target.files[0])}
+                />
+                {profilePhoto && (
                   <button
+                    className="form-control btn btn-outline-danger border-0 pt-3"
                     type="button"
-                    className="btn btn-sm btn-danger"
                     onClick={handleDeleteAvatar}
-                    title="Delete"
+                    title="Delete Image"
                   >
                     <i className="bi bi-trash"></i>
                   </button>
                 )}
               </div>
-            )}
+            </div>
 
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              hidden
-              onChange={(e) => handleAvatarChange(e.target.files[0])}
-            />
-          </div>
-        </div>
-
-        {/* Profile form */}
-        <form onSubmit={handleSubmit}>
-          <div className="row">
-            {/* First row: Full Name + Email */}
-            <div className="form-group col-md-6">
+            {/* Row 1: Full Name + Email */}
+            <div className="col-md-6">
               <label>Full Name</label>
               <input
                 type="text"
@@ -238,7 +160,7 @@ const MyProfile = () => {
               />
             </div>
 
-            <div className="form-group col-md-6">
+            <div className="col-md-6">
               <label>Email</label>
               <input
                 type="email"
@@ -249,8 +171,8 @@ const MyProfile = () => {
               />
             </div>
 
-            {/* Second row: Phone Number + Save Button */}
-            <div className="form-group col-md-6">
+            {/* Row 2: Phone + Country (optional) */}
+            <div className="col-md-6">
               <label>Phone Number</label>
               <input
                 type="text"
@@ -261,15 +183,8 @@ const MyProfile = () => {
               />
             </div>
 
-            <div className="form-group col-md-6 d-flex align-items-end">
-              <button className="btn btn-main w-50" type="submit">
-                Save Changes
-              </button>
-            </div>
-
-            {/* Optional Country */}
-            {profile.id === 4 && (
-              <div className="form-group col-md-6 mt-3">
+            {profile?.role_id === 4 && (
+              <div className="col-md-6">
                 <label>Country</label>
                 <input
                   type="text"
@@ -280,6 +195,13 @@ const MyProfile = () => {
                 />
               </div>
             )}
+          </div>
+
+          {/* Submit Button at Bottom */}
+          <div className="mt-4">
+            <button type="submit" className="btn btn-main px-5">
+              Save Changes
+            </button>
           </div>
         </form>
       </div>

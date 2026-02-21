@@ -23,49 +23,14 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-top: 1.5rem;
+  padding:0.5rem 0;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
 }
 
-.header {
-  margin-top: 30px;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0 1rem 1.5rem;
-}
-
 .expanded .header {
   justify-content: flex-start;
-}
-
-.avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  color: var(--color-text-primary);
-}
-
-.userInfo {
-  margin-top: 0.5rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.name {
-  margin: 0;
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.role {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--color-text-secondary);
 }
 
 .nav {
@@ -83,25 +48,11 @@
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
-  color: var(--color-text-secondary);
   background: transparent;
   border: none;
   width: 100%;
   cursor: pointer;
-  transition:
-    background var(--transition-default),
-    color var(--transition-default);
   border-bottom: var(--color-border-subtle) solid 2px;
-}
-
-.navLink:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-text-primary);
-}
-
-.active {
-  background: var(--color-surface-active);
-  color: var(--color-text-inverse);
 }
 
 .icon {
@@ -109,22 +60,6 @@
   width: 25px;
   text-align: center;
   margin-left: 0.5rem;
-}
-
-.toggle {
-  position: absolute;
-  top: 1.25rem;
-  right: 1.9rem;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--color-surface-sidebar);
-  border: none;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .mobileDrawer {
