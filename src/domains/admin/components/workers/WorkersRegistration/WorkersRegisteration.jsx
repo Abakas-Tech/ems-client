@@ -60,31 +60,62 @@ function WorkersRegistration() {
     }
   };
 
+  const nameRegex = /^[A-Za-z\s]+$/;
+
+  const validateWorkerRegistration = ({ full_name, phone_number, email }) => {
+    // Full name
+    if (!full_name || !full_name.trim()) {
+      return "Full name is required";
+    }
+
+    const name = full_name.trim();
+
+    if (name.length < 3 || name.length > 100) {
+      return "Full name must be between 3 and 100 characters";
+    }
+
+    if (!nameRegex.test(name)) {
+      return "Full name must contain letters only (no numbers or symbols)";
+    }
+
+    // phone_number
+    if (!phone_number || !phone_number.trim()) {
+      return "Phone number is required";
+    }
+
+    const phonePattern = /^(?:\+251[79]\d{8}|09\d{8}|07\d{8})$/;
+    if (!phonePattern.test(phone_number.trim())) {
+      return "Phone number must be in Ethiopian format (+2519..., 09..., or 07...)";
+    }
+
+    // email
+    if (email && email.trim()) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email.trim().toLowerCase())) {
+        return "Email must be a valid email address";
+      }
+    }
+
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const error = validateWorkerRegistration(formData);
+    if (error) {
+      addMessage(false, error);
+      return;
+    }
+
     const { full_name, phone_number, personal_information, email } = formData;
-
-    // Client-side validation
-    const name = full_name.trim();
-    if (!/^[A-Za-z\s]+$/.test(name)) {
-      return addMessage(false, "Full name must contain letters only");
-    }
-
-    const phonePattern = /^(?:\+251[79]\d{8}|09\d{8})$/;
-    if (!phonePattern.test(phone_number.trim())) {
-      return addMessage(
-        false,
-        "Phone number must be in Ethiopian format (+2519... or 09...)",
-      );
-    }
 
     setSubmitLoading(true);
     showLoader();
 
     try {
       const dataToSend = {
-        full_name: name,
+        full_name: full_name.trim(),
         phone_number: phone_number.trim(),
         email: email.trim() || null,
         is_active: true,
