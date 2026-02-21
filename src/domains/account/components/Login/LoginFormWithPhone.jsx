@@ -6,8 +6,7 @@ import useResponse from "../../../../context/response/UseResponse";
 import useAuth from "../../../../context/auth/UseAuth";
 import { setAccessToken } from "../../../../utils/axios";
 
-const LoginFormWithPhone = () => {
-  const [role, setRole] = useState("employer");
+const LoginFormWithPhone = ({role}) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [nationalId, setNationalId] = useState("");
   const [passportNumber, setPassportNumber] = useState("");
@@ -23,67 +22,80 @@ const LoginFormWithPhone = () => {
     return null;
   };
 
-  const validateInputs = () => {
-    if (!role || !phoneNumber) {
-      addMessage(false, "Role and phone number are required.");
-      return false;
-    }
+const validateInputs = () => {
+  if (!phoneNumber) {
+    addMessage(false, "Phone number is required.");
+    return false;
+  }
 
-    // Phone number length
-    const phoneError = validateLength(phoneNumber, 9, 20, "Phone number");
-    if (phoneError) {
-      addMessage(false, phoneError);
+  const phoneError = validateLength(phoneNumber, 9, 20, "Phone number");
+  if (phoneError) {
+    addMessage(false, phoneError);
+    return false;
+  }
+
+  if (role === "employer") {
+    const nationalIdError = validateLength(nationalId, 5, 30, "National ID");
+    if (nationalIdError) {
+      addMessage(false, nationalIdError);
       return false;
     }
+  }
+
+  if (role === "worker") {
+    const passportError = validateLength(
+      passportNumber,
+      5,
+      30,
+      "Passport number",
+    );
+    if (passportError) {
+      addMessage(false, passportError);
+      return false;
+    }
+  }
+
+  return true;
+};
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validateInputs()) return;
+
+  showLoader();
+  try {
+    const credentials = {
+      role, // comes from parent
+      phone_number: phoneNumber,
+    };
 
     if (role === "employer") {
-      const nationalIdError = validateLength(nationalId, 5, 30, "National ID");
-      if (nationalIdError) {
-        addMessage(false, nationalIdError);
-        return false;
-      }
-    } else if (role === "worker") {
-      const passportError = validateLength(
-        passportNumber,
-        5,
-        30,
-        "Passport number",
-      );
-      if (passportError) {
-        addMessage(false, passportError);
-        return false;
-      }
+      credentials.national_id = nationalId;
     }
 
-    return true;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateInputs()) return;
-
-    showLoader();
-    try {
-      const credentials = { role, phone_number: phoneNumber };
-
-      if (role === "employer") credentials.national_id = nationalId;
-      if (role === "worker") credentials.passport_number = passportNumber;
-
-      const response = await loginWithPhone(credentials);
-
-      const { access_token } = response.data;
-      setAccessToken(access_token); // store in memory
-
-      addMessage(response.data.success, response.data.message);
-      setUser(true);
-      navigate("/admin/dashboard");
-    } catch (error) {
-      addMessage(false, error.message);
-    } finally {
-      hideLoader();
+    if (role === "worker") {
+      credentials.passport_number = passportNumber;
     }
-  };
 
+    const response = await loginWithPhone(credentials);
+
+    const { access_token } = response.data;
+    setAccessToken(access_token);
+
+    addMessage(response.data.success, response.data.message);
+    setUser(true);
+
+    // Clear form
+    setPhoneNumber("");
+    setNationalId("");
+    setPassportNumber("");
+
+    navigate("/admin/dashboard");
+  } catch (error) {
+    addMessage(false, error.message);
+  } finally {
+    hideLoader();
+  }
+};
   return (
    
        <div className="container">
@@ -95,19 +107,7 @@ const LoginFormWithPhone = () => {
         <h2 className="text-center mb-3 fw-bold pt-0">Log In</h2>
 
         <form onSubmit={handleSubmit}>
-          {/* Role Selector */}
-          <div className="form-floating mb-3">
-            <select
-              className="form-select"
-              id="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value="employer">Employer</option>
-              <option value="worker">Worker</option>
-            </select>
-            <label htmlFor="role">Role</label>
-          </div>
+       
 
           {/* Phone number */}
           <div className="form-floating mb-3">
