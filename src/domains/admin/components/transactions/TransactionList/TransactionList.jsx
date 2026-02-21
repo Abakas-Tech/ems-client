@@ -12,7 +12,7 @@ const TransactionList = ({
     <div className="card shadow-sm">
       <div className="card-body p-0">
         <div className="table-responsive">
-          <table className={`table table-hover align-middle`}>
+          <table className={`table border-bottom table-hover align-middle`}>
             <thead className="table-light">
               <tr>
                 <th>#</th>
@@ -43,11 +43,12 @@ const TransactionList = ({
                     <div className="d-flex justify-content-center gap-2">
                       {/* View Icon */}
                       <button
-                        className="btn btn-sm btn-outline-primary rounded-circle"
+                        className="btn btn-sm btn-outline-info"
                         onClick={() => onView(t.id)}
                         title="View Details"
+                        aria-label="View Details"
                       >
-                        <i className="bi bi-eye"></i>
+                        <i className="fa-solid fa-eye"></i>
                       </button>
                       {/* Edit Icon */}
                       {/* <button

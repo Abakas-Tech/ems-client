@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import StatCard from "../StatCard/StatCard";
-import DashboardFilters from "../DashboardFilters/DashboardFilters"; // Externalized
+import DashboardFilters from "../AnalyticsFilter/DashboardFilters"; // Externalized
 import { fetchDashboardData } from "../../../api/analytics.api";
 import useLoader from "../../../../../context/Loader/UseLoader";
 import useResponse from "../../../../../context/response/UseResponse";
@@ -48,6 +48,14 @@ const Dashboard = () => {
     }
   };
 
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Handles changes to the filter input fields.
+   * Updates the filter state with the new values.
+   * If the field is 'month', it parses the value as an integer.
+   * @param {Event} e - The event object from the input field's onChange event.
+   */
+  /*******  c493d79d-5575-484a-bf10-f8e18db863ae  *******/
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({
@@ -66,19 +74,18 @@ const Dashboard = () => {
 
   if (!data) return null;
 
+  // Only showing the modified return section for brevity
   return (
     <div className="dashboard-wraper">
-      {/* Page Title Section */}
       <div className="mb-4">
-        <h2 className="fw-bold text-dark mb-1">Dashboard Overview</h2>
+        <h2 className="fw-bold text-dark mb-1">Analytics Dashboard</h2>
         <p className="text-muted mb-0">
-          Tracking operations and finance for{" "}
+          Data for{" "}
           {filters.period === "monthly" ? `${months[filters.month - 1]} ` : ""}
           {filters.year}
         </p>
       </div>
 
-      {/* Externalized Filter Component */}
       <DashboardFilters
         filters={filters}
         onFilterChange={handleFilterChange}
@@ -86,9 +93,12 @@ const Dashboard = () => {
         months={months}
       />
 
-      {/* Workers Section */}
-      <h5 className="fw-bold mb-3 mt-4">Worker Operations</h5>
-      <div className="row">
+      <div className="row mt-4">
+        <div className="col-12">
+          <h6 className="fw-bold text-muted text-uppercase mb-3">
+            Worker Metrics
+          </h6>
+        </div>
         <StatCard
           title="Total Registered"
           value={data.workers.total_registered}
@@ -96,7 +106,7 @@ const Dashboard = () => {
           colorClass="widget-1"
         />
         <StatCard
-          title="Active In Process"
+          title="Active Process"
           value={data.workers.active_in_process}
           icon="bi bi-gear-wide-connected"
           colorClass="widget-2"
@@ -115,29 +125,29 @@ const Dashboard = () => {
         />
       </div>
 
-      {/* Finance Section */}
-      <h5 className="fw-bold mb-3 mt-4">Finance Summary</h5>
-      <div className="row">
+      <div className="row mt-2">
+        <div className="col-12">
+          <h6 className="fw-bold text-muted text-uppercase mb-3">
+            Financial Performance
+          </h6>
+        </div>
         <StatCard
           title="Total Income"
           value={data.finance.period_income}
-          prefix=""
           icon="bi bi-graph-up-arrow"
-          colorClass="widget-1"
+          colorClass="widget-2"
         />
         <StatCard
           title="Expenses"
           value={data.finance.period_expenses}
-          prefix=""
           icon="bi bi-cart-dash"
           colorClass="widget-5"
         />
         <StatCard
           title="Net Profit"
           value={data.finance.period_net_profit}
-          prefix=""
           icon="bi bi-cash-stack"
-          colorClass="widget-2"
+          colorClass="widget-1"
         />
         <StatCard
           title="Transactions"
@@ -147,32 +157,46 @@ const Dashboard = () => {
         />
       </div>
 
-      {/* Lower Summary Cards */}
-      <div className="row mt-2">
+      {/* Modernized Bottom Summary Section */}
+      <div className="row mt-3">
         <div className="col-md-6 mb-4">
-          <div className="bg-white p-4 rounded shadow-sm d-flex justify-content-between align-items-center border-start border-warning border-5">
-            <div>
-              <span className="text-muted d-block small fw-bold text-uppercase">
-                Pending Contracts
-              </span>
-              <h3 className="mb-0 fw-bold">
-                {data.operations.pending_contracts}
-              </h3>
+          <div
+            className="stat-card-v2 widget-3 border-0 shadow-sm"
+            style={{ borderBottom: "4px solid #ffc107" }}
+          >
+            <div className="d-flex justify-content-between align-items-center">
+              <div>
+                <h3 className="fw-bold mb-0">
+                  {data.operations.pending_contracts}
+                </h3>
+                <span className="small text-muted fw-bold text-uppercase">
+                  Pending Contracts
+                </span>
+              </div>
+              <div className="stat-icon-circle">
+                <i className="bi bi-file-earmark-text"></i>
+              </div>
             </div>
-            <i className="bi bi-file-earmark-text fs-1 text-warning"></i>
           </div>
         </div>
         <div className="col-md-6 mb-4">
-          <div className="bg-white p-4 rounded shadow-sm d-flex justify-content-between align-items-center border-start border-primary border-5">
-            <div>
-              <span className="text-muted d-block small fw-bold text-uppercase">
-                Pending QR Codes
-              </span>
-              <h3 className="mb-0 fw-bold">
-                {data.operations.pending_qr_codes}
-              </h3>
+          <div
+            className="stat-card-v2 widget-4 border-0 shadow-sm"
+            style={{ borderBottom: "4px solid #17a2b8" }}
+          >
+            <div className="d-flex justify-content-between align-items-center">
+              <div>
+                <h3 className="fw-bold mb-0">
+                  {data.operations.pending_qr_codes}
+                </h3>
+                <span className="small text-muted fw-bold text-uppercase">
+                  Pending QR Codes
+                </span>
+              </div>
+              <div className="stat-icon-circle">
+                <i className="bi bi-qr-code"></i>
+              </div>
             </div>
-            <i className="bi bi-qr-code fs-1 text-primary"></i>
           </div>
         </div>
       </div>

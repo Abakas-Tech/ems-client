@@ -1,5 +1,5 @@
 import React from "react";
-import Files from "../../components/Files/File/File.jsx";
+import Files from "../../components/files/File/File.jsx";
 function FileManager() {
   return (
     <>

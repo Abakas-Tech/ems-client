@@ -1,10 +1,10 @@
 import React from "react";
-import Dashboard from "../../components/Dashboard/Dashboard/Dashboard";
+import Analytics from "../../components/analytics/Analytics/Analytics";
 
 function AnalyticsPage() {
   return (
     <>
-      <Dashboard />
+      <Analytics />
     </>
   );
 }

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import TransactionList from "../../Transaction/TransactionList/TransactionList";
-import TransactionFilters from "../../Transaction/TransactionFilters/TransactionFilters";
-import RecordTransaction from "../../Transaction/RecordTransaction/RecordTransaction.jsx";
-import TransactionDetail from "../../Transaction/TransactionDetail/TransactionDetail"; // Added this
+import TransactionList from "../../transactions/TransactionList/TransactionList";
+import TransactionFilters from "../../transactions/TransactionFilters/TransactionFilters";
+import RecordTransaction from "../../transactions/RecordTransaction/RecordTransaction.jsx";
+import TransactionDetail from "../../transactions/TransactionDetail/TransactionDetail"; // Added this
 import { fetchTransactions } from "../../../api/finance.api";
 import useLoader from "../../../../../context/Loader/UseLoader";
 import useResponse from "../../../../../context/response/UseResponse";
@@ -65,8 +65,6 @@ const FinancePage = () => {
     setView("list");
   };
 
-  // --- Rendering Logic ---
-
   const renderContent = () => {
     switch (view) {
       case "create":
@@ -94,8 +92,7 @@ const FinancePage = () => {
       case "list":
       default:
         return (
-          <>
-            {/* Header */}
+          <div className="dashboard-wraper">
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
               <div>
                 <h2 className="fw-bold text-dark mb-2">Finance Management</h2>
@@ -147,12 +144,12 @@ const FinancePage = () => {
                 />
               </div>
             </div>
-          </>
+          </div>
         );
     }
   };
 
-  return <div className="dashboard-wraper">{renderContent()}</div>;
+  return renderContent();
 };
 
 export default FinancePage;

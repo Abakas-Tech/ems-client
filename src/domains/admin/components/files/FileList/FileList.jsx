@@ -44,7 +44,9 @@ const FileList = ({
   return (
     <div>
       <div className="table-responsive">
-        <table className={`table table-hover align-middle ${styles.fileTable}`}>
+        <table
+          className={`table border-bottom table-hover align-middle ${styles.fileTable}`}
+        >
           <thead className="table-light">
             <tr>
               <th>Name</th>

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../../Files/FileFilters/FileFilters.module.css"; // Reuse your existing styling
+import styles from "../../files/FileFilters/FileFilters.module.css"; // Reuse your existing styling
 
 const DashboardFilters = ({ filters, onFilterChange, onClear, months }) => {
   return (
