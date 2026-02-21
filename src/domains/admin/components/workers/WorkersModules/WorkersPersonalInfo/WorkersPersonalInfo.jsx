@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { createWorker } from "../../../../api/worker.api";
+import { updateWorker } from "../../../../api/worker.api";
 import { getRegions, getCities } from "../../../../api/meta.api";
 import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/response/useResponse";
@@ -74,6 +74,7 @@ function WorkersPersonalInfo() {
     loadCities();
   }, [formData.personal_information.region_id]);
 
+  // Handle form field changes
   const handleTextChange = (e) => {
     const { name, value } = e.target;
     if (name.startsWith("personal_")) {
@@ -87,6 +88,7 @@ function WorkersPersonalInfo() {
     }
   };
 
+  // Handle number inputs separately to allow empty string (for optional fields)
   const handleNumberChange = (e) => {
     const { name, value } = e.target;
     if (name.startsWith("personal_")) {
@@ -101,6 +103,7 @@ function WorkersPersonalInfo() {
     }
   };
 
+  // Handle file inputs
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     if (!files?.[0]) return;
@@ -108,45 +111,193 @@ function WorkersPersonalInfo() {
     if (name === "photo_standing_url") setPhotoStanding(files[0]);
   };
 
+  // Simple frontend mirror of your Joi schema
+  const validatePersonalInfo = (personalInfo) => {
+    const errors = [];
+
+    // Region and City – must be positive integers if provided
+    if (personalInfo.region_id) {
+      const rid = Number(personalInfo.region_id);
+      if (!Number.isInteger(rid) || rid <= 0) {
+        errors.push("Region must be a valid positive number");
+      }
+    }
+
+    if (personalInfo.city_id) {
+      const cid = Number(personalInfo.city_id);
+      if (!Number.isInteger(cid) || cid <= 0) {
+        errors.push("City must be a valid positive number");
+      }
+    }
+
+    // Date of Birth – must be a valid date in the past
+    if (personalInfo.date_of_birth) {
+      const dob = new Date(personalInfo.date_of_birth);
+      const now = new Date();
+      if (isNaN(dob.getTime())) {
+        errors.push("Date of birth must be a valid date");
+      } else if (dob > now) {
+        errors.push("Date of birth cannot be in the future");
+      }
+    }
+
+    // Text fields – check max lengths (you can adjust these based on your needs)
+    const maxLengths = {
+      place_of_birth: 100,
+      religion: 50,
+      address: 500,
+      education: 100,
+      nationality: 100,
+    };
+
+    for (const [field, max] of Object.entries(maxLengths)) {
+      const value = personalInfo[field]?.trim() || "";
+      if (value.length > max) {
+        errors.push(
+          `${field.replace(/_/g, " ")} must be at most ${max} characters`,
+        );
+      }
+    }
+
+    // Marital status – must be one of the allowed values
+    const allowedMarital = ["Single", "Married", "Divorced", "Widowed", ""];
+    if (
+      personalInfo.marital_status &&
+      !allowedMarital.includes(personalInfo.marital_status)
+    ) {
+      errors.push(
+        "Marital status must be one of: Single, Married, Divorced, Widowed",
+      );
+    }
+
+    // Number of children – must be 0 or a positive integer
+    if (
+      personalInfo.number_of_children !== "" &&
+      personalInfo.number_of_children !== null
+    ) {
+      const noc = Number(personalInfo.number_of_children);
+      if (!Number.isInteger(noc) || noc < 0) {
+        errors.push("Number of children must be 0 or a positive integer");
+      }
+    }
+
+    // Height and Weight – must be within reasonable ranges if provided
+    if (personalInfo.height_cm !== "" && personalInfo.height_cm !== null) {
+      const h = Number(personalInfo.height_cm);
+      if (isNaN(h) || h < 100 || h > 250) {
+        errors.push("Height must be between 100 and 250 cm");
+      }
+    }
+
+    // Weight – must be within reasonable ranges if provided
+    if (personalInfo.weight_kg !== "" && personalInfo.weight_kg !== null) {
+      const w = Number(personalInfo.weight_kg);
+      if (isNaN(w) || w < 30 || w > 200) {
+        errors.push("Weight must be between 30 and 200 kg");
+      }
+    }
+
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { personal_information } = formData;
+
+    const pi = formData.personal_information;
+
+    // Frontend validation before sending
+    const validationErrors = validatePersonalInfo(pi);
+
+    if (validationErrors.length > 0) {
+      addMessage(false, validationErrors.join(" • "));
+      return;
+    }
+
     setSubmitLoading(true);
     showLoader();
-
     try {
       const dataToSend = new FormData();
 
-      dataToSend.append("mode", "personal");
-      dataToSend.append("worker_id", id);
+      const pi = formData.personal_information;
 
-      // Flatten – NO personal_information[ ] wrapper
-      Object.entries(personal_information).forEach(([key, value]) => {
-        if (value !== "" && value !== null && value !== undefined) {
-          dataToSend.append(key, value);
-        }
-      });
-
-      // File names MUST match what controller is searching for
-      if (photo3x4) dataToSend.append("photo_3x4_url", photo3x4);
-      if (photoStanding) dataToSend.append("photo_standing_url", photoStanding);
-
-      // Debug: see what is actually sent (browser console)
-      console.log("Sending FormData:");
-      for (let [key, val] of dataToSend.entries()) {
-        console.log(key, "→", val instanceof File ? val.name : val);
+      // IDs – send only if provided
+      if (pi.region_id) {
+        dataToSend.append("personal_information[region_id]", pi.region_id);
+      }
+      if (pi.city_id) {
+        dataToSend.append("personal_information[city_id]", pi.city_id);
+      }
+      if (pi.status_id) {
+        dataToSend.append("personal_information[status_id]", pi.status_id);
       }
 
-      const response = await createWorker(dataToSend);
-      console.log("Server response:", response);
+      // Date of Birth – send only if provided and valid
+      if (pi.date_of_birth) {
+        dataToSend.append(
+          "personal_information[date_of_birth]",
+          pi.date_of_birth,
+        );
+      }
+
+      // Text fields – send even if empty
+      dataToSend.append(
+        "personal_information[place_of_birth]",
+        pi.place_of_birth || "",
+      );
+      dataToSend.append("personal_information[religion]", pi.religion || "");
+      dataToSend.append(
+        "personal_information[marital_status]",
+        pi.marital_status || "",
+      );
+      dataToSend.append(
+        "personal_information[nationality]",
+        pi.nationality || "Ethiopian",
+      );
+      dataToSend.append("personal_information[address]", pi.address || "");
+      dataToSend.append("personal_information[education]", pi.education || "");
+
+      // Numbers – send as string (express/joi will coerce)
+      dataToSend.append(
+        "personal_information[number_of_children]",
+        pi.number_of_children ?? "",
+      );
+      dataToSend.append("personal_information[height_cm]", pi.height_cm ?? "");
+      dataToSend.append("personal_information[weight_kg]", pi.weight_kg ?? "");
+
+      // Files – send only if a new file is selected
+      if (photo3x4 instanceof File) {
+        dataToSend.append("photo_3x4_url", photo3x4);
+      }
+      if (photoStanding instanceof File) {
+        dataToSend.append("photo_standing_url", photoStanding);
+      }
+
+      // Debug: log FormData entries
+      console.log("FormData being sent:");
+      for (let [key, value] of dataToSend.entries()) {
+        console.log(
+          key.padEnd(38),
+          "→",
+          value instanceof File ? `${value.name} (File)` : value,
+        );
+      }
+
+      await updateWorker(dataToSend, id);
 
       addMessage(true, "Personal information added successfully!");
-
-      // reset ...
     } catch (err) {
-      console.error("Submit failed:", err);
-      const msg = err.response?.data?.message || err.message || "Failed";
-      addMessage(false, msg);
+      console.error("Submit error:", err);
+
+      let errorMsg = "Failed to update personal information";
+
+      if (err.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      }
+      if (err.response?.data?.errors?.length > 0) {
+        errorMsg = err.response.data.errors.join(" • ");
+      }
+
+      addMessage(false, errorMsg);
     } finally {
       setSubmitLoading(false);
       hideLoader();
@@ -317,7 +468,9 @@ function WorkersPersonalInfo() {
 
                     {/* Height */}
                     <div className="form-group col-md-6">
-                      <label>Height (cm)</label>
+                      <label>
+                        Height (cm) <span className="text-danger">*</span>
+                      </label>
                       <input
                         type="number"
                         name="personal_height_cm"
@@ -327,12 +480,15 @@ function WorkersPersonalInfo() {
                         step="0.01"
                         min="100"
                         max="250"
+                        required
                       />
                     </div>
 
                     {/* Weight */}
                     <div className="form-group col-md-6">
-                      <label>Weight (kg)</label>
+                      <label>
+                        Weight (kg)<span className="text-danger">*</span>
+                      </label>
                       <input
                         type="number"
                         name="personal_weight_kg"

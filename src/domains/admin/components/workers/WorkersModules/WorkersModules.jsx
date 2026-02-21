@@ -45,7 +45,7 @@ const WorkersModules = () => {
 
   useEffect(() => {
     fetchWorkers();
-  }, [fetchWorkers]);
+  }, []);
 
   const handleFilterChange = (f) => {
     setFilters((prev) => ({ ...prev, ...f }));

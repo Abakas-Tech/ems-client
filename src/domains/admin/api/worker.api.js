@@ -72,11 +72,11 @@ const restoreWorker = async (id) => {
 };
 
 // Update worker
-const updateWorker = async (workerId, formData) => {
+const updateWorker = async (Payload, id) => {
   try {
     const response = await axiosInstance.patch(
-      `/workers/${workerId}`,
-      formData,
+      `/workers/${id}`,
+      Payload,
     );
     return response.data;
   } catch (error) {

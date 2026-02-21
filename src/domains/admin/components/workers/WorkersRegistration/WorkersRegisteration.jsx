@@ -77,7 +77,6 @@ function WorkersRegistration() {
 
     try {
       const dataToSend = {
-        mode: "basic",
         full_name: name,
         phone_number: phone_number.trim(),
         email: email.trim() || null,
