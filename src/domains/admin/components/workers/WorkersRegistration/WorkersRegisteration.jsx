@@ -19,10 +19,6 @@ function WorkersRegistration() {
   const [statusesError, setStatusesError] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // Photo states
-  const [photo3x4, setPhoto3x4] = useState(null);
-  const [photoStanding, setPhotoStanding] = useState(null);
-
   // Fetch worker statuses on mount
   useEffect(() => {
     const loadStatuses = async () => {
@@ -57,14 +53,6 @@ function WorkersRegistration() {
     }
   };
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    if (files?.[0]) {
-      if (name === "photo_3x4_url") setPhoto3x4(files[0]);
-      if (name === "photo_standing_url") setPhotoStanding(files[0]);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -72,7 +60,6 @@ function WorkersRegistration() {
 
     // Client-side validation
     const name = full_name.trim();
-
     if (!/^[A-Za-z\s]+$/.test(name)) {
       return addMessage(false, "Full name must contain letters only");
     }
@@ -89,22 +76,19 @@ function WorkersRegistration() {
     showLoader();
 
     try {
-      const dataToSend = new FormData();
-      dataToSend.append("full_name", full_name.trim());
-      dataToSend.append("phone_number", phone_number.trim());
-      if (email.trim()) dataToSend.append("email", email.trim());
-      dataToSend.append("is_active", "true");
+      const dataToSend = {
+        mode: "basic",
+        full_name: name,
+        phone_number: phone_number.trim(),
+        email: email.trim() || null,
+        is_active: true,
+        personal_information: {
+          sex: personal_information.sex,
+          status_id: personal_information.status_id,
+        },
+      };
 
-      // Flat nested fields using bracket notation — this is what worked in Postman
-      dataToSend.append("personal_information[sex]", personal_information.sex);
-      dataToSend.append(
-        "personal_information[status_id]",
-        personal_information.status_id,
-      );
-
-      if (photo3x4) dataToSend.append("photo_3x4_url", photo3x4);
-      if (photoStanding) dataToSend.append("photo_standing_url", photoStanding);
-
+      // Send the request
       await createWorker(dataToSend);
 
       addMessage(true, "Worker registered successfully!");
@@ -116,8 +100,6 @@ function WorkersRegistration() {
         email: "",
         personal_information: { sex: "", status_id: "" },
       });
-      setPhoto3x4(null);
-      setPhotoStanding(null);
     } catch (err) {
       const msg =
         err.response?.data?.message ||
@@ -129,7 +111,6 @@ function WorkersRegistration() {
       hideLoader();
     }
   };
-
   return (
     <section className="bg-light">
       <div className="container-fluid">
@@ -230,28 +211,6 @@ function WorkersRegistration() {
                           ))}
                         </select>
                       )}
-                    </div>
-
-                    <div className="form-group col-md-6">
-                      <label>Photo 3x4</label>
-                      <input
-                        type="file"
-                        name="photo_3x4_url" // ← fixed to match backend
-                        accept="image/*"
-                        className="form-control"
-                        onChange={handleFileChange}
-                      />
-                    </div>
-
-                    <div className="form-group col-md-6">
-                      <label>Photo Standing</label>
-                      <input
-                        type="file"
-                        name="photo_standing_url" // ← fixed to match backend
-                        accept="image/*"
-                        className="form-control"
-                        onChange={handleFileChange}
-                      />
                     </div>
                   </div>
                 </div>
