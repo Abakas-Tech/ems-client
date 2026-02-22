@@ -6,22 +6,25 @@ import {
   restoreWorker,
   getArchivedWorkerProfile,
 } from "../../../api/worker.api";
+
 import ActiveWorkersFilters from "../WorkersFilter/WorkersFilter";
+import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
+
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
-import BottomPagination from "../../../../../shared/components/BottomPagination/BottomPagination";
 import { useConfirmDelete } from "../../../../../context/Delete/useDelete";
 
 const ArchivedWorkers = () => {
   const navigate = useNavigate();
+  const { openModal } = useConfirmDelete();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
-  const { openModal } = useConfirmDelete();
 
   const [workers, setWorkers] = useState([]);
   const [filters, setFilters] = useState({ status: "archived" });
   const [meta, setMeta] = useState({ page: 1, limit: 10, total_items: 0 });
 
+// Fetch archived workers with API call, handles loading and error states
   const fetchWorkers = useCallback(async () => {
     showLoader();
     try {
@@ -39,12 +42,13 @@ const ArchivedWorkers = () => {
     } finally {
       hideLoader();
     }
-  }, [filters, meta.page, meta.limit]);
+  }, [filters, meta.page, meta.limit, showLoader, hideLoader, addMessage]);
 
   useEffect(() => {
     fetchWorkers();
   }, [fetchWorkers]);
 
+ // Filter handlers
   const handleFilterChange = (f) => {
     setFilters((prev) => ({ ...prev, ...f }));
     setMeta((prev) => ({ ...prev, page: 1 }));
@@ -55,12 +59,11 @@ const ArchivedWorkers = () => {
     setMeta((prev) => ({ ...prev, page: 1 }));
   };
 
+ // Action handlers for view, restore, and delete operations
   const handleView = async (id) => {
     showLoader();
     try {
       const workerProfile = await getArchivedWorkerProfile(id);
-
-      // Navigate to worker's page
       navigate(`/admin/workers/archived/${id}`, { state: workerProfile });
     } catch (err) {
       addMessage(false, err.message || "Failed to load worker profile");
@@ -69,7 +72,7 @@ const ArchivedWorkers = () => {
     }
   };
 
-  // Restore deleted workers
+  // Restore worker with confirmation modal
   const handleRestore = (id) => {
     openModal(
       async () => {
@@ -77,11 +80,7 @@ const ArchivedWorkers = () => {
         try {
           await restoreWorker(id);
           addMessage(true, "Worker restored successfully");
-
-          // Remove the restored worker from the list instantly
           setWorkers((prev) => prev.filter((w) => w.id !== id));
-
-          // Refresh pagination metadata
           setMeta((prev) => ({ ...prev, total_items: prev.total_items - 1 }));
         } catch (err) {
           addMessage(false, err.message || "Failed to restore worker");
@@ -96,7 +95,6 @@ const ArchivedWorkers = () => {
     );
   };
 
-  // Hard delete
   const handleDelete = (id) => {
     openModal(
       async () => {
@@ -104,15 +102,8 @@ const ArchivedWorkers = () => {
         try {
           await deleteArchivedWorker(id);
           addMessage(true, "Worker deleted permanently");
-
-          // Remove the worker from state immediately
           setWorkers((prev) => prev.filter((w) => w.id !== id));
-
-          // Update total_items in meta
-          setMeta((prev) => ({
-            ...prev,
-            total_items: prev.total_items - 1,
-          }));
+          setMeta((prev) => ({ ...prev, total_items: prev.total_items - 1 }));
         } catch (err) {
           addMessage(false, err.message || "Failed to delete worker");
         } finally {
@@ -126,85 +117,37 @@ const ArchivedWorkers = () => {
     );
   };
 
+ // Render ListingComponent with filters, data, columns, actions, and pagination
   return (
-    <section>
-      <div className="container">
+    <ListingComponent
+      filtersComponent={
         <ActiveWorkersFilters
           filters={filters}
           onFilterChange={handleFilterChange}
           onClear={handleClear}
         />
-
-        {workers.length === 0 ? (
-          <div className="text-center mt-5">
-            <p className="text-muted">No archived workers found</p>
-          </div>
-        ) : (
-          <div className="table-responsive mt-4">
-            <table className="table border-bottom">
-              <thead className="table-light">
-                <tr>
-                  <th>Name</th>
-                  <th>Phone Number</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {workers.map((w) => (
-                  <tr key={w.id}>
-                    <td>{w.full_name || "—"}</td>
-                    <td>{w.phone_number || "—"}</td>
-                    <td>{w.status}</td>
-                    <td>
-                      <div className="d-flex gap-2">
-                        {/* View */}
-                        <button
-                          className="btn btn-sm btn-outline-info"
-                          onClick={() => handleView(w.id)}
-                          title="View worker"
-                          aria-label="View worker"
-                        >
-                          <i className="fa-solid fa-eye"></i>
-                        </button>
-                        {/* Restore */}
-                        <button
-                          className="btn btn-sm btn-outline-success"
-                          onClick={() => handleRestore(w.id)}
-                          title="Restore worker"
-                        >
-                          <i className="fa-solid fa-rotate-left"></i>
-                        </button>
-
-                        {/* Delete */}
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleDelete(w.id)}
-                          title="Delete permanently"
-                        >
-                          <i className="fa-solid fa-trash"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {meta.total_items > meta.limit && (
-              <BottomPagination
-                pagination={{
-                  page: meta.page,
-                  limit: meta.limit,
-                  total: meta.total_items,
-                }}
-                onPageChange={(page) => setMeta((prev) => ({ ...prev, page }))}
-              />
-            )}
-          </div>
-        )}
-      </div>
-    </section>
+      }
+      data={workers}
+      columns={[
+        { header: "Name", accessor: "full_name" },
+        { header: "Phone Number", accessor: "phone_number" },
+        { header: "Status", accessor: "status" },
+      ]}
+      actions={[
+        { type: "view", onClick: (row) => handleView(row.id) },
+        { type: "restore", onClick: (row) => handleRestore(row.id) },
+        { type: "delete", onClick: (row) => handleDelete(row.id) },
+      ]}
+      emptyState={{
+        title: "No archived workers found",
+      }}
+      pagination={{
+        page: meta.page,
+        limit: meta.limit,
+        total: meta.total_items,
+        onPageChange: (page) => setMeta((prev) => ({ ...prev, page })),
+      }}
+    />
   );
 };
 
