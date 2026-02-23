@@ -1,6 +1,9 @@
 import ActionButtons from "../ActionButtons/ActionButtons";
 import BottomPagination from "../BottomPagination/BottomPagination";
 
+// In ListingComponent, before return
+console.log("ListingComponent rendered");
+
 const ListingComponent = ({
   data = [],
   columns = [],
@@ -10,7 +13,7 @@ const ListingComponent = ({
   pagination,
 }) => {
   return (
-    <section>
+    <>
       <div className="container">
         {/* Filters */}
         {filtersComponent}
@@ -72,7 +75,7 @@ const ListingComponent = ({
           </div>
         )}
       </div>
-    </section>
+    </>
   );
 };
 

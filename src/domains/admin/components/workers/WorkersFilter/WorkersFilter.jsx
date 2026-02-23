@@ -5,7 +5,7 @@ import { getRegions } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 import styles from "./WorkersFilter.module.css";
-import BackButton from "../../../../../shared/components/BackButton/BackButton";
+
 
 const WorkersFilter = ({ filters, onFilterChange, onClear }) => {
   const { showLoader, hideLoader } = useLoader();
@@ -14,6 +14,7 @@ const WorkersFilter = ({ filters, onFilterChange, onClear }) => {
   const [statuses, setStatuses] = useState([]);
   const [regions, setRegions] = useState([]);
 
+  // Fetch statuses and regions for filters
   useEffect(() => {
     let mounted = true;
 
@@ -43,7 +44,7 @@ const WorkersFilter = ({ filters, onFilterChange, onClear }) => {
     return () => {
       mounted = false;
     };
-  }, [showLoader, hideLoader, addMessage]);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -22,6 +22,7 @@ const BottomPagination = ({ pagination, onPageChange }) => {
   const pageNumbers = [];
   for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
 
+
   return (
     <div className="d-flex flex-column flex-md-row justify-content-between align-items-center my-2 p-2">
       {/* Pagination */}

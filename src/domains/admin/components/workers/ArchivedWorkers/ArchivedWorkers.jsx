@@ -22,44 +22,48 @@ const ArchivedWorkers = () => {
 
   const [workers, setWorkers] = useState([]);
   const [filters, setFilters] = useState({ status: "archived" });
-  const [meta, setMeta] = useState({ page: 1, limit: 10, total_items: 0 });
 
-// Fetch archived workers with API call, handles loading and error states
+  // Pagination inputs separated from API response metadata
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Fetch archived workers safely
   const fetchWorkers = useCallback(async () => {
     showLoader();
     try {
       const res = await listArchivedWorkers({
         ...filters,
-        page: meta.page,
-        limit: meta.limit,
+        page,
+        limit,
       });
 
-      const { items, meta: apiMeta } = res;
-      setWorkers(items || []);
-      setMeta((prev) => ({ ...prev, ...(apiMeta || {}) }));
+      setWorkers(res?.items || []);
+      setTotalItems(res?.meta?.total_items || 0);
     } catch (err) {
       addMessage(false, err.message || "Failed to load archived workers");
     } finally {
       hideLoader();
     }
-  }, [filters, meta.page, meta.limit, showLoader, hideLoader, addMessage]);
+  }, [filters, page, limit]); 
 
+  // Initial fetch + refetch on filters/page change
   useEffect(() => {
     fetchWorkers();
   }, [fetchWorkers]);
 
- // Filter handlers
+  // Filter handlers
   const handleFilterChange = (f) => {
     setFilters((prev) => ({ ...prev, ...f }));
-    setMeta((prev) => ({ ...prev, page: 1 }));
+    setPage(1);
   };
 
   const handleClear = () => {
     setFilters({ status: "archived" });
-    setMeta((prev) => ({ ...prev, page: 1 }));
+    setPage(1);
   };
 
- // Action handlers for view, restore, and delete operations
+  // Action handlers
   const handleView = async (id) => {
     showLoader();
     try {
@@ -72,20 +76,17 @@ const ArchivedWorkers = () => {
     }
   };
 
-  // Restore worker with confirmation modal
+  // Restore archived worker
   const handleRestore = (id) => {
     openModal(
       async () => {
-        showLoader();
         try {
           await restoreWorker(id);
           addMessage(true, "Worker restored successfully");
           setWorkers((prev) => prev.filter((w) => w.id !== id));
-          setMeta((prev) => ({ ...prev, total_items: prev.total_items - 1 }));
+          setTotalItems((prev) => prev - 1);
         } catch (err) {
           addMessage(false, err.message || "Failed to restore worker");
-        } finally {
-          hideLoader();
         }
       },
       {
@@ -95,19 +96,17 @@ const ArchivedWorkers = () => {
     );
   };
 
+  // Permanent delete handler
   const handleDelete = (id) => {
     openModal(
       async () => {
-        showLoader();
         try {
           await deleteArchivedWorker(id);
           addMessage(true, "Worker deleted permanently");
           setWorkers((prev) => prev.filter((w) => w.id !== id));
-          setMeta((prev) => ({ ...prev, total_items: prev.total_items - 1 }));
+          setTotalItems((prev) => prev - 1);
         } catch (err) {
           addMessage(false, err.message || "Failed to delete worker");
-        } finally {
-          hideLoader();
         }
       },
       {
@@ -117,37 +116,50 @@ const ArchivedWorkers = () => {
     );
   };
 
- // Render ListingComponent with filters, data, columns, actions, and pagination
   return (
-    <ListingComponent
-      filtersComponent={
-        <ActiveWorkersFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onClear={handleClear}
-        />
-      }
-      data={workers}
-      columns={[
-        { header: "Name", accessor: "full_name" },
-        { header: "Phone Number", accessor: "phone_number" },
-        { header: "Status", accessor: "status" },
-      ]}
-      actions={[
-        { type: "view", onClick: (row) => handleView(row.id) },
-        { type: "restore", onClick: (row) => handleRestore(row.id) },
-        { type: "delete", onClick: (row) => handleDelete(row.id) },
-      ]}
-      emptyState={{
-        title: "No archived workers found",
-      }}
-      pagination={{
-        page: meta.page,
-        limit: meta.limit,
-        total: meta.total_items,
-        onPageChange: (page) => setMeta((prev) => ({ ...prev, page })),
-      }}
-    />
+    <div className="dashboard-wrapper">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+          <h2 className="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
+            File Manager
+          </h2>
+          <p className="text-muted mb-0">
+            Organize and manage your files — upload, update, rename, delete, or
+            download.
+          </p>
+        </div>
+      </div>
+
+      <ListingComponent
+        filtersComponent={
+          <ActiveWorkersFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClear={handleClear}
+          />
+        }
+        data={workers}
+        columns={[
+          { header: "Name", accessor: "full_name" },
+          { header: "Phone Number", accessor: "phone_number" },
+          { header: "Status", accessor: "status" },
+        ]}
+        actions={[
+          { type: "view", onClick: (row) => handleView(row.id) },
+          { type: "restore", onClick: (row) => handleRestore(row.id) },
+          { type: "delete", onClick: (row) => handleDelete(row.id) },
+        ]}
+        emptyState={{
+          title: "No archived workers found",
+        }}
+        pagination={{
+          page,
+          limit,
+          total: totalItems,
+          onPageChange: setPage,
+        }}
+      />
+    </div>
   );
 };
 

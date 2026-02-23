@@ -8,7 +8,6 @@ import {
 
 import ActiveWorkersFilters from "../WorkersFilter/WorkersFilter";
 
-
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 import { useConfirmDelete } from "../../../../../context/Delete/useDelete";
@@ -22,34 +21,34 @@ const ActiveWorkers = () => {
 
   const [workers, setWorkers] = useState([]);
   const [filters, setFilters] = useState({});
-  const [meta, setMeta] = useState({
-    page: 1,
-    limit: 10,
-    total_items: 0,
-  });
 
-// Fetch Workers with API call, handles loading and error states
+  // pagination (inputs)
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+
+  // pagination (response)
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Fetch Workers
   const fetchWorkers = useCallback(async () => {
     showLoader();
     try {
       const res = await listWorkers({
         ...filters,
-        page: meta.page,
-        limit: meta.limit,
+        page,
+        limit,
       });
 
-      const { items, meta: apiMeta } = res;
-
-      setWorkers(items || []);
-      setMeta((prev) => ({ ...prev, ...(apiMeta || {}) }));
+      setWorkers(res?.items || []);
+      setTotalItems(res?.meta?.total_items || 0);
     } catch (err) {
       addMessage(false, err.message || "Failed to load workers");
     } finally {
       hideLoader();
     }
-  }, [filters, meta.page, meta.limit, showLoader, hideLoader, addMessage]);
+  }, [filters, page, limit]);
 
-  // Initial fetch and refetch on dependencies change
+  // Initial fetch + refetch on change
   useEffect(() => {
     fetchWorkers();
   }, [fetchWorkers]);
@@ -57,15 +56,16 @@ const ActiveWorkers = () => {
   // Filter handlers
   const handleFilterChange = (f) => {
     setFilters((prev) => ({ ...prev, ...f }));
-    setMeta((prev) => ({ ...prev, page: 1 }));
+    setPage(1);
   };
 
+  // Clear filters
   const handleClear = () => {
     setFilters({});
-    setMeta((prev) => ({ ...prev, page: 1 }));
+    setPage(1);
   };
 
- //Action handlers
+  // View worker
   const handleView = async (id) => {
     showLoader();
     try {
@@ -82,15 +82,12 @@ const ActiveWorkers = () => {
   const handleArchive = (id) => {
     openModal(
       async () => {
-        showLoader();
         try {
           await deleteWorker(id, false);
           addMessage(true, "Worker archived successfully");
           fetchWorkers();
         } catch (err) {
           addMessage(false, err.message || "Failed to archive worker");
-        } finally {
-          hideLoader();
         }
       },
       {
@@ -104,15 +101,12 @@ const ActiveWorkers = () => {
   const handleDelete = (id) => {
     openModal(
       async () => {
-        showLoader();
         try {
           await deleteWorker(id, true);
           addMessage(true, "Worker deleted permanently");
           fetchWorkers();
         } catch (err) {
           addMessage(false, err.message || "Failed to delete worker");
-        } finally {
-          hideLoader();
         }
       },
       {
@@ -122,47 +116,62 @@ const ActiveWorkers = () => {
     );
   };
 
-// Rendering
+  console.log("render ActiveWorkers");
+
   return (
-    <ListingComponent
-      filtersComponent={
-        <ActiveWorkersFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onClear={handleClear}
-        />
-      }
-      data={workers}
-      columns={[
-        { header: "Name", accessor: "full_name" },
-        { header: "Phone Number", accessor: "phone_number" },
-        { header: "Status", accessor: "status" },
-      ]}
-      actions={[
-        {
-          type: "view",
-          onClick: (row) => handleView(row.id),
-        },
-        {
-          type: "archive",
-          onClick: (row) => handleArchive(row.id),
-        },
-        {
-          type: "delete",
-          onClick: (row) => handleDelete(row.id),
-        },
-      ]}
-      emptyState={{
-        title: "No active workers found",
-        subtitle: "Try adjusting the filters above or check back later.",
-      }}
-      pagination={{
-        page: meta.page,
-        limit: meta.limit,
-        total: meta.total_items,
-        onPageChange: (page) => setMeta((prev) => ({ ...prev, page })),
-      }}
-    />
+    <div className="dashboard-wrapper">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+          <h2 className="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
+            File Manager
+          </h2>
+          <p className="text-muted mb-0">
+            Organize and manage your files — upload, update, rename, delete, or
+            download.
+          </p>
+        </div>
+      </div>
+
+      <ListingComponent
+        filtersComponent={
+          <ActiveWorkersFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClear={handleClear}
+          />
+        }
+        data={workers}
+        columns={[
+          { header: "Name", accessor: "full_name" },
+          { header: "Phone Number", accessor: "phone_number" },
+          { header: "Status", accessor: "status" },
+        ]}
+        actions={[
+          {
+            type: "view",
+            onClick: (row) => handleView(row.id),
+          },
+          {
+            type: "archive",
+            onClick: (row) => handleArchive(row.id),
+          },
+          {
+            type: "delete",
+            onClick: (row) => handleDelete(row.id),
+          },
+        ]}
+        emptyState={{
+          title: "No active workers found",
+          subtitle: "Try adjusting the filters above or check back later.",
+        }}
+        pagination={{
+          page,
+          limit,
+          total: totalItems,
+          onPageChange: setPage,
+        }}
+      />
+    </div>
   );
 };
 
