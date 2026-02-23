@@ -38,7 +38,7 @@ const WorkersModules = () => {
     } finally {
       hideLoader();
     }
-  }, [filters, page, limit]); // ✅ only real dependencies
+  }, [filters, page, limit]); 
 
   // Initial fetch + refetch on change
   useEffect(() => {
