@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { passwordResetConfirm } from "../../api/auth.api";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import passwordResetConfirm from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
@@ -165,6 +165,6 @@ const PasswordResetForm = ({ email }) => {
       </div>
     </div>
   );
-};;
+};
 
 export default PasswordResetForm;

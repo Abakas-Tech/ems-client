@@ -22,7 +22,7 @@ const processQueue = (error, token = null) => {
 };
 
 // Update in-memory access token
-export const setAccessToken = (token) => {
+const setAccessToken = (token) => {
   access_token = token;
 };
 
@@ -91,4 +91,7 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-export { axiosInstance };
+export default {
+  axiosInstance,
+  setAccessToken,
+};

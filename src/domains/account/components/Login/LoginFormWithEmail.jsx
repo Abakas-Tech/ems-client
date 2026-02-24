@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginWithEmail } from "../../api/auth.api";
+import loginWithEmail from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import useAuth from "../../../../context/auth/UseAuth";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
-import { setAccessToken } from "../../../../utils/axios";
+import setAccessToken from "../../../../utils/axios";
 
 const LoginFormWithEmail = () => {
   const [email, setEmail] = useState("");
@@ -56,63 +56,58 @@ const LoginFormWithEmail = () => {
   };
 
   return (
-       <div className="container">
-        <div className="row justify-content-center">
-   
-      <div
-        className="login-container p-5 rounded shadow-lg col-12 col-sm-10 col-md-6 col-lg-5"
-      >
-        <h2 className="text-center mb-3 fw-bold pt-0">Log In</h2>
+    <div className="container">
+      <div className="row justify-content-center">
+        <div className="login-container p-5 rounded shadow-lg col-12 col-sm-10 col-md-6 col-lg-5">
+          <h2 className="text-center mb-3 fw-bold pt-0">Log In</h2>
 
-        <form onSubmit={handleSubmit}>
-          {/* Email */}
-          <div className="form-floating mb-3">
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              placeholder="name@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <label htmlFor="email">Email address</label>
-          </div>
+          <form onSubmit={handleSubmit}>
+            {/* Email */}
+            <div className="form-floating mb-3">
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <label htmlFor="email">Email address</label>
+            </div>
 
-          {/* Password with reusable toggle */}
-          <div className="form-floating mb-3">
-            <PasswordInput
-              id="password"
-              label="Password"
-              icon_input={true}
-              value={password}
-              onChange={setPassword}
-              required
-              align="right"
-              variant="floating"
-            />
-          </div>
+            {/* Password with reusable toggle */}
+            <div className="form-floating mb-3">
+              <PasswordInput
+                id="password"
+                label="Password"
+                icon_input={true}
+                value={password}
+                onChange={setPassword}
+                required
+                align="right"
+                variant="floating"
+              />
+            </div>
 
-          {/* Forgot password */}
-          <div className="text-end mb-3 fw-medium">
-            <Link to="/auth/request-otp" className="link-primary">
-              Forgot Password?
-            </Link>
-          </div>
+            {/* Forgot password */}
+            <div className="text-end mb-3 fw-medium">
+              <Link to="/auth/request-otp" className="link-primary">
+                Forgot Password?
+              </Link>
+            </div>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            className="btn btn-main fw-medium w-100 rounded-2"
-          >
-            Log In
-          </button>
-        </form>
+            {/* Submit */}
+            <button
+              type="submit"
+              className="btn btn-main fw-medium w-100 rounded-2"
+            >
+              Log In
+            </button>
+          </form>
+        </div>
       </div>
-      </div>
-      </div>
-      
-
+    </div>
   );
 };
 

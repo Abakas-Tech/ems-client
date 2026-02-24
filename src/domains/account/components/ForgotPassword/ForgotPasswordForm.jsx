@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
-import {useNavigate } from "react-router-dom";
-import { passwordResetRequest } from "../../api/auth.api";
+import { useNavigate } from "react-router-dom";
+import passwordResetRequest from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
@@ -43,36 +43,34 @@ const ForgotPasswordForm = () => {
   };
 
   return (
-  
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="login-container p-5 rounded shadow-lg col-12 col-sm-10 col-md-6 col-lg-5">
-            <h2 className="text-center mb-3 fw-bold pt-0">Forgot Password</h2>
+    <div className="container">
+      <div className="row justify-content-center">
+        <div className="login-container p-5 rounded shadow-lg col-12 col-sm-10 col-md-6 col-lg-5">
+          <h2 className="text-center mb-3 fw-bold pt-0">Forgot Password</h2>
 
-            <form onSubmit={handleSubmit}>
-              <div className="form-floating mb-3">
-                <input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <label htmlFor="email">Email address</label>
-              </div>
-              <button
-                type="submit"
-                className="btn btn-main fw-medium w-100 rounded-2"
-              >
-                Submit
-              </button>
-            </form>
-          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="form-floating mb-3">
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <label htmlFor="email">Email address</label>
+            </div>
+            <button
+              type="submit"
+              className="btn btn-main fw-medium w-100 rounded-2"
+            >
+              Submit
+            </button>
+          </form>
         </div>
       </div>
-  
+    </div>
   );
 };
 
