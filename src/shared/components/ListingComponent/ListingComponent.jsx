@@ -1,9 +1,6 @@
 import ActionButtons from "../ActionButtons/ActionButtons";
 import BottomPagination from "../BottomPagination/BottomPagination";
 
-// In ListingComponent, before return
-console.log("ListingComponent rendered");
-
 const ListingComponent = ({
   data = [],
   columns = [],
