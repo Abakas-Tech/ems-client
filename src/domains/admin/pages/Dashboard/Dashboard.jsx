@@ -3,11 +3,8 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import styles from "./Dashboard.module.css";
 import useLogout from "./../../../../context/logout/UseLogout";
-import { useProfile } from "../../../../context/Profile/ProfileProvider";
-import {
-  uploadProfilePhoto,
-  deleteProfilePhoto,
-} from "../../api/profilePhoto.api";
+import {useProfile} from "../../../../context/Profile/ProfileProvider";
+import Photo from "../../api/profilePhoto.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useConfirmDelete } from "../../../../context/Delete/UseDelete";
@@ -73,7 +70,7 @@ const Dashboard = () => {
 
     showLoader();
     try {
-      const response = await uploadProfilePhoto(file);
+      const response = await Photo.uploadProfilePhoto(file);
       addMessage(response?.success, response?.message);
       await fetchProfile();
     } catch (err) {
@@ -87,7 +84,7 @@ const Dashboard = () => {
     openModal(async () => {
       showLoader();
       try {
-        const response = await deleteProfilePhoto();
+        const response = await Photo.deleteProfilePhoto();
 
         addMessage(response?.success, response?.message);
 

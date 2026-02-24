@@ -1,9 +1,9 @@
-import axiosInstance from "../../../utils/axios";
+import axios from "../../../utils/axios";
 
 // change Password function
 const changePassword = async (data) => {
   try {
-    const response = await axiosInstance.post("/auth/change-password", data);
+    const response = await axios.axiosInstance.post("/auth/change-password", data);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Change password error");
@@ -13,7 +13,7 @@ const changePassword = async (data) => {
 // change Password function
 const refreshTokenApi = async () => {
   try {
-    const response = await axiosInstance.post("/auth/refresh");
+    const response = await axios.axiosInstance.post("/auth/refresh");
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Refresh token error");
@@ -23,7 +23,7 @@ const refreshTokenApi = async () => {
 // change Password function
 const logoutApi = async (data) => {
   try {
-    const response = await axiosInstance.post("/auth/logout", data);
+    const response = await axios.axiosInstance.post("/auth/logout", data);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Logout error");

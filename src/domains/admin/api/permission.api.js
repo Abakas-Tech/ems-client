@@ -1,9 +1,9 @@
-import  axiosInstance  from "../../../utils/axios";
+import  axios  from "../../../utils/axios";
 
 // GRANT PERMISSION
 const grantPermissions = async (payload) => {
   try {
-    const response = await axiosInstance.post("/permissions/grant", payload);
+    const response = await axios.axiosInstance.post("/permissions/grant", payload);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Grant permission error");
@@ -13,7 +13,7 @@ const grantPermissions = async (payload) => {
 // REVOKE PERMISSION
 const revokePermissions = async (payload) => {
   try {
-    const response = await axiosInstance.post("/permissions/revoke", payload);
+    const response = await axios.axiosInstance.post("/permissions/revoke", payload);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Revoke permission error");
@@ -23,7 +23,7 @@ const revokePermissions = async (payload) => {
 // GET USER PERMISSIONS
 const getPermission = async (userId) => {
   try {
-    const response = await axiosInstance.get(`/permissions/${userId}`);
+    const response = await axios.axiosInstance.get(`/permissions/${userId}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Fetch permission error");

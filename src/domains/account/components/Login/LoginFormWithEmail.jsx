@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import loginWithEmail from "../../api/auth.api";
+import login from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import useAuth from "../../../../context/auth/UseAuth";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
-import setAccessToken from "../../../../utils/axios";
+import accessToken from "../../../../utils/axios";
 
 const LoginFormWithEmail = () => {
   const [email, setEmail] = useState("");
@@ -41,9 +41,9 @@ const LoginFormWithEmail = () => {
 
     showLoader();
     try {
-      const response = await loginWithEmail({ email, password });
+      const response = await login.loginWithEmail({ email, password });
       const { access_token } = response.data;
-      setAccessToken(access_token); // store in memory
+      accessToken.setAccessToken(access_token); // store in memory
 
       addMessage(response.success, response.message);
       setUser(true);

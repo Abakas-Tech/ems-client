@@ -1,5 +1,5 @@
 import axios from "axios";
-import { refreshTokenApi } from "../domains/admin/api/auth.api";
+import refreshTokenApi  from "../domains/admin/api/auth.api";
 
 const backend_server_url = import.meta.env.VITE_AXIOS_INSTANCE_BASE_URL;
 

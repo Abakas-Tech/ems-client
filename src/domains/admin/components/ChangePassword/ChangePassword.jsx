@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import  changePassword  from "../../api/auth.api";
+import  password  from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
@@ -37,7 +37,7 @@ const ChangePassword = () => {
 
     showLoader();
     try {
-      const response = await changePassword({
+      const response = await password.changePassword({
         current_password: oldPassword,
         new_password: newPassword,
         confirm_password: confirmPassword,

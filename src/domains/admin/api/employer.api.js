@@ -1,9 +1,9 @@
-import  axiosInstance  from "../../../utils/axios";
+import  axios  from "../../../utils/axios";
 
 // GET ALL EMPLOYERS for logged-in worker
 const getEmployers = async (params = {}) => {
   try {
-    const response = await axiosInstance.get("/employers", {
+    const response = await axios.axiosInstance.get("/employers", {
       params,
     });
     return response.data;
@@ -15,7 +15,7 @@ const getEmployers = async (params = {}) => {
 // GET SINGLE EMPLOYER BY ID
 const getEmployerById = async (employerId) => {
   try {
-    const response = await axiosInstance.get(`/employers/${employerId}`);
+    const response = await axios.axiosInstance.get(`/employers/${employerId}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Employer fetch error");
@@ -25,7 +25,7 @@ const getEmployerById = async (employerId) => {
 // CREATE EMPLOYER (ADMIN ONLY)
 const createEmployer = async (payload) => {
   try {
-    const response = await axiosInstance.post("/employers", payload);
+    const response = await axios.axiosInstance.post("/employers", payload);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Employer creation error");
@@ -35,7 +35,7 @@ const createEmployer = async (payload) => {
 // UPDATE EMPLOYER
 const updateEmployer = async (employerId, payload) => {
   try {
-    const response = await axiosInstance.put(
+    const response = await axios.axiosInstance.put(
       `/employers/${employerId}`,
       payload,
     );
@@ -48,7 +48,7 @@ const updateEmployer = async (employerId, payload) => {
 // DELETE EMPLOYER (ADMIN ONLY)
 const deleteEmployer = async (employerId) => {
   try {
-    const response = await axiosInstance.delete(`/employers/${employerId}`);
+    const response = await axios.axiosInstance.delete(`/employers/${employerId}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Employer delete error");

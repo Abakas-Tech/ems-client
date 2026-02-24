@@ -1,4 +1,4 @@
-import  axiosInstance  from "../../../utils/axios";
+import  axios  from "../../../utils/axios";
 
 // UPLOAD OR UPDATE OWN PROFILE PHOTO
 const uploadProfilePhoto = async (file) => {
@@ -6,7 +6,7 @@ const uploadProfilePhoto = async (file) => {
     const formData = new FormData();
     formData.append("photo", file);
 
-    const response = await axiosInstance.post(
+    const response = await axios.axiosInstance.post(
       "/users/me/profile-photo",
       formData,
       {
@@ -27,7 +27,7 @@ const uploadProfilePhoto = async (file) => {
 // DELETE OWN PROFILE PHOTO
 const deleteProfilePhoto = async () => {
   try {
-    const response = await axiosInstance.delete("/users/me/profile-photo");
+    const response = await axios.axiosInstance.delete("/users/me/profile-photo");
 
     return response.data;
   } catch (error) {

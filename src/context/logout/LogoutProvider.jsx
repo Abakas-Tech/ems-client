@@ -3,8 +3,8 @@ import { LogoutContext } from "./LogoutContext.jsx";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../auth/UseAuth.jsx";
 import Logout from "./../../shared/global/Logout/Logout.jsx";
-import { logoutApi } from './../../domains/admin/api/auth.api';
-import { setAccessToken } from "../../utils/axios.jsx";
+import  logout  from './../../domains/admin/api/auth.api';
+import  accessToken  from "../../utils/axios.jsx";
 
 const LogoutProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -15,10 +15,10 @@ const LogoutProvider = ({ children }) => {
  const logoutNow = async () => {
    try {
      // Call backend logout to clear refresh token cookie
-     await logoutApi();
+     await logout.logoutApi();
 
      // Clear in-memory access token
-     setAccessToken(null);
+     accessToken.setAccessToken(null);
 
      // Smooth transition
      setTimeout(() => {
@@ -28,7 +28,7 @@ const LogoutProvider = ({ children }) => {
    } catch (error) {
      console.error("Logout failed:", error);
      // Still clear in-memory token and redirect even if API fails
-     setAccessToken(null);
+     accessToken.setAccessToken(null);
      setTimeout(() => {
        setUser(null);
        navigate("/");

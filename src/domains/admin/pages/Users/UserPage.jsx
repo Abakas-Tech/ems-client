@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import UserList from "../../components/Users/UserList";
 import UserFilters from "../../components/Users/UserFilters";
 import user from "../../api/user.api";
-import  getPermission  from "../../api/permission.api";
+import  permission  from "../../api/permission.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useConfirmDelete } from "../../../../context/Delete/UseDelete";
@@ -96,7 +96,7 @@ const UsersPage = () => {
   const handleEdit = async (user) => {
     showLoader();
     try {
-      const permResponse = await getPermission(user.id);
+      const permResponse = await permission.getPermission(user.id);
       const userDataWithPermissions = {
         ...user,
         permissions: permResponse?.data || [],

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import passwordResetRequest from "../../api/auth.api";
+import password from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
@@ -31,7 +31,7 @@ const ForgotPasswordForm = () => {
 
     showLoader();
     try {
-      const response = await passwordResetRequest({ email });
+      const response = await password.passwordResetRequest({ email });
       addMessage(response.success, response.message);
       navigate("/auth/reset-password", { state: { email } });
     } catch (error) {

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useProfile } from "../../../../context/Profile/ProfileProvider";
-import  updateProfile  from "../../api/profile.api";
+import  profileApi  from "../../api/profile.api";
 import photo from "../../api/profilePhoto.api";
 import { useConfirmDelete } from "../../../../context/Delete/UseDelete";
 
@@ -98,7 +98,7 @@ const profilePhoto=profile?.profile_photo_url;
 
     showLoader();
     try {
-      const response = await updateProfile(payload);
+      const response = await profileApi.updateProfile(payload);
       addMessage(
         response?.success,
         response?.message || "Profile updated successfully!",
