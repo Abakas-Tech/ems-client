@@ -21,12 +21,14 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [role, setRole] = useState("");
   const [country, setCountry] = useState("");
+  const [nationalId, setNationalId] = useState("");
+  const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
   const [originalPermissions, setOriginalPermissions] = useState([]);
-  const navigate = useNavigate();
-
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
 
+  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
@@ -34,7 +36,7 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
     navigate("/admin/user-management");
   };
 
-  //  Prefill data in Update Mode
+  // Prefill data in Update Mode
   useEffect(() => {
     if (isEditMode && userData) {
       setFullName(userData.full_name || "");
@@ -42,16 +44,17 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
       setPhoneNumber(userData.phone_number || "");
       setRole(String(userData.role_id || ""));
       setCountry(userData.country || "");
+      setNationalId(userData.national_id || "");
+      setCity(userData.city || "");
+      setAddress(userData.address || "");
 
       if (userData.permissions && userData.permissions.length > 0) {
         const permissionObject = userData.permissions[0];
-
         const activePermissions = PERMISSIONS.filter(
           (perm) => permissionObject[perm] === 1,
         );
-
         setSelectedPermissions(activePermissions);
-        setOriginalPermissions(activePermissions); // 🔥 Track original
+        setOriginalPermissions(activePermissions); // Track original
       }
     }
   }, [isEditMode, userData]);
@@ -62,6 +65,9 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
     setPhoneNumber("");
     setRole("");
     setCountry("");
+    setNationalId("");
+    setCity("");
+    setAddress("");
     setSelectedPermissions([]);
     setSelectAll(false);
   };
@@ -90,6 +96,7 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
       setSelectAll(true);
     }
   };
+
   useEffect(() => {
     setSelectAll(selectedPermissions.length === PERMISSIONS.length);
   }, [selectedPermissions]);
@@ -121,20 +128,37 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
       return false;
     }
 
-    if (role === "3" && !country) {
-      addMessage(false, "Country is required for partner.");
+    if ((role === "3" || role === "5") && !country) {
+      addMessage(false, "Country is required.");
       return false;
     }
+
+    // Employer-specific validation
+    if (role === "5") {
+      if (!nationalId) {
+        addMessage(false, "National ID is required for employer.");
+        return false;
+      }
+      if (!city) {
+        addMessage(false, "City is required for employer.");
+        return false;
+      }
+      if (!address) {
+        addMessage(false, "Address is required for employer.");
+        return false;
+      }
+    }
+
+    // Employee permission validation
     if (role === "2" && selectedPermissions.length === 0) {
       addMessage(false, "At least one permission must be selected.");
       hideLoader();
-      return;
+      return false;
     }
 
     return true;
   };
 
-  //  Submit handler (Create + Update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateFields()) return;
@@ -142,26 +166,23 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
     showLoader();
 
     try {
+      const payload = {
+        full_name: fullName,
+        email,
+        phone_number: phoneNumber,
+        role: Number(role),
+        country: role === "3" || role === "5" ? country : undefined,
+        national_id: role === "5" ? nationalId : undefined,
+        city: role === "5" ? city : undefined,
+        address: role === "5" ? address : undefined,
+      };
+
       let response;
 
       if (isEditMode) {
-        //  UPDATE MODE
-        response = await user.updateUser(userData.id, {
-          full_name: fullName,
-          email,
-          phone_number: phoneNumber,
-          role: Number(role),
-          country: role === "3" ? country : undefined,
-        });
+        response = await user.updateUser(userData.id, payload);
       } else {
-        //  CREATE MODE
-        response = await user.createUser({
-          full_name: fullName,
-          email,
-          phone_number: phoneNumber,
-          role: Number(role),
-          country: role === "3" ? country : undefined,
-        });
+        response = await user.createUser(payload);
       }
 
       if (!response.success) {
@@ -172,19 +193,15 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
 
       const userId = isEditMode ? userData.id : response.data?.id;
 
-      //  Handle permissions only if Employee
+      // Handle permissions only if Employee
       if (role === "2") {
-        //  Find permissions to grant
         const permissionsToGrant = selectedPermissions.filter(
           (perm) => !originalPermissions.includes(perm),
         );
-
-        //  Find permissions to revoke
         const permissionsToRevoke = originalPermissions.filter(
           (perm) => !selectedPermissions.includes(perm),
         );
 
-        // Grant new permissions
         if (permissionsToGrant.length > 0) {
           await permission.grantPermissions({
             user_id: userId,
@@ -192,7 +209,6 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
           });
         }
 
-        // Revoke removed permissions
         if (permissionsToRevoke.length > 0) {
           await permission.revokePermissions({
             user_id: userId,
@@ -200,15 +216,13 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
           });
         }
 
-        // Update original state after success
         setOriginalPermissions(selectedPermissions);
       }
 
       addMessage(true, response.message);
       navigate("/admin/user-management");
-      if (!isEditMode) {
-        resetForm();
-      }
+
+      if (!isEditMode) resetForm();
     } catch (error) {
       addMessage(false, error.message);
     } finally {
@@ -227,15 +241,14 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
             <p className="text-muted">
               {isEditMode
                 ? "Update user details and permissions."
-                : "Add a new employee or partner and assign permissions."}
+                : "Add a new employee, partner, or employer and assign permissions."}
             </p>
           </div>
 
-          {/* Back Arrow */}
           <button
             type="button"
             onClick={handleBack}
-            className=" border rounded-circle d-flex align-items-center justify-content-center btn btn-main "
+            className="border rounded-circle d-flex align-items-center justify-content-center btn btn-main"
             style={{ width: "40px", height: "40px" }}
           >
             ←
@@ -289,11 +302,12 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
                   <option value="">Select Role</option>
                   <option value="2">Employee</option>
                   <option value="3">Partner</option>
+                  <option value="5">Employer</option>
                 </select>
               </div>
 
-              {/* Country */}
-              {role === "3" && (
+              {/* Country (Partner + Employer) */}
+              {(role === "3" || role === "5") && (
                 <div className="form-group col-md-6 mb-3">
                   <label>Country</label>
                   <input
@@ -303,6 +317,39 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
                     onChange={(e) => setCountry(e.target.value)}
                   />
                 </div>
+              )}
+
+              {/* Employer Fields */}
+              {role === "5" && (
+                <>
+                  <div className="form-group col-md-6 mb-3">
+                    <label>National ID</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={nationalId}
+                      onChange={(e) => setNationalId(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group col-md-6 mb-3">
+                    <label>City</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group col-md-12 mb-3">
+                    <label>Address</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                    />
+                  </div>
+                </>
               )}
 
               {/* Permission Section (Only for Employee) */}

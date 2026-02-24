@@ -1,9 +1,6 @@
-import React from "react";
-import styles from "./UserFilters.module.css";
-
 const UserFilters = ({ filters, onFilterChange, onClear }) => {
   return (
-    <div className={`card shadow-sm mb-4 ${styles.filtersCard}`}>
+    <div className="card shadow-sm mb-4 rounded-3 border">
       <div className="card-body">
         <div className="row g-3 align-items-center">
           {/* Search (name, email, phone) */}
@@ -11,7 +8,7 @@ const UserFilters = ({ filters, onFilterChange, onClear }) => {
             <input
               type="text"
               name="search"
-              className={`form-control ${styles.input}`}
+              className="form-control"
               placeholder="Search name, email or phone"
               value={filters.search}
               onChange={onFilterChange}
@@ -22,13 +19,14 @@ const UserFilters = ({ filters, onFilterChange, onClear }) => {
           <div className="col-md-3">
             <select
               name="role_id"
-              className={`form-select ${styles.input}`}
+              className="form-select"
               value={filters.role_id}
               onChange={onFilterChange}
             >
               <option value="">All Roles</option>
               <option value="2">Employee</option>
               <option value="3">Partner</option>
+              <option value="5">Employer</option>
             </select>
           </div>
 
@@ -36,7 +34,7 @@ const UserFilters = ({ filters, onFilterChange, onClear }) => {
           <div className="col-md-3">
             <select
               name="is_active"
-              className={`form-select ${styles.input}`}
+              className="form-select"
               value={filters.is_active}
               onChange={onFilterChange}
             >
@@ -50,7 +48,7 @@ const UserFilters = ({ filters, onFilterChange, onClear }) => {
           <div className="col-md-2 d-grid">
             <button
               type="button"
-              className={`btn btn-outline-secondary ${styles.clearBtn}`}
+              className="btn btn-outline-secondary"
               onClick={onClear}
             >
               Clear

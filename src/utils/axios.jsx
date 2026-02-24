@@ -1,5 +1,5 @@
 import axios from "axios";
-import refreshTokenApi  from "../domains/admin/api/auth.api";
+import refreshToken  from "../domains/admin/api/auth.api";
 
 const backend_server_url = import.meta.env.VITE_AXIOS_INSTANCE_BASE_URL;
 
@@ -61,7 +61,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         // Call refresh API
-        const response = await refreshTokenApi();
+        const response = await refreshToken.refreshTokenApi();
         const newAccessToken = response.data?.access_token;
 
         if (!newAccessToken)
