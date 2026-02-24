@@ -360,7 +360,7 @@ function WorkersPersonalInfo() {
                       ) : (
                         <select
                           name="personal_region_id"
-                          className="form-control"
+                          className="form-select"
                           value={formData.personal_information.region_id}
                           onChange={handleTextChange}
                           required
@@ -380,7 +380,7 @@ function WorkersPersonalInfo() {
                       <label>City</label>
                       <select
                         name="personal_city_id"
-                        className="form-control"
+                        className="form-select"
                         value={formData.personal_information.city_id}
                         onChange={handleTextChange}
                         disabled={!formData.personal_information.region_id}
@@ -439,7 +439,7 @@ function WorkersPersonalInfo() {
                       <label>Marital Status</label>
                       <select
                         name="personal_marital_status"
-                        className="form-control"
+                        className="form-select"
                         value={formData.personal_information.marital_status}
                         onChange={handleTextChange}
                       >

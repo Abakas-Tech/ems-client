@@ -204,7 +204,7 @@ function WorkersRegistration() {
                       </label>
                       <select
                         name="personal_sex"
-                        className="form-control"
+                        className="form-select"
                         value={formData.personal_information.sex}
                         onChange={handleTextChange}
                         required
@@ -235,7 +235,7 @@ function WorkersRegistration() {
                       ) : (
                         <select
                           name="personal_status_id"
-                          className="form-control"
+                          className="form-select"
                           value={formData.personal_information.status_id}
                           onChange={handleTextChange}
                           required
