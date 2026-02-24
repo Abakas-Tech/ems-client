@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { createEmployer, updateEmployer } from "../../api/employer.api";
+import employer from "../../api/employer.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useNavigate } from "react-router-dom";
@@ -88,9 +88,12 @@ const CreateEmployer = ({ isEditMode = false, employerData = null }) => {
 
       let response;
       if (isEditMode) {
-        response = await updateEmployer(employerData.employer_id, payload);
+        response = await employer.updateEmployer(
+          employerData.employer_id,
+          payload,
+        );
       } else {
-        response = await createEmployer(payload);
+        response = await employer.createEmployer(payload);
       }
 
       if (!response.success) {

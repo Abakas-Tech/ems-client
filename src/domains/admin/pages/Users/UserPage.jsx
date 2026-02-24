@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UserList from "../../components/Users/UserList";
 import UserFilters from "../../components/Users/UserFilters";
-import { getUsers, deleteUser } from "../../api/user.api";
-import { getPermission } from "../../api/permission.api";
+import user from "../../api/user.api";
+import  getPermission  from "../../api/permission.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useConfirmDelete } from "../../../../context/Delete/UseDelete";
@@ -33,7 +33,7 @@ const UsersPage = () => {
         if (filters.is_active !== "")
           cleanFilters.is_active = filters.is_active === "true" ? 1 : 0;
 
-        const response = await getUsers(cleanFilters);
+        const response = await user.getUsers(cleanFilters);
         setUsers(response?.data || response || []);
       } catch (err) {
         addMessage(false, err.message);
@@ -69,11 +69,11 @@ const UsersPage = () => {
     openModal(async () => {
       showLoader();
       try {
-        const response = await deleteUser(id);
+        const response = await user.deleteUser(id);
         addMessage(response?.success, response?.message);
 
         // Refetch with current filters
-        const refreshed = await getUsers({
+        const refreshed = await user.getUsers({
           ...filters,
           is_active:
             filters.is_active === ""

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EmployerList from "../../components/Employer/EmployerList";
 import EmployerFilters from "../../components/Employer/EmployerFilters";
-import { getEmployers, deleteEmployer } from "../../api/employer.api";
+import employer from "../../api/employer.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useConfirmDelete } from "../../../../context/Delete/UseDelete";
@@ -31,7 +31,7 @@ const EmployersPage = () => {
         if (filters.is_active !== "")
           cleanFilters.is_active = filters.is_active === "true" ? 1 : 0;
 
-        const response = await getEmployers(cleanFilters);
+        const response = await employer.getEmployers(cleanFilters);
         console.log(response)
         setEmployers(response?.data || response || []);
       } catch (err) {
@@ -66,11 +66,11 @@ const EmployersPage = () => {
     openModal(async () => {
       showLoader();
       try {
-        const response = await deleteEmployer(id);
+        const response = await employer.deleteEmployer(id);
         addMessage(response?.success, response?.message);
 
         // Refetch with current filters
-        const refreshed = await getEmployers({
+        const refreshed = await employer.getEmployers({
           ...filters,
           is_active:
             filters.is_active === ""

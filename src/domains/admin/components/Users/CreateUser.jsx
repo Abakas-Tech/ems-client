@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { createUser, updateUser } from "../../api/user.api";
-import { grantPermissions, revokePermissions } from "../../api/permission.api";
+import user from "../../api/user.api";
+import permission from "../../api/permission.api";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useNavigate } from "react-router-dom";
@@ -146,7 +146,7 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
 
       if (isEditMode) {
         //  UPDATE MODE
-        response = await updateUser(userData.id, {
+        response = await user.updateUser(userData.id, {
           full_name: fullName,
           email,
           phone_number: phoneNumber,
@@ -155,7 +155,7 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
         });
       } else {
         //  CREATE MODE
-        response = await createUser({
+        response = await user.createUser({
           full_name: fullName,
           email,
           phone_number: phoneNumber,
@@ -186,7 +186,7 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
 
         // Grant new permissions
         if (permissionsToGrant.length > 0) {
-          await grantPermissions({
+          await permission.grantPermissions({
             user_id: userId,
             permissions: permissionsToGrant,
           });
@@ -194,7 +194,7 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
 
         // Revoke removed permissions
         if (permissionsToRevoke.length > 0) {
-          await revokePermissions({
+          await permission.revokePermissions({
             user_id: userId,
             permissions: permissionsToRevoke,
           });

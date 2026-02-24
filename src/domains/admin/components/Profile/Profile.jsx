@@ -2,11 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useProfile } from "../../../../context/Profile/ProfileProvider";
-import { updateProfile } from "../../api/profile.api";
-import {
-  uploadProfilePhoto,
-  deleteProfilePhoto,
-} from "../../api/profilePhoto.api";
+import  updateProfile  from "../../api/profile.api";
+import photo from "../../api/profilePhoto.api";
 import { useConfirmDelete } from "../../../../context/Delete/UseDelete";
 
 const MyProfile = () => {
@@ -50,7 +47,7 @@ const MyProfile = () => {
 
     showLoader();
     try {
-      const response = await uploadProfilePhoto(file);
+      const response = await photo.uploadProfilePhoto(file);
       addMessage(response?.success, response?.message);
       await fetchProfile();
     } catch (err) {
@@ -64,7 +61,7 @@ const MyProfile = () => {
     openModal(async () => {
       showLoader();
       try {
-        const response = await deleteProfilePhoto();
+        const response = await photo.deleteProfilePhoto();
         addMessage(response?.success, response?.message);
   
         await fetchProfile();
