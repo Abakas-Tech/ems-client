@@ -20,6 +20,7 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [role, setRole] = useState("");
+  const [status, setStatus] = useState("1"); // Active = 1, Inactive = 0
   const [country, setCountry] = useState("");
   const [nationalId, setNationalId] = useState("");
   const [city, setCity] = useState("");
@@ -36,13 +37,16 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
     navigate("/admin/user-management");
   };
 
-  // Prefill data in Update Mode
+  // Prefill data in Edit Mode
   useEffect(() => {
     if (isEditMode && userData) {
       setFullName(userData.full_name || "");
       setEmail(userData.email || "");
       setPhoneNumber(userData.phone_number || "");
       setRole(String(userData.role_id || ""));
+      setStatus(
+        userData.is_active !== undefined ? String(userData.is_active) : "1",
+      );
       setCountry(userData.country || "");
       setNationalId(userData.national_id || "");
       setCity(userData.city || "");
@@ -54,7 +58,7 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
           (perm) => permissionObject[perm] === 1,
         );
         setSelectedPermissions(activePermissions);
-        setOriginalPermissions(activePermissions); // Track original
+        setOriginalPermissions(activePermissions);
       }
     }
   }, [isEditMode, userData]);
@@ -64,6 +68,7 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
     setEmail("");
     setPhoneNumber("");
     setRole("");
+    setStatus("1");
     setCountry("");
     setNationalId("");
     setCity("");
@@ -101,61 +106,60 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
     setSelectAll(selectedPermissions.length === PERMISSIONS.length);
   }, [selectedPermissions]);
 
+  // Determine which fields are required based on backend schema
+  const requiredFields = {
+    full_name: !isEditMode,
+    email: !isEditMode,
+    phone_number: !isEditMode,
+    role: !isEditMode,
+    country: !isEditMode && (role === "3" || role === "5"),
+    national_id: !isEditMode && role === "5",
+    city: !isEditMode && role === "5",
+    address: !isEditMode && role === "5",
+  };
+
   const validateFields = () => {
-    if (!fullName) {
+    if (requiredFields.full_name && !fullName) {
       addMessage(false, "Full name is required.");
       return false;
     }
-
-    if (!email) {
+    if (requiredFields.email && !email) {
       addMessage(false, "Email is required.");
       return false;
     }
-
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
+    if (requiredFields.email && !emailPattern.test(email)) {
       addMessage(false, "Please enter a valid email address.");
       return false;
     }
-
-    if (!phoneNumber) {
+    if (requiredFields.phone_number && !phoneNumber) {
       addMessage(false, "Phone number is required.");
       return false;
     }
-
-    if (!role) {
+    if (requiredFields.role && !role) {
       addMessage(false, "Role is required.");
       return false;
     }
-
-    if ((role === "3" || role === "5") && !country) {
+    if (requiredFields.country && !country) {
       addMessage(false, "Country is required.");
       return false;
     }
-
-    // Employer-specific validation
-    if (role === "5") {
-      if (!nationalId) {
-        addMessage(false, "National ID is required for employer.");
-        return false;
-      }
-      if (!city) {
-        addMessage(false, "City is required for employer.");
-        return false;
-      }
-      if (!address) {
-        addMessage(false, "Address is required for employer.");
-        return false;
-      }
-    }
-
-    // Employee permission validation
-    if (role === "2" && selectedPermissions.length === 0) {
-      addMessage(false, "At least one permission must be selected.");
-      hideLoader();
+    if (requiredFields.national_id && !nationalId) {
+      addMessage(false, "National ID is required for employer.");
       return false;
     }
-
+    if (requiredFields.city && !city) {
+      addMessage(false, "City is required for employer.");
+      return false;
+    }
+    if (requiredFields.address && !address) {
+      addMessage(false, "Address is required for employer.");
+      return false;
+    }
+    if (role === "2" && selectedPermissions.length === 0) {
+      addMessage(false, "At least one permission must be selected.");
+      return false;
+    }
     return true;
   };
 
@@ -164,26 +168,22 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
     if (!validateFields()) return;
 
     showLoader();
-
     try {
       const payload = {
         full_name: fullName,
         email,
         phone_number: phoneNumber,
         role: Number(role),
+        is_active: Number(status),
         country: role === "3" || role === "5" ? country : undefined,
         national_id: role === "5" ? nationalId : undefined,
         city: role === "5" ? city : undefined,
         address: role === "5" ? address : undefined,
       };
 
-      let response;
-
-      if (isEditMode) {
-        response = await user.updateUser(userData.id, payload);
-      } else {
-        response = await user.createUser(payload);
-      }
+      let response = isEditMode
+        ? await user.updateUser(userData.id, payload)
+        : await user.createUser(payload);
 
       if (!response.success) {
         addMessage(false, response.message);
@@ -193,7 +193,7 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
 
       const userId = isEditMode ? userData.id : response.data?.id;
 
-      // Handle permissions only if Employee
+      // Employee permission handling
       if (role === "2") {
         const permissionsToGrant = selectedPermissions.filter(
           (perm) => !originalPermissions.includes(perm),
@@ -208,20 +208,17 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
             permissions: permissionsToGrant,
           });
         }
-
         if (permissionsToRevoke.length > 0) {
           await permission.revokePermissions({
             user_id: userId,
             permissions: permissionsToRevoke,
           });
         }
-
         setOriginalPermissions(selectedPermissions);
       }
 
       addMessage(true, response.message);
       navigate("/admin/user-management");
-
       if (!isEditMode) resetForm();
     } catch (error) {
       addMessage(false, error.message);
@@ -260,44 +257,69 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
             <div className="row">
               {/* Full Name */}
               <div className="form-group col-md-6 mb-3">
-                <label>Full Name</label>
+                <label>
+                  Full Name{" "}
+                  {requiredFields.full_name && (
+                    <span className="text-danger">*</span>
+                  )}
+                </label>
                 <input
                   type="text"
                   className="form-control"
                   value={fullName}
+                  required={requiredFields.full_name}
                   onChange={(e) => setFullName(e.target.value)}
                 />
               </div>
 
               {/* Email */}
               <div className="form-group col-md-6 mb-3">
-                <label>Email</label>
+                <label>
+                  Email{" "}
+                  {requiredFields.email && (
+                    <span className="text-danger">*</span>
+                  )}
+                </label>
                 <input
                   type="email"
                   className="form-control"
                   value={email}
+                  required={requiredFields.email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
 
               {/* Phone */}
               <div className="form-group col-md-6 mb-3">
-                <label>Phone Number</label>
+                <label>
+                  Phone Number{" "}
+                  {requiredFields.phone_number && (
+                    <span className="text-danger">*</span>
+                  )}
+                </label>
                 <input
                   type="text"
                   className="form-control"
                   value={phoneNumber}
+                  required={requiredFields.phone_number}
                   onChange={(e) => handlePhoneChange(e.target.value)}
                 />
               </div>
 
               {/* Role */}
               <div className="form-group col-md-6 mb-3">
-                <label>Role</label>
+                <label>
+                  Role{" "}
+                  {requiredFields.role && (
+                    <span className="text-danger">*</span>
+                  )}
+                </label>
                 <select
                   className="form-control"
                   value={role}
+                  required={requiredFields.role}
                   onChange={(e) => setRole(e.target.value)}
+                  disabled={isEditMode}
                 >
                   <option value="">Select Role</option>
                   <option value="2">Employee</option>
@@ -306,14 +328,35 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
                 </select>
               </div>
 
-              {/* Country (Partner + Employer) */}
+              {/* Status (Edit Mode Only) */}
+              {isEditMode && (
+                <div className="form-group col-md-6 mb-3">
+                  <label>Status</label>
+                  <select
+                    className="form-control"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                  </select>
+                </div>
+              )}
+
+              {/* Country */}
               {(role === "3" || role === "5") && (
                 <div className="form-group col-md-6 mb-3">
-                  <label>Country</label>
+                  <label>
+                    Country{" "}
+                    {requiredFields.country && (
+                      <span className="text-danger">*</span>
+                    )}
+                  </label>
                   <input
                     type="text"
                     className="form-control"
                     value={country}
+                    required={requiredFields.country}
                     onChange={(e) => setCountry(e.target.value)}
                   />
                 </div>
@@ -323,36 +366,54 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
               {role === "5" && (
                 <>
                   <div className="form-group col-md-6 mb-3">
-                    <label>National ID</label>
+                    <label>
+                      National ID{" "}
+                      {requiredFields.national_id && (
+                        <span className="text-danger">*</span>
+                      )}
+                    </label>
                     <input
                       type="text"
                       className="form-control"
                       value={nationalId}
+                      required={requiredFields.national_id}
                       onChange={(e) => setNationalId(e.target.value)}
                     />
                   </div>
                   <div className="form-group col-md-6 mb-3">
-                    <label>City</label>
+                    <label>
+                      City{" "}
+                      {requiredFields.city && (
+                        <span className="text-danger">*</span>
+                      )}
+                    </label>
                     <input
                       type="text"
                       className="form-control"
                       value={city}
+                      required={requiredFields.city}
                       onChange={(e) => setCity(e.target.value)}
                     />
                   </div>
                   <div className="form-group col-md-12 mb-3">
-                    <label>Address</label>
+                    <label>
+                      Address{" "}
+                      {requiredFields.address && (
+                        <span className="text-danger">*</span>
+                      )}
+                    </label>
                     <input
                       type="text"
                       className="form-control"
                       value={address}
+                      required={requiredFields.address}
                       onChange={(e) => setAddress(e.target.value)}
                     />
                   </div>
                 </>
               )}
 
-              {/* Permission Section (Only for Employee) */}
+              {/* Employee Permissions */}
               {role === "2" && (
                 <div className="col-12 mt-4">
                   <h5 className="fw-bold">Assign Permissions</h5>
@@ -373,7 +434,6 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
                       </div>
                     ))}
                   </div>
-
                   <div className="d-flex justify-content-end mt-3">
                     <div className="form-check">
                       <input
