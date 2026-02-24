@@ -120,7 +120,7 @@ const ActiveWorkers = () => {
 
   return (
     <div className="dashboard-wrapper">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+      {/* <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
         <div>
           <h2 className="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
             File Manager
@@ -130,7 +130,7 @@ const ActiveWorkers = () => {
             download.
           </p>
         </div>
-      </div>
+      </div> */}
 
       <ListingComponent
         filtersComponent={

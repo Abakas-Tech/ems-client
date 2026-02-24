@@ -10,9 +10,8 @@
   min-width: 400px;
 }
 .alert-ok {
-  background-color: #2cac70;
-  color: #ffffff;
-  border: 1px solid #2cac70;
+  background-color: hwb(152 50% 5%);
+  color: #0e9255;
+  border: 1px solid hwb(152 50% 5%);
   font-weight: 600;
 }
-
