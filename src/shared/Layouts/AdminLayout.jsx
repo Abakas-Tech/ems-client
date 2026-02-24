@@ -43,7 +43,11 @@ const AdminLayout = () => {
       {/* Main content area */}
       <div
         className="flex-grow-1"
-        style={{ marginLeft: sidebarWidth, transition: "margin 0.3s" }}
+        style={{
+          marginLeft: sidebarWidth,
+          transition: "margin 0.3s",
+          minWidth: 0, 
+        }}
       >
         {/* Header */}
         <AdminHeader

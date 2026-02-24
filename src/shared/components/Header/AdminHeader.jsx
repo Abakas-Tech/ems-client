@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard" },
   { label: "My Profile", path: "/admin/my-profile" },
-  { label: "User Management", path: "/admin/user-management" },
+  { label: "User ", path: "/admin/user-management" },
   { label: "Employer Management", path: "/admin/employer-management" },
   { label: "Groups", path: "/admin/groups" },
   { label: "Contributors", path: "/admin/contributors" },

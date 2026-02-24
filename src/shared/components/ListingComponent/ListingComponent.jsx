@@ -11,7 +11,7 @@ const ListingComponent = ({
 }) => {
   return (
     <>
-      <div className="container">
+      <div className="">
         {/* Filters */}
         {filtersComponent}
 

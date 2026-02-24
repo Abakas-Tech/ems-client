@@ -8,12 +8,7 @@ import useLoader from "../../../../context/Loader/UseLoader";
 import useResponse from "../../../../context/response/UseResponse";
 import { useConfirmDelete } from "../../../../context/Delete/UseDelete";
 
-// Map role IDs to role names
-const ROLE_MAP = {
-  2: "Employee",
-  3: "Partner",
-  5: "Employer",
-};
+const ROLE_MAP = { 2: "Employee", 3: "Partner", 5: "Employer" };
 
 const UsersPage = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -28,30 +23,49 @@ const UsersPage = () => {
     is_active: "",
   });
 
-  // FETCH USERS
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 5,
+    total: 0,
+    pages: 1,
+  });
+
+  const fetchUsers = async (page = 1) => {
+    showLoader();
+    try {
+      const cleanFilters = {};
+      if (filters.search) cleanFilters.search = filters.search;
+      if (filters.role_id) cleanFilters.role_id = filters.role_id;
+      if (filters.is_active !== "")
+        cleanFilters.is_active = filters.is_active === "true" ? 1 : 0;
+
+      cleanFilters.page = page;
+      cleanFilters.limit = pagination.limit;
+
+      const response = await user.getUsers(cleanFilters);
+      setUsers(response?.data || []);
+      setPagination({
+        page: response?.pagination?.page || 1,
+        limit: response?.pagination?.limit || 5,
+        total: response?.pagination?.total || 0,
+        pages: response?.pagination?.pages || 1,
+      });
+    } catch (err) {
+      addMessage(false, err.message);
+    } finally {
+      hideLoader();
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      showLoader();
-      try {
-        const cleanFilters = {};
-        if (filters.search) cleanFilters.search = filters.search;
-        if (filters.role_id) cleanFilters.role_id = filters.role_id;
-        if (filters.is_active !== "")
-          cleanFilters.is_active = filters.is_active === "true" ? 1 : 0;
-
-        const response = await user.getUsers(cleanFilters);
-        setUsers(response?.data || response || []);
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    };
-
-    fetchData();
+    // Reset to first page when filters change
+    fetchUsers(1);
   }, [filters]);
 
-  // FILTER HANDLERS
+  const handlePageChange = (newPage) => {
+    fetchUsers(newPage);
+  };
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
@@ -61,7 +75,6 @@ const UsersPage = () => {
     setFilters({ search: "", role_id: "", is_active: "" });
   };
 
-  // DELETE
   const handleDelete = (row) => {
     openModal(async () => {
       showLoader();
@@ -69,17 +82,8 @@ const UsersPage = () => {
         const response = await user.deleteUser(row.id);
         addMessage(response?.success, response?.message);
 
-        // Refetch users
-        const refreshed = await user.getUsers({
-          ...filters,
-          is_active:
-            filters.is_active === ""
-              ? undefined
-              : filters.is_active === "true"
-                ? 1
-                : 0,
-        });
-        setUsers(refreshed?.data || refreshed || []);
+        // Refresh current page after deletion
+        fetchUsers(pagination.page);
       } catch (err) {
         addMessage(false, err.message);
       } finally {
@@ -88,7 +92,6 @@ const UsersPage = () => {
     });
   };
 
-  // EDIT
   const handleEdit = async (row) => {
     showLoader();
     try {
@@ -97,7 +100,6 @@ const UsersPage = () => {
         ...row,
         permissions: permResponse?.data || [],
       };
-
       navigate("/admin/create-user", {
         state: { isEditMode: true, userData: userDataWithPermissions },
       });
@@ -108,22 +110,17 @@ const UsersPage = () => {
     }
   };
 
-  // CREATE USER
   const handleCreateUser = () => {
     navigate("/admin/create-user", { state: { isEditMode: false } });
   };
 
-  // Columns for ListingComponent
   const columns = [
     {
       header: "Name",
       accessor: "full_name",
       render: (row) => <span className="fw-bold">{row.full_name}</span>,
     },
-    {
-      header: "Email",
-      accessor: "email",
-    },
+    { header: "Email", accessor: "email" },
     {
       header: "Role",
       accessor: "role_id",
@@ -137,16 +134,9 @@ const UsersPage = () => {
     },
   ];
 
-  // Actions for ListingComponent using ACTION_CONFIG types
   const actions = [
-    {
-      type: "edit", // matches ActionButtons config if you have it in ACTION_CONFIG
-      onClick: handleEdit,
-    },
-    {
-      type: "delete",
-      onClick: handleDelete,
-    },
+    { type: "edit", onClick: handleEdit },
+    { type: "delete", onClick: handleDelete },
   ];
 
   const emptyState = {
@@ -155,42 +145,44 @@ const UsersPage = () => {
   };
 
   return (
-    <div className="dashboard-wraper">
+    <div className="dashboard-wraper container-fluid px-3 px-md-4">
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div className="flex-grow-1">
           <h2 className="fw-bold text-dark mb-2">User Management</h2>
           <p className="text-muted mb-0">
             Manage employees, employers, and partners — filter and control
             users.
           </p>
         </div>
-        <div>
-          <button className="btn btn-main" onClick={handleCreateUser}>
-            + Create User
-          </button>
-        </div>
+        <button
+          className="btn btn-main"
+          style={{ whiteSpace: "nowrap" }}
+          onClick={handleCreateUser}
+        >
+          + Create User
+        </button>
       </div>
 
-      {/* Filters */}
-      <UserFilters
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onClear={handleClearFilters}
-      />
-
-      {/* User Listing using new ListingComponent */}
-      <div className="card shadow-sm mb-4">
-        <div className="card-body p-0">
-          <ListingComponent
-            data={users}
-            columns={columns}
-            actions={actions}
-            emptyState={emptyState}
-            pagination={null} // Add pagination if needed
+      <ListingComponent
+        data={users}
+        columns={columns}
+        actions={actions}
+        emptyState={emptyState}
+        filtersComponent={
+          <UserFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClear={handleClearFilters}
           />
-        </div>
-      </div>
+        }
+        pagination={{
+          page: pagination.page,
+          limit: pagination.limit,
+          total: pagination.total,
+          onPageChange: handlePageChange,
+        }}
+      />
     </div>
   );
 };

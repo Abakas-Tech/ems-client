@@ -1,26 +1,30 @@
 const UserFilters = ({ filters, onFilterChange, onClear }) => {
+  const isDisabled = Object.values(filters).every((v) => !v);
+
   return (
-    <div className="card shadow-sm mb-4 rounded-3 border">
+    <div className="card shadow-sm mb-4 rounded-3 border border-light">
       <div className="card-body">
         <div className="row g-3 align-items-center">
-          {/* Search (name, email, phone) */}
+          {/* Search */}
           <div className="col-md-4">
             <input
               type="text"
               name="search"
-              className="form-control"
+              className="form-control form-control-sm py-2"
+              style={{ height: "42px" }}
               placeholder="Search name, email or phone"
-              value={filters.search}
+              value={filters.search || ""}
               onChange={onFilterChange}
             />
           </div>
 
-          {/* Role dropdown */}
+          {/* Role */}
           <div className="col-md-3">
             <select
               name="role_id"
-              className="form-select"
-              value={filters.role_id}
+              className="form-select form-select-sm py-2"
+              style={{ height: "42px" }}
+              value={filters.role_id || ""}
               onChange={onFilterChange}
             >
               <option value="">All Roles</option>
@@ -30,12 +34,13 @@ const UserFilters = ({ filters, onFilterChange, onClear }) => {
             </select>
           </div>
 
-          {/* Status dropdown */}
+          {/* Status */}
           <div className="col-md-3">
             <select
               name="is_active"
-              className="form-select"
-              value={filters.is_active}
+              className="form-select form-select-sm py-2"
+              style={{ height: "42px" }}
+              value={filters.is_active || ""}
               onChange={onFilterChange}
             >
               <option value="">All Status</option>
@@ -44,12 +49,14 @@ const UserFilters = ({ filters, onFilterChange, onClear }) => {
             </select>
           </div>
 
-          {/* Clear button */}
+          {/* Clear */}
           <div className="col-md-2 d-grid">
             <button
               type="button"
               className="btn btn-outline-secondary"
+              style={{ height: "42px" }}
               onClick={onClear}
+              disabled={isDisabled}
             >
               Clear
             </button>

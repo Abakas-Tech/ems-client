@@ -13,11 +13,6 @@ const menuItems = [
     path: "/admin/user-management",
     icon: "bi-file-earmark-text",
   },
-  {
-    label: "Employer Management",
-    path: "/admin/employer-management",
-    icon: "bi-people",
-  },
   { label: "Groups", path: "/admin/groups", icon: "bi-people-fill" },
   {
     label: "Contributors",
