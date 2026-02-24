@@ -10,8 +10,8 @@ const Response = () => {
       {responseMessages.map((msg) => (
         <div
           key={msg.id}
-          className={`alert alert-${
-            msg.type === "success" ? "success" : "danger"
+          className={`alert ${
+            msg.type === "success" ? styles["alert-ok"] : "alert-danger"
           } alert-dismissible fade show`}
           role="alert"
         >

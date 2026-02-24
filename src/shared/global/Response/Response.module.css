@@ -10,6 +10,9 @@
   min-width: 400px;
 }
 .alert-ok {
-  background-color: #a3cfbb !important; /* darker green */
-  color: #fff !important; /* keep text white */
+  background-color: #2cac70;
+  color: #ffffff;
+  border: 1px solid #2cac70;
+  font-weight: 600;
 }
+

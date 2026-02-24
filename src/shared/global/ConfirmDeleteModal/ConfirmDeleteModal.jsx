@@ -3,7 +3,7 @@ import Modal from "react-modal";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { useConfirmDelete } from "../../../context/Delete/UseDelete";
-import styles from "./confirmDelete.module.css";
+import styles from "./ConfirmDeleteModal.module.css";
 
 Modal.setAppElement("#root");
 
