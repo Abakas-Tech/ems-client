@@ -1,7 +1,7 @@
-import { axiosInstance } from "../../../utils/axios";
+import  axiosInstance  from "../../../utils/axios";
 
 // GET ALL EMPLOYERS for logged-in worker
-export const getEmployers = async (params = {}) => {
+const getEmployers = async (params = {}) => {
   try {
     const response = await axiosInstance.get("/employers", {
       params,
@@ -13,7 +13,7 @@ export const getEmployers = async (params = {}) => {
 };
 
 // GET SINGLE EMPLOYER BY ID
-export const getEmployerById = async (employerId) => {
+const getEmployerById = async (employerId) => {
   try {
     const response = await axiosInstance.get(`/employers/${employerId}`);
     return response.data;
@@ -23,8 +23,7 @@ export const getEmployerById = async (employerId) => {
 };
 
 // CREATE EMPLOYER (ADMIN ONLY)
-export const createEmployer = async (payload) => {
-    console.log(payload)
+const createEmployer = async (payload) => {
   try {
     const response = await axiosInstance.post("/employers", payload);
     return response.data;
@@ -34,7 +33,7 @@ export const createEmployer = async (payload) => {
 };
 
 // UPDATE EMPLOYER
-export const updateEmployer = async (employerId, payload) => {
+const updateEmployer = async (employerId, payload) => {
   try {
     const response = await axiosInstance.put(
       `/employers/${employerId}`,
@@ -47,11 +46,19 @@ export const updateEmployer = async (employerId, payload) => {
 };
 
 // DELETE EMPLOYER (ADMIN ONLY)
-export const deleteEmployer = async (employerId) => {
+const deleteEmployer = async (employerId) => {
   try {
     const response = await axiosInstance.delete(`/employers/${employerId}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Employer delete error");
   }
+};
+
+export default {
+  getEmployers,
+  getEmployerById,
+  createEmployer,
+  updateEmployer,
+  deleteEmployer,
 };

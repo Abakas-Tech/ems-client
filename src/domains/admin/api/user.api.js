@@ -1,8 +1,7 @@
-import { axiosInstance } from "../../../utils/axios";
+import axiosInstance  from "../../../utils/axios";
 
-
-// GET ALL USERS 
-export const getUsers = async (params = {}) => {
+// GET ALL USERS
+const getUsers = async (params = {}) => {
   try {
     const response = await axiosInstance.get("/users", {
       params,
@@ -15,7 +14,7 @@ export const getUsers = async (params = {}) => {
 };
 
 // GET USER BY ID
-export const getUserById = async (id) => {
+const getUserById = async (id) => {
   try {
     const response = await axiosInstance.get(`/users/${id}`);
     return response.data;
@@ -24,8 +23,8 @@ export const getUserById = async (id) => {
   }
 };
 
-// CREATE USER 
-export const createUser = async (payload) => {
+// CREATE USER
+const createUser = async (payload) => {
   try {
     const response = await axiosInstance.post("/users", payload);
     return response.data;
@@ -34,9 +33,8 @@ export const createUser = async (payload) => {
   }
 };
 
-
 // UPDATE USER
-export const updateUser = async (id, payload) => {
+const updateUser = async (id, payload) => {
   try {
     const response = await axiosInstance.put(`/users/${id}`, payload);
     return response.data;
@@ -45,13 +43,20 @@ export const updateUser = async (id, payload) => {
   }
 };
 
-
 // DELETE USER (ADMIN)
-export const deleteUser = async (id) => {
+const deleteUser = async (id) => {
   try {
     const response = await axiosInstance.delete(`/users/${id}`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "User delete error");
   }
+};
+
+export default {
+  getUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
 };
