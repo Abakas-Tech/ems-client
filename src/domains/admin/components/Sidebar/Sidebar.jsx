@@ -23,10 +23,6 @@ const menuItems = [
   { label: "Payment History", path: "/admin/payments", icon: "bi-cash-stack" },
   { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
   { label: "Log Out", path: "#", icon: "bi-box-arrow-right", isLogout: true },
-  { label: "Collect Money", path: "/admin/collect-money", icon: "bi-wallet2" },
-  { label: "Payment History", path: "/admin/payments", icon: "bi-cash-stack" },
-  { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
-  { label: "Log Out", path: "#", icon: "bi-box-arrow-right", isLogout: true },
 ];
 
 const Sidebar = ({
