@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import login from "../../api/auth.api";
-import useLoader from "../../../../context/Loader/UseLoader";
-import useResponse from "../../../../context/response/UseResponse";
-import useAuth from "../../../../context/auth/UseAuth";
+import login from "../../../api/auth.api";
+import useLoader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
+import useAuth from "../../../../../context/Auth/useAuth";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
-import accessToken from "../../../../utils/axios";
+import accessToken from "../../../../../utils/axios";
 
 const LoginFormWithEmail = () => {
   const [email, setEmail] = useState("");

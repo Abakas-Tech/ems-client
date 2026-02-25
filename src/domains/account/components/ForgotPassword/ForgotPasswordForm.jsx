@@ -1,17 +1,16 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import password from "../../api/auth.api";
-import useLoader from "../../../../context/Loader/UseLoader";
-import useResponse from "../../../../context/response/UseResponse";
-import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
+import useLoader from "../../../../context/Loader/useLoader";
+import useResponse from "../../../../context/Response/useResponse";
+// import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
-  const { openModal } = useDemoInfo();
+  // const { openModal } = useDemoInfo();
 
   const validateEmail = () => {
     if (!email) {

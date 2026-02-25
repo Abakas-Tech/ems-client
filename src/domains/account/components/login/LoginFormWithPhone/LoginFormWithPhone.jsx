@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import{ useState } from "react";
 import { useNavigate } from "react-router-dom";
-import login from "../../api/auth.api";
-import useLoader from "../../../../context/Loader/UseLoader";
-import useResponse from "../../../../context/response/UseResponse";
-import useAuth from "../../../../context/auth/UseAuth";
-import accessToken from "../../../../utils/axios";
+import login from "../../../api/auth.api";
+import useLoader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
+import useAuth from "../../../../../context/Auth/useAuth";
+import accessToken from "../../../../../utils/axios";
 
 const LoginFormWithPhone = ({ role }) => {
   const [phoneNumber, setPhoneNumber] = useState("");

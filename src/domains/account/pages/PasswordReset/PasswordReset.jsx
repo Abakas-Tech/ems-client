@@ -1,4 +1,3 @@
-import React from "react";
 import Layout from "../../../../shared/Layouts/MainLayout";
 import PasswordResetForm from "../../components/ResetPassword/PasswordResetForm";
 import { Link } from "react-router-dom";

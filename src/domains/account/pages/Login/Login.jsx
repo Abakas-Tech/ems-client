@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Layout from "../../../../shared/Layouts/MainLayout";
 import SEOHelmet from "../../../../shared/components/SEOHelmet/SEOHelmet";
-import LoginFormWithPhone from "../../components/Login/LoginFormWithPhone";
-import LoginFormWithEmail from "../../components/Login/LoginFormWithEmail";
+import LoginFormWithPhone from "../../components/login/LoginFormWithPhone/LoginFormWithPhone";
+import LoginFormWithEmail from "../../components/login/LoginFormWithEmail/LoginFormWithEmail";
 import { Link } from "react-router-dom";
 
 function Login() {

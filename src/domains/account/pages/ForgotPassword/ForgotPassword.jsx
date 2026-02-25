@@ -1,4 +1,3 @@
-import React from "react";
 import Layout from "../../../../shared/Layouts//MainLayout";
 
 import { Link } from "react-router-dom";
