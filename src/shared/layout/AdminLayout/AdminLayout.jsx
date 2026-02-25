@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import Sidebar from "../../domains/admin/components/Sidebar/Sidebar";
-import AdminHeader from "../components/Header/AdminHeader";
-import useLogout from "../../context/logout/UseLogout";
+import { useState, useEffect } from "react";
+import Sidebar from "../../../domains/admin/components/Sidebar/Sidebar";
+import AdminHeader from "../../components/header/AdminHeader/AdminHeader";
+import useLogout from "../../../context/Logout/useLogout";
 import { Outlet } from "react-router-dom";
 
 

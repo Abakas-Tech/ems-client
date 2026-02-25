@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import { Link } from "react-router-dom";
 // import logo from "../../../assets/img/logo.svg";
 // import { fetchAgentProfile } from "../../../domains/public/api/profile.api";
 
 const Footer = () => {
-  const [agentData, setAgentData] = useState({
+  const [agentData] = useState({
     agent_name: "Hussen Agent",
     agent_email: "support@agent.com",
     agent_phone: "0918241535",
