@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ProfileContext from "./ProfileContext";
 import { getProfile } from "../../domains/admin/api/profile.api";
-import useResponse from "../dnkdesponse/ndjknkdseResponse";
+import useResponse from "../Response/useResponse";
 
 const ProfileProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
