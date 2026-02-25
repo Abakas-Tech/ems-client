@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import Modal from "react-modal";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import styles from "./DjhfgdhemoInfoModal.module.css";
+import styles from "./DemoInfoModal.module.css";
 
 Modal.setAppElement("#root");
 

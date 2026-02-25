@@ -5,10 +5,10 @@ const backend_server_url = import.meta.env.VITE_AXIOS_INSTANCE_BASE_URL;
 
 const axiosInstance = axios.create({
   baseURL: backend_server_url,
-  withCredentials: true, // send cookies automatically
+  withCredentials: true, 
 });
 
-let access_token = null; // in-memory token
+let access_token = null; 
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -80,7 +80,7 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         setAccessToken(null);
-        window.location.href = "/login"; // redirect to login if refresh fails
+        window.location.href = "/login"; 
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -91,7 +91,7 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-export default {
+export {
   axiosInstance,
   setAccessToken,
 };

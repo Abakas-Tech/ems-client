@@ -206,7 +206,7 @@ All API functions must:
 example:
 
 // Get Profile function
-export const getProfile = async () => {
+ getProfile = async () => {
   try {
     const response = await axiosInstance.get("/agent-profile");
     return response.data;
@@ -214,6 +214,10 @@ export const getProfile = async () => {
     throw new Error(error.response?.data?.message || "Profile fetch error");
   }
 };
+
+Export rules:
+- If a file contains multiple API functions, use named exports.
+- If a file contains a single API function, use a default export.
 
 ==================================================
 SECTION 7: STYLING RULES

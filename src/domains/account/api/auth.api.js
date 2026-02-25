@@ -1,9 +1,9 @@
-import axios from "../../../utils/axios";
+import { axiosInstance } from "../../../utils/axios";
 
 // email and password login api for admin employee and partner
 const loginWithEmail = async (credentials) => {
   try {
-    const response = await axios.axiosInstance.post("/auth/login", credentials);
+    const response = await axiosInstance.post("/auth/login", credentials);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Login error");
@@ -13,7 +13,7 @@ const loginWithEmail = async (credentials) => {
 // phone and id login api for worker and employer
 const loginWithPhone = async (credentials) => {
   try {
-    const response = await axios.axiosInstance.post(
+    const response = await axiosInstance.post(
       "/auth/login/identifier",
       credentials,
     );
@@ -26,7 +26,7 @@ const loginWithPhone = async (credentials) => {
 // resert password request api for all users
 const passwordResetRequest = async (data) => {
   try {
-    const response = await axios.axiosInstance.post(
+    const response = await axiosInstance.post(
       "/auth/password-reset/request",
       data,
     );
@@ -39,7 +39,7 @@ const passwordResetRequest = async (data) => {
 // Reset Password function
 const passwordResetConfirm = async (data) => {
   try {
-    const response = await axios.axiosInstance.post(
+    const response = await axiosInstance.post(
       "/auth/password-reset/confirm",
       data,
     );
@@ -49,7 +49,7 @@ const passwordResetConfirm = async (data) => {
   }
 };
 
-export default {
+export {
   loginWithEmail,
   loginWithPhone,
   passwordResetRequest,
