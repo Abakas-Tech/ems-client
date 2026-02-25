@@ -49,13 +49,13 @@ const ConfirmDeleteModal = () => {
         initial="idle"
         className={styles.modalInner}
       >
-        <h4 className={styles.modalTitle}>{config.title}</h4>
+        <h4 className={styles.modalTitle}>{config?.title}</h4>
         <div className={styles.modalActions}>
           <button className={styles.cancelBtn} onClick={closeModal}>
             Cancel
           </button>
           <button className={styles.deleteBtn} onClick={confirmAndClose}>
-            {config.confirmText}
+            {config?.confirmText}
           </button>
         </div>
       </motion.div>
