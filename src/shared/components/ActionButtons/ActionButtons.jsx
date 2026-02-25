@@ -7,6 +7,11 @@ const ACTION_CONFIG = {
     icon: <i className="fa-solid fa-eye"></i>,
     title: "View",
   },
+  edit: {
+    className: "btn-outline-primary",
+    icon: <i className="fa-solid fa-pen-to-square"></i>, 
+    title: "Edit",
+  },
   delete: {
     className: "btn-outline-danger",
     icon: <i className="fa-solid fa-trash"></i>,
@@ -23,7 +28,6 @@ const ACTION_CONFIG = {
     title: "Restore",
   },
 
-  // REACT ICONS (from WorkersModules)
   addModule: {
     className: "btn-outline-info",
     icon: <FaFolderPlus size={20} />,
