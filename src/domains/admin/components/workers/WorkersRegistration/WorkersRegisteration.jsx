@@ -5,6 +5,7 @@ import { getWorkerStatuses } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import { RiArrowDropDownLine } from "react-icons/ri";
 
 function WorkersRegistration() {
   const navigate = useNavigate();
@@ -204,7 +205,7 @@ function WorkersRegistration() {
                       </label>
                       <select
                         name="personal_sex"
-                        className="form-select"
+                        className="form-control"
                         value={formData.personal_information.sex}
                         onChange={handleTextChange}
                         required
@@ -235,7 +236,7 @@ function WorkersRegistration() {
                       ) : (
                         <select
                           name="personal_status_id"
-                          className="form-select"
+                          className="form-control"
                           value={formData.personal_information.status_id}
                           onChange={handleTextChange}
                           required
