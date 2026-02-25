@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import CreateUser from "../../components/Users/CreateUser";
+import CreateUserForm from "../../../components/user/CreateUserForm/CreateUserForm";
 
-const CreateUserPage = () => {
+const CreateUser = () => {
   const location = useLocation();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const state = location.state || {};
   const [isEditMode, setIsEditMode] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -19,7 +20,7 @@ const CreateUserPage = () => {
     }
   }, [state]);
 
-  return <CreateUser isEditMode={isEditMode} userData={userData} />;
+  return <CreateUserForm isEditMode={isEditMode} userData={userData} />;
 };
 
-export default CreateUserPage;
+export default CreateUser;

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import styles from "./Sidebar.module.css";
-import { useProfile } from "../../../../context/Profile/ProfileProvider";
+import  useProfile  from "../../../../context/Profile/useProfile";
 
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard", icon: "bi-speedometer2" },

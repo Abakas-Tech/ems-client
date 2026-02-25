@@ -1,11 +1,10 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import  password  from "../../api/auth.api";
-import useLoader from "../../../../context/Loader/UseLoader";
-import useResponse from "../../../../context/response/UseResponse";
+import useLoader from "../../../../context/Loader/useLoader";
+import useResponse from "../../../../context/Response/useResponse";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
-import { useDemoInfo } from "./../../../../context/Demo/useDemoInfo";
+// import { useDemoInfo } from "./../../../../context/Demo/useDemoInfo";
 const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -13,7 +12,7 @@ const ChangePassword = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
-  const { openModal } = useDemoInfo();
+  // const { openModal } = useDemoInfo();
 
   const validateFields = () => {
     if (!oldPassword || !newPassword || !confirmPassword) {

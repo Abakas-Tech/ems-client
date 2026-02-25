@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import user from "../../api/user.api";
-import permission from "../../api/permission.api";
-import useLoader from "../../../../context/Loader/UseLoader";
-import useResponse from "../../../../context/response/UseResponse";
+import user from "../../../api/user.api";
+import permission from "../../../api/permission.api";
+import useLoader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
 import { useNavigate } from "react-router-dom";
 
 const PERMISSIONS = [
@@ -15,7 +15,7 @@ const PERMISSIONS = [
   "manage_audit_logs",
 ];
 
-const CreateUser = ({ isEditMode = false, userData = null }) => {
+const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -462,4 +462,4 @@ const CreateUser = ({ isEditMode = false, userData = null }) => {
   );
 };
 
-export default CreateUser;
+export default CreateUserForm;

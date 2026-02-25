@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
-import useLoader from "../../../../context/Loader/UseLoader";
-import useResponse from "../../../../context/response/UseResponse";
-import { useProfile } from "../../../../context/Profile/ProfileProvider";
-import  profileApi  from "../../api/profile.api";
+import { useState, useEffect, useRef } from "react";
+import useLoader from "../../../../context/Loader/useLoader";
+import useResponse from "../../../../context/Response/useResponse";
+import useProfile from "../../../../context/Profile/useProfile";
+import useConfirmDelete from "../../../../context/Delete/useDelete";
+import profileApi from "../../api/profile.api";
 import photo from "../../api/profilePhoto.api";
-import { useConfirmDelete } from "../../../../context/Delete/UseDelete";
 
 const MyProfile = () => {
-  const { fetchProfile , profile} = useProfile();
+  const { fetchProfile, profile } = useProfile();
   const [profileData, setProfileData] = useState({
     full_name: "",
     email: "",
@@ -33,7 +33,8 @@ const MyProfile = () => {
   }, [profile]);
 
   useEffect(() => {
-       fetchProfile();
+    fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {
@@ -43,7 +44,6 @@ const MyProfile = () => {
 
   const handleAvatarChange = async (file) => {
     if (!file) return;
-
 
     showLoader();
     try {
@@ -63,7 +63,7 @@ const MyProfile = () => {
       try {
         const response = await photo.deleteProfilePhoto();
         addMessage(response?.success, response?.message);
-  
+
         await fetchProfile();
       } catch (err) {
         addMessage(false, err.message);
@@ -72,8 +72,6 @@ const MyProfile = () => {
       }
     });
   };
-
-
 
   const validateFields = () => {
     const { full_name, email, phone_number, country } = profileData;
@@ -88,7 +86,7 @@ const MyProfile = () => {
       return addMessage(false, "Country required.");
     return true;
   };
-const profilePhoto=profile?.profile_photo_url;
+  const profilePhoto = profile?.profile_photo_url;
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateFields()) return;
@@ -104,7 +102,6 @@ const profilePhoto=profile?.profile_photo_url;
         response?.message || "Profile updated successfully!",
       );
       await fetchProfile();
-
     } catch (err) {
       addMessage(false, err.message);
     } finally {

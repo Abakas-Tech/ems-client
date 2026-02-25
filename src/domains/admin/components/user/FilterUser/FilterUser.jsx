@@ -1,4 +1,4 @@
-const UserFilters = ({ filters, onFilterChange, onClear }) => {
+const FilterUser = ({ filters, onFilterChange, onClear }) => {
   const isDisabled = Object.values(filters).every((v) => !v);
 
   return (
@@ -67,4 +67,4 @@ const UserFilters = ({ filters, onFilterChange, onClear }) => {
   );
 };
 
-export default UserFilters;
+export default FilterUser;

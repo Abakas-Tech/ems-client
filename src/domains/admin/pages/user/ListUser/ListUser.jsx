@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ListingComponent from "../../../../shared/components/ListingComponent/ListingComponent";
-import UserFilters from "../../components/Users/UserFilters";
-import user from "../../api/user.api";
-import permission from "../../api/permission.api";
-import useLoader from "../../../../context/Loader/UseLoader";
-import useResponse from "../../../../context/response/UseResponse";
-import { useConfirmDelete } from "../../../../context/Delete/UseDelete";
+import user from "../../../../api/user.api";
+import permission from "../../../api/permission.api";
+import useLoader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
+import { useConfirmDelete } from "../../../../../context/Delete/useDelete";
+import FilterUser from "./../../../components/user/FilterUser/FilterUser";
 
 const ROLE_MAP = { 2: "Employee", 3: "Partner", 5: "Employer" };
 
-const UsersPage = () => {
+const ListUser = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useConfirmDelete();
@@ -60,6 +60,7 @@ const UsersPage = () => {
   useEffect(() => {
     // Reset to first page when filters change
     fetchUsers(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const handlePageChange = (newPage) => {
@@ -170,7 +171,7 @@ const UsersPage = () => {
         actions={actions}
         emptyState={emptyState}
         filtersComponent={
-          <UserFilters
+          <FilterUser
             filters={filters}
             onFilterChange={handleFilterChange}
             onClear={handleClearFilters}
@@ -187,4 +188,4 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default ListUser;
