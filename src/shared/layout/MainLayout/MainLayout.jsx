@@ -1,6 +1,5 @@
-// Layout.jsx
 import React from "react";
-import MainHeader from "../../components/header/MainHeader/MainHeader";
+import MainHeader from "../../components/headers/MainHeader/MainHeader";
 import Footer from "../../components/Footer/Footer";
 
 const MainLayout = ({ children}) => {

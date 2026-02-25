@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { ConfirmDeleteContext } from "./DeleteContext";
-import ConfirmDeleteModal from "../../shared/global/Delete/ConfirmDeleteModal";
+import ConfirmDeleteModal from "../../shared/global/ConfirmDeleteModal/ConfirmDeleteModal";
 
-const ConfirmDeleteProvider = ({ children }) => {
+const DeleteProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [onConfirm, setOnConfirm] = useState(() => () => {});
 

@@ -53,7 +53,7 @@ const deleteUser = async (id) => {
   }
 };
 
-export default {
+export {
   getUsers,
   getUserById,
   createUser,

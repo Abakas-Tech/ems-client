@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../../../domains/admin/components/Sidebar/Sidebar";
-import AdminHeader from "../../components/header/AdminHeader/AdminHeader";
+import AdminHeader from "../../components/headers/AdminHeader/AdminHeader";
 import useLogout from "../../../context/Logout/useLogout";
 import { Outlet } from "react-router-dom";
-
 
 const AdminLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -11,7 +10,6 @@ const AdminLayout = () => {
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 992);
 
   const { logout } = useLogout();
-
 
   // Handle responsive changes
   useEffect(() => {
@@ -46,7 +44,7 @@ const AdminLayout = () => {
         style={{
           marginLeft: sidebarWidth,
           transition: "margin 0.3s",
-          minWidth: 0, 
+          minWidth: 0,
         }}
       >
         {/* Header */}

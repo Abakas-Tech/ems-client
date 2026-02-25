@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
-import styles from "./response.module.css";
-import useResponse from "./../../../context/response/UseResponse";
+import styles from "./kdgnkdsResponse.module.css";
+import useResponse from "./../../../context/response/shfkdjuseResponse";
 
 const Response = () => {
   const { responseMessages, removeMessage } = useResponse();

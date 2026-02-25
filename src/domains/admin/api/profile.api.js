@@ -20,7 +20,7 @@ const updateProfile = async (payload) => {
   }
 };
 
-export default {
+export {
   getProfile,
   updateProfile,
 };

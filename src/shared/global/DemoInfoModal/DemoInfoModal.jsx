@@ -2,8 +2,7 @@ import React, { useRef, useState } from "react";
 import Modal from "react-modal";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { useConfirmDelete } from "../../../context/Delete/UseDelete";
-import styles from "./confirmDelete.module.css";
+import styles from "./DjhfgdhemoInfoModal.module.css";
 
 Modal.setAppElement("#root");
 
@@ -15,9 +14,7 @@ const shakeVariants = {
   },
 };
 
-const ConfirmDeleteModal = () => {
-  const { isOpen, closeModal, confirmAndClose } = useConfirmDelete();
-
+const DemoInfoModal = ({ isOpen, onClose, type }) => {
   const modalRef = useRef(null);
   const [shake, setShake] = useState("idle");
 
@@ -28,6 +25,12 @@ const ConfirmDeleteModal = () => {
     }
   };
 
+const message =
+  type === "changePassword"
+    ? "Password changes are disabled on this demo. In your own live app, you’ll be able to update it."
+    : "Password reset emails are disabled on this demo. In your live app, they’ll work normally.";
+
+
   return (
     <Modal
       isOpen={isOpen}
@@ -37,9 +40,7 @@ const ConfirmDeleteModal = () => {
       overlayClassName={styles.overlay}
       closeTimeoutMS={200}
       overlayRef={(node) => {
-        if (node) {
-          node.onclick = handleOverlayClick;
-        }
+        if (node) node.onclick = handleOverlayClick;
       }}
     >
       <motion.div
@@ -47,17 +48,15 @@ const ConfirmDeleteModal = () => {
         variants={shakeVariants}
         animate={shake}
         initial="idle"
-        className={styles.modalInner} // <- CSS animation applied here
+        className={styles.modalInner}
       >
         <h4 className={styles.modalTitle}>
-          Are you sure you want to delete this item?
+          {type === "changePassword" ? "Change Password" : "Reset Password"}
         </h4>
+        <p className={styles.modalText}>{message}</p>
         <div className={styles.modalActions}>
-          <button className={styles.cancelBtn} onClick={closeModal}>
-            Cancel
-          </button>
-          <button className={styles.deleteBtn} onClick={confirmAndClose}>
-            Delete
+          <button className={styles.cancelBtn} onClick={onClose}>
+            OK
           </button>
         </div>
       </motion.div>
@@ -65,4 +64,4 @@ const ConfirmDeleteModal = () => {
   );
 };
 
-export default ConfirmDeleteModal;
+export default DemoInfoModal;

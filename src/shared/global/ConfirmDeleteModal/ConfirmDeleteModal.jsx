@@ -2,7 +2,8 @@ import React, { useRef, useState } from "react";
 import Modal from "react-modal";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import styles from "./demoInfoModal.module.css";
+import { useConfirmDelete } from "../../../context/Delete/dfdsuseDelete";
+import styles from "./ConfirmDeleteModal";
 
 Modal.setAppElement("#root");
 
@@ -14,7 +15,9 @@ const shakeVariants = {
   },
 };
 
-const DemoInfoModal = ({ isOpen, onClose, type }) => {
+const ConfirmDeleteModal = () => {
+  const { isOpen, closeModal, confirmAndClose } = useConfirmDelete();
+
   const modalRef = useRef(null);
   const [shake, setShake] = useState("idle");
 
@@ -25,12 +28,6 @@ const DemoInfoModal = ({ isOpen, onClose, type }) => {
     }
   };
 
-const message =
-  type === "changePassword"
-    ? "Password changes are disabled on this demo. In your own live app, you’ll be able to update it."
-    : "Password reset emails are disabled on this demo. In your live app, they’ll work normally.";
-
-
   return (
     <Modal
       isOpen={isOpen}
@@ -40,7 +37,9 @@ const message =
       overlayClassName={styles.overlay}
       closeTimeoutMS={200}
       overlayRef={(node) => {
-        if (node) node.onclick = handleOverlayClick;
+        if (node) {
+          node.onclick = handleOverlayClick;
+        }
       }}
     >
       <motion.div
@@ -48,15 +47,17 @@ const message =
         variants={shakeVariants}
         animate={shake}
         initial="idle"
-        className={styles.modalInner}
+        className={styles.modalInner} // <- CSS animation applied here
       >
         <h4 className={styles.modalTitle}>
-          {type === "changePassword" ? "Change Password" : "Reset Password"}
+          Are you sure you want to delete this item?
         </h4>
-        <p className={styles.modalText}>{message}</p>
         <div className={styles.modalActions}>
-          <button className={styles.cancelBtn} onClick={onClose}>
-            OK
+          <button className={styles.cancelBtn} onClick={closeModal}>
+            Cancel
+          </button>
+          <button className={styles.deleteBtn} onClick={confirmAndClose}>
+            Delete
           </button>
         </div>
       </motion.div>
@@ -64,4 +65,4 @@ const message =
   );
 };
 
-export default DemoInfoModal;
+export default ConfirmDeleteModal;

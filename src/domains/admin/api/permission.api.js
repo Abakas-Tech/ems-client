@@ -30,7 +30,7 @@ const getPermission = async (userId) => {
   }
 };
 
-export default {
+export {
   grantPermissions,
   revokePermissions,
   getPermission,

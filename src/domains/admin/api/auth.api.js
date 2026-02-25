@@ -30,7 +30,7 @@ const logoutApi = async (data) => {
   }
 };
 
-export default {
+export {
   changePassword,
   refreshTokenApi,
   logoutApi,
