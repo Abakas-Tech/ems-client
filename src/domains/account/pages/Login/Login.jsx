@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Layout from "../../../../shared/Layouts/MainLayout";
 import SEOHelmet from "../../../../shared/components/SEOHelmet/SEOHelmet";
 import LoginFormWithPhone from "../../components/login/LoginFormWithPhone/LoginFormWithPhone";
 import LoginFormWithEmail from "../../components/login/LoginFormWithEmail/LoginFormWithEmail";
@@ -12,7 +11,7 @@ function Login() {
   return (
     <>
       <SEOHelmet />
-      <Layout>
+  
         <div>
           {showIdentifierLogin ? (
             <div className="login-page d-flex flex-column justify-content-center align-items-center rounded min-vh-100">
@@ -71,7 +70,7 @@ function Login() {
             </div>
           )}
         </div>
-      </Layout>
+  
     </>
   );
 }
