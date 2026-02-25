@@ -12,18 +12,18 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         // Call a protected route to get user info
-        const response = await refreshToken.refreshTokenApi(); // replace with your endpoint
+        const response = await refreshToken.refreshTokenApi();
         const { access_token } = response.data;
 
         if (access_token) {
-          accessToken.setAccessToken(access_token); // set in-memory token
-          setUser(true); // user is logged in
+          accessToken.setAccessToken(access_token); 
+          setUser(true); 
         } else {
           setUser(null);
         }
       } catch {
         accessToken.setAccessToken(null);
-        setUser(null); // not logged in
+        setUser(null); 
       } finally {
         setIsCheckingAuth(false);
       }

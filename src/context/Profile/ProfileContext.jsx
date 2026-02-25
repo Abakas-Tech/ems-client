@@ -1,4 +1,3 @@
-// context/profile/ProfileContext.jsx
 import { createContext } from "react";
 
 const ProfileContext = createContext(null);

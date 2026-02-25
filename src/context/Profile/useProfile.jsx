@@ -1,4 +1,3 @@
-// context/profile/useProfile.js
 import { useContext } from "react";
 import ProfileContext from "./ProfileContext";
 

@@ -43,8 +43,7 @@ const LoginFormWithEmail = () => {
     try {
       const response = await login.loginWithEmail({ email, password });
       const { access_token } = response.data;
-      accessToken.setAccessToken(access_token); // store in memory
-
+      accessToken.setAccessToken(access_token); 
       addMessage(response.success, response.message);
       setUser(true);
       navigate("/admin/dashboard");

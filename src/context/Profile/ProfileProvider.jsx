@@ -1,4 +1,3 @@
-// context/profile/ProfileProvider.jsx
 import React, { useState } from "react";
 import ProfileContext from "./ProfileContext";
 import profileApi from "../../domains/admin/api/profile.api";
