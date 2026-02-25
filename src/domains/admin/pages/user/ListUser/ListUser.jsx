@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
-import user from "../../../api/user.api";
-import permission from "../../../api/permission.api";
+import { getUsers, deleteUser } from "../../../api/user.api";
+import { getPermission } from "../../../api/permission.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
-import { useConfirmDelete } from "../../../../../context/Delete/useDelete";
+import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterUser from "./../../../components/user/FilterUser/FilterUser";
 
 const ROLE_MAP = { 2: "Employee", 3: "Partner", 5: "Employer" };
@@ -13,7 +13,7 @@ const ROLE_MAP = { 2: "Employee", 3: "Partner", 5: "Employer" };
 const ListUser = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
-  const { openModal } = useConfirmDelete();
+  const { openModal } = useDelete();
   const navigate = useNavigate();
 
   const [users, setUsers] = useState([]);
@@ -42,7 +42,7 @@ const ListUser = () => {
       cleanFilters.page = page;
       cleanFilters.limit = pagination.limit;
 
-      const response = await user.getUsers(cleanFilters);
+      const response = await getUsers(cleanFilters);
       setUsers(response?.data || []);
       setPagination({
         page: response?.pagination?.page || 1,
@@ -80,7 +80,7 @@ const ListUser = () => {
     openModal(async () => {
       showLoader();
       try {
-        const response = await user.deleteUser(row.id);
+        const response = await deleteUser(row.id);
         addMessage(response?.success, response?.message);
 
         // Refresh current page after deletion
@@ -96,7 +96,7 @@ const ListUser = () => {
   const handleEdit = async (row) => {
     showLoader();
     try {
-      const permResponse = await permission.getPermission(row.id);
+      const permResponse = await getPermission(row.id);
       const userDataWithPermissions = {
         ...row,
         permissions: permResponse?.data || [],

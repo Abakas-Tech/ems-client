@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import  password  from "../../api/auth.api";
+import { changePassword } from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
@@ -36,7 +36,7 @@ const ChangePassword = () => {
 
     showLoader();
     try {
-      const response = await password.changePassword({
+      const response = await changePassword({
         current_password: oldPassword,
         new_password: newPassword,
         confirm_password: confirmPassword,

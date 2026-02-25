@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ProfileContext from "./ProfileContext";
-import profileApi from "../../domains/admin/api/profile.api";
-import useResponse from "../response/UseResponse";
+import { getProfile } from "../../domains/admin/api/profile.api";
+import useResponse from "../dnkdesponse/ndjknkdseResponse";
 
 const ProfileProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
@@ -9,7 +9,7 @@ const ProfileProvider = ({ children }) => {
 
   const fetchProfile = async () => {
     try {
-      const response = await profileApi.getProfile();
+      const response = await getProfile();
       setProfile(response.data);
     } catch (error) {
       addMessage(false, error.message);

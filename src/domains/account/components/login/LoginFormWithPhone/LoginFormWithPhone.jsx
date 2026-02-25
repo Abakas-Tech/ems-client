@@ -1,10 +1,10 @@
-import{ useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import login from "../../../api/auth.api";
+import { loginWithPhone } from "../../../api/auth.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import useAuth from "../../../../../context/Auth/useAuth";
-import accessToken from "../../../../../utils/axios";
+import { setAccessToken } from "../../../../../utils/axios";
 
 const LoginFormWithPhone = ({ role }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -76,10 +76,10 @@ const LoginFormWithPhone = ({ role }) => {
         credentials.passport_number = passportNumber;
       }
 
-      const response = await login.loginWithPhone(credentials);
+      const response = await loginWithPhone(credentials);
 
       const { access_token } = response.data;
-      accessToken.setAccessToken(access_token);
+      setAccessToken(access_token);
 
       addMessage(response.data.success, response.data.message);
       setUser(true);

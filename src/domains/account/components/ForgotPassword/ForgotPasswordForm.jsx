@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import password from "../../api/auth.api";
+import { passwordResetRequest } from "../../api/auth.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 // import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
@@ -30,7 +30,7 @@ const ForgotPasswordForm = () => {
 
     showLoader();
     try {
-      const response = await password.passwordResetRequest({ email });
+      const response = await passwordResetRequest({ email });
       addMessage(response.success, response.message);
       navigate("/auth/reset-password", { state: { email } });
     } catch (error) {

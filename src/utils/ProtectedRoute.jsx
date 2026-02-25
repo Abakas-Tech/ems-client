@@ -1,6 +1,6 @@
 import  { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import  refreshToken from "../domains/admin/api/auth.api"; 
+import { refreshTokenApi } from "../domains/admin/api/auth.api"; 
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const ProtectedRoute = ({ children }) => {
     const checkAuth = async () => {
       try {
         // Call your refresh token API
-        const response = await refreshToken.refreshTokenApi();
+        const response = await refreshTokenApi();
         const newAccessToken = response.data?.access_token;
         if (!newAccessToken) throw new Error("No access token returned");
 

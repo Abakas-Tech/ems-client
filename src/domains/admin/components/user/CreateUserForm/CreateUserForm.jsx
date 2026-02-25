@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
-import user from "../../../api/user.api";
-import permission from "../../../api/permission.api";
+import { updateUser, createUser } from "../../../api/user.api";
+import {
+  grantPermissions,
+  revokePermissions,
+} from "../../../api/permission.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useNavigate } from "react-router-dom";
@@ -182,8 +185,8 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       };
 
       let response = isEditMode
-        ? await user.updateUser(userData.id, payload)
-        : await user.createUser(payload);
+        ? await updateUser(userData.id, payload)
+        : await createUser(payload);
 
       if (!response.success) {
         addMessage(false, response.message);
@@ -203,13 +206,13 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         );
 
         if (permissionsToGrant.length > 0) {
-          await permission.grantPermissions({
+          await grantPermissions({
             user_id: userId,
             permissions: permissionsToGrant,
           });
         }
         if (permissionsToRevoke.length > 0) {
-          await permission.revokePermissions({
+          await revokePermissions({
             user_id: userId,
             permissions: permissionsToRevoke,
           });

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
-import  refreshToken  from "../../domains/admin/api/auth.api";
-import  accessToken  from "../../utils/axios";
+import { refreshTokenApi } from "../../domains/admin/api/auth.api";
+import { setAccessToken } from "../../utils/axios";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -12,18 +12,18 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         // Call a protected route to get user info
-        const response = await refreshToken.refreshTokenApi();
+        const response = await refreshTokenApi();
         const { access_token } = response.data;
 
         if (access_token) {
-          accessToken.setAccessToken(access_token); 
-          setUser(true); 
+          setAccessToken(access_token);
+          setUser(true);
         } else {
           setUser(null);
         }
-      } catch {
-        accessToken.setAccessToken(null);
-        setUser(null); 
+      } catch (error) {
+        setAccessToken(null);
+        setUser(null);
       } finally {
         setIsCheckingAuth(false);
       }

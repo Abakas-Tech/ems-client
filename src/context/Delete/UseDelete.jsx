@@ -1,4 +1,4 @@
 import { useContext } from "react";
-import { ConfirmDeleteContext } from "./DeleteContext";
+import { DeleteContext } from "./DeleteContext";
 
-export const useDelete = () => useContext(ConfirmDeleteContext);
+export const useDelete = () => useContext(DeleteContext);

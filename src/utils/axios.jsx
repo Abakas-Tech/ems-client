@@ -1,14 +1,14 @@
 import axios from "axios";
-import refreshToken  from "../domains/admin/api/auth.api";
+import { refreshTokenApi } from "../domains/admin/api/auth.api";
 
 const backend_server_url = import.meta.env.VITE_AXIOS_INSTANCE_BASE_URL;
 
 const axiosInstance = axios.create({
   baseURL: backend_server_url,
-  withCredentials: true, 
+  withCredentials: true,
 });
 
-let access_token = null; 
+let access_token = null;
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -61,7 +61,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         // Call refresh API
-        const response = await refreshToken.refreshTokenApi();
+        const response = await refreshTokenApi();
         const newAccessToken = response.data?.access_token;
 
         if (!newAccessToken)
@@ -80,7 +80,7 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         setAccessToken(null);
-        window.location.href = "/login"; 
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -91,7 +91,4 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-export {
-  axiosInstance,
-  setAccessToken,
-};
+export { axiosInstance, setAccessToken };

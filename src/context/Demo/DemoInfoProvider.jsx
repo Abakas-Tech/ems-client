@@ -4,7 +4,7 @@ import DemoInfoModal from "../../shared/global/DemoInfoModal/DemoInfoModal";
 
 const DemoInfoProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [type, setType] = useState("changePassword"); 
+  const [type, setType] = useState("changePassword");
 
   const openModal = (modalType) => {
     setType(modalType);

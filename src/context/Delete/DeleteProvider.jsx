@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ConfirmDeleteContext } from "./DeleteContext";
+import { DeleteContext } from "./DeleteContext";
 import ConfirmDeleteModal from "../../shared/global/ConfirmDeleteModal/ConfirmDeleteModal";
 
 const DeleteProvider = ({ children }) => {
@@ -20,13 +20,13 @@ const DeleteProvider = ({ children }) => {
   };
 
   return (
-    <ConfirmDeleteContext.Provider
+    <DeleteContext.Provider
       value={{ isOpen, openModal, closeModal, confirmAndClose }}
     >
       {children}
       <ConfirmDeleteModal />
-    </ConfirmDeleteContext.Provider>
+    </DeleteContext.Provider>
   );
 };
 
-export default ConfirmDeleteProvider;
+export default DeleteProvider;

@@ -2,9 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import useProfile from "../../../../context/Profile/useProfile";
-import {useConfirmDelete} from "../../../../context/Delete/useDelete";
-import profileApi from "../../api/profile.api";
-import photo from "../../api/profilePhoto.api";
+import { useDelete } from "../../../../context/Delete/useDelete";
+import { updateProfile } from "../../api/profile.api";
+import {
+  uploadProfilePhoto,
+  deleteProfilePhoto,
+} from "../../api/profilePhoto.api";
 
 const MyProfile = () => {
   const { fetchProfile, profile } = useProfile();
@@ -19,7 +22,7 @@ const MyProfile = () => {
 
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
-  const { openModal } = useConfirmDelete();
+  const { openModal } = useDelete();
 
   useEffect(() => {
     if (profile) {
@@ -47,7 +50,7 @@ const MyProfile = () => {
 
     showLoader();
     try {
-      const response = await photo.uploadProfilePhoto(file);
+      const response = await uploadProfilePhoto(file);
       addMessage(response?.success, response?.message);
       await fetchProfile();
     } catch (err) {
@@ -61,7 +64,7 @@ const MyProfile = () => {
     openModal(async () => {
       showLoader();
       try {
-        const response = await photo.deleteProfilePhoto();
+        const response = await deleteProfilePhoto();
         addMessage(response?.success, response?.message);
 
         await fetchProfile();
@@ -96,7 +99,7 @@ const MyProfile = () => {
 
     showLoader();
     try {
-      const response = await profileApi.updateProfile(payload);
+      const response = await updateProfile(payload);
       addMessage(
         response?.success,
         response?.message || "Profile updated successfully!",
