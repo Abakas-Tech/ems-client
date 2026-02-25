@@ -12,6 +12,11 @@ let access_token = null;
 let isRefreshing = false;
 let failedQueue = [];
 
+function hasRefreshToken() {
+  return document.cookie
+    .split(";")
+    .some((cookie) => cookie.trim().startsWith("refresh_token="));
+}
 
 // Process queued requests after refresh
 const processQueue = (error, token = null) => {
