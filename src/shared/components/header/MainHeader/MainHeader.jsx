@@ -5,7 +5,7 @@ import "react-modern-drawer/dist/index.css";
 import { FaBars } from "react-icons/fa";
 
 // import logo from "../../../assets/img/logo.svg";
-import useAuth from "../../../context/auth/UseAuth";
+import useAuth from "../../../../context/Auth/useAuth";
 
 const MainHeader = () => {
   const { user } = useAuth();

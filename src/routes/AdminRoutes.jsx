@@ -3,30 +3,24 @@ import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import NotFound from "../shared/components/NotFound/NotFound.jsx";
 import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePassword.jsx";
-import UsersPage from "../domains/admin/pages/Users/UserPage.jsx";
-import CreateUserPage from "../domains/admin/pages/Users/CreateUsersPage.jsx";
 import Profile from "../domains/admin/pages/Profile/Profile.jsx";
-import AdminLayout from "../shared/Layouts/AdminLayout.jsx";
+import CreateUser from './../domains/admin/pages/user/CreateUser/CreateUser';
+import ListUser from './../domains/admin/pages/user/ListUser/ListUser';
+import AdminLayout from './../shared/layout/AdminLayout/AdminLayout';
 
 const AdminRoutes = () => (
   <Routes>
-    {/* Parent admin layout (Dashboard) */}
-    {/* Parent admin layout (Dashboard) */}
     <Route
       element={
-        // <ProtectedRoute>
+        <ProtectedRoute>
         <AdminLayout />
-        // </ProtectedRoute>
+         </ProtectedRoute>
       }
     >
       <Route path="settings" element={<ChangePasswordPage />} />
-      <Route path="create-user" element={<CreateUserPage />} />
-  
+      <Route path="create-user" element={<CreateUser />} />
       <Route path="my-profile" element={<Profile />} />
-
-      <Route path="user-management" element={<UsersPage />} />
-   
-
+      <Route path="user-management" element={<ListUser />} />
       <Route path="*" element={<NotFound />} />
     </Route>
   </Routes>

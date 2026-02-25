@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import ListingComponent from "../../../../shared/components/ListingComponent/ListingComponent";
-import user from "../../../../api/user.api";
+import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
+import user from "../../../api/user.api";
 import permission from "../../../api/permission.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";

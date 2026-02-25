@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import  useProfile  from "../../../context/Profile/useProfile";
+import  useProfile  from "../../../../context/Profile/useProfile";
 import { FaBars } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 

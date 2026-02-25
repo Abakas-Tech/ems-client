@@ -14,7 +14,7 @@ import LogoutProvider from "./context/logout/LogoutProvider.jsx";
 import ResponseProvider from "./context/response/ResponseProvider.jsx";
 import { AuthProvider } from "./context/auth/authProvider.jsx";
 import ConfirmDeleteProvider from "./context/Delete/DeleteProvider";
-import { ProfileProvider } from "./context/Profile/ProfileProvider.jsx";
+import  ProfileProvider  from "./context/Profile/ProfileProvider.jsx";
 import DemoInfoProvider from "./context/Demo/DemoInfoProvider";
 
 createRoot(document.getElementById("root")).render(
@@ -22,7 +22,7 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <DemoInfoProvider>
         <LogoutProvider>
-          {/* <AuthProvider> */}
+          <AuthProvider>
             <LoaderProvider>
               <ResponseProvider>
                 <ProfileProvider>
@@ -32,7 +32,7 @@ createRoot(document.getElementById("root")).render(
                 </ProfileProvider>
               </ResponseProvider>
             </LoaderProvider>
-          {/* </AuthProvider> */}
+          </AuthProvider>
         </LogoutProvider>
       </DemoInfoProvider>
     </BrowserRouter>

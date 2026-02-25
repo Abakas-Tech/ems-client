@@ -4,7 +4,7 @@ import login from "../../../api/auth.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import useAuth from "../../../../../context/Auth/useAuth";
-import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
+import PasswordInput from "../../../../../shared/components/PasswordInput/PasswordInput";
 import accessToken from "../../../../../utils/axios";
 
 const LoginFormWithEmail = () => {

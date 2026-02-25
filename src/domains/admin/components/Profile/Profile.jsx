@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import useProfile from "../../../../context/Profile/useProfile";
-import useConfirmDelete from "../../../../context/Delete/useDelete";
+import {useConfirmDelete} from "../../../../context/Delete/useDelete";
 import profileApi from "../../api/profile.api";
 import photo from "../../api/profilePhoto.api";
 
