@@ -1,37 +1,97 @@
 import axios from "axios";
+import refreshToken  from "../domains/admin/api/auth.api";
 
-// Environment-based URLs
 const backend_server_url = import.meta.env.VITE_AXIOS_INSTANCE_BASE_URL;
-const python_server_url = import.meta.env.VITE_AXIOS_PYTHON_BASE_URL;
 
-// Node backend instance
 const axiosInstance = axios.create({
   baseURL: backend_server_url,
-  withCredentials: true, // send cookies
+  withCredentials: true, // send cookies automatically
 });
 
-// Python backend instance
-const axiosPythonInstance = axios.create({
-  baseURL: python_server_url,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: false, // usually chatbot APIs don’t need cookies
-});
+let access_token = null; // in-memory token
+let isRefreshing = false;
+let failedQueue = [];
 
-// Request interceptor to attach token
-const attachAuthToken = (config) => {
-const token = sessionStorage.getItem("authToken"); 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+// Process queued requests after refresh
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) prom.reject(error);
+    else prom.resolve(token);
+  });
+  failedQueue = [];
 };
 
-// Error handler
-const handleRequestError = (error) => Promise.reject(error);
+// Update in-memory access token
+const setAccessToken = (token) => {
+  access_token = token;
+};
 
-// Attach interceptors
-axiosInstance.interceptors.request.use(attachAuthToken, handleRequestError);
+// Request interceptor
+axiosInstance.interceptors.request.use(
+  (config) => {
+    if (access_token) {
+      config.headers.Authorization = `Bearer ${access_token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
-export { axiosInstance, axiosPythonInstance };
+// Response interceptor
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // Queue requests while refreshing
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return axiosInstance(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Call refresh API
+        const response = await refreshToken.refreshTokenApi();
+        const newAccessToken = response.data?.access_token;
+
+        if (!newAccessToken)
+          throw new Error("No access_token returned from refresh");
+
+        // Update in-memory token
+        setAccessToken(newAccessToken);
+
+        // Retry original request with new token
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        // Retry queued requests
+        processQueue(null, newAccessToken);
+
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        setAccessToken(null);
+        window.location.href = "/login"; // redirect to login if refresh fails
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);
+
+export default {
+  axiosInstance,
+  setAccessToken,
+};
