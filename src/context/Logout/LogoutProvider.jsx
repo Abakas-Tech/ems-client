@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { LogoutContext } from "./LogoutContext.jsx";
+import { LogoutContext} from "./LogoutContext.jsx";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../auth/UseAuth.jsx";
+import useAuth from "../Auth/useAuth.jsx";
 import Logout from "./../../shared/global/Logout/Logout.jsx";
+import { logoutApi } from "../../domains/admin/api/auth.api.js"
 import { setAccessToken } from "../../utils/axios.jsx";
 
 const LogoutProvider = ({ children }) => {
@@ -13,7 +14,7 @@ const LogoutProvider = ({ children }) => {
   const logoutNow = async () => {
     try {
       // Call backend logout to clear refresh token cookie
-      await logout.logoutApi();
+      await logoutApi();
 
       // Clear in-memory access token
       setAccessToken(null);

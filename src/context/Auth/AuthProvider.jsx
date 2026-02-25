@@ -7,11 +7,22 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
+  // Helper: check if refresh token exists in cookies
+  const hasRefreshToken = () => {
+    return document.cookie.includes("refresh_token=");
+  };
+
   // Check user dynamically on page load
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Call a protected route to get user info
+        // Only call refreshTokenApi if refresh token exists
+        if (!hasRefreshToken()) {
+          setAccessToken(null);
+          setUser(null);
+          return;
+        }
+
         const response = await refreshTokenApi();
         const { access_token } = response.data;
 
@@ -19,9 +30,10 @@ export const AuthProvider = ({ children }) => {
           setAccessToken(access_token);
           setUser(true);
         } else {
+          setAccessToken(null);
           setUser(null);
         }
-      } catch (error) {
+      } catch {
         setAccessToken(null);
         setUser(null);
       } finally {

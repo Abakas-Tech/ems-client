@@ -71,6 +71,7 @@ const LoginFormWithEmail = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                autoComplete="email"
               />
               <label htmlFor="email">Email address</label>
             </div>
@@ -86,6 +87,7 @@ const LoginFormWithEmail = () => {
                 required
                 align="right"
                 variant="floating"
+                autoComplete="current-password"
               />
             </div>
 

@@ -113,6 +113,7 @@ const LoginFormWithPhone = ({ role }) => {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 required
+                autoComplete="tel"
               />
               <label htmlFor="phoneNumber">Phone Number</label>
             </div>
@@ -128,6 +129,7 @@ const LoginFormWithPhone = ({ role }) => {
                   value={nationalId}
                   onChange={(e) => setNationalId(e.target.value)}
                   required
+                  autoComplete="national-id"
                 />
                 <label htmlFor="nationalId">National ID</label>
               </div>
@@ -144,6 +146,7 @@ const LoginFormWithPhone = ({ role }) => {
                   value={passportNumber}
                   onChange={(e) => setPassportNumber(e.target.value)}
                   required
+                  autoComplete="passport-number"
                 />
                 <label htmlFor="passportNumber">Passport Number</label>
               </div>
