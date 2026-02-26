@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import styles from "./Sidebar.module.css";
-import  useProfile  from "../../../../context/Profile/useProfile";
+import useProfile from "../../../../context/Profile/useProfile";
 
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard", icon: "bi-speedometer2" },
@@ -15,23 +15,17 @@ const menuItems = [
   },
   { label: "Groups", path: "/admin/groups", icon: "bi-people-fill" },
   {
-    label: "Contributors",
-    path: "/admin/contributors",
-    icon: "bi-person-lines-fill",
+    label: "Finance",
+    path: "/admin/finances",
+    icon: "bi-wallet2",
   },
-  { label: "Collect Money", path: "/admin/collect-money", icon: "bi-wallet2" },
+  { label: "Files", path: "/admin/my-files", icon: "bi-folder-fill" },
   { label: "Payment History", path: "/admin/payments", icon: "bi-cash-stack" },
   { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
   { label: "Log Out", path: "#", icon: "bi-box-arrow-right", isLogout: true },
 ];
 
-const Sidebar = ({
-  isOpen,
-  onClose,
-  expanded,
-  onLogout,
-  isDesktop,
-}) => {
+const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
   const location = useLocation();
   const [showLabels, setShowLabels] = useState(expanded);
   const { profile } = useProfile();
@@ -73,9 +67,7 @@ const Sidebar = ({
               <li key={item.label} className={liClass}>
                 <Link className={styles.navLink} onClick={onLogout}>
                   <i className={`bi ${item.icon} ${styles.icon}`} />
-                  {showLabels && (
-                    <span >{item.label}</span>
-                  )}
+                  {showLabels && <span>{item.label}</span>}
                 </Link>
               </li>
             );
@@ -85,7 +77,9 @@ const Sidebar = ({
             <li key={item.label} className={liClass}>
               <Link to={item.path} className={styles.navLink} onClick={onClose}>
                 <i className={`bi ${item.icon} ${styles.icon}`} />
-                {showLabels && <span className={styles.label}>{item.label}</span>}
+                {showLabels && (
+                  <span className={styles.label}>{item.label}</span>
+                )}
               </Link>
             </li>
           );
@@ -102,7 +96,6 @@ const Sidebar = ({
           className={`${styles.sidebar}  ${
             expanded ? styles.expanded : styles.collapsed
           } d-navigation `}
-        
         >
           {renderMenu(showLabels)}
         </div>

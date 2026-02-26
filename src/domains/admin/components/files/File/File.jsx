@@ -9,13 +9,13 @@ import {
 import FileFilters from "../FileFilters/FileFilters";
 import useLoader from "../../../../../context/Loader/UseLoader";
 import useResponse from "../../../../../context/response/UseResponse";
-import { useConfirmDelete } from "../../../../../context/Delete/UseDelete";
+import { useDelete } from "../../../../../context/Delete/UseDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
 const File = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
-  const { openModal } = useConfirmDelete();
+  const { openModal } = useDelete();
 
   // --- View Control ---
   // 'list' = Table + Filters
