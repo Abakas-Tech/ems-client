@@ -42,6 +42,35 @@ const Sidebar = ({
   useEffect(() => {
     let timer;
 
+<<<<<<< HEAD
+  const menuItems = [
+    { label: "Dashboard", path: "/admin/dashboard", icon: "bi-speedometer" },
+    {
+      label: "My Profile",
+      path: "/admin/my-profile",
+      icon: "bi-person-bounding-box",
+    },
+    { label: "My Files", path: "/admin/my-files", icon: "bi bi-files" },
+    {
+      label: "Finances",
+      path: "/admin/finances",
+      icon: "bi-wallet2",
+    },
+    { label: "My Listings", path: "/admin/my-listings", icon: "bi-house-door" },
+    {
+      label: "Featured Properties",
+      path: "/admin/featured-properties",
+      icon: "bi-suit-heart",
+    },
+    {
+      label: "Submit Property",
+      path: "/admin/submit-property",
+      icon: "bi-patch-plus",
+    },
+    { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
+    { label: "Log Out", path: "/logout", icon: "bi-power" },
+  ];
+=======
     if (expanded) {
       timer = setTimeout(() => {
         setShowLabels(true);
@@ -49,6 +78,7 @@ const Sidebar = ({
     } else {
       setShowLabels(false);
     }
+>>>>>>> 9a4de8cf0f02901b83cfaddd9828a2ce12d0059e
 
     return () => clearTimeout(timer);
   }, [expanded]);

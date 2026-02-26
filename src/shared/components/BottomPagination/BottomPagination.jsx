@@ -39,7 +39,6 @@ const BottomPagination = ({ pagination, onPageChange }) => {
               <FaChevronLeft />
             </li>
           )}
-
           {pageNumbers.map((page) => (
             <li
               key={page}
