@@ -1,7 +1,7 @@
 import { axiosInstance } from "../../../utils/axios";
 
 // Standardized list fetching
-export const fetchTransactions = async (params = {}) => {
+const fetchTransactions = async (params = {}) => {
   try {
     const response = await axiosInstance.get(`/finance/transactions`, {
       params,
@@ -15,7 +15,7 @@ export const fetchTransactions = async (params = {}) => {
 };
 
 // New: Fetch specific transaction details with User info
-export const fetchTransactionDetails = async (id) => {
+const fetchTransactionDetails = async (id) => {
   try {
     const response = await axiosInstance.get(`/finance/transactions/${id}`);
     return response.data;
@@ -24,8 +24,7 @@ export const fetchTransactionDetails = async (id) => {
   }
 };
 
-
-export const createTransaction = async (data) => {
+const createTransaction = async (data) => {
   try {
     const response = await axiosInstance.post(`/finance/transactions`, data);
     return response.data;
@@ -33,3 +32,5 @@ export const createTransaction = async (data) => {
     throw new Error(error.response?.data?.message || "Submission failed");
   }
 };
+
+export { fetchTransactions, fetchTransactionDetails, createTransaction };

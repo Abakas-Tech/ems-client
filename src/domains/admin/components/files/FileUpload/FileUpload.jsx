@@ -84,6 +84,9 @@ const FileUpload = ({
         ...formData,
         file: selectedFile,
       };
+      if (isEditMode) {
+        delete payload.file;
+      }
 
       // In your File.jsx logic, handle the actual API call
       await onSuccess(payload);

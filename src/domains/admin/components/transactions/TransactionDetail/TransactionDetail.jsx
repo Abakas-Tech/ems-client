@@ -36,7 +36,6 @@ const TransactionDetail = ({ transactionId, onBack }) => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h2 className="fw-bold text-dark mb-1">Transaction Receipt</h2>
-          <p className="text-muted">ID: #{transaction.id}</p>
         </div>
         <BackButton onClick={onBack} />
       </div>
@@ -58,7 +57,7 @@ const TransactionDetail = ({ transactionId, onBack }) => {
               </h6>
               <div className="d-flex align-items-center gap-3">
                 <div
-                  className="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                  className="rounded-circle text-custom-green d-flex align-items-center justify-content-center"
                   style={{ width: "50px", height: "50px" }}
                 >
                   <i className="bi bi-person fs-4 text-secondary"></i>

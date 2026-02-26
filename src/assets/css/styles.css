@@ -12012,3 +12012,7 @@ th.next.available,
 .widget-6 .stat-border-line {
   background: #6610f2;
 }
+.text-custom-green {
+  color: var(--greencolor) !important;
+  background: color-mix(in srgb, var(--greencolor), transparent 90%);
+}

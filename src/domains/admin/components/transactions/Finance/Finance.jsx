@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
-import TransactionList from "../../transactions/TransactionList/TransactionList";
 import TransactionFilters from "../../transactions/TransactionFilters/TransactionFilters";
 import RecordTransaction from "../../transactions/RecordTransaction/RecordTransaction.jsx";
-import TransactionDetail from "../../transactions/TransactionDetail/TransactionDetail"; // Added this
+import TransactionDetail from "../../transactions/TransactionDetail/TransactionDetail";
 import { fetchTransactions } from "../../../api/finance.api";
 import useLoader from "../../../../../context/Loader/UseLoader";
 import useResponse from "../../../../../context/response/UseResponse";
+import { useConfirmDelete } from "../../../../../context/Delete/UseDelete";
+import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
 const FinancePage = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
+  const { openModal } = useConfirmDelete();
 
-  // --- View Control ---
-  // 'list', 'create', 'edit', 'detail'
   const [view, setView] = useState("list");
-
   const [transactions, setTransactions] = useState({ data: [], meta: {} });
   const [filters, setFilters] = useState({
     page: 1,
@@ -27,12 +26,8 @@ const FinancePage = () => {
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [selectedTransactionId, setSelectedTransactionId] = useState(null);
 
-  // Fetch list when filters change or when returning to list view
   useEffect(() => {
-    if (view === "list") {
-      loadTransactions();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (view === "list") loadTransactions();
   }, [filters, view]);
 
   const loadTransactions = async () => {
@@ -47,109 +42,130 @@ const FinancePage = () => {
     }
   };
 
-  // --- Navigation Handlers ---
-
-  const handleEdit = (transaction) => {
-    setEditingTransaction(transaction);
-    setView("edit");
+  const handleDelete = (id) => {
+    openModal(async () => {
+      showLoader();
+      try {
+        await deleteTransaction(id);
+        addMessage("success", "Transaction deleted successfully");
+        loadTransactions();
+      } catch (err) {
+        addMessage("error", err.message);
+      } finally {
+        hideLoader();
+      }
+    });
   };
 
-  const handleViewDetails = (id) => {
-    setSelectedTransactionId(id);
-    setView("detail");
-  };
+  if (view === "create" || view === "edit") {
+    return (
+      <RecordTransaction
+        isEditMode={view === "edit"}
+        initialData={editingTransaction}
+        onSuccess={() => {
+          setView("list");
+          setEditingTransaction(null);
+        }}
+        onCancel={() => setView("list")}
+      />
+    );
+  }
 
-  const handleBackToList = () => {
-    setEditingTransaction(null);
-    setSelectedTransactionId(null);
-    setView("list");
-  };
+  if (view === "detail") {
+    return (
+      <TransactionDetail
+        transactionId={selectedTransactionId}
+        onBack={() => setView("list")}
+      />
+    );
+  }
 
-  const renderContent = () => {
-    switch (view) {
-      case "create":
-      case "edit":
-        return (
-          <RecordTransaction
-            isEditMode={view === "edit"}
-            initialData={editingTransaction}
-            onSuccess={() => {
-              setView("list");
-              loadTransactions();
-            }}
-            onCancel={handleBackToList}
+  return (
+    <div className="dashboard-wraper">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+          <h2 className="fw-bold text-dark mb-2">Finance Management</h2>
+          <p className="text-muted mb-0">
+            Track agency revenue, expenses, and VAT records.
+          </p>
+        </div>
+        <div className="mt-3 mt-md-0">
+          <button
+            className="btn btn-main px-4 py-2 rounded-3 shadow-sm fw-semibold text-white"
+            onClick={() => setView("create")}
+          >
+            + New Transaction
+          </button>
+        </div>
+      </div>
+
+      <ListingComponent
+        filtersComponent={
+          <TransactionFilters
+            filters={filters}
+            onFilterChange={(e) =>
+              setFilters({
+                ...filters,
+                [e.target.name]: e.target.value,
+                page: 1,
+              })
+            }
+            onClear={() =>
+              setFilters({
+                page: 1,
+                limit: 10,
+                category: "",
+                date_from: "",
+                date_to: "",
+              })
+            }
           />
-        );
-
-      case "detail":
-        return (
-          <TransactionDetail
-            transactionId={selectedTransactionId}
-            onBack={handleBackToList}
-          />
-        );
-
-      case "list":
-      default:
-        return (
-          <div className="dashboard-wraper">
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-              <div>
-                <h2 className="fw-bold text-dark mb-2">Finance Management</h2>
-                <p className="text-muted mb-0">
-                  Track agency revenue, expenses, commissions, and VAT records.
-                </p>
-              </div>
-              <div className="mt-3 mt-md-0">
-                <button
-                  className="btn px-4 py-2 rounded-3 shadow-sm fw-semibold text-white"
-                  onClick={() => setView("create")}
-                  style={{ backgroundColor: "var(--maincolor)" }}
-                >
-                  + New Transaction
-                </button>
-              </div>
-            </div>
-
-            {/* Filters */}
-            <TransactionFilters
-              filters={filters}
-              onFilterChange={(e) =>
-                setFilters({
-                  ...filters,
-                  [e.target.name]: e.target.value,
-                  page: 1,
-                })
-              }
-              onClear={() =>
-                setFilters({
-                  page: 1,
-                  limit: 10,
-                  category: "",
-                  date_from: "",
-                  date_to: "",
-                })
-              }
-            />
-
-            {/* List Table */}
-            <div className="card shadow-sm border-0 mb-4">
-              <div className="card-body p-0">
-                <TransactionList
-                  transactions={transactions.data}
-                  pagination={transactions.meta}
-                  onPageChange={(p) => setFilters({ ...filters, page: p })}
-                  onEdit={handleEdit}
-                  onView={handleViewDetails} // Passed to show eye icon
-                />
-              </div>
-            </div>
-          </div>
-        );
-    }
-  };
-
-  return renderContent();
+        }
+        data={transactions.data}
+        columns={[
+          {
+            header: "Date",
+            render: (row) =>
+              new Date(row.transaction_date).toLocaleDateString(),
+          },
+          { header: "Reference", accessor: "reference" },
+          {
+            header: "Category",
+            render: (row) => (
+              <span
+                className={`badge border ${row.category === "income" ? "text-success" : "text-danger"}`}
+              >
+                {row.category.toUpperCase()}
+              </span>
+            ),
+          },
+          {
+            header: "Amount",
+            accessor: "amount",
+          },
+        ]}
+        actions={[
+          {
+            type: "view",
+            onClick: (row) => {
+              setSelectedTransactionId(row.id);
+              setView("detail");
+            },
+          },
+        ]}
+        pagination={{
+          page: filters.page,
+          limit: filters.limit,
+          total: transactions.meta?.total || 0,
+          onPageChange: (p) => setFilters({ ...filters, page: p }),
+        }}
+        emptyState={{
+          title: "No transactions found",
+          subtitle: "Start by recording your first agency transaction.",
+        }}
+      />
+    </div>
+  );
 };
 
 export default FinancePage;

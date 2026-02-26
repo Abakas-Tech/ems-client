@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import FileList from "../FileList/FileList";
 import FileUpload from "../FileUpload/FileUpload";
 import {
   fetchFiles,
@@ -11,6 +10,7 @@ import FileFilters from "../FileFilters/FileFilters";
 import useLoader from "../../../../../context/Loader/UseLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 import { useConfirmDelete } from "../../../../../context/Delete/UseDelete";
+import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
 const File = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -57,7 +57,7 @@ const File = () => {
       };
 
       const response = await fetchFiles(cleanFilters);
-      
+
       // Ensure we match the data structure returned by your API
       setFilesData({
         files: response.files || [],
@@ -86,10 +86,6 @@ const File = () => {
       category: "",
       fileName: "",
     });
-  };
-
-  const handlePageChange = (newPage) => {
-    setFilters((prev) => ({ ...prev, page: newPage }));
   };
 
   const handleFormSubmit = async (formData) => {
@@ -130,7 +126,6 @@ const File = () => {
   return (
     <div className="dashboard-wraper">
       {view !== "list" ? (
-        /* Render Form View */
         <FileUpload
           isEditMode={view === "edit"}
           initialData={editingFile}
@@ -141,10 +136,8 @@ const File = () => {
           }}
         />
       ) : (
-        /* Render List View */
         <>
-          {/* Header */}
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
             <div>
               <h2 className="fw-bold text-dark mb-2">File Manager</h2>
               <p className="text-muted mb-0">
@@ -152,42 +145,68 @@ const File = () => {
                 download.
               </p>
             </div>
-            <div className="mt-3 mt-md-0">
+            <div className="mt-3 mt-md-0 ">
               <button
-                className="btn px-4 py-2 rounded-3 shadow-sm fw-semibold text-white"
+                className="btn btn-main px-4 py-2 rounded-3 shadow-sm fw-semibold text-white"
                 onClick={() => {
                   setEditingFile(null);
                   setView("create");
                 }}
-                style={{ backgroundColor: "var(--maincolor)" }}
               >
                 + Upload File
               </button>
             </div>
           </div>
 
-          {/* Filters */}
-          <FileFilters
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onClear={handleClearFilters}
-          />
-
-          {/* File List Table Container */}
-          <div className="card shadow-sm mb-4">
-            <div className="card-body p-0">
-              <FileList
-                files={filesData.files}
-                onUpdate={(file) => {
-                  setEditingFile(file);
-                  setView("edit");
-                }}
-                onDelete={handleDelete}
-                pagination={filesData.pagination}
-                onPageChange={handlePageChange}
+          <ListingComponent
+            filtersComponent={
+              <FileFilters
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onClear={handleClearFilters}
               />
-            </div>
-          </div>
+            }
+            data={filesData.files}
+            columns={[
+              { header: "Name", accessor: "file_name" },
+              {
+                header: "Type",
+                accessor: "file_type",
+              },
+              {
+                header: "Uploaded",
+                render: (row) => new Date(row.created_at).toLocaleDateString(),
+              },
+              { header: "Category", accessor: "category" },
+            ]}
+            actions={[
+              {
+                type: "rename", // Changed from 'rename' to match standard ActionButtons
+                onClick: (row) => {
+                  setEditingFile(row);
+                  setView("edit");
+                },
+              },
+              {
+                type: "download",
+                onClick: (row) => handleDownload(row),
+              },
+              {
+                type: "delete",
+                onClick: (row) => handleDelete(row.id),
+              },
+            ]}
+            emptyState={{
+              title: "No files found",
+              subtitle: "Try adjusting the filters above or check back later.",
+            }}
+            pagination={{
+              page: filters.page,
+              limit: filters.limit,
+              total: filesData.total,
+              onPageChange: (page) => setFilters((prev) => ({ ...prev, page })),
+            }}
+          />
         </>
       )}
     </div>

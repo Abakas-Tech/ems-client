@@ -1,6 +1,6 @@
 import { axiosInstance } from "../../../utils/axios";
 
-export const fetchFiles = async (params = {}) => {
+const fetchFiles = async (params = {}) => {
   try {
     const response = await axiosInstance.get(`/files`, { params });
     return response.data.data; // Expected: { data: [], total: number }
@@ -12,7 +12,7 @@ export const fetchFiles = async (params = {}) => {
   }
 };
 
-export const uploadFile = async (formData) => {
+const uploadFile = async (formData) => {
   try {
     delete formData["file_url"];
     const response = await axiosInstance.post(`/files`, formData, {
@@ -24,7 +24,7 @@ export const uploadFile = async (formData) => {
   }
 };
 
-export const updateFile = async (id, formData) => {
+const updateFile = async (id, formData) => {
   try {
     delete formData["file_url"];
     const response = await axiosInstance.patch(`/files/${id}`, formData);
@@ -34,10 +34,12 @@ export const updateFile = async (id, formData) => {
   }
 };
 
-export const deleteFile = async (id) => {
+const deleteFile = async (id) => {
   try {
     await axiosInstance.delete(`/files/${id}`);
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to delete file");
   }
 };
+
+export { fetchFiles, uploadFile, updateFile, deleteFile };

@@ -154,47 +154,22 @@ const Analytics = () => {
       </div>
 
       {/* Modernized Bottom Summary Section */}
-      <div className="row mt-3">
-        <div className="col-md-6 mb-4">
-          <div
-            className="stat-card-v2 widget-3 border-0 shadow-sm"
-            style={{ borderBottom: "4px solid #ffc107" }}
-          >
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <h3 className="fw-bold mb-0">
-                  {data.operations.pending_contracts}
-                </h3>
-                <span className="small text-muted fw-bold text-uppercase">
-                  Pending Contracts
-                </span>
-              </div>
-              <div className="stat-icon-circle">
-                <i className="bi bi-file-earmark-text"></i>
-              </div>
-            </div>
-          </div>
+      <div className="row mt-2">
+        <div className="col-12">
+          <h6 className="fw-bold text-muted text-uppercase mb-3">Operations</h6>
         </div>
-        <div className="col-md-6 mb-4">
-          <div
-            className="stat-card-v2 widget-4 border-0 shadow-sm"
-            style={{ borderBottom: "4px solid #17a2b8" }}
-          >
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <h3 className="fw-bold mb-0">
-                  {data.operations.pending_qr_codes}
-                </h3>
-                <span className="small text-muted fw-bold text-uppercase">
-                  Pending QR Codes
-                </span>
-              </div>
-              <div className="stat-icon-circle">
-                <i className="bi bi-qr-code"></i>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StatCard
+          title="Pending Contracts"
+          value={data.operations.pending_contracts}
+          icon="bi bi-file-earmark-text"
+          colorClass="widget-3"
+        />
+        <StatCard
+          title="Pending QR Codes"
+          value={data.operations.pending_qr_codes}
+          icon="bi bi-qr-code"
+          colorClass="widget-4"
+        />
       </div>
     </div>
   );
