@@ -3,6 +3,15 @@ import { Route, Routes } from "react-router-dom";
 import Files from "../domains/admin/pages/FileManager/FileManager.jsx";
 import Finances from "../domains/admin/pages/FinancePage/FinancePage.jsx";
 import Analytics from "../domains/admin/pages/AnalyticsPage/AnalyticsPage.jsx";
+import WorkersDashboard from "../domains/admin/pages/workers/WorkersDashboard/WorkersDashboard.jsx";
+import WorkersRegistration from "../domains/admin/pages/workers/WorkersRegistration/WorkersRegistration.jsx";
+import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
+import ArchivedWorkers from "../domains/admin/pages/workers/ArchivedWorkers/ArchivedWorkers.jsx";
+import WorkersModules from "../domains/admin/pages/workers/WorkersModules/WorkersModules.jsx";
+import ModuleLists from "../domains/admin/pages/workers/ModuleLists/ModuleLists.jsx";
+import WorkersPesonalInfo from "../domains/admin/pages/workers/WorkersModules/WorkersPersonalInfo/WorkersPesonalInfo.jsx";
+
+import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import NotFound from "../shared/components/NotFound/NotFound.jsx";
 import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePassword.jsx";
 import Profile from "../domains/admin/pages/Profile/Profile.jsx";
@@ -27,6 +36,16 @@ const AdminRoutes = () => (
       <Route path="my-files" element={<Files />} />
       <Route path="finances" element={<Finances />} />
       <Route path="*" element={<NotFound />} />
+      <Route path="/workers" element={<WorkersDashboard />} />
+      <Route path="/workers/add" element={<WorkersRegistration />} />
+      <Route path="/workers/active" element={<ActiveWorkers />} />
+      <Route path="/workers/archived" element={<ArchivedWorkers />} />
+      <Route path="workers/modules" element={<WorkersModules />} />
+      <Route path="/workers/modules/:id/add" element={<ModuleLists />} />
+      <Route
+        path="/workers/modules/:id/personal"
+        element={<WorkersPesonalInfo />}
+      />
     </Route>
   </Routes>
 );

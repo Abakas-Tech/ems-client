@@ -1,0 +1,69 @@
+import React from "react";
+import { Link, useParams } from "react-router-dom";
+import {
+  FaUser,
+  FaPassport,
+  FaFileAlt,
+  FaFileMedical,
+  FaPhoneAlt,
+  FaPlane,
+  FaFileContract,
+  FaFile,
+  FaEnvelope,
+} from "react-icons/fa";
+import { PiCertificateFill } from "react-icons/pi";
+import { TbFileCv } from "react-icons/tb";
+import { MdContactPhone } from "react-icons/md";
+import { IoDocumentAttach } from "react-icons/io5";
+import { HiDocumentDuplicate } from "react-icons/hi";
+
+function ModuleLists() {
+  const { id } = useParams();
+
+  const modules = [
+    { name: "Personal Information", icon: <FaUser />, path: `personal` },
+    { name: "Passport", icon: <FaPassport />, path: `passport` },
+    { name: "COC", icon: <PiCertificateFill />, path: `coc` },
+    { name: "Medical", icon: <FaFileMedical />, path: `medical` },
+    {
+      name: "Emergency Contact",
+      icon: <MdContactPhone />,
+      path: `emergency-contact`,
+    },
+    { name: "Visa", icon: <HiDocumentDuplicate />, path: `visa` },
+    { name: "LMIS", icon: <IoDocumentAttach />, path: `lmis` },
+    { name: "Travel Records", icon: <FaPlane />, path: `travel-records` },
+    { name: "Contract", icon: <FaFileContract />, path: `contract` },
+    { name: "CV", icon: <FaFileAlt />, path: `cv` },
+  ];
+
+  return (
+    <section className="gray-simple">
+      <div className="container">
+        <div className="row justify-content-center g-lg-3 g-4">
+          {modules.map((mod, index) => (
+            <div key={index} className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+              <div className="agents-grid card rounded-3 border p-4 text-center">
+                <div className="mt-4 mb-3">
+                  <Link to={`/admin/workers/modules/${id}/${mod.path}`}>
+                    {React.cloneElement(mod.icon, {
+                      className: "text-info",
+                      size: 50,
+                    })}
+                  </Link>
+                </div>
+                <h5 className="fr-can-name lh-base mb-2">
+                  <Link to={`/admin/workers/modules/${id}/${mod.path}`}>
+                    {mod.name}
+                  </Link>
+                </h5>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default ModuleLists;

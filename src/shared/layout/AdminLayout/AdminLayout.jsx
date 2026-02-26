@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../../../domains/admin/components/Sidebar/Sidebar";
-import AdminHeader from "../../components/header/AdminHeader/AdminHeader";
+import AdminHeader from "../../components/headers/AdminHeader/AdminHeader";
 import useLogout from "../../../context/Logout/useLogout";
 import { Outlet } from "react-router-dom";
 

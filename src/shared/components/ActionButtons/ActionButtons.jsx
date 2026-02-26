@@ -8,9 +8,8 @@ const ACTION_CONFIG = {
     title: "View",
   },
   edit: {
-    // <-- Added Edit button
     className: "btn-outline-primary",
-    icon: <i className="fa-solid fa-pen-to-square"></i>, // FontAwesome edit icon
+    icon: <i className="fa-solid fa-pen-to-square"></i>, 
     title: "Edit",
   },
   delete: {
@@ -29,7 +28,6 @@ const ACTION_CONFIG = {
     title: "Restore",
   },
 
-  // REACT ICONS (from WorkersModules)
   addModule: {
     className: "btn-outline-info",
     icon: <FaFolderPlus size={20} />,

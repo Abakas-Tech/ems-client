@@ -25,3 +25,4 @@ const ProfileProvider = ({ children }) => {
 };
 
 export default ProfileProvider;
+
