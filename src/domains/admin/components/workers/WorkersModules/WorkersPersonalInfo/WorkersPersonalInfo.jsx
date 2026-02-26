@@ -133,7 +133,6 @@ function WorkersPersonalInfo() {
       }
     }
 
-
     // date_of_birth
     if (pi.date_of_birth) {
       const dob = new Date(pi.date_of_birth);
@@ -225,13 +224,13 @@ function WorkersPersonalInfo() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-   const pi = formData.personal_information;
+    const pi = formData.personal_information;
 
-   const error = validatePersonalInfo(pi);
-   if (error) {
-     addMessage(false, error);
-     return;
-   }
+    const error = validatePersonalInfo(pi);
+    if (error) {
+      addMessage(false, error);
+      return;
+    }
 
     setSubmitLoading(true);
     showLoader();
@@ -336,243 +335,237 @@ function WorkersPersonalInfo() {
   };
 
   return (
-    <section className="bg-light">
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-lg-12 col-md-12">
-            <div className="dashboard-wraper">
-              <BackButton onClick={goBack} />
-              <form className="form-submit" onSubmit={handleSubmit}>
-                <h4>Worker Personal Information</h4>
-                <div className="submit-section">
-                  <div className="row">
-                    {/* Region */}
-                    <div className="form-group col-md-6">
-                      <label>
-                        Region <span className="text-danger">*</span>
-                      </label>
-                      {regions.length === 0 ? (
-                        <div className="form-control text-muted">
-                          {regionsError
-                            ? "Failed to load regions"
-                            : "Loading regions..."}
-                        </div>
-                      ) : (
-                        <select
-                          name="personal_region_id"
-                          className="form-select"
-                          value={formData.personal_information.region_id}
-                          onChange={handleTextChange}
-                          required
-                        >
-                          <option value="">Select region</option>
-                          {regions.map((region) => (
-                            <option key={region.id} value={region.id}>
-                              {region.name}
-                            </option>
-                          ))}
-                        </select>
-                      )}
+    <section className="dashboard-wraper">
+      <div className="row">
+        <div className="col-lg-12 col-md-12">
+          <BackButton onClick={goBack} />
+          <form className="form-submit" onSubmit={handleSubmit}>
+            <h4>Worker Personal Information</h4>
+            <div className="submit-section">
+              <div className="row">
+                {/* Region */}
+                <div className="form-group col-md-6">
+                  <label>
+                    Region <span className="text-danger">*</span>
+                  </label>
+                  {regions.length === 0 ? (
+                    <div className="form-control text-muted">
+                      {regionsError
+                        ? "Failed to load regions"
+                        : "Loading regions..."}
                     </div>
-
-                    {/* City */}
-                    <div className="form-group col-md-6">
-                      <label>City</label>
-                      <select
-                        name="personal_city_id"
-                        className="form-select"
-                        value={formData.personal_information.city_id}
-                        onChange={handleTextChange}
-                        disabled={!formData.personal_information.region_id}
-                      >
-                        <option value="">
-                          {formData.personal_information.region_id
-                            ? "Select city"
-                            : "Select region first"}
-                        </option>
-                        {cities.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Date of Birth */}
-                    <div className="form-group col-md-6">
-                      <label>Date of Birth</label>
-                      <input
-                        type="date"
-                        name="personal_date_of_birth"
-                        className="form-control"
-                        value={formData.personal_information.date_of_birth}
-                        onChange={handleTextChange}
-                      />
-                    </div>
-
-                    {/* Place of Birth */}
-                    <div className="form-group col-md-6">
-                      <label>Place of Birth</label>
-                      <input
-                        type="text"
-                        name="personal_place_of_birth"
-                        className="form-control"
-                        value={formData.personal_information.place_of_birth}
-                        onChange={handleTextChange}
-                      />
-                    </div>
-
-                    {/* Religion */}
-                    <div className="form-group col-md-6">
-                      <label>Religion </label>
-                      <input
-                        type="text"
-                        name="personal_religion"
-                        className="form-control"
-                        value={formData.personal_information.religion}
-                        onChange={handleTextChange}
-                      />
-                    </div>
-
-                    {/* Marital Status */}
-                    <div className="form-group col-md-6">
-                      <label>Marital Status</label>
-                      <select
-                        name="personal_marital_status"
-                        className="form-select"
-                        value={formData.personal_information.marital_status}
-                        onChange={handleTextChange}
-                      >
-                        <option value="">Select status</option>
-                        <option value="Single">Single</option>
-                        <option value="Married">Married</option>
-                        <option value="Divorced">Divorced</option>
-                        <option value="Widowed">Widowed</option>
-                      </select>
-                    </div>
-
-                    {/* Nationality */}
-                    <div className="form-group col-md-6">
-                      <label>Nationality</label>
-                      <input
-                        type="text"
-                        name="personal_nationality"
-                        className="form-control"
-                        value={formData.personal_information.nationality}
-                        onChange={handleTextChange}
-                      />
-                    </div>
-
-                    {/* Address */}
-                    <div className="form-group col-md-6">
-                      <label>Address</label>
-                      <input
-                        type="text"
-                        name="personal_address"
-                        className="form-control"
-                        value={formData.personal_information.address}
-                        onChange={handleTextChange}
-                      />
-                    </div>
-
-                    {/* Education */}
-                    <div className="form-group col-md-6">
-                      <label>Education</label>
-                      <input
-                        type="text"
-                        name="personal_education"
-                        className="form-control"
-                        value={formData.personal_information.education}
-                        onChange={handleTextChange}
-                      />
-                    </div>
-
-                    {/* Number of Children */}
-                    <div className="form-group col-md-6">
-                      <label>Number of Children</label>
-                      <input
-                        type="number"
-                        name="personal_number_of_children"
-                        className="form-control"
-                        value={formData.personal_information.number_of_children}
-                        onChange={handleNumberChange}
-                        min="0"
-                      />
-                    </div>
-
-                    {/* Height */}
-                    <div className="form-group col-md-6">
-                      <label>
-                        Height (cm) <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        name="personal_height_cm"
-                        className="form-control"
-                        value={formData.personal_information.height_cm}
-                        onChange={handleNumberChange}
-                        step="0.01"
-                       
-                        required
-                      />
-                    </div>
-
-                    {/* Weight */}
-                    <div className="form-group col-md-6">
-                      <label>
-                        Weight (kg)<span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        name="personal_weight_kg"
-                        className="form-control"
-                        value={formData.personal_information.weight_kg}
-                        onChange={handleNumberChange}
-                        step="0.01"
-                        
-                        required
-                      />
-                    </div>
-
-                    {/* Photos */}
-                    <div className="form-group col-md-6">
-                      <label>Photo 3x4</label>
-                      <input
-                        type="file"
-                        name="photo_3x4_url"
-                        accept="image/*"
-                        className="form-control"
-                        onChange={handleFileChange}
-                      />
-                    </div>
-
-                    <div className="form-group col-md-6">
-                      <label>Photo Standing</label>
-                      <input
-                        type="file"
-                        name="photo_standing_url"
-                        accept="image/*"
-                        className="form-control"
-                        onChange={handleFileChange}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="submit-section">
-                  <div className="form-group col-lg-12 col-md-12 mt-4">
-                    <button
-                      className="btn btn-main px-5 rounded"
-                      type="submit"
-                      disabled={submitLoading}
+                  ) : (
+                    <select
+                      name="personal_region_id"
+                      className="form-control"
+                      value={formData.personal_information.region_id}
+                      onChange={handleTextChange}
+                      required
                     >
-                      Add Personal Information
-                    </button>
-                  </div>
+                      <option value="">Select region</option>
+                      {regions.map((region) => (
+                        <option key={region.id} value={region.id}>
+                          {region.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
-              </form>
+
+                {/* City */}
+                <div className="form-group col-md-6">
+                  <label>City</label>
+                  <select
+                    name="personal_city_id"
+                    className="form-control"
+                    value={formData.personal_information.city_id}
+                    onChange={handleTextChange}
+                    disabled={!formData.personal_information.region_id}
+                  >
+                    <option value="">
+                      {formData.personal_information.region_id
+                        ? "Select city"
+                        : "Select region first"}
+                    </option>
+                    {cities.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Date of Birth */}
+                <div className="form-group col-md-6">
+                  <label>Date of Birth</label>
+                  <input
+                    type="date"
+                    name="personal_date_of_birth"
+                    className="form-control"
+                    value={formData.personal_information.date_of_birth}
+                    onChange={handleTextChange}
+                  />
+                </div>
+
+                {/* Place of Birth */}
+                <div className="form-group col-md-6">
+                  <label>Place of Birth</label>
+                  <input
+                    type="text"
+                    name="personal_place_of_birth"
+                    className="form-control"
+                    value={formData.personal_information.place_of_birth}
+                    onChange={handleTextChange}
+                  />
+                </div>
+
+                {/* Religion */}
+                <div className="form-group col-md-6">
+                  <label>Religion </label>
+                  <input
+                    type="text"
+                    name="personal_religion"
+                    className="form-control"
+                    value={formData.personal_information.religion}
+                    onChange={handleTextChange}
+                  />
+                </div>
+
+                {/* Marital Status */}
+                <div className="form-group col-md-6">
+                  <label>Marital Status</label>
+                  <select
+                    name="personal_marital_status"
+                    className="form-control"
+                    value={formData.personal_information.marital_status}
+                    onChange={handleTextChange}
+                  >
+                    <option value="">Select status</option>
+                    <option value="Single">Single</option>
+                    <option value="Married">Married</option>
+                    <option value="Divorced">Divorced</option>
+                    <option value="Widowed">Widowed</option>
+                  </select>
+                </div>
+
+                {/* Nationality */}
+                <div className="form-group col-md-6">
+                  <label>Nationality</label>
+                  <input
+                    type="text"
+                    name="personal_nationality"
+                    className="form-control"
+                    value={formData.personal_information.nationality}
+                    onChange={handleTextChange}
+                  />
+                </div>
+
+                {/* Address */}
+                <div className="form-group col-md-6">
+                  <label>Address</label>
+                  <input
+                    type="text"
+                    name="personal_address"
+                    className="form-control"
+                    value={formData.personal_information.address}
+                    onChange={handleTextChange}
+                  />
+                </div>
+
+                {/* Education */}
+                <div className="form-group col-md-6">
+                  <label>Education</label>
+                  <input
+                    type="text"
+                    name="personal_education"
+                    className="form-control"
+                    value={formData.personal_information.education}
+                    onChange={handleTextChange}
+                  />
+                </div>
+
+                {/* Number of Children */}
+                <div className="form-group col-md-6">
+                  <label>Number of Children</label>
+                  <input
+                    type="number"
+                    name="personal_number_of_children"
+                    className="form-control"
+                    value={formData.personal_information.number_of_children}
+                    onChange={handleNumberChange}
+                    min="0"
+                  />
+                </div>
+
+                {/* Height */}
+                <div className="form-group col-md-6">
+                  <label>
+                    Height (cm) <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="personal_height_cm"
+                    className="form-control"
+                    value={formData.personal_information.height_cm}
+                    onChange={handleNumberChange}
+                    step="0.01"
+                    required
+                  />
+                </div>
+
+                {/* Weight */}
+                <div className="form-group col-md-6">
+                  <label>
+                    Weight (kg)<span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="personal_weight_kg"
+                    className="form-control"
+                    value={formData.personal_information.weight_kg}
+                    onChange={handleNumberChange}
+                    step="0.01"
+                    required
+                  />
+                </div>
+
+                {/* Photos */}
+                <div className="form-group col-md-6">
+                  <label>Photo 3x4</label>
+                  <input
+                    type="file"
+                    name="photo_3x4_url"
+                    accept="image/*"
+                    className="form-control"
+                    onChange={handleFileChange}
+                  />
+                </div>
+
+                <div className="form-group col-md-6">
+                  <label>Photo Standing</label>
+                  <input
+                    type="file"
+                    name="photo_standing_url"
+                    accept="image/*"
+                    className="form-control"
+                    onChange={handleFileChange}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
+
+            <div className="submit-section">
+              <div className="form-group col-lg-12 col-md-12 mt-4">
+                <button
+                  className="btn btn-main px-5 rounded"
+                  type="submit"
+                  disabled={submitLoading}
+                >
+                  Add Personal Information
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </section>

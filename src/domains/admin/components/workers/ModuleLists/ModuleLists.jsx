@@ -38,7 +38,7 @@ function ModuleLists() {
   ];
 
   return (
-    <section className="gray-simple">
+    <section className="dashboard-wraper">
       <div className="container">
         <div className="row justify-content-center g-lg-3 g-4">
           {modules.map((mod, index) => (
