@@ -10,12 +10,12 @@ import ActiveWorkersFilters from "../WorkersFilter/WorkersFilter";
 
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
-import { useConfirmDelete } from "../../../../../context/Delete/useDelete";
+import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
 const ActiveWorkers = () => {
   const navigate = useNavigate();
-  const { openModal } = useConfirmDelete();
+  const { openModal } = useDelete();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 

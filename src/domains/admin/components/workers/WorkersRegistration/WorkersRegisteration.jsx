@@ -150,11 +150,10 @@ function WorkersRegistration() {
     }
   };
   return (
-    <section className="bg-light">
+    <section className="dashboard-wraper">
       <div className="container-fluid">
         <div className="row">
           <div className="col-lg-12 col-md-12">
-            <div className="dashboard-wraper">
               <BackButton onClick={goBack} />
               <form className="form-submit" onSubmit={handleSubmit}>
                 <h4>Worker Registration</h4>
@@ -265,7 +264,6 @@ function WorkersRegistration() {
                   </div>
                 </div>
               </form>
-            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import axiosInstance from "../../../utils/axios";
+import { axiosInstance } from "../../../utils/axios";
 
 // Create worker
 const createWorker = async (formData) => {
@@ -73,10 +73,7 @@ const restoreWorker = async (id) => {
 // Update worker
 const updateWorker = async (Payload, id) => {
   try {
-    const response = await axiosInstance.patch(
-      `/workers/${id}`,
-      Payload,
-    );
+    const response = await axiosInstance.patch(`/workers/${id}`, Payload);
     return response.data;
   } catch (error) {
     throw new Error(

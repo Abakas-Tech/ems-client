@@ -12,11 +12,11 @@ import ListingComponent from "../../../../../shared/components/ListingComponent/
 
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
-import { useConfirmDelete } from "../../../../../context/Delete/useDelete";
+import { useDelete } from "../../../../../context/Delete/useDelete";
 
 const ArchivedWorkers = () => {
   const navigate = useNavigate();
-  const { openModal } = useConfirmDelete();
+  const { openModal } = useDelete();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
@@ -118,17 +118,6 @@ const ArchivedWorkers = () => {
 
   return (
     <div className="dashboard-wrapper">
-      {/* <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-        <div>
-          <h2 className="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
-            File Manager
-          </h2>
-          <p className="text-muted mb-0">
-            Organize and manage your files — upload, update, rename, delete, or
-            download.
-          </p>
-        </div>
-      </div> */}
 
       <ListingComponent
         filtersComponent={

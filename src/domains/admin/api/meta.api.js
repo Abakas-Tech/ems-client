@@ -1,4 +1,4 @@
-import axiosInstance from "../../../utils/axios";
+import { axiosInstance } from "../../../utils/axios";
 // Get regions
 const getRegions = async () => {
   try {
