@@ -1,3 +1,4 @@
+// src/context/useLoader.js
 import { useContext } from "react";
 import LoaderContext from "./LoaderContext.jsx";
 

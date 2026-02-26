@@ -1,26 +1,23 @@
-import useResponse from "./../../../context/response/UseResponse";
-import styles from "./Response.module.css";
+import { X } from "lucide-react";
+import styles from "./response.module.css";
+import useResponse from './../../../context/response/UseResponse';
+
 const Response = () => {
   const { responseMessages, removeMessage } = useResponse();
-
-  if (!responseMessages.length) return null;
-
   return (
-    <div className={styles["response-container"]}>
+    <div className={styles.container}>
       {responseMessages.map((msg) => (
         <div
           key={msg.id}
-          className={`alert ${
-            msg.type === "success" ? styles["alert-ok"] : "alert-danger"
-          } alert-dismissible fade show`}
-          role="alert"
+          className={`${styles.messageBox} ${
+            msg.type === "success" ? styles.success : styles.error
+          }`}
         >
-          {msg.text}
-          <button
-            type="button"
-            className="btn-close"
-            aria-label="Close"
+          <span>{msg.text}</span>
+          <X
+            size={16}
             onClick={() => removeMessage(msg.id)}
+            className={styles.closeIcon}
           />
         </div>
       ))}

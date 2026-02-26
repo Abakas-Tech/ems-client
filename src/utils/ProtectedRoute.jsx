@@ -1,33 +1,19 @@
-import  { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import  refreshToken from "../domains/admin/api/auth.api"; 
+import React, { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import useAuth from "../context/auth/UseAuth";
 
-const ProtectedRoute = ({ children }) => {
+const ProtecteRoute = ({ children }) => {
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [isAuthorized, setIsAuthorized] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // Call your refresh token API
-        const response = await refreshToken.refreshTokenApi();
-        const newAccessToken = response.data?.access_token;
-        if (!newAccessToken) throw new Error("No access token returned");
+    if (!user) {
+      navigate("/auth/login");
+    }
+  }, [user, navigate, location]);
 
-        // Optionally store in memory or context if needed
-        setIsAuthorized(true);
-      } catch  {
-        setIsAuthorized(false);
-        navigate("/auth/login", { replace: true });
-      }
-    };
-
-    checkAuth();
-  }, [navigate]);
-
-  if (isAuthorized === null) return null; // or a loader
-
-  return isAuthorized ? children : null;
+  return user ? children : null;
 };
 
-export default ProtectedRoute;
+export default ProtecteRoute;

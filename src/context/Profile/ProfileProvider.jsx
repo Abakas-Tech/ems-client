@@ -1,24 +1,26 @@
-<<<<<<< HEAD
-=======
 // context/profile/ProfileProvider.jsx
-import React, { useState } from "react";
-import ProfileContext from "./ProfileContext";
-import profileApi from "../../domains/admin/api/profile.api";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { getProfile } from "../../domains/admin/api/agent.api";
 import useResponse from "../response/UseResponse";
 
-const ProfileProvider = ({ children }) => {
+const ProfileContext = createContext();
+
+export const ProfileProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
   const { addMessage } = useResponse();
 
   const fetchProfile = async () => {
     try {
-      const response = await profileApi.getProfile();
-      setProfile(response.data);
+      const { data } = await getProfile();
+      setProfile(data);
     } catch (error) {
-      addMessage(false, error.message);
-      setProfile(null);
+      addMessage("error", error.message);
     }
   };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   return (
     <ProfileContext.Provider value={{ profile, setProfile, fetchProfile }}>
@@ -27,5 +29,4 @@ const ProfileProvider = ({ children }) => {
   );
 };
 
-export default ProfileProvider;
->>>>>>> dev
+export const useProfile = () => useContext(ProfileContext);

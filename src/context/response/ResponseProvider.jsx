@@ -7,19 +7,9 @@ let messageId = 0;
 const ResponseProvider = ({ children }) => {
   const [responseMessages, setResponseMessages] = useState([]);
 
-  // isSuccess: boolean, text: string
-  const addMessage = (isSuccess, text) => {
+  const addMessage = (type, text) => {
     const id = ++messageId;
-
-    setResponseMessages((prev) => [
-      ...prev,
-      {
-        id,
-        type: isSuccess ? "success" : "error",
-        text,
-      },
-    ]);
-
+    setResponseMessages((prev) => [...prev, { id, type, text }]);
     setTimeout(() => removeMessage(id), 5000);
   };
 

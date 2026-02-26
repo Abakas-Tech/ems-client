@@ -1,7 +1,7 @@
 // DemoInfoProvider.js
 import React, { useState } from "react";
 import { DemoInfoContext } from "./DemoInfoContext";
-import DemoInfoModal from "./../../shared/global/DemoInfoModal/DemoInfoModal";
+import DemoInfoModal from "./../../shared/global/Demo/DemoInfoModal";
 
 const DemoInfoProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
