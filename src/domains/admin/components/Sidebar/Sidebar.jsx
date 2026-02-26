@@ -7,22 +7,30 @@ import useProfile from "../../../../context/Profile/useProfile";
 
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard", icon: "bi-speedometer2" },
-  { label: "My Profile", path: "/admin/my-profile", icon: "bi-person" },
+  {
+    label: "My Profile",
+    path: "/admin/my-profile",
+    icon: "bi bi-person-bounding-box",
+  },
   {
     label: "User Management",
     path: "/admin/user-management",
-    icon: "bi-file-earmark-text",
+    icon: "bi bi-people",
   },
-  { label: "Groups", path: "/admin/groups", icon: "bi-people-fill" },
+  {
+    label: "Worker",
+    path: "/admin/workers",
+    icon: "bi bi-file-earmark-person-fill",
+  },
   {
     label: "Finance",
     path: "/admin/finances",
-    icon: "bi-wallet2",
+    icon: "bi bi-wallet",
   },
-  { label: "Files", path: "/admin/my-files", icon: "bi-folder-fill" },
+  { label: "Files", path: "/admin/my-files", icon: "bi bi-files" },
   { label: "Payment History", path: "/admin/payments", icon: "bi-cash-stack" },
   { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
-  { label: "Log Out", path: "#", icon: "bi-box-arrow-right", isLogout: true },
+  { label: "Log Out", path: "#", icon: "bi bi-power", isLogout: true },
 ];
 
 const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {

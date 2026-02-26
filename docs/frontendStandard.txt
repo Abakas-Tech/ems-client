@@ -386,7 +386,7 @@ Rules:
    - It does not replace backend validation.
 
 3. Implementing Frontend Validation
-   - Show inline error messages near input fields.
+   - Show error messages using custome useResponse hook.
    - Validate only necessary fields to avoid over-validation.
 
 4. Handling Backend Errors
