@@ -179,7 +179,7 @@ SECTION 5: STATE & HOOK RULES
 ==================================================
 
 - useState for local state only
-- useEffect only when necessary
+- useEffect when necessary
 - No unnecessary state variables
 - No deeply nested state objects
 - Hooks must be at the top level
@@ -206,7 +206,7 @@ All API functions must:
 example:
 
 // Get Profile function
- getProfile = async () => {
+export const getProfile = async () => {
   try {
     const response = await axiosInstance.get("/agent-profile");
     return response.data;
@@ -214,10 +214,6 @@ example:
     throw new Error(error.response?.data?.message || "Profile fetch error");
   }
 };
-
-Export rules:
-- If a file contains multiple API functions, use named exports.
-- If a file contains a single API function, use a default export.
 
 ==================================================
 SECTION 7: STYLING RULES
@@ -243,8 +239,7 @@ components/
     └── Button.module.css
 
 3. No inline styles (unless necessary)
-- Avoid using inline style={{ ... }} in JSX.
-- Exception: rare one-off styles approved by senior developers.
+- Avoid using inline style={{ ... }} in JSX unless you have to.
 
 4. No !important
 - Using !important overrides CSS hierarchy and breaks maintainability.
@@ -316,7 +311,133 @@ Mandatory Requirements:
    - This ensures proper keyboard navigation and accessibility support.
 
 ==================================================
-SECTION 10: CODE QUALITY RULES
+SECTION 10: IMAGE LOCATION STANDARDS
+==================================================
+
+Rules:
+
+1. All images must live inside the `assets/img/` folder.
+   - Example: `src/assets/img/`
+
+2. Images must be organized in subfolders based on their context or feature.
+   - Example:
+     - Partner images → `src/assets/img/partners/`
+     - Property images → `src/assets/img/properties/`
+     - Backgrounds → `src/assets/img/backgrounds/`
+
+3. File naming conventions:
+   - Use kebab-case: `logo-light.png`, `banner-hero.jpg`
+   - Avoid spaces, underscores, or uppercase letters.
+   - Include descriptive names for easy identification.
+
+4. Avoid duplication
+   - Do not store the same image in multiple folders.
+   - Reuse images via imports wherever possible.
+
+6. No images in public except for:
+   - favicon.ico
+
+==================================================
+SECTION 11: REACT KEYS (LIST RENDERING)
+==================================================
+
+Rules:
+
+1. Always provide a unique `key` prop when rendering lists.
+   - Example (Good):
+     const users = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}];
+     return (
+       <ul>
+         {users.map(user => (
+           <li key={user.id}>{user.name}</li>
+         ))}
+       </ul>
+     );
+
+2. Never use array index as the key unless the list is static and will never change.
+   - Example (Avoid if items can be reordered or deleted):
+     {items.map((item, index) => (
+       <div key={index}>{item.name}</div>
+     ))}
+
+3. Keys must be:
+   - Unique within the list
+   - Consistent across renders
+   - Preferably a unique ID from your data
+
+4. Why keys are important:
+   - Help React identify which items have changed, added, or removed.
+   - Improve performance by minimizing unnecessary DOM updates.
+   - Prevent bugs like component state being lost on re-render.
+
+==================================================
+SECTION 13: FORM VALIDATION STANDARDS
+==================================================
+
+Rules:
+
+1. Backend Validation is Mandatory
+   - All form data must be validated on the backend using Joi.
+   - Backend validation is the source of truth and cannot be bypassed.
+
+2. Frontend Validation is Recommended
+   - Use frontend validation to provide instant feedback to users.
+   - Frontend validation should mirror backend rules (required fields, lengths, formats).
+   - It does not replace backend validation.
+
+3. Implementing Frontend Validation
+   - Show inline error messages near input fields.
+   - Validate only necessary fields to avoid over-validation.
+
+4. Handling Backend Errors
+   - Always handle backend validation errors gracefully in the UI.
+   - Display errors clearly, even if frontend validation passed.
+
+
+==================================================
+SECTION 14: TIME MANAGEMENT AND DELIVERY STANDARDS
+==================================================
+
+Rules:
+
+1. Punctuality in Scrum Events is Mandatory
+- All team members must join Scrum meetings (daily standups, sprint planning, reviews, and retrospectives) on time.
+- Late attendance without prior notice is not acceptable.
+
+2. On-Time Task and Project Delivery
+- All assigned work items must be completed within the agreed sprint timeline
+- Any expected delay must be communicated early to the team.
+- Missed deadlines without communication are not acceptable.
+
+3. Commitment to Sprint Goals
+- Team members should commit only to tasks they can realistically complete within the sprint.
+- Transparency and reliability are prioritized over overcommitment.
+
+4. Timely Participation in Reviews and Demos
+- All assigned features must be ready for review and demonstration by the sprint review deadline.
+- Incomplete work must be clearly communicated before the review meeting.
+
+
+==================================================
+SECTION 15: COMMUNICATION AND COLLABORATION STANDARDS
+==================================================
+
+Rules:
+
+1. Clear and Proactive Communication
+- Task progress must be updated regularly using the agreed project management tools.
+- Blockers should be communicated immediately.
+
+2. Respect for Team Workflow
+- Follow agreed development processes, coding standards, and review practices.
+- Avoid last-minute changes that may impact testing or deployment unless approved.
+
+3. Accountability and Ownership
+- Each team member is responsible for the quality and timeliness of their work.
+- Issues or bugs introduced must be addressed promptly.
+
+==================================================
+SECTION 16: CODE QUALITY RULES
 ==================================================
 
 Before submitting:
@@ -327,7 +448,7 @@ Before submitting:
 - Keep files clean
 
 ================================================
-SECTION 11: GIT & COLLABORATION STANDARDS
+SECTION 17: GIT & COLLABORATION STANDARDS
 ================================================
 
 Branches:
@@ -385,9 +506,9 @@ Commit Message Examples:
 - "Add login form validation"
 - "Refactor user card component"
 
-==================================================
-SECTION 12: INTERN-SPECIFIC RULES (DETAILED)
-==================================================
+======================================
+SECTION 18: INTERN-SPECIFIC RULES 
+======================================
 
 Interns MUST:
 1. Follow standards exactly
@@ -414,7 +535,7 @@ Interns MUST NOT:
    - If unsure, ask a senior developer before implementing.
 
 ==================================================
-SECTION 13: REVIEW CHECKLIST (FOR SENIORS)
+SECTION 19: REVIEW CHECKLIST (FOR SENIORS)
 ==================================================
 
 Before approval, check:
@@ -430,90 +551,6 @@ Before approval, check:
 [ ] Code is readable and consistent
 
 
-==================================================
-SECTION X: IMAGE LOCATION STANDARDS
-==================================================
-
-Rules:
-
-1. All images must live inside the `assets/img/` folder.
-   - Example: `src/assets/img/`
-
-2. Images must be organized in subfolders based on their context or feature.
-   - Example:
-     - Partner images → `src/assets/img/partners/`
-     - Property images → `src/assets/img/properties/`
-     - Backgrounds → `src/assets/img/backgrounds/`
-
-3. File naming conventions:
-   - Use kebab-case: `logo-light.png`, `banner-hero.jpg`
-   - Avoid spaces, underscores, or uppercase letters.
-   - Include descriptive names for easy identification.
-
-4. Avoid duplication
-   - Do not store the same image in multiple folders.
-   - Reuse images via imports wherever possible.
-
-6. No images in public except for:
-   - favicon.ico
-
-
-==================================================
-SECTION X: REACT KEYS (LIST RENDERING)
-==================================================
-
-Rules:
-
-1. Always provide a unique `key` prop when rendering lists.
-   - Example (Good):
-     const users = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}];
-     return (
-       <ul>
-         {users.map(user => (
-           <li key={user.id}>{user.name}</li>
-         ))}
-       </ul>
-     );
-
-2. Never use array index as the key unless the list is static and will never change.
-   - Example (Avoid if items can be reordered or deleted):
-     {items.map((item, index) => (
-       <div key={index}>{item.name}</div>
-     ))}
-
-3. Keys must be:
-   - Unique within the list
-   - Consistent across renders
-   - Preferably a unique ID from your data
-
-4. Why keys are important:
-   - Help React identify which items have changed, added, or removed.
-   - Improve performance by minimizing unnecessary DOM updates.
-   - Prevent bugs like component state being lost on re-render.
-
-
-==================================================
-SECTION X: FORM VALIDATION STANDARDS
-==================================================
-
-Rules:
-
-1. Backend Validation is Mandatory
-   - All form data must be validated on the backend using Joi.
-   - Backend validation is the source of truth and cannot be bypassed.
-
-2. Frontend Validation is Recommended
-   - Use frontend validation to provide instant feedback to users.
-   - Frontend validation should mirror backend rules (required fields, lengths, formats).
-   - It does not replace backend validation.
-
-3. Implementing Frontend Validation
-   - Show inline error messages near input fields.
-   - Validate only necessary fields to avoid over-validation.
-
-4. Handling Backend Errors
-   - Always handle backend validation errors gracefully in the UI.
-   - Display errors clearly, even if frontend validation passed.
 ==================================================
 FINAL NOTE
 ==================================================
