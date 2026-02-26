@@ -1,14 +1,21 @@
 import React, { useState } from "react";
-import { ConfirmDeleteContext } from "./DeleteContext";
-import ConfirmDeleteModal from "../../shared/global/Delete/ConfirmDeleteModal";
+import { DeleteContext } from "./DeleteContext";
+import ConfirmDeleteModal from "../../shared/global/ConfirmDeleteModal/ConfirmDeleteModal";
 
-const ConfirmDeleteProvider = ({ children }) => {
+const DeleteProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [onConfirm, setOnConfirm] = useState(() => () => {});
-
+  const [config, setConfig] = useState({
+    title: "Are you sure you want to delete?",
+    confirmText: "Delete",
+  });
   // Open modal with confirm action only
-  const openModal = (confirmAction) => {
+  const openModal = (confirmAction, options = {}) => {
     setOnConfirm(() => confirmAction);
+    setConfig({
+      title: options.title || "Are you sure you want to delete?",
+      confirmText: options.confirmText || "Delete",
+    });
     setIsOpen(true);
   };
 
@@ -20,13 +27,19 @@ const ConfirmDeleteProvider = ({ children }) => {
   };
 
   return (
-    <ConfirmDeleteContext.Provider
-      value={{ isOpen, openModal, closeModal, confirmAndClose }}
+    <DeleteContext.Provider
+      value={{
+        isOpen,
+        openModal,
+        closeModal,
+        confirmAndClose,
+        config,
+      }}
     >
       {children}
       <ConfirmDeleteModal />
-    </ConfirmDeleteContext.Provider>
+    </DeleteContext.Provider>
   );
 };
 
-export default ConfirmDeleteProvider;
+export default DeleteProvider;

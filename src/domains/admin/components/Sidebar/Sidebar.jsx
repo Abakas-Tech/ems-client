@@ -1,36 +1,48 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import useLogout from "../../../../context/logout/UseLogout";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
-import { useProfile } from "../../../../context/Profile/ProfileProvider";
-const Sidebar = ({ isOpen, closeSidebar }) => {
-  const { logout } = useLogout();
+import styles from "./Sidebar.module.css";
+import  useProfile  from "../../../../context/Profile/useProfile";
+
+const menuItems = [
+  { label: "Dashboard", path: "/admin/dashboard", icon: "bi-speedometer2" },
+  { label: "My Profile", path: "/admin/my-profile", icon: "bi-person" },
+  {
+    label: "User Management",
+    path: "/admin/user-management",
+    icon: "bi-file-earmark-text",
+  },
+  { label: "Groups", path: "/admin/groups", icon: "bi-people-fill" },
+  {
+    label: "Contributors",
+    path: "/admin/contributors",
+    icon: "bi-person-lines-fill",
+  },
+  { label: "Collect Money", path: "/admin/collect-money", icon: "bi-wallet2" },
+  { label: "Payment History", path: "/admin/payments", icon: "bi-cash-stack" },
+  { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
+  { label: "Log Out", path: "#", icon: "bi-box-arrow-right", isLogout: true },
+];
+
+const Sidebar = ({
+  isOpen,
+  onClose,
+  expanded,
+  onLogout,
+  isDesktop,
+}) => {
   const location = useLocation();
+  const [showLabels, setShowLabels] = useState(expanded);
   const { profile } = useProfile();
 
-  const agentData = {
-    image: profile?.profile_photo_url || "https://placehold.co/500x500",
-    name: profile?.full_name || "Loading...",
+  const user = profile;
 
-    location:
-      // eslint-disable-next-line no-constant-binary-expression
-      `${profile?.address || ""}, ${profile?.city || ""}, ${
-        profile?.country || ""
-      }` || "Loading...",
-  };
-
-  // Auto-close drawer on window resize
+  // Handle label animation
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 992 && isOpen) {
-        closeSidebar();
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isOpen, closeSidebar]);
+    let timer;
 
+<<<<<<< HEAD
   const menuItems = [
     { label: "Dashboard", path: "/admin/dashboard", icon: "bi-speedometer" },
     {
@@ -58,82 +70,86 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
     { label: "Log Out", path: "/logout", icon: "bi-power" },
   ];
+=======
+    if (expanded) {
+      timer = setTimeout(() => {
+        setShowLabels(true);
+      }, 150);
+    } else {
+      setShowLabels(false);
+    }
+>>>>>>> 9a4de8cf0f02901b83cfaddd9828a2ce12d0059e
 
-  const SidebarContent = () => (
-    <div className="sidebar-widgets">
-      <div className="dashboard-navbar">
-        {/* Close button only on mobile */}
-        <button
-          type="button"
-          className="btn btn-sm btn-outline-secondary d-lg-none position-absolute top-0 end-0 mx-2 my-0"
-          onClick={closeSidebar}
-        >
-          <i className="bi bi-x-lg p-2"></i>
-        </button>
+    return () => clearTimeout(timer);
+  }, [expanded]);
 
-        {/* User profile */}
-        <div className="d-user-avater">
-          <img
-            src={agentData.image}
-            className="img-fluid avater"
-            alt={`${agentData.name}'s Avatar`}
-          />
-          <h3>{agentData.name}</h3>
-          <span>{agentData.location}</span>
-        </div>
+  const filteredItems =
+    user?.role === "Employee"
+      ? menuItems.filter(
+          (item) =>
+            !["Dashboard", "Employees", "Payment History"].includes(item.label),
+        )
+      : menuItems;
 
-        {/* Navigation */}
-        <div className="d-navigation">
-          <ul>
-            {menuItems.map((item) => (
-              <li
-                key={item.path}
-                className={location.pathname === item.path ? "active" : ""}
-                onClick={closeSidebar}
-              >
-                {item.label === "Log Out" ? (
-                  <Link onClick={() => logout()}>
-                    <i className={`bi ${item.icon} me-2`}></i>
-                    {item.label}
-                  </Link>
-                ) : (
-                  <Link to={item.path}>
-                    <i className={`bi ${item.icon} me-2`}></i>
-                    {item.label}
-                  </Link>
-                )}
+  const renderMenu = (showLabels = true) => (
+    <div className={styles.content}>
+      <ul className={styles.nav}>
+        {filteredItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          const liClass = isActive ? "active" : "";
+
+          if (item.isLogout) {
+            return (
+              <li key={item.label} className={liClass}>
+                <Link className={styles.navLink} onClick={onLogout}>
+                  <i className={`bi ${item.icon} ${styles.icon}`} />
+                  {showLabels && (
+                    <span >{item.label}</span>
+                  )}
+                </Link>
               </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+            );
+          }
+
+          return (
+            <li key={item.label} className={liClass}>
+              <Link to={item.path} className={styles.navLink} onClick={onClose}>
+                <i className={`bi ${item.icon} ${styles.icon}`} />
+                {showLabels && <span className={styles.label}>{item.label}</span>}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 
   return (
     <>
-      {/* Mobile/Tablet: Drawer */}
-      <Drawer
-        open={isOpen}
-        onClose={closeSidebar}
-        direction="left"
-        size="100%"
-        style={{ zIndex: 999999999999 }}
-      >
+      {/* Desktop Sidebar */}
+      {isDesktop && (
         <div
-          style={{ height: "100vh", overflowY: "auto" }}
-          className="px-1 m-0"
+          className={`${styles.sidebar}  ${
+            expanded ? styles.expanded : styles.collapsed
+          } d-navigation `}
+        
         >
-          <SidebarContent />
+          {renderMenu(showLabels)}
         </div>
-      </Drawer>
+      )}
 
-      {/* Desktop: static sidebar */}
-      <div className="d-none d-lg-block">
-        <div className="simple-sidebar sm-sidebar">
-          <SidebarContent />
-        </div>
-      </div>
+      {/* Mobile Drawer */}
+      {!isDesktop && (
+        <Drawer open={isOpen} onClose={onClose} direction="left" size="100%">
+          <div className={`${styles.mobileDrawer} d-navigation`}>
+            <button className={styles.drawerClose} onClick={onClose}>
+              <i className="bi bi-x-lg"></i>
+            </button>
+
+            {renderMenu(true)}
+          </div>
+        </Drawer>
+      )}
     </>
   );
 };

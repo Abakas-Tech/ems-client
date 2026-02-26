@@ -5,45 +5,51 @@ const ACTION_CONFIG = {
   view: {
     className: "btn-outline-info",
     icon: <i className="fa-solid fa-eye"></i>,
-    title: "view",
+    title: "View",
+  },
+  edit: {
+    // <-- Added Edit button
+    className: "btn-outline-primary",
+    icon: <i className="fa-solid fa-pen-to-square"></i>, // FontAwesome edit icon
+    title: "Edit",
   },
   delete: {
     className: "btn-outline-danger",
     icon: <i className="fa-solid fa-trash"></i>,
-    title: "delete",
+    title: "Delete",
   },
   archive: {
     className: "btn-outline-warning",
     icon: <i className="fa-solid fa-folder-open"></i>,
-    title: "archive",
+    title: "Archive",
   },
   restore: {
     className: "btn-outline-success",
     icon: <i className="fa-solid fa-rotate-left"></i>,
-    title: "restore",
+    title: "Restore",
   },
 
   // REACT ICONS (from WorkersModules)
   addModule: {
     className: "btn-outline-info",
     icon: <FaFolderPlus size={20} />,
-    title: "add-module",
+    title: "Add Module",
   },
 
   rename: {
     className: "btn-outline-secondary",
     icon: <i className="fa-solid fa-pen"></i>,
-    title: "rename",
+    title: "Rename",
   },
   download: {
     className: "btn-outline-info",
     icon: <i className="fa-solid fa-download"></i>,
-    title: "download",
+    title: "Download",
   },
   viewModule: {
     className: "btn-outline-info",
     icon: <AiOutlineFolderView size={25} />,
-    title: "view-module",
+    title: "View Module",
   },
 };
 

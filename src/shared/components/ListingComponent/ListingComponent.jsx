@@ -10,8 +10,8 @@ const ListingComponent = ({
   pagination,
 }) => {
   return (
-    <section>
-      <div >
+    <>
+      <div className="">
         {/* Filters */}
         {filtersComponent}
 
@@ -72,7 +72,7 @@ const ListingComponent = ({
           </div>
         )}
       </div>
-     </section>
+    </>
   );
 };
 

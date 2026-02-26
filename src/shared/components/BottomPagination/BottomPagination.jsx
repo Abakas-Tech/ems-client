@@ -1,5 +1,6 @@
 import React from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import styles from "./BottomPagination.module.css";
 
 const BottomPagination = ({ pagination, onPageChange }) => {
   const totalPages = Math.ceil(pagination.total / pagination.limit);
@@ -23,37 +24,17 @@ const BottomPagination = ({ pagination, onPageChange }) => {
   for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
 
   return (
-    <div className="d-flex flex-column flex-md-row justify-content-between align-items-center my-2 p-2">
-      {/* Pagination */}
+    <div
+      className={`${styles["bottom-pagination-wrapper"]} d-flex flex-column flex-md-row justify-content-between align-items-center`}
+    >
       <div className="d-flex justify-content-center flex-grow-1">
-        <ul
-          style={{
-            display: "flex",
-            gap: "10px",
-            padding: 0,
-            margin: 0,
-            listStyle: "none",
-            fontSize: "clamp(12px,1.2vw,14px)",
-            alignItems: "center",
-          }}
-        >
+        <ul className={styles["bottom-pagination-list"]}>
           {totalPages > 3 && (
             <li
               onClick={() => handlePageChange(currentPage - 1)}
-              style={{
-                cursor: currentPage === 1 ? "not-allowed" : "pointer",
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                border: "2px solid #ddd",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#fff",
-                color: currentPage === 1 ? "#ccc" : "#333",
-                fontWeight: 500,
-                transition: "all 0.2s",
-              }}
+              className={`${styles["pagination-item"]} ${
+                currentPage === 1 ? styles["pagination-item-disabled"] : ""
+              }`}
             >
               <FaChevronLeft />
             </li>
@@ -62,42 +43,22 @@ const BottomPagination = ({ pagination, onPageChange }) => {
             <li
               key={page}
               onClick={() => handlePageChange(page)}
-              style={{
-                cursor: "pointer",
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                border:
-                  page === currentPage ? "2px solid #007bff" : "2px solid #ddd",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: page === currentPage ? "#e6f0ff" : "#fff",
-                color: page === currentPage ? "#007bff" : "#333",
-                fontWeight: 500,
-                transition: "all 0.2s",
-              }}
+              className={`${styles["pagination-item"]} ${
+                page === currentPage ? styles["pagination-item-active"] : ""
+              }`}
             >
               {page}
             </li>
           ))}
+
           {totalPages > 3 && (
             <li
               onClick={() => handlePageChange(currentPage + 1)}
-              style={{
-                cursor: currentPage === totalPages ? "not-allowed" : "pointer",
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                border: "2px solid #ddd",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#fff",
-                color: currentPage === totalPages ? "#ccc" : "#333",
-                fontWeight: 500,
-                transition: "all 0.2s",
-              }}
+              className={`${styles["pagination-item"]} ${
+                currentPage === totalPages
+                  ? styles["pagination-item-disabled"]
+                  : ""
+              }`}
             >
               <FaChevronRight />
             </li>

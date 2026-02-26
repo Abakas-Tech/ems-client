@@ -8585,6 +8585,10 @@ h3.pa-name {
   color: var(--greencolor) !important;
   background: color-mix(in srgb, var(--greencolor), transparent 90%);
 }
+.d-navigation ul li.active  {
+  color: var(--greencolor) !important;
+  background: color-mix(in srgb, var(--greencolor), transparent 90%);
+}
 
 .d-navigation ul li a i {
   margin-right: 10px;

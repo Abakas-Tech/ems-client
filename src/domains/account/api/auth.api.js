@@ -1,9 +1,7 @@
 import { axiosInstance } from "../../../utils/axios";
 
-
-
 // email and password login api for admin employee and partner
-export const loginWithEmail = async (credentials) => {
+const loginWithEmail = async (credentials) => {
   try {
     const response = await axiosInstance.post("/auth/login", credentials);
     return response.data;
@@ -11,10 +9,14 @@ export const loginWithEmail = async (credentials) => {
     throw new Error(error.response?.data?.message || "Login error");
   }
 };
+
 // phone and id login api for worker and employer
-export const loginWithPhone = async (credentials) => {
+const loginWithPhone = async (credentials) => {
   try {
-    const response = await axiosInstance.post("/auth/login/identifier", credentials);
+    const response = await axiosInstance.post(
+      "/auth/login/identifier",
+      credentials,
+    );
     return response;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Login error");
@@ -22,9 +24,12 @@ export const loginWithPhone = async (credentials) => {
 };
 
 // resert password request api for all users
-export const resetPasswordRequest = async (data) => {
+const passwordResetRequest = async (data) => {
   try {
-    const response = await axiosInstance.post("/auth/password-reset/request", data);
+    const response = await axiosInstance.post(
+      "/auth/password-reset/request",
+      data,
+    );
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Forgot password error");
@@ -32,7 +37,7 @@ export const resetPasswordRequest = async (data) => {
 };
 
 // Reset Password function
-export const resetPasswordConfirm = async (data) => {
+const passwordResetConfirm = async (data) => {
   try {
     const response = await axiosInstance.post(
       "/auth/password-reset/confirm",
@@ -42,4 +47,11 @@ export const resetPasswordConfirm = async (data) => {
   } catch (error) {
     throw new Error(error.response?.data?.message || "Reset password error");
   }
+};
+
+export {
+  loginWithEmail,
+  loginWithPhone,
+  passwordResetRequest,
+  passwordResetConfirm,
 };
