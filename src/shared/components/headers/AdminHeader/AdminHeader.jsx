@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import  useProfile  from "../../../../context/Profile/useProfile";
+import useProfile from "../../../../context/Profile/useProfile";
 import { FaBars } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 
@@ -7,9 +7,9 @@ const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard" },
   { label: "My Profile", path: "/admin/my-profile" },
   { label: "User ", path: "/admin/user-management" },
-  { label: "Employer Management", path: "/admin/employer-management" },
-  { label: "Groups", path: "/admin/groups" },
-  { label: "Contributors", path: "/admin/contributors" },
+  { label: "Worker", path: "/admin/workers" },
+  { label: "Finance", path: "/admin/finances" },
+  { label: "Files", path: "/admin/my-files" },
   { label: "Collect Money", path: "/admin/collect-money" },
   { label: "Payment History", path: "/admin/payments" },
   { label: "Settings", path: "/admin/settings" },
@@ -22,15 +22,15 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   useEffect(() => {
     fetchProfile();
   }, []);
-const roleMap = {
-  1: "Admin",
-  2: "Employee",
-  3: "Partner",
-  4: "Worker",
-  5: "Employer",
-};
+  const roleMap = {
+    1: "Admin",
+    2: "Employee",
+    3: "Partner",
+    4: "Worker",
+    5: "Employer",
+  };
 
-const roleName = roleMap[Number(profile?.role_id)] || "";
+  const roleName = roleMap[Number(profile?.role_id)] || "";
   // ===== Format Name =====
   const fullName = profile?.full_name?.trim() || "";
   const nameParts = fullName.split(" ").filter(Boolean);
@@ -107,7 +107,6 @@ const roleName = roleMap[Number(profile?.role_id)] || "";
                 marginRight: "18px",
                 display: "flex",
                 alignItems: "center",
-              
               }}
             >
               <FaBars />
