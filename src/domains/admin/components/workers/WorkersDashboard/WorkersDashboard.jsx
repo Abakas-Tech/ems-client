@@ -5,6 +5,14 @@ import { Link } from "react-router-dom";
 function WorkersDashboard() {
   return (
     <section className=" dashboard-wraper">
+      <div className="mb-4">
+        <h2 className="fw-bold text-dark mb-1">Worker Management</h2>
+        <p className="text-muted mb-0">
+          Add new workers, manage active profiles, review archived records, and
+          configure worker modules.
+        </p>
+      </div>
+
       <div className="container">
         <div className="row justify-content-center g-lg-3 g-4">
           {/* Add Worker */}

@@ -134,12 +134,12 @@ const MyProfile = () => {
                 />
                 {profilePhoto && (
                   <button
-                    className="form-control btn btn-outline-danger border-0 pt-3"
+                    className="form-control btn  border-0 pt-3"
                     type="button"
                     onClick={handleDeleteAvatar}
                     title="Delete Image"
                   >
-                    <i className="bi bi-trash"></i>
+                    <i className="bi bi-trash text-danger"></i>
                   </button>
                 )}
               </div>
