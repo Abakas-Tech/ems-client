@@ -28,7 +28,6 @@ const menuItems = [
     icon: "bi bi-wallet",
   },
   { label: "Files", path: "/admin/my-files", icon: "bi bi-files" },
-  { label: "Payment History", path: "/admin/payments", icon: "bi-cash-stack" },
   { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
   { label: "Log Out", path: "#", icon: "bi bi-power", isLogout: true },
 ];

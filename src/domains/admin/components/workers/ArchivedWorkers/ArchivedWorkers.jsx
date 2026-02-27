@@ -13,6 +13,7 @@ import ListingComponent from "../../../../../shared/components/ListingComponent/
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 const ArchivedWorkers = () => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const ArchivedWorkers = () => {
     } finally {
       hideLoader();
     }
-  }, [filters, page, limit]); 
+  }, [filters, page, limit]);
 
   // Initial fetch + refetch on filters/page change
   useEffect(() => {
@@ -116,9 +117,21 @@ const ArchivedWorkers = () => {
     );
   };
 
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div className="dashboard-wrapper">
-
+      <BackButton onClick={goBack} />
+      <div className="mb-4">
+        <h2 className="fw-bold text-dark mb-1">Archived Workers</h2>
+        <p className="text-muted mb-0">
+          Browse archived workers, view detailed profiles, restore records, or
+          permanently delete them.
+        </p>
+      </div>
       <ListingComponent
         filtersComponent={
           <ActiveWorkersFilters
@@ -150,6 +163,6 @@ const ArchivedWorkers = () => {
       />
     </div>
   );
-};
+};;
 
 export default ArchivedWorkers;

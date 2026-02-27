@@ -12,6 +12,7 @@ import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 const ActiveWorkers = () => {
   const navigate = useNavigate();
@@ -116,61 +117,65 @@ const ActiveWorkers = () => {
     );
   };
 
-  console.log("render ActiveWorkers");
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  };
 
   return (
     <div className="dashboard-wrapper">
-      {/* <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-        <div>
-          <h2 className="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
-            File Manager
-          </h2>
-          <p className="text-muted mb-0">
-            Organize and manage your files — upload, update, rename, delete, or
-            download.
-          </p>
-        </div>
-      </div> */}
+      <div className="row">
+        <div className="col-lg-12 col-md-12">
+          <BackButton onClick={goBack} />
+          <div className="mb-4 container">
+            <h2 className="fw-bold text-dark mb-1">Active Workers</h2>
+            <p className="text-muted mb-0">
+              View and manage active workers, access detailed profiles, archive
+              records, or remove workers when needed.
+            </p>
+          </div>
 
-      <ListingComponent
-        filtersComponent={
-          <ActiveWorkersFilters
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onClear={handleClear}
+          <ListingComponent
+            filtersComponent={
+              <ActiveWorkersFilters
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onClear={handleClear}
+              />
+            }
+            data={workers}
+            columns={[
+              { header: "Name", accessor: "full_name" },
+              { header: "Phone Number", accessor: "phone_number" },
+              { header: "Status", accessor: "status" },
+            ]}
+            actions={[
+              {
+                type: "view",
+                onClick: (row) => handleView(row.id),
+              },
+              {
+                type: "archive",
+                onClick: (row) => handleArchive(row.id),
+              },
+              {
+                type: "delete",
+                onClick: (row) => handleDelete(row.id),
+              },
+            ]}
+            emptyState={{
+              title: "No active workers found",
+              subtitle: "Try adjusting the filters above or check back later.",
+            }}
+            pagination={{
+              page,
+              limit,
+              total: totalItems,
+              onPageChange: setPage,
+            }}
           />
-        }
-        data={workers}
-        columns={[
-          { header: "Name", accessor: "full_name" },
-          { header: "Phone Number", accessor: "phone_number" },
-          { header: "Status", accessor: "status" },
-        ]}
-        actions={[
-          {
-            type: "view",
-            onClick: (row) => handleView(row.id),
-          },
-          {
-            type: "archive",
-            onClick: (row) => handleArchive(row.id),
-          },
-          {
-            type: "delete",
-            onClick: (row) => handleDelete(row.id),
-          },
-        ]}
-        emptyState={{
-          title: "No active workers found",
-          subtitle: "Try adjusting the filters above or check back later.",
-        }}
-        pagination={{
-          page,
-          limit,
-          total: totalItems,
-          onPageChange: setPage,
-        }}
-      />
+        </div>
+      </div>
     </div>
   );
 };

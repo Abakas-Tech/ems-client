@@ -155,7 +155,7 @@ function WorkersRegistration() {
         <div className="col-lg-12 col-md-12">
           <BackButton onClick={goBack} />
           <form className="form-submit" onSubmit={handleSubmit}>
-            <h4>Worker Registration</h4>
+            <h2>Worker Registration</h2>
             <div className="submit-section">
               <div className="row">
                 <div className="form-group col-md-6">

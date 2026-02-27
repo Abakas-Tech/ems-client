@@ -7,6 +7,7 @@ import ListingComponent from "../../../../../shared/components/ListingComponent/
 
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 const WorkersModules = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const WorkersModules = () => {
     } finally {
       hideLoader();
     }
-  }, [filters, page, limit]); 
+  }, [filters, page, limit]);
 
   // Initial fetch + refetch on change
   useEffect(() => {
@@ -62,35 +63,50 @@ const WorkersModules = () => {
     navigate(`/admin/workers/modules/${id}/add`);
   };
 
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  };
+
   return (
-    <ListingComponent
-      filtersComponent={
-        <ActiveWorkersFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onClear={handleClear}
-        />
-      }
-      data={workers}
-      columns={[
-        { header: "Name", accessor: "full_name" },
-        { header: "Phone Number", accessor: "phone_number" },
-        { header: "Status", accessor: "status" },
-      ]}
-      actions={[
-        { type: "addModule", onClick: (row) => handleAddModule(row.id) },
-      ]}
-      emptyState={{
-        title: "No active workers found",
-        subtitle: "Try adjusting the filters above or check back later.",
-      }}
-      pagination={{
-        page,
-        limit,
-        total: totalItems,
-        onPageChange: setPage,
-      }}
-    />
+    <div className="dashboard-wrapper">
+      <BackButton onClick={goBack} />
+      <div className="mb-4">
+        <h2 className="fw-bold text-dark mb-1">Add Worker Modules</h2>
+        <p className="text-muted mb-0">
+          View the list of workers and assign or manage modules for each
+          profile.
+        </p>
+      </div>
+      <ListingComponent
+        filtersComponent={
+          <ActiveWorkersFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClear={handleClear}
+          />
+        }
+        data={workers}
+        columns={[
+          { header: "Name", accessor: "full_name" },
+          { header: "Phone Number", accessor: "phone_number" },
+          { header: "Status", accessor: "status" },
+        ]}
+        actions={[
+          { type: "addModule", onClick: (row) => handleAddModule(row.id) },
+        ]}
+        emptyState={{
+          title: "No active workers found",
+          subtitle: "Try adjusting the filters above or check back later.",
+        }}
+        pagination={{
+          page,
+          limit,
+          total: totalItems,
+          onPageChange: setPage,
+        }}
+      />
+    </div>
   );
 };
 
