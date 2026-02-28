@@ -2,7 +2,7 @@ import React from "react";
 import { FaUserPlus, FaUsers, FaUserSlash, FaFolderPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-function WorkersDashboard() {
+function WorkerDashboard() {
   return (
     <section className=" dashboard-wraper">
       <div className="mb-4">
@@ -76,4 +76,4 @@ function WorkersDashboard() {
   );
 }
 
-export default WorkersDashboard;
+export default WorkerDashboard;

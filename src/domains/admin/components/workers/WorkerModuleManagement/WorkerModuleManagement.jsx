@@ -2,14 +2,14 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { listWorkers } from "../../../api/worker.api";
 
-import ActiveWorkersFilters from "../WorkersFilter/WorkersFilter";
+import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
-const WorkersModules = () => {
+const WorkerModuleManagement = () => {
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -69,14 +69,16 @@ const WorkersModules = () => {
   };
 
   return (
-    <div className="dashboard-wrapper">
-      <BackButton onClick={goBack} />
-      <div className="mb-4">
-        <h2 className="fw-bold text-dark mb-1">Add Worker Modules</h2>
-        <p className="text-muted mb-0">
-          View the list of workers and assign or manage modules for each
-          profile.
-        </p>
+    <div className="dashboard-wraper">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div className="mb-4">
+          <BackButton onClick={goBack} />
+          <h2 className="fw-bold text-dark mb-2">Add Worker Modules</h2>
+          <p className="text-muted mb-0">
+            View the list of workers and assign or manage modules for each
+            profile.
+          </p>
+        </div>
       </div>
       <ListingComponent
         filtersComponent={
@@ -110,4 +112,4 @@ const WorkersModules = () => {
   );
 };
 
-export default WorkersModules;
+export default WorkerModuleManagement;

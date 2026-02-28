@@ -3,13 +3,14 @@ import { Route, Routes } from "react-router-dom";
 import Files from "../domains/admin/pages/FileManager/FileManager.jsx";
 import Finances from "../domains/admin/pages/FinancePage/FinancePage.jsx";
 import Analytics from "../domains/admin/pages/AnalyticsPage/AnalyticsPage.jsx";
-import WorkersDashboard from "../domains/admin/pages/workers/WorkersDashboard/WorkersDashboard.jsx";
-import WorkersRegistration from "../domains/admin/pages/workers/WorkersRegistration/WorkersRegistration.jsx";
+import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/WorkerDashboard.jsx";
+import WorkerRegistration from "../domains/admin/pages/workers/WorkerRegistration/WorkerRegistration.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import ArchivedWorkers from "../domains/admin/pages/workers/ArchivedWorkers/ArchivedWorkers.jsx";
-import WorkersModules from "../domains/admin/pages/workers/WorkersModules/WorkersModules.jsx";
-import ModuleLists from "../domains/admin/pages/workers/ModuleLists/ModuleLists.jsx";
-import WorkersPesonalInfo from "../domains/admin/pages/workers/WorkersModules/WorkersPersonalInfo/WorkersPesonalInfo.jsx";
+// import WorkerModules from "../domains/admin/pages/workers/ModulesList/ModulesList.jsx";
+// import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/WorkerDashboard.jsx";
+import ModulesList from "../domains/admin/pages/workers/ModulesList/ModulesList.jsx";
+import WorkerPesonalInfo from "../domains/admin/pages/workers/WorkerModules/WorkerPersonalInfo/WorkerPesonalInfo.jsx";
 
 import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import NotFound from "../shared/components/NotFound/NotFound.jsx";
@@ -19,6 +20,7 @@ import CreateUser from "./../domains/admin/pages/user/CreateUser/CreateUser";
 import ListUser from "./../domains/admin/pages/user/ListUser/ListUser";
 import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
 import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
+import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
 
 const AdminRoutes = () => (
   <Routes>
@@ -37,15 +39,15 @@ const AdminRoutes = () => (
       <Route path="my-files" element={<Files />} />
       <Route path="finances" element={<Finances />} />
       <Route path="*" element={<NotFound />} />
-      <Route path="/workers" element={<WorkersDashboard />} />
-      <Route path="/workers/add" element={<WorkersRegistration />} />
+      <Route path="/workers" element={<WorkerDashboard />} />
+      <Route path="/workers/add" element={<WorkerRegistration />} />
       <Route path="/workers/active" element={<ActiveWorkers />} />
       <Route path="/workers/archived" element={<ArchivedWorkers />} />
-      <Route path="workers/modules" element={<WorkersModules />} />
-      <Route path="/workers/modules/:id/add" element={<ModuleLists />} />
+      <Route path="workers/modules" element={<WorkerModuleManagement />} />
+      <Route path="/workers/modules/:id/add" element={<ModulesList />} />
       <Route
         path="/workers/modules/:id/personal"
-        element={<WorkersPesonalInfo />}
+        element={<WorkerPesonalInfo />}
       />
 
       <Route path="/meta-data" element={<MetaDataDashboard />} />

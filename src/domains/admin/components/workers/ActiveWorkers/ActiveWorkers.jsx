@@ -6,7 +6,7 @@ import {
   deleteWorker,
 } from "../../../api/worker.api";
 
-import ActiveWorkersFilters from "../WorkersFilter/WorkersFilter";
+import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
@@ -123,59 +123,57 @@ const ActiveWorkers = () => {
   };
 
   return (
-    <div className="dashboard-wrapper">
-      <div className="row">
-        <div className="col-lg-12 col-md-12">
+    <div className="dashboard-wraper">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div className="mb-4">
           <BackButton onClick={goBack} />
-          <div className="mb-4 container">
-            <h2 className="fw-bold text-dark mb-1">Active Workers</h2>
-            <p className="text-muted mb-0">
-              View and manage active workers, access detailed profiles, archive
-              records, or remove workers when needed.
-            </p>
-          </div>
-
-          <ListingComponent
-            filtersComponent={
-              <ActiveWorkersFilters
-                filters={filters}
-                onFilterChange={handleFilterChange}
-                onClear={handleClear}
-              />
-            }
-            data={workers}
-            columns={[
-              { header: "Name", accessor: "full_name" },
-              { header: "Phone Number", accessor: "phone_number" },
-              { header: "Status", accessor: "status" },
-            ]}
-            actions={[
-              {
-                type: "view",
-                onClick: (row) => handleView(row.id),
-              },
-              {
-                type: "archive",
-                onClick: (row) => handleArchive(row.id),
-              },
-              {
-                type: "delete",
-                onClick: (row) => handleDelete(row.id),
-              },
-            ]}
-            emptyState={{
-              title: "No active workers found",
-              subtitle: "Try adjusting the filters above or check back later.",
-            }}
-            pagination={{
-              page,
-              limit,
-              total: totalItems,
-              onPageChange: setPage,
-            }}
-          />
+          <h2 className="fw-bold text-dark mb-2">Active Workers</h2>
+          <p className="text-muted mb-0">
+            View and manage active workers, access detailed profiles, archive
+            records, or remove workers when needed.
+          </p>
         </div>
       </div>
+
+      <ListingComponent
+        filtersComponent={
+          <ActiveWorkersFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClear={handleClear}
+          />
+        }
+        data={workers}
+        columns={[
+          { header: "Name", accessor: "full_name" },
+          { header: "Phone Number", accessor: "phone_number" },
+          { header: "Status", accessor: "status" },
+        ]}
+        actions={[
+          {
+            type: "view",
+            onClick: (row) => handleView(row.id),
+          },
+          {
+            type: "archive",
+            onClick: (row) => handleArchive(row.id),
+          },
+          {
+            type: "delete",
+            onClick: (row) => handleDelete(row.id),
+          },
+        ]}
+        emptyState={{
+          title: "No active workers found",
+          subtitle: "Try adjusting the filters above or check back later.",
+        }}
+        pagination={{
+          page,
+          limit,
+          total: totalItems,
+          onPageChange: setPage,
+        }}
+      />
     </div>
   );
 };

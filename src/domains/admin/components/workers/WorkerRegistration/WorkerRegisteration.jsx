@@ -7,7 +7,7 @@ import useResponse from "../../../../../context/response/UseResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import { RiArrowDropDownLine } from "react-icons/ri";
 
-function WorkersRegistration() {
+function WorkerRegistration() {
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -150,123 +150,125 @@ function WorkersRegistration() {
     }
   };
   return (
-    <section className="dashboard-wraper">
-      <div className="row">
-        <div className="col-lg-12 col-md-12">
+    <div className="dashboard-wraper">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div className="mb-4">
           <BackButton onClick={goBack} />
-          <form className="form-submit" onSubmit={handleSubmit}>
-            <h2>Worker Registration</h2>
-            <div className="submit-section">
-              <div className="row">
-                <div className="form-group col-md-6">
-                  <label>
-                    Full Name <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="full_name"
-                    className="form-control"
-                    value={formData.full_name}
-                    onChange={handleTextChange}
-                    required
-                  />
-                </div>
-
-                <div className="form-group col-md-6">
-                  <label>
-                    Phone Number <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone_number"
-                    className="form-control"
-                    value={formData.phone_number}
-                    onChange={handleTextChange}
-                    required
-                  />
-                </div>
-
-                <div className="form-group col-md-6">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    className="form-control"
-                    value={formData.email}
-                    onChange={handleTextChange}
-                  />
-                </div>
-
-                <div className="form-group col-md-6">
-                  <label>
-                    Sex <span className="text-danger">*</span>
-                  </label>
-                  <select
-                    name="personal_sex"
-                    className="form-control"
-                    value={formData.personal_information.sex}
-                    onChange={handleTextChange}
-                    required
-                  >
-                    <option value="">Select sex</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
-                </div>
-
-                <div className="form-group col-md-6">
-                  <label>
-                    Worker Status <span className="text-danger">*</span>
-                  </label>
-
-                  {statuses === null ? (
-                    <div className="form-control text-muted">
-                      Loading statuses...
-                    </div>
-                  ) : statusesError ? (
-                    <div className="form-control text-danger">
-                      {statusesError}
-                    </div>
-                  ) : statuses.length === 0 ? (
-                    <div className="form-control text-muted">
-                      No statuses available
-                    </div>
-                  ) : (
-                    <select
-                      name="personal_status_id"
-                      className="form-control"
-                      value={formData.personal_information.status_id}
-                      onChange={handleTextChange}
-                      required
-                    >
-                      <option value="">Select status</option>
-                      {statuses.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.name}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="submit-section">
-              <div className="form-group col-lg-12 col-md-12 mt-4">
-                <button
-                  className="btn btn-main px-5 rounded"
-                  type="submit"
-                  disabled={submitLoading}
-                >
-                  Register Worker
-                </button>
-              </div>
-            </div>
-          </form>
+          <h2 className="fw-bold text-dark mb-2">Add Worker</h2>
+          <p className="text-muted mb-0">
+            Register a new worker by providing their full name, phone number,
+            email, sex, and personal status
+          </p>
         </div>
       </div>
-    </section>
+      <form className="form-submit" onSubmit={handleSubmit}>
+        <div className="submit-section">
+          <div className="row">
+            <div className="form-group col-md-6">
+              <label>
+                Full Name <span className="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                name="full_name"
+                className="form-control"
+                value={formData.full_name}
+                onChange={handleTextChange}
+                required
+              />
+            </div>
+
+            <div className="form-group col-md-6">
+              <label>
+                Phone Number <span className="text-danger">*</span>
+              </label>
+              <input
+                type="tel"
+                name="phone_number"
+                className="form-control"
+                value={formData.phone_number}
+                onChange={handleTextChange}
+                required
+              />
+            </div>
+
+            <div className="form-group col-md-6">
+              <label>Email</label>
+              <input
+                type="email"
+                name="email"
+                className="form-control"
+                value={formData.email}
+                onChange={handleTextChange}
+              />
+            </div>
+
+            <div className="form-group col-md-6">
+              <label>
+                Sex <span className="text-danger">*</span>
+              </label>
+              <select
+                name="personal_sex"
+                className="form-control"
+                value={formData.personal_information.sex}
+                onChange={handleTextChange}
+                required
+              >
+                <option value="">Select sex</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+
+            <div className="form-group col-md-6">
+              <label>
+                Worker Status <span className="text-danger">*</span>
+              </label>
+
+              {statuses === null ? (
+                <div className="form-control text-muted">
+                  Loading statuses...
+                </div>
+              ) : statusesError ? (
+                <div className="form-control text-danger">{statusesError}</div>
+              ) : statuses.length === 0 ? (
+                <div className="form-control text-muted">
+                  No statuses available
+                </div>
+              ) : (
+                <select
+                  name="personal_status_id"
+                  className="form-control"
+                  value={formData.personal_information.status_id}
+                  onChange={handleTextChange}
+                  required
+                >
+                  <option value="">Select status</option>
+                  {statuses.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="submit-section">
+          <div className="form-group col-lg-12 col-md-12 mt-4">
+            <button
+              className="btn btn-main px-5 rounded"
+              type="submit"
+              disabled={submitLoading}
+            >
+              Register Worker
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 }
 
-export default WorkersRegistration;
+export default WorkerRegistration;

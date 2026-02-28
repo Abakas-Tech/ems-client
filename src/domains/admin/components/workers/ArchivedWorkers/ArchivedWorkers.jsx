@@ -7,7 +7,7 @@ import {
   getArchivedWorkerProfile,
 } from "../../../api/worker.api";
 
-import ActiveWorkersFilters from "../WorkersFilter/WorkersFilter";
+import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
 import useLoader from "../../../../../context/Loader/useLoader";
@@ -123,14 +123,16 @@ const ArchivedWorkers = () => {
   };
 
   return (
-    <div className="dashboard-wrapper">
-      <BackButton onClick={goBack} />
-      <div className="mb-4">
-        <h2 className="fw-bold text-dark mb-1">Archived Workers</h2>
-        <p className="text-muted mb-0">
-          Browse archived workers, view detailed profiles, restore records, or
-          permanently delete them.
-        </p>
+    <div className="dashboard-wraper">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div className="mb-4">
+          <BackButton onClick={goBack} />
+          <h2 className="fw-bold text-dark mb-2">Archived Workers</h2>
+          <p className="text-muted mb-0">
+            Browse archived workers, view detailed profiles, restore records, or
+            permanently delete them.
+          </p>
+        </div>
       </div>
       <ListingComponent
         filtersComponent={
@@ -163,6 +165,6 @@ const ArchivedWorkers = () => {
       />
     </div>
   );
-};;
+};
 
 export default ArchivedWorkers;

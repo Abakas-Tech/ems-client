@@ -6,7 +6,7 @@ import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 
-function WorkersPersonalInfo() {
+function WorkerPersonalInfo() {
   const Navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -340,7 +340,9 @@ function WorkersPersonalInfo() {
         <div className="col-lg-12 col-md-12">
           <BackButton onClick={goBack} />
           <form className="form-submit" onSubmit={handleSubmit}>
-            <h4>Worker Personal Information</h4>
+            <h2 className="fw-bold text-dark mb-1">
+              Worker Personal Information
+            </h2>
             <div className="submit-section">
               <div className="row">
                 {/* Region */}
@@ -572,4 +574,4 @@ function WorkersPersonalInfo() {
   );
 }
 
-export default WorkersPersonalInfo;
+export default WorkerPersonalInfo;

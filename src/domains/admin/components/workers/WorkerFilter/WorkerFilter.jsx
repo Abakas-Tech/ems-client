@@ -4,10 +4,9 @@ import { getWorkerStatuses } from "../../../api/meta.api";
 import { getRegions } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
-import styles from "./WorkersFilter.module.css";
+import styles from "./WorkerFilter.module.css";
 
-
-const WorkersFilter = ({ filters, onFilterChange, onClear }) => {
+const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
@@ -117,4 +116,4 @@ const WorkersFilter = ({ filters, onFilterChange, onClear }) => {
   );
 };
 
-export default WorkersFilter;
+export default WorkerFilter;
