@@ -33,7 +33,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   };
 
   const roleName = roleMap[Number(profile?.role_id)] || "";
-  // ===== Format Name =====
+  //  Format Name 
   const fullName = profile?.full_name?.trim() || "";
   const nameParts = fullName.split(" ").filter(Boolean);
   const formattedName =
@@ -41,8 +41,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
       ? `${nameParts[0]} ${nameParts[1][0]}`
       : nameParts[0] || "";
 
-  // ===== Avatar Source =====
-  const avatarSrc = profile?.profile_photo_url || "https://placehold.co/88x88";
+
 
   const activePage =
     menuItems.find((item) => item.path === location.pathname)?.label || "";
@@ -77,8 +76,8 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
 
             <ProfileCell
               profile={{
-                profile_photo_url: profile?.profile_photo_url,
-                full_name: profile?.full_name,
+                firstName: profile?.full_name,
+                image: profile?.profile_photo_url,
               }}
             />
 
@@ -135,8 +134,8 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
             {/* Avatar */}
             <ProfileCell
               profile={{
-                profile_photo_url: profile?.profile_photo_url,
-                full_name: profile?.full_name,
+                firstName: profile?.full_name,
+                image: profile?.profile_photo_url,
               }}
             />
             <div className="text-start">
