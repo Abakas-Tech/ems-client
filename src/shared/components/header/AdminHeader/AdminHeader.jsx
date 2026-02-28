@@ -21,6 +21,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
 
   useEffect(() => {
     fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const roleMap = {
     1: "Admin",

@@ -92,4 +92,7 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-export { axiosInstance, setAccessToken };
+const hasAccessToken = () => {
+  return !!access_token;
+};
+export { axiosInstance, setAccessToken, hasAccessToken };

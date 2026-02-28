@@ -1,44 +1,52 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { hasAccessToken, setAccessToken } from "./axios";
 import { refreshTokenApi } from "../domains/admin/api/auth.api";
 
 const ProtectedRoute = ({ children }) => {
-  const navigate = useNavigate();
-  const [isAuthorized, setIsAuthorized] = useState(null);
-
-  // Helper: check if refresh token exists in cookies
-  const hasRefreshToken = () => {
-    return document.cookie.includes("refresh_token=");
-  };
+  const [checked, setChecked] = useState(false);
+  const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const restoreSession = async () => {
+      // If token already exists → allow immediately
+      if (hasAccessToken()) {
+        setIsAuth(true);
+        setChecked(true);
+        return;
+      }
+
       try {
-        // Only call refreshTokenApi if refresh token exists
-        if (!hasRefreshToken()) {
-          setIsAuthorized(false);
-          navigate("/auth/login", { replace: true });
-          return;
-        }
-
+        // Try to restore using refresh cookie
         const response = await refreshTokenApi();
-        const newAccessToken = response.data?.access_token;
-        if (!newAccessToken) throw new Error("No access token returned");
+        const newToken = response.data?.access_token;
 
-        // Optionally store in memory or context if needed
-        setIsAuthorized(true);
+        if (newToken) {
+          setAccessToken(newToken);
+          setIsAuth(true);
+        } else {
+          setIsAuth(false);
+        }
       } catch {
-        setIsAuthorized(false);
-        navigate("/auth/login", { replace: true });
+        setIsAuth(false);
+      } finally {
+        setChecked(true);
       }
     };
 
-    checkAuth();
-  }, [navigate]);
+    restoreSession();
+  }, []);
 
-  if (isAuthorized === null) return null; // or a loader
+  //  Wait until check finishes
+  if (!checked) return null; // or loader
 
-  return isAuthorized ? children : null;
+  //  Still not logged in
+  if (!isAuth) {
+    return <Navigate to="/auth/login" replace />;
+  }
+
+  //  Logged in
+  return children;
 };
 
 export default ProtectedRoute;

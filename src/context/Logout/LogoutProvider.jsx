@@ -22,7 +22,7 @@ const LogoutProvider = ({ children }) => {
       // Smooth transition
       setTimeout(() => {
         setUser(null);
-        navigate("/");
+        navigate("/auth/login");
       }, 50);
     } catch (error) {
       console.error("Logout failed:", error);
