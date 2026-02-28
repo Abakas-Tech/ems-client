@@ -67,7 +67,16 @@ const ListingComponent = ({
 
                   {actions && (
                     <td className="align-middle text-nowrap">
-                      <ActionButtons actions={actions} row={row} />
+                      <ActionButtons
+                        actions={actions?.filter((action) => {
+                          // If no condition → show always
+                          if (typeof action.showOn === "undefined") return true;
+
+                          // Match boolean status
+                          return action.showOn == row.is_active;
+                        })}
+                        row={row}
+                      />
                     </td>
                   )}
                 </tr>

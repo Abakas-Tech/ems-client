@@ -137,8 +137,8 @@ const ListUser = () => {
   const actions = [
     { type: "edit", onClick: handleEdit },
     { type: "delete", onClick: handleDelete },
-    { type: "archive", onClick: handleDelete },
-    { type: "restore", onClick: handleDelete },
+    { type: "archive", onClick: handleDelete , showOn: true },
+    { type: "restore", onClick: handleDelete ,showOn: false},
   ];
 
   const emptyState = {
