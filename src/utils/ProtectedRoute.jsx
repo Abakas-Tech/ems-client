@@ -2,16 +2,21 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { hasAccessToken, setAccessToken } from "./axios";
 import { refreshTokenApi } from "../domains/admin/api/auth.api";
+import useLoader from "./../context/Loader/useLoader";
 
 const ProtectedRoute = ({ children }) => {
   const [checking, setChecking] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
+  const { showLoader, hideLoader } = useLoader();
 
   useEffect(() => {
     const restoreToken = async () => {
+      showLoader(); //show global loader
+
       if (hasAccessToken()) {
         setIsAuth(true);
         setChecking(false);
+        hideLoader(); // stop loader
         return;
       }
 
@@ -29,15 +34,17 @@ const ProtectedRoute = ({ children }) => {
         setIsAuth(false);
       } finally {
         setChecking(false);
+        hideLoader(); // hide loader when done
       }
     };
 
     restoreToken();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (checking) return <div>Loading...</div>;
+  // No UI loader now — global loader handles it
+  if (checking) return null;
 
-  // Redirect if not authenticated
   if (!isAuth) return <Navigate to="/auth/login" replace />;
 
   return children;
