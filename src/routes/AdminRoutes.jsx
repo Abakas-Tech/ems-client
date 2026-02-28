@@ -18,6 +18,7 @@ import Profile from "../domains/admin/pages/Profile/Profile.jsx";
 import CreateUser from "./../domains/admin/pages/user/CreateUser/CreateUser";
 import ListUser from "./../domains/admin/pages/user/ListUser/ListUser";
 import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
+import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
 
 const AdminRoutes = () => (
   <Routes>
@@ -46,6 +47,8 @@ const AdminRoutes = () => (
         path="/workers/modules/:id/personal"
         element={<WorkersPesonalInfo />}
       />
+
+      <Route path="/meta-data" element={<MetaDataDashboard />} />
     </Route>
   </Routes>
 );

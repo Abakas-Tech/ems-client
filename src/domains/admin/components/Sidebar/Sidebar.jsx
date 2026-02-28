@@ -28,6 +28,7 @@ const menuItems = [
     icon: "bi bi-wallet",
   },
   { label: "Files", path: "/admin/my-files", icon: "bi bi-files" },
+  { label: "Meta Data", path: "/admin/meta-data", icon: "bi bi-database-add" },
   { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
   { label: "Log Out", path: "#", icon: "bi bi-power", isLogout: true },
 ];
