@@ -9,6 +9,11 @@ import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterUser from "./../../../components/user/FilterUser/FilterUser";
 
 const ROLE_MAP = { 2: "Employee", 3: "Partner", 5: "Employer" };
+const ROLE_COLOR = {
+  2: "text-success", // Employee
+  3: "text-primary", // Partner
+  5: "text-warning", // Employer 
+};
 
 const ListUser = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -158,7 +163,11 @@ const ListUser = () => {
     {
       header: "Role",
       accessor: "role_id",
-      render: (row) => ROLE_MAP[row.role_id] || row.role_name || "—",
+      render: (row) => {
+        const roleName = ROLE_MAP[row.role_id] || row.role_name || "—";
+        const roleClass = ROLE_COLOR[row.role_id] || "text-muted";
+        return <span className={`badge border fw-semibold ${roleClass}`}>{roleName}</span>;
+      },
     },
   ];
 
