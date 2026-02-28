@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
-import { getUsers, deleteUser } from "../../../api/user.api";
+import { getUsers, deleteUser, updateUser } from "../../../api/user.api";
 import { getPermission } from "../../../api/permission.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -92,7 +92,35 @@ const ListUser = () => {
       }
     });
   };
+  const handleStatusToggle = (row) => {
+    const action = row.is_active ? "archive" : "restore";
+    const defaultTitle = `Are you sure you want to ${action}  this user?`;
+    const defaultConfirmText = `Yes, ${action.charAt(0).toUpperCase() + action.slice(1)}`;
 
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await updateUser(row.id, {
+            is_active: row.is_active ? 0 : 1,
+          });
+
+          addMessage(response?.success, response?.message);
+
+          // Refresh current page after update
+          fetchUsers(pagination.page);
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: defaultTitle,
+        confirmText: defaultConfirmText,
+      },
+    );
+  };
   const handleEdit = async (row) => {
     showLoader();
     try {
@@ -137,8 +165,8 @@ const ListUser = () => {
   const actions = [
     { type: "edit", onClick: handleEdit },
     { type: "delete", onClick: handleDelete },
-    { type: "archive", onClick: handleDelete , showOn: true },
-    { type: "restore", onClick: handleDelete ,showOn: false},
+    { type: "archive", onClick: handleStatusToggle, showOn: true },
+    { type: "restore", onClick: handleStatusToggle, showOn: false },
   ];
 
   const emptyState = {
