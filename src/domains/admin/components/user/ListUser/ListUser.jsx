@@ -164,9 +164,9 @@ const ListUser = () => {
 
   const actions = [
     { type: "edit", onClick: handleEdit },
-    { type: "delete", onClick: handleDelete },
     { type: "archive", onClick: handleStatusToggle, showOn: true },
     { type: "restore", onClick: handleStatusToggle, showOn: false },
+    { type: "delete", onClick: handleDelete },
   ];
 
   const emptyState = {
