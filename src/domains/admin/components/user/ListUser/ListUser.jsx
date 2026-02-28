@@ -199,6 +199,7 @@ const ListUser = () => {
         columns={columns}
         actions={actions}
         emptyState={emptyState}
+        showAvater={true}
         filtersComponent={
           <FilterUser
             filters={filters}

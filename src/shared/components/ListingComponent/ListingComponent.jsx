@@ -9,6 +9,7 @@ const ListingComponent = ({
   filtersComponent,
   emptyState,
   pagination,
+  showAvater = false,
 }) => {
   return (
     <div className="container">
@@ -33,8 +34,8 @@ const ListingComponent = ({
           >
             <thead className="table-light">
               <tr>
-                {/* First column is profile, no header */}
-                <th className="p-0" />
+                {/* Only render first column if showAvater is true */}
+                {showAvater && <th className="p-0" />}
 
                 {columns.map((col) => (
                   <th key={col.header}>{col.header}</th>
@@ -48,14 +49,16 @@ const ListingComponent = ({
               {data.map((row) => (
                 <tr key={row.id}>
                   {/* Profile Cell as first column */}
-                  <td className="p-0 align-middle">
-                    <ProfileCell
-                      profile={{
-                        firstName: row.full_name || "?",
-                        image: row.profile_photo_url || "",
-                      }}
-                    />
-                  </td>
+                  {showAvater && (
+                    <td className="p-0 align-middle">
+                      <ProfileCell
+                        profile={{
+                          firstName: row.full_name || "?",
+                          image: row.profile_photo_url || "",
+                        }}
+                      />
+                    </td>
+                  )}
 
                   {columns.map((col, index) => (
                     <td key={index} className="align-middle text-nowrap">
