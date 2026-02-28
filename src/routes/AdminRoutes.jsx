@@ -25,7 +25,7 @@ const AdminRoutes = () => (
       element={
         // <ProtectedRoute>
         <AdminLayout />
-        //  </ProtectedRoute>
+        // </ProtectedRoute>
       }
     >
       <Route path="settings" element={<ChangePasswordPage />} />
