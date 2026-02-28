@@ -122,41 +122,55 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   };
 
   const validateFields = () => {
-    if (requiredFields.full_name && !fullName) {
-      addMessage(false, "Full name is required.");
+    // Full Name: letters only, min 2, max 50
+    if (fullName && !/^[A-Za-z\s]+$/.test(fullName)) {
+      addMessage(false, "Full name can contain letters only.");
       return false;
     }
-    if (requiredFields.email && !email) {
-      addMessage(false, "Email is required.");
+    if (fullName && (fullName.length < 2 || fullName.length > 50)) {
+      addMessage(false, "Full name must be between 2 and 50 characters.");
       return false;
     }
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (requiredFields.email && !emailPattern.test(email)) {
+
+    // Email: basic pattern
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       addMessage(false, "Please enter a valid email address.");
       return false;
     }
-    if (requiredFields.phone_number && !phoneNumber) {
-      addMessage(false, "Phone number is required.");
+
+    // Phone number: digits only, length 7–15
+    if (phoneNumber && !/^\d+$/.test(phoneNumber)) {
+      addMessage(false, "Phone number can contain digits only.");
       return false;
     }
-    if (requiredFields.role && !role) {
-      addMessage(false, "Role is required.");
+    if (phoneNumber && (phoneNumber.length < 7 || phoneNumber.length > 15)) {
+      addMessage(false, "Phone number must be between 7 and 15 digits.");
       return false;
     }
-    if (requiredFields.country && !country) {
-      addMessage(false, "Country is required.");
+
+    // National ID: letters and digits only, length 5–15
+    if (nationalId && !/^[A-Za-z0-9]+$/.test(nationalId)) {
+      addMessage(false, "National ID can contain letters and digits only.");
       return false;
     }
-    if (requiredFields.national_id && !nationalId) {
-      addMessage(false, "National ID is required for employer.");
+    if (nationalId && (nationalId.length < 5 || nationalId.length > 15)) {
+      addMessage(false, "National ID must be between 5 and 15 characters.");
       return false;
     }
-    if (requiredFields.city && !city) {
-      addMessage(false, "City is required for employer.");
+
+    // City: letters only, max length 50
+    if (city && !/^[A-Za-z\s]+$/.test(city)) {
+      addMessage(false, "City can contain letters only.");
       return false;
     }
-    if (requiredFields.address && !address) {
-      addMessage(false, "Address is required for employer.");
+    if (city && city.length > 50) {
+      addMessage(false, "City cannot exceed 50 characters.");
+      return false;
+    }
+
+    // Address: max length 100
+    if (address && address.length > 100) {
+      addMessage(false, "Address cannot exceed 100 characters.");
       return false;
     }
     if (role === "2" && selectedPermissions.length === 0) {
@@ -274,41 +288,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   onChange={(e) => setFullName(e.target.value)}
                 />
               </div>
-
-              {/* Email */}
-              <div className="form-group col-md-6 mb-3">
-                <label>
-                  Email{" "}
-                  {requiredFields.email && (
-                    <span className="text-danger">*</span>
-                  )}
-                </label>
-                <input
-                  type="email"
-                  className="form-control"
-                  value={email}
-                  required={requiredFields.email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-
-              {/* Phone */}
-              <div className="form-group col-md-6 mb-3">
-                <label>
-                  Phone Number{" "}
-                  {requiredFields.phone_number && (
-                    <span className="text-danger">*</span>
-                  )}
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={phoneNumber}
-                  required={requiredFields.phone_number}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
-                />
-              </div>
-
               {/* Role */}
               <div className="form-group col-md-6 mb-3">
                 <label>
@@ -329,6 +308,39 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   <option value="3">Partner</option>
                   <option value="5">Employer</option>
                 </select>
+              </div>
+
+              {/* Phone */}
+              <div className="form-group col-md-6 mb-3">
+                <label>
+                  Phone Number{" "}
+                  {requiredFields.phone_number && (
+                    <span className="text-danger">*</span>
+                  )}
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={phoneNumber}
+                  required={requiredFields.phone_number}
+                  onChange={(e) => handlePhoneChange(e.target.value)}
+                />
+              </div>
+              {/* Email */}
+              <div className="form-group col-md-6 mb-3">
+                <label>
+                  Email{" "}
+                  {role && requiredFields.email && role !== "5" && (
+                    <span className="text-danger">*</span>
+                  )}
+                </label>
+                <input
+                  type="email"
+                  className="form-control"
+                  value={email}
+                  required={requiredFields.email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
 
               {/* Status (Edit Mode Only) */}

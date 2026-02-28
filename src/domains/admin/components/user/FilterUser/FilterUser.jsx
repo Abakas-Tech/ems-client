@@ -43,7 +43,6 @@ const FilterUser = ({ filters, onFilterChange, onClear }) => {
               value={filters.is_active || ""}
               onChange={onFilterChange}
             >
-              <option value="">All Status</option>
               <option value="true">Active</option>
               <option value="false">Inactive</option>
             </select>

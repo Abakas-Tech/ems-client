@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import useProfile from "../../../../context/Profile/useProfile";
 import { FaBars } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
+import ProfileCell from "../../ProfileCell/ProfileCell";
 
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard" },
@@ -21,6 +22,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
 
   useEffect(() => {
     fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const roleMap = {
     1: "Admin",
@@ -31,7 +33,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   };
 
   const roleName = roleMap[Number(profile?.role_id)] || "";
-  // ===== Format Name =====
+  //  Format Name 
   const fullName = profile?.full_name?.trim() || "";
   const nameParts = fullName.split(" ").filter(Boolean);
   const formattedName =
@@ -39,8 +41,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
       ? `${nameParts[0]} ${nameParts[1][0]}`
       : nameParts[0] || "";
 
-  // ===== Avatar Source =====
-  const avatarSrc = profile?.profile_photo_url || "https://placehold.co/88x88";
+
 
   const activePage =
     menuItems.find((item) => item.path === location.pathname)?.label || "";
@@ -73,11 +74,11 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
               </div>
             </div>
 
-            <img
-              src={avatarSrc}
-              alt="User"
-              className="rounded-circle border object-fit-cover"
-              style={{ width: "2.25rem", height: "2.25rem" }}
+            <ProfileCell
+              profile={{
+                firstName: profile?.full_name,
+                image: profile?.profile_photo_url,
+              }}
             />
 
             <button
@@ -131,13 +132,10 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
             {/* User Info */}
 
             {/* Avatar */}
-            <img
-              src={avatarSrc}
-              alt="User"
-              className="rounded-circle border object-fit-cover shadow-sm"
-              style={{
-                width: "2.75rem",
-                height: "2.75rem",
+            <ProfileCell
+              profile={{
+                firstName: profile?.full_name,
+                image: profile?.profile_photo_url,
               }}
             />
             <div className="text-start">

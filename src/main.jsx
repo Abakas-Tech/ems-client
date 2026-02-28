@@ -10,9 +10,8 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 import LoaderProvider from "./context/Loader/LoaderProvider";
-import LogoutProvider from "./context/logout/LogoutProvider.jsx";
+import LogoutProvider from "./context/Logout/LogoutProvider.jsx";
 import ResponseProvider from "./context/response/ResponseProvider.jsx";
-import { AuthProvider } from "./context/auth/authProvider.jsx";
 import ConfirmDeleteProvider from "./context/Delete/DeleteProvider";
 import ProfileProvider from "./context/Profile/ProfileProvider.jsx";
 import DemoInfoProvider from "./context/Demo/DemoInfoProvider";
@@ -22,7 +21,6 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <DemoInfoProvider>
         <LogoutProvider>
-          {/* <AuthProvider> */}
             <LoaderProvider>
               <ResponseProvider>
                 <ProfileProvider>
@@ -32,7 +30,6 @@ createRoot(document.getElementById("root")).render(
                 </ProfileProvider>
               </ResponseProvider>
             </LoaderProvider>
-          {/* </AuthProvider> */}
         </LogoutProvider>
       </DemoInfoProvider>
     </BrowserRouter>

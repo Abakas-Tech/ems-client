@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
-import { getUsers, deleteUser } from "../../../api/user.api";
+import { getUsers, deleteUser, updateUser } from "../../../api/user.api";
 import { getPermission } from "../../../api/permission.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -9,6 +9,11 @@ import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterUser from "./../../../components/user/FilterUser/FilterUser";
 
 const ROLE_MAP = { 2: "Employee", 3: "Partner", 5: "Employer" };
+const ROLE_COLOR = {
+  2: "text-success", // Employee
+  3: "text-primary", // Partner
+  5: "text-warning", // Employer 
+};
 
 const ListUser = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -92,7 +97,35 @@ const ListUser = () => {
       }
     });
   };
+  const handleStatusToggle = (row) => {
+    const action = row.is_active ? "archive" : "restore";
+    const defaultTitle = `Are you sure you want to ${action}  this user?`;
+    const defaultConfirmText = `Yes, ${action.charAt(0).toUpperCase() + action.slice(1)}`;
 
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await updateUser(row.id, {
+            is_active: row.is_active ? 0 : 1,
+          });
+
+          addMessage(response?.success, response?.message);
+
+          // Refresh current page after update
+          fetchUsers(pagination.page);
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: defaultTitle,
+        confirmText: defaultConfirmText,
+      },
+    );
+  };
   const handleEdit = async (row) => {
     showLoader();
     try {
@@ -123,20 +156,25 @@ const ListUser = () => {
     },
     { header: "Email", accessor: "email" },
     {
-      header: "Role",
-      accessor: "role_id",
-      render: (row) => ROLE_MAP[row.role_id] || row.role_name || "—",
+      header: "Phone",
+      accessor: "phone",
+      render: (row) => row.phone_number || "—",
     },
     {
-      header: "Created",
-      accessor: "created_at",
-      render: (row) =>
-        row.created_at ? new Date(row.created_at).toLocaleDateString() : "—",
+      header: "Role",
+      accessor: "role_id",
+      render: (row) => {
+        const roleName = ROLE_MAP[row.role_id] || row.role_name || "—";
+        const roleClass = ROLE_COLOR[row.role_id] || "text-muted";
+        return <span className={`badge border fw-semibold ${roleClass}`}>{roleName}</span>;
+      },
     },
   ];
 
   const actions = [
     { type: "edit", onClick: handleEdit },
+    { type: "archive", onClick: handleStatusToggle, showOn: true },
+    { type: "restore", onClick: handleStatusToggle, showOn: false },
     { type: "delete", onClick: handleDelete },
   ];
 
@@ -170,6 +208,7 @@ const ListUser = () => {
         columns={columns}
         actions={actions}
         emptyState={emptyState}
+        showAvater={true}
         filtersComponent={
           <FilterUser
             filters={filters}

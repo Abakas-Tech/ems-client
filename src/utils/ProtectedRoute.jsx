@@ -1,44 +1,53 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { hasAccessToken, setAccessToken } from "./axios";
 import { refreshTokenApi } from "../domains/admin/api/auth.api";
+import useLoader from "./../context/Loader/useLoader";
 
 const ProtectedRoute = ({ children }) => {
-  const navigate = useNavigate();
-  const [isAuthorized, setIsAuthorized] = useState(null);
-
-  // Helper: check if refresh token exists in cookies
-  const hasRefreshToken = () => {
-    return document.cookie.includes("refresh_token=");
-  };
+  const [checking, setChecking] = useState(true);
+  const [isAuth, setIsAuth] = useState(false);
+  const { showLoader, hideLoader } = useLoader();
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const restoreToken = async () => {
+      showLoader(); //show global loader
+
+      if (hasAccessToken()) {
+        setIsAuth(true);
+        setChecking(false);
+        hideLoader(); // stop loader
+        return;
+      }
+
       try {
-        // Only call refreshTokenApi if refresh token exists
-        if (!hasRefreshToken()) {
-          setIsAuthorized(false);
-          navigate("/auth/login", { replace: true });
-          return;
-        }
-
         const response = await refreshTokenApi();
-        const newAccessToken = response.data?.access_token;
-        if (!newAccessToken) throw new Error("No access token returned");
+        const token = response.data?.access_token;
 
-        // Optionally store in memory or context if needed
-        setIsAuthorized(true);
+        if (token) {
+          setAccessToken(token);
+          setIsAuth(true);
+        } else {
+          setIsAuth(false);
+        }
       } catch {
-        setIsAuthorized(false);
-        navigate("/auth/login", { replace: true });
+        setIsAuth(false);
+      } finally {
+        setChecking(false);
+        hideLoader(); // hide loader when done
       }
     };
 
-    checkAuth();
-  }, [navigate]);
+    restoreToken();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  if (isAuthorized === null) return null; // or a loader
+  // No UI loader now — global loader handles it
+  if (checking) return null;
 
-  return isAuthorized ? children : null;
+  if (!isAuth) return <Navigate to="/auth/login" replace />;
+
+  return children;
 };
 
 export default ProtectedRoute;

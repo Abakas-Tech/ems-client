@@ -5,10 +5,10 @@ import "react-modern-drawer/dist/index.css";
 import { FaBars } from "react-icons/fa";
 
 // import logo from "../../../assets/img/logo.svg";
-import useAuth from "../../../../context/Auth/useAuth";
+import useProfile from "../../../../context/Profile/useProfile";
 
 const MainHeader = () => {
-  const { user } = useAuth();
+  const { profile} = useProfile();
   const [isOpen, setIsOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -144,15 +144,15 @@ const MainHeader = () => {
 
                 <li className="nav-menu-social add-listing">
                   <Link
-                    to={user ? "/admin/dashboard" : "/auth/login"}
+                    to={profile ? "/admin/dashboard" : "/auth/login"}
                     className={
                       location.pathname ===
-                      (user ? "/admin/dashboard" : "/auth/login")
+                      (profile ? "/admin/dashboard" : "/auth/login")
                         ? "active"
                         : ""
                     }
                   >
-                    {user ? "Dashboard" : "Sign In"}
+                    {profile ? "Dashboard" : "Sign In"}
                   </Link>
                 </li>
               </ul>
@@ -223,16 +223,16 @@ const MainHeader = () => {
                   </li>
                   <li>
                     <Link
-                      to={user ? "/admin/dashboard" : "/auth/login"}
+                      to={profile ? "/admin/dashboard" : "/auth/login"}
                       className={
                         location.pathname ===
-                        (user ? "/admin/dashboard" : "/auth/login")
+                        (profile ? "/admin/dashboard" : "/auth/login")
                           ? "active"
                           : ""
                       }
                       onClick={toggleMenu}
                     >
-                      {user ? "Dashboard" : "Sign In"}
+                      {profile ? "Dashboard" : "Sign In"}
                     </Link>
                   </li>
                 </ul>
