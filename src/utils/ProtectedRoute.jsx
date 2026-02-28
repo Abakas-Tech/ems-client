@@ -4,25 +4,23 @@ import { hasAccessToken, setAccessToken } from "./axios";
 import { refreshTokenApi } from "../domains/admin/api/auth.api";
 
 const ProtectedRoute = ({ children }) => {
-  const [checked, setChecked] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
-    const restoreSession = async () => {
-      // If token already exists → allow immediately
+    const restoreToken = async () => {
       if (hasAccessToken()) {
         setIsAuth(true);
-        setChecked(true);
+        setChecking(false);
         return;
       }
 
       try {
-        // Try to restore using refresh cookie
         const response = await refreshTokenApi();
-        const newToken = response.data?.access_token;
+        const token = response.data?.access_token;
 
-        if (newToken) {
-          setAccessToken(newToken);
+        if (token) {
+          setAccessToken(token);
           setIsAuth(true);
         } else {
           setIsAuth(false);
@@ -30,22 +28,18 @@ const ProtectedRoute = ({ children }) => {
       } catch {
         setIsAuth(false);
       } finally {
-        setChecked(true);
+        setChecking(false);
       }
     };
 
-    restoreSession();
+    restoreToken();
   }, []);
 
-  //  Wait until check finishes
-  if (!checked) return null; // or loader
+  if (checking) return <div>Loading...</div>;
 
-  //  Still not logged in
-  if (!isAuth) {
-    return <Navigate to="/auth/login" replace />;
-  }
+  // Redirect if not authenticated
+  if (!isAuth) return <Navigate to="/auth/login" replace />;
 
-  //  Logged in
   return children;
 };
 

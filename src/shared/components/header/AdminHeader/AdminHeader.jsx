@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import useProfile from "../../../../context/Profile/useProfile";
 import { FaBars } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
+import ProfileCell from "../../ProfileCell/ProfileCell";
 
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard" },
@@ -74,11 +75,11 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
               </div>
             </div>
 
-            <img
-              src={avatarSrc}
-              alt="User"
-              className="rounded-circle border object-fit-cover"
-              style={{ width: "2.25rem", height: "2.25rem" }}
+            <ProfileCell
+              profile={{
+                profile_photo_url: profile?.profile_photo_url,
+                full_name: profile?.full_name,
+              }}
             />
 
             <button
@@ -132,13 +133,10 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
             {/* User Info */}
 
             {/* Avatar */}
-            <img
-              src={avatarSrc}
-              alt="User"
-              className="rounded-circle border object-fit-cover shadow-sm"
-              style={{
-                width: "2.75rem",
-                height: "2.75rem",
+            <ProfileCell
+              profile={{
+                profile_photo_url: profile?.profile_photo_url,
+                full_name: profile?.full_name,
               }}
             />
             <div className="text-start">

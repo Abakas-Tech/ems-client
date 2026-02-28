@@ -123,21 +123,22 @@ const ListUser = () => {
     },
     { header: "Email", accessor: "email" },
     {
+      header: "Phone",
+      accessor: "phone",
+      render: (row) => row.phone_number || "—",
+    },
+    {
       header: "Role",
       accessor: "role_id",
       render: (row) => ROLE_MAP[row.role_id] || row.role_name || "—",
-    },
-    {
-      header: "Created",
-      accessor: "created_at",
-      render: (row) =>
-        row.created_at ? new Date(row.created_at).toLocaleDateString() : "—",
     },
   ];
 
   const actions = [
     { type: "edit", onClick: handleEdit },
     { type: "delete", onClick: handleDelete },
+    { type: "archive", onClick: handleDelete },
+    { type: "restore", onClick: handleDelete },
   ];
 
   const emptyState = {
