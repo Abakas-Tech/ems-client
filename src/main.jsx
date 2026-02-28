@@ -12,7 +12,6 @@ import App from "./App.jsx";
 import LoaderProvider from "./context/Loader/LoaderProvider";
 import LogoutProvider from "./context/Logout/LogoutProvider.jsx";
 import ResponseProvider from "./context/response/ResponseProvider.jsx";
-import { AuthProvider } from "./context/auth/authProvider.jsx";
 import ConfirmDeleteProvider from "./context/Delete/DeleteProvider";
 import ProfileProvider from "./context/Profile/ProfileProvider.jsx";
 import DemoInfoProvider from "./context/Demo/DemoInfoProvider";

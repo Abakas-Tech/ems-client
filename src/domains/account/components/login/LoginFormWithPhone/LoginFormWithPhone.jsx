@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { loginWithPhone } from "../../../api/auth.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
-import useAuth from "../../../../../context/Auth/useAuth";
+
 import { setAccessToken } from "../../../../../utils/axios";
 
 const LoginFormWithPhone = ({ role }) => {
@@ -13,7 +13,7 @@ const LoginFormWithPhone = ({ role }) => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+ 
 
   const validateLength = (value, min, max, fieldName) => {
     if (!value) return `${fieldName} is required.`;
@@ -82,7 +82,7 @@ const LoginFormWithPhone = ({ role }) => {
       setAccessToken(access_token);
 
       addMessage(response.data.success, response.data.message);
-      setUser(true);
+
 
       // Clear form
       setPhoneNumber("");
