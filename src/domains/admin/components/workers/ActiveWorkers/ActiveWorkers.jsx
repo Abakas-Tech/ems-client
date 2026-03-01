@@ -40,13 +40,14 @@ const ActiveWorkers = () => {
         limit,
       });
 
-      setWorkers(res?.items || []);
-      setTotalItems(res?.meta?.total_items || 0);
+      setWorkers(res?.data.items || []);
+      setTotalItems(res?.data.meta?.total_items || 0);
     } catch (err) {
-      addMessage(false, err.message || "Failed to load workers");
+      addMessage(false, err.message);
     } finally {
       hideLoader();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);
 
   // Initial fetch + refetch on change
@@ -73,7 +74,7 @@ const ActiveWorkers = () => {
       const workerProfile = await getWorkerProfile(id);
       navigate(`/admin/workers/active/${id}`, { state: workerProfile });
     } catch (err) {
-      addMessage(false, err.message || "Failed to load worker profile");
+      addMessage(false, err.message );
     } finally {
       hideLoader();
     }
@@ -84,11 +85,11 @@ const ActiveWorkers = () => {
     openModal(
       async () => {
         try {
-          await deleteWorker(id, false);
-          addMessage(true, "Worker archived successfully");
+         const response= await deleteWorker(id, false);
+          addMessage(response?.success, response?.message);
           fetchWorkers();
         } catch (err) {
-          addMessage(false, err.message || "Failed to archive worker");
+          addMessage(false, err.message);
         }
       },
       {
@@ -103,11 +104,11 @@ const ActiveWorkers = () => {
     openModal(
       async () => {
         try {
-          await deleteWorker(id, true);
-          addMessage(true, "Worker deleted permanently");
+          const response = await deleteWorker(id, true);
+          addMessage(response?.success, response?.message);
           fetchWorkers();
         } catch (err) {
-          addMessage(false, err.message || "Failed to delete worker");
+          addMessage(false, err.message);
         }
       },
       {

@@ -5,7 +5,7 @@ import { getWorkerStatuses } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/UseResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
-import { RiArrowDropDownLine } from "react-icons/ri";
+
 
 function WorkerRegistration() {
   const navigate = useNavigate();
@@ -33,19 +33,20 @@ function WorkerRegistration() {
     const loadStatuses = async () => {
       showLoader();
       try {
-        const data = await getWorkerStatuses();
-        setStatuses(Array.isArray(data?.data) ? data.data : data || []);
+        const response = await getWorkerStatuses();
+        setStatuses(response.data || []);
         setStatusesError(null);
-      } catch (err) {
+      } catch (error) {
         setStatuses([]);
         setStatusesError("Could not load worker statuses");
-        addMessage(false, "Could not load worker statuses. Please try again.");
+        addMessage(false, error.message);
       } finally {
         hideLoader();
       }
     };
 
     loadStatuses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleTextChange = (e) => {
@@ -127,9 +128,9 @@ function WorkerRegistration() {
       };
 
       // Send the request
-      await createWorker(dataToSend);
+      const response = await createWorker(dataToSend);
 
-      addMessage(true, "Worker registered successfully!");
+      addMessage(response?.success, response?.message);
 
       // Reset form
       setFormData({
@@ -139,11 +140,8 @@ function WorkerRegistration() {
         personal_information: { sex: "", status_id: "" },
       });
     } catch (err) {
-      const msg =
-        err.response?.data?.message ||
-        err.message ||
-        "Failed to register worker";
-      addMessage(false, msg);
+    
+      addMessage(false, err.message );
     } finally {
       setSubmitLoading(false);
       hideLoader();

@@ -20,17 +20,17 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
     const fetchMeta = async () => {
       showLoader();
       try {
-        const [statusData, regionData] = await Promise.all([
-          getWorkerStatuses(),
-          getRegions(),
-        ]);
+        const response  = await getWorkerStatuses()
+        const statusData = response?.data || [];
+        const regionResponse = await getRegions();
+        const regionData = regionResponse?.data || [];
 
         if (!mounted) return;
 
-        setStatuses(Array.isArray(statusData) ? statusData : []);
-        setRegions(Array.isArray(regionData) ? regionData : []);
+        setStatuses(statusData);
+        setRegions(regionData);
       } catch (err) {
-        addMessage(false, "Failed to load filters data");
+        addMessage(false, err.message);
         setStatuses([]);
         setRegions([]);
       } finally {
@@ -43,6 +43,7 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
     return () => {
       mounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {
