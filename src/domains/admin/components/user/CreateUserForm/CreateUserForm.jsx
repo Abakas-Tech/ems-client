@@ -7,7 +7,7 @@ import {
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useNavigate } from "react-router-dom";
-import BackButton from './../../../../../shared/components/BackButton/BackButton';
+import BackButton from "./../../../../../shared/components/BackButton/BackButton";
 
 const PERMISSIONS = [
   "manage_users",
@@ -142,12 +142,13 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       return false;
     }
 
-    // Email: basic pattern
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      addMessage(false, "Please enter a valid email address.");
-      return false;
-    }
-
+   if (role !== "5" && (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+     addMessage(
+       false,
+       !email ? "Email is required." : "Please enter a valid email address.",
+     );
+     return false;
+   }
     // Phone number: digits only, length 7–15
     if (phoneNumber && !/^\d+$/.test(phoneNumber)) {
       addMessage(false, "Phone number can contain digits only.");
@@ -190,23 +191,31 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     return true;
   };
 
+  const removeEmptyFields = (obj) => {
+    return Object.fromEntries(
+      Object.entries(obj).filter(
+        // eslint-disable-next-line no-unused-vars
+        ([_, value]) => value !== undefined && value !== null && value !== "",
+      ),
+    );
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateFields()) return;
 
     showLoader();
     try {
-      const payload = {
-        full_name: fullName,
-        email,
-        phone_number: phoneNumber,
-        role: Number(role),
-        is_active: Number(status),
-        country: role === "3" || role === "5" ? country : undefined,
-        national_id: role === "5" ? nationalId : undefined,
-        city: role === "5" ? city : undefined,
-        address: role === "5" ? address : undefined,
-      };
+   let payload = removeEmptyFields({
+     full_name: fullName,
+     email,
+     phone_number: phoneNumber,
+     role: Number(role),
+     is_active: Number(status),
+     country: role === "3" || role === "5" ? country : undefined,
+     national_id: role === "5" ? nationalId : undefined,
+     city: role === "5" ? city : undefined,
+     address: role === "5" ? address : undefined,
+   });
 
       let response = isEditMode
         ? await updateUser(userData.id, payload)
@@ -340,7 +349,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   type="email"
                   className="form-control"
                   value={email}
-                  required={requiredFields.email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
@@ -412,7 +420,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                       onChange={(e) => setCity(e.target.value)}
                     />
                   </div>
-                  <div className="form-group col-md-12 mb-3">
+                  <div className="form-group col-md-6 mb-3">
                     <label>
                       Address{" "}
                       {requiredFields.address && (
