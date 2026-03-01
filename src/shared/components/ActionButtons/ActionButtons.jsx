@@ -30,7 +30,7 @@ const ACTION_CONFIG = {
 
   addModule: {
     className: "btn-outline-info",
-    icon: <FaFolderPlus size={20} />,
+    icon: <FaFolderPlus/>,
     title: "Add Module",
   },
 
@@ -46,7 +46,7 @@ const ACTION_CONFIG = {
   },
   viewModule: {
     className: "btn-outline-info",
-    icon: <AiOutlineFolderView size={25} />,
+    icon: <AiOutlineFolderView/>,
     title: "View Module",
   },
 };

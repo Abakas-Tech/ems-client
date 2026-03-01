@@ -122,6 +122,11 @@ const ActiveWorkers = () => {
     navigate(-1);
   };
 
+  // Action handler for adding a module to a worker
+  const handleAddModule = (id) => {
+    navigate(`/admin/workers/modules/${id}/add`);
+  };
+
   return (
     <div className="dashboard-wraper">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
@@ -161,6 +166,11 @@ const ActiveWorkers = () => {
           {
             type: "delete",
             onClick: (row) => handleDelete(row.id),
+          },
+
+          {
+            type: "addModule",
+            onClick: (row) => handleAddModule(row.id),
           },
         ]}
         emptyState={{
