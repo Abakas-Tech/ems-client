@@ -76,19 +76,48 @@ const MyProfile = () => {
     });
   };
 
-  const validateFields = () => {
-    const { full_name, email, phone_number, country } = profileData;
-    if (!full_name) return addMessage(false, "Full name is required.");
-    if (!email) return addMessage(false, "Email is required.");
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) return addMessage(false, "Invalid email.");
-    if (!phone_number) return addMessage(false, "Phone number required.");
-    if (phone_number.length < 7 || phone_number.length > 20)
-      return addMessage(false, "Invalid phone number.");
-    if (profile?.role_id === 4 && !country)
-      return addMessage(false, "Country required.");
-    return true;
-  };
+const validateFields = () => {
+  const { full_name, email, phone_number, country } = profileData;
+
+  const name = full_name?.trim();
+  const mail = email?.trim();
+  const phone = phone_number?.trim();
+  const countryVal = country?.trim();
+
+  // -------- FULL NAME --------
+  if (!name) return addMessage(false, "Full name is required.");
+
+  if (!/^[A-Za-z\s]+$/.test(name))
+    return addMessage(false, "Full name must contain letters only.");
+
+  if (name.length < 2 || name.length > 50)
+    return addMessage(false, "Full name must be between 2 and 50 characters.");
+
+  // -------- EMAIL --------
+  if (!mail) return addMessage(false, "Email is required.");
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(mail))
+    return addMessage(false, "Please enter a valid email address.");
+
+  if (!phone) return addMessage(false, "Phone number is required.");
+
+  if (!/^\d+$/.test(phone))
+    return addMessage(false, "Phone number must contain digits only.");
+
+  if (phone.length < 7 || phone.length > 15)
+    return addMessage(false, "Phone number must be between 7 and 15 digits.");
+
+
+  if (profile?.role_id === 4) {
+    if (!countryVal) return addMessage(false, "Country is required.");
+
+    if (!/^[A-Za-z\s]+$/.test(countryVal))
+      return addMessage(false, "Country must contain letters only.");
+  }
+
+  return true;
+};
   const profilePhoto = profile?.profile_photo_url;
   const handleSubmit = async (e) => {
     e.preventDefault();
