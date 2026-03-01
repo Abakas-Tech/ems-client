@@ -201,7 +201,7 @@ const validateFields = () => {
             <div className="col-md-6">
               <label>Phone Number</label>
               <input
-                type="text"
+                type="number"
                 className="form-control"
                 name="phone_number"
                 value={profileData.phone_number}
