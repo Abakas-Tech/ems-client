@@ -84,7 +84,7 @@ const validateFields = () => {
   const phone = phone_number?.trim();
   const countryVal = country?.trim();
 
-  // -------- FULL NAME --------
+  //full name validation
   if (!name) return addMessage(false, "Full name is required.");
 
   if (!/^[A-Za-z\s]+$/.test(name))
@@ -93,7 +93,7 @@ const validateFields = () => {
   if (name.length < 2 || name.length > 50)
     return addMessage(false, "Full name must be between 2 and 50 characters.");
 
-  // -------- EMAIL --------
+  // email validation
   if (!mail) return addMessage(false, "Email is required.");
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -176,22 +176,28 @@ const validateFields = () => {
 
             {/* Row 1: Full Name + Email */}
             <div className="col-md-6">
-              <label>Full Name</label>
+              <label>
+                Full Name <span className="text-danger">*</span>
+              </label>
               <input
                 type="text"
                 className="form-control"
                 name="full_name"
+                required
                 value={profileData.full_name}
                 onChange={handleChange}
               />
             </div>
 
             <div className="col-md-6">
-              <label>Email</label>
+              <label>
+                Email <span className="text-danger">*</span>
+              </label>
               <input
                 type="email"
                 className="form-control"
                 name="email"
+                required
                 value={profileData.email}
                 onChange={handleChange}
               />
@@ -199,11 +205,14 @@ const validateFields = () => {
 
             {/* Row 2: Phone + Country (optional) */}
             <div className="col-md-6">
-              <label>Phone Number</label>
+              <label>
+                Phone Number <span className="text-danger">*</span>
+              </label>
               <input
-                type="number"
+                type="text"
                 className="form-control"
                 name="phone_number"
+                required
                 value={profileData.phone_number}
                 onChange={handleChange}
               />
@@ -211,11 +220,14 @@ const validateFields = () => {
 
             {profile?.role_id === 4 && (
               <div className="col-md-6">
-                <label>Country</label>
+                <label>
+                  Country <span className="text-danger">*</span>
+                </label>
                 <input
                   type="text"
                   className="form-control"
                   name="country"
+                  required
                   value={profileData.country}
                   onChange={handleChange}
                 />

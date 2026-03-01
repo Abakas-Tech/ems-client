@@ -14,7 +14,7 @@ const loginWithEmail = async (credentials) => {
 const loginWithPhone = async (credentials) => {
   try {
     const response = await axiosInstance.post(
-      "/auth/login/identifier",
+      "/auth/login",
       credentials,
     );
     return response;
