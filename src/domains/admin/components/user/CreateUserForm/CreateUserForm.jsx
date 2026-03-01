@@ -18,6 +18,15 @@ const PERMISSIONS = [
   "manage_system_settings",
   "manage_audit_logs",
 ];
+const PERMISSION_LABELS = {
+  manage_users: "Manage Users",
+  manage_workers: "Manage Workers",
+  manage_partners: "Manage Partners",
+  manage_finance: "Manage Finance",
+  manage_analytics: "Manage Analytics",
+  manage_system_settings: "System Settings",
+  manage_audit_logs: "Audit Logs",
+};
 
 const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [fullName, setFullName] = useState("");
@@ -436,7 +445,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                             onChange={() => togglePermission(permission)}
                           />
                           <label className="form-check-label">
-                            {permission}
+                            {PERMISSION_LABELS[permission] || permission}
                           </label>
                         </div>
                       </div>
