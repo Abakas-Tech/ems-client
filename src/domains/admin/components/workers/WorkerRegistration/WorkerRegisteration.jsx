@@ -130,7 +130,7 @@ function WorkerRegistration() {
       // Send the request
       const response = await createWorker(dataToSend);
 
-      addMessage(response?.success, response?.message);
+      addMessage(response?.success, response?.message || "Worker registered successfully");
 
       // Reset form
       setFormData({
@@ -141,7 +141,7 @@ function WorkerRegistration() {
       });
     } catch (err) {
     
-      addMessage(false, err.message );
+      addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
       hideLoader();

@@ -43,7 +43,7 @@ const ActiveWorkers = () => {
       setWorkers(res?.data.items || []);
       setTotalItems(res?.data.meta?.total_items || 0);
     } catch (err) {
-      addMessage(false, err.message || "Failed to load active workers");
+      addMessage(false, err.message);
     } finally {
       hideLoader();
     }
@@ -74,7 +74,7 @@ const ActiveWorkers = () => {
       const workerProfile = await getWorkerProfile(id);
       navigate(`/admin/workers/active/${id}`, { state: workerProfile });
     } catch (err) {
-      addMessage(false, err.message || "Failed to load worker profile");
+      addMessage(false, err.message);
     } finally {
       hideLoader();
     }
@@ -86,10 +86,10 @@ const ActiveWorkers = () => {
       async () => {
         try {
          const response= await deleteWorker(id, false);
-          addMessage(response?.success, response?.message);
+          addMessage(response?.success, response?.message || "Worker archived successfully");
           fetchWorkers();
         } catch (err) {
-          addMessage(false, err.message || "Failed to archive worker");
+          addMessage(false, err.message);
         }
       },
       {
@@ -105,10 +105,10 @@ const ActiveWorkers = () => {
       async () => {
         try {
           const response = await deleteWorker(id, true);
-          addMessage(response?.success, response?.message);
+          addMessage(response?.success, response?.message || "Worker deleted successfully");
           fetchWorkers();
         } catch (err) {
-          addMessage(false, err.message || "Failed to delete worker");
+          addMessage(false, err.message);
         }
       },
       {
