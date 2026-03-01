@@ -17,7 +17,6 @@ const MyProfile = () => {
     phone_number: "",
     country: "",
   });
-
   const fileInputRef = useRef(null);
 
   const { showLoader, hideLoader } = useLoader();
@@ -30,7 +29,7 @@ const MyProfile = () => {
         full_name: profile?.full_name || "",
         email: profile?.email || "",
         phone_number: profile?.phone_number || "",
-        country: profile?.role_id === 4 ? profile?.country || "" : "",
+        country: profile?.role_id == 3 ? profile?.country || "" : "",
       });
     }
   }, [profile]);
@@ -76,48 +75,50 @@ const MyProfile = () => {
     });
   };
 
-const validateFields = () => {
-  const { full_name, email, phone_number, country } = profileData;
+  const validateFields = () => {
+    const { full_name, email, phone_number, country } = profileData;
 
-  const name = full_name?.trim();
-  const mail = email?.trim();
-  const phone = phone_number?.trim();
-  const countryVal = country?.trim();
+    const name = full_name?.trim();
+    const mail = email?.trim();
+    const phone = phone_number?.trim();
+    const countryVal = country?.trim();
 
-  //full name validation
-  if (!name) return addMessage(false, "Full name is required.");
+    //full name validation
+    if (!name) return addMessage(false, "Full name is required.");
 
-  if (!/^[A-Za-z\s]+$/.test(name))
-    return addMessage(false, "Full name must contain letters only.");
+    if (!/^[A-Za-z\s]+$/.test(name))
+      return addMessage(false, "Full name must contain letters only.");
 
-  if (name.length < 2 || name.length > 50)
-    return addMessage(false, "Full name must be between 2 and 50 characters.");
+    if (name.length < 2 || name.length > 50)
+      return addMessage(
+        false,
+        "Full name must be between 2 and 50 characters.",
+      );
 
-  // email validation
-  if (!mail) return addMessage(false, "Email is required.");
+    // email validation
+    if (!mail) return addMessage(false, "Email is required.");
 
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailPattern.test(mail))
-    return addMessage(false, "Please enter a valid email address.");
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(mail))
+      return addMessage(false, "Please enter a valid email address.");
 
-  if (!phone) return addMessage(false, "Phone number is required.");
+    if (!phone) return addMessage(false, "Phone number is required.");
 
-  if (!/^\d+$/.test(phone))
-    return addMessage(false, "Phone number must contain digits only.");
+    if (!/^\d+$/.test(phone))
+      return addMessage(false, "Phone number must contain digits only.");
 
-  if (phone.length < 7 || phone.length > 15)
-    return addMessage(false, "Phone number must be between 7 and 15 digits.");
+    if (phone.length < 7 || phone.length > 15)
+      return addMessage(false, "Phone number must be between 7 and 15 digits.");
 
+    if (profile?.role_id === 4) {
+      if (!countryVal) return addMessage(false, "Country is required.");
 
-  if (profile?.role_id === 4) {
-    if (!countryVal) return addMessage(false, "Country is required.");
+      if (!/^[A-Za-z\s]+$/.test(countryVal))
+        return addMessage(false, "Country must contain letters only.");
+    }
 
-    if (!/^[A-Za-z\s]+$/.test(countryVal))
-      return addMessage(false, "Country must contain letters only.");
-  }
-
-  return true;
-};
+    return true;
+  };
   const profilePhoto = profile?.profile_photo_url;
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -188,22 +189,22 @@ const validateFields = () => {
                 onChange={handleChange}
               />
             </div>
+            {profile?.role_id !== 5 && profile.role_id !== 4 && (
+              <div className="col-md-6">
+                <label>
+                  Email <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="email"
+                  className="form-control"
+                  name="email"
+                  required
+                  value={profileData.email}
+                  onChange={handleChange}
+                />
+              </div>
+            )}
 
-            <div className="col-md-6">
-              <label>
-                Email <span className="text-danger">*</span>
-              </label>
-              <input
-                type="email"
-                className="form-control"
-                name="email"
-                required
-                value={profileData.email}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Row 2: Phone + Country (optional) */}
             <div className="col-md-6">
               <label>
                 Phone Number <span className="text-danger">*</span>
@@ -218,7 +219,7 @@ const validateFields = () => {
               />
             </div>
 
-            {profile?.role_id === 4 && (
+            {profile?.role_id === 3 && profile.role_id === 5 && (
               <div className="col-md-6">
                 <label>
                   Country <span className="text-danger">*</span>
