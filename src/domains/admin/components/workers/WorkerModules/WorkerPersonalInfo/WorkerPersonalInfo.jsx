@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { updateWorker } from "../../../../api/worker.api";
 import { getRegions, getCities } from "../../../../api/meta.api";
 import useLoader from "../../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../../context/response/useResponse";
+import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 
 function WorkerPersonalInfo() {
@@ -13,7 +13,7 @@ function WorkerPersonalInfo() {
   const { id } = useParams();
 
   const [regions, setRegions] = useState([]);
-  const [regionsError, setRegionsError] = useState(null);
+  const [regionsError] = useState(null);
   const [cities, setCities] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -47,15 +47,16 @@ function WorkerPersonalInfo() {
       showLoader();
       try {
         const regions = await getRegions();
-        setRegions(Array.isArray(regions) ? regions : []);
+        setRegions(regions.data || []);
       } catch (err) {
         setRegions([]);
-        addMessage(false, "Could not load regions. Please try again.");
+        addMessage(false, err.message);
       } finally {
         hideLoader();
       }
     };
     loadRegions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load cities when region changes
@@ -66,16 +67,17 @@ function WorkerPersonalInfo() {
     const loadCities = async () => {
       showLoader();
       try {
-        const data = await getCities(regionId);
-        setCities(Array.isArray(data) ? data : []);
+        const response = await getCities(regionId);
+        setCities(response.data || []);
       } catch (err) {
-        addMessage(false, "Failed to load cities");
+        addMessage(false, err.message);
         setCities([]);
       } finally {
         hideLoader();
       }
     };
     loadCities();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.personal_information.region_id]);
 
   // Handle form field changes
@@ -291,9 +293,9 @@ function WorkerPersonalInfo() {
         dataToSend.append("photo_standing_url", photoStanding);
       }
 
-      await updateWorker(dataToSend, id);
+      const response = await updateWorker(dataToSend, id);
 
-      addMessage(true, "Personal information added successfully!");
+      addMessage(response?.success, response?.message);
 
       // Clear form and photos after successful submission
       setFormData({
@@ -318,16 +320,8 @@ function WorkerPersonalInfo() {
       setPhoto3x4(null);
       setPhotoStanding(null);
     } catch (err) {
-      let errorMsg = "Failed to add personal information";
-
-      if (err.response?.data?.message) {
-        errorMsg = err.response.data.message;
-      }
-      if (err.response?.data?.errors?.length > 0) {
-        errorMsg = err.response.data.errors.join(" • ");
-      }
-
-      addMessage(false, errorMsg);
+     
+      addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
       hideLoader();

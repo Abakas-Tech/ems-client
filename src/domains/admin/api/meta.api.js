@@ -3,7 +3,7 @@ import { axiosInstance } from "../../../utils/axios";
 const getRegions = async () => {
   try {
     const response = await axiosInstance.get("/meta/regions");
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -24,7 +24,7 @@ const getCities = async (region_id, name = "") => {
         ...(name ? { name } : {}),
       },
     });
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -38,7 +38,7 @@ const getCities = async (region_id, name = "") => {
 const getWorkerStatuses = async () => {
   try {
     const response = await axiosInstance.get("/meta/worker-statuses");
-    return response.data.data || [];
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||

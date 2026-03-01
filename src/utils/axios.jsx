@@ -12,7 +12,6 @@ let access_token = null;
 let isRefreshing = false;
 let failedQueue = [];
 
-
 // Process queued requests after refresh
 const processQueue = (error, token = null) => {
   failedQueue.forEach((prom) => {
@@ -27,26 +26,36 @@ const setAccessToken = (token) => {
   access_token = token;
 };
 
-// Request interceptor
+// REQUEST INTERCEPTOR
 axiosInstance.interceptors.request.use(
   (config) => {
-    if (access_token) {
+    const isPublic = config.publicApi === true;
+
+    // Attach token only if request is protected (default)
+    if (!isPublic && access_token) {
       config.headers.Authorization = `Bearer ${access_token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error),
 );
 
-// Response interceptor
+// RESPONSE INTERCEPTOR
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const isPublic = originalRequest?.publicApi === true;
+
+    // Only refresh for protected requests
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isPublic
+    ) {
       if (isRefreshing) {
-        // Queue requests while refreshing
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
@@ -61,27 +70,23 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Call refresh API
         const response = await refreshTokenApi();
         const newAccessToken = response.data?.access_token;
 
         if (!newAccessToken)
           throw new Error("No access_token returned from refresh");
 
-        // Update in-memory token
         setAccessToken(newAccessToken);
 
-        // Retry original request with new token
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-
-        // Retry queued requests
         processQueue(null, newAccessToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
         setAccessToken(null);
-        window.location.href = "/login";
+        window.location.href = "/auth/login";
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -92,7 +97,6 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-const hasAccessToken = () => {
-  return !!access_token;
-};
+const hasAccessToken = () => !!access_token;
+
 export { axiosInstance, setAccessToken, hasAccessToken };

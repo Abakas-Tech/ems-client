@@ -32,13 +32,14 @@ const WorkerModuleManagement = () => {
         limit,
       });
 
-      setWorkers(res?.items || []);
-      setTotalItems(res?.meta?.total_items || 0);
+      setWorkers(res?.data.items || []);
+      setTotalItems(res?.data?.meta?.total_items || 0);
     } catch (err) {
-      addMessage(false, err.message || "Failed to load workers");
+      addMessage(false, err.message);
     } finally {
       hideLoader();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);
 
   // Initial fetch + refetch on change

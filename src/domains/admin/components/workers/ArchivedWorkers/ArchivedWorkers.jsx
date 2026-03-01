@@ -39,13 +39,14 @@ const ArchivedWorkers = () => {
         limit,
       });
 
-      setWorkers(res?.items || []);
-      setTotalItems(res?.meta?.total_items || 0);
+      setWorkers(res?.data.items || []);
+      setTotalItems(res?.data.meta?.total_items || 0);
     } catch (err) {
       addMessage(false, err.message || "Failed to load archived workers");
     } finally {
       hideLoader();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);
 
   // Initial fetch + refetch on filters/page change
@@ -82,12 +83,12 @@ const ArchivedWorkers = () => {
     openModal(
       async () => {
         try {
-          await restoreWorker(id);
-          addMessage(true, "Worker restored successfully");
+          const response=await restoreWorker(id);
+          addMessage(response?.success, response?.message);
           setWorkers((prev) => prev.filter((w) => w.id !== id));
           setTotalItems((prev) => prev - 1);
         } catch (err) {
-          addMessage(false, err.message || "Failed to restore worker");
+          addMessage(false, err.message);
         }
       },
       {
@@ -102,12 +103,12 @@ const ArchivedWorkers = () => {
     openModal(
       async () => {
         try {
-          await deleteArchivedWorker(id);
-          addMessage(true, "Worker deleted permanently");
+          const response = await deleteArchivedWorker(id);
+          addMessage(response?.success, response?.message );
           setWorkers((prev) => prev.filter((w) => w.id !== id));
           setTotalItems((prev) => prev - 1);
         } catch (err) {
-          addMessage(false, err.message || "Failed to delete worker");
+          addMessage(false, err.message );
         }
       },
       {

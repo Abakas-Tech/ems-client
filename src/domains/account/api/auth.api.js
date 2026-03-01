@@ -3,7 +3,9 @@ import { axiosInstance } from "../../../utils/axios";
 // email and password login api for admin employee and partner
 const loginWithEmail = async (credentials) => {
   try {
-    const response = await axiosInstance.post("/auth/login", credentials);
+    const response = await axiosInstance.post("/auth/login/email", credentials, {
+      publicApi: true,
+    });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Login error");
@@ -13,10 +15,9 @@ const loginWithEmail = async (credentials) => {
 // phone and id login api for worker and employer
 const loginWithPhone = async (credentials) => {
   try {
-    const response = await axiosInstance.post(
-      "/auth/login/identifier",
-      credentials,
-    );
+    const response = await axiosInstance.post("/auth/login/phone", credentials, {
+      publicApi: true,
+    });
     return response;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Login error");
@@ -29,6 +30,7 @@ const passwordResetRequest = async (data) => {
     const response = await axiosInstance.post(
       "/auth/password-reset/request",
       data,
+      { publicApi: true },
     );
     return response.data;
   } catch (error) {
@@ -42,6 +44,7 @@ const passwordResetConfirm = async (data) => {
     const response = await axiosInstance.post(
       "/auth/password-reset/confirm",
       data,
+      { publicApi: true },
     );
     return response.data;
   } catch (error) {

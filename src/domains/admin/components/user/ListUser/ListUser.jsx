@@ -100,7 +100,7 @@ const ListUser = () => {
   const handleStatusToggle = (row) => {
     const action = row.is_active ? "archive" : "restore";
     const defaultTitle = `Are you sure you want to ${action}  this user?`;
-    const defaultConfirmText = `Yes, ${action.charAt(0).toUpperCase() + action.slice(1)}`;
+    const defaultConfirmText = `${action.charAt(0).toUpperCase() + action.slice(1)}`;
 
     openModal(
       async () => {
