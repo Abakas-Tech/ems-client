@@ -43,7 +43,7 @@ const ActiveWorkers = () => {
       setWorkers(res?.data.items || []);
       setTotalItems(res?.data.meta?.total_items || 0);
     } catch (err) {
-      addMessage(false, err.message);
+      addMessage(false, err.message || "Failed to load active workers");
     } finally {
       hideLoader();
     }
@@ -74,7 +74,7 @@ const ActiveWorkers = () => {
       const workerProfile = await getWorkerProfile(id);
       navigate(`/admin/workers/active/${id}`, { state: workerProfile });
     } catch (err) {
-      addMessage(false, err.message );
+      addMessage(false, err.message || "Failed to load worker profile");
     } finally {
       hideLoader();
     }
@@ -89,7 +89,7 @@ const ActiveWorkers = () => {
           addMessage(response?.success, response?.message);
           fetchWorkers();
         } catch (err) {
-          addMessage(false, err.message);
+          addMessage(false, err.message || "Failed to archive worker");
         }
       },
       {
@@ -108,7 +108,7 @@ const ActiveWorkers = () => {
           addMessage(response?.success, response?.message);
           fetchWorkers();
         } catch (err) {
-          addMessage(false, err.message);
+          addMessage(false, err.message || "Failed to delete worker");
         }
       },
       {

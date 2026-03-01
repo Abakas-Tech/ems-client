@@ -7,7 +7,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  min-width: 400px;
+  max-width: 400px;
+  margin-left: auto;
+  box-sizing: border-box;
 }
 .alert-ok {
   background-color: hwb(152 50% 5%);

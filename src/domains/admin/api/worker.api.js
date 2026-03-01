@@ -130,7 +130,6 @@ const deleteWorker = async (id, hard = false) => {
 
 export {
   deleteWorker,
-  // personalInformation,
   createWorker,
   listArchivedWorkers,
   deleteArchivedWorker,
