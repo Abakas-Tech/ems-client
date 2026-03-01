@@ -184,7 +184,7 @@ const ListUser = () => {
   };
 
   return (
-    <div className="dashboard-wraper container-fluid px-3 px-md-4">
+    <div className="dashboard-wraper ">
       {/* Header */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         <div className="flex-grow-1">

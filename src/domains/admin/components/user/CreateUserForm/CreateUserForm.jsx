@@ -7,6 +7,7 @@ import {
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useNavigate } from "react-router-dom";
+import BackButton from './../../../../../shared/components/BackButton/BackButton';
 
 const PERMISSIONS = [
   "manage_users",
@@ -258,15 +259,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                 : "Add a new employee, partner, or employer and assign permissions."}
             </p>
           </div>
-
-          <button
-            type="button"
-            onClick={handleBack}
-            className="border rounded-circle d-flex align-items-center justify-content-center btn btn-main"
-            style={{ width: "40px", height: "40px" }}
-          >
-            ←
-          </button>
+          <BackButton onClick={handleBack} />
         </div>
 
         <form onSubmit={handleSubmit}>
