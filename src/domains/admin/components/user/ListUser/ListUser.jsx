@@ -7,12 +7,13 @@ import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterUser from "./../../../components/user/FilterUser/FilterUser";
+import Badge from "../../../../../shared/components/Badge/Badge";
 
 const ROLE_MAP = { 2: "Employee", 3: "Partner", 5: "Employer" };
 const ROLE_COLOR = {
-  2: "text-success", // Employee
-  3: "text-primary", // Partner
-  5: "text-warning", // Employer 
+  2: "green",
+  3: "blue",
+  5: "yellow",
 };
 
 const ListUser = () => {
@@ -165,8 +166,9 @@ const ListUser = () => {
       accessor: "role_id",
       render: (row) => {
         const roleName = ROLE_MAP[row.role_id] || row.role_name || "—";
-        const roleClass = ROLE_COLOR[row.role_id] || "text-muted";
-        return <span className={`badge border fw-semibold ${roleClass}`}>{roleName}</span>;
+        const roleColor = ROLE_COLOR[row.role_id] || "gray";
+
+        return <Badge content={roleName} color={roleColor} />;
       },
     },
   ];
