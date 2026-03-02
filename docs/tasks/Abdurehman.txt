@@ -1,0 +1,356 @@
+TASK: Worker Emergency Contact, Visa & LMIS Management Features
+
+Assigned to: Abdurehman
+Domain: Admin → Workers → Modules
+Priority: High
+Deadline: March 5th, 2026
+
+==================================================================
+IMPORTANT NOTE
+==================================================================
+
+This task includes THREE worker sub-modules:
+
+1. Emergency Contact (Guarantor Information)  
+2. Visa  
+3. LMIS  
+
+All three modules MUST:
+- Follow the SAME structure
+- Follow the SAME coding standards
+- Follow the SAME UI/UX patterns
+
+These modules are considered SISTER MODULES.
+Any inconsistency between them will result in rework.
+
+==================================================================
+STEP 0: PREPARE YOUR ENVIRONMENT
+==================================================================
+
+1. Ensure Node.js and npm are installed.
+2. Ensure Git is installed and configured.
+3. Ensure you have access to the project repository.
+
+==================================================================
+STEP 1: CLONE THE REPOSITORY
+==================================================================
+
+1. Open your terminal.
+2. Navigate to your development folder:
+   cd ~/projects
+3. Clone the repository:
+   git clone <repository-url>
+4. Enter the project folder:
+   cd <project-folder>
+5. Install dependencies:
+   npm install
+6. Start the dev server:
+   npm run dev
+
+==================================================================
+STEP 2: GIT BRANCH SETUP (MANDATORY)
+==================================================================
+
+You MUST be on the `dev` branch before creating your feature branch.
+
+--------------------------------------------------
+CHECK CURRENT BRANCH
+--------------------------------------------------
+
+git branch
+
+- If you see: * dev → continue
+- Otherwise, switch to dev
+
+--------------------------------------------------
+SWITCH TO DEV AND UPDATE
+--------------------------------------------------
+
+git checkout dev
+git pull origin dev
+
+--------------------------------------------------
+CREATE FEATURE BRANCH (FROM DEV ONLY)
+--------------------------------------------------
+
+Branch name:
+feature/worker-emergency-visa-lmis
+
+Create and switch:
+git checkout -b feature/worker-emergency-visa-lmis
+
+--------------------------------------------------
+RULES
+--------------------------------------------------
+
+- DO NOT create branches from main
+- DO NOT push directly to dev or main
+- ALWAYS branch from dev
+
+==================================================================
+STEP 3: CREATE EMERGENCY CONTACT, VISA & LMIS CRUD API FUNCTIONS
+==================================================================
+
+Location:
+src/domains/admin/api/worker.api.js
+
+--------------------------------------------------
+TASK DESCRIPTION
+--------------------------------------------------
+
+Using the BACKEND API DOCUMENTATION as the SINGLE SOURCE OF TRUTH:
+
+1. Identify Emergency Contact (Guarantor Information) endpoints (Create, Read, Update, Delete)
+2. Identify Visa endpoints (Create, Read, Update, Delete)
+3. Identify LMIS endpoints (Create, Read, Update, Delete)
+4. Implement all related API functions in worker.api.js
+
+--------------------------------------------------
+IMPLEMENTATION RULES (MANDATORY)
+--------------------------------------------------
+
+All API functions MUST:
+- Use async / await
+- Use axiosInstance
+- Use try / catch
+- Throw meaningful error messages
+- Return the relevant data from the response.
+- Some API responses may be nested (e.g. response.data.data).
+- Inspect the API response and return the correct level of data.
+- Do NOT assume the response structure.
+- Use camelCase naming
+- Match existing API patterns in worker.api.js
+
+--------------------------------------------------
+STYLE REFERENCE ONLY
+--------------------------------------------------
+
+Use existing functions in worker.api.js as a STYLE reference only.
+Do NOT copy logic.
+
+==================================================================
+STEP 4: CREATE COMPONENTS
+==================================================================
+
+Base path:
+src/domains/admin/components/workers/modules/
+
+--------------------------------------------------
+EMERGENCY CONTACT COMPONENT
+--------------------------------------------------
+
+Folder: EmergencyContact  
+File: EmergencyContact.jsx  
+
+- Functional component only
+- useState for local state
+- useLoader & useResponse hooks
+- Input fields + file upload (if any)
+- Refer to Worker Personal Information component for structure
+
+Fields (REFERENCE ONLY):
+- Guarantor name
+- Guarantor address
+- Guarantor phone number
+- Relation
+- Contact phone
+- Email
+- Address
+- File upload (if applicable)
+
+Backend documentation MUST be followed.
+
+--------------------------------------------------
+VISA COMPONENT
+--------------------------------------------------
+
+Folder: Visa  
+File: Visa.jsx  
+
+Implement EXACTLY like Emergency Contact:
+- Same structure
+- Same hooks
+- Same patterns
+- Different fields & endpoints
+
+Fields (REFERENCE ONLY):
+- Visa number
+- Visa type
+- Issue date
+- Expiry date
+- Visa file upload
+
+--------------------------------------------------
+LMIS COMPONENT
+--------------------------------------------------
+
+Folder: Lmis  
+File: Lmis.jsx  
+
+Implement EXACTLY like Emergency Contact & Visa:
+- Same structure
+- Same hooks
+- Same validation approach
+
+Fields (REFERENCE ONLY):
+- LMIS number
+- LMIS type
+- Issue date
+- Expiry date
+- LMIS file upload
+
+==================================================================
+FRONTEND VALIDATION (MANDATORY)
+==================================================================
+
+All frontend validation MUST mirror the backend Joi validation rules.
+
+The backend API documentation is the SINGLE SOURCE OF TRUTH for:
+- Required fields
+- Data types
+- Allowed values
+- Min / max limits
+- String length constraints
+- Enum values
+- Date rules
+
+--------------------------------------------------
+GENERAL RULES
+--------------------------------------------------
+
+1. Every required field in the backend MUST:
+   - Have the `required` attribute in the input element
+   - Be validated on the frontend before submission
+
+2. Every input MUST be validated for:
+   - Correct data type (string, number, date, file, etc.)
+   - Allowed range / length / enum values (if applicable)
+
+3. Frontend validation MUST run:
+   - BEFORE sending data to the backend
+   - Inside a dedicated validation function
+   - NOT inside JSX
+
+4. Validation errors MUST:
+   - Be user-friendly
+   - Clearly explain what is wrong
+   - Prevent form submission
+
+--------------------------------------------------
+VALIDATION STRUCTURE
+--------------------------------------------------
+
+- Create a dedicated validation function for the module
+  (e.g. validateEmergencyContact(), validateVisa(), validateLmis())
+- The function should:
+  - Accept the relevant form data object
+  - Return an error message string if invalid
+  - Return null if valid
+
+--------------------------------------------------
+DATA TYPE HANDLING RULES
+--------------------------------------------------
+
+- Number fields:
+  - Convert to Number before validation
+  - Ensure integers / ranges where required
+- Date fields:
+  - Must be valid ISO dates
+  - Apply logical checks (e.g. must be in the past / future)
+- Select fields:
+  - Must match allowed backend enum values
+- File uploads:
+  - Validate presence if required
+  - Validate file type if specified in backend docs
+
+--------------------------------------------------
+REFERENCE IMPLEMENTATION
+--------------------------------------------------
+
+Use the Worker Personal Information module as a REFERENCE for:
+- Validation approach
+- Error handling style
+- Data type coercion
+- Required attribute usage
+- Separation of validation logic from JSX
+
+==================================================================
+STEP 5: CREATE PAGES
+==================================================================
+
+Base path:
+src/domains/admin/pages/workers/modules/
+
+--------------------------------------------------
+EMERGENCY CONTACT PAGE
+--------------------------------------------------
+
+Folder: EmergencyContact  
+File: EmergencyContact.jsx  
+
+Import EmergencyContact component and render it.
+
+--------------------------------------------------
+VISA PAGE
+--------------------------------------------------
+
+Folder: Visa  
+File: Visa.jsx  
+
+Import Visa component and render it.
+
+--------------------------------------------------
+LMIS PAGE
+--------------------------------------------------
+
+Folder: Lmis  
+File: Lmis.jsx  
+
+Import Lmis component and render it.
+
+==================================================================
+STEP 6: ADD ROUTES
+==================================================================
+
+File:
+src/routes/AdminRoutes.jsx
+
+Add the following routes:
+
+/workers/modules/:id/emergency-contact  
+/workers/modules/:id/visa  
+/workers/modules/:id/lmis  
+
+Ensure proper imports and correct routing.
+
+==================================================================
+STEP 7: COMMIT & PUSH
+==================================================================
+
+git add .
+git commit -m "add emergency contact, visa, and lmis worker modules"
+git push origin feature/worker-emergency-visa-lmis
+
+==================================================================
+STEP 8: FINAL CHECKLIST
+==================================================================
+
+- [ ] Emergency Contact module complete
+- [ ] Visa module complete
+- [ ] LMIS module complete
+- [ ] All three follow same structure
+- [ ] API logic only in /api
+- [ ] Functional components only
+- [ ] Bootstrap used correctly
+- [ ] Responsive on all screens
+- [ ] No console.log or commented code (when submitted)
+- [ ] Clean commit history
+
+==================================================================
+FINAL NOTE
+==================================================================
+
+Emergency Contact (Guarantor Information), Visa, and LMIS are tightly related modules.
+Consistency between them is mandatory.
+
+If unsure at any point — STOP and ask before implementing.

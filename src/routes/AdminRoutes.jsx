@@ -10,7 +10,7 @@ import ArchivedWorkers from "../domains/admin/pages/workers/ArchivedWorkers/Arch
 // import WorkerModules from "../domains/admin/pages/workers/ModulesList/ModulesList.jsx";
 // import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/WorkerDashboard.jsx";
 import ModulesList from "../domains/admin/pages/workers/ModulesList/ModulesList.jsx";
-import WorkerPesonalInfo from "../domains/admin/pages/workers/WorkerModules/WorkerPersonalInfo/WorkerPesonalInfo.jsx";
+import WorkerPesonalInfo from "../domains/admin/pages/workers/modules/WorkerPersonalInfo/WorkerPesonalInfo.jsx";
 
 import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import NotFound from "../shared/components/NotFound/NotFound.jsx";
