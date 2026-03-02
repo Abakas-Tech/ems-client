@@ -98,5 +98,19 @@ axiosInstance.interceptors.response.use(
 );
 
 const hasAccessToken = () => !!access_token;
+const initAuth = async () => {
+  try {
+    const response = await refreshTokenApi();
+    const newAccessToken = response.data?.access_token;
 
-export { axiosInstance, setAccessToken, hasAccessToken };
+    if (newAccessToken) {
+      setAccessToken(newAccessToken);
+      return true;
+    }
+  } catch  {
+    setAccessToken(null);
+  }
+  return false;
+};
+
+export { axiosInstance, setAccessToken, hasAccessToken , initAuth };
