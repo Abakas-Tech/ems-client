@@ -3,15 +3,15 @@ import TransactionFilters from "../../transactions/TransactionFilters/Transactio
 import RecordTransaction from "../../transactions/RecordTransaction/RecordTransaction.jsx";
 import TransactionDetail from "../../transactions/TransactionDetail/TransactionDetail";
 import { fetchTransactions } from "../../../api/finance.api";
-import useLoader from "../../../../../context/Loader/UseLoader";
-import useResponse from "../../../../../context/response/UseResponse";
-import { useDelete } from "../../../../../context/Delete/UseDelete";
+import useLoader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
+// import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
 const FinancePage = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
-  const { openModal } = useDelete();
+  // const { openModal } = useDelete();
 
   const [view, setView] = useState("list");
   const [transactions, setTransactions] = useState({ data: [], meta: {} });
@@ -28,6 +28,7 @@ const FinancePage = () => {
 
   useEffect(() => {
     if (view === "list") loadTransactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, view]);
 
   const loadTransactions = async () => {
@@ -42,20 +43,20 @@ const FinancePage = () => {
     }
   };
 
-  const handleDelete = (id) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        await deleteTransaction(id);
-        addMessage(true, "Transaction deleted successfully");
-        loadTransactions();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
-  };
+  // const handleDelete = (id) => {
+  //   openModal(async () => {
+  //     showLoader();
+  //     try {
+  //       const response = await deleteTransaction(id);
+  //       addMessage(response.success, response.Message || "Transaction deleted successfully");
+  //       loadTransactions();
+  //     } catch (err) {
+  //       addMessage(false, err.message);
+  //     } finally {
+  //       hideLoader();
+  //     }
+  //   });
+  // };
 
   if (view === "create" || view === "edit") {
     return (

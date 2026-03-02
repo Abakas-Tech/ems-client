@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import StatCard from "../StatCard/StatCard";
 import AnalyticsFilter from "../AnalyticsFilter/AnalyticsFilter";
-import { fetchDashboardData } from "../../../api/analytics.api";
-import useLoader from "../../../../../context/Loader/UseLoader";
-import useResponse from "../../../../../context/response/UseResponse";
+import fetchDashboardData from "../../../api/analytics.api";
+import useLoader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
 
 const Analytics = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -42,9 +42,9 @@ const Analytics = () => {
     showLoader();
     try {
       const result = await fetchDashboardData(filters);
-      setData(result);
+      setData(result.data);
     } catch (err) {
-      addMessage("error", err.message);
+      addMessage(false, err.message);
     } finally {
       hideLoader();
     }

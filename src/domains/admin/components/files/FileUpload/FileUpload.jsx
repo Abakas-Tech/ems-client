@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
-import useResponse from "../../../../../context/response/UseResponse";
+import useResponse from "../../../../../context/Response/useResponse";
 
 const FileUpload = ({
   isEditMode = false,
