@@ -1,0 +1,2476 @@
+Abakas Overseas Employment Agency Management System (AOEMS)
+
+
+API Documentation - Stage 2: Core Business APIs (Workers, CVs, Partners)
+
+
+Abakas – Crafting Digital Success
+
+Introduction
+This document defines all API endpoints for Stage 2 of AOEMS — the Core Business APIs focusing on worker lifecycle management, CV automation, partner access, and worker self-service. It models workers as users whose profiles evolve through many stages from account creation to deployment and integrates secure access, compliance checks, and status workflows to automate agency operations and reduce manual follow-ups.
+General Information
+
+--------------------------------------------------
+Base URL: /api/
+--------------------------------------------------
+•	Authentication: JWT Bearer Token in Authorization header required for all endpoints.
+•	Content-Type: JSON for requests/responses unless stated (file uploads use multipart/form-data).
+•	Timestamps: ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ).
+•	IDs: BIGINT UNSIGNED.
+•	Enums: Case-sensitive strings.
+•	Pagination: Use page (default 1) and limit (default 10, max 100) query params.
+•	Filtering: Available via query parameters per endpoint.
+
+--------------------------------------------------
+ERROR RESPONSES (ALL ENDPOINTS)
+--------------------------------------------------
+- 401 Unauthorized        Missing or invalid authentication token
+- 403 Forbidden           Insufficient permissions
+- 404 Not Found           Resource not found
+- 422 Unprocessable Entity validation errors (e.g., missing fields, invalid enum)
+- 500 Internal Server Error Unexpected system failure
+
+--------------------------------------------------
+Error format
+--------------------------------------------------
+{
+  "success": false,
+  "message": "Human-readable summary",
+  "error": {
+    "code": "ERROR_CODE",
+    "details": "Detailed explanation"
+  }
+} 
+
+
+Role & Access
+Role: Admin
+Access Level: Full CRUD on all worker data and workflows
+
+Role: Employee
+Access Level: Full CRUD on assigned worker data and workflows
+
+Role: Partner
+Access Level: Read-only access to assigned workers and CVs, including CV download
+
+Role: Worker
+Access Level: Self-service access; can view own profile, status, and notifications
+
+Role: Employer
+Access Level: Limited access related to contracts only
+
+
+WORKER LIFECYCLE OVERVIEW
+========================
+
+Workers undergo a structured lifecycle composed of multiple stages. Each stage is
+represented in system APIs and enforced through defined business rules.
+
+1. ACCOUNT & ACCESS EVENTS
+-------------------------
+- Worker account creation as a system user with role: worker
+- Active, inactive, and soft-deleted account states
+- Role-based access control and custom permission overrides
+
+2. IDENTITY & PROFILE EVOLUTION
+-------------------------------
+- Incremental updates to personal information:
+  birth details, religion, marital status, address, education,
+  and physical attributes
+- Photo management (3x4 photo, full standing photo)
+- Regional assignment
+- Status progression tracking:
+  registered -> ready -> deployed
+
+3. SKILLS, LANGUAGES, AND JOB READINESS
+--------------------------------------
+- Multiple job positions with experience history
+- Primary job position designation
+- Skill assignment and classification
+- Language records with proficiency levels
+- Allowed destination country configuration
+
+4. DOCUMENT & COMPLIANCE MILESTONES
+----------------------------------
+- Passport issuance, expiry tracking, and document scans
+- Certificate of Competency (COC) management
+- Medical status tracking:
+  pending, fit, unfit
+- Medical report uploads
+- Compliance enforcement preventing progression until medically fit
+
+5. VISA & GOVERNMENT APPROVAL FLOW
+---------------------------------
+- LMIS reference number assignment
+- QR code generation and linking
+- Visa issuance and expiry tracking
+- Automated status flow:
+  waiting -> approved -> travel-ready
+
+6. EMPLOYER & CONTRACT OUTCOMES
+-------------------------------
+- Employer linkage
+- Contract lifecycle management:
+  creation, approval, rejection, termination
+- Salary and contract duration records
+- Signed contract document uploads
+
+7. TRAVEL & DEPLOYMENT
+---------------------
+- Travel ticket issuance
+- Departure scheduling
+- Travel-related document uploads
+- Final deployment confirmation
+
+8. FINANCIAL EVENTS (STAGE 3 INTEGRATION)
+----------------------------------------
+- Worker income tracking
+- Agency expense records
+- Commission calculations
+- VAT and financial compliance tracking
+
+9. NOTIFICATIONS & COMMUNICATION
+--------------------------------
+- Notifications for visa updates, status changes, and contract decisions
+- Read and unread state tracking
+- File attachments
+- Push notification delivery
+============================================
+API ENDPOINTS DETAIL (DB-COMPATIBLE VERSION)
+============================================
+
+===========================================
+1. WORKER REGISTRATION & ACCOUNT MANAGEMENT
+===========================================
+
+IMPORTANT NOTES
+---------------
+- A "worker" is a record in `users` whose role_id references roles.name = 'worker'
+- User core fields are stored in `users`
+- Worker personal data is stored in `workers_personal_information`
+- Worker status is stored as `status_id` referencing `worker_statuses.id`
+- Every status change MUST create a record in `worker_status_history`
+- Soft delete is handled via `users.deleted_at`
+
+
+========================================
+WORKER MODULE: CREATE & UPDATE WORKER
+========================================
+
+
+====================
+CREATE WORKER
+====================
+
+Endpoint
+--------
+POST /workers
+
+Roles Allowed
+-------------
+- admin
+- employee
+
+Content-Type
+------------
+multipart/form-data
+
+Description
+-----------
+Creates a new worker user, initializes personal information,
+uploads worker photos, and inserts the initial worker status history.
+
+
+Database Tables Affected
+------------------------
+- users
+- workers_personal_information
+- worker_status_history
+
+
+Form-Data Fields (TEXT)
+----------------------
+
+User Fields
+-----------
+- full_name (string, required)
+- phone_number (string, required)
+- email (string, optional)
+- is_active (boolean, optional, default=true)
+
+Personal Information Fields
+---------------------------
+- region_id (bigint, optional)
+- status_id (smallint, optional)
+- date_of_birth (date, YYYY-MM-DD, optional)
+- place_of_birth (string, optional)
+- religion (string, optional)
+- marital_status (enum: Single | Married | Divorced | Widowed, optional)
+- sex (enum: male | female, required)
+- nationality (string, optional, default=Ethiopian)
+- address (text, optional)
+- education (string, optional)
+- number_of_children (integer, optional, default=0)
+- height_cm (decimal, optional)
+- weight_kg (decimal, optional)
+
+
+Form-Data Fields (FILES)
+-----------------------
+- photo_3x4_url (file, optional, image only)
+- photo_standing_url (file, optional, image only)
+
+
+Notes
+-----
+- role is automatically set to "worker"
+- status_id inserts a record into worker_status_history
+- photos are optional but validated if provided
+
+
+Success Response
+----------------
+HTTP 201 Created
+
+{
+  success: true,
+  message: "Worker created successfully",
+  data: {
+    id,
+    role,
+    full_name,
+    phone_number,
+    email,
+    status,
+    is_active,
+    created_at
+  }
+}
+
+
+
+====================
+UPDATE WORKER
+====================
+
+Endpoint
+--------
+PATCH /workers/{id}
+
+Roles Allowed
+-------------
+- admin
+- employee
+
+Content-Type
+------------
+multipart/form-data
+
+Description
+-----------
+Updates user-level fields, personal information, worker photos,
+and worker status if status_id changes.
+
+
+Database Tables Affected
+------------------------
+- users
+- workers_personal_information
+- worker_status_history (only if status_id changes)
+
+
+Form-Data Fields (ALL OPTIONAL)
+------------------------------
+
+User Fields
+-----------
+- full_name
+- phone_number
+- email
+- is_active
+
+Personal Information Fields
+---------------------------
+- region_id
+- status_id
+- date_of_birth
+- place_of_birth
+- religion
+- marital_status
+- sex
+- nationality
+- address
+- education
+- number_of_children
+- height_cm
+- weight_kg
+
+
+Form-Data Fields (FILES)
+-----------------------
+- photo_3x4_url (file, optional, replaces existing)
+- photo_standing_url (file, optional, replaces existing)
+
+
+Photo Update Rules
+------------------
+- If a new photo is uploaded:
+  - The old Cloudinary file is deleted
+  - DB URL and public_id are updated
+- If no file is sent:
+  - Existing photo remains unchanged
+
+
+Status Update Rule
+------------------
+- If status_id is different from the current value:
+  - Insert a new record into worker_status_history
+  - Update workers_personal_information.status_id
+
+
+Success Response
+----------------
+HTTP 200 OK
+
+{
+  success: true,
+  message: "Worker updated successfully",
+  data: {
+    id,
+    full_name,
+    phone_number,
+    status,
+    updated_at
+  }
+}
+
+
+--------------------------------------------------
+VIEW WORKER PROFILE
+--------------------------------------------------
+Endpoint:
+GET /workers/{id}
+
+Roles Allowed:
+- admin
+- employee
+- partner (assigned only)
+- worker (self)
+- employer
+
+Description:
+Returns an aggregated worker profile composed
+from all worker-related tables.
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "id": 128,
+    "full_name": "Abebe Kebede",
+    "phone_number": "+251912345678",
+    "email": "abebe.kebede@example.com",
+    "is_active": true,
+    "created_at": "2026-02-01T10:22:31Z",
+
+    "status": {
+      "id": 1,
+      "name": "Registered"
+    },
+
+    "personal_information": {
+      "date_of_birth": "1998-05-12",
+      "sex": "male",
+      "marital_status": "Married",
+      "nationality": "Ethiopian",
+      "education": "High School",
+      "number_of_children": 1,
+      "region": {
+        "id": 3,
+        "name": "Oromia"
+      }
+    },
+
+    "passport": {
+      "passport_number": "EP1234567",
+      "passport_issue_date": "2023-01-10",
+      "passport_expiry_date": "2033-01-10",
+      "passport_issuing_country": "Ethiopia"
+    },
+
+    "medical": {
+      "medical_status": "fit",
+      "medical_center": "Addis Medical Center",
+      "medical_report_number": "MED-778899",
+      "issue_date": "2025-11-20"
+    },
+
+    "visa": {
+      "visa_number": "SA-987654",
+      "visa_issue_date": "2025-12-01",
+      "visa_expiry_date": "2027-12-01"
+    },
+
+    "contracts": [
+      {
+        "id": 45,
+        "employer_id": 12,
+        "monthly_salary": 1200.00,
+        "status": "approved",
+        "contract_start_date": "2026-02-10",
+        "contract_end_date": "2028-02-10"
+      }
+    ]
+  }
+}
+
+
+--------------------------------------------------
+LIST WORKERS
+--------------------------------------------------
+Endpoint:
+GET /workers
+
+Roles Allowed:
+- admin
+- employee
+- partner (assigned only)
+
+Description:
+Returns a paginated list of workers derived
+from users, workers_personal_information,
+worker_statuses, and contracts.
+
+Query Parameters:
+- page (number, default: 1)
+- limit (number, default: 10)
+- status_id (number)
+- region_id (number)
+- sex (male | female)
+- marital_status (Single | Married | Divorced | Widowed)
+- search (full_name | phone_number)
+- is_active (boolean)
+- has_contract (true | false)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": 128,
+        "full_name": "Abebe Kebede",
+        "sex": "male",
+        "region": "Addis Ababa",
+        "status": "Registered",
+        "is_active": true,
+        "has_contract": false,
+        "created_at": "2026-02-01T10:22:31Z"
+      }
+    ],
+    "meta": {
+      "page": 1,
+      "limit": 10,
+      "total_items": 42,
+      "total_pages": 5
+    }
+  }
+}
+
+
+--------------------------------------------------
+DELETE / ARCHIVE WORKER
+--------------------------------------------------
+Endpoint:
+DELETE /workers/{id}
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Soft delete sets users.deleted_at.
+Hard delete removes the user and cascades
+to all related worker records.
+
+Query Parameter:
+- hard=true | false
+
+Example:
+DELETE /workers/128?hard=true
+
+Soft Delete Response:
+{
+  "success": true,
+  "message": "Worker archived successfully",
+  "data": {
+    "id": 128,
+    "deleted_at": "2026-02-01T12:00:00Z"
+  }
+}
+
+Hard Delete Response:
+{
+  "success": true,
+  "message": "Worker deleted permanently",
+  "data": {
+    "id": 128
+  }
+}
+
+--------------------------------------------------
+LIST ARCHIVED WORKERS (SOFT-DELETED)
+--------------------------------------------------
+Endpoint:
+GET /workers/archived
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Returns a paginated list of archived (soft-deleted) workers. Supports filtering by last known status, region, sex, marital status, and search by name or phone number.
+
+Query Parameters:
+- page (number, default: 1)
+- limit (number, default: 10)
+- search (string, optional) — search by full_name or phone_number
+- status_id (number, optional) — filter by last status before archive
+- region_id (number, optional)
+- sex (male | female, optional)
+- marital_status (Single | Married | Divorced | Widowed, optional)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Archived workers listed successfully",
+  "data": {
+    "items": [
+      {
+        "id": 128,
+        "full_name": "Abebe Kebede",
+        "sex": "male",
+        "region": "Oromia",
+        "is_active": false,
+        "has_contract": false,
+        "created_at": "2026-02-04T18:17:28.000Z",
+        "archived_at": "2026-02-04T18:31:47.000Z"
+      }
+    ],
+    "meta": {
+      "page": 1,
+      "limit": 10,
+      "total_items": 5,
+      "total_pages": 1
+    }
+  }
+}
+
+--------------------------------------------------
+GET SINGLE ARCHIVED WORKER PROFILE
+--------------------------------------------------
+Endpoint:
+GET /workers/archived/{id}
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Fetches a full aggregated profile of a single archived worker by ID.
+
+Response:
+200 OK
+
+{
+    "success": true,
+    "message": "Archived worker profile retrieved",
+    "data": {
+        "id": 14,
+        "full_name": "Kasim Nurlgn",
+        "phone_number": "+251968302531",
+        "email": "kasim@gmaghbil.com",
+        "is_active": false,
+        "created_at": "2026-02-04T18:17:28.000Z",
+        "archived_at": "2026-02-04T18:31:47.000Z",
+        "status": {
+            "id": 1,
+            "name": "Registered"
+        },
+        "personal_information": {
+            "date_of_birth": "1998-05-20",
+            "sex": "male",
+            "marital_status": "Single",
+            "nationality": "Ethiopian",
+            "education": "Bachelors Degree",
+            "number_of_children": 0,
+            "region": {
+                "id": 2,
+                "name": "Afar"
+            }
+        },
+        "passport": null,
+        "medical": null,
+        "visa": null,
+        "contracts": []
+    }
+}
+
+--------------------------------------------------
+RESTORE ARCHIVED WORKER
+--------------------------------------------------
+Endpoint:
+PATCH /workers/{id}/restore
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Restores a previously archived worker by setting is_active = true and clearing deleted_at.
+
+Response:
+200 OK
+
+{
+    "success": true,
+    "message": "Worker restored successfully",
+    "data": {
+        "id": "14",
+        "full_name": "Kasim Nurlgn",
+        "phone_number": "+251968302531",
+        "is_active": true,
+        "restored_at": "2026-02-04T18:37:25.761Z"
+    }
+}
+
+--------------------------------------------------
+DELETE ARCHIVED WORKER (PERMANENT DELETE)
+--------------------------------------------------
+Endpoint:
+DELETE /workers/archived/{id}
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Permanently deletes a previously archived worker and all related records from the database. Only applicable to workers who have been soft-deleted.
+
+Response:
+200 OK
+
+{
+    "success": true,
+    "message": "Archived worker deleted permanently",
+    "data": {
+        "id": "14",
+        "deleted_at": "2026-02-04T18:39:24.619Z"
+    }
+}
+
+
+=====================
+2. WORKER SUB-MODULES
+=====================
+
+All endpoints in this section are scoped under:
+
+/workers/{worker_id}/<submodule>
+
+========================================
+WORKER SUB-MODULE: PASSPORT MODULE
+========================================
+
+NOTES
+-----
+- worker_id refers to users.id
+- Passport data is stored in workers_passport_information
+- Each worker can have ONLY ONE passport record
+- passport_number is UNIQUE and NOT NULL at DB level
+- Passport files are stored externally (Cloudinary); DB stores URL, public_id, and resource type
+
+Base Path:
+/workers/{worker_id}/passport
+
+
+--------------------------------------------------
+CREATE PASSPORT
+--------------------------------------------------
+Endpoint:
+POST /workers/{worker_id}/passport
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Creates passport information for a worker.
+Fails if a passport record already exists.
+
+DATABASE TABLE AFFECTED:
+- workers_passport_information
+
+Request:
+- Content-Type: multipart/form-data
+- URL parameter:
+  - worker_id (path) - Worker ID
+
+- Form data fields:
+  - passport_number (string, required): Passport number (5-50 chars)
+  - passport_issue_date (string, required): ISO 8601 date (YYYY-MM-DD)
+  - passport_expiry_date (string, required): ISO 8601 date (must be after issue date)
+  - passport_issuing_country (string, optional): Default is "Ethiopia"
+  - passport_scan (file, required): Passport scan file (image or PDF)
+
+Response:
+201 Created
+
+{
+  "success": true,
+  "message": "Passport created successfully",
+  "data": {
+    "id": 22,
+    "user_id": 128,
+    "passport_number": "A123456",
+    "passport_issue_date": "2020-01-01T00:00:00.000Z",
+    "passport_expiry_date": "2030-01-01T00:00:00.000Z",
+    "passport_issuing_country": "Ethiopia",
+    "passport_scan_url": "https://res.cloudinary.com/your_cloud_name/raw/upload/v1234567890/passports/worker_128",
+    "passport_scan_public_id": "passports/worker_128",
+    "passport_scan_resource_type": "raw",
+    "created_at": "2026-02-01T11:10:00.000Z",
+    "updated_at": "2026-02-01T11:10:00.000Z"
+  }
+}
+
+
+--------------------------------------------------
+UPDATE PASSPORT
+--------------------------------------------------
+Endpoint:
+PATCH /workers/{worker_id}/passport
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Partially updates passport information.
+If a new passport scan file is uploaded, the old file is replaced.
+
+DATABASE TABLE AFFECTED:
+- workers_passport_information
+
+Request:
+- Content-Type: multipart/form-data
+- URL parameter:
+  - worker_id (path) - Worker ID
+
+- Form data fields (all optional; send only fields to update):
+  - passport_number (string): Passport number (unique)
+  - passport_issue_date (string): ISO 8601 date
+  - passport_expiry_date (string): ISO 8601 date (must be after issue date)
+  - passport_issuing_country (string)
+  - passport_scan (file): New passport scan file (image or PDF)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Passport updated successfully",
+  "data": {
+    "user_id": 128,
+    "passport_number": "A123457",
+    "passport_issue_date": "2020-01-01T00:00:00.000Z",
+    "passport_expiry_date": "2031-01-01T00:00:00.000Z",
+    "passport_issuing_country": "Ethiopia",
+    "passport_scan_url": "https://res.cloudinary.com/your_cloud_name/image/upload/v1234567890/passports/worker_128_updated.jpg",
+    "passport_scan_public_id": "passports/worker_128_updated",
+    "passport_scan_resource_type": "image",
+    "updated_at": "2026-02-02T09:30:12.000Z"
+  }
+}
+
+
+--------------------------------------------------
+GET PASSPORT DETAILS
+--------------------------------------------------
+Endpoint:
+GET /workers/{worker_id}/passport
+
+Roles Allowed:
+- admin
+- employee
+- partner (only if assigned to this worker)
+- worker (only own passport)
+
+Description:
+Retrieves the worker’s passport information.
+
+DATABASE TABLE READ:
+- workers_passport_information
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "user_id": 128,
+    "passport_number": "A123457",
+    "passport_issue_date": "2020-01-01T00:00:00.000Z",
+    "passport_expiry_date": "2031-01-01T00:00:00.000Z",
+    "passport_issuing_country": "Ethiopia",
+    "passport_scan_url": "https://res.cloudinary.com/your_cloud_name/image/upload/v1234567890/passports/worker_128.jpg",
+    "passport_scan_public_id": "passports/worker_128",
+    "passport_scan_resource_type": "image",
+    "created_at": "2026-02-01T11:10:00.000Z",
+    "updated_at": "2026-02-02T09:30:12.000Z"
+  }
+}
+
+
+--------------------------------------------------
+DELETE PASSPORT
+--------------------------------------------------
+Endpoint:
+DELETE /workers/{worker_id}/passport
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Deletes the worker’s passport record permanently along with the associated file in storage.
+
+DATABASE TABLE AFFECTED:
+- workers_passport_information
+
+Request:
+No request body.
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Passport deleted successfully",
+  "data": {
+    "worker_id": 128,
+    "passport_number": "A123457"
+  }
+}
+
+
+
+========================================
+WORKER SUB-MODULE: COC MODULE
+========================================
+
+NOTES
+-----
+- worker_id refers to users.id
+- COC data is stored in workers_coc_information
+- Each worker can have ONLY ONE COC record
+- coc_number is OPTIONAL but MUST be UNIQUE if provided
+- COC document files are stored externally (e.g. Cloudinary)
+- DB stores document URL, public_id, and resource type
+- Expired or missing COC may block worker lifecycle progression (business rule)
+
+Base Path:
+/workers/{worker_id}/coc
+
+
+--------------------------------------------------
+CREATE COC
+--------------------------------------------------
+Endpoint:
+POST /workers/{worker_id}/coc
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Creates Certificate of Competency (COC) information for a worker.
+Fails if a COC record already exists for the worker.
+
+DATABASE TABLE AFFECTED:
+- workers_coc_information
+
+Request:
+- Content-Type: multipart/form-data
+- URL parameter:
+  - worker_id (path) - Worker ID
+
+- Form data fields:
+  - coc_number (string, optional): COC number (unique if provided)
+  - coc_assessment_center (string, required)
+  - coc_assessment_date (string, required): ISO 8601 date (YYYY-MM-DD)
+  - coc_issue_date (string, required): ISO 8601 date
+  - coc_expiry_date (string, required): ISO 8601 date (must be after issue date)
+  - coc_document (file, required): COC document file (PDF or image)
+
+Response:
+201 Created
+
+{
+  "success": true,
+  "message": "COC created successfully",
+  "data": {
+    "id": 456,
+    "user_id": 128,
+    "coc_number": "COC123",
+    "coc_assessment_center": "Addis Ababa Assessment Center",
+    "coc_assessment_date": "2024-12-15T00:00:00.000Z",
+    "coc_issue_date": "2025-01-01T00:00:00.000Z",
+    "coc_expiry_date": "2027-01-01T00:00:00.000Z",
+    "coc_document_url": "https://res.cloudinary.com/your_cloud_name/raw/upload/v1234567890/coc/worker_128.pdf",
+    "coc_document_public_id": "coc/worker_128",
+    "coc_document_resource_type": "raw",
+    "created_at": "2026-02-01T11:00:00.000Z",
+    "updated_at": "2026-02-01T11:00:00.000Z"
+  }
+}
+
+
+--------------------------------------------------
+UPDATE COC
+--------------------------------------------------
+Endpoint:
+PATCH /workers/{worker_id}/coc
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Partially updates Certificate of Competency information.
+Only provided fields are updated.
+If a new COC document file is uploaded, the old file is replaced.
+
+DATABASE TABLE AFFECTED:
+- workers_coc_information
+
+Request:
+- Content-Type: multipart/form-data
+- URL parameter:
+  - worker_id (path) - Worker ID
+
+- Form data fields (ALL OPTIONAL; send only fields to update):
+  - coc_number (string): COC number (unique if provided)
+  - coc_assessment_center (string)
+  - coc_assessment_date (string): ISO 8601 date
+  - coc_issue_date (string): ISO 8601 date
+  - coc_expiry_date (string): ISO 8601 date (must be after issue date)
+  - coc_document (file): New COC document file (PDF or image)
+
+NOTES:
+- Updating coc_number must respect UNIQUE constraint
+- If coc_issue_date or coc_expiry_date is updated, expiry date must still be after issue date
+- When a new document is uploaded, the old document is deleted from storage
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "COC updated successfully",
+  "data": {
+    "user_id": 128,
+    "coc_number": "COC1234",
+    "coc_assessment_center": "New Assessment Center",
+    "coc_assessment_date": "2025-01-20T00:00:00.000Z",
+    "coc_issue_date": "2025-02-01T00:00:00.000Z",
+    "coc_expiry_date": "2027-02-01T00:00:00.000Z",
+    "coc_document_url": "https://res.cloudinary.com/your_cloud_name/raw/upload/v1234567890/coc/worker_128_updated.pdf",
+    "coc_document_public_id": "coc/worker_128_updated",
+    "coc_document_resource_type": "raw",
+    "updated_at": "2026-02-02T09:30:00.000Z"
+  }
+}
+
+
+--------------------------------------------------
+GET COC DETAILS
+--------------------------------------------------
+Endpoint:
+GET /workers/{worker_id}/coc
+
+Roles Allowed:
+- admin
+- employee
+- partner (only if assigned to this worker)
+- worker (only own COC)
+
+Description:
+Retrieves the worker’s Certificate of Competency information.
+
+DATABASE TABLE READ:
+- workers_coc_information
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "user_id": 128,
+    "coc_number": "COC1234",
+    "coc_assessment_center": "New Assessment Center",
+    "coc_assessment_date": "2025-01-20T00:00:00.000Z",
+    "coc_issue_date": "2025-02-01T00:00:00.000Z",
+    "coc_expiry_date": "2027-02-01T00:00:00.000Z",
+    "coc_document_url": "https://res.cloudinary.com/your_cloud_name/raw/upload/v1234567890/coc/worker_128.pdf",
+    "coc_document_public_id": "coc/worker_128",
+    "coc_document_resource_type": "raw",
+    "created_at": "2026-02-01T11:00:00.000Z",
+    "updated_at": "2026-02-02T09:30:00.000Z"
+  }
+}
+
+
+--------------------------------------------------
+DELETE COC
+--------------------------------------------------
+Endpoint:
+DELETE /workers/{worker_id}/coc
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Permanently deletes the worker’s COC record
+and removes the associated document file from storage.
+
+DATABASE TABLE AFFECTED:
+- workers_coc_information
+
+IMPORTANT NOTES:
+- This is a HARD DELETE (no soft delete)
+- Deleting COC may block worker lifecycle progression until replaced
+
+Request:
+No request body.
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "COC deleted successfully",
+  "data": {
+    "worker_id": 128,
+    "coc_number": "COC1234"
+  }
+}
+
+
+==================================================
+WORKER SUB-MODULE: MEDICAL INFORMATION
+==================================================
+
+NOTES
+-----
+- worker_id refers to users.id
+- Medical data is stored in workers_medical_information
+- Each worker can have ONLY ONE active medical record
+- medical_report_number is OPTIONAL but UNIQUE if provided
+- Medical report files are stored externally; DB stores URL + public_id
+
+Base Path:
+/workers/{worker_id}/medical
+
+Description:
+Manages medical fitness information for a worker.
+Medical status is a critical compliance checkpoint and
+directly affects worker lifecycle progression.
+
+--------------------------------------------------
+CREATE MEDICAL RECORD
+--------------------------------------------------
+Endpoint:
+POST /workers/{worker_id}/medical
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Creates a new medical information record for a worker.
+Fails if a medical record already exists.
+
+DATABASE TABLE AFFECTED:
+- workers_medical_information
+
+Request:
+- Content-Type: multipart/form-data
+- URL parameter:
+  - worker_id (path) - Worker ID
+
+- Form data fields:
+  - medical_status (string, required): Enum: fit, unfit, pending
+  - medical_center (string, optional)
+  - medical_report_number (string, optional, unique if provided)
+  - medical_file (file, required): Medical report file (image or PDF)
+  - issue_date (string, optional): ISO 8601 date (YYYY-MM-DD)
+  - expiry_date (string, optional): ISO 8601 date (YYYY-MM-DD)
+
+Response:
+201 Created
+
+{
+  "success": true,
+  "message": "Medical information created successfully",
+  "data": {
+    "id": 789,
+    "user_id": 128,
+    "medical_status": "fit",
+    "medical_center": "Health Center",
+    "medical_report_number": "MED123",
+    "medical_file_url": "https://storage.example.com/files/medical_789.pdf",
+    "medical_file_public_id": "medical_789_public_id",
+    "issue_date": "2026-01-01",
+    "expiry_date" :2028-06-05,
+    "created_at": "2026-02-01T11:15:00Z",
+    "updated_at": "2026-02-01T11:15:00Z"
+  }
+}
+
+--------------------------------------------------
+UPDATE MEDICAL RECORD (PARTIAL)
+--------------------------------------------------
+Endpoint:
+PATCH /workers/{worker_id}/medical
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Partially updates an existing medical record.
+Only provided fields will be updated.
+If a new medical report file is uploaded, the old file is replaced.
+
+DATABASE TABLE AFFECTED:
+- workers_medical_information
+
+Request:
+- Content-Type: multipart/form-data
+- URL parameter:
+  - worker_id (path) - Worker ID
+
+- Form data fields (all optional; send only fields to update):
+  - medical_status (string): Enum: fit, unfit, pending
+  - medical_center (string)
+  - medical_report_number (string, unique if provided)
+  - medical_file (file): New medical report file (image or PDF)
+  - issue_date (string): ISO 8601 date (YYYY-MM-DD)
+  - expiry_date (string): ISO 8601 date (YYYY-MM-DD)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Medical information updated successfully",
+  "data": {
+    "id": 789,
+    "user_id": 128,
+    "medical_status": "unfit",
+    "medical_center": "New Health Center",
+    "medical_report_number": "MED124",
+    "medical_file_url": "https://storage.example.com/files/medical_789_updated.pdf",
+    "medical_file_public_id": "medical_789_updated_public_id",
+    "issue_date": "2026-02-01",
+    "expiry_date": "2026-02-01",
+    "created_at": "2026-02-01T11:15:00Z",
+    "updated_at": "2026-02-05T09:30:00Z"
+  }
+}
+
+--------------------------------------------------
+GET MEDICAL DETAILS
+--------------------------------------------------
+Endpoint:
+GET /workers/{worker_id}/medical
+
+Roles Allowed:
+- admin
+- employee
+- partner (assigned worker only)
+- worker (own record)
+
+Description:
+Retrieves medical information for a worker.
+
+DATABASE TABLE READ:
+- workers_medical_information
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "id": 789,
+    "user_id": 128,
+    "medical_status": "unfit",
+    "medical_center": "New Health Center",
+    "medical_report_number": "MED124",
+    "medical_file_url": "https://storage.example.com/files/medical_789_updated.pdf",
+    "issue_date": "2026-02-01",
+    "expiry_date": "2026-02-01",
+    "created_at": "2026-02-01T11:15:00Z",
+    "updated_at": "2026-02-05T09:30:00Z"
+  }
+}
+
+--------------------------------------------------
+DELETE MEDICAL RECORD
+--------------------------------------------------
+Endpoint:
+DELETE /workers/{worker_id}/medical
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Deletes the worker’s medical record permanently.
+Associated medical report files must also be removed from storage.
+
+Deleting medical information may block worker progression until a new valid medical record is created.
+
+DATABASE TABLE AFFECTED:
+- workers_medical_information
+
+Request:
+No request body.
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Medical information deleted successfully",
+  "data": {
+    "worker_id": 128,
+    "medical_report_number": "MED124",
+  }
+}
+
+==================================================
+WORKER SUB-MODULE: GUARANTOR INFORMATION
+==================================================
+
+Base Path:
+/workers/{worker_id}/guarantor
+
+Description:
+Manages guarantor information for a worker.
+Guarantor data is used for legal, financial, and
+compliance purposes during worker processing.
+
+Each worker can have ONLY ONE active guarantor record.
+
+--------------------------------------------------
+CREATE GUARANTOR RECORD
+--------------------------------------------------
+Endpoint:
+POST /workers/{worker_id}/guarantor
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Create a new guarantor information record for a worker.
+
+Request Body (multipart/form-data):
+- guarantor_name: string, required, max 150 chars
+- relation: string, optional, max 200 chars
+- guarantor_address: string, optional (text)
+- guarantor_phone_number: string, required, max 20 chars, unique
+- id_scan_url: file (PDF/image) - required file upload for guarantor ID scan
+
+Response:
+201 Created
+
+{
+  "success": true,
+  "message": "Guarantor information created successfully",
+  "data": {
+    "id": 456,
+    "user_id": 128,
+    "guarantor_name": "Jane Doe",
+    "relation": "Parent",
+    "guarantor_address": "123 Street",
+    "guarantor_phone_number": "+251912345678",
+    "id_scan_url": "https://storage.example.com/files/id_scan_456.pdf",
+    "is_scan_public_id": "id_scan_456_public_id",
+    "created_at": "2026-02-01T11:20:00Z",
+    "updated_at": "2026-02-01T11:20:00Z"
+  }
+}
+
+--------------------------------------------------
+UPDATE GUARANTOR RECORD (PARTIAL)
+--------------------------------------------------
+Endpoint:
+PATCH /workers/{worker_id}/guarantor
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Partially update existing guarantor information.
+Only provided fields will be updated.
+
+Request Body (multipart/form-data, all optional):
+- guarantor_name: string, max 150 chars
+- relation: string, max 200 chars
+- guarantor_address: string (text)
+- guarantor_phone_number: string, max 20 chars, unique
+- id_scan_url: file (PDF/image) - optional file upload for updated ID scan
+
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Guarantor information updated successfully",
+  "data": {
+    "id": 456,
+    "user_id": 128,
+    "guarantor_name": "Jane Smith",
+    "relation": "Sibling",
+    "guarantor_address": "456 Avenue",
+    "guarantor_phone_number": "+251911234567",
+    "id_scan_url": "https://storage.example.com/files/id_scan_456_updated.pdf",
+    "is_scan_public_id": "id_scan_456_updated_public_id",
+    "created_at": "2026-02-01T11:20:00Z",
+    "updated_at": "2026-02-05T09:40:00Z"
+  }
+}
+
+--------------------------------------------------
+GET GUARANTOR DETAILS
+--------------------------------------------------
+Endpoint:
+GET /workers/{worker_id}/guarantor
+
+Roles Allowed:
+- admin
+- employee
+- partner (assigned worker only)
+- worker (own record)
+
+Description:
+Retrieve guarantor information for a worker.
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "id": 456,
+    "user_id": 128,
+    "guarantor_name": "Jane Smith",
+    "relation": "Sibling",
+    "guarantor_address": "456 Avenue",
+    "guarantor_phone_number": "+251911234567",
+    "id_scan_url": "https://storage.example.com/files/id_scan_456_updated.pdf",
+    "is_scan_public_id": "id_scan_456_updated_public_id",
+    "created_at": "2026-02-01T11:20:00Z",
+    "updated_at": "2026-02-05T09:40:00Z"
+  }
+}
+
+--------------------------------------------------
+DELETE GUARANTOR RECORD
+--------------------------------------------------
+Endpoint:
+DELETE /workers/{worker_id}/guarantor
+
+Roles Allowed:
+- admin
+- employee
+
+Description:
+Delete the guarantor information for a worker.
+Associated ID scan files must be removed from storage.
+
+Deleting guarantor data may block contract approval
+until a new guarantor is provided.
+
+Request:
+No request body.
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Guarantor information deleted successfully",
+  "data": {
+    "worker_id": 128,
+    "guarantor_phone_number": "+251911234567",
+    "deleted_at": "2026-02-06T10:30:00Z"
+  }
+}
+
+==================================================
+WORKER SUB-MODULE: VISA DETAILS MANAGEMENT
+==================================================
+
+Base Path:
+/workers/{worker_id}/visa
+
+Description:
+Manage visa details of a worker including creation, retrieval, update, and deletion.
+Visa document is uploaded via multipart/form-data and stored in cloud storage.
+
+Each worker can have ONLY ONE visa record.
+
+--------------------------------------------------
+CREATE VISA DETAILS FOR WORKER
+--------------------------------------------------
+Endpoint:
+POST /workers/{worker_id}/visa
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body (multipart/form-data):
+
+- visa_number: string, max 100 chars, required, unique
+- visa_issue_date: date (YYYY-MM-DD), required
+- visa_expiry_date: date (YYYY-MM-DD), required
+- visa_reference_number: string, max 100 chars, optional
+- visa_reference_date: date (YYYY-MM-DD), optional
+- visa_scan: file (PDF/image), required (visa document upload)
+
+System Automatically Stores:
+- visa_url
+- visa_url_public_id
+- visa_url_resource_type
+
+Response:
+201 Created
+
+{
+  "success": true,
+  "message": "Visa details created successfully",
+  "data": {
+    "id": 456,
+    "user_id": 123,
+    "visa_number": "V123",
+    "visa_issue_date": "2026-01-01",
+    "visa_expiry_date": "2027-01-01",
+    "visa_reference_number": "REF123",
+    "visa_reference_date": "2026-01-05",
+    "visa_url": "https://storage.example.com/visa.pdf",
+    "visa_url_public_id": "visa_public_id_xyz",
+    "visa_url_resource_type": "raw",
+    "created_at": "2026-02-01T12:00:00Z",
+    "updated_at": "2026-02-01T12:00:00Z"
+  }
+}
+
+--------------------------------------------------
+UPDATE VISA DETAILS FOR WORKER (PARTIAL)
+--------------------------------------------------
+Endpoint:
+PATCH /workers/{worker_id}/visa
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body (multipart/form-data, all optional):
+
+- visa_number: string, max 100 chars
+- visa_issue_date: date (YYYY-MM-DD)
+- visa_expiry_date: date (YYYY-MM-DD)
+- visa_reference_number: string, max 100 chars
+- visa_reference_date: date (YYYY-MM-DD)
+- visa_scan: file (PDF/image) — optional replacement upload
+
+System Behavior:
+- If new file is uploaded, old file may be deleted.
+- New visa_url, public_id, and resource_type are saved.
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Visa details updated successfully",
+  "data": {
+    "id": 456,
+    "user_id": 123,
+    "visa_number": "V124",
+    "visa_issue_date": "2026-02-01",
+    "visa_expiry_date": "2027-02-01",
+    "visa_reference_number": "REF124",
+    "visa_reference_date": "2026-02-05",
+    "visa_url": "https://storage.example.com/new_visa.pdf",
+    "visa_url_public_id": "new_public_id_xyz",
+    "visa_url_resource_type": "raw",
+    "created_at": "2026-02-01T12:00:00Z",
+    "updated_at": "2026-02-10T15:30:00Z"
+  }
+}
+
+--------------------------------------------------
+GET VISA DETAILS FOR WORKER
+--------------------------------------------------
+Endpoint:
+GET /workers/{worker_id}/visa
+
+Roles Allowed:
+- admin
+- employee
+- partner (assigned worker only)
+- worker (own)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Visa details retrieved successfully",
+  "data": {
+    "id": 456,
+    "user_id": 123,
+    "visa_number": "V124",
+    "visa_issue_date": "2026-02-01",
+    "visa_expiry_date": "2027-02-01",
+    "visa_reference_number": "REF124",
+    "visa_reference_date": "2026-02-05",
+    "visa_url": "https://storage.example.com/new_visa.pdf",
+    "visa_url_public_id": "new_public_id_xyz",
+    "visa_url_resource_type": "raw",
+    "created_at": "2026-02-01T12:00:00Z",
+    "updated_at": "2026-02-10T15:30:00Z"
+  }
+}
+
+--------------------------------------------------
+DELETE VISA DETAILS FOR WORKER
+--------------------------------------------------
+Endpoint:
+DELETE /workers/{worker_id}/visa
+
+Roles Allowed:
+- admin
+- employee
+
+Behavior:
+- Deletes record from database
+- Optionally deletes file from storage
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Visa details deleted successfully"
+}
+
+==================================================
+WORKER SUB-MODULE: LMIS DATA MANAGEMENT
+==================================================
+
+Base Path:
+/workers/{worker_id}/lmis
+
+Description:
+Manage LMIS (Labor Market Information System) data for a worker, including creation, update, retrieval, and deletion of LMIS records.
+
+--------------------------------------------------
+CREATE LMIS INFORMATION FOR WORKER
+--------------------------------------------------
+Endpoint:
+POST /workers/{worker_id}/lmis
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body (multipart/form-data):
+- lmis_labour_id: string, max 100 chars, required, unique
+- lmis_qr_code: file (image/pdf), required (QR code document upload)
+- lmis_qr_code_resource_type: enum('image', 'raw'), required — indicates type of uploaded file
+- approval_date: date (YYYY-MM-DD), optional (nullable)
+
+System Automatically Stores:
+- lmis_qr_code_url
+- lmis_qr_code_public_id
+- lmis_qr_code_resource_type
+
+Response:
+201 Created
+
+{
+  "success": true,
+  "message": "LMIS information created successfully",
+  "data": {
+    "id": 456,
+    "user_id": 128,
+    "lmis_labour_id": "LMIS123",
+    "lmis_qr_code_url": "https://example.com/files/lmis_qr_123.png",
+    "lmis_qr_code_public_id": "public_id_xyz",
+    "lmis_qr_code_resource_type": "image",
+    "approval_date": "2026-01-01",
+    "created_at": "2026-02-01T10:22:31Z",
+    "updated_at": "2026-02-01T10:22:31Z"
+  }
+}
+
+--------------------------------------------------
+UPDATE LMIS INFORMATION FOR WORKER (PARTIAL)
+--------------------------------------------------
+Endpoint:
+PATCH /workers/{worker_id}/lmis
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body (multipart/form-data, all optional):
+- lmis_labour_id: string, max 100 chars
+- lmis_qr_code: file (image/pdf) — optional replacement upload
+- lmis_qr_code_resource_type: enum('image', 'raw'), optional — indicates type of uploaded file
+- approval_date: date (YYYY-MM-DD), optional
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "LMIS information updated successfully",
+  "data": {
+    "id": 456,
+    "user_id": 128,
+    "lmis_labour_id": "LMIS123",
+    "lmis_qr_code_url": "https://example.com/files/lmis_qr_123_updated.png",
+    "lmis_qr_code_public_id": "new_public_id_xyz",
+    "lmis_qr_code_resource_type": "raw",
+    "approval_date": "2026-01-01",
+    "created_at": "2026-02-01T10:22:31Z",
+    "updated_at": "2026-02-15T09:10:45Z"
+  }
+}
+
+--------------------------------------------------
+GET LMIS INFORMATION FOR WORKER
+--------------------------------------------------
+Endpoint:
+GET /workers/{worker_id}/lmis
+
+Roles Allowed:
+- admin
+- employee
+- partner (assigned worker only)
+- worker (own)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "id": 456,
+    "user_id": 128,
+    "lmis_labour_id": "LMIS123",
+    "lmis_qr_code_url": "https://example.com/files/lmis_qr_123.png",
+    "lmis_qr_code_public_id": "public_id_xyz",
+    "lmis_qr_code_resource_type": "image",
+    "approval_date": "2026-01-01",
+    "created_at": "2026-02-01T10:22:31Z",
+    "updated_at": "2026-02-01T10:22:31Z"
+  }
+}
+
+--------------------------------------------------
+DELETE LMIS INFORMATION FOR WORKER
+--------------------------------------------------
+Endpoint:
+DELETE /workers/{worker_id}/lmis
+
+Roles Allowed:
+- admin
+- employee
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "LMIS information deleted successfully"
+}
+
+
+==================================================
+EMPLOYER & CONTRACT MANAGEMENT
+==================================================
+
+Base Path:
+/workers
+
+Description:
+Manage worker contracts, including employer, partner assignment,
+contract dates, salary, contract document upload, and lifecycle status.
+
+-----------------------------------
+CREATE NEW CONTRACT FOR WORKER
+-----------------------------------
+
+Endpoint:
+POST /workers/{worker_id}/contract
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body (multipart/form-data):
+
+Fields:
+- employer_id                   bigint, REQUIRED
+- partner_id                    bigint, OPTIONAL (if contract involves partner)
+- contract_start_date           date (YYYY-MM-DD), REQUIRED
+- contract_end_date             date (YYYY-MM-DD), REQUIRED
+- monthly_salary                decimal(12,2), REQUIRED
+- status                        enum REQUIRED
+  Values: pending | approved | rejected | terminated
+- contract_upload_url           file REQUIRED (PDF/Image)
+
+Processing:
+- Validate worker exists
+- Validate employer exists
+- Validate partner exists (if provided)
+- Upload file to storage
+- Detect file type and store resource_type
+- Save contract record
+
+Response:
+201 Created
+
+{
+  "success": true,
+  "message": "Contract created successfully",
+  "data": {
+    "id": 789,
+    "user_id": 128,
+    "employer_id": 1,
+    "partner_id": 5,
+    "contract_start_date": "2026-03-01",
+    "contract_end_date": "2028-03-01",
+    "monthly_salary": 1000.00,
+    "contract_upload_url": "https://example.com/files/contracts/contract_789.pdf",
+    "contract_upload_url_public_id": "contracts/worker_128",
+    "contract_upload_url_resource_type": "raw",
+    "status": "pending",
+    "created_at": "2026-02-01T10:22:31Z",
+    "updated_at": "2026-02-01T10:22:31Z"
+  }
+}
+
+------------------------------------
+UPDATE EXISTING CONTRACT (PARTIAL)
+------------------------------------
+
+Endpoint:
+PATCH /contract/{worker_id}/{contract_id}
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body (multipart/form-data):
+
+Optional Fields:
+- employer_id
+- partner_id
+- contract_start_date
+- contract_end_date
+- monthly_salary
+- status
+- contract_upload_url (file replacement)
+
+Processing:
+- Update only provided fields
+- Replace uploaded file if new file exists
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Contract updated successfully",
+  "data": {
+    "id": 789,
+    "user_id": 128,
+    "employer_id": 2,
+    "partner_id": 7,
+    "contract_start_date": "2026-04-01",
+    "contract_end_date": "2029-04-01",
+    "monthly_salary": 1100.00,
+    "contract_upload_url": "https://example.com/files/contracts/contract_789_updated.pdf",
+    "contract_upload_url_public_id": "contracts/worker_128_updated",
+    "contract_upload_url_resource_type": "raw",
+    "status": "approved",
+    "created_at": "2026-02-01T10:22:31Z",
+    "updated_at": "2026-02-15T09:10:45Z"
+  }
+}
+
+==================================================
+GET CONTRACT DETAILS BY ID
+==================================================
+
+Endpoint:
+GET /contract/{worker_id}/{contract_id}
+
+Roles Allowed:
+- admin
+- employee
+- Partner (assiged worker)
+- employer (assinged worker)
+- worker (own)
+
+
+
+Response:
+
+{
+  "success": true,
+  "data": {
+    "id": 789,
+    "user_id": 128,
+    "employer_id": 1,
+    "partner_id": 5,
+    "contract_start_date": "2026-03-01",
+    "contract_end_date": "2028-03-01",
+    "monthly_salary": 1000.00,
+    "contract_upload_url": "...",
+    "contract_upload_url_resource_type": "raw",
+    "status": "pending",
+    "created_at": "...",
+    "updated_at": "..."
+  }
+}
+
+
+---------------------
+DELETE CONTRACT
+---------------------
+
+Endpoint:
+DELETE /contract/{worker_id}/{contract_id}
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "LMIS information deleted successfully"
+}
+
+
+==================================================
+WORKER SUB-MODULE: TICKET AND TRAVEL MANAGEMENT
+==================================================
+
+Base Path:
+/workers/{worker_id}/travel
+
+Description:
+Manage travel and deployment info linked to workers (users with role 'worker').
+
+--------------------------------------------------
+CREATE TRAVEL AND DEPLOYMENT INFO FOR WORKER
+--------------------------------------------------
+Endpoint:
+POST /workers/{worker_id}/travel
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body (multipart/form-data):
+{
+  "ticket_number": "TKT123",              // varchar(100), optional (nullable)
+  "departure_date": "2026-02-01",         // date (YYYY-MM-DD), optional (nullable)
+  "agent_name": "Agent Smith",             // varchar(150), optional (nullable)
+  "agent_email": "agent@example.com",      // varchar(255), optional (nullable)
+  "agent_phone_number": "+251911234567",   // varchar(20), optional (nullable)
+  "arrival_date": "2026-02-15",             // date, optional (nullable)
+  "departure_location": "Addis Ababa",      // varchar(150), optional (nullable)
+  "arrival_location": "Dubai",               // varchar(150), optional (nullable)
+  "ticket_file_url": <file>,                 // required, upload ticket document (pdf/image)
+}
+
+Processing:
+- Store uploaded ticket file in storage (cloud/server)
+- Save file URL, public ID, and resource type ('image' or 'raw') in
+  ticket_file_url, ticket_file_public_id, ticket_file_resource_type columns
+- Insert new record with user_id = worker_id and other provided fields
+
+Response:
+201 Created
+
+{
+  "success": true,
+  "message": "Travel info created successfully",
+  "data": {
+    "id": 456,
+    "user_id": 123,
+    "ticket_number": "TKT123",
+    "departure_date": "2026-02-01",
+    "agent_name": "Agent Smith",
+    "agent_email": "agent@example.com",
+    "agent_phone_number": "+251911234567",
+    "arrival_date": "2026-02-15",
+    "departure_location": "Addis Ababa",
+    "arrival_location": "Dubai",
+    "ticket_file_url": "https://example.com/files/tkt123.pdf",
+    "ticket_file_public_id": "uighduiewhfkdnvkjdb",
+    "ticket_file_resource_type": "raw",
+    "created_at": "2026-02-01T08:00:00Z",
+    "updated_at": "2026-02-01T08:00:00Z"
+  }
+}
+
+--------------------------------------------------
+UPDATE TRAVEL INFO FOR WORKER (PARTIAL)
+--------------------------------------------------
+Endpoint:
+PATCH /workers/{worker_id}/travel
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body (multipart/form-data):
+{
+  "ticket_number": "TKT123-UPDATED",         // varchar(100), optional
+  "departure_date": "2026-02-05",             // date, optional
+  "agent_name": "Agent Smith Updated",         // optional
+  "agent_email": "agent.updated@example.com",  // optional
+  "agent_phone_number": "+251912345678",       // optional
+  "arrival_date": "2026-02-20",                // optional
+  "departure_location": "Addis Ababa Updated", // optional
+  "arrival_location": "Dubai Updated",          // optional
+  "ticket_file_url": <file>,                    // optional, upload new ticket file
+}
+
+Processing:
+- Update provided fields only
+- Replace stored file URL, public ID, and resource type if new file uploaded
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Travel info updated successfully",
+  "data": {
+    "id": 456,
+    "user_id": 123,
+    "ticket_number": "TKT123-UPDATED",
+    "departure_date": "2026-02-05",
+    "agent_name": "Agent Smith Updated",
+    "agent_email": "agent.updated@example.com",
+    "agent_phone_number": "+251912345678",
+    "arrival_date": "2026-02-20",
+    "departure_location": "Addis Ababa Updated",
+    "arrival_location": "Dubai Updated",
+    "ticket_file_url": "https://example.com/files/tkt123-updated.pdf",
+    "ticket_file_public_id": "new_public_id_xyz",
+    "ticket_file_resource_type": "image",
+    "created_at": "2026-02-01T08:00:00Z",
+    "updated_at": "2026-02-02T10:00:00Z"
+  }
+}
+
+--------------------------------------------------
+GET WORKER'S TRAVEL INFO
+--------------------------------------------------
+Endpoint:
+GET /workers/{worker_id}/travel
+
+Roles Allowed:
+- admin
+- employee
+- partner (assigned worker only)
+- worker (own)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "id": 456,
+    "user_id": 123,
+    "ticket_number": "TKT123",
+    "departure_date": "2026-02-01",
+    "agent_name": "Agent Smith",
+    "agent_email": "agent@example.com",
+    "agent_phone_number": "+251911234567",
+    "arrival_date": "2026-02-15",
+    "departure_location": "Addis Ababa",
+    "arrival_location": "Dubai",
+    "ticket_file_url": "https://example.com/files/tkt123.pdf",
+    "ticket_file_public_id": "uighduiewhfkdnvkjdb",
+    "ticket_file_resource_type": "raw",
+    "created_at": "2026-02-01T08:00:00Z",
+    "updated_at": "2026-02-01T08:00:00Z"
+  }
+}
+
+--------------------------------------------------
+DELETE TRAVEL RECORD FOR WORKER
+--------------------------------------------------
+Endpoint:
+DELETE /workers/{worker_id}/travel
+
+Roles Allowed:
+- admin
+- employee
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Travel record deleted successfully"
+}
+
+
+==================================================
+WORKER STATUS FLOW
+==================================================
+Base Path:
+/workers/{worker_id}/status
+
+Description:
+Manage and track the status changes of a worker.
+
+--------------------------------------------------
+UPDATE WORKER STATUS
+--------------------------------------------------
+Endpoint:
+PATCH /workers/{worker_id}/status
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body (JSON):
+{
+  "status_id": 1
+}
+
+Fields:
+- status_id (integer, required): ID of the new status
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Worker status updated successfully",
+  "data": {
+    "worker_id": 123,
+    "status_id": 1,
+    "status_name": "Active",
+    "updated_at": "2026-02-01T10:22:31Z"
+  }
+}
+
+--------------------------------------------------
+CHECK CURRENT WORKER STATUS
+--------------------------------------------------
+Endpoint:
+GET /workers/{worker_id}/status
+
+Roles Allowed:
+- admin
+- employee
+- worker (own, if /me/status)
+- partner
+- employer
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "current_status": {
+      "id": 3,
+      "name": "Medical Fit",
+      "details": "Worker has passed medical examination and is eligible."
+    }
+  }
+}
+
+--------------------------------------------------
+GET WORKER STATUS HISTORY
+--------------------------------------------------
+Endpoint:
+GET /workers/{id}/status-history
+
+Roles Allowed:
+- admin
+- employee
+- worker (own)
+- partner
+- employer
+
+Query Parameters:
+- from_date (string, optional): Filter history from this date (YYYY-MM-DD)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "history": [
+      {
+        "status_id": 1,
+        "status_name": "Active",
+        "changed_by": "admin",
+        "changed_at": "2026-01-01T09:00:00Z"
+      },
+      {
+        "status_id": 2,
+        "status_name": "Inactive",
+        "changed_by": "employee",
+        "changed_at": "2025-12-01T14:30:00Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 2
+    }
+  }
+}
+
+
+===============
+CV MANAGEMENT
+===============
+
+--------------------------------------------------
+GENERATE CV FOR WORKER
+--------------------------------------------------
+Endpoint:
+POST /workers/{worker_id}/cv/generate
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body (JSON):
+{
+  "format": "pdf"
+}
+
+Fields:
+- format (string, required): CV format (e.g., pdf, docx)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "CV generated successfully",
+  "data": {
+    "worker_id": 128,
+    "cv_url": "https://your-storage-service.com/cvs/worker_128_cv.pdf",
+    "format": "pdf",
+    "generated_at": "2026-02-02T12:00:00Z"
+  }
+}
+
+--------------------------------------------------
+UPLOAD CV FOR WORKER
+--------------------------------------------------
+Endpoint:
+POST /workers/{worker_id}/cv/upload
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body:
+File upload (multipart/form-data)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "CV uploaded successfully",
+  "data": {
+    "worker_id": 128,
+    "cv_url": "https://your-storage-service.com/cvs/worker_128_cv.pdf",
+    "uploaded_at": "2026-02-02T12:30:00Z"
+  }
+}
+
+--------------------------------------------------
+RENAME WORKER CV
+--------------------------------------------------
+Endpoint:
+PATCH /workers/{worker_id}/cv/rename
+
+Roles Allowed:
+- admin
+- employee
+
+Request Body (JSON):
+{
+  "new_filename": "custom_cv_name.pdf"
+}
+
+Fields:
+- new_filename (string, required): Desired new filename including extension
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "CV renamed successfully",
+  "data": {
+    "worker_id": 128,
+    "cv_url": "https://your-storage-service.com/cvs/custom_cv_name.pdf",
+    "renamed_at": "2026-02-03T10:00:00Z"
+  }
+}
+
+--------------------------------------------------
+DELETE WORKER CV
+--------------------------------------------------
+Endpoint:
+DELETE /workers/{worker_id}/cv
+
+Roles Allowed:
+- admin
+- employee
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "CV deleted successfully"
+}
+
+==================================================
+PARTNER SUB-MODULE: PARTNER ACCESS WORKFLOW
+==================================================
+
+--------------------------------------------------
+VIEW ASSIGNED WORKERS
+--------------------------------------------------
+Endpoint:
+GET /partners/workers
+
+Roles Allowed:
+- partner
+
+Query Parameters:
+- page (integer, optional, default=1)
+- limit (integer, optional, default=10, max=100)
+- status_id (integer, optional)
+- region_id (integer, optional)
+- search (string, optional): search by worker name or phone number
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "message": "Assigned workers retrieved successfully",
+  "data": {
+    "workers": [
+      {
+        "id": 128,
+        "full_name": "Abebe Kebede",
+        "phone_number": "+251912345678",
+        "status": "Registered",
+        "region": "Addis Ababa",
+        "created_at": "2026-02-01T10:22:31Z"
+      }
+      // More workers...
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total_pages": 5,
+      "total_items": 45
+    }
+  }
+}
+
+--------------------------------------------------
+DOWNLOAD CV OF ASSIGNED WORKER
+--------------------------------------------------
+Endpoint:
+GET /partners/workers/{worker_id}/cv/download
+
+Roles Allowed:
+- partner
+
+Description:
+Allows a partner to download the CV of an assigned worker.
+
+
+==================================================
+WORKER SELF-SERVICE MODULE
+==================================================
+
+--------------------------------------------------
+CHECK CURRENT WORKER STATUS
+--------------------------------------------------
+Endpoint:
+GET /me/status/current
+
+Roles Allowed:
+- worker
+
+Description:
+Retrieve the current status of the logged-in worker.
+
+Request Body:
+- None (GET request)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "current_status": {
+      "id": 3,
+      "name": "Medical Fit",
+      "details": "Worker has passed medical examination and is eligible."
+    }
+  }
+}
+
+--------------------------------------------------
+GET WORKER STATUS HISTORY
+--------------------------------------------------
+Endpoint:
+GET /me/status/history
+
+Roles Allowed:
+- worker
+
+Query Parameters:
+- from_date (string, optional, format YYYY-MM-DD): Filter history starting from this date
+- page (integer, optional, default=1): Page number for pagination
+- limit (integer, optional, default=10, max=100): Number of records per page
+
+Description:
+Retrieve the status change history of the logged-in worker.
+
+Request Body:
+- None (GET request)
+
+Response:
+200 OK
+
+{
+  "success": true,
+  "data": {
+    "history": [
+      {
+        "id": 1,
+        "status_id": 1,
+        "status_name": "Registered",
+        "changed_by_user_id": 101,
+        "changed_by_user_name": "Admin User",
+        "changed_at": "2026-01-01T12:00:00Z",
+        "old_status_id": null
+      },
+      {
+        "id": 2,
+        "status_id": 2,
+        "status_name": "Medical Pending",
+        "changed_by_user_id": 101,
+        "changed_by_user_name": "Admin User",
+        "changed_at": "2026-01-15T15:00:00Z",
+        "old_status_id": 1
+      },
+      {
+        "id": 3,
+        "status_id": 3,
+        "status_name": "Medical Fit",
+        "changed_by_user_id": 102,
+        "changed_by_user_name": "Employee User",
+        "changed_at": "2026-01-30T09:00:00Z",
+        "old_status_id": 2
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total_pages": 1,
+      "total_items": 3
+    }
+  }
+}
+
+
+
+
+==================================================
+ERROR HANDLING SUMMARY
+==================================================
+- 401 Unauthorized — invalid or missing JWT token
+- 403 Forbidden — insufficient permissions
+- 404 Not Found — resource does not exist
+- 422 Unprocessable Entity — invalid or missing input data
+- 500 Internal Server Error — unexpected server failure
+
+
+==================================================
+PAGINATION & FILTERING SUMMARY
+==================================================
+- Use query parameters `page` and `limit` for pagination on list endpoints.
+- Support filtering on relevant fields like status, region, name, etc.
+- Responses include pagination metadata (total counts, pages, current page).
+
+
+==================================================
+JOI VALIDATION SCHEMA NOTES (FOR DEVELOPERS)
+==================================================
+- All request bodies are validated using Joi schemas.
+- Examples:
+  - Worker creation: required strings for full_name, regex validation for phone_number, date validation for date_of_birth with age checks.
+  - Status updates: enum checks and cross-field validation.
+- Validation errors return 422 with detailed messages per field.

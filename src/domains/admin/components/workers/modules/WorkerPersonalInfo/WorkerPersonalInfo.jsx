@@ -295,7 +295,7 @@ function WorkerPersonalInfo() {
 
       const response = await updateWorker(dataToSend, id);
 
-      addMessage(response?.success, response?.message);
+      addMessage(response?.success, response?.message || "Personal information added successfully");
 
       // Clear form and photos after successful submission
       setFormData({

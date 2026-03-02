@@ -1,6 +1,6 @@
 TASK: Worker Emergency Contact, Visa & LMIS Management Features
 
-Assigned to: Abdurehman
+Assigned to: Nebil Kebede
 Domain: Admin → Workers → Modules
 Priority: High
 Deadline: March 5th, 2026
@@ -115,7 +115,6 @@ All API functions MUST:
 - Use try / catch
 - Throw meaningful error messages
 - Return the relevant data from the response.
-- Some API responses may be nested (e.g. response.data.data).
 - Inspect the API response and return the correct level of data.
 - Do NOT assume the response structure.
 - Use camelCase naming
