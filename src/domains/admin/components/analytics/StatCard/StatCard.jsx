@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 // Helper to format numbers (1000 -> 1K, 1000000 -> 1M)
 const formatNumber = (num) => {
@@ -16,9 +16,6 @@ const StatCard = ({ title, value, icon, colorClass }) => {
     let start = 0;
     const end = parseInt(value);
     if (start === end) return;
-
-    let totalMilisecondDuraton = 1000;
-    let incrementTime = (totalMilisecondDuraton / end) * 5;
 
     let timer = setInterval(() => {
       start += Math.ceil(end / 20); // Increment speed

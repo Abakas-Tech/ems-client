@@ -7,9 +7,9 @@ import {
   deleteFile,
 } from "../../../api/file.api";
 import FileFilters from "../FileFilters/FileFilters";
-import useLoader from "../../../../../context/Loader/UseLoader";
-import useResponse from "../../../../../context/response/UseResponse";
-import { useDelete } from "../../../../../context/Delete/UseDelete";
+import useLoader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
+import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
 const File = () => {
@@ -17,10 +17,6 @@ const File = () => {
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
-  // --- View Control ---
-  // 'list' = Table + Filters
-  // 'create' = Upload Form
-  // 'edit' = Update Form
   const [view, setView] = useState("list");
 
   const [filesData, setFilesData] = useState({
@@ -60,9 +56,9 @@ const File = () => {
 
       // Ensure we match the data structure returned by your API
       setFilesData({
-        files: response.files || [],
-        total: response.pagination.total || 0,
-        pagination: response.pagination || {},
+        files: response?.data.files || [],
+        total: response?.data.pagination?.total || 0,
+        pagination: response?.data.pagination || {},
       });
     } catch (err) {
       addMessage(false, err.message);
@@ -71,7 +67,7 @@ const File = () => {
     }
   };
 
-  // --- Handlers ---
+  //  Handlers 
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -94,10 +90,10 @@ const File = () => {
       let response;
       if (view === "edit") {
         response = await updateFile(editingFile.id, formData);
-        addMessage("success", "File details updated successfully!");
+        addMessage(response.success, response.Message || "File details updated successfully!");
       } else {
         response = await uploadFile(formData);
-        addMessage("success", "File uploaded successfully!");
+        addMessage(response.success, response.Message || "File uploaded successfully!");
       }
       setView("list");
       setEditingFile(null);
@@ -112,8 +108,8 @@ const File = () => {
     openModal(async () => {
       showLoader();
       try {
-        await deleteFile(id);
-        addMessage("success", "File deleted successfully!");
+        const response = await deleteFile(id);
+        addMessage(response.success, response.Message || "File deleted successfully!");
         fetchData();
       } catch (err) {
         addMessage(false, err.message);
@@ -189,7 +185,7 @@ const File = () => {
               },
               {
                 type: "download",
-                onClick: (row) => handleDownload(row),
+                // onClick: (row) => handleDownload(row),
               },
               {
                 type: "delete",

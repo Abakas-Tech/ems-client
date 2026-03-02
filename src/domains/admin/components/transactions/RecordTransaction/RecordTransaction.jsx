@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createTransaction } from "../../../api/finance.api";
-import useLoader from "../../../../../context/Loader/UseLoader";
-import useResponse from "../../../../../context/response/UseResponse";
+import useLoader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 const RecordTransaction = ({
@@ -82,17 +82,15 @@ const RecordTransaction = ({
 
       let response;
       if (isEditMode) {
-        response = await updateTransaction(initialData.id, payload);
+        // response = await updateTransaction(initialData.id, payload);
       } else {
         response = await createTransaction(payload);
       }
 
-      addMessage(true, response.message || "Transaction saved successfully");
+      addMessage(response?.success || false, response?.message || "Transaction saved successfully");
       onSuccess();
     } catch (err) {
-      const msg =
-        err.response?.data?.message || err.message || "Operation failed";
-      addMessage(false, msg);
+      addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
       hideLoader();

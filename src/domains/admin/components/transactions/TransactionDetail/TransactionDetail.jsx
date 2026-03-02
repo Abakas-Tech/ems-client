@@ -1,8 +1,8 @@
 // TransactionDetail.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchTransactionDetails } from "../../../api/finance.api";
-import useLoader from "../../../../../context/Loader/UseLoader";
-import useResponse from "../../../../../context/response/UseResponse";
+import useLoader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 const TransactionDetail = ({ transactionId, onBack }) => {
   const [transaction, setTransaction] = useState(null);
@@ -13,16 +13,17 @@ const TransactionDetail = ({ transactionId, onBack }) => {
     const getDetails = async () => {
       showLoader();
       try {
-        const { data } = await fetchTransactionDetails(transactionId);
-        setTransaction(data);
+        const response = await fetchTransactionDetails(transactionId);
+        setTransaction(response.data);
       } catch (err) {
-        addMessage("error", err.message);
+        addMessage(false, err.message);
         onBack(); // Go back if fetch fails
       } finally {
         hideLoader();
       }
     };
     if (transactionId) getDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionId]);
 
   if (!transaction) return null;
