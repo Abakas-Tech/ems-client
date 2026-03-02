@@ -87,9 +87,9 @@ const ListingComponent = ({
                       className="form-control form-control-sm"
                       autoFocus
                       style={{
-                        height: "100%", 
-                        padding: "0 0.5rem", 
-                        fontSize: "1rem", 
+                        height: "100%",
+                        padding: "0 0.5rem",
+                        fontSize: "1rem",
                         boxSizing: "border-box",
                       }}
                       value={tempValue}
@@ -114,24 +114,32 @@ const ListingComponent = ({
                 className={`align-middle text-nowrap ${fewColumns ? "px-5" : ""}`}
               >
                 <ActionButtons
-                  actions={actions.map((action) => {
-                    if (action.type === "rename") {
-                      const renameableCol = columns.find(
-                        (col) => col.renameable,
-                      );
-                      if (!renameableCol) return action;
-                      return {
-                        ...action,
-                        onClick: () =>
-                          startRename(
-                            row,
-                            renameableCol.accessor,
-                            action.onClick,
-                          ),
-                      };
-                    }
-                    return action;
-                  })}
+                  actions={actions
+                    // Filter based on showOn
+                    .filter((action) => {
+                      if (action.showOn === undefined) return true;
+                      return Boolean(row.is_active) === action.showOn;
+                    })
+                    // Preserve rename logic
+                    .map((action) => {
+                      if (action.type === "rename") {
+                        const renameableCol = columns.find(
+                          (col) => col.renameable,
+                        );
+                        if (!renameableCol) return action;
+
+                        return {
+                          ...action,
+                          onClick: () =>
+                            startRename(
+                              row,
+                              renameableCol.accessor,
+                              action.onClick,
+                            ),
+                        };
+                      }
+                      return action;
+                    })}
                   row={row}
                 />
               </td>

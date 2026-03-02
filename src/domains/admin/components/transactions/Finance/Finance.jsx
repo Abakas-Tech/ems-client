@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import TransactionFilters from "../../transactions/TransactionFilters/TransactionFilters";
 import RecordTransaction from "../../transactions/RecordTransaction/RecordTransaction.jsx";
 import TransactionDetail from "../../transactions/TransactionDetail/TransactionDetail";
-import { fetchTransactions } from "../../../api/finance.api";
+import { fetchTransactions, deleteTransaction } from "../../../api/finance.api";
 import useLoader from "../../../../../context/Loader/UseLoader";
 import useResponse from "../../../../../context/response/UseResponse";
-import { useDelete } from "../../../../../context/Delete/UseDelete";
+import { useDelete } from "../../../../../context/Delete/UseDelete.jsx";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
+import Badge from "../../../../../shared/components/Badge/Badge.jsx";
 
 const FinancePage = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -132,11 +133,12 @@ const FinancePage = () => {
           {
             header: "Category",
             render: (row) => (
-              <span
-                className={`badge border ${row.category === "income" ? "text-success" : "text-danger"}`}
-              >
-                {row.category.toUpperCase()}
-              </span>
+              <>
+                <Badge
+                  content={row.category.toUpperCase()}
+                  color={row.category === "income" ? "green" : "red"}
+                />
+              </>
             ),
           },
           {
@@ -151,6 +153,17 @@ const FinancePage = () => {
               setSelectedTransactionId(row.id);
               setView("detail");
             },
+          },
+          {
+            type: "edit",
+            onClick: (row) => {
+              setEditingTransaction(row);
+              setView("edit");
+            },
+          },
+          {
+            type: "delete",
+            onClick: (row) => handleDelete(row.id),
           },
         ]}
         pagination={{

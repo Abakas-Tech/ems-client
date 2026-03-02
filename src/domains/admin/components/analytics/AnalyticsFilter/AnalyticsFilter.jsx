@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "../../files/FileFilters/FileFilters.module.css"; // Reuse your existing styling
 
 const AnalyticsFilters = ({ filters, onFilterChange, onClear, months }) => {

@@ -2,9 +2,16 @@
 import { axiosInstance } from "../../../utils/axios";
 
 const fetchDashboardData = async (params) => {
-  // params: { period: 'yearly', year: 2026 } or { period: 'monthly', year: 2026, month: 1 }
-  const response = await axiosInstance.get("/analytics/dashboard", { params });
-  return response.data.data;
+  try {
+    const response = await axiosInstance.get("/analytics/dashboard", {
+      params,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Fetch dashboard data error",
+    );
+  }
 };
 
-export { fetchDashboardData };
+export default fetchDashboardData;

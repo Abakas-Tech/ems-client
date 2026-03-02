@@ -85,8 +85,11 @@ const ActiveWorkers = () => {
     openModal(
       async () => {
         try {
-         const response= await deleteWorker(id, false);
-          addMessage(response?.success, response?.message || "Worker archived successfully");
+          const response = await deleteWorker(id, false);
+          addMessage(
+            response?.success,
+            response?.message || "Worker archived successfully",
+          );
           fetchWorkers();
         } catch (err) {
           addMessage(false, err.message);
@@ -105,7 +108,10 @@ const ActiveWorkers = () => {
       async () => {
         try {
           const response = await deleteWorker(id, true);
-          addMessage(response?.success, response?.message || "Worker deleted successfully");
+          addMessage(
+            response?.success,
+            response?.message || "Worker deleted successfully",
+          );
           fetchWorkers();
         } catch (err) {
           addMessage(false, err.message);
@@ -142,6 +148,7 @@ const ActiveWorkers = () => {
       </div>
 
       <ListingComponent
+        showAvater={true}
         filtersComponent={
           <ActiveWorkersFilters
             filters={filters}

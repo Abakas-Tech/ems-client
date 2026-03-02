@@ -83,8 +83,11 @@ const ArchivedWorkers = () => {
     openModal(
       async () => {
         try {
-          const response=await restoreWorker(id);
-          addMessage(response?.success, response?.message || "Worker restored successfully");
+          const response = await restoreWorker(id);
+          addMessage(
+            response?.success,
+            response?.message || "Worker restored successfully",
+          );
           setWorkers((prev) => prev.filter((w) => w.id !== id));
           setTotalItems((prev) => prev - 1);
         } catch (err) {
@@ -104,7 +107,10 @@ const ArchivedWorkers = () => {
       async () => {
         try {
           const response = await deleteArchivedWorker(id);
-          addMessage(response?.success, response?.message || "Worker deleted successfully");
+          addMessage(
+            response?.success,
+            response?.message || "Worker deleted successfully",
+          );
           setWorkers((prev) => prev.filter((w) => w.id !== id));
           setTotalItems((prev) => prev - 1);
         } catch (err) {
@@ -136,6 +142,7 @@ const ArchivedWorkers = () => {
         </div>
       </div>
       <ListingComponent
+        showAvater={true}
         filtersComponent={
           <ActiveWorkersFilters
             filters={filters}

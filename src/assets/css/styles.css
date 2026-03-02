@@ -12028,42 +12028,36 @@ th.next.available,
   background: color-mix(in srgb, var(--greencolor), transparent 90%);
 }
 @media print {
-  /* 1. Hide the sidebar and header completely */
-  .d-navigation,
-  header,
-  .card-footer,
-  button[aria-label="Back"] {
+  /* 1. Hide everything by default, then show ONLY the receipt */
+  body * {
+    visibility: hidden;
+  }
+
+  #printable-receipt, #printable-receipt * {
+    visibility: visible;
+  }
+
+  /* 2. Position the receipt at the very top left of the page */
+  #printable-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 3. Hide common layout wrappers that might have background colors or borders */
+  header, .header, .navbar, .d-navigation, .sidebar, footer, .card-footer, button {
     display: none !important;
   }
 
-  /* 2. Reset the main content container */
-  /* We must force margin-left to 0 to remove the sidebar gap */
-  .flex-grow-1 {
-    margin-left: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-  }
-
-  /* 3. Remove padding from the main tag and body */
-  main,
-  .p-3,
-  .dashboard-wraper {
-    padding: 0 !important;
+  /* 4. Reset spacing on body/html to prevent white gaps */
+  html, body {
+    height: auto;
     margin: 0 !important;
-  }
-
-  /* 4. Ensure the receipt card takes full width and remove shadows */
-  #printable-receipt {
-    width: 100% !important;
-    border: 1px solid #eee !important; /* Optional: adds a light border for the print */
-    box-shadow: none !important;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  /* 5. Hide the 'Transaction Receipt' title if you don't want it in the print */
-  h2.fw-bold.text-dark.mb-1 {
-    display: none;
+    padding: 0 !important;
+    overflow: visible;
   }
 }
+

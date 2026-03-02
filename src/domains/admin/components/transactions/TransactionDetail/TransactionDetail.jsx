@@ -1,28 +1,38 @@
 // TransactionDetail.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchTransactionDetails } from "../../../api/finance.api";
-import useLoader from "../../../../../context/Loader/UseLoader";
-import useResponse from "../../../../../context/response/UseResponse";
+import useLoader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import ProfileCell from "../../../../../shared/components/ProfileCell/ProfileCell";
+import Badge from "../../../../../shared/components/Badge/Badge";
 const TransactionDetail = ({ transactionId, onBack }) => {
   const [transaction, setTransaction] = useState(null);
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
+  const ROLE_MAP = {
+    1: "Admin",
+    2: "Employee",
+    3: "Partner",
+    4: "Worker",
+    5: "Employer",
+  };
 
   useEffect(() => {
     const getDetails = async () => {
       showLoader();
       try {
-        const { data } = await fetchTransactionDetails(transactionId);
-        setTransaction(data);
+        const response = await fetchTransactionDetails(transactionId);
+        setTransaction(response.data);
       } catch (err) {
-        addMessage("error", err.message);
+        addMessage(false, err.message);
         onBack(); // Go back if fetch fails
       } finally {
         hideLoader();
       }
     };
     if (transactionId) getDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionId]);
 
   if (!transaction) return null;
@@ -35,7 +45,7 @@ const TransactionDetail = ({ transactionId, onBack }) => {
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h2 className="fw-bold text-dark mb-1">Transaction Receipt</h2>
+          <h3 className="fw-bold text-dark mb-1">Transaction Receipt</h3>
         </div>
         <BackButton onClick={onBack} />
       </div>
@@ -59,18 +69,18 @@ const TransactionDetail = ({ transactionId, onBack }) => {
                 User
               </h6>
               <div className="d-flex align-items-center gap-3">
-                <div
-                  className="rounded-circle text-custom-green d-flex align-items-center justify-content-center"
-                  style={{ width: "50px", height: "50px" }}
-                >
-                  <i className="bi bi-person fs-4 text-secondary"></i>
-                </div>
+                <ProfileCell
+                  profile={{
+                    firstName: transaction?.user_name,
+                    image: transaction?.profile_photo_url,
+                  }}
+                />
                 <div>
                   <h5 className="mb-0 fw-bold">
-                    {transaction.user?.name || "Unknown User"}
+                    {transaction?.user_name || "Unknown User"}
                   </h5>
                   <span className="badge bg-secondary-soft text-secondary text-capitalize">
-                    {transaction.user?.role || "Staff"}
+                    {ROLE_MAP[transaction?.user_role] || "Unknown Role"}
                   </span>
                 </div>
               </div>
@@ -94,7 +104,9 @@ const TransactionDetail = ({ transactionId, onBack }) => {
                 <label className="text-muted d-block small mb-1">
                   Category
                 </label>
-                <span className="fw-semibold">{transaction.category}</span>
+                <span className="fw-semibold">
+                  {transaction.category === "income" ? "Income" : "Expense"}
+                </span>
               </div>
               <div className="col-md-3 col-6">
                 <label className="text-muted d-block small mb-1">Date</label>
@@ -114,11 +126,10 @@ const TransactionDetail = ({ transactionId, onBack }) => {
               </div>
               <div className="col-md-3 col-6">
                 <label className="text-muted d-block small mb-1">Type</label>
-                <span
-                  className={`badge ${isIncome ? "bg-success" : "bg-danger"}`}
-                >
-                  {transaction.type || transaction.category}
-                </span>
+                <Badge
+                  content={transaction.category}
+                  color={transaction.category === "income" ? "green" : "red"}
+                />
               </div>
             </div>
           </div>
