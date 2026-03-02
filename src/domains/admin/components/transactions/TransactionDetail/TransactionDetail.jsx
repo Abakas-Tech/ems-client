@@ -40,7 +40,10 @@ const TransactionDetail = ({ transactionId, onBack }) => {
         <BackButton onClick={onBack} />
       </div>
 
-      <div className="card border-0 shadow-sm overflow-hidden">
+      <div
+        className="card border-0 shadow-sm overflow-hidden"
+        id="printable-receipt"
+      >
         {/* Top Status Bar */}
         <div
           style={{

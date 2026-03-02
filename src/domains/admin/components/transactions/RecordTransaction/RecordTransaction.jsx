@@ -20,6 +20,8 @@ const RecordTransaction = ({
     reference: "",
     description: "",
   });
+  
+// Get user id from  
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
