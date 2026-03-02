@@ -8585,7 +8585,7 @@ h3.pa-name {
   color: var(--greencolor) !important;
   background: color-mix(in srgb, var(--greencolor), transparent 90%);
 }
-.d-navigation ul li.active  {
+.d-navigation ul li.active {
   color: var(--greencolor) !important;
   background: color-mix(in srgb, var(--greencolor), transparent 90%);
 }
@@ -11988,6 +11988,10 @@ th.next.available,
   background: rgba(102, 16, 242, 0.1);
   color: #6610f2;
 }
+.widget-7 .stat-icon-circle {
+  background: rgba(255, 87, 34, 0.1);
+  color: #ff5722;
+}
 
 /* The Bottom Accent Line for the square feel */
 .stat-border-line {
@@ -12015,6 +12019,9 @@ th.next.available,
 }
 .widget-6 .stat-border-line {
   background: #6610f2;
+}
+.widget-7 .stat-border-line {
+  background: #ff5722;
 }
 .text-custom-green {
   color: var(--greencolor) !important;

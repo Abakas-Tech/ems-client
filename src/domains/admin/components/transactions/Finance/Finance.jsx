@@ -5,7 +5,7 @@ import TransactionDetail from "../../transactions/TransactionDetail/TransactionD
 import { fetchTransactions } from "../../../api/finance.api";
 import useLoader from "../../../../../context/Loader/UseLoader";
 import useResponse from "../../../../../context/response/UseResponse";
-import {  useDelete } from "../../../../../context/Delete/UseDelete";
+import { useDelete } from "../../../../../context/Delete/UseDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
 const FinancePage = () => {
@@ -36,7 +36,7 @@ const FinancePage = () => {
       const data = await fetchTransactions(filters);
       setTransactions(data);
     } catch (err) {
-      addMessage("error", err.message);
+      addMessage(false, err.message);
     } finally {
       hideLoader();
     }
@@ -47,10 +47,10 @@ const FinancePage = () => {
       showLoader();
       try {
         await deleteTransaction(id);
-        addMessage("success", "Transaction deleted successfully");
+        addMessage(true, "Transaction deleted successfully");
         loadTransactions();
       } catch (err) {
-        addMessage("error", err.message);
+        addMessage(false, err.message);
       } finally {
         hideLoader();
       }

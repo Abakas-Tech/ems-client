@@ -54,6 +54,13 @@ const RecordTransaction = ({
     if (!formData.transaction_date) {
       return addMessage(false, "Transaction date is required");
     }
+    // Check if the date is not in the future
+    if (
+      new Date(formData.transaction_date) >
+      new Date(new Date().toISOString().split("T")[0])
+    ) {
+      return addMessage(false, "Transaction date cannot be in the future");
+    }
     if (!formData.reference.trim()) {
       return addMessage(false, "Reference is required");
     }

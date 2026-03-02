@@ -104,8 +104,14 @@ const MyProfile = () => {
 
     if (!phone) return addMessage(false, "Phone number is required.");
 
-    if (!/^\d+$/.test(phone))
-      return addMessage(false, "Phone number must contain digits only.");
+    const phoneRegex = /^(?:\+?(251|974|966|971)[0-9]{7,12}|09[0-9]{8})$/;
+
+    if (!phoneRegex.test(phone)) {
+      return addMessage(
+        false,
+        "Phone number must start with 09 or include the country code (e.g. +2519xxx).",
+      );
+    }
 
     if (phone.length < 7 || phone.length > 15)
       return addMessage(false, "Phone number must be between 7 and 15 digits.");
