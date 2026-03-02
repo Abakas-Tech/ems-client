@@ -128,6 +128,194 @@ const deleteWorker = async (id, hard = false) => {
   }
 };
 
+// PASSPORT API
+
+// Create passport
+const createPassport = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/${workerId}/passport`,
+      formData,
+    );
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to create passport",
+    );
+  }
+};
+
+// Update passport
+const updatePassport = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/${workerId}/passport`,
+      formData,
+    );
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update passport",
+    );
+  }
+};
+
+// Get passport details
+const getPassportDetails = async (workerId) => {
+  try {
+    const response = await axiosInstance.get(`/workers/${workerId}/passport`);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get passport details",
+    );
+  }
+};
+
+// Delete passport
+const deletePassport = async (workerId) => {
+  try {
+    const response = await axiosInstance.delete(
+      `/workers/${workerId}/passport`,
+    );
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete passport",
+    );
+  }
+};
+
+// COC API
+
+// Create COC
+const createCoc = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/${workerId}/coc`,
+      formData,
+    );
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || error.message || "Failed to create COC",
+    );
+  }
+};
+
+// Update COC
+const updateCoc = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/${workerId}/coc`,
+      formData,
+    );
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || error.message || "Failed to update COC",
+    );
+  }
+};
+
+// Get COC details
+const getCocDetails = async (workerId) => {
+  try {
+    const response = await axiosInstance.get(`/workers/${workerId}/coc`);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get COC details",
+    );
+  }
+};
+
+// Delete COC
+const deleteCoc = async (workerId) => {
+  try {
+    const response = await axiosInstance.delete(`/workers/${workerId}/coc`);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || error.message || "Failed to delete COC",
+    );
+  }
+};
+
+// MEDICAL API
+
+// Create medical record
+const createMedicalRecord = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/${workerId}/medical`,
+      formData,
+    );
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to create medical record",
+    );
+  }
+};
+
+// Update medical
+const updateMedicalRecord = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/${workerId}/medical`,
+      formData,
+    );
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update medical record",
+    );
+  }
+};
+
+// Get medical details
+const getMedicalDetails = async (workerId) => {
+  try {
+    const response = await axiosInstance.get(`/workers/${workerId}/medical`);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get medical details",
+    );
+  }
+};
+
+// Delete medical record
+const deleteMedicalRecord = async (workerId) => {
+  try {
+    const response = await axiosInstance.delete(`/workers/${workerId}/medical`);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete medical record",
+    );
+  }
+};
+
 export {
   deleteWorker,
   createWorker,
@@ -138,4 +326,16 @@ export {
   getWorkerProfile,
   getArchivedWorkerProfile,
   restoreWorker,
+  createPassport,
+  updatePassport,
+  getPassportDetails,
+  deletePassport,
+  createCoc,
+  updateCoc,
+  getCocDetails,
+  deleteCoc,
+  createMedicalRecord,
+  updateMedicalRecord,
+  getMedicalDetails,
+  deleteMedicalRecord,
 };
