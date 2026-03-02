@@ -65,7 +65,7 @@ const File = () => {
         pagination: response.pagination || {},
       });
     } catch (err) {
-      addMessage("error", err.message);
+      addMessage(false, err.message);
     } finally {
       hideLoader();
     }
@@ -102,7 +102,7 @@ const File = () => {
       setView("list");
       setEditingFile(null);
     } catch (err) {
-      addMessage("error", err.message);
+      addMessage(false, err.message);
     } finally {
       hideLoader();
     }
@@ -116,7 +116,7 @@ const File = () => {
         addMessage("success", "File deleted successfully!");
         fetchData();
       } catch (err) {
-        addMessage("error", err.message);
+        addMessage(false, err.message);
       } finally {
         hideLoader();
       }
@@ -137,7 +137,7 @@ const File = () => {
         />
       ) : (
         <>
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
             <div>
               <h2 className="fw-bold text-dark mb-2">File Manager</h2>
               <p className="text-muted mb-0">

@@ -140,6 +140,18 @@ const Analytics = () => {
           colorClass="widget-5"
         />
         <StatCard
+          title="Commissions"
+          value={data.finance.period_commission}
+          icon="bi bi-cash-coin"
+          colorClass="widget-6"
+        />
+        <StatCard
+          title="Vat"
+          value={data.finance.period_vat}
+          icon="bi bi-percent"
+          colorClass="widget-7"
+        />
+        <StatCard
           title="Net Profit"
           value={data.finance.period_net_profit}
           icon="bi bi-cash-stack"
