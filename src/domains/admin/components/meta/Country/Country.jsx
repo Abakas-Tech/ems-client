@@ -26,13 +26,23 @@ const Country = () => {
   const { openModal } = useDelete();
 
   const [countries, setCountries] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+  });
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const fetchCountries = async () => {
+  const fetchCountries = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getCountries();
+      const response = await getCountries({page, limit});
       setCountries(response?.data || []);
+      setPagination({
+        page: response.pagination.page,
+        limit: response.pagination.limit,
+        total: response.pagination.total,
+      });
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -80,6 +90,9 @@ const Country = () => {
       }
     });
   };
+const handlePageChange = (newPage) => {
+  fetchCountries(newPage, pagination.limit);
+};
 
   // Handle creating a new country
   const handleCreate = async (inputValues) => {
@@ -147,7 +160,12 @@ const Country = () => {
         actions={actions}
         emptyState={emptyState}
         fewColumns={true}
-    
+        pagination={{
+          page: pagination.page,
+          limit: pagination.limit,
+          total: pagination.total,
+        }}
+        onPageChange={handlePageChange}
       />
 
       {/* Create Country Modal */}

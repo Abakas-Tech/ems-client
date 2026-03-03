@@ -1,9 +1,9 @@
 import { axiosInstance } from "../../../utils/axios";
 
 // Get all countries
-const getCountries = async () => {
+const getCountries = async (params = {}) => {
   try {
-    const response = await axiosInstance.get("/meta/countries");
+   const response = await axiosInstance.get("/meta/countries",{ params});
     return response.data;
   } catch (error) {
     throw new Error(
