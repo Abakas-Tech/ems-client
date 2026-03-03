@@ -72,9 +72,9 @@ const deleteCountry = async (id) => {
 
 //regions api
 // Get regions
-const getRegions = async () => {
+const getRegions = async (params = {}) => {
   try {
-    const response = await axiosInstance.get("/meta/regions");
+    const response = await axiosInstance.get("/meta/regions", { params });
     return response.data;
   } catch (error) {
     throw new Error(

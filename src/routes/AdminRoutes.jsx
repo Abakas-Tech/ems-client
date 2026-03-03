@@ -22,6 +22,7 @@ import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
 import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
 import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
 import Country from "../domains/admin/components/meta/Country/Country.jsx";
+import Region from "../domains/admin/components/meta/Region/Region.jsx";
 
 const AdminRoutes = () => (
   <Routes>
@@ -47,6 +48,7 @@ const AdminRoutes = () => (
       <Route path="workers/modules" element={<WorkerModuleManagement />} />
       <Route path="/workers/modules/:id/add" element={<ModulesList />} />
       <Route path="/meta-data/country" element={<Country />} />
+      <Route path="/meta-data/region" element={<Region />} />
 
       <Route
         path="/workers/modules/:id/personal"
