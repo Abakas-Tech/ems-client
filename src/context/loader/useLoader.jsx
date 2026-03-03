@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import loaderContext from "./LoaderContext.jsx";
 
-const useloader = () => useContext(loaderContext);
+const useLoader = () => useContext(loaderContext);
 
-export default useloader;
+export default useLoader;

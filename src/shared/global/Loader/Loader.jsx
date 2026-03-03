@@ -15,7 +15,7 @@ const dotVariants = {
   },
 };
 
-const loader = () => {
+const Loader = () => {
   const { loading } = useLoader();
 
   return (
@@ -63,4 +63,4 @@ const loader = () => {
   );
 };
 
-export default loader;
+export default Loader;

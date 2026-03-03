@@ -1,5 +1,5 @@
 import { createContext } from "react";
 
-const loaderContext = createContext();
+const LoaderContext = createContext();
 
-export default loaderContext;
+export default LoaderContext;
