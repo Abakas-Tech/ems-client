@@ -21,9 +21,10 @@ import ListUser from "./../domains/admin/pages/user/ListUser/ListUser";
 import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
 import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
 import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
-import Country from "../domains/admin/components/meta/Country/Country.jsx";
-import Region from "../domains/admin/components/meta/Region/Region.jsx";
-import Skill from "../domains/admin/components/meta/Skill/Skill.jsx";
+import SkillPage from "../domains/admin/pages/meta/SkillPage/SkillPage.jsx";
+import CountryPage from "../domains/admin/pages/meta/CountryPage/CountryPage.jsx";
+import JobPostionPage from "../domains/admin/pages/meta/JobPostionPage/JobPostionPage.jsx";
+import RegionPage from "../domains/admin/pages/meta/RegionPage/RegionPage.jsx";
 
 const AdminRoutes = () => (
   <Routes>
@@ -48,9 +49,11 @@ const AdminRoutes = () => (
       <Route path="/workers/archived" element={<ArchivedWorkers />} />
       <Route path="workers/modules" element={<WorkerModuleManagement />} />
       <Route path="/workers/modules/:id/add" element={<ModulesList />} />
-      <Route path="/meta-data/country" element={<Country />} />
-      <Route path="/meta-data/region" element={<Region />} />
-      <Route path="/meta-data/skill" element={<Skill />} />
+      <Route path="/meta-data/country" element={<CountryPage />} />
+      <Route path="/meta-data/region" element={<RegionPage />} />
+      <Route path="/meta-data/skill" element={<SkillPage />} />
+      <Route path="/meta-data/job-position" element={<JobPostionPage />} />
+
 
       <Route
         path="/workers/modules/:id/personal"
