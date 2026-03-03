@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { createTransaction } from "../../../api/finance.api";
+import { createTransaction, updateTransaction } from "../../../api/finance.api";
+import useProfile from "../../../../../context/Profile/useProfile";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
@@ -12,8 +13,10 @@ const RecordTransaction = ({
 }) => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
+  const { profile } = useProfile();
 
   const [formData, setFormData] = useState({
+    user_id: profile.id,
     amount: "",
     category: "",
     transaction_date: new Date().toISOString().split("T")[0],
@@ -27,6 +30,7 @@ const RecordTransaction = ({
   useEffect(() => {
     if (isEditMode && initialData) {
       setFormData({
+        user_id: initialData.user_id || profile.id,
         amount: initialData.amount || "",
         category: initialData.category || "",
         transaction_date: initialData.transaction_date?.split("T")[0] || "",
@@ -54,15 +58,11 @@ const RecordTransaction = ({
     if (!formData.transaction_date) {
       return addMessage(false, "Transaction date is required");
     }
-    // Check if the date is not in the future
     if (
       new Date(formData.transaction_date) >
       new Date(new Date().toISOString().split("T")[0])
     ) {
       return addMessage(false, "Transaction date cannot be in the future");
-    }
-    if (!formData.reference.trim()) {
-      return addMessage(false, "Reference is required");
     }
     if (!formData.description.trim()) {
       return addMessage(false, "Description is required");
@@ -82,7 +82,7 @@ const RecordTransaction = ({
 
       let response;
       if (isEditMode) {
-        // response = await updateTransaction(initialData.id, payload);
+        response = await updateTransaction(initialData.id, payload);
       } else {
         response = await createTransaction(payload);
       }
@@ -162,9 +162,7 @@ const RecordTransaction = ({
             </div>
 
             <div className="form-group col-md-6">
-              <label>
-                Reference <span className="text-danger">*</span>
-              </label>
+              <label>Reference</label>
               <input
                 type="text"
                 name="reference"

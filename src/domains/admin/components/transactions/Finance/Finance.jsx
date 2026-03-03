@@ -2,16 +2,17 @@ import React, { useState, useEffect } from "react";
 import TransactionFilters from "../../transactions/TransactionFilters/TransactionFilters";
 import RecordTransaction from "../../transactions/RecordTransaction/RecordTransaction.jsx";
 import TransactionDetail from "../../transactions/TransactionDetail/TransactionDetail";
-import { fetchTransactions } from "../../../api/finance.api";
-import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/response/useResponse";
-// import { useDelete } from "../../../../../context/Delete/useDelete";
+import { fetchTransactions, deleteTransaction } from "../../../api/finance.api";
+import useLoader from "../../../../../context/Loader/UseLoader";
+import useResponse from "../../../../../context/response/UseResponse";
+import { useDelete } from "../../../../../context/Delete/UseDelete.jsx";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
+import Badge from "../../../../../shared/components/Badge/Badge.jsx";
 
 const FinancePage = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
-  // const { openModal } = useDelete();
+  const { openModal } = useDelete();
 
   const [view, setView] = useState("list");
   const [transactions, setTransactions] = useState({ data: [], meta: {} });
@@ -28,7 +29,6 @@ const FinancePage = () => {
 
   useEffect(() => {
     if (view === "list") loadTransactions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, view]);
 
   const loadTransactions = async () => {
@@ -43,20 +43,20 @@ const FinancePage = () => {
     }
   };
 
-  // const handleDelete = (id) => {
-  //   openModal(async () => {
-  //     showLoader();
-  //     try {
-  //       const response = await deleteTransaction(id);
-  //       addMessage(response.success, response.Message || "Transaction deleted successfully");
-  //       loadTransactions();
-  //     } catch (err) {
-  //       addMessage(false, err.message);
-  //     } finally {
-  //       hideLoader();
-  //     }
-  //   });
-  // };
+  const handleDelete = (id) => {
+    openModal(async () => {
+      showLoader();
+      try {
+        await deleteTransaction(id);
+        addMessage(true, "Transaction deleted successfully");
+        loadTransactions();
+      } catch (err) {
+        addMessage(false, err.message);
+      } finally {
+        hideLoader();
+      }
+    });
+  };
 
   if (view === "create" || view === "edit") {
     return (
@@ -133,11 +133,12 @@ const FinancePage = () => {
           {
             header: "Category",
             render: (row) => (
-              <span
-                className={`badge border ${row.category === "income" ? "text-success" : "text-danger"}`}
-              >
-                {row.category.toUpperCase()}
-              </span>
+              <>
+                <Badge
+                  content={row.category.toUpperCase()}
+                  color={row.category === "income" ? "green" : "red"}
+                />
+              </>
             ),
           },
           {
@@ -152,6 +153,17 @@ const FinancePage = () => {
               setSelectedTransactionId(row.id);
               setView("detail");
             },
+          },
+          {
+            type: "edit",
+            onClick: (row) => {
+              setEditingTransaction(row);
+              setView("edit");
+            },
+          },
+          {
+            type: "delete",
+            onClick: (row) => handleDelete(row.id),
           },
         ]}
         pagination={{

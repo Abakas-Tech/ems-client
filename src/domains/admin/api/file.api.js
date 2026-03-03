@@ -4,7 +4,7 @@ import { axiosInstance } from "../../../utils/axios";
 const fetchFiles = async (params = {}) => {
   try {
     const response = await axiosInstance.get(`/files`, { params });
-    return response.data; 
+    return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch files");
   }
@@ -32,6 +32,14 @@ const updateFile = async (id, formData) => {
   }
 };
 
+const fetchFile = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/files/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to fetch file");
+  }
+};
 const deleteFile = async (id) => {
   try {
     const response = await axiosInstance.delete(`/files/${id}`);
@@ -41,4 +49,4 @@ const deleteFile = async (id) => {
   }
 };
 
-export { fetchFiles, uploadFile, updateFile, deleteFile };
+export { fetchFiles, uploadFile, updateFile, fetchFile, deleteFile };

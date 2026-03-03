@@ -110,6 +110,15 @@ const File = () => {
     }
   };
 
+  const handleDownload = (file) => {
+    if (!file.file_url) return;
+    const link = document.createElement("a");
+    link.href = file.file_url;
+    link.download = file.file_name || "download";
+    link.target = "_blank";
+    link.click();
+  };
+
   const handleDelete = (id) => {
     openModal(async () => {
       showLoader();
@@ -193,7 +202,7 @@ const File = () => {
               },
               {
                 type: "download",
-                // onClick: (row) => handleDownload(row),
+                onClick: (row) => handleDownload(row),
               },
               {
                 type: "delete",
