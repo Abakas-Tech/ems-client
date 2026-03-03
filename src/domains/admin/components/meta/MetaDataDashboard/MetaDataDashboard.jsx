@@ -39,12 +39,12 @@ function MetaDataDashboard() {
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <div className="agents-grid card rounded-3 border p-4 text-center">
               <div className="mt-4 mb-3">
-                <Link to="/admin/meta-data/add-language">
+                <Link to="/admin/meta-data/language">
                   <IoLanguage className="text-info" size={50} />
                 </Link>
               </div>
               <h5 className="fr-can-name lh-base mb-2">
-                <Link to="/admin/meta-data/add-language">Add Language</Link>
+                <Link to="/admin/meta-data/language">Language</Link>
               </h5>
             </div>
           </div>
@@ -67,12 +67,12 @@ function MetaDataDashboard() {
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <div className="agents-grid card rounded-3 border p-4 text-center">
               <div className="mt-4 mb-3">
-                <Link to="/admin/meta-data/add-city">
+                <Link to="/admin/meta-data/city">
                   <FaMapLocationDot className="text-info" size={50} />
                 </Link>
               </div>
               <h5 className="fr-can-name lh-base mb-2">
-                <Link to="/admin/meta-data/add-city">Add City</Link>
+                <Link to="/admin/meta-data/city">City</Link>
               </h5>
             </div>
           </div>
@@ -109,12 +109,12 @@ function MetaDataDashboard() {
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <div className="agents-grid card rounded-3 border p-4 text-center">
               <div className="mt-4 mb-3">
-                <Link to="/admin/meta-data/add-status">
+                <Link to="/admin/meta-data/worker-status">
                   <FiActivity className="text-info" size={50} />
                 </Link>
               </div>
               <h5 className="fr-can-name lh-base mb-2">
-                <Link to="/admin/meta-data/add-status">Add Status</Link>
+                <Link to="/admin/meta-data/worker-status"> Status</Link>
               </h5>
             </div>
           </div>

@@ -25,6 +25,8 @@ import SkillPage from "../domains/admin/pages/meta/SkillPage/SkillPage.jsx";
 import CountryPage from "../domains/admin/pages/meta/CountryPage/CountryPage.jsx";
 import JobPostionPage from "../domains/admin/pages/meta/JobPostionPage/JobPostionPage.jsx";
 import RegionPage from "../domains/admin/pages/meta/RegionPage/RegionPage.jsx";
+import LanguagePage from "../domains/admin/pages/meta/LanguagePage/LanguagePage.jsx";
+import WorkerStatusPage from "../domains/admin/pages/meta/WorkerStatusPage/WorkerStatusPage.jsx";
 
 const AdminRoutes = () => (
   <Routes>
@@ -53,6 +55,10 @@ const AdminRoutes = () => (
       <Route path="/meta-data/region" element={<RegionPage />} />
       <Route path="/meta-data/skill" element={<SkillPage />} />
       <Route path="/meta-data/job-position" element={<JobPostionPage />} />
+      <Route path="/meta-data/language" element={<LanguagePage />} />
+      <Route path="/meta-data/worker-status" element={<WorkerStatusPage />} />
+
+
 
 
       <Route

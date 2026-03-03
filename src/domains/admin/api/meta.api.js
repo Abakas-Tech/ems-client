@@ -459,9 +459,9 @@ const getWorkerStatusById = async (id) => {
 };
 
 // Get worker status
-const getWorkerStatuses = async () => {
+const getWorkerStatuses = async (params={}) => {
   try {
-    const response = await axiosInstance.get("/meta/worker-statuses");
+    const response = await axiosInstance.get("/meta/worker-statuses", { params });
     return response.data;
   } catch (error) {
     throw new Error(
