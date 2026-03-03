@@ -21,14 +21,17 @@ import ListUser from "./../domains/admin/pages/user/ListUser/ListUser";
 import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
 import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
 import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
+import PassportPage from "../domains/admin/pages/passport/Passport.jsx";
+import CocPage from "../domains/admin/pages/coc/Coc.jsx";
+import MedicalPage from "../domains/admin/pages/medical/Medical.jsx";
 
 const AdminRoutes = () => (
   <Routes>
     <Route
       element={
         <ProtectedRoute>
-        <AdminLayout />
-         </ProtectedRoute>
+          <AdminLayout />
+        </ProtectedRoute>
       }
     >
       <Route path="settings" element={<ChangePasswordPage />} />
@@ -49,8 +52,11 @@ const AdminRoutes = () => (
         path="/workers/modules/:id/personal"
         element={<WorkerPesonalInfo />}
       />
-
+      <Route path="workers/modules/:id/passport" element={<PassportPage />} />
+      <Route path="workers/modules/:id/coc" element={<CocPage />} />
+      <Route path="workers/modules/:id/medical" element={<MedicalPage />} />
       <Route path="/meta-data" element={<MetaDataDashboard />} />
+      <Route path="*" element={<NotFound />} />
     </Route>
   </Routes>
 );
