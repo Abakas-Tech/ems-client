@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginWithPhone } from "../../../api/auth.api";
 import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/Response/useResponse";
+import useResponse from "../../../../../context/response/useResponse";
 
 import { setAccessToken } from "../../../../../utils/axios";
 

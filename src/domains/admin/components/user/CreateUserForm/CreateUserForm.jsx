@@ -5,9 +5,9 @@ import {
   revokePermissions,
 } from "../../../api/permission.api";
 import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/Response/useResponse";
 import { useNavigate } from "react-router-dom";
 import BackButton from "./../../../../../shared/components/BackButton/BackButton";
+import useResponse from "../../../../../context/response/useResponse";
 
 const PERMISSIONS = [
   "manage_users",
@@ -142,13 +142,13 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       return false;
     }
 
-   if (role !== "5" && (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
-     addMessage(
-       false,
-       !email ? "Email is required." : "Please enter a valid email address.",
-     );
-     return false;
-   }
+    if (role !== "5" && (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+      addMessage(
+        false,
+        !email ? "Email is required." : "Please enter a valid email address.",
+      );
+      return false;
+    }
     // Phone number: digits only, length 7–15
     if (phoneNumber && !/^\d+$/.test(phoneNumber)) {
       addMessage(false, "Phone number can contain digits only.");
@@ -205,20 +205,21 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
     showLoader();
     try {
-   let payload = removeEmptyFields({
-     full_name: fullName,
-     email,
-     phone_number: phoneNumber,
-     role: Number(role),
-     is_active: Number(status),
-     country: role === "3" || role === "5" ? country : undefined,
-     national_id: role === "5" ? nationalId : undefined,
-     city: role === "5" ? city : undefined,
-     address: role === "5" ? address : undefined,
-   });
+      let payload = removeEmptyFields({
+        full_name: fullName,
+        email,
+        phone_number: phoneNumber,
+        role: Number(role),
+        is_active: Number(status),
+        country: role === "3" || role === "5" ? country : undefined,
+        national_id: role === "5" ? nationalId : undefined,
+        city: role === "5" ? city : undefined,
+        address: role === "5" ? address : undefined,
+      });
 
-      let response = isEditMode
-        ? await updateUser(userData.id, payload)
+      let response =
+        isEditMode ?
+          await updateUser(userData.id, payload)
         : await createUser(payload);
 
       if (!response.success) {
@@ -272,9 +273,10 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
               {isEditMode ? "Update User" : "Create New User"}
             </h2>
             <p className="text-muted">
-              {isEditMode
-                ? "Update user details and permissions."
-                : "Add a new employee, partner, or employer and assign permissions."}
+              {isEditMode ?
+                "Update user details and permissions."
+              : "Add a new employee, partner, or employer and assign permissions."
+              }
             </p>
           </div>
           <BackButton onClick={handleBack} />

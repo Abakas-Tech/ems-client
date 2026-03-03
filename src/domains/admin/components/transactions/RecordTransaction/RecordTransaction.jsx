@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createTransaction } from "../../../api/finance.api";
 import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/Response/useResponse";
+import useResponse from "../../../../../context/response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 const RecordTransaction = ({
@@ -87,7 +87,10 @@ const RecordTransaction = ({
         response = await createTransaction(payload);
       }
 
-      addMessage(response?.success || false, response?.message || "Transaction saved successfully");
+      addMessage(
+        response?.success || false,
+        response?.message || "Transaction saved successfully",
+      );
       onSuccess();
     } catch (err) {
       addMessage(false, err.message);
@@ -198,11 +201,11 @@ const RecordTransaction = ({
               disabled={submitLoading}
               style={{ backgroundColor: "var(--maincolor)" }}
             >
-              {submitLoading
-                ? "Processing..."
-                : isEditMode
-                  ? "Update Record"
-                  : "Save Transaction"}
+              {submitLoading ?
+                "Processing..."
+              : isEditMode ?
+                "Update Record"
+              : "Save Transaction"}
             </button>
             <button
               type="button"

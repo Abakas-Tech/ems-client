@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { updateWorker } from "../../../../api/worker.api";
 import { getRegions, getCities } from "../../../../api/meta.api";
 import useLoader from "../../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../../context/Response/useResponse";
+import useResponse from "../../../../../../context/response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 
 function WorkerPersonalInfo() {
@@ -295,7 +295,10 @@ function WorkerPersonalInfo() {
 
       const response = await updateWorker(dataToSend, id);
 
-      addMessage(response?.success, response?.message || "Personal information added successfully");
+      addMessage(
+        response?.success,
+        response?.message || "Personal information added successfully",
+      );
 
       // Clear form and photos after successful submission
       setFormData({
@@ -320,7 +323,6 @@ function WorkerPersonalInfo() {
       setPhoto3x4(null);
       setPhotoStanding(null);
     } catch (err) {
-     
       addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
@@ -344,14 +346,13 @@ function WorkerPersonalInfo() {
                   <label>
                     Region <span className="text-danger">*</span>
                   </label>
-                  {regions.length === 0 ? (
+                  {regions.length === 0 ?
                     <div className="form-control text-muted">
-                      {regionsError
-                        ? "Failed to load regions"
-                        : "Loading regions..."}
+                      {regionsError ?
+                        "Failed to load regions"
+                      : "Loading regions..."}
                     </div>
-                  ) : (
-                    <select
+                  : <select
                       name="personal_region_id"
                       className="form-control"
                       value={formData.personal_information.region_id}
@@ -365,7 +366,7 @@ function WorkerPersonalInfo() {
                         </option>
                       ))}
                     </select>
-                  )}
+                  }
                 </div>
 
                 {/* City */}
@@ -379,9 +380,9 @@ function WorkerPersonalInfo() {
                     disabled={!formData.personal_information.region_id}
                   >
                     <option value="">
-                      {formData.personal_information.region_id
-                        ? "Select city"
-                        : "Select region first"}
+                      {formData.personal_information.region_id ?
+                        "Select city"
+                      : "Select region first"}
                     </option>
                     {cities.map((c) => (
                       <option key={c.id} value={c.id}>

@@ -4,7 +4,7 @@ import RecordTransaction from "../../transactions/RecordTransaction/RecordTransa
 import TransactionDetail from "../../transactions/TransactionDetail/TransactionDetail";
 import { fetchTransactions } from "../../../api/finance.api";
 import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/Response/useResponse";
+import useResponse from "../../../../../context/response/useResponse";
 // import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 

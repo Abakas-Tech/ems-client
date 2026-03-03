@@ -3,7 +3,7 @@ import StatCard from "../StatCard/StatCard";
 import AnalyticsFilter from "../AnalyticsFilter/AnalyticsFilter";
 import fetchDashboardData from "../../../api/analytics.api";
 import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/Response/useResponse";
+import useResponse from "../../../../../context/response/useResponse";
 
 const Analytics = () => {
   const { showLoader, hideLoader } = useLoader();

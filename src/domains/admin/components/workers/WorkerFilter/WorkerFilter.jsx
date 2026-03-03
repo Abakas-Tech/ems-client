@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import { getRegions } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/response/UseResponse";
+import useResponse from "../../../../../context/response/useResponse";
 import styles from "./WorkerFilter.module.css";
 
 const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
@@ -20,7 +20,7 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
     const fetchMeta = async () => {
       showLoader();
       try {
-        const response  = await getWorkerStatuses()
+        const response = await getWorkerStatuses();
         const statusData = response?.data || [];
         const regionResponse = await getRegions();
         const regionData = regionResponse?.data || [];

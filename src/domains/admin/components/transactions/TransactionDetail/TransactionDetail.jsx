@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { fetchTransactionDetails } from "../../../api/finance.api";
 import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/Response/useResponse";
+import useResponse from "../../../../../context/response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 const TransactionDetail = ({ transactionId, onBack }) => {
   const [transaction, setTransaction] = useState(null);

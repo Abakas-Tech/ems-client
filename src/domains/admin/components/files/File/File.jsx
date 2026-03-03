@@ -8,7 +8,7 @@ import {
 } from "../../../api/file.api";
 import FileFilters from "../FileFilters/FileFilters";
 import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/Response/useResponse";
+import useResponse from "../../../../../context/response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
@@ -67,7 +67,7 @@ const File = () => {
     }
   };
 
-  //  Handlers 
+  //  Handlers
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -90,10 +90,16 @@ const File = () => {
       let response;
       if (view === "edit") {
         response = await updateFile(editingFile.id, formData);
-        addMessage(response.success, response.Message || "File details updated successfully!");
+        addMessage(
+          response.success,
+          response.Message || "File details updated successfully!",
+        );
       } else {
         response = await uploadFile(formData);
-        addMessage(response.success, response.Message || "File uploaded successfully!");
+        addMessage(
+          response.success,
+          response.Message || "File uploaded successfully!",
+        );
       }
       setView("list");
       setEditingFile(null);
@@ -109,7 +115,10 @@ const File = () => {
       showLoader();
       try {
         const response = await deleteFile(id);
-        addMessage(response.success, response.Message || "File deleted successfully!");
+        addMessage(
+          response.success,
+          response.Message || "File deleted successfully!",
+        );
         fetchData();
       } catch (err) {
         addMessage(false, err.message);
@@ -121,7 +130,7 @@ const File = () => {
 
   return (
     <div className="dashboard-wraper">
-      {view !== "list" ? (
+      {view !== "list" ?
         <FileUpload
           isEditMode={view === "edit"}
           initialData={editingFile}
@@ -131,8 +140,7 @@ const File = () => {
             setEditingFile(null);
           }}
         />
-      ) : (
-        <>
+      : <>
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
             <div>
               <h2 className="fw-bold text-dark mb-2">File Manager</h2>
@@ -204,7 +212,7 @@ const File = () => {
             }}
           />
         </>
-      )}
+      }
     </div>
   );
 };

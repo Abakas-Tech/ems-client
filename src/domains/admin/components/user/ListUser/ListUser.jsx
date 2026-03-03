@@ -4,7 +4,7 @@ import ListingComponent from "../../../../../shared/components/ListingComponent/
 import { getUsers, deleteUser, updateUser } from "../../../api/user.api";
 import { getPermission } from "../../../api/permission.api";
 import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/Response/useResponse";
+import useResponse from "../../../../../context/response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterUser from "./../../../components/user/FilterUser/FilterUser";
 import Badge from "../../../../../shared/components/Badge/Badge";

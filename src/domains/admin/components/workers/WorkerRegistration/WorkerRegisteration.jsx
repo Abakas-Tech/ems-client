@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { createWorker } from "../../../api/worker.api";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/response/UseResponse";
+import useResponse from "../../../../../context/response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
-
 
 function WorkerRegistration() {
   const navigate = useNavigate();
@@ -130,7 +129,10 @@ function WorkerRegistration() {
       // Send the request
       const response = await createWorker(dataToSend);
 
-      addMessage(response?.success, response?.message || "Worker registered successfully");
+      addMessage(
+        response?.success,
+        response?.message || "Worker registered successfully",
+      );
 
       // Reset form
       setFormData({
@@ -140,7 +142,6 @@ function WorkerRegistration() {
         personal_information: { sex: "", status_id: "" },
       });
     } catch (err) {
-    
       addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
@@ -223,18 +224,17 @@ function WorkerRegistration() {
                 Worker Status <span className="text-danger">*</span>
               </label>
 
-              {statuses === null ? (
+              {statuses === null ?
                 <div className="form-control text-muted">
                   Loading statuses...
                 </div>
-              ) : statusesError ? (
+              : statusesError ?
                 <div className="form-control text-danger">{statusesError}</div>
-              ) : statuses.length === 0 ? (
+              : statuses.length === 0 ?
                 <div className="form-control text-muted">
                   No statuses available
                 </div>
-              ) : (
-                <select
+              : <select
                   name="personal_status_id"
                   className="form-control"
                   value={formData.personal_information.status_id}
@@ -248,7 +248,7 @@ function WorkerRegistration() {
                     </option>
                   ))}
                 </select>
-              )}
+              }
             </div>
           </div>
         </div>

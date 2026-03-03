@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
-import useResponse from "../../../../../context/Response/useResponse";
+import useResponse from "../../../../../context/response/useResponse";
 
 const FileUpload = ({
   isEditMode = false,
@@ -180,13 +180,11 @@ const FileUpload = ({
                   ></i>
                   <h5 className="mt-2">Click or Drag File Here</h5>
                   <p className="text-muted small mb-0">
-                    {selectedFile ? (
+                    {selectedFile ?
                       <strong className="text-success">
                         {selectedFile.name}
                       </strong>
-                    ) : (
-                      "PDF, JPG, PNG or DOCX (Max 20MB)"
-                    )}
+                    : "PDF, JPG, PNG or DOCX (Max 20MB)"}
                   </p>
                 </div>
               </div>
@@ -203,11 +201,11 @@ const FileUpload = ({
             disabled={submitLoading}
             style={{ backgroundColor: "var(--maincolor)" }}
           >
-            {submitLoading
-              ? "Processing..."
-              : isEditMode
-                ? "Update Details"
-                : "Start Upload"}
+            {submitLoading ?
+              "Processing..."
+            : isEditMode ?
+              "Update Details"
+            : "Start Upload"}
           </button>
           <button
             type="button"
