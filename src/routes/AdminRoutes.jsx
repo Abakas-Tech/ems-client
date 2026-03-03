@@ -21,14 +21,15 @@ import ListUser from "./../domains/admin/pages/user/ListUser/ListUser";
 import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
 import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
 import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
+import Country from "../domains/admin/components/meta/Country/Country.jsx";
 
 const AdminRoutes = () => (
   <Routes>
     <Route
       element={
         <ProtectedRoute>
-        <AdminLayout />
-         </ProtectedRoute>
+          <AdminLayout />
+        </ProtectedRoute>
       }
     >
       <Route path="settings" element={<ChangePasswordPage />} />
@@ -45,6 +46,8 @@ const AdminRoutes = () => (
       <Route path="/workers/archived" element={<ArchivedWorkers />} />
       <Route path="workers/modules" element={<WorkerModuleManagement />} />
       <Route path="/workers/modules/:id/add" element={<ModulesList />} />
+      <Route path="/meta-data/country" element={<Country />} />
+
       <Route
         path="/workers/modules/:id/personal"
         element={<WorkerPesonalInfo />}
