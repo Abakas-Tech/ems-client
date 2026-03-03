@@ -3,14 +3,14 @@ import TransactionFilters from "../../transactions/TransactionFilters/Transactio
 import RecordTransaction from "../../transactions/RecordTransaction/RecordTransaction.jsx";
 import TransactionDetail from "../../transactions/TransactionDetail/TransactionDetail";
 import { fetchTransactions, deleteTransaction } from "../../../api/finance.api";
-import useLoader from "../../../../../context/Loader/UseLoader";
-import useResponse from "../../../../../context/response/UseResponse";
-import { useDelete } from "../../../../../context/Delete/UseDelete.jsx";
+import useloader from "../../../../../context/loader/useLoader";
+import useResponse from "../../../../../context/response/useResponse";
+import { useDelete } from "../../../../../context/Delete/useDelete.jsx";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import Badge from "../../../../../shared/components/Badge/Badge.jsx";
 
 const FinancePage = () => {
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
@@ -32,20 +32,20 @@ const FinancePage = () => {
   }, [filters, view]);
 
   const loadTransactions = async () => {
-    showLoader();
+    showloader();
     try {
       const data = await fetchTransactions(filters);
       setTransactions(data);
     } catch (err) {
       addMessage(false, err.message);
     } finally {
-      hideLoader();
+      hideloader();
     }
   };
 
   const handleDelete = (id) => {
     openModal(async () => {
-      showLoader();
+      showloader();
       try {
         await deleteTransaction(id);
         addMessage(true, "Transaction deleted successfully");
@@ -53,7 +53,7 @@ const FinancePage = () => {
       } catch (err) {
         addMessage(false, err.message);
       } finally {
-        hideLoader();
+        hideloader();
       }
     });
   };

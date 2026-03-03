@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginWithPhone } from "../../../api/auth.api";
-import useLoader from "../../../../../context/Loader/useLoader";
+import useloader from "../../../../../context/loader/useLoader";
 import useResponse from "../../../../../context/response/useResponse";
 
 import { setAccessToken } from "../../../../../utils/axios";
@@ -10,10 +10,9 @@ const LoginFormWithPhone = ({ role }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [nationalId, setNationalId] = useState("");
   const [passportNumber, setPassportNumber] = useState("");
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
- 
 
   const validateLength = (value, min, max, fieldName) => {
     if (!value) return `${fieldName} is required.`;
@@ -61,7 +60,7 @@ const LoginFormWithPhone = ({ role }) => {
     e.preventDefault();
     if (!validateInputs()) return;
 
-    showLoader();
+    showloader();
     try {
       const credentials = {
         role, // comes from parent
@@ -83,7 +82,6 @@ const LoginFormWithPhone = ({ role }) => {
 
       addMessage(response.data.success, response.data.message);
 
-
       // Clear form
       setPhoneNumber("");
       setNationalId("");
@@ -93,7 +91,7 @@ const LoginFormWithPhone = ({ role }) => {
     } catch (error) {
       addMessage(false, error.message);
     } finally {
-      hideLoader();
+      hideloader();
     }
   };
   return (

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { changePassword } from "../../api/auth.api";
-import useLoader from "../../../../context/Loader/useLoader";
+import useloader from "../../../../context/loader/useLoader";
 import useResponse from "../../../../context/response/useResponse";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
 // import { useDemoInfo } from "./../../../../context/Demo/useDemoInfo";
@@ -9,7 +9,7 @@ const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
   // const { openModal } = useDemoInfo();
@@ -34,7 +34,7 @@ const ChangePassword = () => {
     e.preventDefault();
     if (!validateFields()) return;
 
-    showLoader();
+    showloader();
     try {
       const response = await changePassword({
         current_password: oldPassword,
@@ -50,7 +50,7 @@ const ChangePassword = () => {
     } catch (error) {
       addMessage(false, error.message);
     } finally {
-      hideLoader();
+      hideloader();
     }
     // Instead of API call, show demo modal
     // openModal("changePassword");

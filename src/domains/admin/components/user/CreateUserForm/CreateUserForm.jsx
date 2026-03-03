@@ -4,7 +4,7 @@ import {
   grantPermissions,
   revokePermissions,
 } from "../../../api/permission.api";
-import useLoader from "../../../../../context/Loader/useLoader";
+import useloader from "../../../../../context/loader/useLoader";
 import { useNavigate } from "react-router-dom";
 import BackButton from "./../../../../../shared/components/BackButton/BackButton";
 import useResponse from "../../../../../context/response/useResponse";
@@ -43,7 +43,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [selectAll, setSelectAll] = useState(false);
 
   const navigate = useNavigate();
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
 
   const handleBack = () => {
@@ -203,7 +203,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     e.preventDefault();
     if (!validateFields()) return;
 
-    showLoader();
+    showloader();
     try {
       let payload = removeEmptyFields({
         full_name: fullName,
@@ -224,7 +224,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
       if (!response.success) {
         addMessage(false, response.message);
-        hideLoader();
+        hideloader();
         return;
       }
 
@@ -260,7 +260,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     } catch (error) {
       addMessage(false, error.message);
     } finally {
-      hideLoader();
+      hideloader();
     }
   };
 

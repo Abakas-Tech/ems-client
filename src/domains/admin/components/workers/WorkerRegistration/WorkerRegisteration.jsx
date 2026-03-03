@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createWorker } from "../../../api/worker.api";
 import { getWorkerStatuses } from "../../../api/meta.api";
-import useLoader from "../../../../../context/Loader/useLoader";
+import useloader from "../../../../../context/loader/useLoader";
 import useResponse from "../../../../../context/response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 function WorkerRegistration() {
   const navigate = useNavigate();
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
 
   const [formData, setFormData] = useState({
@@ -30,7 +30,7 @@ function WorkerRegistration() {
   // Fetch worker statuses on mount
   useEffect(() => {
     const loadStatuses = async () => {
-      showLoader();
+      showloader();
       try {
         const response = await getWorkerStatuses();
         setStatuses(response.data || []);
@@ -40,7 +40,7 @@ function WorkerRegistration() {
         setStatusesError("Could not load worker statuses");
         addMessage(false, error.message);
       } finally {
-        hideLoader();
+        hideloader();
       }
     };
 
@@ -112,7 +112,7 @@ function WorkerRegistration() {
     const { full_name, phone_number, personal_information, email } = formData;
 
     setSubmitLoading(true);
-    showLoader();
+    showloader();
 
     try {
       const dataToSend = {
@@ -145,7 +145,7 @@ function WorkerRegistration() {
       addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
-      hideLoader();
+      hideloader();
     }
   };
   return (

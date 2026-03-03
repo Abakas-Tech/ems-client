@@ -143,7 +143,7 @@ File: EmergencyContact.jsx
 
 - Functional component only
 - useState for local state
-- useLoader & useResponse hooks
+- useloader & useResponse hooks
 - Input fields + file upload (if any)
 - Refer to Worker Personal Information component for structure
 

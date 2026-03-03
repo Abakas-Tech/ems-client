@@ -1,14 +1,14 @@
 // TransactionDetail.jsx
 import { useEffect, useState } from "react";
 import { fetchTransactionDetails } from "../../../api/finance.api";
-import useLoader from "../../../../../context/Loader/useLoader";
+import useloader from "../../../../../context/loader/useLoader";
 import useResponse from "../../../../../context/response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import ProfileCell from "../../../../../shared/components/ProfileCell/ProfileCell";
 import Badge from "../../../../../shared/components/Badge/Badge";
 const TransactionDetail = ({ transactionId, onBack }) => {
   const [transaction, setTransaction] = useState(null);
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
   const ROLE_MAP = {
     1: "Admin",
@@ -20,7 +20,7 @@ const TransactionDetail = ({ transactionId, onBack }) => {
 
   useEffect(() => {
     const getDetails = async () => {
-      showLoader();
+      showloader();
       try {
         const response = await fetchTransactionDetails(transactionId);
         setTransaction(response.data);
@@ -28,7 +28,7 @@ const TransactionDetail = ({ transactionId, onBack }) => {
         addMessage(false, err.message);
         onBack(); // Go back if fetch fails
       } finally {
-        hideLoader();
+        hideloader();
       }
     };
     if (transactionId) getDetails();

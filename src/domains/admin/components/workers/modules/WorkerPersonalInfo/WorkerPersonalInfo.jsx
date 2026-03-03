@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { updateWorker } from "../../../../api/worker.api";
 import { getRegions, getCities } from "../../../../api/meta.api";
-import useLoader from "../../../../../../context/Loader/useLoader";
+import useloader from "../../../../../../context/loader/useLoader";
 import useResponse from "../../../../../../context/response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 
 function WorkerPersonalInfo() {
   const Navigate = useNavigate();
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
   const { id } = useParams();
 
@@ -44,7 +44,7 @@ function WorkerPersonalInfo() {
   // Load regions
   useEffect(() => {
     const loadRegions = async () => {
-      showLoader();
+      showloader();
       try {
         const regions = await getRegions();
         setRegions(regions.data || []);
@@ -52,7 +52,7 @@ function WorkerPersonalInfo() {
         setRegions([]);
         addMessage(false, err.message);
       } finally {
-        hideLoader();
+        hideloader();
       }
     };
     loadRegions();
@@ -65,7 +65,7 @@ function WorkerPersonalInfo() {
     if (!regionId) return setCities([]);
 
     const loadCities = async () => {
-      showLoader();
+      showloader();
       try {
         const response = await getCities(regionId);
         setCities(response.data || []);
@@ -73,7 +73,7 @@ function WorkerPersonalInfo() {
         addMessage(false, err.message);
         setCities([]);
       } finally {
-        hideLoader();
+        hideloader();
       }
     };
     loadCities();
@@ -235,7 +235,7 @@ function WorkerPersonalInfo() {
     }
 
     setSubmitLoading(true);
-    showLoader();
+    showloader();
     try {
       const dataToSend = new FormData();
 
@@ -326,7 +326,7 @@ function WorkerPersonalInfo() {
       addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
-      hideLoader();
+      hideloader();
     }
   };
 

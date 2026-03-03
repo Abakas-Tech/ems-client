@@ -141,7 +141,7 @@ File: TravelRecords.jsx
 
 - Functional component only
 - useState for local state
-- useLoader & useResponse hooks
+- useloader & useResponse hooks
 - Input fields + file upload
 - Refer to Worker Personal Information component for structure
 
@@ -161,7 +161,7 @@ File: Contract.jsx
 
 - Functional component only
 - useState for local state
-- useLoader & useResponse hooks
+- useloader & useResponse hooks
 - Input fields + file upload
 - Refer to Worker Personal Information component for structure
 

@@ -8,7 +8,7 @@ import {
 
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 
-import useLoader from "../../../../../context/Loader/useLoader";
+import useloader from "../../../../../context/loader/useLoader";
 import useResponse from "../../../../../context/response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
@@ -17,7 +17,7 @@ import BackButton from "../../../../../shared/components/BackButton/BackButton";
 const ActiveWorkers = () => {
   const navigate = useNavigate();
   const { openModal } = useDelete();
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
 
   const [workers, setWorkers] = useState([]);
@@ -32,7 +32,7 @@ const ActiveWorkers = () => {
 
   // Fetch Workers
   const fetchWorkers = useCallback(async () => {
-    showLoader();
+    showloader();
     try {
       const res = await listWorkers({
         ...filters,
@@ -45,7 +45,7 @@ const ActiveWorkers = () => {
     } catch (err) {
       addMessage(false, err.message);
     } finally {
-      hideLoader();
+      hideloader();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);
@@ -69,14 +69,14 @@ const ActiveWorkers = () => {
 
   // View worker
   const handleView = async (id) => {
-    showLoader();
+    showloader();
     try {
       const workerProfile = await getWorkerProfile(id);
       navigate(`/admin/workers/active/${id}`, { state: workerProfile });
     } catch (err) {
       addMessage(false, err.message);
     } finally {
-      hideLoader();
+      hideloader();
     }
   };
 

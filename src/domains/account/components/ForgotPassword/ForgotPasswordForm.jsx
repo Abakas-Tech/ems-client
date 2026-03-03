@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { passwordResetRequest } from "../../api/auth.api";
-import useLoader from "../../../../context/Loader/useLoader";
+import useloader from "../../../../context/loader/useLoader";
 import useResponse from "../../../../context/response/useResponse";
 // import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
   // const { openModal } = useDemoInfo();
@@ -28,7 +28,7 @@ const ForgotPasswordForm = () => {
     e.preventDefault();
     if (!validateEmail()) return;
 
-    showLoader();
+    showloader();
     try {
       const response = await passwordResetRequest({ email });
       addMessage(response.success, response.message);
@@ -36,7 +36,7 @@ const ForgotPasswordForm = () => {
     } catch (error) {
       addMessage(false, error.message);
     } finally {
-      hideLoader();
+      hideloader();
     }
     // openModal("resetPassword");
   };
