@@ -3,10 +3,10 @@ import { axiosInstance } from "../../../utils/axios";
 // skill apis
 
 // Assign skill to worker
-const assignWorkerSkill = async (workerId, data) => {
+const assignWorkerSkill = async (worker_id, data) => {
   try {
     const response = await axiosInstance.post(
-      `/worker-meta/${workerId}/skills`,
+      `/workers/meta/${worker_id}/skills`,
       data,
     );
     return response.data;
@@ -16,9 +16,9 @@ const assignWorkerSkill = async (workerId, data) => {
 };
 
 // List worker skills
-const getWorkerSkills = async (workerId) => {
+const getWorkerSkills = async (worker_id) => {
   try {
-    const response = await axiosInstance.get(`/worker-meta/${workerId}/skills`);
+    const response = await axiosInstance.get(`/workers/meta/${worker_id}/skills`);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Fetch skills error");
@@ -26,10 +26,10 @@ const getWorkerSkills = async (workerId) => {
 };
 
 // Remove worker skill
-const deleteWorkerSkill = async (workerId, skillId) => {
+const deleteWorkerSkill = async (worker_id, skill_id) => {
   try {
     const response = await axiosInstance.delete(
-      `/worker-meta/${workerId}/skills/${skillId}`,
+      `/workers/meta/${worker_id}/skills/${skill_id}`,
     );
     return response.data;
   } catch (error) {
@@ -42,7 +42,7 @@ const deleteWorkerSkill = async (workerId, skillId) => {
 const addWorkerLanguage = async (workerId, data) => {
   try {
     const response = await axiosInstance.post(
-      `/worker-meta/${workerId}/languages`,
+      `/workers/meta/${workerId}/languages`,
       data,
     );
     return response.data;
@@ -55,7 +55,7 @@ const addWorkerLanguage = async (workerId, data) => {
 const getWorkerLanguages = async (workerId) => {
   try {
     const response = await axiosInstance.get(
-      `/worker-meta/${workerId}/languages`,
+      `/workers/meta/${workerId}/languages`,
     );
     return response.data;
   } catch (error) {
@@ -67,7 +67,7 @@ const getWorkerLanguages = async (workerId) => {
 const updateWorkerLanguage = async (workerId, languageId, data) => {
   try {
     const response = await axiosInstance.patch(
-      `/worker-meta/${workerId}/languages/${languageId}`,
+      `/workers/meta/${workerId}/languages/${languageId}`,
       data,
     );
     return response.data;
@@ -80,7 +80,7 @@ const updateWorkerLanguage = async (workerId, languageId, data) => {
 const deleteWorkerLanguage = async (workerId, languageId) => {
   try {
     const response = await axiosInstance.delete(
-      `/worker-meta/${workerId}/languages/${languageId}`,
+      `/workers/meta/${workerId}/languages/${languageId}`,
     );
     return response.data;
   } catch (error) {
@@ -94,7 +94,7 @@ const deleteWorkerLanguage = async (workerId, languageId) => {
 const addWorkerPosition = async (workerId, data) => {
   try {
     const response = await axiosInstance.post(
-      `/worker-meta/${workerId}/positions`,
+      `/workers/meta/${workerId}/positions`,
       data,
     );
     return response.data;
@@ -107,7 +107,7 @@ const addWorkerPosition = async (workerId, data) => {
 const getWorkerPositions = async (workerId) => {
   try {
     const response = await axiosInstance.get(
-      `/worker-meta/${workerId}/positions`,
+      `/workers/meta/${workerId}/positions`,
     );
     return response.data;
   } catch (error) {
@@ -119,7 +119,7 @@ const getWorkerPositions = async (workerId) => {
 const updateWorkerPosition = async (workerId, positionId, data) => {
   try {
     const response = await axiosInstance.patch(
-      `/worker-meta/${workerId}/positions/${positionId}`,
+      `/workers/meta/${workerId}/positions/${positionId}`,
       data,
     );
     return response.data;
@@ -132,7 +132,7 @@ const updateWorkerPosition = async (workerId, positionId, data) => {
 const deleteWorkerPosition = async (workerId, positionId) => {
   try {
     const response = await axiosInstance.delete(
-      `/worker-meta/${workerId}/positions/${positionId}`,
+      `/workers/meta/${workerId}/positions/${positionId}`,
     );
     return response.data;
   } catch (error) {
@@ -146,7 +146,7 @@ const deleteWorkerPosition = async (workerId, positionId) => {
 const updateWorkerStatus = async (workerId, data) => {
   try {
     const response = await axiosInstance.patch(
-      `/worker-meta/${workerId}/status`,
+      `/workers/meta/${workerId}/status`,
       data,
     );
     return response.data;
@@ -161,7 +161,7 @@ const updateWorkerStatus = async (workerId, data) => {
 const addWorkerCountry = async (workerId, data) => {
   try {
     const response = await axiosInstance.post(
-      `/worker-meta/${workerId}/countries`,
+      `/workers/meta/${workerId}/countries`,
       data,
     );
     return response.data;
@@ -174,7 +174,7 @@ const addWorkerCountry = async (workerId, data) => {
 const getWorkerCountries = async (workerId) => {
   try {
     const response = await axiosInstance.get(
-      `/worker-meta/${workerId}/countries`,
+      `/workers/meta/${workerId}/countries`,
     );
     return response.data;
   } catch (error) {
@@ -186,7 +186,7 @@ const getWorkerCountries = async (workerId) => {
 const deleteWorkerCountry = async (workerId, countryId) => {
   try {
     const response = await axiosInstance.delete(
-      `/worker-meta/${workerId}/countries/${countryId}`,
+      `/workers/meta/${workerId}/countries/${countryId}`,
     );
     return response.data;
   } catch (error) {

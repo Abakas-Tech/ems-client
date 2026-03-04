@@ -172,7 +172,7 @@ const handleFilterChange = (e) => {
         columns={columns}
         actions={actions}
         emptyState={emptyState}
-        // fewColumns={true}
+        fewColumns={true}
         pagination={{
           page: pagination.page,
           limit: pagination.limit,
