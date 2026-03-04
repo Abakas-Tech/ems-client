@@ -67,9 +67,8 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
     <div className={styles.content}>
       <ul className={styles.nav}>
         {filteredItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = location.pathname.startsWith(item.path);
           const liClass = isActive ? "active" : "";
-
           if (item.isLogout) {
             return (
               <li key={item.label} className={liClass}>
