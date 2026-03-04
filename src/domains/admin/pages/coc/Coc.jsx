@@ -1,7 +1,7 @@
 import React from "react";
 import CocComponent from "../../components/workers/modules/coc/Coc";
 
-function CocPage() {
+function Coc() {
   return (
     <>
       <CocComponent />
@@ -9,4 +9,4 @@ function CocPage() {
   );
 }
 
-export default CocPage;
+export default Coc;

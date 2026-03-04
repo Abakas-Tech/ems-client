@@ -1,7 +1,7 @@
 import React from "react";
 import MedicalComponent from "../../components/workers/modules/medical/Medical";
 
-function MedicalPage() {
+function Medical() {
   return (
     <>
       <MedicalComponent />
@@ -9,4 +9,4 @@ function MedicalPage() {
   );
 }
 
-export default MedicalPage;
+export default Medical;

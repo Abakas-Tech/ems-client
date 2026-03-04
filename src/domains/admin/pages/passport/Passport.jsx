@@ -1,7 +1,7 @@
 import React from "react";
 import PassportComponent from "../../components/workers/modules/passport/Passport";
 
-function PassportPage() {
+function Passport() {
   return (
     <>
       <PassportComponent />
@@ -9,4 +9,4 @@ function PassportPage() {
   );
 }
 
-export default PassportPage;
+export default Passport;
