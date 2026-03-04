@@ -5,7 +5,7 @@ import useResponse from "../../../../../../context/response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createMedicalRecord } from "../../../../api/worker.api";
 
-function MedicalComponent() {
+function Medical() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showloader, hideloader } = useloader();
@@ -35,41 +35,64 @@ function MedicalComponent() {
     }
   };
 
-  const validateMedical = () => {
-    const { medical_status, issue_date, expiry_date } = formData;
+ const validateMedical = () => {
+   
 
-    if (!["fit", "unfit", "pending"].includes(medical_status)) {
-      return "Medical status must be fit, unfit, or pending";
-    }
+   const { medical_status, issue_date, expiry_date } = formData;
 
-    if (issue_date) {
-      const issue = new Date(issue_date);
-      if (isNaN(issue.getTime())) {
-        return "Issue date must be a valid date";
-      }
-    }
+   if (!["fit", "unfit", "pending"].includes(medical_status)) {
+     return "Medical status must be fit, unfit, or pending";
+   }
 
-    if (expiry_date) {
-      const expiry = new Date(expiry_date);
-      if (isNaN(expiry.getTime())) {
-        return "Expiry date must be a valid date";
-      }
-    }
+   const today = new Date();
+   today.setHours(0, 0, 0, 0);
 
-    if (
-      issue_date &&
-      expiry_date &&
-      new Date(expiry_date) <= new Date(issue_date)
-    ) {
-      return "Expiry date must be after issue date";
-    }
+   if (issue_date) {
+     const issue = new Date(issue_date);
 
-    if (!(medicalFile instanceof File)) {
-      return "Medical file is required";
-    }
+     if (isNaN(issue.getTime())) {
+       return "Issue date must be a valid date";
+     }
 
-    return null;
-  };
+     if (issue > today) {
+       return "Issue date cannot be in the future";
+     }
+   }
+
+   if (expiry_date) {
+     const expiry = new Date(expiry_date);
+
+     if (isNaN(expiry.getTime())) {
+       return "Expiry date must be a valid date";
+     }
+   }
+
+   if (issue_date && expiry_date) {
+     const issue = new Date(issue_date);
+     const expiry = new Date(expiry_date);
+
+     if (expiry <= issue) {
+       return "Expiry date must be after issue date";
+     }
+   }
+
+   if (!medicalFile) {
+     return "Medical file is required";
+   }
+
+   const allowedTypes = [
+     "image/jpeg",
+     "image/png",
+     "image/jpg",
+     "application/pdf",
+   ];
+
+   if (!allowedTypes.includes(medicalFile.type)) {
+     return "Medical file must be an image or PDF";
+   }
+
+   return null;
+ };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -107,7 +130,7 @@ function MedicalComponent() {
         dataToSend.append("expiry_date", formData.expiry_date);
       }
 
-      dataToSend.append("medical_file", medicalFile);
+      dataToSend.append("medical_file_url", medicalFile);
 
       const response = await createMedicalRecord(id, dataToSend);
 
@@ -231,4 +254,4 @@ function MedicalComponent() {
   );
 }
 
-export default MedicalComponent;
+export default Medical;

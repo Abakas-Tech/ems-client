@@ -5,7 +5,7 @@ import useResponse from "../../../../../../context/response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createPassport } from "../../../../api/worker.api";
 
-function PassportComponent() {
+function Passport() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showloader, hideloader } = useloader();
@@ -34,39 +34,58 @@ function PassportComponent() {
     }
   };
 
-  const validatePassport = () => {
-    const { passport_number, passport_issue_date, passport_expiry_date } =
-      formData;
+ const validatePassport = () => {
+   const passportNumber = formData.passport_number?.trim();
+   const issueDateRaw = formData.passport_issue_date;
+   const expiryDateRaw = formData.passport_expiry_date;
 
-    if (
-      !passport_number ||
-      passport_number.length < 5 ||
-      passport_number.length > 50
-    ) {
-      return "Passport number must be between 5 and 50 characters";
-    }
 
-    const issueDate = new Date(passport_issue_date);
-    const expiryDate = new Date(passport_expiry_date);
+  if (!passportNumber) {
+    return "Passport number is required";
+  }
+   
+   if (passportNumber.length < 5 || passportNumber.length > 50) {
+     return "Passport number must be between 5 and 50 characters";
+   }
 
-    if (isNaN(issueDate.getTime())) {
-      return "Passport issue date must be a valid date";
-    }
+   const issueDate = new Date(issueDateRaw);
+   const expiryDate = new Date(expiryDateRaw);
+   const today = new Date();
+   today.setHours(0, 0, 0, 0); 
 
-    if (isNaN(expiryDate.getTime())) {
-      return "Passport expiry date must be a valid date";
-    }
+   if (isNaN(issueDate.getTime())) {
+     return "Passport issue date must be a valid date";
+   }
 
-    if (expiryDate <= issueDate) {
-      return "Passport expiry date must be after issue date";
-    }
+   if (issueDate > today) {
+     return "Passport issue date cannot be in the future";
+   }
 
-   if (!passportScan || !passportScan.name) {
+   if (isNaN(expiryDate.getTime())) {
+     return "Passport expiry date must be a valid date";
+   }
+
+   if (expiryDate <= issueDate) {
+     return "Passport expiry date must be after issue date";
+   }
+
+   if (!passportScan) {
      return "Passport scan file is required";
    }
 
-    return null;
-  };
+   const allowedTypes = [
+     "image/jpeg",
+     "image/png",
+     "image/jpg",
+     "application/pdf",
+   ];
+
+   if (!allowedTypes.includes(passportScan.type)) {
+     return "Passport scan must be an image or PDF file";
+   }
+
+   return null;
+ };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,7 +110,7 @@ function PassportComponent() {
         "passport_issuing_country",
         formData.passport_issuing_country || "Ethiopia",
       );
-      dataToSend.append("passport_scan", passportScan);
+      dataToSend.append("passport_scan_url", passportScan);
 
         const response = await createPassport(id, dataToSend);
       addMessage(
@@ -133,6 +152,7 @@ function PassportComponent() {
               value={formData.passport_number}
               onChange={handleChange}
               required
+
             />
           </div>
 
@@ -204,4 +224,4 @@ function PassportComponent() {
   );
 }
 
-export default PassportComponent;
+export default Passport;

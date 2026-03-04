@@ -917,7 +917,7 @@ Request:
   - coc_assessment_date (string, required): ISO 8601 date (YYYY-MM-DD)
   - coc_issue_date (string, required): ISO 8601 date
   - coc_expiry_date (string, required): ISO 8601 date (must be after issue date)
-  - coc_document (file, required): COC document file (PDF or image)
+  - coc_document_url (file, required): COC document file (PDF or image)
 
 Response:
 201 Created
