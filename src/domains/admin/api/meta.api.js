@@ -159,16 +159,9 @@ const getCityById = async (id) => {
 
 
 // Get cities
-const getCities = async (region_id, name = "") => {
-  if (!region_id) return [];
-
+const getCities = async (params = {}) => {
   try {
-    const response = await axiosInstance.get("/meta/cities", {
-      params: {
-        region_id,
-        ...(name ? { name } : {}),
-      },
-    });
+    const response = await axiosInstance.get("/meta/cities", {params});
     return response.data;
   } catch (error) {
     throw new Error(

@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import {
-  deleteRegion,
+  deleteCity,
+  getCities,
+  updateCity,
+  createCity,
   getRegions,
-  updateRegion,
-  createRegion,
 } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -12,21 +13,23 @@ import { useDelete } from "../../../../../context/Delete/useDelete";
 import CreateMetaModal from "../CreateMetaModal/CreateMetaModal";
 import MetaFilter from "../MetaFilter/MetaFilter";
 
-// Validation for region name
-const validateRegionName = (name) => {
-  if (!name || !name.trim()) return "Region name is required";
-  if (name.length < 2) return "Region name must be at least 2 characters";
-  if (name.length > 100) return "Region name cannot exceed 100 characters";
-  if (!/^[A-Za-z\s]+$/.test(name))
-    return "Region name can only contain letters";
+// Validation for city name and region
+const validateCity = (name, regionId) => {
+  if (!name || !name.trim()) return "City name is required";
+  if (name.length < 2) return "City name must be at least 2 characters";
+  if (name.length > 100) return "City name cannot exceed 100 characters";
+  if (!/^[A-Za-z\s]+$/.test(name)) return "City name can only contain letters";
+  if (!regionId) return "Region must be selected";
   return null;
 };
 
-const Region = () => {
+const City = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
-const [filter, setFilter] = useState({ name: "" });
+
+  const [filter, setFilter] = useState({ name: "", region_id: "" });
+  const [cities, setCities] = useState([]);
   const [regions, setRegions] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -35,15 +38,16 @@ const [filter, setFilter] = useState({ name: "" });
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const fetchRegions = async (page = 1, limit = 10) => {
+  // Fetch cities
+  const fetchCities = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getRegions({ page, limit, name: filter.name });
-      setRegions(response?.data || []);
+      const response = await getCities({ ...filter, page, limit });
+      setCities(response?.data || []);
       setPagination({
-        page: response.pagination.page,
-        limit: response.pagination.limit,
-        total: response.pagination.total,
+        page: response.pagination?.page || 1,
+        limit: response.pagination?.limit || 10,
+        total: response.pagination?.total || response?.data?.length || 0,
       });
     } catch (err) {
       addMessage(false, err.message);
@@ -52,24 +56,35 @@ const [filter, setFilter] = useState({ name: "" });
     }
   };
 
+  // Fetch regions for dropdown
+  const fetchRegions = async () => {
+    try {
+      const response = await getRegions({ page: 1, limit: 100 });
+      setRegions(response?.data || []);
+    } catch (err) {
+      addMessage(false, err.message);
+    }
+  };
+
   useEffect(() => {
     fetchRegions();
+    fetchCities();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
-  // Handle renaming a region
+  // Handle city rename
   const handleRename = async (row, newName) => {
-    const error = validateRegionName(newName);
-    if (error) {
-      addMessage(false, error);
-      return;
-    }
+    const error = validateCity(newName, row.region_id);
+    if (error) return addMessage(false, error);
 
     showLoader();
     try {
-      const response = await updateRegion(row.id, { name: newName });
+      const response = await updateCity(row.id, {
+        name: newName,
+        region_id: row.region_id,
+      });
       addMessage(response?.success, response?.message);
-      fetchRegions();
+      fetchCities();
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -77,27 +92,22 @@ const [filter, setFilter] = useState({ name: "" });
     }
   };
 
+  // Handle filter change
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-
-    setFilter((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFilter((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleClearFilters = () => {
-    setFilter({ name: "" });
-  }
+  const handleClearFilters = () => setFilter({ name: "", region_id: "" });
 
-  // Handle deleting a region
+  // Handle delete city
   const handleDelete = (row) => {
     openModal(async () => {
       showLoader();
       try {
-        const response = await deleteRegion(row.id);
+        const response = await deleteCity(row.id);
         addMessage(response?.success, response?.message);
-        fetchRegions();
+        fetchCities();
       } catch (err) {
         addMessage(false, err.message);
       } finally {
@@ -106,24 +116,20 @@ const [filter, setFilter] = useState({ name: "" });
     });
   };
 
-  const handlePageChange = (newPage) => {
-    fetchRegions(newPage, pagination.limit);
-  };
+  // Handle page change
+  const handlePageChange = (newPage) => fetchCities(newPage, pagination.limit);
 
-  // Handle creating a new region
+  // Handle create city
   const handleCreate = async (inputValues) => {
-    const name = inputValues.name;
-    const error = validateRegionName(name);
-    if (error) {
-      addMessage(false, error);
-      return;
-    }
+    const { name, region_id } = inputValues;
+    const error = validateCity(name, region_id);
+    if (error) return addMessage(false, error);
 
     showLoader();
     try {
-      const response = await createRegion({ name });
+      const response = await createCity({ name, region_id });
       addMessage(response?.success, response?.message);
-      fetchRegions();
+      fetchCities();
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -132,32 +138,42 @@ const [filter, setFilter] = useState({ name: "" });
   };
 
   const columns = [
-    {
-      header: "Region Name",
-      accessor: "name",
-      renameable: true,
-    },
-  ];
+      { header: "City Name", accessor: "name", renameable: true },
+      { header: "Region", accessor: "region_name" },
+    ];
 
   const actions = [
     { type: "rename", onClick: handleRename },
     { type: "delete", onClick: handleDelete },
   ];
 
-  const fields = [{ name: "name", label: "Region Name" }];
-
+  const fields = [
+    {
+      name: "region_id",
+      label: "Region",
+      type: "select",
+      options: regions.map((r) => ({ value: r.id, label: r.name })),
+    },
+    { name: "name", label: "City Name" },
+  ];
+  const extraField = {
+    name: "region_id",
+    label: "Region",
+    type: "select",
+    options: regions.map((r) => ({ value: r.id, label: r.name })),
+  };
   const emptyState = {
-    title: "No regions found",
-    subtitle: "Add regions to see them listed here",
+    title: "No cities found",
+    subtitle: "Add cities to see them listed here",
   };
 
   return (
     <div className="dashboard-wraper">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         <div className="flex-grow-1">
-          <h2 className="fw-bold text-dark mb-2">Region Management</h2>
+          <h2 className="fw-bold text-dark mb-2">City Management</h2>
           <p className="text-muted mb-0">
-            Manage regions — create, rename, or delete entries as needed.
+            Manage cities — create, rename, or delete entries as needed.
           </p>
         </div>
 
@@ -165,40 +181,37 @@ const [filter, setFilter] = useState({ name: "" });
           className="btn btn-main"
           onClick={() => setShowCreateModal(true)}
         >
-          + Create Region
+          + Create City
         </button>
       </div>
 
       <ListingComponent
-        data={regions}
+        data={cities}
         columns={columns}
         actions={actions}
         emptyState={emptyState}
-        pagination={{
-          page: pagination.page,
-          limit: pagination.limit,
-          total: pagination.total,
-        }}
+        pagination={pagination}
         onPageChange={handlePageChange}
         filtersComponent={
           <MetaFilter
             filter={filter}
             onFilterChange={handleFilterChange}
             onClear={handleClearFilters}
+            extraField={extraField }
           />
         }
       />
 
-      {/* Create Region Modal */}
+      {/* Create City Modal */}
       <CreateMetaModal
         show={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCreate={handleCreate}
         fields={fields}
-        title="Create New Region"
+        title="Create New City"
       />
     </div>
   );
 };
 
-export default Region;
+export default City;

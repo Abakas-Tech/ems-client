@@ -27,6 +27,7 @@ import JobPostionPage from "../domains/admin/pages/meta/JobPostionPage/JobPostio
 import RegionPage from "../domains/admin/pages/meta/RegionPage/RegionPage.jsx";
 import LanguagePage from "../domains/admin/pages/meta/LanguagePage/LanguagePage.jsx";
 import WorkerStatusPage from "../domains/admin/pages/meta/WorkerStatusPage/WorkerStatusPage.jsx";
+import CityPage from "../domains/admin/pages/meta/CityPage/CityPage.jsx";
 
 const AdminRoutes = () => (
   <Routes>
@@ -57,6 +58,7 @@ const AdminRoutes = () => (
       <Route path="/meta-data/job-position" element={<JobPostionPage />} />
       <Route path="/meta-data/language" element={<LanguagePage />} />
       <Route path="/meta-data/worker-status" element={<WorkerStatusPage />} />
+      <Route path="/meta-data/city" element={<CityPage />} />
 
 
 

@@ -1,11 +1,11 @@
-const MetaFilter = ({ filter = {}, onFilterChange, onClear }) => {
+const MetaFilter = ({ filter = {}, onFilterChange, onClear, extraField }) => {
   const isDisabled = Object.values(filter).every((v) => !v);
 
   return (
     <div className="card shadow-sm mb-4 rounded-3 border border-light">
       <div className="card-body">
         <div className="row g-3 align-items-center">
-          {/* Search */}
+          {/* Name Search */}
           <div className="col-md-4">
             <input
               type="text"
@@ -17,8 +17,29 @@ const MetaFilter = ({ filter = {}, onFilterChange, onClear }) => {
               onChange={onFilterChange}
             />
           </div>
-          {/* Clear */}
-          <div className="col-md-2 d-grid">
+
+          {/* Extra Field (optional) */}
+          {extraField && extraField.type === "select" && (
+            <div className="col-md-4">
+              <select
+                name={extraField.name}
+                className="form-control form-control-sm py-2"
+                style={{ height: "42px" }}
+                value={filter[extraField.name] || ""}
+                onChange={onFilterChange}
+              >
+                <option value="">Select {extraField.label}</option>
+                {extraField.options?.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Clear Button */}
+          <div className={`col-md-${extraField ? "2" : "2"} d-grid`}>
             <button
               type="button"
               className="btn btn-outline-secondary"

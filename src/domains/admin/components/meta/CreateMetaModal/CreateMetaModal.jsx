@@ -71,7 +71,7 @@ const CreateMetaModal = ({
       // Shake animation if validation fails
       setShake("shake");
       setTimeout(() => setShake("idle"), 500);
-      form.reportValidity(); // Show browser native validation flags
+      form.reportValidity(); // Show browser native validation
       return;
     }
 
@@ -107,16 +107,32 @@ const CreateMetaModal = ({
               <h6>
                 {field.label} <span className="text-danger">*</span>
               </h6>
-              <input
-                type="text"
-                className="form-control"
-                value={inputValues[field.name]}
-                onChange={(e) => handleChange(field.name, e.target.value)}
-                required
-                style={{
-                  backgroundColor: "#EDF1FB",
-                }}
-              />
+
+              {field.type === "select" ? (
+                <select
+                  className="form-control"
+                  value={inputValues[field.name]}
+                  onChange={(e) => handleChange(field.name, e.target.value)}
+                  required
+                  style={{ backgroundColor: "#EDF1FB" }}
+                >
+                  <option value="">Select {field.label}</option>
+                  {field.options?.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type={field.type || "text"}
+                  className="form-control"
+                  value={inputValues[field.name]}
+                  onChange={(e) => handleChange(field.name, e.target.value)}
+                  required
+                  style={{ backgroundColor: "#EDF1FB" }}
+                />
+              )}
             </div>
           ))}
 
