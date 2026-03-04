@@ -10,6 +10,7 @@ import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import CreateMetaModal from "../CreateMetaModal/CreateMetaModal";
+import MetaFilter from "../MetaFilter/MetaFilter";
 
 // Validation for language name
 const validateLanguageName = (name) => {
@@ -25,7 +26,7 @@ const Language = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
-
+ const [filter, setFilter] = useState({ name: "" });
   const [languages, setLanguages] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -37,7 +38,7 @@ const Language = () => {
   const fetchLanguages = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getLanguages({ page, limit });
+      const response = await getLanguages({ page, limit, name: filter.name });
       setLanguages(response?.data || []);
       setPagination({
         page: response.pagination.page,
@@ -54,7 +55,7 @@ const Language = () => {
   useEffect(() => {
     fetchLanguages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filter]);
 
   // Handle renaming a language
   const handleRename = async (row, newName) => {
@@ -77,6 +78,18 @@ const Language = () => {
       hideLoader();
     }
   };
+
+const handleFilterChange = (e) => {
+  const { name, value } = e.target;
+
+  setFilter((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+  const handleClearFilters = () => {
+    setFilter({ name: "" });
+  }
 
   // Handle deleting a language
   const handleDelete = (row) => {
@@ -168,6 +181,13 @@ const Language = () => {
           total: pagination.total,
         }}
         onPageChange={handlePageChange}
+        filtersComponent={
+          <MetaFilter
+            filter={filter}
+            onFilterChange={handleFilterChange}
+            onClear={handleClearFilters}
+          />
+        }
       />
 
       <CreateMetaModal

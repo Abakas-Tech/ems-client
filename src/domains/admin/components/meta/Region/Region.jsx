@@ -10,6 +10,7 @@ import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import CreateMetaModal from "../CreateMetaModal/CreateMetaModal";
+import MetaFilter from "../MetaFilter/MetaFilter";
 
 // Validation for region name
 const validateRegionName = (name) => {
@@ -25,7 +26,7 @@ const Region = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
-
+const [filter, setFilter] = useState({ name: "" });
   const [regions, setRegions] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -37,7 +38,7 @@ const Region = () => {
   const fetchRegions = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getRegions({ page, limit });
+      const response = await getRegions({ page, limit, name: filter.name });
       setRegions(response?.data || []);
       setPagination({
         page: response.pagination.page,
@@ -55,7 +56,7 @@ const Region = () => {
   useEffect(() => {
     fetchRegions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filter]);
 
   // Handle renaming a region
   const handleRename = async (row, newName) => {
@@ -76,6 +77,19 @@ const Region = () => {
       hideLoader();
     }
   };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+
+    setFilter((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleClearFilters = () => {
+    setFilter({ name: "" });
+  }
 
   // Handle deleting a region
   const handleDelete = (row) => {
@@ -167,6 +181,13 @@ const Region = () => {
           total: pagination.total,
         }}
         onPageChange={handlePageChange}
+        filtersComponent={
+          <MetaFilter
+            filter={filter}
+            onFilterChange={handleFilterChange}
+            onClear={handleClearFilters}
+          />
+        }
       />
 
       {/* Create Region Modal */}

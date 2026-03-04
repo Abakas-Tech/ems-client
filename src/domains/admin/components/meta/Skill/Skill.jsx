@@ -10,6 +10,7 @@ import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import CreateMetaModal from "../CreateMetaModal/CreateMetaModal";
+import MetaFilter from "../MetaFilter/MetaFilter";
 
 // Validation for skill name
 const validateSkillName = (name) => {
@@ -24,7 +25,7 @@ const Skill = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
-
+const [filter, setFilter] = useState({ name: "" });
   const [skills, setSkills] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -36,7 +37,7 @@ const Skill = () => {
   const fetchSkills = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getSkills({ page, limit });
+      const response = await getSkills({ page, limit ,name: filter.name});
       setSkills(response?.data || []);
       setPagination({
         page: response.pagination.page,
@@ -53,7 +54,7 @@ const Skill = () => {
   useEffect(() => {
     fetchSkills();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filter]);
 
   // Handle renaming a skill
   const handleRename = async (row, newName) => {
@@ -74,6 +75,17 @@ const Skill = () => {
       hideLoader();
     }
   };
+const handleFilterChange = (e) => {
+  const { name, value } = e.target;
+
+  setFilter((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+  const handleClearFilters = () => {
+    setFilter({ name: "" });
+  }
 
   // Handle deleting a skill
   const handleDelete = (row) => {
@@ -165,6 +177,13 @@ const Skill = () => {
           total: pagination.total,
         }}
         onPageChange={handlePageChange}
+        filtersComponent={
+          <MetaFilter
+            filter={filter}
+            onFilterChange={handleFilterChange}
+            onClear={handleClearFilters}
+          />
+        }
       />
 
       <CreateMetaModal

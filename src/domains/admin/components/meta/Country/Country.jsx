@@ -10,6 +10,7 @@ import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import CreateMetaModal from "../CreateMetaModal/CreateMetaModal";
+import MetaFilter from "../MetaFilter/MetaFilter";
 
 // Validation for country name
 const validateCountryName = (name) => {
@@ -25,6 +26,8 @@ const Country = () => {
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
+  const [filter, setFilter] = useState({ name: "" });
+
   const [countries, setCountries] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -36,7 +39,7 @@ const Country = () => {
   const fetchCountries = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getCountries({page, limit});
+      const response = await getCountries({ page, limit, name: filter.name });
       setCountries(response?.data || []);
       setPagination({
         page: response.pagination.page,
@@ -53,7 +56,7 @@ const Country = () => {
   useEffect(() => {
     fetchCountries();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filter]);
 
   // Handle renaming a country
   const handleRename = async (row, newName) => {
@@ -75,6 +78,18 @@ const Country = () => {
     }
   };
 
+const handleFilterChange = (e) => {
+  const { name, value } = e.target;
+
+  setFilter((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+  const handleClearFilters = () => {
+    setFilter({ name: "" });
+  };
+
   // Handle deleting a country
   const handleDelete = (row) => {
     openModal(async () => {
@@ -90,9 +105,9 @@ const Country = () => {
       }
     });
   };
-const handlePageChange = (newPage) => {
-  fetchCountries(newPage, pagination.limit);
-};
+  const handlePageChange = (newPage) => {
+    fetchCountries(newPage, pagination.limit);
+  };
 
   // Handle creating a new country
   const handleCreate = async (inputValues) => {
@@ -128,9 +143,7 @@ const handlePageChange = (newPage) => {
     { type: "delete", onClick: handleDelete },
   ];
 
-  const fields = [
-    { name: "name", label: "Country Name" },
-  ];
+  const fields = [{ name: "name", label: "Country Name" }];
   const emptyState = {
     title: "No countries found",
     subtitle: "Add countries to see them listed here",
@@ -166,6 +179,13 @@ const handlePageChange = (newPage) => {
           total: pagination.total,
         }}
         onPageChange={handlePageChange}
+        filtersComponent={
+          <MetaFilter
+            filter={filter}
+            onFilterChange={handleFilterChange}
+            onClear={handleClearFilters}
+          />
+        }
       />
 
       {/* Create Country Modal */}

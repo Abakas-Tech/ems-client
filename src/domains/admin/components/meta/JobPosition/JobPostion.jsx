@@ -10,6 +10,7 @@ import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import CreateMetaModal from "../CreateMetaModal/CreateMetaModal";
+import MetaFilter from "../MetaFilter/MetaFilter";
 
 // Validation for job position name
 const validateJobPositionName = (name) => {
@@ -26,7 +27,7 @@ const JobPosition = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
-
+ const [filter, setFilter] = useState({ name: "" });
   const [jobPositions, setJobPositions] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -38,7 +39,7 @@ const JobPosition = () => {
   const fetchJobPositions = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getJobPositions({ page, limit });
+      const response = await getJobPositions({ page, limit, name: filter.name });
       setJobPositions(response?.data || []);
       setPagination({
         page: response.pagination.page,
@@ -55,7 +56,7 @@ const JobPosition = () => {
   useEffect(() => {
     fetchJobPositions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filter]);
 
   // Handle renaming a job position
   const handleRename = async (row, newName) => {
@@ -78,6 +79,17 @@ const JobPosition = () => {
       hideLoader();
     }
   };
+const handleFilterChange = (e) => {
+  const { name, value } = e.target;
+
+  setFilter((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+  const handleClearFilters = () => {
+    setFilter({ name: "" });
+  }
 
   // Handle deleting a job position
   const handleDelete = (row) => {
@@ -169,6 +181,13 @@ const JobPosition = () => {
           total: pagination.total,
         }}
         onPageChange={handlePageChange}
+         filtersComponent={
+          <MetaFilter
+            filter={filter}
+            onFilterChange={handleFilterChange}
+            onClear={handleClearFilters}
+          />
+        }
       />
 
       <CreateMetaModal
