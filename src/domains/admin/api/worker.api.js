@@ -137,7 +137,7 @@ const createPassport = async (workerId, formData) => {
       `/workers/${workerId}/passport`,
       formData,
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -154,7 +154,7 @@ const updatePassport = async (workerId, formData) => {
       `/workers/${workerId}/passport`,
       formData,
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -168,7 +168,7 @@ const updatePassport = async (workerId, formData) => {
 const getPassportDetails = async (workerId) => {
   try {
     const response = await axiosInstance.get(`/workers/${workerId}/passport`);
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -184,7 +184,7 @@ const deletePassport = async (workerId) => {
     const response = await axiosInstance.delete(
       `/workers/${workerId}/passport`,
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -203,7 +203,7 @@ const createCoc = async (workerId, formData) => {
       `/workers/${workerId}/coc`,
       formData,
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message || error.message || "Failed to create COC",
@@ -218,7 +218,7 @@ const updateCoc = async (workerId, formData) => {
       `/workers/${workerId}/coc`,
       formData,
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message || error.message || "Failed to update COC",
@@ -230,7 +230,7 @@ const updateCoc = async (workerId, formData) => {
 const getCocDetails = async (workerId) => {
   try {
     const response = await axiosInstance.get(`/workers/${workerId}/coc`);
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -244,7 +244,7 @@ const getCocDetails = async (workerId) => {
 const deleteCoc = async (workerId) => {
   try {
     const response = await axiosInstance.delete(`/workers/${workerId}/coc`);
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message || error.message || "Failed to delete COC",
@@ -261,7 +261,7 @@ const createMedicalRecord = async (workerId, formData) => {
       `/workers/${workerId}/medical`,
       formData,
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -278,7 +278,7 @@ const updateMedicalRecord = async (workerId, formData) => {
       `/workers/${workerId}/medical`,
       formData,
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -292,7 +292,7 @@ const updateMedicalRecord = async (workerId, formData) => {
 const getMedicalDetails = async (workerId) => {
   try {
     const response = await axiosInstance.get(`/workers/${workerId}/medical`);
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
@@ -306,7 +306,7 @@ const getMedicalDetails = async (workerId) => {
 const deleteMedicalRecord = async (workerId) => {
   try {
     const response = await axiosInstance.delete(`/workers/${workerId}/medical`);
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
