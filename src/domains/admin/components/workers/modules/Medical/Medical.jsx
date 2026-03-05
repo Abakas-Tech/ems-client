@@ -15,8 +15,8 @@ function Medical() {
     medical_status: "",
     medical_center: "",
     medical_report_number: "",
-    issue_date: "",
-    expiry_date: "",
+    medical_issue_date: "",
+    medical_expiry_date: "",
   });
 
   const [medicalFile, setMedicalFile] = useState(null);
@@ -36,7 +36,7 @@ function Medical() {
   };
 
   const validateMedical = () => {
-    const { medical_status, issue_date, expiry_date } = formData;
+    const { medical_status, medical_issue_date, medical_expiry_date } = formData;
 
     if (!["fit", "unfit", "pending"].includes(medical_status)) {
       return "Medical status must be fit, unfit, or pending";
@@ -45,8 +45,8 @@ function Medical() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    if (issue_date) {
-      const issue = new Date(issue_date);
+    if (medical_issue_date) {
+      const issue = new Date(medical_issue_date);
 
       if (isNaN(issue.getTime())) {
         return "Issue date must be a valid date";
@@ -57,17 +57,17 @@ function Medical() {
       }
     }
 
-    if (expiry_date) {
-      const expiry = new Date(expiry_date);
+    if (medical_expiry_date) {
+      const expiry = new Date(medical_expiry_date);
 
       if (isNaN(expiry.getTime())) {
         return "Expiry date must be a valid date";
       }
     }
 
-    if (issue_date && expiry_date) {
-      const issue = new Date(issue_date);
-      const expiry = new Date(expiry_date);
+    if (medical_issue_date && medical_expiry_date) {
+      const issue = new Date(medical_issue_date);
+      const expiry = new Date(medical_expiry_date);
 
       if (expiry <= issue) {
         return "Expiry date must be after issue date";
@@ -120,12 +120,12 @@ function Medical() {
         );
       }
 
-      if (formData.issue_date) {
-        dataToSend.append("issue_date", formData.issue_date);
+      if (formData.medical_issue_date) {
+        dataToSend.append("medical_issue_date", formData.medical_issue_date);
       }
 
-      if (formData.expiry_date) {
-        dataToSend.append("expiry_date", formData.expiry_date);
+      if (formData.medical_expiry_date) {
+        dataToSend.append("medical_expiry_date", formData.medical_expiry_date);
       }
 
       dataToSend.append("medical_file_url", medicalFile);

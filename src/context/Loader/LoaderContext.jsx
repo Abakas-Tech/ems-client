@@ -1,6 +1,5 @@
-import { useContext } from "react";
-import LoaderContext from "./LoaderContext.jsx";
+import { createContext } from "react";
 
-const useLoader = () => useContext(LoaderContext);
+const LoaderContext = createContext();
 
-export default useLoader;
+export default LoaderContext;
