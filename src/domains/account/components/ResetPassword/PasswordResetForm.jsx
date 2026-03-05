@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useLoader from "../../../../context/Loader/useLoader";
-import useResponse from "../../../../context/Response/useResponse";
+import useloader from "../../../../context/loader/useLoader";
 // import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
+import useResponse from "../../../../context/Response/useResponse";
 
 const PasswordResetForm = ({ email }) => {
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
   // const { openModal } = useDemoInfo();
@@ -81,7 +81,7 @@ const PasswordResetForm = ({ email }) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    showLoader();
+    showloader();
     try {
       const response = await password.passwordResetConfirm({
         email,
@@ -94,7 +94,7 @@ const PasswordResetForm = ({ email }) => {
     } catch (error) {
       addMessage(false, error.message);
     } finally {
-      hideLoader();
+      hideloader();
     }
   };
 

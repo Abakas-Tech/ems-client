@@ -5,13 +5,13 @@ import { listWorkers } from "../../../api/worker.api";
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
-import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/response/UseResponse";
+import useloader from "../../../../../context/loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 const WorkerModuleManagement = () => {
   const navigate = useNavigate();
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
 
   const [workers, setWorkers] = useState([]);
@@ -24,7 +24,7 @@ const WorkerModuleManagement = () => {
 
   // Fetch workers safely
   const fetchWorkers = useCallback(async () => {
-    showLoader();
+    showloader();
     try {
       const res = await listWorkers({
         ...filters,
@@ -37,7 +37,7 @@ const WorkerModuleManagement = () => {
     } catch (err) {
       addMessage(false, err.message);
     } finally {
-      hideLoader();
+      hideloader();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);

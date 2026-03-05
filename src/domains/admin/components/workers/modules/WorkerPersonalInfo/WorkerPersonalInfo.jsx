@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { updateWorker } from "../../../../api/worker.api";
 import { getRegions, getCities } from "../../../../api/meta.api";
-import useLoader from "../../../../../../context/Loader/useLoader";
+import useloader from "../../../../../../context/loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 
 function WorkerPersonalInfo() {
   const Navigate = useNavigate();
-  const { showLoader, hideLoader } = useLoader();
+  const { showloader, hideloader } = useloader();
   const { addMessage } = useResponse();
   const { id } = useParams();
 
@@ -44,7 +44,7 @@ function WorkerPersonalInfo() {
   // Load regions
   useEffect(() => {
     const loadRegions = async () => {
-      showLoader();
+      showloader();
       try {
         const regions = await getRegions();
         setRegions(regions.data || []);
@@ -52,7 +52,7 @@ function WorkerPersonalInfo() {
         setRegions([]);
         addMessage(false, err.message);
       } finally {
-        hideLoader();
+        hideloader();
       }
     };
     loadRegions();
@@ -65,7 +65,7 @@ function WorkerPersonalInfo() {
     if (!regionId) return setCities([]);
 
     const loadCities = async () => {
-      showLoader();
+      showloader();
       try {
         const response = await getCities(regionId);
         setCities(response.data || []);
@@ -73,7 +73,7 @@ function WorkerPersonalInfo() {
         addMessage(false, err.message);
         setCities([]);
       } finally {
-        hideLoader();
+        hideloader();
       }
     };
     loadCities();
@@ -235,7 +235,7 @@ function WorkerPersonalInfo() {
     }
 
     setSubmitLoading(true);
-    showLoader();
+    showloader();
     try {
       const dataToSend = new FormData();
 
@@ -295,7 +295,10 @@ function WorkerPersonalInfo() {
 
       const response = await updateWorker(dataToSend, id);
 
-      addMessage(response?.success, response?.message || "Personal information added successfully");
+      addMessage(
+        response?.success,
+        response?.message || "Personal information added successfully",
+      );
 
       // Clear form and photos after successful submission
       setFormData({
@@ -320,11 +323,10 @@ function WorkerPersonalInfo() {
       setPhoto3x4(null);
       setPhotoStanding(null);
     } catch (err) {
-     
       addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
-      hideLoader();
+      hideloader();
     }
   };
 
@@ -344,14 +346,13 @@ function WorkerPersonalInfo() {
                   <label>
                     Region <span className="text-danger">*</span>
                   </label>
-                  {regions.length === 0 ? (
+                  {regions.length === 0 ?
                     <div className="form-control text-muted">
-                      {regionsError
-                        ? "Failed to load regions"
-                        : "Loading regions..."}
+                      {regionsError ?
+                        "Failed to load regions"
+                      : "Loading regions..."}
                     </div>
-                  ) : (
-                    <select
+                  : <select
                       name="personal_region_id"
                       className="form-control"
                       value={formData.personal_information.region_id}
@@ -365,7 +366,7 @@ function WorkerPersonalInfo() {
                         </option>
                       ))}
                     </select>
-                  )}
+                  }
                 </div>
 
                 {/* City */}
@@ -379,9 +380,9 @@ function WorkerPersonalInfo() {
                     disabled={!formData.personal_information.region_id}
                   >
                     <option value="">
-                      {formData.personal_information.region_id
-                        ? "Select city"
-                        : "Select region first"}
+                      {formData.personal_information.region_id ?
+                        "Select city"
+                      : "Select region first"}
                     </option>
                     {cities.map((c) => (
                       <option key={c.id} value={c.id}>

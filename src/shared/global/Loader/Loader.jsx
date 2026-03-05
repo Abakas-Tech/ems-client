@@ -2,7 +2,7 @@ import React from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Loader.module.css";
-import useLoader from './../../../context/Loader/useLoader';
+import useLoader from "./../../../context/loader/useLoader";
 
 const dotVariants = {
   bounce: {
@@ -55,8 +55,7 @@ const Loader = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
-            >
-            </motion.p>
+            ></motion.p>
           </motion.div>
         </>
       )}
