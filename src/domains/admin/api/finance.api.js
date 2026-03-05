@@ -33,4 +33,31 @@ const createTransaction = async (data) => {
   }
 };
 
-export { fetchTransactions, fetchTransactionDetails, createTransaction };
+const updateTransaction = async (id, data) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/finance/transactions/${id}`,
+      data,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Submission failed");
+  }
+};
+
+const deleteTransaction = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/finance/transactions/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Submission failed");
+  }
+};
+
+export {
+  fetchTransactions,
+  fetchTransactionDetails,
+  createTransaction,
+  updateTransaction,
+  deleteTransaction,
+};

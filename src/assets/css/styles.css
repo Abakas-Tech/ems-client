@@ -12027,3 +12027,37 @@ th.next.available,
   color: var(--greencolor) !important;
   background: color-mix(in srgb, var(--greencolor), transparent 90%);
 }
+@media print {
+  /* 1. Hide everything by default, then show ONLY the receipt */
+  body * {
+    visibility: hidden;
+  }
+
+  #printable-receipt, #printable-receipt * {
+    visibility: visible;
+  }
+
+  /* 2. Position the receipt at the very top left of the page */
+  #printable-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 3. Hide common layout wrappers that might have background colors or borders */
+  header, .header, .navbar, .d-navigation, .sidebar, footer, .card-footer, button {
+    display: none !important;
+  }
+
+  /* 4. Reset spacing on body/html to prevent white gaps */
+  html, body {
+    height: auto;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible;
+  }
+}
+

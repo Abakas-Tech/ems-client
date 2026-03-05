@@ -67,7 +67,7 @@ const File = () => {
     }
   };
 
-  //  Handlers 
+  //  Handlers
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -90,10 +90,16 @@ const File = () => {
       let response;
       if (view === "edit") {
         response = await updateFile(editingFile.id, formData);
-        addMessage(response.success, response.Message || "File details updated successfully!");
+        addMessage(
+          response.success,
+          response.Message || "File details updated successfully!",
+        );
       } else {
         response = await uploadFile(formData);
-        addMessage(response.success, response.Message || "File uploaded successfully!");
+        addMessage(
+          response.success,
+          response.Message || "File uploaded successfully!",
+        );
       }
       setView("list");
       setEditingFile(null);
@@ -104,12 +110,24 @@ const File = () => {
     }
   };
 
+  const handleDownload = (file) => {
+    if (!file.file_url) return;
+    const link = document.createElement("a");
+    link.href = file.file_url;
+    link.download = file.file_name || "download";
+    link.target = "_blank";
+    link.click();
+  };
+
   const handleDelete = (id) => {
     openModal(async () => {
       showLoader();
       try {
         const response = await deleteFile(id);
-        addMessage(response.success, response.Message || "File deleted successfully!");
+        addMessage(
+          response.success,
+          response.Message || "File deleted successfully!",
+        );
         fetchData();
       } catch (err) {
         addMessage(false, err.message);
@@ -185,7 +203,7 @@ const File = () => {
               },
               {
                 type: "download",
-                // onClick: (row) => handleDownload(row),
+                onClick: (row) => handleDownload(row),
               },
               {
                 type: "delete",
