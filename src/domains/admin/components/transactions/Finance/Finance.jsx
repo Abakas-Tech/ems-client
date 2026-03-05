@@ -113,7 +113,7 @@ const FinancePage = () => {
           </button>
           <span className="m-2"></span>
           <button
-            className="btn btn-main px-4 py-2 rounded-3 shadow-sm fw-semibold text-white"
+            className="btn btn-main px-4 py-2 rounded-3 shadow-sm fw-semibold text-white me-2"
             onClick={() => setView("report")}
           >
             Generate report
