@@ -31,6 +31,7 @@ import LanguagePage from "../domains/admin/pages/meta/LanguagePage/LanguagePage.
 import WorkerStatusPage from "../domains/admin/pages/meta/WorkerStatusPage/WorkerStatusPage.jsx";
 import CityPage from "../domains/admin/pages/meta/CityPage/CityPage.jsx";
 import WorkerMetaPage from "../domains/admin/pages/WorkerMetaPage/WorkerMetaPage.jsx";
+import WorkerProfile from "../domains/admin/pages/workers/WorkerProfile/WorkerProfile.jsx";
 
 const AdminRoutes = () => (
   <Routes>
@@ -52,6 +53,7 @@ const AdminRoutes = () => (
       <Route path="/workers" element={<WorkerDashboard />} />
       <Route path="/workers/add" element={<WorkerRegistration />} />
       <Route path="/workers/active" element={<ActiveWorkers />} />
+      <Route path="/workers/active/:id" element={<WorkerProfile />} />
       <Route path="/workers/archived" element={<ArchivedWorkers />} />
       <Route path="workers/modules" element={<WorkerModuleManagement />} />
       <Route path="/workers/modules/:id/add" element={<ModulesList />} />
