@@ -28,7 +28,7 @@ const Skill = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
-const [filter, setFilter] = useState({ name: "" });
+  const [filter, setFilter] = useState({ name: "" });
   const [skills, setSkills] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -40,12 +40,12 @@ const [filter, setFilter] = useState({ name: "" });
   // Go back to previous page
   const goBack = () => {
     navigate(-1);
-  }
+  };
 
   const fetchSkills = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getSkills({ page, limit ,name: filter.name});
+      const response = await getSkills({ page, limit, name: filter.name });
       setSkills(response?.data || []);
       setPagination({
         page: response.pagination.page,
@@ -83,17 +83,17 @@ const [filter, setFilter] = useState({ name: "" });
       hideLoader();
     }
   };
-const handleFilterChange = (e) => {
-  const { name, value } = e.target;
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
 
-  setFilter((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
+    setFilter((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   const handleClearFilters = () => {
     setFilter({ name: "" });
-  }
+  };
 
   // Handle deleting a skill
   const handleDelete = (row) => {

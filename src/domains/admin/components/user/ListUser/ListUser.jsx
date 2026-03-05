@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import { getUsers, deleteUser, updateUser } from "../../../api/user.api";
 import { getPermission } from "../../../api/permission.api";
-import useloader from "../../../../../context/loader/useLoader";
+import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterUser from "./../../../components/user/FilterUser/FilterUser";
@@ -17,7 +17,7 @@ const ROLE_COLOR = {
 };
 
 const ListUser = () => {
-  const { showloader, hideloader } = useloader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const ListUser = () => {
   });
 
   const fetchUsers = async (page = 1) => {
-    showloader();
+    showLoader();
     try {
       const cleanFilters = {};
       if (filters.search) cleanFilters.search = filters.search;
@@ -59,7 +59,7 @@ const ListUser = () => {
     } catch (err) {
       addMessage(false, err.message);
     } finally {
-      hideloader();
+      hideLoader();
     }
   };
 
@@ -84,7 +84,7 @@ const ListUser = () => {
 
   const handleDelete = (row) => {
     openModal(async () => {
-      showloader();
+      showLoader();
       try {
         const response = await deleteUser(row.id);
         addMessage(response?.success, response?.message);
@@ -94,7 +94,7 @@ const ListUser = () => {
       } catch (err) {
         addMessage(false, err.message);
       } finally {
-        hideloader();
+        hideLoader();
       }
     });
   };
@@ -105,7 +105,7 @@ const ListUser = () => {
 
     openModal(
       async () => {
-        showloader();
+        showLoader();
         try {
           const response = await updateUser(row.id, {
             is_active: row.is_active ? 0 : 1,
@@ -118,7 +118,7 @@ const ListUser = () => {
         } catch (err) {
           addMessage(false, err.message);
         } finally {
-          hideloader();
+          hideLoader();
         }
       },
       {
@@ -128,7 +128,7 @@ const ListUser = () => {
     );
   };
   const handleEdit = async (row) => {
-    showloader();
+    showLoader();
     try {
       const permResponse = await getPermission(row.id);
       const userDataWithPermissions = {
@@ -141,12 +141,14 @@ const ListUser = () => {
     } catch (err) {
       addMessage(false, err.message);
     } finally {
-      hideloader();
+      hideLoader();
     }
   };
 
   const handleCreateUser = () => {
-    navigate("/admin/user-management/create-user", { state: { isEditMode: false } });
+    navigate("/admin/user-management/create-user", {
+      state: { isEditMode: false },
+    });
   };
 
   const columns = [

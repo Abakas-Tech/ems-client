@@ -24,7 +24,7 @@ const validateCountryName = (name) => {
   return null;
 };
 const Country = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
@@ -212,6 +212,6 @@ const Country = () => {
       </div>
     </div>
   );
-};;
+};
 
 export default Country;

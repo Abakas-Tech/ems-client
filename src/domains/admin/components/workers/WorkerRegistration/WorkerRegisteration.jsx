@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createWorker } from "../../../api/worker.api";
 import { getWorkerStatuses } from "../../../api/meta.api";
-import useloader from "../../../../../context/loader/useLoader";
+import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 function WorkerRegistration() {
   const navigate = useNavigate();
-  const { showloader, hideloader } = useloader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
   const [formData, setFormData] = useState({
@@ -30,7 +30,7 @@ function WorkerRegistration() {
   // Fetch worker statuses on mount
   useEffect(() => {
     const loadStatuses = async () => {
-      showloader();
+      showLoader();
       try {
         const response = await getWorkerStatuses();
         setStatuses(response.data || []);
@@ -40,7 +40,7 @@ function WorkerRegistration() {
         setStatusesError("Could not load worker statuses");
         addMessage(false, error.message);
       } finally {
-        hideloader();
+        hideLoader();
       }
     };
 
@@ -112,7 +112,7 @@ function WorkerRegistration() {
     const { full_name, phone_number, personal_information, email } = formData;
 
     setSubmitLoading(true);
-    showloader();
+    showLoader();
 
     try {
       const dataToSend = {
@@ -145,7 +145,7 @@ function WorkerRegistration() {
       addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
-      hideloader();
+      hideLoader();
     }
   };
   return (
@@ -224,17 +224,18 @@ function WorkerRegistration() {
                 Worker Status <span className="text-danger">*</span>
               </label>
 
-              {statuses === null ?
+              {statuses === null ? (
                 <div className="form-control text-muted">
                   Loading statuses...
                 </div>
-              : statusesError ?
+              ) : statusesError ? (
                 <div className="form-control text-danger">{statusesError}</div>
-              : statuses.length === 0 ?
+              ) : statuses.length === 0 ? (
                 <div className="form-control text-muted">
                   No statuses available
                 </div>
-              : <select
+              ) : (
+                <select
                   name="personal_status_id"
                   className="form-control"
                   value={formData.personal_information.status_id}
@@ -248,7 +249,7 @@ function WorkerRegistration() {
                     </option>
                   ))}
                 </select>
-              }
+              )}
             </div>
           </div>
         </div>

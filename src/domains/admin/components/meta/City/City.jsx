@@ -225,6 +225,6 @@ const City = () => {
       </div>
     </div>
   );
-};;
+};
 
 export default City;

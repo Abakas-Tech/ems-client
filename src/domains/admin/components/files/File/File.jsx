@@ -7,13 +7,13 @@ import {
   deleteFile,
 } from "../../../api/file.api";
 import FileFilters from "../FileFilters/FileFilters";
-import useloader from "../../../../../context/loader/useLoader";
+import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
 const File = () => {
-  const { showloader, hideloader } = useloader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
@@ -42,7 +42,7 @@ const File = () => {
   }, [filters, view]);
 
   const fetchData = async () => {
-    showloader();
+    showLoader();
     try {
       const cleanFilters = {
         page: filters.page,
@@ -63,7 +63,7 @@ const File = () => {
     } catch (err) {
       addMessage(false, err.message);
     } finally {
-      hideloader();
+      hideLoader();
     }
   };
 
@@ -85,7 +85,7 @@ const File = () => {
   };
 
   const handleFormSubmit = async (formData) => {
-    showloader();
+    showLoader();
     try {
       let response;
       if (view === "edit") {
@@ -106,7 +106,7 @@ const File = () => {
     } catch (err) {
       addMessage(false, err.message);
     } finally {
-      hideloader();
+      hideLoader();
     }
   };
 
@@ -121,7 +121,7 @@ const File = () => {
 
   const handleDelete = (id) => {
     openModal(async () => {
-      showloader();
+      showLoader();
       try {
         const response = await deleteFile(id);
         addMessage(
@@ -132,14 +132,14 @@ const File = () => {
       } catch (err) {
         addMessage(false, err.message);
       } finally {
-        hideloader();
+        hideLoader();
       }
     });
   };
 
   return (
     <div className="dashboard-wraper">
-      {view !== "list" ?
+      {view !== "list" ? (
         <FileUpload
           isEditMode={view === "edit"}
           initialData={editingFile}
@@ -149,7 +149,8 @@ const File = () => {
             setEditingFile(null);
           }}
         />
-      : <>
+      ) : (
+        <>
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
             <div>
               <h2 className="fw-bold text-dark mb-2">File Manager</h2>
@@ -221,7 +222,7 @@ const File = () => {
             }}
           />
         </>
-      }
+      )}
     </div>
   );
 };

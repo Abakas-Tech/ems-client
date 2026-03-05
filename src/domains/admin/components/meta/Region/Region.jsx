@@ -12,7 +12,7 @@ import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 import { useNavigate } from "react-router-dom";
-import BackButton from './../../../../../shared/components/BackButton/BackButton';
+import BackButton from "./../../../../../shared/components/BackButton/BackButton";
 
 // Validation for region name
 const validateRegionName = (name) => {
@@ -29,7 +29,7 @@ const Region = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
-const [filter, setFilter] = useState({ name: "" });
+  const [filter, setFilter] = useState({ name: "" });
   const [regions, setRegions] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -40,7 +40,7 @@ const [filter, setFilter] = useState({ name: "" });
   // Go back to previous page
   const goBack = () => {
     navigate(-1);
-  }
+  };
 
   const fetchRegions = async (page = 1, limit = 10) => {
     showLoader();
@@ -95,7 +95,7 @@ const [filter, setFilter] = useState({ name: "" });
 
   const handleClearFilters = () => {
     setFilter({ name: "" });
-  }
+  };
 
   // Handle deleting a region
   const handleDelete = (row) => {

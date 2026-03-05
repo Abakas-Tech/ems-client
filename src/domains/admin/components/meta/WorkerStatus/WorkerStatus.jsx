@@ -189,7 +189,6 @@ const WorkerStatus = () => {
             >
               + Worker Status
             </button>
-        
           </div>
 
           <ListingComponent
@@ -223,6 +222,6 @@ const WorkerStatus = () => {
       </div>
     </div>
   );
-};;
+};
 
 export default WorkerStatus;

@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { updateWorker } from "../../../../api/worker.api";
 import { getRegions, getCities } from "../../../../api/meta.api";
-import useloader from "../../../../../../context/loader/useLoader";
+import useloader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 
 function WorkerPersonalInfo() {
   const Navigate = useNavigate();
-  const { showloader, hideloader } = useloader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { id } = useParams();
 
@@ -44,7 +44,7 @@ function WorkerPersonalInfo() {
   // Load regions
   useEffect(() => {
     const loadRegions = async () => {
-      showloader();
+      showLoader();
       try {
         const regions = await getRegions();
         setRegions(regions.data || []);
@@ -52,7 +52,7 @@ function WorkerPersonalInfo() {
         setRegions([]);
         addMessage(false, err.message);
       } finally {
-        hideloader();
+        hideLoader();
       }
     };
     loadRegions();
@@ -65,7 +65,7 @@ function WorkerPersonalInfo() {
     if (!regionId) return setCities([]);
 
     const loadCities = async () => {
-      showloader();
+      showLoader();
       try {
         const response = await getCities(regionId);
         setCities(response.data || []);
@@ -73,7 +73,7 @@ function WorkerPersonalInfo() {
         addMessage(false, err.message);
         setCities([]);
       } finally {
-        hideloader();
+        hideLoader();
       }
     };
     loadCities();
@@ -235,7 +235,7 @@ function WorkerPersonalInfo() {
     }
 
     setSubmitLoading(true);
-    showloader();
+    showLoader();
     try {
       const dataToSend = new FormData();
 
@@ -326,7 +326,7 @@ function WorkerPersonalInfo() {
       addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
-      hideloader();
+      hideLoader();
     }
   };
 
@@ -346,13 +346,14 @@ function WorkerPersonalInfo() {
                   <label>
                     Region <span className="text-danger">*</span>
                   </label>
-                  {regions.length === 0 ?
+                  {regions.length === 0 ? (
                     <div className="form-control text-muted">
-                      {regionsError ?
-                        "Failed to load regions"
-                      : "Loading regions..."}
+                      {regionsError
+                        ? "Failed to load regions"
+                        : "Loading regions..."}
                     </div>
-                  : <select
+                  ) : (
+                    <select
                       name="personal_region_id"
                       className="form-control"
                       value={formData.personal_information.region_id}
@@ -366,7 +367,7 @@ function WorkerPersonalInfo() {
                         </option>
                       ))}
                     </select>
-                  }
+                  )}
                 </div>
 
                 {/* City */}
@@ -380,9 +381,9 @@ function WorkerPersonalInfo() {
                     disabled={!formData.personal_information.region_id}
                   >
                     <option value="">
-                      {formData.personal_information.region_id ?
-                        "Select city"
-                      : "Select region first"}
+                      {formData.personal_information.region_id
+                        ? "Select city"
+                        : "Select region first"}
                     </option>
                     {cities.map((c) => (
                       <option key={c.id} value={c.id}>

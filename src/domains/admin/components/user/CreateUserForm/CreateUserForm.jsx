@@ -4,7 +4,7 @@ import {
   grantPermissions,
   revokePermissions,
 } from "../../../api/permission.api";
-import useloader from "../../../../../context/loader/useLoader";
+import useloader from "../../../../../context/Loader/useLoader";
 import { useNavigate } from "react-router-dom";
 import BackButton from "./../../../../../shared/components/BackButton/BackButton";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -43,7 +43,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [selectAll, setSelectAll] = useState(false);
 
   const navigate = useNavigate();
-  const { showloader, hideloader } = useloader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
   const handleBack = () => {
@@ -203,7 +203,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     e.preventDefault();
     if (!validateFields()) return;
 
-    showloader();
+    showLoader();
     try {
       let payload = removeEmptyFields({
         full_name: fullName,
@@ -217,14 +217,13 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         address: role === "5" ? address : undefined,
       });
 
-      let response =
-        isEditMode ?
-          await updateUser(userData.id, payload)
+      let response = isEditMode
+        ? await updateUser(userData.id, payload)
         : await createUser(payload);
 
       if (!response.success) {
         addMessage(false, response.message);
-        hideloader();
+        hideLoader();
         return;
       }
 
@@ -260,7 +259,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     } catch (error) {
       addMessage(false, error.message);
     } finally {
-      hideloader();
+      hideLoader();
     }
   };
 
@@ -273,10 +272,9 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
               {isEditMode ? "Update User" : "Create New User"}
             </h2>
             <p className="text-muted">
-              {isEditMode ?
-                "Update user details and permissions."
-              : "Add a new employee, partner, or employer and assign permissions."
-              }
+              {isEditMode
+                ? "Update user details and permissions."
+                : "Add a new employee, partner, or employer and assign permissions."}
             </p>
           </div>
           <BackButton onClick={handleBack} />

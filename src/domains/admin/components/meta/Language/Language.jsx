@@ -29,7 +29,7 @@ const Language = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
- const [filter, setFilter] = useState({ name: "" });
+  const [filter, setFilter] = useState({ name: "" });
   const [languages, setLanguages] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -87,17 +87,17 @@ const Language = () => {
     }
   };
 
-const handleFilterChange = (e) => {
-  const { name, value } = e.target;
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
 
-  setFilter((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
+    setFilter((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   const handleClearFilters = () => {
     setFilter({ name: "" });
-  }
+  };
 
   // Handle deleting a language
   const handleDelete = (row) => {

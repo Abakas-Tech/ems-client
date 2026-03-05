@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginWithEmail } from "../../../api/auth.api";
-import useloader from "../../../../../context/loader/useLoader";
+import useloader from "../../../../../context/Loader/useLoader";
 
 import PasswordInput from "../../../../../shared/components/PasswordInput/PasswordInput";
 import { setAccessToken } from "../../../../../utils/axios";
@@ -10,7 +10,7 @@ import useResponse from "../../../../../context/Response/useResponse";
 const LoginFormWithEmail = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { showloader, hideloader } = useloader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
 
@@ -38,7 +38,7 @@ const LoginFormWithEmail = () => {
     e.preventDefault();
     if (!validateInputs()) return;
 
-    showloader();
+    showLoader();
     try {
       const response = await loginWithEmail({ email, password });
       const { access_token } = response.data;
@@ -48,7 +48,7 @@ const LoginFormWithEmail = () => {
     } catch (error) {
       addMessage(false, error.message);
     } finally {
-      hideloader();
+      hideLoader();
     }
   };
 

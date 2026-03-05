@@ -26,7 +26,7 @@ import {
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import { useDelete } from "../../../../context/Delete/useDelete";
-import CreateModal from './../../../../shared/components/CreateModal/CreateModal';
+import CreateModal from "./../../../../shared/components/CreateModal/CreateModal";
 import BackButton from "../../../../shared/components/BackButton/BackButton";
 // Validation for selecting skill
 const validateSkill = (skill_id) => {
@@ -757,5 +757,5 @@ const WorkerMeta = () => {
       </div>
     </div>
   );
-};;
+};
 export default WorkerMeta;

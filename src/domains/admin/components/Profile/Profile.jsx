@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import useloader from "../../../../context/loader/useLoader";
+import useloader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import useProfile from "../../../../context/Profile/useProfile";
 import { useDelete } from "../../../../context/Delete/useDelete";
@@ -19,7 +19,7 @@ const MyProfile = () => {
   });
   const fileInputRef = useRef(null);
 
-  const { showloader, hideloader } = useloader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
@@ -47,7 +47,7 @@ const MyProfile = () => {
   const handleAvatarChange = async (file) => {
     if (!file) return;
 
-    showloader();
+    showLoader();
     try {
       const response = await uploadProfilePhoto(file);
       addMessage(response?.success, response?.message);
@@ -55,13 +55,13 @@ const MyProfile = () => {
     } catch (err) {
       addMessage(false, err.message);
     } finally {
-      hideloader();
+      hideLoader();
     }
   };
 
   const handleDeleteAvatar = async () => {
     openModal(async () => {
-      showloader();
+      showLoader();
       try {
         const response = await deleteProfilePhoto();
         addMessage(response?.success, response?.message);
@@ -70,7 +70,7 @@ const MyProfile = () => {
       } catch (err) {
         addMessage(false, err.message);
       } finally {
-        hideloader();
+        hideLoader();
       }
     });
   };
@@ -133,7 +133,7 @@ const MyProfile = () => {
     const payload = { ...profileData };
     if (profile?.role_id !== 4) delete payload.country;
 
-    showloader();
+    showLoader();
     try {
       const response = await updateProfile(payload);
       addMessage(
@@ -144,7 +144,7 @@ const MyProfile = () => {
     } catch (err) {
       addMessage(false, err.message);
     } finally {
-      hideloader();
+      hideLoader();
     }
   };
 

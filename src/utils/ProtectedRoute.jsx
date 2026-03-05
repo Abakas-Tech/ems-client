@@ -2,21 +2,21 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { hasAccessToken, setAccessToken } from "./axios";
 import { refreshTokenApi } from "../domains/admin/api/auth.api";
-import useloader from "./../context/loader/useLoader";
+import useloader from "./../context/Loader/useLoader";
 
 const ProtectedRoute = ({ children }) => {
   const [checking, setChecking] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
-  const { showloader, hideloader } = useloader();
+  const { showLoader, hideLoader } = useloader();
 
   useEffect(() => {
     const restoreToken = async () => {
-      showloader(); //show global loader
+      showLoader(); //show global loader
 
       if (hasAccessToken()) {
         setIsAuth(true);
         setChecking(false);
-        hideloader(); // stop loader
+        hideLoader(); // stop loader
         return;
       }
 
@@ -34,7 +34,7 @@ const ProtectedRoute = ({ children }) => {
         setIsAuth(false);
       } finally {
         setChecking(false);
-        hideloader(); // hide loader when done
+        hideLoader(); // hide loader when done
       }
     };
 

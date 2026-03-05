@@ -30,7 +30,7 @@ const JobPosition = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
- const [filter, setFilter] = useState({ name: "" });
+  const [filter, setFilter] = useState({ name: "" });
   const [jobPositions, setJobPositions] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -42,12 +42,16 @@ const JobPosition = () => {
   // Go back to previous page
   const goBack = () => {
     navigate(-1);
-  }
+  };
 
   const fetchJobPositions = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getJobPositions({ page, limit, name: filter.name });
+      const response = await getJobPositions({
+        page,
+        limit,
+        name: filter.name,
+      });
       setJobPositions(response?.data || []);
       setPagination({
         page: response.pagination.page,
@@ -87,17 +91,17 @@ const JobPosition = () => {
       hideLoader();
     }
   };
-const handleFilterChange = (e) => {
-  const { name, value } = e.target;
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
 
-  setFilter((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
+    setFilter((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   const handleClearFilters = () => {
     setFilter({ name: "" });
-  }
+  };
 
   // Handle deleting a job position
   const handleDelete = (row) => {
@@ -175,7 +179,7 @@ const handleFilterChange = (e) => {
               </p>
             </div>
 
-              <div className="position-absolute top-0 end-0 mt-2">
+            <div className="position-absolute top-0 end-0 mt-2">
               <BackButton onClick={goBack} />
             </div>
             <button
@@ -184,7 +188,6 @@ const handleFilterChange = (e) => {
             >
               + Job Position
             </button>
-       
           </div>
 
           <ListingComponent

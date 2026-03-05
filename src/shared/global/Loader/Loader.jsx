@@ -2,7 +2,7 @@ import React from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Loader.module.css";
-import useLoader from "./../../../context/loader/useLoader";
+import useLoader from "./../../../context/Loader/useLoader";
 
 const dotVariants = {
   bounce: {

@@ -10,7 +10,7 @@ import {
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
-import useloader from "../../../../../context/loader/useLoader";
+import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
@@ -18,7 +18,7 @@ import BackButton from "../../../../../shared/components/BackButton/BackButton";
 const ArchivedWorkers = () => {
   const navigate = useNavigate();
   const { openModal } = useDelete();
-  const { showloader, hideloader } = useloader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
   const [workers, setWorkers] = useState([]);
@@ -31,7 +31,7 @@ const ArchivedWorkers = () => {
 
   // Fetch archived workers safely
   const fetchWorkers = useCallback(async () => {
-    showloader();
+    showLoader();
     try {
       const res = await listArchivedWorkers({
         ...filters,
@@ -44,7 +44,7 @@ const ArchivedWorkers = () => {
     } catch (err) {
       addMessage(false, err.message || "Failed to load archived workers");
     } finally {
-      hideloader();
+      hideLoader();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);
@@ -67,14 +67,14 @@ const ArchivedWorkers = () => {
 
   // Action handlers
   const handleView = async (id) => {
-    showloader();
+    showLoader();
     try {
       const workerProfile = await getArchivedWorkerProfile(id);
       navigate(`/admin/workers/archived/${id}`, { state: workerProfile });
     } catch (err) {
       addMessage(false, err.message || "Failed to load worker profile");
     } finally {
-      hideloader();
+      hideLoader();
     }
   };
 

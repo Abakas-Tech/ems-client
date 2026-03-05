@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createTransaction, updateTransaction } from "../../../api/finance.api";
 import useProfile from "../../../../../context/Profile/useProfile";
-import useloader from "../../../../../context/loader/useLoader";
+import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
@@ -11,7 +11,7 @@ const RecordTransaction = ({
   onSuccess,
   onCancel,
 }) => {
-  const { showloader, hideloader } = useloader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { profile } = useProfile();
 
@@ -72,7 +72,7 @@ const RecordTransaction = ({
     }
 
     setSubmitLoading(true);
-    showloader();
+    showLoader();
 
     try {
       const payload = {
@@ -96,7 +96,7 @@ const RecordTransaction = ({
       addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
-      hideloader();
+      hideLoader();
     }
   };
 
@@ -199,11 +199,11 @@ const RecordTransaction = ({
               disabled={submitLoading}
               style={{ backgroundColor: "var(--maincolor)" }}
             >
-              {submitLoading ?
-                "Processing..."
-              : isEditMode ?
-                "Update Record"
-              : "Save Transaction"}
+              {submitLoading
+                ? "Processing..."
+                : isEditMode
+                  ? "Update Record"
+                  : "Save Transaction"}
             </button>
             <button
               type="button"
