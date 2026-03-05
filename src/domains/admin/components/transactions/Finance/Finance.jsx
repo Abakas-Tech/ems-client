@@ -8,6 +8,7 @@ import useResponse from "../../../../../context/response/UseResponse";
 import { useDelete } from "../../../../../context/Delete/UseDelete.jsx";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import Badge from "../../../../../shared/components/Badge/Badge.jsx";
+import FinanceReportSummary from "../FinancialReport/FinancialReport.jsx";
 
 const FinancePage = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -81,6 +82,19 @@ const FinancePage = () => {
     );
   }
 
+  if (view === "report") {
+    return (
+      <FinanceReportSummary
+        filters={{
+          ...filters,
+          startDate: filters.date_from, // Map date_from to startDate
+          endDate: filters.date_to, // Map date_to to endDate
+        }}
+        onBack={() => setView("list")}
+      />
+    );
+  }
+
   return (
     <div className="dashboard-wraper">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
@@ -96,6 +110,13 @@ const FinancePage = () => {
             onClick={() => setView("create")}
           >
             + New Transaction
+          </button>
+          <span className="m-2"></span>
+          <button
+            className="btn btn-main px-4 py-2 rounded-3 shadow-sm fw-semibold text-white"
+            onClick={() => setView("report")}
+          >
+            Generate report
           </button>
         </div>
       </div>
