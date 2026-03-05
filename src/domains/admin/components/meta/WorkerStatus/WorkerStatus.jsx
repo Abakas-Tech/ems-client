@@ -9,8 +9,8 @@ import {
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
-import CreateMetaModal from "../CreateMetaModal/CreateMetaModal";
 import MetaFilter from "../MetaFilter/MetaFilter";
+import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 
 // Validation for worker status name
 const validateWorkerStatusName = (name) => {
@@ -196,7 +196,7 @@ const [filter, setFilter] = useState({ name: "" });
         }
       />
 
-      <CreateMetaModal
+      <CreateModal
         show={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCreate={handleCreate}

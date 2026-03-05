@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Modal from "react-modal";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import styles from "./CreateMetaModal.module.css";
+import styles from "./CreateModal.module.css";
 
 Modal.setAppElement("#root");
 
@@ -14,12 +14,13 @@ const shakeVariants = {
   },
 };
 
-const CreateMetaModal = ({
+const CreateModal = ({
   show,
   onClose,
   onCreate,
   fields = [],
   title = "",
+  btnLabel = "Create",
 }) => {
   const modalRef = useRef(null);
   const [shake, setShake] = useState("idle");
@@ -145,7 +146,7 @@ const CreateMetaModal = ({
               Cancel
             </button>
             <button type="submit" className={styles.createButton}>
-              Create
+              {btnLabel}
             </button>
           </div>
         </form>
@@ -154,4 +155,4 @@ const CreateMetaModal = ({
   );
 };
 
-export default CreateMetaModal;
+export default CreateModal;

@@ -9,8 +9,8 @@ import {
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
-import CreateMetaModal from "../CreateMetaModal/CreateMetaModal";
 import MetaFilter from "../MetaFilter/MetaFilter";
+import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 
 // Validation for job position name
 const validateJobPositionName = (name) => {
@@ -195,7 +195,7 @@ const handleFilterChange = (e) => {
             }
           />
 
-          <CreateMetaModal
+          <CreateModal
             show={showCreateModal}
             onClose={() => setShowCreateModal(false)}
             onCreate={handleCreate}

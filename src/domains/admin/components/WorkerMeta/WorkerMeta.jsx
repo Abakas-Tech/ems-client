@@ -26,7 +26,7 @@ import {
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import { useDelete } from "../../../../context/Delete/useDelete";
-import CreateMetaModal from "../meta/CreateMetaModal/CreateMetaModal";
+import CreateModal from './../../../../shared/components/CreateModal/CreateModal';
 // Validation for selecting skill
 const validateSkill = (skill_id) => {
   if (!skill_id) return "Skill is required";
@@ -620,12 +620,13 @@ const WorkerMeta = () => {
             actions={actionsSkills}
             emptyState={emptyStateSkills}
           />
-          <CreateMetaModal
+          <CreateModal
             show={showCreateSkillModal}
             onClose={() => setShowCreateSkillModal(false)}
             onCreate={handleAssignSkill}
             fields={fieldsSkills}
             title="Assign Skill"
+            btnLabel="Assign"
           />
         </div>
 
@@ -651,14 +652,15 @@ const WorkerMeta = () => {
             actions={actionsLanguages}
             emptyState={emptyStateLanguages}
           />
-          <CreateMetaModal
+          <CreateModal
             show={showCreateLanguageModal}
             onClose={() => setShowCreateLanguageModal(false)}
             onCreate={handleAddLanguage}
             fields={fieldsAddLanguages}
             title="Add Language"
+            btnLabel="Add"
           />
-          <CreateMetaModal
+          <CreateModal
             show={showUpdateLanguageModal}
             onClose={() => {
               setShowUpdateLanguageModal(false);
@@ -667,6 +669,7 @@ const WorkerMeta = () => {
             onCreate={handleUpdateLanguage}
             fields={fieldsUpdateLanguages}
             title="Update Language"
+            btnLabel="Update"
           />
         </div>
       </div>
@@ -692,14 +695,15 @@ const WorkerMeta = () => {
             actions={actionsPositions}
             emptyState={emptyStatePositions}
           />
-          <CreateMetaModal
+          <CreateModal
             show={showCreatePositionModal}
             onClose={() => setShowCreatePositionModal(false)}
             onCreate={handleAddPosition}
             fields={fieldsAddPositions}
             title="Add Position"
+            btnLabel="Add"
           />
-          <CreateMetaModal
+          <CreateModal
             show={showUpdatePositionModal}
             onClose={() => {
               setShowUpdatePositionModal(false);
@@ -708,6 +712,7 @@ const WorkerMeta = () => {
             onCreate={handleUpdatePosition}
             fields={fieldsUpdatePositions}
             title="Update Position"
+            btnLabel="Update"
           />
         </div>
         <div className="col-12 col-md-6">
@@ -731,12 +736,13 @@ const WorkerMeta = () => {
             actions={actionsExperiences}
             emptyState={emptyStateExperiences}
           />
-          <CreateMetaModal
+          <CreateModal
             show={showCreateExperienceModal}
             onClose={() => setShowCreateExperienceModal(false)}
             onCreate={handleAddExperience}
             fields={fieldsAddExperiences}
             title="Add Experience"
+            btnLabel="Add"
           />
         </div>
       </div>
