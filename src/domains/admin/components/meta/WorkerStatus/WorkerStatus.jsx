@@ -156,7 +156,9 @@ const [filter, setFilter] = useState({ name: "" });
   };
 
   return (
-    <div className="dashboard-wraper">
+     <div className="row">
+      <div className="col-12 col-lg-6">
+        <div className="dashboard-wraper">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         <div className="flex-grow-1">
           <h2 className="fw-bold text-dark mb-2">Worker Status Management</h2>
@@ -167,10 +169,10 @@ const [filter, setFilter] = useState({ name: "" });
         </div>
 
         <button
-          className="btn btn-main"
+          className="btn btn-main w-40 w-auto"
           onClick={() => setShowCreateModal(true)}
         >
-          + Create Worker Status
+          + Status
         </button>
       </div>
 
@@ -202,6 +204,9 @@ const [filter, setFilter] = useState({ name: "" });
         title="Create New Worker Status"
       />
     </div>
+    </div>
+    </div>
+
   );
 };
 

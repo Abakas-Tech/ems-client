@@ -153,50 +153,54 @@ const handleFilterChange = (e) => {
   };
 
   return (
-    <div className="dashboard-wraper">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        <div className="flex-grow-1">
-          <h2 className="fw-bold text-dark mb-2">Language Management</h2>
-          <p className="text-muted mb-0">
-            Manage languages — create, rename, or delete entries as needed.
-          </p>
-        </div>
+    <div className="row">
+      <div className="col-12 col-lg-6">
+        <div className="dashboard-wraper">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div className="flex-grow-1">
+              <h2 className="fw-bold text-dark mb-2">Language Management</h2>
+              <p className="text-muted mb-0">
+                Manage languages — create, rename, or delete entries as needed.
+              </p>
+            </div>
 
-        <button
-          className="btn btn-main"
-          onClick={() => setShowCreateModal(true)}
-        >
-          + Create Language
-        </button>
-      </div>
+            <button
+              className="btn btn-main w-40 w-auto"
+              onClick={() => setShowCreateModal(true)}
+            >
+              + Language
+            </button>
+          </div>
 
-      <ListingComponent
-        data={languages}
-        columns={columns}
-        actions={actions}
-        emptyState={emptyState}
-        pagination={{
-          page: pagination.page,
-          limit: pagination.limit,
-          total: pagination.total,
-        }}
-        onPageChange={handlePageChange}
-        filtersComponent={
-          <MetaFilter
-            filter={filter}
-            onFilterChange={handleFilterChange}
-            onClear={handleClearFilters}
+          <ListingComponent
+            data={languages}
+            columns={columns}
+            actions={actions}
+            emptyState={emptyState}
+            pagination={{
+              page: pagination.page,
+              limit: pagination.limit,
+              total: pagination.total,
+            }}
+            onPageChange={handlePageChange}
+            filtersComponent={
+              <MetaFilter
+                filter={filter}
+                onFilterChange={handleFilterChange}
+                onClear={handleClearFilters}
+              />
+            }
           />
-        }
-      />
 
-      <CreateMetaModal
-        show={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onCreate={handleCreate}
-        fields={fields}
-        title="Create New Language"
-      />
+          <CreateMetaModal
+            show={showCreateModal}
+            onClose={() => setShowCreateModal(false)}
+            onCreate={handleCreate}
+            fields={fields}
+            title="Create New Language"
+          />
+        </div>
+      </div>
     </div>
   );
 };

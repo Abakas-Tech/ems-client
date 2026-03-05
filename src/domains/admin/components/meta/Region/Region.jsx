@@ -152,51 +152,55 @@ const [filter, setFilter] = useState({ name: "" });
   };
 
   return (
-    <div className="dashboard-wraper">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        <div className="flex-grow-1">
-          <h2 className="fw-bold text-dark mb-2">Region Management</h2>
-          <p className="text-muted mb-0">
-            Manage regions — create, rename, or delete entries as needed.
-          </p>
-        </div>
+    <div className="row">
+      <div className="col-12 col-lg-6">
+        <div className="dashboard-wraper">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div className="flex-grow-1">
+              <h2 className="fw-bold text-dark mb-2">Region Management</h2>
+              <p className="text-muted mb-0">
+                Manage regions — create, rename, or delete entries as needed.
+              </p>
+            </div>
 
-        <button
-          className="btn btn-main"
-          onClick={() => setShowCreateModal(true)}
-        >
-          + Create Region
-        </button>
-      </div>
+            <button
+              className="btn btn-main w-40 w-auto"
+              onClick={() => setShowCreateModal(true)}
+            >
+              + Region
+            </button>
+          </div>
 
-      <ListingComponent
-        data={regions}
-        columns={columns}
-        actions={actions}
-        emptyState={emptyState}
-        pagination={{
-          page: pagination.page,
-          limit: pagination.limit,
-          total: pagination.total,
-        }}
-        onPageChange={handlePageChange}
-        filtersComponent={
-          <MetaFilter
-            filter={filter}
-            onFilterChange={handleFilterChange}
-            onClear={handleClearFilters}
+          <ListingComponent
+            data={regions}
+            columns={columns}
+            actions={actions}
+            emptyState={emptyState}
+            pagination={{
+              page: pagination.page,
+              limit: pagination.limit,
+              total: pagination.total,
+            }}
+            onPageChange={handlePageChange}
+            filtersComponent={
+              <MetaFilter
+                filter={filter}
+                onFilterChange={handleFilterChange}
+                onClear={handleClearFilters}
+              />
+            }
           />
-        }
-      />
 
-      {/* Create Region Modal */}
-      <CreateMetaModal
-        show={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onCreate={handleCreate}
-        fields={fields}
-        title="Create New Region"
-      />
+          {/* Create Region Modal */}
+          <CreateMetaModal
+            show={showCreateModal}
+            onClose={() => setShowCreateModal(false)}
+            onCreate={handleCreate}
+            fields={fields}
+            title="Create New Region"
+          />
+        </div>
+      </div>
     </div>
   );
 };

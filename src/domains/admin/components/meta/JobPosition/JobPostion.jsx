@@ -153,50 +153,57 @@ const handleFilterChange = (e) => {
   };
 
   return (
-    <div className="dashboard-wraper">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        <div className="flex-grow-1">
-          <h2 className="fw-bold text-dark mb-2">Job Position Management</h2>
-          <p className="text-muted mb-0">
-            Manage job positions — create, rename, or delete entries as needed.
-          </p>
-        </div>
+    <div className="row">
+      <div className="col-12 col-lg-6">
+        <div className="dashboard-wraper">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div className="flex-grow-1">
+              <h2 className="fw-bold text-dark mb-2">
+                Job Position Management
+              </h2>
+              <p className="text-muted mb-0">
+                Manage job positions — create, rename, or delete entries as
+                needed.
+              </p>
+            </div>
 
-        <button
-          className="btn btn-main"
-          onClick={() => setShowCreateModal(true)}
-        >
-          + Create Job Position
-        </button>
-      </div>
+            <button
+              className="btn btn-main w-45 w-auto"
+              onClick={() => setShowCreateModal(true)}
+            >
+              + Job Position
+            </button>
+          </div>
 
-      <ListingComponent
-        data={jobPositions}
-        columns={columns}
-        actions={actions}
-        emptyState={emptyState}
-        pagination={{
-          page: pagination.page,
-          limit: pagination.limit,
-          total: pagination.total,
-        }}
-        onPageChange={handlePageChange}
-         filtersComponent={
-          <MetaFilter
-            filter={filter}
-            onFilterChange={handleFilterChange}
-            onClear={handleClearFilters}
+          <ListingComponent
+            data={jobPositions}
+            columns={columns}
+            actions={actions}
+            emptyState={emptyState}
+            pagination={{
+              page: pagination.page,
+              limit: pagination.limit,
+              total: pagination.total,
+            }}
+            onPageChange={handlePageChange}
+            filtersComponent={
+              <MetaFilter
+                filter={filter}
+                onFilterChange={handleFilterChange}
+                onClear={handleClearFilters}
+              />
+            }
           />
-        }
-      />
 
-      <CreateMetaModal
-        show={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onCreate={handleCreate}
-        fields={fields}
-        title="Create New Job Position"
-      />
+          <CreateMetaModal
+            show={showCreateModal}
+            onClose={() => setShowCreateModal(false)}
+            onCreate={handleCreate}
+            fields={fields}
+            title="Create New Job Position"
+          />
+        </div>
+      </div>
     </div>
   );
 };

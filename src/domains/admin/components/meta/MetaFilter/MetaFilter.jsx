@@ -1,12 +1,17 @@
 const MetaFilter = ({ filter = {}, onFilterChange, onClear, extraField }) => {
   const isDisabled = Object.values(filter).every((v) => !v);
 
+  // Determine input widths dynamically based on extraField
+  const nameCol = extraField ? 5 : 10; // Name input
+  const extraCol = extraField ? 5 : 0; // Extra field 
+  const buttonCol = 2; // Clear button
+
   return (
-    <div className="card shadow-sm mb-4 rounded-3 border border-light">
+    <div className="card shadow-sm mb-4 rounded-3 border border-light pe-md-3">
       <div className="card-body">
         <div className="row g-3 align-items-center">
           {/* Name Search */}
-          <div className="col-md-4">
+          <div className={`col-12 col-md-${nameCol}`}>
             <input
               type="text"
               name="name"
@@ -20,7 +25,7 @@ const MetaFilter = ({ filter = {}, onFilterChange, onClear, extraField }) => {
 
           {/* Extra Field (optional) */}
           {extraField && extraField.type === "select" && (
-            <div className="col-md-4">
+            <div className={`col-12 col-md-${extraCol}`}>
               <select
                 name={extraField.name}
                 className="form-control form-control-sm py-2"
@@ -39,10 +44,10 @@ const MetaFilter = ({ filter = {}, onFilterChange, onClear, extraField }) => {
           )}
 
           {/* Clear Button */}
-          <div className={`col-md-${extraField ? "2" : "2"} d-grid`}>
+          <div className={`col-12 col-md-${buttonCol} d-grid`}>
             <button
               type="button"
-              className="btn btn-outline-secondary"
+              className="btn btn-outline-secondary w-100"
               style={{ height: "42px" }}
               onClick={onClear}
               disabled={isDisabled}

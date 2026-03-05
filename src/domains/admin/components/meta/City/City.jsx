@@ -168,48 +168,52 @@ const City = () => {
   };
 
   return (
-    <div className="dashboard-wraper">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        <div className="flex-grow-1">
-          <h2 className="fw-bold text-dark mb-2">City Management</h2>
-          <p className="text-muted mb-0">
-            Manage cities — create, rename, or delete entries as needed.
-          </p>
-        </div>
+    <div className="row">
+      <div className="col-12 col-lg-6">
+        <div className="dashboard-wraper">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div className="flex-grow-1">
+              <h2 className="fw-bold text-dark mb-2">City Management</h2>
+              <p className="text-muted mb-0">
+                Manage cities — create, rename, or delete entries as needed.
+              </p>
+            </div>
 
-        <button
-          className="btn btn-main"
-          onClick={() => setShowCreateModal(true)}
-        >
-          + Create City
-        </button>
-      </div>
+            <button
+              className="btn btn-main w-40 w-auto"
+              onClick={() => setShowCreateModal(true)}
+            >
+              + City
+            </button>
+          </div>
 
-      <ListingComponent
-        data={cities}
-        columns={columns}
-        actions={actions}
-        emptyState={emptyState}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        filtersComponent={
-          <MetaFilter
-            filter={filter}
-            onFilterChange={handleFilterChange}
-            onClear={handleClearFilters}
-            extraField={extraField }
+          <ListingComponent
+            data={cities}
+            columns={columns}
+            actions={actions}
+            emptyState={emptyState}
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            filtersComponent={
+              <MetaFilter
+                filter={filter}
+                onFilterChange={handleFilterChange}
+                onClear={handleClearFilters}
+                extraField={extraField}
+              />
+            }
           />
-        }
-      />
 
-      {/* Create City Modal */}
-      <CreateMetaModal
-        show={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onCreate={handleCreate}
-        fields={fields}
-        title="Create New City"
-      />
+          {/* Create City Modal */}
+          <CreateMetaModal
+            show={showCreateModal}
+            onClose={() => setShowCreateModal(false)}
+            onCreate={handleCreate}
+            fields={fields}
+            title="Create New City"
+          />
+        </div>
+      </div>
     </div>
   );
 };
