@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useloader from "../../../../context/loader/useLoader";
 // import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
-import useResponse from "../../../../context/response/useResponse";
+import useResponse from "../../../../context/Response/useResponse";
 
 const PasswordResetForm = ({ email }) => {
   const [otp, setOtp] = useState("");

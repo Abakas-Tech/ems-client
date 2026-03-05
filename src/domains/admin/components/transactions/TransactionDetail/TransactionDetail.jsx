@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { fetchTransactionDetails } from "../../../api/finance.api";
 import useloader from "../../../../../context/loader/useLoader";
-import useResponse from "../../../../../context/response/useResponse";
+import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import ProfileCell from "../../../../../shared/components/ProfileCell/ProfileCell";
 import Badge from "../../../../../shared/components/Badge/Badge";

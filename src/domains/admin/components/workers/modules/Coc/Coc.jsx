@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useloader from "../../../../../../context/loader/useLoader";
-import useResponse from "../../../../../../context/response/useResponse";
+import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createCoc } from "../../../../api/worker.api";
 
@@ -35,70 +35,70 @@ function Coc() {
     }
   };
 
-const validateCoc = () => {
-  const assessmentCenter = formData.coc_assessment_center?.trim();
-  const cocNumber = formData.coc_number?.trim();
+  const validateCoc = () => {
+    const assessmentCenter = formData.coc_assessment_center?.trim();
+    const cocNumber = formData.coc_number?.trim();
 
-  const assessmentDateRaw = formData.coc_assessment_date;
-  const issueDateRaw = formData.coc_issue_date;
-  const expiryDateRaw = formData.coc_expiry_date;
+    const assessmentDateRaw = formData.coc_assessment_date;
+    const issueDateRaw = formData.coc_issue_date;
+    const expiryDateRaw = formData.coc_expiry_date;
 
-  if (!assessmentCenter) {
-    return "COC assessment center is required";
-  }
+    if (!assessmentCenter) {
+      return "COC assessment center is required";
+    }
 
-  if (cocNumber && (cocNumber.length < 3 || cocNumber.length > 50)) {
-    return "COC number must be between 3 and 50 characters";
-  }
+    if (cocNumber && (cocNumber.length < 3 || cocNumber.length > 50)) {
+      return "COC number must be between 3 and 50 characters";
+    }
 
-  const assessmentDate = new Date(assessmentDateRaw);
-  const issueDate = new Date(issueDateRaw);
-  const expiryDate = new Date(expiryDateRaw);
+    const assessmentDate = new Date(assessmentDateRaw);
+    const issueDate = new Date(issueDateRaw);
+    const expiryDate = new Date(expiryDateRaw);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  if (isNaN(assessmentDate.getTime())) {
-    return "COC assessment date must be a valid date";
-  }
+    if (isNaN(assessmentDate.getTime())) {
+      return "COC assessment date must be a valid date";
+    }
 
-  if (assessmentDate > today) {
-    return "COC assessment date cannot be in the future";
-  }
+    if (assessmentDate > today) {
+      return "COC assessment date cannot be in the future";
+    }
 
-  if (isNaN(issueDate.getTime())) {
-    return "COC issue date must be a valid date";
-  }
+    if (isNaN(issueDate.getTime())) {
+      return "COC issue date must be a valid date";
+    }
 
-  if (issueDate > today) {
-    return "COC issue date cannot be in the future";
-  }
+    if (issueDate > today) {
+      return "COC issue date cannot be in the future";
+    }
 
-  if (isNaN(expiryDate.getTime())) {
-    return "COC expiry date must be a valid date";
-  }
+    if (isNaN(expiryDate.getTime())) {
+      return "COC expiry date must be a valid date";
+    }
 
-  if (expiryDate <= issueDate) {
-    return "COC expiry date must be after issue date";
-  }
+    if (expiryDate <= issueDate) {
+      return "COC expiry date must be after issue date";
+    }
 
-  if (!cocDocument) {
-    return "COC document file is required";
-  }
+    if (!cocDocument) {
+      return "COC document file is required";
+    }
 
-  const allowedTypes = [
-    "image/jpeg",
-    "image/png",
-    "image/jpg",
-    "application/pdf",
-  ];
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "application/pdf",
+    ];
 
-  if (!allowedTypes.includes(cocDocument.type)) {
-    return "COC document must be an image or PDF file";
-  }
+    if (!allowedTypes.includes(cocDocument.type)) {
+      return "COC document must be an image or PDF file";
+    }
 
-  return null;
-};
+    return null;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

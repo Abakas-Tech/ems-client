@@ -14,7 +14,7 @@ General Information
 Base URL: /api/
 --------------------------------------------------
 •	Authentication: JWT Bearer Token in Authorization header required for all endpoints.
-•	Content-Type: JSON for requests/responses unless stated (file uploads use multipart/form-data).
+•	Content-Type: JSON for requests/Responses unless stated (file uploads use multipart/form-data).
 •	Timestamps: ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ).
 •	IDs: BIGINT UNSIGNED.
 •	Enums: Case-sensitive strings.

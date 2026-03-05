@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import useloader from "../../../../context/loader/useLoader";
-import useResponse from "../../../../context/response/useResponse";
+import useResponse from "../../../../context/Response/useResponse";
 import useProfile from "../../../../context/Profile/useProfile";
 import { useDelete } from "../../../../context/Delete/useDelete";
 import { updateProfile } from "../../api/profile.api";

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createWorker } from "../../../api/worker.api";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import useloader from "../../../../../context/loader/useLoader";
-import useResponse from "../../../../../context/response/useResponse";
+import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 function WorkerRegistration() {

@@ -1,5 +1,5 @@
 import React from "react";
-import PassportComponent from "../../components/workers/modules/passport/Passport";
+import PassportComponent from "../../../../components/workers/modules/Passport/Passport";
 
 function Passport() {
   return (

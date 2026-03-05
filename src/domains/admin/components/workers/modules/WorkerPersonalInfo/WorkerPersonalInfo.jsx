@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { updateWorker } from "../../../../api/worker.api";
 import { getRegions, getCities } from "../../../../api/meta.api";
 import useloader from "../../../../../../context/loader/useLoader";
-import useResponse from "../../../../../../context/response/useResponse";
+import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 
 function WorkerPersonalInfo() {

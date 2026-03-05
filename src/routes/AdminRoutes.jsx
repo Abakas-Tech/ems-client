@@ -21,9 +21,9 @@ import ListUser from "./../domains/admin/pages/user/ListUser/ListUser";
 import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
 import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
 import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
-import Passport from "../domains/admin/pages/passport/Passport.jsx";
-import Coc from "../domains/admin/pages/coc/Coc.jsx";
-import Medical from "../domains/admin/pages/medical/Medical.jsx";
+import Passport from "../domains/admin/pages/workers/modules/Passport/Passport.jsx";
+import Coc from "../domains/admin/pages/workers/modules/Coc/Coc.jsx";
+import Medical from "../domains/admin/pages/workers/modules/Medical/Medical.jsx";
 
 
 const AdminRoutes = () => (

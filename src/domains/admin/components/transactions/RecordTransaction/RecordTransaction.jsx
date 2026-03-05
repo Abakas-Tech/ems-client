@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createTransaction, updateTransaction } from "../../../api/finance.api";
 import useProfile from "../../../../../context/Profile/useProfile";
 import useloader from "../../../../../context/loader/useLoader";
-import useResponse from "../../../../../context/response/useResponse";
+import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 const RecordTransaction = ({

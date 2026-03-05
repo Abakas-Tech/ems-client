@@ -1,4 +1,4 @@
-import useResponse from "./../../../context/response/useResponse";
+import useResponse from "./../../../context/Response/useResponse";
 import styles from "./Response.module.css";
 const Response = () => {
   const { responseMessages, removeMessage } = useResponse();

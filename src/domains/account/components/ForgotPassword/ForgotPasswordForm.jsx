@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { passwordResetRequest } from "../../api/auth.api";
 import useloader from "../../../../context/loader/useLoader";
-import useResponse from "../../../../context/response/useResponse";
+import useResponse from "../../../../context/Response/useResponse";
 // import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 
 const ForgotPasswordForm = () => {

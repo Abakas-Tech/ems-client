@@ -7,7 +7,7 @@ import {
 import useloader from "../../../../../context/loader/useLoader";
 import { useNavigate } from "react-router-dom";
 import BackButton from "./../../../../../shared/components/BackButton/BackButton";
-import useResponse from "../../../../../context/response/useResponse";
+import useResponse from "../../../../../context/Response/useResponse";
 
 const PERMISSIONS = [
   "manage_users",

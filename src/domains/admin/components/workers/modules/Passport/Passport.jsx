@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useloader from "../../../../../../context/loader/useLoader";
-import useResponse from "../../../../../../context/response/useResponse";
+import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createPassport } from "../../../../api/worker.api";
 
@@ -34,64 +34,63 @@ function Passport() {
     }
   };
 
- const validatePassport = () => {
-   const passportNumber = formData.passport_number?.trim();
-   const issueDateRaw = formData.passport_issue_date;
-   const expiryDateRaw = formData.passport_expiry_date;
+  const validatePassport = () => {
+    const passportNumber = formData.passport_number?.trim();
+    const issueDateRaw = formData.passport_issue_date;
+    const expiryDateRaw = formData.passport_expiry_date;
 
+    if (!passportNumber) {
+      return "Passport number is required";
+    }
 
-  if (!passportNumber) {
-    return "Passport number is required";
-  }
-   
-   if (passportNumber.length < 5 || passportNumber.length > 50) {
-     return "Passport number must be between 5 and 50 characters";
-   }
+    if (passportNumber.length < 5 || passportNumber.length > 50) {
+      return "Passport number must be between 5 and 50 characters";
+    }
 
-   const issueDate = new Date(issueDateRaw);
-   const expiryDate = new Date(expiryDateRaw);
-   const today = new Date();
-   today.setHours(0, 0, 0, 0); 
+    const issueDate = new Date(issueDateRaw);
+    const expiryDate = new Date(expiryDateRaw);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-   if (isNaN(issueDate.getTime())) {
-     return "Passport issue date must be a valid date";
-   }
+    if (isNaN(issueDate.getTime())) {
+      return "Passport issue date must be a valid date";
+    }
 
-   if (issueDate > today) {
-     return "Passport issue date cannot be in the future";
-   }
+    if (issueDate > today) {
+      return "Passport issue date cannot be in the future";
+    }
 
-   if (isNaN(expiryDate.getTime())) {
-     return "Passport expiry date must be a valid date";
-   }
+    if (isNaN(expiryDate.getTime())) {
+      return "Passport expiry date must be a valid date";
+    }
 
-   if (expiryDate <= issueDate) {
-     return "Passport expiry date must be after issue date";
-   }
+    if (expiryDate <= issueDate) {
+      return "Passport expiry date must be after issue date";
+    }
 
-   if (!passportScan) {
-     return "Passport scan file is required";
-   }
+    if (!passportScan) {
+      return "Passport scan file is required";
+    }
 
-   const allowedTypes = [
-     "image/jpeg",
-     "image/png",
-     "image/jpg",
-     "application/pdf",
-   ];
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "application/pdf",
+    ];
 
-   if (!allowedTypes.includes(passportScan.type)) {
-     return "Passport scan must be an image or PDF file";
-   }
+    if (!allowedTypes.includes(passportScan.type)) {
+      return "Passport scan must be an image or PDF file";
+    }
 
-   return null;
- };
+    return null;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-      const error = validatePassport();
-      
+    const error = validatePassport();
+
     if (error) {
       addMessage(false, error);
       return;
@@ -112,7 +111,7 @@ function Passport() {
       );
       dataToSend.append("passport_scan_url", passportScan);
 
-        const response = await createPassport(id, dataToSend);
+      const response = await createPassport(id, dataToSend);
       addMessage(
         response?.success,
         response?.message || "Passport created successfully",
@@ -152,7 +151,6 @@ function Passport() {
               value={formData.passport_number}
               onChange={handleChange}
               required
-
             />
           </div>
 

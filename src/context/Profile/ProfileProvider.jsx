@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProfileContext from "./ProfileContext";
 import { getProfile } from "../../domains/admin/api/profile.api";
 import { initAuth } from "../../utils/axios";
-import useResponse from "../response/useResponse";
+import useResponse from "../Response/useResponse";
 
 const ProfileProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);

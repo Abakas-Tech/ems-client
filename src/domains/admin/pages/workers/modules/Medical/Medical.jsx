@@ -1,6 +1,5 @@
 import React from "react";
-import MedicalComponent from "../../components/workers/modules/medical/Medical";
-
+import MedicalComponent from "../../../../components/workers/modules/Medical/Medical";
 function Medical() {
   return (
     <>

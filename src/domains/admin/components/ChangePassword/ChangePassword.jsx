@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { changePassword } from "../../api/auth.api";
 import useloader from "../../../../context/loader/useLoader";
-import useResponse from "../../../../context/response/useResponse";
+import useResponse from "../../../../context/Response/useResponse";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
 // import { useDemoInfo } from "./../../../../context/Demo/useDemoInfo";
 const ChangePassword = () => {

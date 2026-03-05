@@ -11,7 +11,7 @@ import "./index.css";
 import App from "./App.jsx";
 import LoaderProvider from "./context/loader/LoaderProvider";
 import LogoutProvider from "./context/Logout/LogoutProvider.jsx";
-import ResponseProvider from "./context/response/ResponseProvider.jsx";
+import ResponseProvider from "./context/Response/ResponseProvider.jsx";
 import ConfirmDeleteProvider from "./context/Delete/DeleteProvider";
 import ProfileProvider from "./context/Profile/ProfileProvider.jsx";
 import DemoInfoProvider from "./context/Demo/DemoInfoProvider";
@@ -21,15 +21,15 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <DemoInfoProvider>
         <LogoutProvider>
-            <LoaderProvider>
-              <ResponseProvider>
-                <ProfileProvider>
-                  <ConfirmDeleteProvider>
-                    <App />
-                  </ConfirmDeleteProvider>
-                </ProfileProvider>
-              </ResponseProvider>
-            </LoaderProvider>
+          <LoaderProvider>
+            <ResponseProvider>
+              <ProfileProvider>
+                <ConfirmDeleteProvider>
+                  <App />
+                </ConfirmDeleteProvider>
+              </ProfileProvider>
+            </ResponseProvider>
+          </LoaderProvider>
         </LogoutProvider>
       </DemoInfoProvider>
     </BrowserRouter>
