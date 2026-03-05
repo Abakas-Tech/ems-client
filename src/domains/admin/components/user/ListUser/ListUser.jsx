@@ -135,7 +135,7 @@ const ListUser = () => {
         ...row,
         permissions: permResponse?.data || [],
       };
-      navigate("/admin/create-user", {
+      navigate("/admin/user-management/create-user", {
         state: { isEditMode: true, userData: userDataWithPermissions },
       });
     } catch (err) {
@@ -146,7 +146,7 @@ const ListUser = () => {
   };
 
   const handleCreateUser = () => {
-    navigate("/admin/create-user", { state: { isEditMode: false } });
+    navigate("/admin/user-management/create-user", { state: { isEditMode: false } });
   };
 
   const columns = [

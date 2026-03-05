@@ -10,6 +10,7 @@ const ListingComponent = ({
   filtersComponent,
   emptyState,
   pagination,
+  onPageChange,
   showAvater = false,
   fewColumns = false,
 }) => {
@@ -183,7 +184,7 @@ const ListingComponent = ({
                 limit: pagination.limit,
                 total: pagination.total,
               }}
-              onPageChange={pagination.onPageChange}
+              onPageChange={onPageChange} 
             />
           )}
         </div>
