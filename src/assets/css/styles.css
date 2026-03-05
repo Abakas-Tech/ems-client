@@ -12082,3 +12082,42 @@ th.next.available,
     display: none !important;
   }
 }
+/* Container for the notification list */
+.notification-row:hover {
+  background-color: #f8f9fa !important;
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Scrollbar for a cleaner look */
+div::-webkit-scrollbar {
+  width: 6px;
+}
+div::-webkit-scrollbar-track {
+  background: transparent;
+}
+div::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+div::-webkit-scrollbar-thumb:hover {
+  background: #d0d0d0;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
