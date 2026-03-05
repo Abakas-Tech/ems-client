@@ -4,11 +4,13 @@ import { FaEdit, FaTrash, FaFilePdf, FaImage } from "react-icons/fa";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import { getWorkerProfile } from "../../../api/worker.api";
 
+import useloader from "../../../../../context/Loader/useLoader";
+
 const WorkerProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [worker, setWorker] = useState(null);
-  const [loading, setLoading] = useState(true);
+   const { showLoader, hideLoader } = useloader();
 
   useEffect(() => {
     fetchWorker();
@@ -16,23 +18,19 @@ const WorkerProfile = () => {
 
   const fetchWorker = async () => {
     try {
+       showLoader();
       const response = await getWorkerProfile(id);
       setWorker(response.data);
     } catch (error) {
       console.error("Failed to load worker:", error.message);
     } finally {
-      setLoading(false);
+       hideLoader();
     }
   };
 
   const goBack = () => navigate(-1);
 
-  if (loading) return <div className="dashboard-wraper">Loading...</div>;
-  if (!worker) return <div className="dashboard-wraper">No worker found</div>;
-
-  // ────────────────────────────────────────────────
-  //  Extract & prepare data with safe defaults
-  // ────────────────────────────────────────────────
+ // Extract data
   const personal = worker.personal_information || {};
   const passport = worker.passport || {};
   const coc = worker.coc || {};
@@ -54,9 +52,7 @@ const WorkerProfile = () => {
       ? "badge bg-success px-3 py-2 fs-6"
       : "badge bg-secondary px-3 py-2 fs-6";
 
-  // ────────────────────────────────────────────────
-  //  Render helper – Document link (PDF or image)
-  // ────────────────────────────────────────────────
+ // Helper component for document links
   const DocumentLink = ({ url, label, isImage = false }) => {
     if (!url) return <span className="text-muted">Not available</span>;
 
@@ -77,7 +73,7 @@ const WorkerProfile = () => {
     <div className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
-      {/* Header – Photo + Name + Phone + Passport + Status */}
+      {/* Header */}
       <div className="card-body">
         <div className="row align-items-center">
           <div className="col-md-2 text-center mb-3 mb-md-0">
@@ -112,7 +108,7 @@ const WorkerProfile = () => {
       {/* Cards Grid */}
       <div className="container mt-4">
         <div className="row g-4">
-          {/* ─── Personal Information ─── */}
+          {/*  Personal Information */}
           <div className="col-12 col-md-12 ">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-header d-flex justify-content-between align-items-center fw-bold">
@@ -189,7 +185,7 @@ const WorkerProfile = () => {
             </div>
           </div>
 
-          {/* ─── Passport ─── */}
+          {/* Passport */}
           <div className="col-12 col-md-6 ">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-header d-flex justify-content-between align-items-center fw-bold">
@@ -238,7 +234,7 @@ const WorkerProfile = () => {
             </div>
           </div>
 
-          {/* ─── COC ─── */}
+          {/*  COC */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-header d-flex justify-content-between align-items-center fw-bold">
@@ -292,7 +288,7 @@ const WorkerProfile = () => {
             </div>
           </div>
 
-          {/* ─── Medical ─── */}
+          {/*Medical  */}
           <div className="col-12 col-md-6 ">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-header d-flex justify-content-between align-items-center fw-bold">
@@ -354,7 +350,7 @@ const WorkerProfile = () => {
             </div>
           </div>
 
-          {/* ─── Emergency / Guarantor ─── */}
+          {/* Emergency / Guarantor */}
           <div className="col-12 col-md-6 ">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-header d-flex justify-content-between align-items-center fw-bold">
@@ -403,7 +399,7 @@ const WorkerProfile = () => {
             </div>
           </div>
 
-          {/* ─── Visa ─── */}
+          {/* Visa */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-header d-flex justify-content-between align-items-center fw-bold">
@@ -444,7 +440,7 @@ const WorkerProfile = () => {
             </div>
           </div>
 
-          {/* ─── LMIS ─── */}
+          {/*  LMIS*/}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-header d-flex justify-content-between align-items-center fw-bold">
@@ -478,15 +474,13 @@ const WorkerProfile = () => {
                       label="View QR Code"
                       isImage
                     />
-                    {/* Optional: show image inline */}
-                    {/* <img src={lmis.qr_code.url} alt="LMIS QR" style={{maxWidth:"140px", marginTop:"8px"}} /> */}
                   </p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* ─── Travel Records ─── (one card per travel record) */}
+          {/* Travel Records  */}
           {worker.travel_records?.length > 0 ? (
             worker.travel_records.map((travel, index) => (
               <div key={`travel-${index}`} className="col-12 col-md-6">
@@ -566,7 +560,7 @@ const WorkerProfile = () => {
             </div>
           )}
 
-          {/* ─── Contracts ─── (one card per contract) */}
+          {/* Contracts */}
           {worker.contracts?.length > 0 ? (
             worker.contracts.map((contract, index) => (
               <div key={`contract-${index}`} className="col-12 col-md-6">
