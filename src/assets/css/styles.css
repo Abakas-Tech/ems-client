@@ -12121,3 +12121,15 @@ div::-webkit-scrollbar-thumb:hover {
 .tracking-wider {
   letter-spacing: 0.05em;
 }
+/* Add this to your CSS for a real chat "nub" */
+.message-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -10px;
+  width: 20px;
+  height: 20px;
+  background: inherit;
+  border-bottom-right-radius: 15px;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
