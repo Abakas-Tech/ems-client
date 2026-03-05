@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ListingComponent from "../../../../shared/components/ListingComponent/ListingComponent";
 import {
   assignWorkerSkill,
@@ -27,12 +27,14 @@ import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import { useDelete } from "../../../../context/Delete/useDelete";
 import CreateModal from './../../../../shared/components/CreateModal/CreateModal';
+import BackButton from "../../../../shared/components/BackButton/BackButton";
 // Validation for selecting skill
 const validateSkill = (skill_id) => {
   if (!skill_id) return "Skill is required";
   return null;
 };
 const WorkerMeta = () => {
+  const navigate = useNavigate();
   const { worker_id } = useParams();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -65,6 +67,10 @@ const WorkerMeta = () => {
     { value: "native", label: "Native" },
   ];
 
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  };
   // Fetch assigned experiences
   const fetchWorkerExperiences = async () => {
     showLoader();
@@ -488,7 +494,7 @@ const WorkerMeta = () => {
       accessor: "name",
     },
     {
-      header: "Experience",
+      header: "Years",
       accessor: "years_of_experience",
     },
   ];
@@ -557,6 +563,9 @@ const WorkerMeta = () => {
 
   return (
     <div className="dashboard-wraper">
+      <div className="position-absolute top-0 end-0 mt-2">
+        <BackButton onClick={goBack} />
+      </div>
       {/* Worker Meta Header (optional) */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         {/* Title and description */}
@@ -568,7 +577,7 @@ const WorkerMeta = () => {
         </div>
 
         {/* Action buttons for all meta types */}
-        <div className="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+        <div className="d-flex flex-wrap gap-2 mt-3 mt-md-4">
           <button
             className="btn btn-main"
             onClick={() => setShowCreateSkillModal(true)}
@@ -748,5 +757,5 @@ const WorkerMeta = () => {
       </div>
     </div>
   );
-};
+};;
 export default WorkerMeta;

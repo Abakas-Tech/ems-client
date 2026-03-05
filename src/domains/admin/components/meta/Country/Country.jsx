@@ -11,6 +11,8 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import { useNavigate } from "react-router-dom";
 
 // Validation for country name
 const validateCountryName = (name) => {
@@ -22,6 +24,7 @@ const validateCountryName = (name) => {
   return null;
 };
 const Country = () => {
+  const navigate = useNavigate(); 
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
@@ -35,6 +38,11 @@ const Country = () => {
     total: 0,
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  };
 
   const fetchCountries = async (page = 1, limit = 10) => {
     showLoader();
@@ -78,14 +86,14 @@ const Country = () => {
     }
   };
 
-const handleFilterChange = (e) => {
-  const { name, value } = e.target;
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
 
-  setFilter((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
+    setFilter((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   const handleClearFilters = () => {
     setFilter({ name: "" });
   };
@@ -160,9 +168,11 @@ const handleFilterChange = (e) => {
                 Manage countries — create, rename, or delete entries as needed.
               </p>
             </div>
-
+            <div className="position-absolute top-0 end-0 mt-2">
+              <BackButton onClick={goBack} />
+            </div>
             <button
-              className="btn btn-main  w-40 w-md-auto"
+              className="btn btn-main w-40 w-auto m-4"
               onClick={() => setShowCreateModal(true)}
             >
               + Country
@@ -202,6 +212,6 @@ const handleFilterChange = (e) => {
       </div>
     </div>
   );
-};
+};;
 
 export default Country;

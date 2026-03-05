@@ -12,6 +12,8 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import { useNavigate } from "react-router-dom";
 
 // Validation for city name and region
 const validateCity = (name, regionId) => {
@@ -24,6 +26,7 @@ const validateCity = (name, regionId) => {
 };
 
 const City = () => {
+  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
@@ -38,6 +41,10 @@ const City = () => {
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  };
   // Fetch cities
   const fetchCities = async (page = 1, limit = 10) => {
     showLoader();
@@ -138,9 +145,9 @@ const City = () => {
   };
 
   const columns = [
-      { header: "City Name", accessor: "name", renameable: true },
-      { header: "Region", accessor: "region_name" },
-    ];
+    { header: "City Name", accessor: "name", renameable: true },
+    { header: "Region", accessor: "region_name" },
+  ];
 
   const actions = [
     { type: "rename", onClick: handleRename },
@@ -169,7 +176,7 @@ const City = () => {
 
   return (
     <div className="row">
-      <div className="col-12 col-lg-6">
+      <div className="col-12 col-lg-8">
         <div className="dashboard-wraper">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div className="flex-grow-1">
@@ -178,9 +185,11 @@ const City = () => {
                 Manage cities — create, rename, or delete entries as needed.
               </p>
             </div>
-
+            <div className="position-absolute top-0 end-0 mt-2">
+              <BackButton onClick={goBack} />
+            </div>
             <button
-              className="btn btn-main w-40 w-auto"
+              className="btn btn-main w-40 w-auto m-4"
               onClick={() => setShowCreateModal(true)}
             >
               + City
@@ -216,6 +225,6 @@ const City = () => {
       </div>
     </div>
   );
-};
+};;
 
 export default City;

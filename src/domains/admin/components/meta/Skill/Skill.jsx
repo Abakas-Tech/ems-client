@@ -11,6 +11,8 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import { useNavigate } from "react-router-dom";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 // Validation for skill name
 const validateSkillName = (name) => {
@@ -22,6 +24,7 @@ const validateSkillName = (name) => {
 };
 
 const Skill = () => {
+  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
@@ -33,6 +36,11 @@ const [filter, setFilter] = useState({ name: "" });
     total: 0,
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  }
 
   const fetchSkills = async (page = 1, limit = 10) => {
     showLoader();
@@ -159,9 +167,11 @@ const handleFilterChange = (e) => {
                 Manage skills — create, rename, or delete entries as needed.
               </p>
             </div>
-
+            <div className="position-absolute top-0 end-0 mt-2">
+              <BackButton onClick={goBack} />
+            </div>
             <button
-              className="btn btn-main w-40 w-auto"
+              className="btn btn-main w-40 w-auto m-4"
               onClick={() => setShowCreateModal(true)}
             >
               + Skill

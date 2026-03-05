@@ -11,6 +11,8 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import { useNavigate } from "react-router-dom";
 
 // Validation for language name
 const validateLanguageName = (name) => {
@@ -23,6 +25,7 @@ const validateLanguageName = (name) => {
 };
 
 const Language = () => {
+  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
@@ -34,6 +37,11 @@ const Language = () => {
     total: 0,
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  };
 
   const fetchLanguages = async (page = 1, limit = 10) => {
     showLoader();
@@ -164,8 +172,11 @@ const handleFilterChange = (e) => {
               </p>
             </div>
 
+            <div className="position-absolute top-0 end-0 mt-2">
+              <BackButton onClick={goBack} />
+            </div>
             <button
-              className="btn btn-main w-40 w-auto"
+              className="btn btn-main w-40 w-auto m-4"
               onClick={() => setShowCreateModal(true)}
             >
               + Language

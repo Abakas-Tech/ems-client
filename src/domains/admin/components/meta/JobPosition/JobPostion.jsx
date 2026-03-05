@@ -11,6 +11,8 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import { useNavigate } from "react-router-dom";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 // Validation for job position name
 const validateJobPositionName = (name) => {
@@ -24,6 +26,7 @@ const validateJobPositionName = (name) => {
 };
 
 const JobPosition = () => {
+  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
@@ -35,6 +38,11 @@ const JobPosition = () => {
     total: 0,
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  }
 
   const fetchJobPositions = async (page = 1, limit = 10) => {
     showLoader();
@@ -167,12 +175,16 @@ const handleFilterChange = (e) => {
               </p>
             </div>
 
+              <div className="position-absolute top-0 end-0 mt-2">
+              <BackButton onClick={goBack} />
+            </div>
             <button
-              className="btn btn-main w-45 w-auto"
+              className="btn btn-main w-40 w-auto m-4"
               onClick={() => setShowCreateModal(true)}
             >
               + Job Position
             </button>
+       
           </div>
 
           <ListingComponent

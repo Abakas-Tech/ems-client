@@ -11,6 +11,8 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import { useNavigate } from "react-router-dom";
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 // Validation for worker status name
 const validateWorkerStatusName = (name) => {
@@ -25,10 +27,11 @@ const validateWorkerStatusName = (name) => {
 };
 
 const WorkerStatus = () => {
+  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
-const [filter, setFilter] = useState({ name: "" });
+  const [filter, setFilter] = useState({ name: "" });
   const [workerStatuses, setWorkerStatuses] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -36,11 +39,18 @@ const [filter, setFilter] = useState({ name: "" });
     total: 0,
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
-
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  };
   const fetchWorkerStatuses = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getWorkerStatuses({ page, limit, name: filter.name });
+      const response = await getWorkerStatuses({
+        page,
+        limit,
+        name: filter.name,
+      });
       setWorkerStatuses(response?.data || []);
       setPagination({
         page: response.pagination.page,
@@ -92,7 +102,7 @@ const [filter, setFilter] = useState({ name: "" });
 
   const handleClearFilters = () => {
     setFilter({ name: "" });
-  }
+  };
 
   // Handle deleting a worker status
   const handleDelete = (row) => {
@@ -156,58 +166,63 @@ const [filter, setFilter] = useState({ name: "" });
   };
 
   return (
-     <div className="row">
+    <div className="row">
       <div className="col-12 col-lg-6">
         <div className="dashboard-wraper">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        <div className="flex-grow-1">
-          <h2 className="fw-bold text-dark mb-2">Worker Status Management</h2>
-          <p className="text-muted mb-0">
-            Manage worker statuses — create, rename, or delete entries as
-            needed.
-          </p>
-        </div>
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div className="flex-grow-1">
+              <h2 className="fw-bold text-dark mb-2">
+                Worker Status Management
+              </h2>
+              <p className="text-muted mb-0">
+                Manage worker statuses — create, rename, or delete entries as
+                needed.
+              </p>
+            </div>
 
-        <button
-          className="btn btn-main w-40 w-auto"
-          onClick={() => setShowCreateModal(true)}
-        >
-          + Status
-        </button>
-      </div>
+            <div className="position-absolute top-0 end-0 mt-2">
+              <BackButton onClick={goBack} />
+            </div>
+            <button
+              className="btn btn-main w-40 w-auto m-4"
+              onClick={() => setShowCreateModal(true)}
+            >
+              + Worker Status
+            </button>
+        
+          </div>
 
-      <ListingComponent
-        data={workerStatuses}
-        columns={columns}
-        actions={actions}
-        emptyState={emptyState}
-        pagination={{
-          page: pagination.page,
-          limit: pagination.limit,
-          total: pagination.total,
-        }}
-        onPageChange={handlePageChange}
-        filtersComponent={
-          <MetaFilter
-            filter={filter}
-            onFilterChange={handleFilterChange}
-            onClear={handleClearFilters}
+          <ListingComponent
+            data={workerStatuses}
+            columns={columns}
+            actions={actions}
+            emptyState={emptyState}
+            pagination={{
+              page: pagination.page,
+              limit: pagination.limit,
+              total: pagination.total,
+            }}
+            onPageChange={handlePageChange}
+            filtersComponent={
+              <MetaFilter
+                filter={filter}
+                onFilterChange={handleFilterChange}
+                onClear={handleClearFilters}
+              />
+            }
           />
-        }
-      />
 
-      <CreateModal
-        show={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onCreate={handleCreate}
-        fields={fields}
-        title="Create New Worker Status"
-      />
+          <CreateModal
+            show={showCreateModal}
+            onClose={() => setShowCreateModal(false)}
+            onCreate={handleCreate}
+            fields={fields}
+            title="Create New Worker Status"
+          />
+        </div>
+      </div>
     </div>
-    </div>
-    </div>
-
   );
-};
+};;
 
 export default WorkerStatus;
