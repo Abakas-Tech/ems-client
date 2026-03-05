@@ -1,0 +1,108 @@
+TASK: Edit Worker Passport, COC & Medical Features
+Assigned to: Hanan Abdushekur
+Domain: Admin → Workers → Modules
+Priority: High
+Deadline: March 6th, 2026
+==================================================================
+IMPORTANT NOTE
+==================================================================
+This task adds editing capability to the existing Passport, COC, and Medical modules.
+
+All three modules MUST:
+- Use the SAME component for both creating and editing
+- Pre-populate all input fields with existing data when editing
+- Call the correct API (create or update) depending on the mode
+- Follow the SAME coding style, hooks, validation, and UI patterns
+==================================================================
+STEP 1: UPDATE PASSPORT COMPONENT FOR CREATE + EDIT
+==================================================================
+1. Change the prop from `isEdit` to `mode` with value "create" or "edit".
+
+   Example: function Passport({ mode }: { mode: "create" | "edit" })
+
+2. Add a loading state for edit mode:
+   const [isLoading, setIsLoading] = useState(mode === "edit");
+
+3. In useEffect:
+   - If mode === "edit", fetch the existing passport data (you will need getPassport API)
+   - While fetching → keep isLoading = true
+   - After fetch succeeds → set formData with the received values + setIsLoading(false)
+   - If no data found → show message via addMessage("No passport found – creating new one") and treat as create mode
+
+4. Show a simple loading message or spinner when isLoading is true:
+   if (isLoading) return <div>Loading passport information...</div>;
+
+5. Update handleSubmit:
+   - If mode === "create" → call createPassport(id, FormData)
+   - If mode === "edit" → call updatePassport(passportId, FormData)
+     (save passportId from the fetch result)
+
+6. Make UI dynamic:
+   - Heading: mode === "create" ? "Add Worker Passport" : "Edit Worker Passport"
+   - Button text: mode === "create" ? "Add Passport" : "Update Passport"
+
+7. For the file input (passport scan):
+   - In create mode: required (keep as is)
+   - In edit mode: optional – show "Current file: [name/link]" if exists
+   - Only send new file in FormData if user selects one
+
+8. Keep all existing validation, hooks (useLoader, useResponse), and form structure
+
+==================================================================
+STEP 2: UPDATE COC & MEDICAL THE SAME WAY
+==================================================================
+- Do exactly the same steps as in Passport:
+  1. Accept mode prop ("create" | "edit")
+  2. Add isLoading state when mode === "edit"
+  3. Fetch data only in edit mode + show loading
+  4. Pre-populate form after fetch
+  5. Call create or update API based on mode
+  6. Dynamic heading + button text
+  7. Handle files the same way (optional in edit + show current)
+- Keep code structure, naming, and styling 100% consistent
+
+==================================================================
+STEP 3: ROUTING – MUST CHANGE THIS PART
+==================================================================
+Replace the old route with two separate routes:
+
+<Route path="workers/modules/:id/passport/new" element={<Passport mode="create" />} />
+<Route path="workers/modules/:id/passport/edit" element={<Passport mode="edit" />} />
+
+Do the same for COC and Medical:
+
+<Route path="workers/modules/:id/coc/new" element={<COC mode="create" />} />
+<Route path="workers/modules/:id/coc/edit" element={<COC mode="edit" />} />
+
+<Route path="workers/modules/:id/medical/new" element={<Medical mode="create" />} />
+<Route path="workers/modules/:id/medical/edit" element={<Medical mode="edit" />} />
+
+- When user wants to create → navigate to /.../passport/new
+- When user wants to edit → navigate to /.../passport/edit
+
+No need to read query params or decide mode from fetch result – mode comes directly from the route.
+
+==================================================================
+STEP 4: VALIDATION (NO CHANGE NEEDED)
+==================================================================
+- Keep all existing validation rules
+- Validate even pre-filled fields on submit
+- Show errors with addMessage
+- Block submit if validation fails
+
+==================================================================
+FINAL NOTE
+==================================================================
+- Reuse as much code as possible from the current create version
+- The loading spinner/message in edit mode is very important – it prevents the form looking empty for 1–2 seconds
+- Test both /new and /edit paths
+- Test on slow network (Chrome DevTools → Network → Slow 3G) to make sure no ugly flash
+
+If you are not sure about:
+- How to write getPassport API
+- What updatePassport expects
+- How to show current file name/link
+
+ask me right away.
+
+Good luck Hanan! This is a good learning task.
