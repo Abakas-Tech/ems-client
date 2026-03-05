@@ -7,13 +7,13 @@ import {
   deleteFile,
 } from "../../../api/file.api";
 import FileFilters from "../FileFilters/FileFilters";
-import useLoader from "../../../../../context/Loader/useLoader";
+import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
 const File = () => {
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 

@@ -2,14 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createWorker } from "../../../api/worker.api";
 import { getWorkerStatuses } from "../../../api/meta.api";
-import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/response/UseResponse";
+import useloader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
-
 
 function WorkerRegistration() {
   const navigate = useNavigate();
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
   const [formData, setFormData] = useState({
@@ -130,7 +129,10 @@ function WorkerRegistration() {
       // Send the request
       const response = await createWorker(dataToSend);
 
-      addMessage(response?.success, response?.message || "Worker registered successfully");
+      addMessage(
+        response?.success,
+        response?.message || "Worker registered successfully",
+      );
 
       // Reset form
       setFormData({
@@ -140,7 +142,6 @@ function WorkerRegistration() {
         personal_information: { sex: "", status_id: "" },
       });
     } catch (err) {
-    
       addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);

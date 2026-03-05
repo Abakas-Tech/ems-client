@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ProfileContext from "./ProfileContext";
 import { getProfile } from "../../domains/admin/api/profile.api";
-import useResponse from "../Response/useResponse";
 import { initAuth } from "../../utils/axios";
+import useResponse from "../Response/useResponse";
 
 const ProfileProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
@@ -29,4 +29,3 @@ const ProfileProvider = ({ children }) => {
 };
 
 export default ProfileProvider;
-

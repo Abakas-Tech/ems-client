@@ -1,6 +1,6 @@
 import { useState } from "react";
 import LoaderContext from "./LoaderContext.jsx";
-import Loader from "./../../shared/global/Loader/Loader.jsx"; 
+import Loader from "./../../shared/global/Loader/Loader.jsx";
 
 const LoaderProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);

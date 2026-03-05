@@ -19,7 +19,18 @@ import ListUser from "./../domains/admin/pages/user/ListUser/ListUser";
 import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
 import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
 import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
+import Passport from "../domains/admin/pages/workers/modules/Passport/Passport.jsx";
+import Coc from "../domains/admin/pages/workers/modules/Coc/Coc.jsx";
+import Medical from "../domains/admin/pages/workers/modules/Medical/Medical.jsx";
 
+import SkillPage from "../domains/admin/pages/meta/SkillPage/SkillPage.jsx";
+import CountryPage from "../domains/admin/pages/meta/CountryPage/CountryPage.jsx";
+import JobPostionPage from "../domains/admin/pages/meta/JobPostionPage/JobPostionPage.jsx";
+import RegionPage from "../domains/admin/pages/meta/RegionPage/RegionPage.jsx";
+import LanguagePage from "../domains/admin/pages/meta/LanguagePage/LanguagePage.jsx";
+import WorkerStatusPage from "../domains/admin/pages/meta/WorkerStatusPage/WorkerStatusPage.jsx";
+import CityPage from "../domains/admin/pages/meta/CityPage/CityPage.jsx";
+import WorkerMetaPage from "../domains/admin/pages/WorkerMetaPage/WorkerMetaPage.jsx";
 
 const AdminRoutes = () => (
   <Routes>
@@ -31,7 +42,7 @@ const AdminRoutes = () => (
       }
     >
       <Route path="settings" element={<ChangePasswordPage />} />
-      <Route path="create-user" element={<CreateUser />} />
+      <Route path="user-management/create-user" element={<CreateUser />} />
       <Route path="my-profile" element={<Profile />} />
       <Route path="user-management" element={<ListUser />} />
       <Route path="dashboard" element={<Analytics />} />
@@ -44,11 +55,27 @@ const AdminRoutes = () => (
       <Route path="/workers/archived" element={<ArchivedWorkers />} />
       <Route path="workers/modules" element={<WorkerModuleManagement />} />
       <Route path="/workers/modules/:id/add" element={<ModulesList />} />
+      <Route path="/meta-data/country" element={<CountryPage />} />
+      <Route path="/meta-data/region" element={<RegionPage />} />
+      <Route path="/meta-data/skill" element={<SkillPage />} />
+      <Route path="/meta-data/job-position" element={<JobPostionPage />} />
+      <Route path="/meta-data/language" element={<LanguagePage />} />
+      <Route path="/meta-data/worker-status" element={<WorkerStatusPage />} />
+      <Route path="/meta-data/city" element={<CityPage />} />
+      <Route
+        path="/workers/modules/:worker_id/attributes"
+        element={<WorkerMetaPage />}
+      />
+
       <Route
         path="/workers/modules/:id/personal"
         element={<WorkerPesonalInfo />}
       />
+      <Route path="workers/modules/:id/passport" element={<Passport />} />
+      <Route path="workers/modules/:id/coc" element={<Coc />} />
+      <Route path="workers/modules/:id/medical" element={<Medical />} />
       <Route path="/meta-data" element={<MetaDataDashboard />} />
+      <Route path="*" element={<NotFound />} />
     </Route>
   </Routes>
 );

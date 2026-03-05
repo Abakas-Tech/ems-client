@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import useLoader from "../../../../context/Loader/useLoader";
+import useloader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import useProfile from "../../../../context/Profile/useProfile";
 import { useDelete } from "../../../../context/Delete/useDelete";
@@ -19,7 +19,7 @@ const MyProfile = () => {
   });
   const fileInputRef = useRef(null);
 
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 

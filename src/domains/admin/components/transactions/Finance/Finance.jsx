@@ -3,14 +3,14 @@ import TransactionFilters from "../../transactions/TransactionFilters/Transactio
 import RecordTransaction from "../../transactions/RecordTransaction/RecordTransaction.jsx";
 import TransactionDetail from "../../transactions/TransactionDetail/TransactionDetail";
 import { fetchTransactions, deleteTransaction } from "../../../api/finance.api";
-import useLoader from "../../../../../context/Loader/UseLoader";
-import useResponse from "../../../../../context/response/UseResponse";
-import { useDelete } from "../../../../../context/Delete/UseDelete.jsx";
+import useloader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
+import { useDelete } from "../../../../../context/Delete/useDelete.jsx";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import Badge from "../../../../../shared/components/Badge/Badge.jsx";
 
 const FinancePage = () => {
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
