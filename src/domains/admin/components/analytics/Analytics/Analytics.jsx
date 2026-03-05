@@ -11,7 +11,7 @@ const Analytics = () => {
 
   const [data, setData] = useState(null);
   const [filters, setFilters] = useState({
-    period: "monthly",
+    period: "yearly",
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
   });
