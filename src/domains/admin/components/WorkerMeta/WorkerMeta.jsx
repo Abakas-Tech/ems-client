@@ -17,7 +17,12 @@ import {
   getWorkerExperiences,
   deleteWorkerExperience,
 } from "../../api/workerMeta";
-import { getSkills, getLanguages, getJobPositions, getCountries } from "../../api/meta.api";
+import {
+  getSkills,
+  getLanguages,
+  getJobPositions,
+  getCountries,
+} from "../../api/meta.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import { useDelete } from "../../../../context/Delete/useDelete";
@@ -216,7 +221,10 @@ const WorkerMeta = () => {
     openModal(async () => {
       showLoader();
       try {
-        const response = await deleteWorkerExperience(worker_id, row.country_id);
+        const response = await deleteWorkerExperience(
+          worker_id,
+          row.country_id,
+        );
         addMessage(response?.success, response?.message);
         fetchWorkerExperiences();
       } catch (err) {
@@ -429,7 +437,6 @@ const WorkerMeta = () => {
   ];
   const emptyStateSkills = {
     title: "No skills assigned",
-    subtitle: "Assign skills to this worker to see them listed here",
   };
   // Languages
   const columnsLanguages = [
@@ -473,7 +480,6 @@ const WorkerMeta = () => {
   ];
   const emptyStateLanguages = {
     title: "No languages assigned",
-    subtitle: "Assign languages to this worker to see them listed here",
   };
   // Positions
   const columnsPositions = [
@@ -515,14 +521,13 @@ const WorkerMeta = () => {
   ];
   const emptyStatePositions = {
     title: "No positions assigned",
-    subtitle: "Assign positions to this worker to see them listed here",
   };
 
   // experiences
   const columnsExperiences = [
     { header: "Country", accessor: "country_name" },
     { header: "Position", accessor: "position_name" },
-    { header: "Years of Experience", accessor: "years_of_experience" },
+    { header: "Years ", accessor: "years_of_experience" },
   ];
   const actionsExperiences = [
     { type: "delete", onClick: handleDeleteExperience },
@@ -548,18 +553,48 @@ const WorkerMeta = () => {
   ];
   const emptyStateExperiences = {
     title: "No experiences added",
-    subtitle:
-      "Add previous work experiences for this worker to see them listed here",
   };
 
   return (
     <div className="dashboard-wraper">
       {/* Worker Meta Header (optional) */}
-      {/* <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-      <div className="flex-grow-1">
-        <h2 className="fw-bold text-dark mb-2">Worker Meta</h2>
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        {/* Title and description */}
+        <div className="flex-grow-1">
+          <h2 className="fw-bold text-dark mb-2">Worker Meta</h2>
+          <p className="text-muted mb-0">
+            Assign skills, languages, positions, and experiences to this worker.
+          </p>
+        </div>
+
+        {/* Action buttons for all meta types */}
+        <div className="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+          <button
+            className="btn btn-main"
+            onClick={() => setShowCreateSkillModal(true)}
+          >
+            + Skill
+          </button>
+          <button
+            className="btn btn-main"
+            onClick={() => setShowCreateLanguageModal(true)}
+          >
+            + Language
+          </button>
+          <button
+            className="btn btn-main"
+            onClick={() => setShowCreatePositionModal(true)}
+          >
+            + Position
+          </button>
+          <button
+            className="btn btn-main"
+            onClick={() => setShowCreateExperienceModal(true)}
+          >
+            + Experience
+          </button>
+        </div>
       </div>
-    </div> */}
 
       {/* Skills + Languages Section in a row on md+ screens */}
       <div className="row mb-5 g-4">
@@ -567,17 +602,17 @@ const WorkerMeta = () => {
         <div className="col-12 col-md-6">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div className="flex-grow-1">
-              <h3 className="fw-bold text-dark mb-2">Worker Skills</h3>
+              <h3 className="fw-bold text-dark mb-2">Skills</h3>
               <p className="text-muted mb-0">
                 Assign or remove skills for this worker.
               </p>
             </div>
-            <button
+            {/* <button
               className="btn btn-main"
               onClick={() => setShowCreateSkillModal(true)}
             >
               + Skill
-            </button>
+            </button> */}
           </div>
           <ListingComponent
             data={skills}
@@ -598,17 +633,17 @@ const WorkerMeta = () => {
         <div className="col-12 col-md-6">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div className="flex-grow-1">
-              <h3 className="fw-bold text-dark mb-2">Worker Languages</h3>
+              <h3 className="fw-bold text-dark mb-2">Languages</h3>
               <p className="text-muted mb-0">
                 Add, update, or remove languages for this worker.
               </p>
             </div>
-            <button
+            {/* <button
               className="btn btn-main"
               onClick={() => setShowCreateLanguageModal(true)}
             >
               + Language
-            </button>
+            </button> */}
           </div>
           <ListingComponent
             data={languages}
@@ -632,90 +667,80 @@ const WorkerMeta = () => {
             onCreate={handleUpdateLanguage}
             fields={fieldsUpdateLanguages}
             title="Update Language"
-            initialValues={
-              selectedLanguage
-                ? { proficiency: selectedLanguage.proficiency }
-                : {}
-            }
           />
         </div>
       </div>
-
-      {/* Positions Section (full width) */}
-      <div className="mb-5">
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-          <div className="flex-grow-1">
-            <h3 className="fw-bold text-dark mb-2">Worker Positions</h3>
-            <p className="text-muted mb-0">
-              Add, update, or remove positions for this worker.
-            </p>
+      <div className="row mb-5 g-4">
+        <div className="col-12 col-md-6">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div className="flex-grow-1">
+              <h3 className="fw-bold text-dark mb-2">Positions</h3>
+              <p className="text-muted mb-0">
+                Add, update, or remove positions for this worker.
+              </p>
+            </div>
+            {/* <button
+              className="btn btn-main"
+              onClick={() => setShowCreatePositionModal(true)}
+            >
+              + Position
+            </button> */}
           </div>
-          <button
-            className="btn btn-main"
-            onClick={() => setShowCreatePositionModal(true)}
-          >
-            + Position
-          </button>
+          <ListingComponent
+            data={positions}
+            columns={columnsPositions}
+            actions={actionsPositions}
+            emptyState={emptyStatePositions}
+          />
+          <CreateMetaModal
+            show={showCreatePositionModal}
+            onClose={() => setShowCreatePositionModal(false)}
+            onCreate={handleAddPosition}
+            fields={fieldsAddPositions}
+            title="Add Position"
+          />
+          <CreateMetaModal
+            show={showUpdatePositionModal}
+            onClose={() => {
+              setShowUpdatePositionModal(false);
+              setSelectedPosition(null);
+            }}
+            onCreate={handleUpdatePosition}
+            fields={fieldsUpdatePositions}
+            title="Update Position"
+          />
         </div>
-        <ListingComponent
-          data={positions}
-          columns={columnsPositions}
-          actions={actionsPositions}
-          emptyState={emptyStatePositions}
-        />
-        <CreateMetaModal
-          show={showCreatePositionModal}
-          onClose={() => setShowCreatePositionModal(false)}
-          onCreate={handleAddPosition}
-          fields={fieldsAddPositions}
-          title="Add Position"
-        />
-        <CreateMetaModal
-          show={showUpdatePositionModal}
-          onClose={() => {
-            setShowUpdatePositionModal(false);
-            setSelectedPosition(null);
-          }}
-          onCreate={handleUpdatePosition}
-          fields={fieldsUpdatePositions}
-          title="Update Position"
-          initialValues={
-            selectedPosition
-              ? { years_of_experience: selectedPosition.years_of_experience }
-              : {}
-          }
-        />
-      </div>
-      <div className="mb-5">
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-          <div className="flex-grow-1">
-            <h3 className="fw-bold text-dark mb-2">Worker Experiences</h3>
-            <p className="text-muted mb-0">
-              Add or remove previous work experiences for this worker.
-            </p>
+        <div className="col-12 col-md-6">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div className="flex-grow-1">
+              <h3 className="fw-bold text-dark mb-2">Experiences</h3>
+              <p className="text-muted mb-0">
+                Add or remove previous work experiences for this worker.
+              </p>
+            </div>
+            {/* <button
+              className="btn btn-main"
+              onClick={() => setShowCreateExperienceModal(true)}
+            >
+              + Experience
+            </button> */}
           </div>
-          <button
-            className="btn btn-main"
-            onClick={() => setShowCreateExperienceModal(true)}
-          >
-            + Experience
-          </button>
+          <ListingComponent
+            data={experiences}
+            columns={columnsExperiences}
+            actions={actionsExperiences}
+            emptyState={emptyStateExperiences}
+          />
+          <CreateMetaModal
+            show={showCreateExperienceModal}
+            onClose={() => setShowCreateExperienceModal(false)}
+            onCreate={handleAddExperience}
+            fields={fieldsAddExperiences}
+            title="Add Experience"
+          />
         </div>
-        <ListingComponent
-          data={experiences}
-          columns={columnsExperiences}
-          actions={actionsExperiences}
-          emptyState={emptyStateExperiences}
-        />
-        <CreateMetaModal
-          show={showCreateExperienceModal}
-          onClose={() => setShowCreateExperienceModal(false)}
-          onCreate={handleAddExperience}
-          fields={fieldsAddExperiences}
-          title="Add Experience"
-        />
       </div>
     </div>
   );
-};;;;;;
+};
 export default WorkerMeta;
