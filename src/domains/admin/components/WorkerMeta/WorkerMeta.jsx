@@ -13,8 +13,11 @@ import {
   getWorkerPositions,
   updateWorkerPosition,
   deleteWorkerPosition,
+  addWorkerExperience,
+  getWorkerExperiences,
+  deleteWorkerExperience,
 } from "../../api/workerMeta";
-import { getSkills, getLanguages, getJobPositions } from "../../api/meta.api";
+import { getSkills, getLanguages, getJobPositions, getCountries } from "../../api/meta.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import { useDelete } from "../../../../context/Delete/useDelete";
@@ -42,6 +45,12 @@ const WorkerMeta = () => {
   const [showCreatePositionModal, setShowCreatePositionModal] = useState(false);
   const [showUpdatePositionModal, setShowUpdatePositionModal] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState(null);
+  // State for Worker Experiences
+  const [experiences, setExperiences] = useState([]);
+  const [allCountries, setAllCountries] = useState([]);
+  const [allJobPositions, setAllJobPositions] = useState([]);
+  const [showCreateExperienceModal, setShowCreateExperienceModal] =
+    useState(false);
 
   const proficiencyOptions = [
     { value: "poor", label: "Poor" },
@@ -51,6 +60,37 @@ const WorkerMeta = () => {
     { value: "native", label: "Native" },
   ];
 
+  // Fetch assigned experiences
+  const fetchWorkerExperiences = async () => {
+    showLoader();
+    try {
+      const response = await getWorkerExperiences(worker_id);
+      setExperiences(response?.data || []);
+    } catch (err) {
+      addMessage(false, err.message);
+    } finally {
+      hideLoader();
+    }
+  };
+
+  // Fetch all countries
+  const fetchAllCountries = async () => {
+    try {
+      const response = await getCountries({ page: 1, limit: 100 });
+      setAllCountries(response?.data || []);
+    } catch (err) {
+      addMessage(false, err.message);
+    }
+  };
+  // Fetch all job positions
+  const fetchAllJobPositions = async () => {
+    try {
+      const response = await getJobPositions({ page: 1, limit: 100 });
+      setAllJobPositions(response?.data || []);
+    } catch (err) {
+      addMessage(false, err.message);
+    }
+  };
   // Fetch assigned skills
   const fetchWorkerSkills = async () => {
     showLoader();
@@ -115,6 +155,9 @@ const WorkerMeta = () => {
     }
   };
   useEffect(() => {
+    fetchAllCountries();
+    fetchAllJobPositions();
+    fetchWorkerExperiences();
     fetchWorkerSkills();
     fetchAllSkills();
     fetchWorkerLanguages();
@@ -123,6 +166,67 @@ const WorkerMeta = () => {
     fetchAllPositions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [worker_id]);
+
+  // Validator for Worker Experience
+  const validateExperience = ({
+    country_id,
+    job_position_id,
+    years_of_experience,
+  }) => {
+    if (!country_id) return "Country is required";
+    if (!job_position_id) return "Job position is required";
+
+    const years = Number(years_of_experience);
+    if (isNaN(years) || years < 0 || !Number.isInteger(years)) {
+      return "Years of experience must be a non-negative integer";
+    }
+
+    return null; // valid
+  };
+
+  // Handle add experience
+  const handleAddExperience = async (inputValues) => {
+    const error = validateExperience(inputValues);
+    if (error) {
+      addMessage(false, error);
+      return;
+    }
+
+    const { country_id, job_position_id, years_of_experience } = inputValues;
+
+    showLoader();
+    try {
+      const response = await addWorkerExperience(worker_id, {
+        country_id,
+        job_position_id,
+        years_of_experience: Number(years_of_experience),
+      });
+      addMessage(response?.success, response?.message);
+      setShowCreateExperienceModal(false);
+      fetchWorkerExperiences();
+    } catch (err) {
+      addMessage(false, err.message);
+    } finally {
+      hideLoader();
+    }
+  };
+
+  // Handle delete experience
+  const handleDeleteExperience = (row) => {
+    openModal(async () => {
+      showLoader();
+      try {
+        const response = await deleteWorkerExperience(worker_id, row.country_id);
+        addMessage(response?.success, response?.message);
+        fetchWorkerExperiences();
+      } catch (err) {
+        addMessage(false, err.message);
+      } finally {
+        hideLoader();
+      }
+    });
+  };
+
   // Handle assigning skill
   const handleAssignSkill = async (inputValues) => {
     const skill_id = inputValues.skill_id;
@@ -303,6 +407,8 @@ const WorkerMeta = () => {
       }
     });
   };
+  // Columns, actions, fields, and empty states for skills, languages, positions and experiences
+  // Skills
   const columnsSkills = [
     {
       header: "Name",
@@ -325,7 +431,7 @@ const WorkerMeta = () => {
     title: "No skills assigned",
     subtitle: "Assign skills to this worker to see them listed here",
   };
-
+  // Languages
   const columnsLanguages = [
     {
       header: "Name",
@@ -369,7 +475,7 @@ const WorkerMeta = () => {
     title: "No languages assigned",
     subtitle: "Assign languages to this worker to see them listed here",
   };
-
+  // Positions
   const columnsPositions = [
     {
       header: "Name",
@@ -411,141 +517,205 @@ const WorkerMeta = () => {
     title: "No positions assigned",
     subtitle: "Assign positions to this worker to see them listed here",
   };
-return (
-  <div className="dashboard-wraper">
-    {/* Worker Meta Header (optional) */}
-    {/* <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+
+  // experiences
+  const columnsExperiences = [
+    { header: "Country", accessor: "country_name" },
+    { header: "Position", accessor: "position_name" },
+    { header: "Years of Experience", accessor: "years_of_experience" },
+  ];
+  const actionsExperiences = [
+    { type: "delete", onClick: handleDeleteExperience },
+  ];
+  const fieldsAddExperiences = [
+    {
+      name: "country_id",
+      label: "Country",
+      type: "select",
+      options: allCountries.map((c) => ({ value: c.id, label: c.name })),
+    },
+    {
+      name: "job_position_id",
+      label: "Job Position",
+      type: "select",
+      options: allJobPositions.map((p) => ({ value: p.id, label: p.name })),
+    },
+    {
+      name: "years_of_experience",
+      label: "Years of Experience",
+      type: "number",
+    },
+  ];
+  const emptyStateExperiences = {
+    title: "No experiences added",
+    subtitle:
+      "Add previous work experiences for this worker to see them listed here",
+  };
+
+  return (
+    <div className="dashboard-wraper">
+      {/* Worker Meta Header (optional) */}
+      {/* <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
       <div className="flex-grow-1">
         <h2 className="fw-bold text-dark mb-2">Worker Meta</h2>
       </div>
     </div> */}
 
-    {/* Skills + Languages Section in a row on md+ screens */}
-    <div className="row mb-5 g-4">
-      {/* Skills */}
-      <div className="col-12 col-md-6">
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-          <div className="flex-grow-1">
-            <h3 className="fw-bold text-dark mb-2">Worker Skills</h3>
-            <p className="text-muted mb-0">
-              Assign or remove skills for this worker.
-            </p>
+      {/* Skills + Languages Section in a row on md+ screens */}
+      <div className="row mb-5 g-4">
+        {/* Skills */}
+        <div className="col-12 col-md-6">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div className="flex-grow-1">
+              <h3 className="fw-bold text-dark mb-2">Worker Skills</h3>
+              <p className="text-muted mb-0">
+                Assign or remove skills for this worker.
+              </p>
+            </div>
+            <button
+              className="btn btn-main"
+              onClick={() => setShowCreateSkillModal(true)}
+            >
+              + Skill
+            </button>
           </div>
-          <button
-            className="btn btn-main"
-            onClick={() => setShowCreateSkillModal(true)}
-          >
-            + Skill
-          </button>
+          <ListingComponent
+            data={skills}
+            columns={columnsSkills}
+            actions={actionsSkills}
+            emptyState={emptyStateSkills}
+          />
+          <CreateMetaModal
+            show={showCreateSkillModal}
+            onClose={() => setShowCreateSkillModal(false)}
+            onCreate={handleAssignSkill}
+            fields={fieldsSkills}
+            title="Assign Skill"
+          />
         </div>
-        <ListingComponent
-          data={skills}
-          columns={columnsSkills}
-          actions={actionsSkills}
-          emptyState={emptyStateSkills}
-        />
-        <CreateMetaModal
-          show={showCreateSkillModal}
-          onClose={() => setShowCreateSkillModal(false)}
-          onCreate={handleAssignSkill}
-          fields={fieldsSkills}
-          title="Assign Skill"
-        />
+
+        {/* Languages */}
+        <div className="col-12 col-md-6">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div className="flex-grow-1">
+              <h3 className="fw-bold text-dark mb-2">Worker Languages</h3>
+              <p className="text-muted mb-0">
+                Add, update, or remove languages for this worker.
+              </p>
+            </div>
+            <button
+              className="btn btn-main"
+              onClick={() => setShowCreateLanguageModal(true)}
+            >
+              + Language
+            </button>
+          </div>
+          <ListingComponent
+            data={languages}
+            columns={columnsLanguages}
+            actions={actionsLanguages}
+            emptyState={emptyStateLanguages}
+          />
+          <CreateMetaModal
+            show={showCreateLanguageModal}
+            onClose={() => setShowCreateLanguageModal(false)}
+            onCreate={handleAddLanguage}
+            fields={fieldsAddLanguages}
+            title="Add Language"
+          />
+          <CreateMetaModal
+            show={showUpdateLanguageModal}
+            onClose={() => {
+              setShowUpdateLanguageModal(false);
+              setSelectedLanguage(null);
+            }}
+            onCreate={handleUpdateLanguage}
+            fields={fieldsUpdateLanguages}
+            title="Update Language"
+            initialValues={
+              selectedLanguage
+                ? { proficiency: selectedLanguage.proficiency }
+                : {}
+            }
+          />
+        </div>
       </div>
 
-      {/* Languages */}
-      <div className="col-12 col-md-6">
+      {/* Positions Section (full width) */}
+      <div className="mb-5">
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
           <div className="flex-grow-1">
-            <h3 className="fw-bold text-dark mb-2">Worker Languages</h3>
+            <h3 className="fw-bold text-dark mb-2">Worker Positions</h3>
             <p className="text-muted mb-0">
-              Add, update, or remove languages for this worker.
+              Add, update, or remove positions for this worker.
             </p>
           </div>
           <button
             className="btn btn-main"
-            onClick={() => setShowCreateLanguageModal(true)}
+            onClick={() => setShowCreatePositionModal(true)}
           >
-        + Language
+            + Position
           </button>
         </div>
         <ListingComponent
-          data={languages}
-          columns={columnsLanguages}
-          actions={actionsLanguages}
-          emptyState={emptyStateLanguages}
+          data={positions}
+          columns={columnsPositions}
+          actions={actionsPositions}
+          emptyState={emptyStatePositions}
         />
         <CreateMetaModal
-          show={showCreateLanguageModal}
-          onClose={() => setShowCreateLanguageModal(false)}
-          onCreate={handleAddLanguage}
-          fields={fieldsAddLanguages}
-          title="Add Language"
+          show={showCreatePositionModal}
+          onClose={() => setShowCreatePositionModal(false)}
+          onCreate={handleAddPosition}
+          fields={fieldsAddPositions}
+          title="Add Position"
         />
         <CreateMetaModal
-          show={showUpdateLanguageModal}
+          show={showUpdatePositionModal}
           onClose={() => {
-            setShowUpdateLanguageModal(false);
-            setSelectedLanguage(null);
+            setShowUpdatePositionModal(false);
+            setSelectedPosition(null);
           }}
-          onCreate={handleUpdateLanguage}
-          fields={fieldsUpdateLanguages}
-          title="Update Language"
+          onCreate={handleUpdatePosition}
+          fields={fieldsUpdatePositions}
+          title="Update Position"
           initialValues={
-            selectedLanguage
-              ? { proficiency: selectedLanguage.proficiency }
+            selectedPosition
+              ? { years_of_experience: selectedPosition.years_of_experience }
               : {}
           }
         />
       </div>
-    </div>
-
-    {/* Positions Section (full width) */}
-    <div className="mb-5">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        <div className="flex-grow-1">
-          <h3 className="fw-bold text-dark mb-2">Worker Positions</h3>
-          <p className="text-muted mb-0">
-            Add, update, or remove positions for this worker.
-          </p>
+      <div className="mb-5">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+          <div className="flex-grow-1">
+            <h3 className="fw-bold text-dark mb-2">Worker Experiences</h3>
+            <p className="text-muted mb-0">
+              Add or remove previous work experiences for this worker.
+            </p>
+          </div>
+          <button
+            className="btn btn-main"
+            onClick={() => setShowCreateExperienceModal(true)}
+          >
+            + Experience
+          </button>
         </div>
-        <button
-          className="btn btn-main"
-          onClick={() => setShowCreatePositionModal(true)}
-        >
-          + Position
-        </button>
+        <ListingComponent
+          data={experiences}
+          columns={columnsExperiences}
+          actions={actionsExperiences}
+          emptyState={emptyStateExperiences}
+        />
+        <CreateMetaModal
+          show={showCreateExperienceModal}
+          onClose={() => setShowCreateExperienceModal(false)}
+          onCreate={handleAddExperience}
+          fields={fieldsAddExperiences}
+          title="Add Experience"
+        />
       </div>
-      <ListingComponent
-        data={positions}
-        columns={columnsPositions}
-        actions={actionsPositions}
-        emptyState={emptyStatePositions}
-      />
-      <CreateMetaModal
-        show={showCreatePositionModal}
-        onClose={() => setShowCreatePositionModal(false)}
-        onCreate={handleAddPosition}
-        fields={fieldsAddPositions}
-        title="Add Position"
-      />
-      <CreateMetaModal
-        show={showUpdatePositionModal}
-        onClose={() => {
-          setShowUpdatePositionModal(false);
-          setSelectedPosition(null);
-        }}
-        onCreate={handleUpdatePosition}
-        fields={fieldsUpdatePositions}
-        title="Update Position"
-        initialValues={
-          selectedPosition
-            ? { years_of_experience: selectedPosition.years_of_experience }
-            : {}
-        }
-      />
     </div>
-  </div>
-);
-};
+  );
+};;;;;;
 export default WorkerMeta;

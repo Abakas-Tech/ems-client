@@ -157,40 +157,40 @@ const updateWorkerStatus = async (workerId, data) => {
 
 // worker country apis
 
-// Add country
-const addWorkerCountry = async (workerId, data) => {
+// Add experience
+const addWorkerExperience = async (workerId, data) => {
   try {
     const response = await axiosInstance.post(
-      `/workers/meta/${workerId}/countries`,
+      `/workers/meta/${workerId}/experiences`,
       data,
     );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || "Add country error");
+    throw new Error(error.response?.data?.message || "Add experience error");
   }
 };
 
-// List countries
-const getWorkerCountries = async (workerId) => {
+// List experiences
+const getWorkerExperiences = async (workerId) => {
   try {
     const response = await axiosInstance.get(
-      `/workers/meta/${workerId}/countries`,
+      `/workers/meta/${workerId}/experiences`,
     );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || "Fetch countries error");
+    throw new Error(error.response?.data?.message || "Fetch experiences error");
   }
 };
 
-// Remove country
-const deleteWorkerCountry = async (workerId, countryId) => {
+// Remove experience
+const deleteWorkerExperience = async (workerId, experienceId) => {
   try {
     const response = await axiosInstance.delete(
-      `/workers/meta/${workerId}/countries/${countryId}`,
+      `/workers/meta/${workerId}/experiences/${experienceId}`,
     );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || "Delete country error");
+    throw new Error(error.response?.data?.message || "Delete experience error");
   }
 };
 
@@ -211,8 +211,8 @@ export {
   deleteWorkerPosition,
   // status api
   updateWorkerStatus,
-  // worker country apis
-  addWorkerCountry,
-  getWorkerCountries,
-  deleteWorkerCountry,
+  // worker experience apis
+  addWorkerExperience,
+  getWorkerExperiences,
+  deleteWorkerExperience,
 };
