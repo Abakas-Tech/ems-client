@@ -563,7 +563,17 @@ const WorkerProfile = () => {
                 <p>
                   <small className="text-muted">Result</small>
                   <br />
-                  <span className={medicalInfo.badgeClass}>
+                  <span
+                    className={`badge ${
+                      medicalInfo.status === "fit"
+                        ? "bg-success"
+                        : medicalInfo.status === "unfit"
+                          ? "bg-danger"
+                          : medicalInfo.status === "pending"
+                            ? "bg-warning"
+                            : "bg-secondary"
+                    }`}
+                  >
                     {medicalInfo.statusText}
                   </span>
                 </p>
