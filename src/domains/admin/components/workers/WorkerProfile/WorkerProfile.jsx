@@ -793,9 +793,15 @@ const WorkerProfile = () => {
                       )}
 
                       <p>
-                        <small className="text-muted">Period</small>
+                        <small className="text-muted">Start Date</small>
                         <br />
-                        {contract.startDate} – {contract.endDate}
+                        {contract.startDate}
+                      </p>
+
+                      <p>
+                        <small className="text-muted">End Date</small>
+                        <br />
+                        {contract.endDate}
                       </p>
 
                       <p>
