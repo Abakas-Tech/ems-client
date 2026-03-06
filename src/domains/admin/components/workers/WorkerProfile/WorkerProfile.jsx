@@ -64,7 +64,7 @@ const WorkerProfile = () => {
       const response = await getWorkerProfile(id);
       setWorker(response.data);
     } catch (err) {
-       addMessage(false, err.message);
+      addMessage(false, err.message);
     } finally {
       hideLoader();
     }
@@ -86,7 +86,6 @@ const WorkerProfile = () => {
       </div>
     );
   }
-
 
   // Extracted fields for easier access
   const personal = worker?.personal_information || null;
@@ -221,7 +220,7 @@ const WorkerProfile = () => {
               src={photoUrl}
               alt={`${fullName}'s photo`}
               className="worker-photo img-fluid rounded-circle"
-              style={{ width: "140px", height: "140px", objectFit: "cover" }}
+              // style={{ width: "140px", height: "140px", objectFit: "cover" }}
               onError={(e) => {
                 e.target.src =
                   "https://via.placeholder.com/150?text=Photo+Error";
@@ -239,10 +238,9 @@ const WorkerProfile = () => {
                 <p className="mb-1 text-muted">
                   <strong>Passport No:</strong> {passportNumber}
                 </p>
-              </div>
-              <div className="mt-2 mt-md-0">
                 <span className={badgeClass}>{statusName}</span>
               </div>
+              
             </div>
           </div>
         </div>
