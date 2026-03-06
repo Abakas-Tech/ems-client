@@ -103,8 +103,7 @@ const WorkerProfile = () => {
   const statusName = statusObj?.name ?? "—";
 
   const photoUrl =
-    personal?.photo_3x4?.url ||
-    "https://placehold.co/600x400?text=No+Photo";
+    personal?.photo_3x4?.url || "https://placehold.co/600x400?text=No+Photo";
 
   /* Personal */
   const personalInfo = {
@@ -161,13 +160,6 @@ const WorkerProfile = () => {
     status: String(medicalObj.medical_status || "").toLowerCase(),
     fileUrl: medicalObj.file?.url || null,
   };
-
-  medicalInfo.badgeClass =
-    medicalInfo.status === "fit"
-      ? "badge bg-success"
-      : medicalInfo.status
-        ? "badge bg-danger"
-        : "badge bg-secondary";
 
   medicalInfo.statusText = medicalInfo.status
     ? medicalInfo.status.toUpperCase()
@@ -274,8 +266,8 @@ const WorkerProfile = () => {
           {/* PERSONAL */}
           <div className="col-12">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <span className="fw-bold">Personal Information</span>
+              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold">Personal Information</h3>
                 <ActionButtons
                   actions={[{ type: "edit" }, { type: "delete" }]}
                 />
@@ -370,8 +362,8 @@ const WorkerProfile = () => {
 
           {/* PASSPORT */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold">Passport Information</div>
+            <div className="card h-100 shadow-sm border-0 ">
+              <div className="card-header fw-bold pb-0">Passport Information</div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">Passport Number</small>
@@ -416,7 +408,7 @@ const WorkerProfile = () => {
           {/* COC */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold">COC Information</div>
+              <div className="card-header fw-bold pb-0">COC Information</div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">COC Number</small>
@@ -466,7 +458,7 @@ const WorkerProfile = () => {
           {/* Emergency Contact */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold">Emergency Contact</div>
+              <div className="card-header fw-bold  pb-0">Emergency Contact</div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">Relation</small>
@@ -511,7 +503,7 @@ const WorkerProfile = () => {
           {/* Medical */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold">Medical Information</div>
+              <div className="card-header fw-bold pb-0">Medical Information</div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">Medical Center</small>
@@ -563,7 +555,7 @@ const WorkerProfile = () => {
           {/* Visa */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold">Visa Information</div>
+              <div className="card-header fw-bold  pb-0">Visa Information</div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">Visa Number</small>
@@ -613,7 +605,7 @@ const WorkerProfile = () => {
           {/* LMIS */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold">LMIS Information</div>
+              <div className="card-header fw-bold  pb-0">LMIS Information</div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">Labour ID</small>
@@ -649,67 +641,59 @@ const WorkerProfile = () => {
           {/* Travel Records */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold">Travel Records</div>
+              <div className="card-header fw-bold  pb-0">Travel Records</div>
               <div className="card-body">
                 {preparedTravel.length > 0 ? (
-                  <div className="travel-list">
-                    {preparedTravel.map((travel) => (
-                      <div
-                        key={travel.key}
-                        className="mb-4 pb-4 border-bottom last:border-0"
-                      >
-                        <h6 className="fw-semibold mb-3">Travel Record</h6>
-
-                        <div className="row g-3">
-                          <div className="col-6">
-                            <small className="text-muted d-block">
-                              Ticket Number
-                            </small>
-                            {travel.ticketNumber}
-                          </div>
-                          <div className="col-6">
-                            <small className="text-muted d-block">
-                              Destination
-                            </small>
-                            {travel.destination}
-                          </div>
-                          <div className="col-6">
-                            <small className="text-muted d-block">
-                              Departure
-                            </small>
-                            {travel.departureDate}{" "}
-                            {travel.departureLocation !== "—" &&
-                              `(${travel.departureLocation})`}
-                          </div>
-                          <div className="col-6">
-                            <small className="text-muted d-block">
-                              Arrival
-                            </small>
-                            {travel.arrivalDate}{" "}
-                            {travel.arrivalLocation !== "—" &&
-                              `(${travel.arrivalLocation})`}
-                          </div>
-                        </div>
-
-                        <div className="mt-3">
-                          <small className="text-muted d-block">Agent</small>
-                          {travel.agentName} • {travel.agentPhone}
-                          {travel.agentEmail !== "—" &&
-                            ` • ${travel.agentEmail}`}
-                        </div>
-
-                        {travel.ticketUrl && (
-                          <div className="mt-3">
-                            <DocumentLink
-                              url={travel.ticketUrl}
-                              label="View Ticket"
-                              isImage={travel.isImage}
-                            />
-                          </div>
+                  preparedTravel.map((travel) => (
+                    <div
+                      key={travel.key}
+                     
+                    >
+                      <p>
+                        <small className="text-muted">Ticket Number</small>
+                        <br />
+                        {travel.ticketNumber}
+                      </p>
+                      <p>
+                        <small className="text-muted">Destination</small>
+                        <br />
+                        {travel.destination}
+                      </p>
+                      <p>
+                        <small className="text-muted">Departure</small>
+                        <br />
+                        {travel.departureDate}{" "}
+                        {travel.departureLocation !== "—" &&
+                          `(${travel.departureLocation})`}
+                      </p>
+                      <p>
+                        <small className="text-muted">Arrival</small>
+                        <br />
+                        {travel.arrivalDate}{" "}
+                        {travel.arrivalLocation !== "—" &&
+                          `(${travel.arrivalLocation})`}
+                      </p>
+                      <p>
+                        <small className="text-muted">Agent</small>
+                        <br />
+                        {travel.agentName} • {travel.agentPhone}
+                        {travel.agentEmail !== "—" && ` • ${travel.agentEmail}`}
+                      </p>
+                      <p>
+                        <small className="text-muted">Ticket Document</small>
+                        <br />
+                        {travel.ticketUrl ? (
+                          <DocumentLink
+                            url={travel.ticketUrl}
+                            label="View Ticket"
+                            isImage={travel.isImage}
+                          />
+                        ) : (
+                          <span className="text-muted">Not available</span>
                         )}
-                      </div>
-                    ))}
-                  </div>
+                      </p>
+                    </div>
+                  ))
                 ) : (
                   <p className="text-muted mb-0">
                     No travel records available.
@@ -719,66 +703,71 @@ const WorkerProfile = () => {
             </div>
           </div>
 
-          {/* Contracts*/}
+          {/* Contracts */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold">Contracts</div>
+              <div className="card-header fw-bold  pb-0">Contracts</div>
               <div className="card-body">
                 {preparedContracts.length > 0 ? (
-                  <div className="contracts-list">
-                    {preparedContracts.map((contract) => (
-                      <div
-                        key={contract.key}
-                        className="mb-4 pb-4 border-bottom last:border-0"
-                      >
-                        <h6 className="fw-semibold mb-3">Contract</h6>
+                  preparedContracts.map((contract) => (
+                    <div key={contract.key}>
+                     
 
-                        <div className="row g-3">
-                          {contract.number !== "—" && (
-                            <div className="col-6">
-                              <small className="text-muted d-block">
-                                Contract Number
-                              </small>
-                              {contract.number}
-                            </div>
-                          )}
-                          <div className="col-6">
-                            <small className="text-muted d-block">Period</small>
-                            {contract.startDate} – {contract.endDate}
-                          </div>
-                          <div className="col-6">
-                            <small className="text-muted d-block">Status</small>
-                            <span className={`badge ${contract.statusBadge}`}>
-                              {contract.status.toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="col-6">
-                            <small className="text-muted d-block">
-                              Monthly Salary
-                            </small>
-                            {contract.monthlySalary}
-                          </div>
-                        </div>
+                      {contract.number !== "—" && (
+                        <p>
+                          <small className="text-muted">Contract Number</small>
+                          <br />
+                          {contract.number}
+                        </p>
+                      )}
 
-                        <div className="mt-3">
-                          <small className="text-muted d-block">
-                            Partner / Employer
-                          </small>
-                          {contract.partnerId} / {contract.employerId}
-                        </div>
+                      <p>
+                        <small className="text-muted">Period</small>
+                        <br />
+                        {contract.startDate} – {contract.endDate}
+                      </p>
 
-                        {contract.fileUrl && (
-                          <div className="mt-3">
-                            <DocumentLink
-                              url={contract.fileUrl}
-                              label="View Contract"
-                              isImage={contract.isImage}
-                            />
-                          </div>
+                      <p>
+                        <small className="text-muted">Status</small>
+                        <br />
+                        <span className={`badge ${contract.statusBadge}`}>
+                          {contract.status.toUpperCase()}
+                        </span>
+                      </p>
+
+                      <p>
+                        <small className="text-muted">Monthly Salary</small>
+                        <br />
+                        {contract.monthlySalary}
+                      </p>
+
+                      <p>
+                        <small className="text-muted">Partner</small>
+                        <br />
+                        {contract.partnerId}
+                      </p>
+
+                      <p>
+                        <small className="text-muted">Employer</small>
+                        <br />
+                        {contract.employerId}
+                      </p>
+
+                      <p>
+                        <small className="text-muted">Contract Document</small>
+                        <br />
+                        {contract.fileUrl ? (
+                          <DocumentLink
+                            url={contract.fileUrl}
+                            label="View Contract"
+                            isImage={contract.isImage}
+                          />
+                        ) : (
+                          <span className="text-muted">Not available</span>
                         )}
-                      </div>
-                    ))}
-                  </div>
+                      </p>
+                    </div>
+                  ))
                 ) : (
                   <p className="text-muted mb-0">No contracts available.</p>
                 )}
