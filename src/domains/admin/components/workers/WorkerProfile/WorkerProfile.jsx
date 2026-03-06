@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaEdit, FaTrash, FaFilePdf, FaImage } from "react-icons/fa";
+import { FaFilePdf, FaImage } from "react-icons/fa";
+
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import Badge from "../../../../../shared/components/Badge/Badge";
+import ActionButtons from "../../../../../shared/components/ActionButtons/ActionButtons";
+
 import { getWorkerProfile } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
-import ActionButtons from "../../../../../shared/components/ActionButtons/ActionButtons";
 import useResponse from "../../../../../context/Response/useResponse";
-import Badge from "../../../../../shared/components/Badge/Badge";
 
-// Helpers
+// helper functions
+
 const fallback = (value) => value ?? "—";
 
 const niceDate = (dateStr) => {
@@ -20,67 +23,62 @@ const niceDate = (dateStr) => {
       year: "numeric",
     });
   } catch {
-    return dateStr;
+    return String(dateStr);
   }
 };
 
 const DocumentLink = ({ url, label, isImage = false }) => {
   if (!url) return <span className="text-muted">Not available</span>;
+
   const Icon = isImage ? FaImage : FaFilePdf;
+
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-primary text-decoration-none d-flex align-items-center gap-2"
+      className="text-primary text-decoration-none d-flex align-items-center gap-2 hover:underline"
     >
-      <Icon /> {label || "View Document"}
+      <Icon className="text-lg" />
+      {label || (isImage ? "View Image" : "View PDF")}
     </a>
   );
 };
 
-const CARD_ACTIONS = [
-  {
-    type: "edit",
-    onClick: (row) => console.log("Edit", row),
-  },
-  {
-    type: "delete",
-    onClick: (row) => console.log("Delete", row),
-  },
-];
-
 const WorkerProfile = () => {
-  const { addMessage } = useResponse();
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const { showLoader, hideLoader } = useloader();
+  const { addMessage } = useResponse();
+
   const [worker, setWorker] = useState(null);
   const [error, setError] = useState(null);
-  const { showLoader, hideLoader } = useloader();
 
   const fetchWorker = async () => {
     try {
       showLoader();
       setError(null);
-      const response = await getWorkerProfile(id);
-      setWorker(response.data);
+      const { data } = await getWorkerProfile(id);
+      setWorker(data);
     } catch (err) {
-      addMessage(false, err.message);
+      const msg = err.message || "Failed to load worker profile";
+      addMessage(false, msg);
+      setError(msg);
     } finally {
       hideLoader();
     }
   };
 
   useEffect(() => {
-    fetchWorker();
+    if (id) fetchWorker();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
-
-  const goBack = () => navigate(-1);
 
   if (error) {
     return (
       <div className="dashboard-wraper text-danger text-center py-5">
-        {error}
+        <p>{error}</p>
         <button className="btn btn-primary mt-3" onClick={fetchWorker}>
           Retry
         </button>
@@ -88,92 +86,114 @@ const WorkerProfile = () => {
     );
   }
 
-  // Extracted fields for easier access
-  const personal = worker?.personal_information || null;
-  const passport = worker?.passport || null;
-  const coc = worker?.coc || null;
-  const medical = worker?.medical || null;
-  const emergency = worker?.emergency || null;
-  const visa = worker?.visa || null;
-  const lmis = worker?.lmis || null;
-  const travelRecords = worker?.travel_records || [];
-  const contracts = worker?.contracts || [];
+  if (!worker) return null;
 
-  // Header fields
-  const fullName = fallback(worker?.full_name);
-  const phone = fallback(worker?.phone_number);
-  const statusName = fallback(worker?.status?.name);
+  // data extraction and preparation
+
+  const {
+    full_name: fullName = "—",
+    phone_number: phone = "—",
+    status = {},
+    personal_information: personal = {},
+    passport = {},
+    coc = {},
+    medical = {},
+    emergency = {},
+    visa = {},
+    lmis = {},
+    travel_records: travelRecords = [],
+    contracts = [],
+  } = worker;
+
+  const statusName = status?.name ?? "—";
   const photoUrl =
     personal?.photo_3x4?.url || "https://via.placeholder.com/150?text=No+Photo";
-  const badgeClass =
-    statusName === "Registered"
-      ? "badge bg-success px-3 py-2 fs-6"
-      : "badge bg-secondary px-3 py-2 fs-6";
 
   // Personal
-  const personalSex = fallback(personal?.sex);
-  const personalDob = niceDate(personal?.date_of_birth);
-  const personalMaritalStatus = fallback(personal?.marital_status);
-  const personalNationality = fallback(personal?.nationality);
-  const personalEducation = fallback(personal?.education);
-  const personalChildren = fallback(personal?.number_of_children);
-  const personalRegionCity =
-    `${fallback(personal?.region?.name)}${personal?.city?.name ? ` / ${personal.city.name}` : ""}`.trim() ||
-    "—";
-  const personalHeightWeight = `${personal?.height_cm ? `${personal.height_cm} cm` : "—"} / ${personal?.weight_kg ? `${personal.weight_kg} kg` : "—"}`;
-  const personalStandingPhotoUrl = personal?.photo_standing?.url;
+  const personalInfo = {
+    sex: fallback(personal.sex),
+    dob: niceDate(personal.date_of_birth),
+    placeOfBirth: fallback(personal.place_of_birth),
+    address: fallback(personal.address),
+    maritalStatus: fallback(personal.marital_status),
+    nationality: fallback(personal.nationality),
+    education: fallback(personal.education),
+    children: fallback(personal.number_of_children),
+    region: fallback(personal.region?.name),
+    city: fallback(personal.city?.name),
+    height: personal.height_cm ? `${personal.height_cm} cm` : "—",
+    weight: personal.weight_kg ? `${personal.weight_kg} kg` : "—",
+    religion: fallback(personal.religion),
+    standingPhoto: personal.photo_standing?.url || null,
+  };
 
   // Passport
-  const passportNumber = fallback(passport?.passport_number);
-  const passportIssuingCountry = fallback(passport?.issuing_country);
-  const passportIssueDate = niceDate(passport?.issue_date);
-  const passportExpiryDate = niceDate(passport?.expiry_date);
-  const passportScanUrl = passport?.scan?.url;
+  const passportInfo = {
+    number: fallback(passport.passport_number),
+    issuingCountry: fallback(passport.issuing_country),
+    issueDate: niceDate(passport.issue_date),
+    expiryDate: niceDate(passport.expiry_date),
+    scanUrl: passport.scan?.url || null,
+  };
 
   // COC
-  const cocNumber = fallback(coc?.coc_number);
-  const cocAssessmentCenter = fallback(coc?.assessment_center);
-  const cocAssessmentDate = niceDate(coc?.assessment_date);
-  const cocIssueDate = niceDate(coc?.issue_date);
-  const cocExpiryDate = niceDate(coc?.expiry_date);
-  const cocDocumentUrl = coc?.document?.url;
+  const cocInfo = {
+    number: fallback(coc.coc_number),
+    assessmentCenter: fallback(coc.assessment_center),
+    assessmentDate: niceDate(coc.assessment_date),
+    issueDate: niceDate(coc.issue_date),
+    expiryDate: niceDate(coc.expiry_date),
+    documentUrl: coc.document?.url || null,
+  };
 
   // Emergency
-  const emergencyRelation = fallback(emergency?.relation);
-  const emergencyGuarantorName = fallback(emergency?.guarantor_name);
-  const emergencyGuarantorPhone = fallback(emergency?.guarantor_phone_number);
-  const emergencyGuarantorAddress = fallback(emergency?.guarantor_address);
-  const emergencyIdScanUrl = emergency?.id_scan?.url;
+  const emergencyInfo = {
+    relation: fallback(emergency.relation),
+    name: fallback(emergency.guarantor_name),
+    phone: fallback(emergency.guarantor_phone_number),
+    address: fallback(emergency.guarantor_address),
+    idScanUrl: emergency.id_scan?.url || null,
+  };
 
   // Medical
-  const medicalCenter = fallback(medical?.medical_center);
-  const medicalReportNumber = fallback(medical?.medical_report_number);
-  const medicalIssueDate = niceDate(medical?.issue_date);
-  const medicalExpiryDate = niceDate(medical?.expiry_date);
-  const medicalStatus = medical?.medical_status?.toLowerCase() || null;
-  const medicalStatusBadge =
-    medicalStatus === "fit"
+  const medicalInfo = {
+    center: fallback(medical.medical_center),
+    reportNumber: fallback(medical.medical_report_number),
+    issueDate: niceDate(medical.issue_date),
+    expiryDate: niceDate(medical.expiry_date),
+    status: (medical.medical_status || "").toLowerCase(),
+    fileUrl: medical.file?.url || null,
+  };
+  medicalInfo.badgeClass =
+    medicalInfo.status === "fit"
       ? "badge bg-success"
-      : medicalStatus
+      : medicalInfo.status
         ? "badge bg-danger"
         : "badge bg-secondary";
-  const medicalStatusText = medicalStatus ? medicalStatus.toUpperCase() : "—";
-  const medicalFileUrl = medical?.file?.url;
+  medicalInfo.statusText = medicalInfo.status
+    ? medicalInfo.status.toUpperCase()
+    : "—";
 
   // Visa
-  const visaNumber = fallback(visa?.visa_number);
-  const visaIssueDate = niceDate(visa?.issue_date);
-  const visaExpiryDate = niceDate(visa?.expiry_date);
-  const visaDocumentUrl = visa?.document?.url;
+  const visaInfo = {
+    number: fallback(visa.visa_number),
+    issueDate: niceDate(visa.issue_date),
+    expiryDate: niceDate(visa.expiry_date),
+    referenceNumber: fallback(visa.reference_number),
+    referenceDate: niceDate(visa.reference_date),
+    documentUrl: visa.document?.url || null,
+  };
 
   // LMIS
-  const lmisLabourId = fallback(lmis?.labour_id);
-  const lmisApprovalDate = niceDate(lmis?.approval_date);
-  const lmisQrCodeUrl = lmis?.qr_code?.url;
+  const lmisInfo = {
+    labourId: fallback(lmis.labour_id),
+    approvalDate: niceDate(lmis.approval_date),
+    qrCodeUrl: lmis.qr_code?.url || null,
+  };
 
   // Travel Records
   const preparedTravel = travelRecords.map((rec, idx) => ({
-    key: `travel-${idx}`,
+    key: `travel-${idx + 1}`,
     titleSuffix: rec.ticket_number ? ` – #${rec.ticket_number}` : "",
     departureDate: niceDate(rec.departure_date),
     departureLocation: fallback(rec.departure_location),
@@ -182,143 +202,167 @@ const WorkerProfile = () => {
     destination: fallback(rec.destination || rec.arrival_location),
     agentName: fallback(rec.agent_name),
     agentPhone: fallback(rec.agent_phone_number),
-    ticketFileUrl: rec.ticket_file?.url,
+    ticketUrl: rec.ticket_file?.url || null,
     isImage: rec.ticket_file?.resource_type === "image",
   }));
 
   // Contracts
-  const preparedContracts = contracts.map((con, idx) => ({
-    key: `contract-${idx}`,
-    number: fallback(con.contract_number),
-    startDate: niceDate(con.contract_start_date || con.start_date),
-    endDate: niceDate(con.contract_end_date || con.end_date),
-    status: fallback(con.status),
-    statusBadge:
-      con.status === "active"
-        ? "bg-success"
-        : con.status === "pending"
-          ? "bg-warning"
-          : "bg-secondary",
-    monthlySalary:
-      con.monthly_salary != null ? `${con.monthly_salary} SAR` : "—",
-    partnerId: fallback(con.partner_id),
-    employerId: fallback(con.employer_id),
-    fileUrl: con.contract_upload?.url || con.file?.url,
-    isImage:
-      (con.contract_upload?.resource_type || con.file?.resource_type) ===
-      "image",
-  }));
+  const preparedContracts = contracts.map((con, idx) => {
+    const status = fallback(con.status);
+    return {
+      key: `contract-${idx + 1}`,
+      number: fallback(con.contract_number),
+      startDate: niceDate(con.contract_start_date || con.start_date),
+      endDate: niceDate(con.contract_end_date || con.end_date),
+      status,
+      statusBadge:
+        status === "active"
+          ? "bg-success"
+          : status === "pending"
+            ? "bg-warning"
+            : "bg-secondary",
+      monthlySalary:
+        con.monthly_salary != null ? `${con.monthly_salary} SAR` : "—",
+      partnerId: fallback(con.partner_id),
+      employerId: fallback(con.employer_id),
+      fileUrl: con.contract_upload?.url || con.file?.url || null,
+      isImage:
+        (con.contract_upload?.resource_type || con.file?.resource_type) ===
+        "image",
+    };
+  });
 
   return (
     <div className="dashboard-wraper">
-      <BackButton onClick={goBack} />
+      <BackButton onClick={() => navigate(-1)} />
 
       {/* Header */}
-      <div className="card-body">
+      <div className=" mb-4 border-0">
         <div className="row align-items-center">
-          <div className="col-md-2 text-center mb-3 mb-md-0">
+          <div className="col-md-2 text-center mb-4 mb-md-0">
             <img
               src={photoUrl}
-              alt={`${fullName}'s photo`}
-              className="worker-photo img-fluid rounded-circle"
-              // style={{ width: "140px", height: "140px", objectFit: "cover" }}
+              alt={`${fullName} photo`}
+              className="img-fluid rounded-circle worker-photo"
+              style={{ width: "140px", height: "140px", objectFit: "cover" }}
               onError={(e) => {
-                e.target.src =
-                  "https://via.placeholder.com/150?text=Photo+Error";
-                e.target.alt = "Photo failed to load";
+                e.target.src = "https://via.placeholder.com/150?text=Error";
               }}
             />
           </div>
+
           <div className="col-md-10">
-            <div className="d-flex justify-content-between align-items-center flex-wrap">
-              <div>
-                <h4 className="mb-1 fw-bold">{fullName}</h4>
-                <p className="mb-1 text-muted">
-                  <strong>Phone:</strong> {phone}
-                </p>
-                <p className="mb-1 text-muted">
-                  <strong>Passport No:</strong> {passportNumber}
-                </p>
-                <Badge content={statusName} color="green" />
-              </div>
-            </div>
+            <h4 className="fw-bold mb-1">{fullName}</h4>
+            <p className="text-muted mb-1">
+              <strong>Phone:</strong> {phone}
+            </p>
+            <p className="text-muted mb-2">
+              <strong>Passport No:</strong> {passportInfo.number}
+            </p>
+            <Badge content={statusName} color="green" />
           </div>
         </div>
       </div>
 
       {/* Cards Grid */}
-      <div className="container mt-4">
+      <div className="container">
         <div className="row g-4">
           {/* Personal Information */}
           <div className="col-12">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-header d-flex justify-content-between align-items-center fw-bold">
-                <span>Personal Information</span>
-                <ActionButtons actions={CARD_ACTIONS} row={personal} />
+                <h3 className="fw-bold text-dark">Personal Information</h3>
+                <ActionButtons
+                  actions={[
+                    {
+                      type: "edit",
+                      // onClick: (row) => handleEdit(row.id),
+                    },
+                    {
+                      type: "delete",
+                      // onClick: (row) => handleDelete(row.id),
+                    },
+                  ]}
+                  row={worker} // pass the row data here
+                />
               </div>
               <div className="card-body">
-                {personal ? (
-                  <>
-                    <p>
-                      <small className="text-muted">Full Name</small>
-                      <br />
-                      {fullName}
-                    </p>
+                <div className="row">
+                  <div className="col-md-6">
                     <p>
                       <small className="text-muted">Sex</small>
                       <br />
-                      {personalSex}
+                      {personalInfo.sex}
                     </p>
                     <p>
                       <small className="text-muted">Date of Birth</small>
                       <br />
-                      {personalDob}
+                      {personalInfo.dob}
+                    </p>
+                    <p>
+                      <small className="text-muted">Place of Birth</small>
+                      <br />
+                      {personalInfo.placeOfBirth}
                     </p>
                     <p>
                       <small className="text-muted">Marital Status</small>
                       <br />
-                      {personalMaritalStatus}
+                      {personalInfo.maritalStatus}
                     </p>
                     <p>
                       <small className="text-muted">Nationality</small>
                       <br />
-                      {personalNationality}
+                      {personalInfo.nationality}
                     </p>
-                    <p>
-                      <small className="text-muted">Education</small>
-                      <br />
-                      {personalEducation}
-                    </p>
-                    <p>
-                      <small className="text-muted">Children</small>
-                      <br />
-                      {personalChildren}
-                    </p>
-                    <p>
-                      <small className="text-muted">Region / City</small>
-                      <br />
-                      {personalRegionCity}
-                    </p>
-                    <p>
-                      <small className="text-muted">Height / Weight</small>
-                      <br />
-                      {personalHeightWeight}
-                    </p>
-                    {personalStandingPhotoUrl && (
+
+                    {personalInfo.standingPhoto && (
                       <p>
                         <small className="text-muted">Standing Photo</small>
                         <br />
                         <DocumentLink
-                          url={personalStandingPhotoUrl}
+                          url={personalInfo.standingPhoto}
                           label="View Standing Photo"
                           isImage
                         />
                       </p>
                     )}
-                  </>
-                ) : (
-                  <p className="text-muted">No personal data available.</p>
-                )}
+                  </div>
+                  <div className="col-md-6">
+                    <p>
+                      <small className="text-muted">Education</small>
+                      <br />
+                      {personalInfo.education}
+                    </p>
+                    <p>
+                      <small className="text-muted">Number of Children</small>
+                      <br />
+                      {personalInfo.children}
+                    </p>
+                    <p>
+                      <small className="text-muted">Region / City</small>
+                      <br />
+                      {personalInfo.region}
+                      {personalInfo.city !== "—"
+                        ? ` / ${personalInfo.city}`
+                        : ""}
+                    </p>
+                    <p>
+                      <small className="text-muted">Height / Weight</small>
+                      <br />
+                      {personalInfo.height} / {personalInfo.weight}
+                    </p>
+                    <p>
+                      <small className="text-muted">Religion</small>
+                      <br />
+                      {personalInfo.religion}
+                    </p>
+                    <p>
+                      <small className="text-muted">Address</small>
+                      <br />
+                      {personalInfo.address}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -326,46 +370,37 @@ const WorkerProfile = () => {
           {/* Passport */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center fw-bold">
-                <span>Passport Information</span>
-                <ActionButtons actions={CARD_ACTIONS} row={personal} />
-              </div>
+              <div className="card-header fw-bold">Passport Information</div>
               <div className="card-body">
-                {passport ? (
-                  <>
-                    <p>
-                      <small className="text-muted">Passport Number</small>
-                      <br />
-                      {passportNumber}
-                    </p>
-                    <p>
-                      <small className="text-muted">Issuing Country</small>
-                      <br />
-                      {passportIssuingCountry}
-                    </p>
-                    <p>
-                      <small className="text-muted">Issue Date</small>
-                      <br />
-                      {passportIssueDate}
-                    </p>
-                    <p>
-                      <small className="text-muted">Expiry Date</small>
-                      <br />
-                      {passportExpiryDate}
-                    </p>
-                    {passportScanUrl && (
-                      <p>
-                        <small className="text-muted">Passport Scan</small>
-                        <br />
-                        <DocumentLink
-                          url={passportScanUrl}
-                          label="Open Passport (PDF)"
-                        />
-                      </p>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-muted">No passport data available.</p>
+                <p>
+                  <small className="text-muted">Passport Number</small>
+                  <br />
+                  {passportInfo.number}
+                </p>
+                <p>
+                  <small className="text-muted">Issuing Country</small>
+                  <br />
+                  {passportInfo.issuingCountry}
+                </p>
+                <p>
+                  <small className="text-muted">Issue Date</small>
+                  <br />
+                  {passportInfo.issueDate}
+                </p>
+                <p>
+                  <small className="text-muted">Expiry Date</small>
+                  <br />
+                  {passportInfo.expiryDate}
+                </p>
+                {passportInfo.scanUrl && (
+                  <p>
+                    <small className="text-muted">Passport Scan</small>
+                    <br />
+                    <DocumentLink
+                      url={passportInfo.scanUrl}
+                      label="View Passport Scan"
+                    />
+                  </p>
                 )}
               </div>
             </div>
@@ -374,100 +409,80 @@ const WorkerProfile = () => {
           {/* COC */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center fw-bold">
-                <span>COC Information</span>
-                <ActionButtons actions={CARD_ACTIONS} row={personal} />
-              </div>
+              <div className="card-header fw-bold">COC Information</div>
               <div className="card-body">
-                {coc ? (
-                  <>
-                    <p>
-                      <small className="text-muted">COC Number</small>
-                      <br />
-                      {cocNumber}
-                    </p>
-                    <p>
-                      <small className="text-muted">Assessment Center</small>
-                      <br />
-                      {cocAssessmentCenter}
-                    </p>
-                    <p>
-                      <small className="text-muted">Assessment Date</small>
-                      <br />
-                      {cocAssessmentDate}
-                    </p>
-                    <p>
-                      <small className="text-muted">Issue Date</small>
-                      <br />
-                      {cocIssueDate}
-                    </p>
-                    <p>
-                      <small className="text-muted">Expiry Date</small>
-                      <br />
-                      {cocExpiryDate}
-                    </p>
-                    {cocDocumentUrl && (
-                      <p>
-                        <small className="text-muted">COC Document</small>
-                        <br />
-                        <DocumentLink
-                          url={cocDocumentUrl}
-                          label="View COC Document"
-                        />
-                      </p>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-muted">No COC data available.</p>
+                <p>
+                  <small className="text-muted">COC Number</small>
+                  <br />
+                  {cocInfo.number}
+                </p>
+                <p>
+                  <small className="text-muted">Assessment Center</small>
+                  <br />
+                  {cocInfo.assessmentCenter}
+                </p>
+                <p>
+                  <small className="text-muted">Assessment Date</small>
+                  <br />
+                  {cocInfo.assessmentDate}
+                </p>
+                <p>
+                  <small className="text-muted">Issue Date</small>
+                  <br />
+                  {cocInfo.issueDate}
+                </p>
+                <p>
+                  <small className="text-muted">Expiry Date</small>
+                  <br />
+                  {cocInfo.expiryDate}
+                </p>
+                {cocInfo.documentUrl && (
+                  <p>
+                    <small className="text-muted">COC Document</small>
+                    <br />
+                    <DocumentLink
+                      url={cocInfo.documentUrl}
+                      label="View COC Document"
+                    />
+                  </p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Emergency / Guarantor */}
+          {/* Emergency Contact */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center fw-bold">
-                <span>Emergency Contact</span>
-                <ActionButtons actions={CARD_ACTIONS} row={personal} />
-              </div>
+              <div className="card-header fw-bold">Emergency / Guarantor</div>
               <div className="card-body">
-                {emergency ? (
-                  <>
-                    <p>
-                      <small className="text-muted">Relation</small>
-                      <br />
-                      {emergencyRelation}
-                    </p>
-                    <p>
-                      <small className="text-muted">Name</small>
-                      <br />
-                      {emergencyGuarantorName}
-                    </p>
-                    <p>
-                      <small className="text-muted">Phone</small>
-                      <br />
-                      {emergencyGuarantorPhone}
-                    </p>
-                    <p>
-                      <small className="text-muted">Address</small>
-                      <br />
-                      {emergencyGuarantorAddress}
-                    </p>
-                    {emergencyIdScanUrl && (
-                      <p>
-                        <small className="text-muted">ID Scan</small>
-                        <br />
-                        <DocumentLink
-                          url={emergencyIdScanUrl}
-                          label="View Guarantor ID"
-                        />
-                      </p>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-muted">
-                    No emergency / guarantor data available.
+                <p>
+                  <small className="text-muted">Relation</small>
+                  <br />
+                  {emergencyInfo.relation}
+                </p>
+                <p>
+                  <small className="text-muted">Name</small>
+                  <br />
+                  {emergencyInfo.name}
+                </p>
+                <p>
+                  <small className="text-muted">Phone</small>
+                  <br />
+                  {emergencyInfo.phone}
+                </p>
+                <p>
+                  <small className="text-muted">Address</small>
+                  <br />
+                  {emergencyInfo.address}
+                </p>
+                {emergencyInfo.idScanUrl && (
+                  <p>
+                    <small className="text-muted">ID Scan</small>
+                    <br />
+                    <DocumentLink
+                      url={emergencyInfo.idScanUrl}
+                      label="View Guarantor ID"
+                    />
                   </p>
                 )}
               </div>
@@ -477,53 +492,44 @@ const WorkerProfile = () => {
           {/* Medical */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center fw-bold">
-                <span>Medical Information</span>
-                <ActionButtons actions={CARD_ACTIONS} row={personal} />
-              </div>
+              <div className="card-header fw-bold">Medical Information</div>
               <div className="card-body">
-                {medical ? (
-                  <>
-                    <p>
-                      <small className="text-muted">Medical Center</small>
-                      <br />
-                      {medicalCenter}
-                    </p>
-                    <p>
-                      <small className="text-muted">Report Number</small>
-                      <br />
-                      {medicalReportNumber}
-                    </p>
-                    <p>
-                      <small className="text-muted">Issue Date</small>
-                      <br />
-                      {medicalIssueDate}
-                    </p>
-                    <p>
-                      <small className="text-muted">Expiry Date</small>
-                      <br />
-                      {medicalExpiryDate}
-                    </p>
-                    <p>
-                      <small className="text-muted">Result</small>
-                      <br />
-                      <span className={medicalStatusBadge}>
-                        {medicalStatusText}
-                      </span>
-                    </p>
-                    {medicalFileUrl && (
-                      <p>
-                        <small className="text-muted">Medical File</small>
-                        <br />
-                        <DocumentLink
-                          url={medicalFileUrl}
-                          label="View Medical Report"
-                        />
-                      </p>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-muted">No medical data available.</p>
+                <p>
+                  <small className="text-muted">Medical Center</small>
+                  <br />
+                  {medicalInfo.center}
+                </p>
+                <p>
+                  <small className="text-muted">Report Number</small>
+                  <br />
+                  {medicalInfo.reportNumber}
+                </p>
+                <p>
+                  <small className="text-muted">Issue Date</small>
+                  <br />
+                  {medicalInfo.issueDate}
+                </p>
+                <p>
+                  <small className="text-muted">Expiry Date</small>
+                  <br />
+                  {medicalInfo.expiryDate}
+                </p>
+                <p>
+                  <small className="text-muted">Result</small>
+                  <br />
+                  <span className={medicalInfo.badgeClass}>
+                    {medicalInfo.statusText}
+                  </span>
+                </p>
+                {medicalInfo.fileUrl && (
+                  <p>
+                    <small className="text-muted">Medical Report</small>
+                    <br />
+                    <DocumentLink
+                      url={medicalInfo.fileUrl}
+                      label="View Medical Report"
+                    />
+                  </p>
                 )}
               </div>
             </div>
@@ -532,38 +538,42 @@ const WorkerProfile = () => {
           {/* Visa */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center fw-bold">
-                <span>Visa Information</span>
-                <ActionButtons actions={CARD_ACTIONS} row={personal} />
-              </div>
+              <div className="card-header fw-bold">Visa Information</div>
               <div className="card-body">
-                {visa ? (
-                  <>
-                    <p>
-                      <small className="text-muted">Visa Number</small>
-                      <br />
-                      {visaNumber}
-                    </p>
-                    <p>
-                      <small className="text-muted">Issue Date</small>
-                      <br />
-                      {visaIssueDate}
-                    </p>
-                    <p>
-                      <small className="text-muted">Expiry Date</small>
-                      <br />
-                      {visaExpiryDate}
-                    </p>
-                    {visaDocumentUrl && (
-                      <p>
-                        <small className="text-muted">Visa Document</small>
-                        <br />
-                        <DocumentLink url={visaDocumentUrl} label="View Visa" />
-                      </p>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-muted">No visa data available.</p>
+                <p>
+                  <small className="text-muted">Visa Number</small>
+                  <br />
+                  {visaInfo.number}
+                </p>
+                <p>
+                  <small className="text-muted">Issue Date</small>
+                  <br />
+                  {visaInfo.issueDate}
+                </p>
+                <p>
+                  <small className="text-muted">Expiry Date</small>
+                  <br />
+                  {visaInfo.expiryDate}
+                </p>
+                <p>
+                  <small className="text-muted">Reference Number</small>
+                  <br />
+                  {visaInfo.referenceNumber}
+                </p>
+                <p>
+                  <small className="text-muted">Reference Date</small>
+                  <br />
+                  {visaInfo.referenceDate}
+                </p>
+                {visaInfo.documentUrl && (
+                  <p>
+                    <small className="text-muted">Visa Document</small>
+                    <br />
+                    <DocumentLink
+                      url={visaInfo.documentUrl}
+                      label="View Visa"
+                    />
+                  </p>
                 )}
               </div>
             </div>
@@ -572,53 +582,41 @@ const WorkerProfile = () => {
           {/* LMIS */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center fw-bold">
-                <span>LMIS Information</span>
-                <ActionButtons actions={CARD_ACTIONS} row={personal} />
-              </div>
+              <div className="card-header fw-bold">LMIS Information</div>
               <div className="card-body">
-                {lmis ? (
-                  <>
-                    <p>
-                      <small className="text-muted">Labour ID</small>
-                      <br />
-                      {lmisLabourId}
-                    </p>
-                    <p>
-                      <small className="text-muted">Approval Date</small>
-                      <br />
-                      {lmisApprovalDate}
-                    </p>
-                    {lmisQrCodeUrl && (
-                      <p>
-                        <small className="text-muted">LMIS QR Code</small>
-                        <br />
-                        <DocumentLink
-                          url={lmisQrCodeUrl}
-                          label="View QR Code"
-                          isImage
-                        />
-                      </p>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-muted">No LMIS data available.</p>
+                <p>
+                  <small className="text-muted">Labour ID</small>
+                  <br />
+                  {lmisInfo.labourId}
+                </p>
+                <p>
+                  <small className="text-muted">Approval Date</small>
+                  <br />
+                  {lmisInfo.approvalDate}
+                </p>
+                {lmisInfo.qrCodeUrl && (
+                  <p>
+                    <small className="text-muted">QR Code</small>
+                    <br />
+                    <DocumentLink
+                      url={lmisInfo.qrCodeUrl}
+                      label="View LMIS QR Code"
+                      isImage
+                    />
+                  </p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Travel Records – now showing ALL fields */}
+          {/* Travel Records */}
           {preparedTravel.length > 0 ? (
             preparedTravel.map((travel) => (
               <div key={travel.key} className="col-12 col-md-6">
                 <div className="card h-100 shadow-sm border-0">
-                  <div className="card-header d-flex justify-content-between align-items-center fw-bold">
-                    <span>
-                      Travel Record {travel.key.split("-")[1] + 1}
-                      {travel.titleSuffix}
-                    </span>
-                    <ActionButtons actions={CARD_ACTIONS} row={personal} />
+                  <div className="card-header fw-bold">
+                    Travel Record {travel.key.split("-")[1]}
+                    {travel.titleSuffix}
                   </div>
                   <div className="card-body">
                     <p>
@@ -646,12 +644,12 @@ const WorkerProfile = () => {
                       {travel.agentName}{" "}
                       {travel.agentPhone !== "—" && `(${travel.agentPhone})`}
                     </p>
-                    {travel.ticketFileUrl && (
+                    {travel.ticketUrl && (
                       <p>
-                        <small className="text-muted">Ticket Document</small>
+                        <small className="text-muted">Ticket</small>
                         <br />
                         <DocumentLink
-                          url={travel.ticketFileUrl}
+                          url={travel.ticketUrl}
                           label="View Ticket"
                           isImage={travel.isImage}
                         />
@@ -672,14 +670,13 @@ const WorkerProfile = () => {
             </div>
           )}
 
-          {/* Contracts – now showing ALL fields */}
+          {/* Contracts */}
           {preparedContracts.length > 0 ? (
             preparedContracts.map((contract) => (
               <div key={contract.key} className="col-12 col-md-6">
                 <div className="card h-100 shadow-sm border-0">
-                  <div className="card-header d-flex justify-content-between align-items-center fw-bold">
-                    <span>Contract {contract.key.split("-")[1] + 1}</span>
-                    <ActionButtons actions={CARD_ACTIONS} row={personal} />
+                  <div className="card-header fw-bold">
+                    Contract {contract.key.split("-")[1]}
                   </div>
                   <div className="card-body">
                     {contract.number !== "—" && (
