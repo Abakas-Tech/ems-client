@@ -216,8 +216,8 @@ const WorkerProfile = () => {
             : "bg-secondary",
       monthlySalary:
         con.monthly_salary != null ? `${con.monthly_salary} SAR` : "—",
-      partnerId: fallback(con.partner_id),
-      employerId: fallback(con.employer_id),
+      partnerName: fallback(con.partner_name),
+      employerName: fallback(con.employer_name),
       fileUrl: con.contract_upload?.url || con.file?.url || null,
       isImage:
         (con.contract_upload?.resource_type || con.file?.resource_type) ===
@@ -269,7 +269,10 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Personal Information</h3>
                 <ActionButtons
-                  actions={[{ type: "edit" }, { type: "delete" }]}
+                  actions={[
+                    { type: "edit", onClick: (row) => handleEdit(row) },
+                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                  ]}
                 />
               </div>
 
@@ -363,7 +366,15 @@ const WorkerProfile = () => {
           {/* PASSPORT */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0 ">
-              <div className="card-header fw-bold pb-0">Passport Information</div>
+              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold">Passport Information</h3>
+                <ActionButtons
+                  actions={[
+                    { type: "edit", onClick: (row) => handleEdit(row) },
+                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                  ]}
+                />
+              </div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">Passport Number</small>
@@ -408,7 +419,15 @@ const WorkerProfile = () => {
           {/* COC */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold pb-0">COC Information</div>
+              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold">COC Information</h3>
+                <ActionButtons
+                  actions={[
+                    { type: "edit", onClick: (row) => handleEdit(row) },
+                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                  ]}
+                />
+              </div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">COC Number</small>
@@ -458,7 +477,15 @@ const WorkerProfile = () => {
           {/* Emergency Contact */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold  pb-0">Emergency Contact</div>
+              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold">Emergency Contact</h3>
+                <ActionButtons
+                  actions={[
+                    { type: "edit", onClick: (row) => handleEdit(row) },
+                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                  ]}
+                />
+              </div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">Relation</small>
@@ -503,7 +530,15 @@ const WorkerProfile = () => {
           {/* Medical */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold pb-0">Medical Information</div>
+              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold">Medical Information</h3>
+                <ActionButtons
+                  actions={[
+                    { type: "edit", onClick: (row) => handleEdit(row) },
+                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                  ]}
+                />
+              </div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">Medical Center</small>
@@ -555,7 +590,15 @@ const WorkerProfile = () => {
           {/* Visa */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold  pb-0">Visa Information</div>
+              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold">Visa Information</h3>
+                <ActionButtons
+                  actions={[
+                    { type: "edit", onClick: (row) => handleEdit(row) },
+                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                  ]}
+                />
+              </div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">Visa Number</small>
@@ -605,7 +648,15 @@ const WorkerProfile = () => {
           {/* LMIS */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold  pb-0">LMIS Information</div>
+              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold">LMIS Information</h3>
+                <ActionButtons
+                  actions={[
+                    { type: "edit", onClick: (row) => handleEdit(row) },
+                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                  ]}
+                />
+              </div>
               <div className="card-body">
                 <p>
                   <small className="text-muted">Labour ID</small>
@@ -641,14 +692,19 @@ const WorkerProfile = () => {
           {/* Travel Records */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold  pb-0">Travel Records</div>
+              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold">Travel Records</h3>
+                <ActionButtons
+                  actions={[
+                    { type: "edit", onClick: (row) => handleEdit(row) },
+                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                  ]}
+                />
+              </div>
               <div className="card-body">
                 {preparedTravel.length > 0 ? (
                   preparedTravel.map((travel) => (
-                    <div
-                      key={travel.key}
-                     
-                    >
+                    <div key={travel.key}>
                       <p>
                         <small className="text-muted">Ticket Number</small>
                         <br />
@@ -706,13 +762,19 @@ const WorkerProfile = () => {
           {/* Contracts */}
           <div className="col-12 col-md-6">
             <div className="card h-100 shadow-sm border-0">
-              <div className="card-header fw-bold  pb-0">Contracts</div>
+              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold">Contracts</h3>
+                <ActionButtons
+                  actions={[
+                    { type: "edit", onClick: (row) => handleEdit(row) },
+                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                  ]}
+                />
+              </div>
               <div className="card-body">
                 {preparedContracts.length > 0 ? (
                   preparedContracts.map((contract) => (
                     <div key={contract.key}>
-                     
-
                       {contract.number !== "—" && (
                         <p>
                           <small className="text-muted">Contract Number</small>
@@ -744,13 +806,13 @@ const WorkerProfile = () => {
                       <p>
                         <small className="text-muted">Partner</small>
                         <br />
-                        {contract.partnerId}
+                        {contract.partnerName}
                       </p>
 
                       <p>
                         <small className="text-muted">Employer</small>
                         <br />
-                        {contract.employerId}
+                        {contract.employerName}
                       </p>
 
                       <p>
