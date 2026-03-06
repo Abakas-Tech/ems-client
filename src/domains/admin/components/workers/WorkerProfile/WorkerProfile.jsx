@@ -201,6 +201,7 @@ const WorkerProfile = () => {
     arrivalLocation: fallback(rec.arrival_location),
     destination: fallback(rec.destination || rec.arrival_location),
     agentName: fallback(rec.agent_name),
+    agentEmail: fallback(rec.agent_email),
     agentPhone: fallback(rec.agent_phone_number),
     ticketUrl: rec.ticket_file?.url || null,
     isImage: rec.ticket_file?.resource_type === "image",
@@ -639,10 +640,19 @@ const WorkerProfile = () => {
                       {travel.destination}
                     </p>
                     <p>
-                      <small className="text-muted">Agent</small>
+                      <small className="text-muted">Agent Name</small>
                       <br />
                       {travel.agentName}{" "}
-                      {travel.agentPhone !== "—" && `(${travel.agentPhone})`}
+                    </p>
+                    <p>
+                      <small className="text-muted">Agent Phone</small>
+                      <br />
+                      {travel.agentPhone}
+                    </p>
+                    <p>
+                      <small className="text-muted">Agent Email</small>
+                      <br />
+                      {travel.agentEmail}
                     </p>
                     {travel.ticketUrl && (
                       <p>
