@@ -239,7 +239,7 @@ const WorkerProfile = () => {
                 <p className="mb-1 text-muted">
                   <strong>Passport No:</strong> {passportNumber}
                 </p>
-                <Badge content={statusName} color="cyan" />
+                <Badge content={statusName} color="green" />
               </div>
             </div>
           </div>
