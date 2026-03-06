@@ -11,8 +11,10 @@ import useResponse from "../../../../../context/Response/useResponse";
 import NotificationItem from "../NotificationItem/NotificationItem";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import useNotification from "../../../../../context/Notification/useNotification";
 
 const NotificationPage = () => {
+  const { getNotifications } = useNotification();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const [notifications, setNotifications] = useState({ data: [], total: 0 });
@@ -22,7 +24,6 @@ const NotificationPage = () => {
   // Search States
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const ROLE_MAP = { 2: "Employee", 3: "Partner", 5: "Employer" };
   useEffect(() => {
     loadNotifications();
   }, []);
@@ -53,6 +54,7 @@ const NotificationPage = () => {
             n.id === notif.id ? { ...n, is_read: true } : n,
           ),
         }));
+        getNotifications();
       } catch (e) {
         console.error("Failed to mark read:", e);
       }
@@ -85,7 +87,6 @@ const NotificationPage = () => {
       // Convert recipient_type value to role name from ROLE_MAP
       if (formValues.recipient_type != "worker") {
         if (formValues.recipient_type === "2") {
-          console.log("it's chnaged");
           formValues.recipient_type = "employee";
         } else if (formValues.recipient_type === "3") {
           formValues.recipient_type = "partner";
@@ -136,24 +137,31 @@ const NotificationPage = () => {
               <button
                 key={user.id}
                 type="button"
-                className="list-group-item list-group-item-action small py-2 d-flex justify-content-between"
+                // Added align-items-center and kept padding tight with py-1
+                className="list-group-item list-group-item-action small py-1 px-3 d-flex justify-content-between align-items-center"
+                style={{ minHeight: "auto" }} // Force reset any inherited heights
                 onClick={() => {
                   handleChange("recipient_id", user.id);
                   setSearchTerm(user.name || `${user.full_name}`);
                   setSearchResults([]);
                 }}
               >
-                <div>
-                  <div className="fw-bold text-dark">
+                <div className="text-start">
+                  <div
+                    className="fw-bold text-dark mb-0"
+                    style={{ lineHeight: "1.2" }}
+                  >
                     {user.name || `${user.full_name}`}
                   </div>
-                  <div className="text-muted" style={{ fontSize: "0.75rem" }}>
+                  <div className="text-muted" style={{ fontSize: "0.7rem" }}>
                     {user.email || user.phone_number}
                   </div>
                 </div>
-                <span className="badge bg-light text-primary border h-50 my-auto">
+
+                {/* Removed h-50 so the badge doesn't try to take up half the height */}
+                {/* <span className="badge bg-light text-primary border py-1">
                   ID: {user.id}
-                </span>
+                </span> */}
               </button>
             ))}
           </div>

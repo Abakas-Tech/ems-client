@@ -15,21 +15,24 @@ import ResponseProvider from "./context/response/ResponseProvider.jsx";
 import ConfirmDeleteProvider from "./context/Delete/DeleteProvider";
 import ProfileProvider from "./context/Profile/ProfileProvider.jsx";
 import DemoInfoProvider from "./context/Demo/DemoInfoProvider";
+import NotificationProvider from "./context/Notification/NotificationProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <DemoInfoProvider>
         <LogoutProvider>
-            <LoaderProvider>
-              <ResponseProvider>
-                <ProfileProvider>
-                  <ConfirmDeleteProvider>
+          <LoaderProvider>
+            <ResponseProvider>
+              <ProfileProvider>
+                <ConfirmDeleteProvider>
+                  <NotificationProvider>
                     <App />
-                  </ConfirmDeleteProvider>
-                </ProfileProvider>
-              </ResponseProvider>
-            </LoaderProvider>
+                  </NotificationProvider>
+                </ConfirmDeleteProvider>
+              </ProfileProvider>
+            </ResponseProvider>
+          </LoaderProvider>
         </LogoutProvider>
       </DemoInfoProvider>
     </BrowserRouter>

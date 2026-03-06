@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useProfile from "../../../../context/Profile/useProfile";
+import useNotification from "../../../../context/Notification/useNotification";
 import { FaBars } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ProfileCell from "../../ProfileCell/ProfileCell";
-
+import { setupPushNotifications } from "../../../../utils/push-notifications"
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard" },
   { label: "My Profile", path: "/admin/my-profile" },
@@ -18,12 +19,44 @@ const menuItems = [
 
 const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   const { fetchProfile, profile } = useProfile();
+  const { unreadCount } = useNotification();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Setup push notifications
+ useEffect(() => {
+   if (profile) {
+      setupPushNotifications(profile);
+    }
+  }, [profile]);
+
+  // Create a reusable Bell component to avoid code duplication
+  const NotificationBell = () => (
+    <button
+      className="btn p-0 fs-5 position-relative"
+      style={{ color: "var(--maincolor)" }}
+      onClick={() => navigate("/admin/notifications")}
+    >
+      <i className="bi bi-bell fw-bold"></i>
+      {unreadCount > 0 && (
+        <span
+          className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white"
+          style={{
+            fontSize: "0.6rem",
+            padding: "0.2rem 0.4rem",
+            marginTop: "8px",
+          }}
+        >
+          {unreadCount > 9 ? "9+" : unreadCount}
+        </span>
+      )}
+    </button>
+  );
   const roleMap = {
     1: "Admin",
     2: "Employee",
@@ -33,15 +66,13 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   };
 
   const roleName = roleMap[Number(profile?.role_id)] || "";
-  //  Format Name 
+  //  Format Name
   const fullName = profile?.full_name?.trim() || "";
   const nameParts = fullName.split(" ").filter(Boolean);
   const formattedName =
     nameParts.length > 1
       ? `${nameParts[0]} ${nameParts[1][0]}`
       : nameParts[0] || "";
-
-
 
   const activePage =
     menuItems.find((item) => item.path === location.pathname)?.label || "";
@@ -57,9 +88,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
           <h5 className="mb-0 fw-semibold text-dark">{activePage}</h5>
 
           <div className="d-flex align-items-center gap-3">
-            <button className="btn btn-link p-0 fs-5">
-              <i className="bi bi-bell"></i>
-            </button>
+            <NotificationBell />
 
             {/* User Info */}
             <div className="text-end">
@@ -122,12 +151,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
           </div>
 
           <div className="d-flex align-items-center gap-3">
-            <button
-              className="btn p-0 fs-5"
-              style={{ color: "var(--maincolor)" }}
-            >
-              <i className="bi bi-bell fw-bold"></i>
-            </button>
+            <NotificationBell />
 
             {/* User Info */}
 
