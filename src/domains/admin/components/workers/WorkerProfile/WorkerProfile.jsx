@@ -103,10 +103,10 @@ const WorkerProfile = () => {
   const statusName = statusObj?.name ?? "—";
 
   const photoUrl =
-    personal?.photo_3x4?.url || "https://via.placeholder.com/150?text=No+Photo";
+    personal?.photo_3x4?.url ||
+    "https://placehold.co/600x400?text=No+Photo";
 
   /* Personal */
-
   const personalInfo = {
     sex: fallback(personal.sex),
     dob: niceDate(personal.date_of_birth),
@@ -125,7 +125,6 @@ const WorkerProfile = () => {
   };
 
   /* Passport */
-
   const passportInfo = {
     number: fallback(passportObj.passport_number),
     issuingCountry: fallback(passportObj.issuing_country),
@@ -135,7 +134,6 @@ const WorkerProfile = () => {
   };
 
   /* COC */
-
   const cocInfo = {
     number: fallback(cocObj.coc_number),
     assessmentCenter: fallback(cocObj.assessment_center),
@@ -146,7 +144,6 @@ const WorkerProfile = () => {
   };
 
   /* Emergency */
-
   const emergencyInfo = {
     relation: fallback(emergencyObj.relation),
     name: fallback(emergencyObj.guarantor_name),
@@ -156,7 +153,6 @@ const WorkerProfile = () => {
   };
 
   /* Medical */
-
   const medicalInfo = {
     center: fallback(medicalObj.medical_center),
     reportNumber: fallback(medicalObj.medical_report_number),
@@ -178,7 +174,6 @@ const WorkerProfile = () => {
     : "—";
 
   /* Visa */
-
   const visaInfo = {
     number: fallback(visaObj.visa_number),
     issueDate: niceDate(visaObj.issue_date),
@@ -189,7 +184,6 @@ const WorkerProfile = () => {
   };
 
   /* LMIS */
-
   const lmisInfo = {
     labourId: fallback(lmisObj.labour_id),
     approvalDate: niceDate(lmisObj.approval_date),
@@ -197,7 +191,6 @@ const WorkerProfile = () => {
   };
 
   /* Travel */
-
   const preparedTravel = travelRecords.map((rec, idx) => ({
     key: `travel-${idx + 1}`,
     ticketNumber: rec.ticket_number ? String(rec.ticket_number) : "—",
@@ -214,7 +207,6 @@ const WorkerProfile = () => {
   }));
 
   /* Contracts */
-
   const preparedContracts = contractsList.map((con, idx) => {
     const status = fallback(con.status);
 
@@ -322,7 +314,7 @@ const WorkerProfile = () => {
                         <small className="text-muted">Standing Photo</small>
                         <br />
                         <DocumentLink
-                          url={personalInfo.standingPhoto} 
+                          url={personalInfo.standingPhoto}
                           label="View Standing Photo"
                           isImage
                         />
