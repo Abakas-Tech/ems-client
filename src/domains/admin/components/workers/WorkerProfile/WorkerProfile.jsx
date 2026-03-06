@@ -270,8 +270,8 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Personal Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => handleEdit(row) },
-                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                    { type: "edit", onClick: (row) => editPersonal(row) },
+                    { type: "delete", onClick: (row) => deletePersonal(row.id) },
                   ]}
                 />
               </div>
@@ -370,8 +370,8 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Passport Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => handleEdit(row) },
-                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                    { type: "edit", onClick: (row) => editPassport(row) },
+                    { type: "delete", onClick: (row) => deletePassport(row.id) },
                   ]}
                 />
               </div>
@@ -423,8 +423,8 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">COC Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => handleEdit(row) },
-                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                    { type: "edit", onClick: (row) => editCoc(row) },
+                    { type: "delete", onClick: (row) => deleteCoc(row.id) },
                   ]}
                 />
               </div>
@@ -481,8 +481,8 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Emergency Contact</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => handleEdit(row) },
-                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                    { type: "edit", onClick: (row) => editEmergency(row) },
+                    { type: "delete", onClick: (row) => deleteEmergency(row.id) },
                   ]}
                 />
               </div>
@@ -534,8 +534,8 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Medical Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => handleEdit(row) },
-                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                    { type: "edit", onClick: (row) => editMedical(row) },
+                    { type: "delete", onClick: (row) => deleteMedical(row.id) },
                   ]}
                 />
               </div>
@@ -604,8 +604,8 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Visa Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => handleEdit(row) },
-                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                    { type: "edit", onClick: (row) => editVisa(row) },
+                    { type: "delete", onClick: (row) => deleteVisa(row.id) },
                   ]}
                 />
               </div>
@@ -662,8 +662,8 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">LMIS Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => handleEdit(row) },
-                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                    { type: "edit", onClick: (row) => editLmis(row) },
+                    { type: "delete", onClick: (row) => deleteLmis(row.id) },
                   ]}
                 />
               </div>
@@ -706,8 +706,8 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Travel Records</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => handleEdit(row) },
-                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                    { type: "edit", onClick: (row) => editTravel(row) },
+                    { type: "delete", onClick: (row) => deleteTravel(row.id) },
                   ]}
                 />
               </div>
@@ -785,8 +785,8 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Contracts</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => handleEdit(row) },
-                    { type: "delete", onClick: (row) => handleDelete(row.id) },
+                    { type: "edit", onClick: (row) => editContract(row) },
+                    { type: "delete", onClick: (row) => deleteContract(row.id) },
                   ]}
                 />
               </div>
