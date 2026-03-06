@@ -75,19 +75,6 @@ const WorkerProfile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  if (error) {
-    return (
-      <div className="dashboard-wraper text-danger text-center py-5">
-        <p>{error}</p>
-        <button className="btn btn-primary mt-3" onClick={fetchWorker}>
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  if (!worker) return null;
-
   // data extraction and preparation
 
   const {
