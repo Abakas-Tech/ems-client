@@ -271,7 +271,10 @@ const WorkerProfile = () => {
                 <ActionButtons
                   actions={[
                     { type: "edit", onClick: (row) => editPersonal(row) },
-                    { type: "delete", onClick: (row) => deletePersonal(row.id) },
+                    {
+                      type: "delete",
+                      onClick: (row) => deletePersonal(row.id),
+                    },
                   ]}
                 />
               </div>
@@ -371,7 +374,10 @@ const WorkerProfile = () => {
                 <ActionButtons
                   actions={[
                     { type: "edit", onClick: (row) => editPassport(row) },
-                    { type: "delete", onClick: (row) => deletePassport(row.id) },
+                    {
+                      type: "delete",
+                      onClick: (row) => deletePassport(row.id),
+                    },
                   ]}
                 />
               </div>
@@ -482,7 +488,10 @@ const WorkerProfile = () => {
                 <ActionButtons
                   actions={[
                     { type: "edit", onClick: (row) => editEmergency(row) },
-                    { type: "delete", onClick: (row) => deleteEmergency(row.id) },
+                    {
+                      type: "delete",
+                      onClick: (row) => deleteEmergency(row.id),
+                    },
                   ]}
                 />
               </div>
@@ -713,8 +722,11 @@ const WorkerProfile = () => {
               </div>
               <div className="card-body">
                 {preparedTravel.length > 0 ? (
-                  preparedTravel.map((travel) => (
-                    <div key={travel.key}>
+                  preparedTravel.map((travel, index) => (
+                    <div
+                      key={travel.key}
+                      className={index > 0 ? "mt-5 pt-4 border-top" : ""}
+                    >
                       <p>
                         <small className="text-muted">Ticket Number</small>
                         <br />
@@ -770,9 +782,48 @@ const WorkerProfile = () => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-muted mb-0">
-                    No travel records available.
-                  </p>
+                  <div>
+                    <p>
+                      <small className="text-muted">Ticket Number</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">Destination</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">Departure</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">Arrival</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">Agent Name</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">Agent Phone</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">Agent Email</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">Ticket Document</small>
+                      <br />
+                      <span className="text-muted">Not available</span>
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
@@ -786,22 +837,20 @@ const WorkerProfile = () => {
                 <ActionButtons
                   actions={[
                     { type: "edit", onClick: (row) => editContract(row) },
-                    { type: "delete", onClick: (row) => deleteContract(row.id) },
+                    {
+                      type: "delete",
+                      onClick: (row) => deleteContract(row.id),
+                    },
                   ]}
                 />
               </div>
               <div className="card-body">
                 {preparedContracts.length > 0 ? (
-                  preparedContracts.map((contract) => (
-                    <div key={contract.key}>
-                      {contract.number !== "—" && (
-                        <p>
-                          <small className="text-muted">Contract Number</small>
-                          <br />
-                          {contract.number}
-                        </p>
-                      )}
-
+                  preparedContracts.map((contract, index) => (
+                    <div
+                      key={contract.key}
+                      className={index > 0 ? "mt-5 pt-4 border-top" : ""}
+                    >
                       <p>
                         <small className="text-muted">Start Date</small>
                         <br />
@@ -856,7 +905,43 @@ const WorkerProfile = () => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-muted mb-0">No contracts available.</p>
+                  <div>
+                    <p>
+                      <small className="text-muted">Start Date</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">End Date</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">Status</small>
+                      <br />
+                      <span className="badge bg-secondary">—</span>
+                    </p>
+                    <p>
+                      <small className="text-muted">Monthly Salary</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">Partner</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">Employer</small>
+                      <br />
+                      {"—"}
+                    </p>
+                    <p>
+                      <small className="text-muted">Contract Document</small>
+                      <br />
+                      <span className="text-muted">Not available</span>
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
