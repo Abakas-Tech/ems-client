@@ -730,10 +730,19 @@ const WorkerProfile = () => {
                           `(${travel.arrivalLocation})`}
                       </p>
                       <p>
-                        <small className="text-muted">Agent</small>
+                        <small className="text-muted">Agent Name</small>
                         <br />
-                        {travel.agentName} • {travel.agentPhone}
-                        {travel.agentEmail !== "—" && ` • ${travel.agentEmail}`}
+                        {travel.agentName}
+                      </p>
+                      <p>
+                        <small className="text-muted">Agent Phone</small>
+                        <br />
+                        {travel.agentPhone}
+                      </p>
+                      <p>
+                        <small className="text-muted">Agent Email</small>
+                        <br />
+                        {travel.agentEmail}
                       </p>
                       <p>
                         <small className="text-muted">Ticket Document</small>
