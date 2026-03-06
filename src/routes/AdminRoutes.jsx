@@ -7,8 +7,6 @@ import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/Work
 import WorkerRegistration from "../domains/admin/pages/workers/WorkerRegistration/WorkerRegistration.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import ArchivedWorkers from "../domains/admin/pages/workers/ArchivedWorkers/ArchivedWorkers.jsx";
-// import WorkerModules from "../domains/admin/pages/workers/ModulesList/ModulesList.jsx";
-// import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/WorkerDashboard.jsx";
 import ModulesList from "../domains/admin/pages/workers/ModulesList/ModulesList.jsx";
 import WorkerPesonalInfo from "../domains/admin/pages/workers/modules/WorkerPersonalInfo/WorkerPesonalInfo.jsx";
 

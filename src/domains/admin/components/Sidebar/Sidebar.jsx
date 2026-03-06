@@ -29,7 +29,13 @@ const menuItems = [
   },
   { label: "Files", path: "/admin/my-files", icon: "bi bi-files" },
   { label: "Meta Data", path: "/admin/meta-data", icon: "bi bi-database-add" },
+  {
+    label: "Public Profile",
+    path: "/admin/public-profile",
+    icon: "bi bi-layout-text-sidebar-reverse",
+  },
   { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
+
   { label: "Log Out", path: "#", icon: "bi bi-power", isLogout: true },
 ];
 
