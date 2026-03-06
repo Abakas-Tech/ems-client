@@ -6,6 +6,7 @@ import { getWorkerProfile } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import ActionButtons from "../../../../../shared/components/ActionButtons/ActionButtons";
 import useResponse from "../../../../../context/Response/useResponse";
+import Badge from "../../../../../shared/components/Badge/Badge";
 
 // Helpers
 const fallback = (value) => value ?? "—";
@@ -238,9 +239,8 @@ const WorkerProfile = () => {
                 <p className="mb-1 text-muted">
                   <strong>Passport No:</strong> {passportNumber}
                 </p>
-                <span className={badgeClass}>{statusName}</span>
+                <Badge content={statusName} color="cyan" />
               </div>
-              
             </div>
           </div>
         </div>
