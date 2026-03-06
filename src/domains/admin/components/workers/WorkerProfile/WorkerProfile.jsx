@@ -194,7 +194,7 @@ const WorkerProfile = () => {
   // Travel Records
   const preparedTravel = travelRecords.map((rec, idx) => ({
     key: `travel-${idx + 1}`,
-    titleSuffix: rec.ticket_number ? ` – #${rec.ticket_number}` : "",
+    ticketNumber: rec.ticket_number ? String(rec.ticket_number) : "—",
     departureDate: niceDate(rec.departure_date),
     departureLocation: fallback(rec.departure_location),
     arrivalDate: niceDate(rec.arrival_date),
@@ -616,10 +616,14 @@ const WorkerProfile = () => {
               <div key={travel.key} className="col-12 col-md-6">
                 <div className="card h-100 shadow-sm border-0">
                   <div className="card-header fw-bold">
-                    Travel Record {travel.key.split("-")[1]}
-                    {travel.titleSuffix}
+                    Travel Record 
                   </div>
                   <div className="card-body">
+                     <p>
+                      <small className="text-muted">Ticket Number</small>
+                      <br />
+                      {travel.ticketNumber}
+                    </p>
                     <p>
                       <small className="text-muted">Departure</small>
                       <br />
@@ -685,9 +689,7 @@ const WorkerProfile = () => {
             preparedContracts.map((contract) => (
               <div key={contract.key} className="col-12 col-md-6">
                 <div className="card h-100 shadow-sm border-0">
-                  <div className="card-header fw-bold">
-                    Contract {contract.key.split("-")[1]}
-                  </div>
+                  <div className="card-header fw-bold">Contract</div>
                   <div className="card-body">
                     {contract.number !== "—" && (
                       <p>
@@ -719,9 +721,13 @@ const WorkerProfile = () => {
                       {contract.monthlySalary}
                     </p>
                     <p>
-                      <small className="text-muted">Partners</small>
+                      <small className="text-muted">Partner</small>
                       <br />
-                      Partner: {contract.partnerId} • Employer:{" "}
+                      {contract.partnerId}
+                    </p>
+                    <p>
+                      <small className="text-muted">Employer</small>
+                      <br />
                       {contract.employerId}
                     </p>
                     {contract.fileUrl && (
