@@ -143,19 +143,28 @@ const WorkerProfile = () => {
       return;
     }
 
-    openModal(async () => {
-      showLoader();
-      try {
-        // Use the verified statusId
-        const res = await deleteWorkerStatus(id, statusId);
-        addMessage(res?.success, res?.message || "Status revoked successfully");
-        fetchWorkerStatuses();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          // Use the verified statusId
+          const res = await deleteWorkerStatus(id, statusId);
+          addMessage(
+            res?.success,
+            res?.message || "Status revoked successfully",
+          );
+          fetchWorkerStatuses();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to revoke this status?",
+        confirmText: "Revoke",
+      },
+    );
   };
 
   // Modal form fields for adding a status to a worker
