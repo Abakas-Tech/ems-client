@@ -25,16 +25,20 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
 
   useEffect(() => {
     fetchProfile();
-    getNotifications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Setup push notifications
+  useEffect(() => {
+    getNotifications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+  
+  // Setup push notifications only one times when profile is available
   useEffect(() => {
     if (profile) {
       setupPushNotifications(profile);
     }
-  }, [profile]);
+  }, []);
 
   // Create a reusable Bell component to avoid code duplication
   const NotificationBell = () => (
@@ -44,7 +48,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
       style={{
         border: "none",
         background: "transparent",
-        transition: "transform 0.2s ease"
+        transition: "transform 0.2s ease",
       }}
       onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
       onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
