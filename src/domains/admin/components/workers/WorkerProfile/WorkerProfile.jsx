@@ -133,11 +133,21 @@ const WorkerProfile = () => {
   };
 
   // Handle revoking status
-  const handleDeleteStatus = (status) => {
+  const handleDeleteStatus = (statusItem) => {
+    // Check if statusItem.id exists, or if it's actually statusItem.status_id
+    const statusId = statusItem.id || statusItem.status_id;
+
+    if (!statusId) {
+      console.error("Status object missing ID:", statusItem);
+      addMessage(false, "Could not find the ID for this status.");
+      return;
+    }
+
     openModal(async () => {
       showLoader();
       try {
-        const res = await deleteWorkerStatus(id, status.id);
+        // Use the verified statusId
+        const res = await deleteWorkerStatus(id, statusId);
         addMessage(res?.success, res?.message || "Status revoked successfully");
         fetchWorkerStatuses();
       } catch (err) {
@@ -386,7 +396,7 @@ const WorkerProfile = () => {
                       <Badge
                         content={status.name}
                         color="cyan"
-                        onDelete={() => handleDeleteStatus(id)}
+                        onDelete={() => handleDeleteStatus(status)}
                         solid
                       />
                     </span>
