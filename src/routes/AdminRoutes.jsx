@@ -31,6 +31,8 @@ import LanguagePage from "../domains/admin/pages/meta/LanguagePage/LanguagePage.
 import WorkerStatusPage from "../domains/admin/pages/meta/WorkerStatusPage/WorkerStatusPage.jsx";
 import CityPage from "../domains/admin/pages/meta/CityPage/CityPage.jsx";
 import WorkerMetaPage from "../domains/admin/pages/WorkerMetaPage/WorkerMetaPage.jsx";
+import SocialMediaPage from "../domains/admin/pages/content/SocialMedia/SocialMedia.jsx";
+
 
 const AdminRoutes = () => (
   <Routes>
@@ -75,6 +77,7 @@ const AdminRoutes = () => (
       <Route path="workers/modules/:id/coc" element={<Coc />} />
       <Route path="workers/modules/:id/medical" element={<Medical />} />
       <Route path="/meta-data" element={<MetaDataDashboard />} />
+      <Route path="/public-profile" element={<SocialMediaPage />} />
       <Route path="*" element={<NotFound />} />
     </Route>
   </Routes>

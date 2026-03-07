@@ -1,0 +1,339 @@
+TASK: Gallery & Social Media Management Features
+
+Assigned to: Hanan Abdushekur
+Domain: Admin → Content Management
+Priority: High
+Deadline: March 9th, 2026
+
+==================================================================
+IMPORTANT NOTE
+==================================================================
+
+This task includes TWO content management modules:
+
+1. Gallery
+2. Social Media
+
+Both modules MUST:
+- Follow the SAME coding standards
+- Follow the provided backend API documentation
+- Follow the project folder structure
+
+These modules are part of the CONTENT MANAGEMENT section of the admin panel.
+
+
+==================================================================
+STEP 0: GIT BRANCH SETUP (MANDATORY)
+==================================================================
+
+You MUST be on the `dev` branch before creating your feature branch.
+
+--------------------------------------------------
+CHECK CURRENT BRANCH
+--------------------------------------------------
+
+git branch
+
+- If you see: * dev → continue
+- Otherwise switch to dev
+
+--------------------------------------------------
+SWITCH TO DEV AND UPDATE
+--------------------------------------------------
+
+git checkout dev
+git pull origin dev
+
+--------------------------------------------------
+CREATE FEATURE BRANCH (FROM DEV ONLY)
+--------------------------------------------------
+
+Branch name:
+
+feature/gallery-social-media-management
+
+Create and switch:
+
+git checkout -b feature/gallery-social-media-management
+
+--------------------------------------------------
+RULES
+--------------------------------------------------
+
+- DO NOT create branches from main
+- DO NOT push directly to dev or main
+- ALWAYS branch from dev
+
+==================================================================
+STEP 1: CREATE API FUNCTIONS
+==================================================================
+
+Location:
+
+src/domains/admin/api/content.api.js
+
+--------------------------------------------------
+TASK DESCRIPTION
+--------------------------------------------------
+
+Using the BACKEND API DOCUMENTATION as the SINGLE SOURCE OF TRUTH:
+
+Implement all API functions required for:
+
+1. Gallery Management
+2. Social Media Management
+
+--------------------------------------------------
+GALLERY API FUNCTIONS
+--------------------------------------------------
+
+Create functions for:
+
+- createGalleryItem
+- getAllGalleryItems
+- getGalleryItem
+- updateGalleryItem
+- deleteGalleryItem
+- deleteAllGalleryItems
+
+These functions must match the endpoints defined in the Gallery API documentation.
+
+--------------------------------------------------
+SOCIAL MEDIA API FUNCTIONS
+--------------------------------------------------
+
+Create functions for:
+
+- saveSocialMedia (create or update)
+- getSocialMedia
+- deleteSocialMedia
+
+These functions must match the Social Media API documentation.
+
+--------------------------------------------------
+IMPLEMENTATION RULES (MANDATORY)
+--------------------------------------------------
+
+All API functions MUST:
+
+- Use async / await
+- Use axiosInstance
+- Use try / catch
+- Throw meaningful error messages
+- Return the relevant data from the response
+- Inspect the API response and return the correct level of data
+- Do NOT assume the response structure
+- Use camelCase naming
+- Follow existing API patterns in the project
+
+Existing API files should be used as STYLE reference only.
+
+==================================================================
+STEP 2: CREATE COMPONENTS
+==================================================================
+
+Base path:
+
+src/domains/admin/components/content/
+
+--------------------------------------------------
+GALLERY COMPONENT
+--------------------------------------------------
+
+Folder: Gallery  
+File: Gallery.jsx
+
+Gallery Management must include:
+
+1. Display all gallery items
+2. Upload new gallery item
+3. Edit gallery item
+4. Delete single gallery item
+5. Delete all gallery items
+
+Gallery items include:
+
+- title
+- description
+- image upload
+
+Requirements:
+
+- Use functional component
+- useState for state
+- useLoader hook
+- useResponse hook
+- Use FormData for upload
+- Follow backend field names exactly
+
+Important rule:
+
+Gallery is limited to a maximum of 10 images.
+
+
+--------------------------------------------------
+SOCIAL MEDIA COMPONENT
+--------------------------------------------------
+
+Folder: SocialMedia  
+File: SocialMedia.jsx
+
+Social Media Management must include:
+
+1. Fetch existing social media data
+2. Display the data in editable form
+3. Save (create or update)
+4. Delete all data
+
+Fields include:
+
+- facebook_username
+- instagram_username
+- telegram_username
+- tiktok_username
+- linkedin_username
+- youtube_channel
+- twitter_username
+- whatsapp_number
+- contact_number
+
+Important behavior:
+
+The backend stores only ONE record.
+
+The "Save" button must:
+- Create if no data exists
+- Update if data already exists
+
+==================================================================
+FRONTEND VALIDATION (MANDATORY)
+==================================================================
+
+All frontend validation MUST mirror the backend validation rules.
+
+The backend API documentation is the SINGLE SOURCE OF TRUTH for:
+
+- Required fields
+- Data types
+- Allowed characters
+- String length constraints
+- Phone number formats
+
+--------------------------------------------------
+GENERAL RULES
+--------------------------------------------------
+
+1. Every required field must include the `required` attribute.
+
+2. Validation MUST happen BEFORE sending data to the backend.
+
+3. Validation must be implemented in a dedicated validation function.
+
+4. Validation errors must:
+   - be user friendly
+   - clearly explain the problem
+   - prevent submission
+
+--------------------------------------------------
+PHONE NUMBER VALIDATION
+--------------------------------------------------
+
+whatsapp_number
+- must start with "+"
+- must contain only numbers after "+"
+- must follow phone number rules
+
+contact_number
+- maximum two numbers allowed
+- if two numbers are used they must be separated using "/"
+
+Example valid input:
+
++251900000000
+
+or
+
++251900000000/+251911111111
+
+--------------------------------------------------
+VALIDATION STRUCTURE
+--------------------------------------------------
+
+Create validation functions:
+
+validateGallery()
+validateSocialMedia()
+
+Each function must:
+
+- accept the form data object
+- return an error message string if invalid
+- return null if valid
+
+==================================================================
+STEP 3: CREATE PAGES
+==================================================================
+
+Base path:
+
+src/domains/admin/pages/content/
+
+--------------------------------------------------
+GALLERY PAGE
+--------------------------------------------------
+
+Folder: Gallery  
+File: Gallery.jsx
+
+Import and render the Gallery component.
+
+--------------------------------------------------
+SOCIAL MEDIA PAGE
+--------------------------------------------------
+
+Folder: SocialMedia  
+File: SocialMedia.jsx
+
+Import and render the SocialMedia component.
+
+==================================================================
+STEP 4: ADD ROUTES
+==================================================================
+
+File:
+
+src/routes/AdminRoutes.jsx
+
+Add the following routes:
+
+/content/gallery
+/content/social-media
+
+Ensure proper imports and routing configuration.
+t
+
+==================================================================
+STEP 5: FINAL CHECKLIST
+==================================================================
+
+- [ ] Gallery module complete
+- [ ] Social Media module complete
+- [ ] API functions implemented correctly
+- [ ] API logic only in /api
+- [ ] Functional components only
+- [ ] Form validation implemented
+- [ ] Bootstrap layout used correctly
+- [ ] Responsive on all screen sizes
+- [ ] No console.log or commented code
+- [ ] Clean and readable code
+
+==================================================================
+FINAL NOTE
+==================================================================
+
+The backend API documentation must be followed strictly.
+
+If the API documentation and frontend implementation do not match,
+the task will be returned for correction.
+
+If unsure at any point — STOP and ask before implementing.
