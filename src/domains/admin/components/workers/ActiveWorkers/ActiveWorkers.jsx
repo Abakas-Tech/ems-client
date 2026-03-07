@@ -157,15 +157,20 @@ const ActiveWorkers = () => {
     );
   };
 
+  // Go back to previous page
+  const goBack = () => {
+    navigate(-1);
+  };
+
   return (
-    <div className="dashboard-wraper position-relative">
+    <div className="dashboard-wraper">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
         <div className="mb-4">
-          <BackButton onClick={() => navigate(-1)} />
+          <BackButton onClick={goBack} />
           <h2 className="fw-bold text-dark mb-2">Active Workers</h2>
           <p className="text-muted mb-0">
-            View and manage active workers. <strong>Double-click a row</strong>{" "}
-            to start bulk selection.
+            View and manage active workers, access detailed profiles, archive
+            records, or remove workers when needed.
           </p>
         </div>
       </div>
@@ -173,21 +178,56 @@ const ActiveWorkers = () => {
       {/* Floating Selection Bar */}
       {isSelectionMode && (
         <div
-          className="alert alert-primary d-flex justify-content-between align-items-center shadow-lg border-0 rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top"
-          style={{ zIndex: 1000, top: "10px" }}
+          className="d-flex justify-content-between align-items-center shadow-lg border-0 rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top px-4 py-3"
+          style={{
+            zIndex: 1000,
+            top: "20px",
+            backgroundColor: "rgba(255, 255, 255, 0.95)", // Glass effect
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(0, 0, 0, 0.05)",
+            maxWidth: "900px",
+            margin: "0 auto",
+            width: "95%", // Ensures padding on mobile
+          }}
         >
-          <div>
-            <i className="bi bi-check2-all me-2 fs-5"></i>
-            <span className="fw-bold">{selectedWorkerIds.length}</span> Workers
-            Selected
+          {/* Left Side: Status Info */}
+          <div className="d-flex align-items-center">
+            <div
+              className="rounded-3 d-flex align-items-center justify-content-center me-3"
+              style={{
+                width: "45px",
+                height: "45px",
+                backgroundColor: "rgba(var(--maincolor-rgb), 0.1)", // Light version of your main color
+                color: "var(--maincolor)",
+              }}
+            >
+              <i className="bi bi-person-check-fill fs-4"></i>
+            </div>
+            <div>
+              <h6
+                className="mb-0 fw-bold text-dark"
+                style={{ letterSpacing: "-0.3px" }}
+              >
+                Bulk Action Mode
+              </h6>
+              <p className="mb-0 text-muted small fw-medium">
+                <span style={{ color: "var(--maincolor)" }}>
+                  {selectedWorkerIds.length}
+                </span>{" "}
+                workers ready for notification
+              </p>
+            </div>
           </div>
-          <div className="d-flex gap-2">
+
+          {/* Right Side: Actions */}
+          <div className="gap-2 d-flex">
             <button
               className="btn btn-main btn-sm text-white px-3 fw-bold"
               disabled={selectedWorkerIds.length === 0}
               onClick={handleBulkNotify}
             >
-              <i className="bi bi-megaphone me-1"></i> Send Bulk Alert
+              {" "}
+              Send Bulk Alert
             </button>
             <button
               className="btn btn-light btn-sm border"
