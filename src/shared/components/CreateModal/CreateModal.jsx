@@ -53,6 +53,19 @@ const CreateModal = ({
       setTimeout(() => setShake("idle"), 500);
     }
   };
+  useEffect(() => {
+    if (show) {
+      const vals = {};
+      fields.forEach((field) => {
+        // Logic: Use initialValue if provided, else field.value, else empty string
+        vals[field.name] =
+          field.initialValue !== undefined
+            ? field.initialValue
+            : field.value || "";
+      });
+      setInputValues(vals);
+    }
+  }, [show, fields]);
 
   useEffect(() => {
     if (show) {
@@ -118,10 +131,14 @@ const CreateModal = ({
               ) : field.type === "select" ? (
                 <select
                   className="form-control"
-                  value={inputValues[field.name]}
+                  value={inputValues[field.name] || ""}
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   required
-                  style={{ backgroundColor: "#EDF1FB" }}
+                  disabled={!!field.disabled}
+                  style={{
+                    backgroundColor: field.disabled ? "#f0f0f0" : "#EDF1FB",
+                    cursor: field.disabled ? "not-allowed" : "default",
+                  }}
                 >
                   <option value="">Select {field.label}</option>
                   {field.options?.map((option) => (
@@ -137,6 +154,7 @@ const CreateModal = ({
                   value={inputValues[field.name]}
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   required
+                  disabled={!!field.disabled}
                   style={{ backgroundColor: "#EDF1FB" }}
                 />
               ) : (

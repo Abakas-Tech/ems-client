@@ -23,11 +23,13 @@ const ActiveWorkers = () => {
   const [workers, setWorkers] = useState([]);
   const [filters, setFilters] = useState({});
 
-  // pagination (inputs)
+  // --- Selection Mode States ---
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
+
+  // pagination
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
-
-  // pagination (response)
   const [totalItems, setTotalItems] = useState(0);
 
   // Fetch Workers
@@ -47,13 +49,47 @@ const ActiveWorkers = () => {
     } finally {
       hideLoader();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);
 
-  // Initial fetch + refetch on change
   useEffect(() => {
     fetchWorkers();
   }, [fetchWorkers]);
+
+  // --- Selection Handlers ---
+  const handleRowDoubleClick = (row) => {
+    if (!isSelectionMode) {
+      setIsSelectionMode(true);
+      setSelectedWorkerIds([row.id]);
+    }
+  };
+
+  const handleSelectRow = (id) => {
+    setSelectedWorkerIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  };
+
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedWorkerIds(workers.map((w) => w.id));
+    } else {
+      setSelectedWorkerIds([]);
+    }
+  };
+
+  const handleBulkNotify = () => {
+    navigate("/admin/notifications", {
+      state: {
+        bulkIds: selectedWorkerIds,
+        bulkType: "worker", // Hardcoded for this page
+      },
+    });
+  };
+
+  const handleExitSelection = () => {
+    setIsSelectionMode(false);
+    setSelectedWorkerIds([]);
+  };
 
   // Filter handlers
   const handleFilterChange = (f) => {
@@ -61,13 +97,12 @@ const ActiveWorkers = () => {
     setPage(1);
   };
 
-  // Clear filters
   const handleClear = () => {
     setFilters({});
     setPage(1);
   };
 
-  // View worker
+  // View, Archive, Delete handlers (existing logic)
   const handleView = async (id) => {
     showLoader();
     try {
@@ -80,7 +115,6 @@ const ActiveWorkers = () => {
     }
   };
 
-  // Archive worker
   const handleArchive = (id) => {
     openModal(
       async () => {
@@ -102,7 +136,6 @@ const ActiveWorkers = () => {
     );
   };
 
-  // Permanent delete
   const handleDelete = (id) => {
     openModal(
       async () => {
@@ -124,31 +157,56 @@ const ActiveWorkers = () => {
     );
   };
 
-  // Go back to previous page
-  const goBack = () => {
-    navigate(-1);
-  };
-
-  // Action handler for adding a module to a worker
-  const handleAddModule = (id) => {
-    navigate(`/admin/workers/modules/${id}/add`);
-  };
-
   return (
-    <div className="dashboard-wraper">
+    <div className="dashboard-wraper position-relative">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
         <div className="mb-4">
-          <BackButton onClick={goBack} />
+          <BackButton onClick={() => navigate(-1)} />
           <h2 className="fw-bold text-dark mb-2">Active Workers</h2>
           <p className="text-muted mb-0">
-            View and manage active workers, access detailed profiles, archive
-            records, or remove workers when needed.
+            View and manage active workers. <strong>Double-click a row</strong>{" "}
+            to start bulk selection.
           </p>
         </div>
       </div>
 
+      {/* Floating Selection Bar */}
+      {isSelectionMode && (
+        <div
+          className="alert alert-primary d-flex justify-content-between align-items-center shadow-lg border-0 rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top"
+          style={{ zIndex: 1000, top: "10px" }}
+        >
+          <div>
+            <i className="bi bi-check2-all me-2 fs-5"></i>
+            <span className="fw-bold">{selectedWorkerIds.length}</span> Workers
+            Selected
+          </div>
+          <div className="d-flex gap-2">
+            <button
+              className="btn btn-main btn-sm text-white px-3 fw-bold"
+              disabled={selectedWorkerIds.length === 0}
+              onClick={handleBulkNotify}
+            >
+              <i className="bi bi-megaphone me-1"></i> Send Bulk Alert
+            </button>
+            <button
+              className="btn btn-light btn-sm border"
+              onClick={handleExitSelection}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       <ListingComponent
         showAvater={true}
+        // Selection Props
+        isSelectionMode={isSelectionMode}
+        selectedIds={selectedWorkerIds}
+        onSelectRow={handleSelectRow}
+        onSelectAll={handleSelectAll}
+        onRowDoubleClick={handleRowDoubleClick}
         filtersComponent={
           <ActiveWorkersFilters
             filters={filters}
@@ -163,22 +221,12 @@ const ActiveWorkers = () => {
           { header: "Status", accessor: "status" },
         ]}
         actions={[
-          {
-            type: "view",
-            onClick: (row) => handleView(row.id),
-          },
-          {
-            type: "archive",
-            onClick: (row) => handleArchive(row.id),
-          },
-          {
-            type: "delete",
-            onClick: (row) => handleDelete(row.id),
-          },
-
+          { type: "view", onClick: (row) => handleView(row.id) },
+          { type: "archive", onClick: (row) => handleArchive(row.id) },
+          { type: "delete", onClick: (row) => handleDelete(row.id) },
           {
             type: "addModule",
-            onClick: (row) => handleAddModule(row.id),
+            onClick: (row) => navigate(`/admin/workers/modules/${row.id}/add`),
           },
         ]}
         emptyState={{

@@ -4,7 +4,7 @@ import useNotification from "../../../../context/Notification/useNotification";
 import { FaBars } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProfileCell from "../../ProfileCell/ProfileCell";
-import { setupPushNotifications } from "../../../../utils/push-notifications"
+import { setupPushNotifications } from "../../../../utils/push-notifications";
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard" },
   { label: "My Profile", path: "/admin/my-profile" },
@@ -19,18 +19,19 @@ const menuItems = [
 
 const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   const { fetchProfile, profile } = useProfile();
-  const { unreadCount } = useNotification();
+  const { unreadCount, getNotifications } = useNotification();
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchProfile();
+    getNotifications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Setup push notifications
- useEffect(() => {
-   if (profile) {
+  useEffect(() => {
+    if (profile) {
       setupPushNotifications(profile);
     }
   }, [profile]);
@@ -38,18 +39,39 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   // Create a reusable Bell component to avoid code duplication
   const NotificationBell = () => (
     <button
-      className="btn p-0 fs-5 position-relative"
-      style={{ color: "var(--maincolor)" }}
+      className="btn p-0 position-relative d-flex align-items-center justify-content-center"
       onClick={() => navigate("/admin/notifications")}
+      style={{
+        border: "none",
+        background: "transparent",
+        transition: "transform 0.2s ease"
+      }}
+      onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+      onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
     >
-      <i className="bi bi-bell fw-bold"></i>
+      {/* Conditional Icon: Fill when count exists, Outline when empty */}
+      <i
+        className={unreadCount > 0 ? "bi bi-bell-fill" : "bi bi-bell"}
+        style={{
+          fontSize: "1.6rem",
+          color: "var(--maincolor)", // Both versions use the main color
+          display: "block",
+          fontWeight: unreadCount === 0 ? "bold" : "normal",
+        }}
+      ></i>
+
       {unreadCount > 0 && (
         <span
-          className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white"
+          className="position-absolute badge rounded-pill bg-danger"
           style={{
-            fontSize: "0.6rem",
+            top: "7px",
+            right: "-8px",
+            fontSize: "0.65rem",
             padding: "0.2rem 0.4rem",
-            marginTop: "8px",
+            // border: "2px solid white",
+            minWidth: "18px",
+            fontWeight: "bold",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
           }}
         >
           {unreadCount > 9 ? "9+" : unreadCount}

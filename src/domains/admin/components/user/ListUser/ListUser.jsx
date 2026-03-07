@@ -20,6 +20,8 @@ const ListUser = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
   const navigate = useNavigate();
 
   const [users, setUsers] = useState([]);
@@ -69,6 +71,37 @@ const ListUser = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
+  // Triggered by first double-click
+  const handleRowDoubleClick = (row) => {
+    if (!isSelectionMode) {
+      setIsSelectionMode(true);
+      setSelectedUserIds([row.id]); // Select the first one automatically
+    }
+  };
+  const handleSelectRow = (id) => {
+    setSelectedUserIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  };
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedUserIds(users.map((u) => u.id));
+    } else {
+      setSelectedUserIds([]);
+    }
+  };
+  const handleBulkNotify = () => {
+    navigate("/admin/notifications", {
+      state: {
+        bulkIds: selectedUserIds,
+        bulkType: filters.role_id || "employee",
+      },
+    });
+  };
+  const handleExitSelection = () => {
+    setIsSelectionMode(false);
+    setSelectedUserIds([]);
+  };
   const handlePageChange = (newPage) => {
     fetchUsers(newPage);
   };
@@ -204,12 +237,44 @@ const ListUser = () => {
           + Create User
         </button>
       </div>
-
+      {isSelectionMode && (
+        <div
+          className="alert alert-primary d-flex justify-content-between align-items-center shadow-lg border-0 rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top"
+          style={{ zIndex: 1000, top: "10px" }}
+        >
+          <div>
+            <i className="bi bi-check2-all me-2 fs-5"></i>
+            <span className="fw-bold">{selectedUserIds.length}</span> Users
+            Selected
+          </div>
+          <div className="gap-2 d-flex">
+            <button
+              className="btn btn-main btn-sm text-white px-3 fw-bold"
+              disabled={selectedUserIds.length === 0}
+              onClick={handleBulkNotify}
+            >
+              <i className="bi bi-megaphone me-1"></i> Send Bulk Alert
+            </button>
+            <button
+              className="btn btn-light btn-sm border"
+              onClick={handleExitSelection}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
       <ListingComponent
         data={users}
         columns={columns}
         actions={actions}
         emptyState={emptyState}
+        // Selection Props
+        isSelectionMode={isSelectionMode}
+        selectedIds={selectedUserIds}
+        onSelectRow={handleSelectRow}
+        onSelectAll={handleSelectAll}
+        onRowDoubleClick={handleRowDoubleClick}
         showAvater={true}
         filtersComponent={
           <FilterUser

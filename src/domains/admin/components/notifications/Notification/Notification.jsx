@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
-  fetchNotifications,
   markNotificationRead,
   sendManualNotification,
 } from "../../../api/notification.api";
@@ -14,9 +14,16 @@ import CreateModal from "../../../../../shared/components/CreateModal/CreateModa
 import useNotification from "../../../../../context/Notification/useNotification";
 
 const NotificationPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { getNotifications } = useNotification();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
+
+  // --- Bulk Selection Data from Navigation State ---
+  const incomingBulkIds = location.state?.bulkIds || null;
+  const incomingType = location.state?.bulkType || null;
+
   const [notifications, setNotifications] = useState({ data: [], total: 0 });
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showCompose, setShowCompose] = useState(false);
@@ -24,14 +31,20 @@ const NotificationPage = () => {
   // Search States
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+
   useEffect(() => {
     loadNotifications();
-  }, []);
+
+    // Trigger modal automatically if navigating from Worker/User list with IDs
+    if (incomingBulkIds && incomingBulkIds.length > 0) {
+      setShowCompose(true);
+    }
+  }, [incomingBulkIds]);
 
   const loadNotifications = async () => {
     showLoader();
     try {
-      const response = await fetchNotifications();
+      const response = await getNotifications();
       setNotifications({
         data: response?.data.data || [],
         total: response?.pagination?.total || 0,
@@ -80,103 +93,143 @@ const NotificationPage = () => {
       console.error("Search failed", err);
     }
   };
-
   const handleSend = async (formValues) => {
     showLoader();
     try {
-      // Convert recipient_type value to role name from ROLE_MAP
-      if (formValues.recipient_type != "worker") {
-        if (formValues.recipient_type === "2") {
-          formValues.recipient_type = "employee";
-        } else if (formValues.recipient_type === "3") {
-          formValues.recipient_type = "partner";
-        } else if (formValues.recipient_type === "5") {
-          formValues.recipient_type = "employer";
-        }
-      }
-      console.log(formValues);
-      await sendManualNotification(formValues);
-      addMessage(true, "Notification sent successfully!");
+      // 1. Create a deep copy of the form values
+      const finalData = {
+        ...formValues,
+        recipient_id: incomingBulkIds
+          ? incomingBulkIds
+          : formValues.recipient_id,
+      };
+
+      // 2. Define the strict mapping required by your Backend Joi validation
+      const ROLE_MAP = {
+        2: "employee",
+        3: "partner",
+        5: "employer",
+        worker: "worker",
+        employee: "employee", // Handle cases where it might already be a string
+        partner: "partner",
+        employer: "employer",
+      };
+
+      // 3. Convert the recipient_type to the required string format
+      // We use .toString() to handle cases where the value might be a number
+      const currentType = finalData.recipient_type?.toString();
+      finalData.recipient_type = ROLE_MAP[currentType] || currentType;
+
+      // 4. Send to API
+      await sendManualNotification(finalData);
+
+      addMessage(
+        true,
+        `Sent successfully to ${Array.isArray(finalData.recipient_id) ? finalData.recipient_id.length : 1} recipient(s)!`,
+      );
+
       setShowCompose(false);
       setSearchTerm("");
+      navigate(location.pathname, { replace: true, state: {} });
       loadNotifications();
     } catch (err) {
+      // This is where your "recipient type must be one of..." error was being caught
       addMessage(false, err.message);
     } finally {
       hideLoader();
     }
   };
 
-  // --- Search UI Logic ---
+  // --- Custom Field Rendering (The Lock UI) ---
   const renderSearchField = useCallback(
     (field, inputValues, handleChange) => (
       <div className="position-relative">
-        <input
-          type="text"
-          className="form-control"
-          placeholder={
-            inputValues.recipient_type
-              ? "Type to search..."
-              : "Choose a role first"
-          }
-          disabled={!inputValues.recipient_type}
-          value={searchTerm}
-          required={!inputValues.recipient_id}
-          style={{ backgroundColor: "#EDF1FB", borderRadius: "8px" }}
-          autoComplete="off"
-          onChange={(e) =>
-            handleUserSearch(e.target.value, inputValues.recipient_type)
-          }
-        />
-        {searchResults.length > 0 && (
+        {incomingBulkIds ? (
+          /* Bulk Mode UI: Locked Recipients */
           <div
-            className="list-group position-absolute w-100 shadow-lg mt-1 z-3"
-            style={{ maxHeight: "200px", overflowY: "auto" }}
+            className="form-control d-flex align-items-center justify-content-between"
+            style={{
+              backgroundColor: "#f8f9fa",
+              border: "1px dashed #dee2e6",
+              borderRadius: "8px",
+              height: "45px",
+            }}
           >
-            {searchResults.map((user) => (
-              <button
-                key={user.id}
-                type="button"
-                // Added align-items-center and kept padding tight with py-1
-                className="list-group-item list-group-item-action small py-1 px-3 d-flex justify-content-between align-items-center"
-                style={{ minHeight: "auto" }} // Force reset any inherited heights
-                onClick={() => {
-                  handleChange("recipient_id", user.id);
-                  setSearchTerm(user.name || `${user.full_name}`);
-                  setSearchResults([]);
-                }}
-              >
-                <div className="text-start">
-                  <div
-                    className="fw-bold text-dark mb-0"
-                    style={{ lineHeight: "1.2" }}
-                  >
-                    {user.name || `${user.full_name}`}
-                  </div>
-                  <div className="text-muted" style={{ fontSize: "0.7rem" }}>
-                    {user.email || user.phone_number}
-                  </div>
-                </div>
-
-                {/* Removed h-50 so the badge doesn't try to take up half the height */}
-                {/* <span className="badge bg-light text-primary border py-1">
-                  ID: {user.id}
-                </span> */}
-              </button>
-            ))}
+            <span className="text-primary fw-bold">
+              <i className="bi bi-people-fill me-2"></i>
+              {incomingBulkIds.length} Selected Recipients
+            </span>
+            <span className="badge bg-primary-subtle text-primary">
+              Bulk Mode
+            </span>
           </div>
+        ) : (
+          /* Single Mode UI: Standard Search */
+          <>
+            <input
+              type="text"
+              className="form-control"
+              placeholder={
+                inputValues.recipient_type
+                  ? "Type to search..."
+                  : "Choose a role first"
+              }
+              disabled={!inputValues.recipient_type}
+              value={searchTerm}
+              required={!inputValues.recipient_id}
+              style={{ backgroundColor: "#EDF1FB", borderRadius: "8px" }}
+              autoComplete="off"
+              onChange={(e) =>
+                handleUserSearch(e.target.value, inputValues.recipient_type)
+              }
+            />
+            {searchResults.length > 0 && (
+              <div
+                className="list-group position-absolute w-100 shadow-lg mt-1 z-3"
+                style={{ maxHeight: "200px", overflowY: "auto" }}
+              >
+                {searchResults.map((user) => (
+                  <button
+                    key={user.id}
+                    type="button"
+                    className="list-group-item list-group-item-action small py-1 px-3 d-flex justify-content-between align-items-center"
+                    onClick={() => {
+                      handleChange("recipient_id", user.id);
+                      setSearchTerm(user.name || `${user.full_name}`);
+                      setSearchResults([]);
+                    }}
+                  >
+                    <div className="text-start">
+                      <div className="fw-bold text-dark mb-0">
+                        {user.name || `${user.full_name}`}
+                      </div>
+                      <div
+                        className="text-muted"
+                        style={{ fontSize: "0.7rem" }}
+                      >
+                        {user.email || user.phone_number}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     ),
-    [searchTerm, searchResults],
+    [searchTerm, searchResults, incomingBulkIds],
   );
 
+  // --- Modal Form Configuration ---
   const fields = useMemo(
     () => [
       {
         name: "recipient_type",
         label: "Recipient Role",
         type: "select",
+        disabled: !!incomingBulkIds,
+        initialValue: incomingType || "",
         options: [
           { value: "worker", label: "Worker" },
           { value: "3", label: "Partner" },
@@ -186,7 +239,7 @@ const NotificationPage = () => {
       },
       {
         name: "recipient_id",
-        label: "Find User",
+        label: incomingBulkIds ? "Recipients Info" : "Find User",
         type: "custom",
       },
       {
@@ -195,7 +248,7 @@ const NotificationPage = () => {
         type: "textarea",
       },
     ],
-    [],
+    [incomingBulkIds, incomingType],
   );
 
   return (
@@ -287,12 +340,15 @@ const NotificationPage = () => {
               </div>
             ) : (
               <div className="m-auto text-center py-5">
-                <div className="bg-light rounded-circle d-inline-flex p-4 mb-3">
-                  <i className="bi bi-chat-dots text-muted fs-1"></i>
+                <div
+                  className="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                  style={{ width: "80px", height: "80px" }}
+                >
+                  <i className="bi bi-chat-left-text text-muted fs-2"></i>
                 </div>
-                <h6 className="fw-bold">Select a message</h6>
-                <p className="text-muted small px-4">
-                  Choose an item from the left to read its full content.
+                <h6 className="text-dark fw-bold">Select a message</h6>
+                <p className="text-muted small">
+                  Choose a notification from the list to view its full content.
                 </p>
               </div>
             )}
@@ -303,11 +359,19 @@ const NotificationPage = () => {
       {showCompose && (
         <CreateModal
           show={showCompose}
-          onClose={() => setShowCompose(false)}
+          onClose={() => {
+            setShowCompose(false);
+            // Clear route state on close
+            navigate(location.pathname, { replace: true, state: {} });
+          }}
           onCreate={handleSend}
-          title="Compose Notification"
+          title={
+            incomingBulkIds
+              ? "Compose Bulk Notification"
+              : "Compose Notification"
+          }
           fields={fields}
-          btnLabel="Send Alert"
+          btnLabel={incomingBulkIds ? "Send Bulk Alert" : "Send Alert"}
           renderCustomField={renderSearchField}
         />
       )}

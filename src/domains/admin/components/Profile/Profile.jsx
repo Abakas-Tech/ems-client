@@ -195,7 +195,7 @@ const MyProfile = () => {
                 onChange={handleChange}
               />
             </div>
-            {profile?.role_id !== 5 && profile.role_id !== 4 && (
+            {profile?.role_id !== 5 && profile?.role_id !== 4 && (
               <div className="col-md-6">
                 <label>
                   Email <span className="text-danger">*</span>

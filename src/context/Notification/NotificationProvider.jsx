@@ -12,13 +12,20 @@ const NotificationProvider = ({ children }) => {
       const response = await fetchNotifications();
       const count = response?.data?.data?.filter((n) => !n.is_read).length || 0;
       setUnreadCount(count);
+      return response;
     } catch (error) {
-      addMessage(false, error.message);
+      // Don't show error messages during background polling to avoid annoying the user
       setUnreadCount(0);
     }
   };
   useEffect(() => {
     getNotifications();
+
+    // Poll every 60 seconds
+    const interval = setInterval(getNotifications, 60000);
+
+    // Clean up on unmount
+    return () => clearInterval(interval);
   }, []);
 
   return (
