@@ -10,7 +10,12 @@ import { getWorkerProfile } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 
-import {getWorkerStatuses} from "../../../api/meta.api";
+import {
+  getWorkerStatuses,
+  deleteWorkerStatus,
+  createWorkerStatus,
+} from "../../../api/meta.api";
+import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 
 /* helpers */
 
@@ -72,11 +77,11 @@ const WorkerProfile = () => {
     }
   };
 
- // Fetch worker statuses for button display and status change options
+  // Fetch worker statuses for button display and status change options
   const fetchWorkerStatuses = async () => {
     showLoader();
     try {
-      const response = await getWorkerStatuses(id);
+      const response = await getWorkerStatuses({ id });
       setWorkerStatuses(response?.data || []);
     } catch (err) {
       addMessage(false, err.message);
@@ -95,12 +100,80 @@ const WorkerProfile = () => {
     }
   };
 
-   useEffect(() => {
-     if (id) fetchWorker();
-     fetchWorkerStatuses();
-     fetchAllStatuses();
-   // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [id]);
+  useEffect(() => {
+    if (id) fetchWorker();
+    fetchWorkerStatuses();
+    fetchAllStatuses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  // add status to worker
+  const handleAssignStatus = async (inputValues) => {
+    const { status_id } = inputValues;
+
+    if (!status_id) {
+      addMessage(false, "Status is required");
+      return;
+    }
+
+    showLoader();
+
+    try {
+      const response = await createWorkerStatus({
+        id,
+        status_id,
+      });
+
+      addMessage(response?.success, response?.message);
+
+      setShowCreateStatusModal(false);
+
+      fetchWorkerStatuses();
+    } catch (err) {
+      addMessage(false, err.message);
+    } finally {
+      hideLoader();
+    }
+  };
+
+  // delete status from worker
+  const handleDeleteStatus = (status) => {
+    openModal(async () => {
+      showLoader();
+
+      try {
+        const response = await deleteWorkerStatus(status.id);
+
+        addMessage(response?.success, response?.message);
+
+        fetchWorkerStatuses();
+      } catch (err) {
+        addMessage(false, err.message);
+      } finally {
+        hideLoader();
+      }
+    });
+  };
+
+  const columnsStatuses = [
+    {
+      header: "Status",
+      accessor: "name",
+    },
+  ];
+
+  // Modal form fields for adding a status to a worker
+  const fieldsStatuses = [
+    {
+      name: "status_id",
+      label: "Status",
+      type: "select",
+      options: allStatuses.map((status) => ({
+        value: status.id,
+        label: status.name,
+      })),
+    },
+  ];
 
   if (!worker) return null;
 
@@ -297,6 +370,52 @@ const WorkerProfile = () => {
       {/* Cards */}
       <div className="container">
         <div className="row g-4">
+          {/* Worker Statuses */}
+          <div className="mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <h5 className="fw-bold mb-0">Statuses</h5>
+
+              <button
+                className="btn btn-sm btn-main"
+                onClick={() => setShowCreateStatusModal(true)}
+              >
+                + Status
+              </button>
+            </div>
+
+            <div className="d-flex flex-wrap gap-2">
+              {workerStatuses.length === 0 && (
+                <span className="text-muted">No statuses assigned</span>
+              )}
+
+              {workerStatuses.map((status) => (
+                <span
+                  key={status.id}
+                  className="d-inline-flex align-items-center"
+                >
+                  <Badge content={status.name} color="blue" />
+
+                  <button
+                    className="btn btn-sm text-danger ms-1"
+                    onClick={() => handleDeleteStatus(status)}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* MODAL GOES HERE */}
+          <CreateModal
+            show={showCreateStatusModal}
+            onClose={() => setShowCreateStatusModal(false)}
+            onCreate={handleAssignStatus}
+            fields={fieldsStatuses}
+            title="Assign Status"
+            btnLabel="Assign"
+          />
+
           {/* PERSONAL */}
           <div className="col-12">
             <div className="card h-100 shadow-sm border-0">
