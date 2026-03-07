@@ -10,6 +10,8 @@ import { getWorkerProfile } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 
+import { useDelete } from "../../../../../context/Delete/useDelete";
+
 import {
   getWorkerStatuses,
   deleteWorkerStatus,
@@ -58,6 +60,7 @@ const WorkerProfile = () => {
 
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
+  const { openModal } = useDelete();
 
   const [worker, setWorker] = useState(null);
 
@@ -376,7 +379,7 @@ const WorkerProfile = () => {
               <h5 className="fw-bold mb-0">Statuses</h5>
 
               <button
-                className="btn btn-sm btn-main"
+                className="btn btn-sm btn-main p-4"
                 onClick={() => setShowCreateStatusModal(true)}
               >
                 + Status
