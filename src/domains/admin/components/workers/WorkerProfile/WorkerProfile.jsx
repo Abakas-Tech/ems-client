@@ -10,6 +10,8 @@ import { getWorkerProfile } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 
+import {getWorkerStatuses} from "../../../api/meta.api";
+
 /* helpers */
 
 const fallback = (value) => value ?? "—";
@@ -54,6 +56,10 @@ const WorkerProfile = () => {
 
   const [worker, setWorker] = useState(null);
 
+  const [workerStatuses, setWorkerStatuses] = useState([]);
+  const [allStatuses, setAllStatuses] = useState([]);
+  const [showCreateStatusModal, setShowCreateStatusModal] = useState(false);
+
   const fetchWorker = async () => {
     try {
       showLoader();
@@ -66,9 +72,35 @@ const WorkerProfile = () => {
     }
   };
 
-  useEffect(() => {
-    if (id) fetchWorker();
-  }, [id]);
+ // Fetch worker statuses for button display and status change options
+  const fetchWorkerStatuses = async () => {
+    showLoader();
+    try {
+      const response = await getWorkerStatuses(id);
+      setWorkerStatuses(response?.data || []);
+    } catch (err) {
+      addMessage(false, err.message);
+    } finally {
+      hideLoader();
+    }
+  };
+
+  // Fetch all worker statuses for status change options
+  const fetchAllStatuses = async () => {
+    try {
+      const response = await getWorkerStatuses({ page: 1, limit: 100 });
+      setAllStatuses(response?.data || []);
+    } catch (err) {
+      addMessage(false, err.message);
+    }
+  };
+
+   useEffect(() => {
+     if (id) fetchWorker();
+     fetchWorkerStatuses();
+     fetchAllStatuses();
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [id]);
 
   if (!worker) return null;
 
@@ -103,7 +135,8 @@ const WorkerProfile = () => {
   const statusName = statusObj?.name ?? "—";
 
   const photoUrl =
-    personal?.photo_3x4?.url || "https://placehold.co/600x400?text=No+Photo";
+    personal?.photo_3x4?.url ||
+    "https://placehold.co/600x400/000000/FFF?text=No+Photo";
 
   /* Personal */
   const personalInfo = {
@@ -236,15 +269,16 @@ const WorkerProfile = () => {
             <img
               src={photoUrl}
               alt={`${fullName} photo`}
-              className="img-fluid rounded-circle worker-photo"
-              style={{ width: "140px", height: "140px", objectFit: "cover" }}
+              className="rounded-circle object-fit-cover"
+              width="140"
+              height="140"
               onError={(e) => {
-                e.target.src = "https://via.placeholder.com/150?text=Error";
+                e.target.src = "https://via.placeholder.com/140?text=Error";
               }}
             />
           </div>
 
-          <div className="col-md-10">
+          <div className="col-12 col-md-10">
             <h4 className="fw-bold mb-1">{fullName}</h4>
 
             <p className="text-muted mb-1">
