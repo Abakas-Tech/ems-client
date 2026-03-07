@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
+import styles from "./Badge.module.css";
 
-// Define text color mappings for non-solid badges
 const TEXT_COLORS = {
   green: "text-success border-success",
   blue: "text-primary border-primary",
@@ -12,7 +12,6 @@ const TEXT_COLORS = {
   purple: "text-secondary border-secondary",
 };
 
-// Define background color mappings for solid badges
 const BG_COLORS = {
   green: "bg-success text-white border-success",
   blue: "bg-primary text-white border-primary",
@@ -23,7 +22,6 @@ const BG_COLORS = {
   cyan: "bg-info text-white border-info",
 };
 
-//
 const Badge = ({ content, color = "gray", solid = false, onDelete }) => {
   const badgeClass = useMemo(() => {
     const activeMap = solid ? BG_COLORS : TEXT_COLORS;
@@ -31,37 +29,26 @@ const Badge = ({ content, color = "gray", solid = false, onDelete }) => {
   }, [color, solid]);
 
   const displayContent = content ? String(content).toUpperCase() : "—";
+  const closeBtnColor = solid ? "" : "text-danger";
 
-  // Determine close button color based on badge style
-  const closeBtnColor = solid ? "inherit" : "text-danger";
+  // Combine module classes with Bootstrap utilities
+  const containerClasses = [
+    "badge",
+    "border",
+    "fw-semibold",
+    styles["badge-container"],
+    onDelete ? styles["is-editable"] : "",
+    badgeClass,
+  ].join(" ");
 
   return (
-    <span
-      className={`badge border fw-semibold d-inline-flex align-items-center ${badgeClass}`}
-      style={{
-        gap: "4px",
-        paddingRight: onDelete ? "4px" : "8px",
-        verticalAlign: "middle",
-      }}
-    >
+    <span className={containerClasses}>
       {displayContent}
 
       {onDelete && (
         <button
           type="button"
-          className={`btn p-0 d-flex align-items-center justify-content-center ${closeBtnColor}`}
-          style={{
-            width: "14px",
-            height: "14px",
-            fontSize: "16px",
-            lineHeight: "0",
-            border: "none",
-            background: "transparent",
-            color: "currentColor",
-            paddingBottom: "2px", 
-            outline: "none",
-            boxShadow: "none",
-          }}
+          className={`btn p-0 d-flex align-items-center justify-content-center ${styles["delete-button"]} ${closeBtnColor}`}
           onClick={(e) => {
             e.stopPropagation();
             onDelete();

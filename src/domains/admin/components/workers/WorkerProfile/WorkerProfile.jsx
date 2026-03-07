@@ -385,8 +385,9 @@ const WorkerProfile = () => {
                     >
                       <Badge
                         content={status.name}
-                        color="red"
+                        color="cyan"
                         onDelete={() => handleDeleteStatus(id)}
+                        solid
                       />
                     </span>
                   ))}
