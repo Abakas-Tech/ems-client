@@ -18,7 +18,9 @@ const assignWorkerSkill = async (worker_id, data) => {
 // List worker skills
 const getWorkerSkills = async (worker_id) => {
   try {
-    const response = await axiosInstance.get(`/workers/meta/${worker_id}/skills`);
+    const response = await axiosInstance.get(
+      `/workers/meta/${worker_id}/skills`,
+    );
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Fetch skills error");
@@ -141,22 +143,62 @@ const deleteWorkerPosition = async (workerId, positionId) => {
 };
 
 // status api
-
-// Update worker status
-const updateWorkerStatus = async (workerId, data) => {
+// Get current status of a worker
+ const getWorkerCurrentStatus = async (workerId) => {
   try {
-    const response = await axiosInstance.patch(
-      `/workers/meta/${workerId}/status`,
-      data,
+    const response = await axiosInstance.get(
+      `/workers/meta/${workerId}/statuses`,
     );
+    console.log(response)
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || "Update status error");
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch worker status",
+    );
   }
 };
 
-// worker country apis
+// Assign a status to a worker
+ const assignWorkerStatus = async (workerId, statusId) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/meta/${workerId}/statuses`,
+      { status_id: statusId },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to assign status");
+  }
+};
 
+// Delete/revoke a status from a worker
+ const deleteWorkerStatus = async (workerId, statusId) => {
+  try {
+    const response = await axiosInstance.delete(
+      `/workers/meta/${workerId}/statuses/${statusId}`,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Failed to delete worker status",
+    );
+  }
+};
+
+// Update worker status
+// export const updateWorkerStatuse = async (workerId, statusId) => {
+//   try {
+//     const response = await axiosInstance.patch(
+//       `/workers/meta/${workerId}/status`,
+//       { status_id: statusId },
+//     );
+//     return response.data;
+//   } catch (error) {
+//     throw new Error(error.response?.data?.message || "Update status error");
+//   }
+// };
+
+// worker country apis
 // Add experience
 const addWorkerExperience = async (workerId, data) => {
   try {
@@ -209,8 +251,11 @@ export {
   getWorkerPositions,
   updateWorkerPosition,
   deleteWorkerPosition,
-  // status api
-  updateWorkerStatus,
+  // status apis
+  getWorkerCurrentStatus,
+  assignWorkerStatus,
+  deleteWorkerStatus,
+  // updateWorkerStatuses,
   // worker experience apis
   addWorkerExperience,
   getWorkerExperiences,
