@@ -4,7 +4,7 @@ import { FaFilePdf, FaImage } from "react-icons/fa";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import ActionButtons from "../../../../../shared/components/ActionButtons/ActionButtons";
-import { deletePassport, getWorkerProfile } from "../../../api/worker.api";
+import { deletePassport, getWorkerProfile, deleteCoc } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
@@ -91,6 +91,7 @@ const useWorkerActions = (workerId) => {
 const useWorkerDeletes = (
   workerId,
   { showLoader, hideLoader, addMessage, openModal },
+  onSuccess,
 ) => {
   const handleDelete =
     (deleteFn, title = "Are you sure?") =>
@@ -101,6 +102,10 @@ const useWorkerDeletes = (
           try {
             const res = await deleteFn(workerId);
             addMessage(res?.success, res?.message || "Deleted successfully");
+            // If the delete worked, trigger the UI update
+            if (res?.success && onSuccess) {
+              onSuccess();
+            }
           } catch (err) {
             addMessage(false, err.message);
           } finally {
@@ -121,10 +126,10 @@ const useWorkerDeletes = (
       deletePassport,
       "Are you sure you want to delete this passport?",
     ),
-    // deleteCoc: handleDelete(
-    //   deleteCoc,
-    //   "Are you sure you want to delete this COC?",
-    // ),
+    deleteCoc: handleDelete(
+      deleteCoc,
+      "Are you sure you want to delete this COC?",
+    ),
     // deleteMedical: handleDelete(
     //   deleteMedical,
     //   "Are you sure you want to delete this medical info?",
@@ -168,14 +173,7 @@ const WorkerProfile = () => {
   const [allStatuses, setAllStatuses] = useState([]);
   const [showCreateStatusModal, setShowCreateStatusModal] = useState(false);
 
-   const actions = useWorkerActions(id);
-   const deletes = useWorkerDeletes(id, {
-     showLoader,
-     hideLoader,
-     addMessage,
-     openModal,
-   });
-
+// Fetch worker profile data
   const fetchWorker = async () => {
     try {
       showLoader();
@@ -187,6 +185,19 @@ const WorkerProfile = () => {
       hideLoader();
     }
   };
+
+  // Get action handlers and delete handlers for the worker
+     const actions = useWorkerActions(id);
+     const deletes = useWorkerDeletes(
+       id,
+       {
+         showLoader,
+         hideLoader,
+         addMessage,
+         openModal,
+       },
+       fetchWorker,
+     );
 
   // Fetch assigned statuses
   const fetchWorkerStatuses = async () => {
@@ -717,7 +728,7 @@ const WorkerProfile = () => {
                     { type: "edit", onClick: actions.editCoc },
                     {
                       type: "delete",
-                      // onClick: deletes.deleteCoc,
+                      onClick: deletes.deleteCoc,
                     },
                   ]}
                 />

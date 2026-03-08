@@ -144,12 +144,11 @@ const deleteWorkerPosition = async (workerId, positionId) => {
 
 // status api
 // Get current status of a worker
- const getWorkerCurrentStatus = async (workerId) => {
+const getWorkerCurrentStatus = async (workerId) => {
   try {
     const response = await axiosInstance.get(
       `/workers/meta/${workerId}/statuses`,
     );
-    console.log(response)
     return response.data;
   } catch (error) {
     throw new Error(
@@ -159,7 +158,7 @@ const deleteWorkerPosition = async (workerId, positionId) => {
 };
 
 // Assign a status to a worker
- const assignWorkerStatus = async (workerId, statusId) => {
+const assignWorkerStatus = async (workerId, statusId) => {
   try {
     const response = await axiosInstance.post(
       `/workers/meta/${workerId}/statuses`,
@@ -172,7 +171,7 @@ const deleteWorkerPosition = async (workerId, positionId) => {
 };
 
 // Delete/revoke a status from a worker
- const deleteWorkerStatus = async (workerId, statusId) => {
+const deleteWorkerStatus = async (workerId, statusId) => {
   try {
     const response = await axiosInstance.delete(
       `/workers/meta/${workerId}/statuses/${statusId}`,
