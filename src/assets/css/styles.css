@@ -12069,3 +12069,9 @@ th.next.available,
     overflow: visible;
   }
 }
+
+.form-control::placeholder {
+  color: #333;
+  font-style: italic;
+  font-weight: 100;
+}

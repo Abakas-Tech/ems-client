@@ -172,7 +172,7 @@ const WorkerStatus = () => {
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div className="flex-grow-1">
               <h2 className="fw-bold text-dark mb-2">
-                Worker Status Management
+                Worker Status
               </h2>
               <p className="text-muted mb-0">
                 Manage worker statuses — create, rename, or delete entries as
