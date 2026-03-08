@@ -34,16 +34,17 @@ const GalleryList = () => {
 
   useEffect(() => {
     fetchGalleryItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Navigate to create page
   const handleAddNew = () => {
-    navigate("/admin/public-gallery/create");
+    navigate("/admin/public-content/gallery/create");
   };
 
   // Navigate to edit page
   const handleEdit = (item) => {
-    navigate(`/admin/public-gallery/edit/${item.id}`);
+    navigate(`/admin/public-content/gallery/edit/${item.id}`);
   };
 
   // Delete single item

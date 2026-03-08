@@ -20,6 +20,9 @@ const GalleryUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
+  // return back
+  const goBack = () => navigate(-1);
+
   const extractDescription = (description) => {
     if (!description || typeof description !== "string") return "";
     return description
@@ -43,6 +46,7 @@ const GalleryUpload = () => {
         .catch((err) => addMessage(false, err.message))
         .finally(hideLoader);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isEditMode]);
 
   const handleChange = (e) => {
@@ -91,6 +95,7 @@ const GalleryUpload = () => {
       return addMessage(false, "Description cannot exceed 200 characters");
 
     setSubmitLoading(true);
+    showLoader(); // show loader
 
     try {
       const payload = new FormData();
@@ -106,10 +111,11 @@ const GalleryUpload = () => {
         addMessage(true, "Gallery item created successfully");
       }
 
-      navigate("/admin/gallery"); // back to gallery list
+      navigate("/admin/public-content/gallery");
     } catch (err) {
       addMessage(false, err.message || "Failed to process gallery item");
     } finally {
+      hideLoader(); // hide loader
       setSubmitLoading(false);
     }
   };
@@ -129,7 +135,7 @@ const GalleryUpload = () => {
                 : "Fill in the details to add a new gallery item."}
             </p>
           </div>
-          <BackButton onClick={() => navigate("/admin/gallery")} />
+          <BackButton onClick={goBack} />
         </div>
       </div>
 
@@ -137,6 +143,7 @@ const GalleryUpload = () => {
       <form className="form-submit" onSubmit={handleSubmit}>
         <div className="submit-section">
           <div className="row">
+            {/* Title */}
             <div className="form-group col-md-12">
               <label>
                 Title <span className="text-danger">*</span>
@@ -152,53 +159,57 @@ const GalleryUpload = () => {
               />
             </div>
 
-            <div className="form-group col-md-12">
-              <label>Description (Optional)</label>
-              <textarea
-                name="description"
-                className="form-control"
-                rows="3"
-                placeholder="Example: Main office building entrance"
-                value={formData.description}
-                onChange={handleChange}
-              ></textarea>
-            </div>
+            {/* Description & Image Upload Side by Side */}
+            <div className="col-md-12 d-flex flex-column flex-lg-row gap-3">
+              <div className="form-group flex-fill">
+                <label>Description (Optional)</label>
+                <textarea
+                  name="description"
+                  className="form-control"
+                  rows="5"
+                  placeholder="Example: Main office building entrance"
+                  value={formData.description}
+                  onChange={handleChange}
+                ></textarea>
+              </div>
 
-            <div className="form-group col-md-12">
-              <label>
-                Select Image {isEditMode ? "(Optional to replace)" : "*"}
-              </label>
-              <div
-                className="primary-dropzone p-4 border rounded-3 text-center position-relative"
-                style={{
-                  backgroundColor: "#DAEDFE",
-                  border: "2px dashed #dee2e6",
-                }}
-              >
-                <input
-                  type="file"
-                  className="position-absolute w-100 h-100 top-0 start-0 opacity-0"
-                  style={{ cursor: "pointer" }}
-                  onChange={handleFileChange}
-                  accept=".jpg,.jpeg,.png,.webp"
-                />
-                <div className="dz-message">
-                  <i
-                    className="bi bi-images fs-1"
-                    style={{ color: "var(--maincolor)" }}
-                  ></i>
-                  <h5 className="mt-2">Click or Drag Image Here</h5>
-                  <p className="text-muted small mb-0">
-                    {selectedFile ? (
-                      <strong className="text-success">
-                        {selectedFile.name}
-                      </strong>
-                    ) : isEditMode ? (
-                      "Leave empty to keep existing image"
-                    ) : (
-                      "JPG, PNG, WEBP (Max 5MB)"
-                    )}
-                  </p>
+              <div className="form-group flex-fill">
+                <label>
+                  Select Image <span className="text-danger">*</span>
+                </label>
+                <div
+                  className="primary-dropzone p-4 border rounded-3 text-center position-relative"
+                  style={{
+                    backgroundColor: "#DAEDFE",
+                    border: "2px dashed #dee2e6",
+                    minHeight: "150px",
+                  }}
+                >
+                  <input
+                    type="file"
+                    className="position-absolute w-100 h-100 top-0 start-0 opacity-0"
+                    style={{ cursor: "pointer" }}
+                    onChange={handleFileChange}
+                    accept=".jpg,.jpeg,.png,.webp"
+                  />
+                  <div className="dz-message">
+                    <i
+                      className="bi bi-images fs-1"
+                      style={{ color: "var(--maincolor)" }}
+                    ></i>
+                    <h5 className="mt-2">Click or Drag Image Here</h5>
+                    <p className="text-muted small mb-0">
+                      {selectedFile ? (
+                        <strong className="text-success">
+                          {selectedFile.name}
+                        </strong>
+                      ) : isEditMode ? (
+                        "Leave empty to keep existing image"
+                      ) : (
+                        "JPG, PNG, WEBP (Max 5MB)"
+                      )}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -207,24 +218,20 @@ const GalleryUpload = () => {
 
         {/* Submit Buttons */}
         <div className="submit-section mt-4">
-          <div className="form-group col-lg-12 col-md-12">
+          <div className="form-group col-lg-12 col-md-12 d-flex gap-2">
             <button
               className="btn btn-main px-5 rounded fw-bold text-white"
               type="submit"
               disabled={submitLoading}
               style={{ backgroundColor: "var(--maincolor)" }}
             >
-              {submitLoading
-                ? "Processing..."
-                : isEditMode
-                  ? "Update Gallery Item"
-                  : "Create Gallery Item"}
+              {isEditMode ? "Update Gallery Item" : "Create Gallery Item"}
             </button>
 
             <button
               type="button"
-              className="btn btn-outline-secondary ms-2 px-4 rounded"
-              onClick={() => navigate("/admin/gallery")}
+              className="btn btn-outline-secondary  px-4 rounded fw-bold"
+              onClick={() => navigate("/admin/public-content/gallery")}
             >
               Cancel
             </button>

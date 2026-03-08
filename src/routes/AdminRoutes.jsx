@@ -86,7 +86,7 @@ const AdminRoutes = () => (
       <Route path="/public-content/location" element={<LocationPage />} />
       <Route path="/public-content/gallery" element={<GalleryListPage />} />
       <Route path="/public-content/gallery/create" element={<GalleryUplaodPage />} />
-      <Route path="/public-content/gallery/edit/id" element={<GalleryUplaodPage />} />
+      <Route path="/public-content/gallery/edit/:id" element={<GalleryUplaodPage />} />
 
       <Route path="*" element={<NotFound />} />
     </Route>
