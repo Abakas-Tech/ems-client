@@ -31,6 +31,12 @@ import LanguagePage from "../domains/admin/pages/meta/LanguagePage/LanguagePage.
 import WorkerStatusPage from "../domains/admin/pages/meta/WorkerStatusPage/WorkerStatusPage.jsx";
 import CityPage from "../domains/admin/pages/meta/CityPage/CityPage.jsx";
 import WorkerMetaPage from "../domains/admin/pages/WorkerMetaPage/WorkerMetaPage.jsx";
+import SocialMediaPage from "../domains/admin/pages/content/SocialMedia/SocialMedia.jsx";
+import GalleryListPage from './../domains/admin/pages/content/Gallery/Gallery/Gallery';
+import GalleryUplaodPage from "../domains/admin/pages/content/Gallery/GalleryUpload/GalleryUplaod.jsx";
+import LocationPage from './../domains/admin/pages/content/Location/Location';
+import ContentDashboard from "../domains/admin/components/content/Dashboard/Dashboard.jsx";
+
 
 const AdminRoutes = () => (
   <Routes>
@@ -75,6 +81,13 @@ const AdminRoutes = () => (
       <Route path="workers/modules/:id/coc" element={<Coc />} />
       <Route path="workers/modules/:id/medical" element={<Medical />} />
       <Route path="/meta-data" element={<MetaDataDashboard />} />
+      <Route path="/public-content" element={<ContentDashboard/>} />
+      <Route path="/public-content/social-media" element={<SocialMediaPage />} />
+      <Route path="/public-content/location" element={<LocationPage />} />
+      <Route path="/public-content/gallery" element={<GalleryListPage />} />
+      <Route path="/public-content/gallery/create" element={<GalleryUplaodPage />} />
+      <Route path="/public-content/gallery/edit/:id" element={<GalleryUplaodPage />} />
+
       <Route path="*" element={<NotFound />} />
     </Route>
   </Routes>
