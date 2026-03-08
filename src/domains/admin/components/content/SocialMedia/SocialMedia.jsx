@@ -7,7 +7,7 @@ import {
   createOrUpdateSocialMedia,
   getSocialMedia,
   deleteSocialMedia,
-} from "../../../api/socialMedia";
+} from "../../../api/socialMedia.api";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import { useNavigate } from "react-router-dom";
 

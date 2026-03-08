@@ -32,6 +32,9 @@ import WorkerStatusPage from "../domains/admin/pages/meta/WorkerStatusPage/Worke
 import CityPage from "../domains/admin/pages/meta/CityPage/CityPage.jsx";
 import WorkerMetaPage from "../domains/admin/pages/WorkerMetaPage/WorkerMetaPage.jsx";
 import SocialMediaPage from "../domains/admin/pages/content/SocialMedia/SocialMedia.jsx";
+import GalleryListPage from './../domains/admin/pages/content/Gallery/GalleryList/GalleryList';
+import GalleryUplaodPage from "../domains/admin/pages/content/Gallery/GalleryUpload/GalleryUplaod.jsx";
+import LocationPage from './../domains/admin/pages/content/Location/Location';
 
 
 const AdminRoutes = () => (
@@ -78,6 +81,11 @@ const AdminRoutes = () => (
       <Route path="workers/modules/:id/medical" element={<Medical />} />
       <Route path="/meta-data" element={<MetaDataDashboard />} />
       <Route path="/public-profile" element={<SocialMediaPage />} />
+      <Route path="/public-Location" element={<LocationPage />} />
+      <Route path="/public-gallery" element={<GalleryListPage />} />
+      <Route path="/public-gallery/create" element={<GalleryUplaodPage />} />
+      <Route path="/public-gallery/edit/id" element={<GalleryUplaodPage />} />
+
       <Route path="*" element={<NotFound />} />
     </Route>
   </Routes>

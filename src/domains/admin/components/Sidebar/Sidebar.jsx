@@ -34,6 +34,16 @@ const menuItems = [
     path: "/admin/public-profile",
     icon: "bi bi-layout-text-sidebar-reverse",
   },
+  {
+    label: "Public Location",
+    path: "/admin/public-Location",
+    icon: "bi bi-geo-alt",
+  },
+  {
+    label: "Public Gallery",
+    path: "/admin/public-gallery",
+    icon: "bi bi-images",
+  },
   { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
 
   { label: "Log Out", path: "#", icon: "bi bi-power", isLogout: true },
