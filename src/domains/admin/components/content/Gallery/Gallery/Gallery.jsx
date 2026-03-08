@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 import "keen-slider/keen-slider.min.css";
 
-const GalleryList = () => {
+const Gallery = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
@@ -37,7 +37,7 @@ const GalleryList = () => {
     showLoader();
     try {
       const response = await getGalleryItems();
-      setGalleryItems(response.data || []);
+      setGalleryItems(response?.data || []);
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -63,7 +63,7 @@ const GalleryList = () => {
         showLoader();
         try {
           const response=await deleteGalleryItem(itemId);
-          addMessage(response.success ,response.message);
+          addMessage(response?.success ,response?.message);
           fetchGalleryItems();
         } catch (err) {
           addMessage(false, err.message);
@@ -87,7 +87,7 @@ const GalleryList = () => {
         showLoader();
         try {
           const response = await deleteAllGalleryItems();
-          addMessage(response.sucess, response.message);
+          addMessage(response?.success, response?.message);
           fetchGalleryItems();
         } catch (err) {
           addMessage(false, err.message);
@@ -212,4 +212,4 @@ const GalleryList = () => {
   );
 };
 
-export default GalleryList;
+export default Gallery;

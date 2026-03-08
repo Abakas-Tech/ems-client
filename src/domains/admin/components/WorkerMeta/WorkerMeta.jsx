@@ -16,7 +16,7 @@ import {
   addWorkerExperience,
   getWorkerExperiences,
   deleteWorkerExperience,
-} from "../../api/workerMeta";
+} from "../../api/workerMeta.api";
 import {
   getSkills,
   getLanguages,

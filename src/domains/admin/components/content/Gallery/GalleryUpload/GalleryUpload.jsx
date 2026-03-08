@@ -104,11 +104,11 @@ const GalleryUpload = () => {
       if (selectedFile) payload.append("file", selectedFile);
 
       if (isEditMode) {
-        await updateGalleryItem(id, payload);
-        addMessage(true, "Gallery item updated successfully");
+        const response = await updateGalleryItem(id, payload);
+        addMessage(response?.success, response?.message);
       } else {
-        await createGalleryItem(payload);
-        addMessage(true, "Gallery item created successfully");
+        const response = await createGalleryItem(payload);
+        addMessage(response?.success, response?.message);
       }
 
       navigate("/admin/public-content/gallery");
