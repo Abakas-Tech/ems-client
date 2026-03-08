@@ -49,7 +49,6 @@ const Gallery = () => {
     fetchGalleryItems();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   const goBack = () => navigate(-1);
 
   const handleAddNew = () => navigate("/admin/public-content/gallery/create");
@@ -168,12 +167,14 @@ const Gallery = () => {
 
           {/* Right Panel */}
           <div className="col-12 col-lg-8 d-flex justify-content-center align-items-center gap-3">
-            <button
-              className="btn btn-outline-primary"
-              onClick={() => slider && slider.current?.prev()}
-            >
-              <FaArrowLeft />
-            </button>
+            <ActionButtons
+              actions={[
+                {
+                  type: "leftArrow",
+                  onClick: () => slider && slider.current?.prev(),
+                },
+              ]}
+            />
 
             <div
               ref={sliderRef}
@@ -199,12 +200,14 @@ const Gallery = () => {
               ))}
             </div>
 
-            <button
-              className="btn btn-outline-primary"
-              onClick={() => slider && slider.current?.next()}
-            >
-              <FaArrowRight />
-            </button>
+            <ActionButtons
+              actions={[
+                {
+                  type: "rightArrow",
+                  onClick: () => slider && slider.current?.next(),
+                },
+              ]}
+            />
           </div>
         </div>
       )}

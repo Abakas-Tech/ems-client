@@ -1,4 +1,4 @@
-import { FaFolderPlus } from "react-icons/fa";
+import { FaFolderPlus, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { AiOutlineFolderView } from "react-icons/ai";
 
 const ACTION_CONFIG = {
@@ -48,6 +48,16 @@ const ACTION_CONFIG = {
     className: "btn-outline-info",
     icon: <AiOutlineFolderView/>,
     title: "View Module",
+  },
+  leftArrow: {
+    className: "btn-outline-info",
+    icon: <FaChevronLeft />,
+    title: "Back",
+  },
+  rightArrow: {
+    className: "btn-outline-info",
+    icon:<FaChevronRight />,
+    title: "Next",
   },
   
 };
