@@ -30,19 +30,9 @@ const menuItems = [
   { label: "Files", path: "/admin/my-files", icon: "bi bi-files" },
   { label: "Meta Data", path: "/admin/meta-data", icon: "bi bi-database-add" },
   {
-    label: "Public Profile",
-    path: "/admin/public-profile",
+    label: "Public Content",
+    path: "/admin/public-content",
     icon: "bi bi-layout-text-sidebar-reverse",
-  },
-  {
-    label: "Public Location",
-    path: "/admin/public-Location",
-    icon: "bi bi-geo-alt",
-  },
-  {
-    label: "Public Gallery",
-    path: "/admin/public-gallery",
-    icon: "bi bi-images",
   },
   { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
 

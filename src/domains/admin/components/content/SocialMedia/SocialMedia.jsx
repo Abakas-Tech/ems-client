@@ -215,8 +215,8 @@ const SocialMedia = () => {
   return (
     <div className="dashboard-wraper">
       <div className="form-submit">
-        <h2>Public Profile</h2>
-        <p className="text-muted">Manage company public accounts.</p>
+        <h2>Social Media</h2>
+        <p className="text-muted">Manage company social media accounts.</p>
         <div className="position-absolute top-0 end-0 mt-2">
           <BackButton onClick={goBack} />
         </div>

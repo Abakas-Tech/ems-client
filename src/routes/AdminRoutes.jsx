@@ -35,6 +35,7 @@ import SocialMediaPage from "../domains/admin/pages/content/SocialMedia/SocialMe
 import GalleryListPage from './../domains/admin/pages/content/Gallery/GalleryList/GalleryList';
 import GalleryUplaodPage from "../domains/admin/pages/content/Gallery/GalleryUpload/GalleryUplaod.jsx";
 import LocationPage from './../domains/admin/pages/content/Location/Location';
+import ContentDashboard from "../domains/admin/components/content/Dashboard/Dashboard.jsx";
 
 
 const AdminRoutes = () => (
@@ -80,11 +81,12 @@ const AdminRoutes = () => (
       <Route path="workers/modules/:id/coc" element={<Coc />} />
       <Route path="workers/modules/:id/medical" element={<Medical />} />
       <Route path="/meta-data" element={<MetaDataDashboard />} />
-      <Route path="/public-profile" element={<SocialMediaPage />} />
-      <Route path="/public-Location" element={<LocationPage />} />
-      <Route path="/public-gallery" element={<GalleryListPage />} />
-      <Route path="/public-gallery/create" element={<GalleryUplaodPage />} />
-      <Route path="/public-gallery/edit/id" element={<GalleryUplaodPage />} />
+      <Route path="/public-content" element={<ContentDashboard/>} />
+      <Route path="/public-content/social-media" element={<SocialMediaPage />} />
+      <Route path="/public-content/location" element={<LocationPage />} />
+      <Route path="/public-content/gallery" element={<GalleryListPage />} />
+      <Route path="/public-content/gallery/create" element={<GalleryUplaodPage />} />
+      <Route path="/public-content/gallery/edit/id" element={<GalleryUplaodPage />} />
 
       <Route path="*" element={<NotFound />} />
     </Route>
