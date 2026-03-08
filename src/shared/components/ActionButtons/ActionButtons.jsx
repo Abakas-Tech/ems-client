@@ -49,6 +49,7 @@ const ACTION_CONFIG = {
     icon: <AiOutlineFolderView/>,
     title: "View Module",
   },
+  
 };
 
 const ActionButtons = ({ actions = [], row }) => {
