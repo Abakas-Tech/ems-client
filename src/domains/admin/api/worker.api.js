@@ -88,7 +88,6 @@ const updateWorker = async (Payload, id) => {
 const getWorkerProfile = async (id) => {
   try {
     const response = await axiosInstance.get(`/workers/${id}`);
-    console.log(response);
     return response.data;
   } catch (error) {
     throw new Error(

@@ -31,12 +31,16 @@ import LanguagePage from "../domains/admin/pages/meta/LanguagePage/LanguagePage.
 import WorkerStatusPage from "../domains/admin/pages/meta/WorkerStatusPage/WorkerStatusPage.jsx";
 import CityPage from "../domains/admin/pages/meta/CityPage/CityPage.jsx";
 import WorkerMetaPage from "../domains/admin/pages/WorkerMetaPage/WorkerMetaPage.jsx";
+<<<<<<< HEAD
+import WorkerProfile from "../domains/admin/pages/workers/WorkerProfile/WorkerProfile.jsx";
+=======
 import SocialMediaPage from "../domains/admin/pages/content/SocialMedia/SocialMedia.jsx";
 import GalleryListPage from './../domains/admin/pages/content/Gallery/Gallery/Gallery';
 import GalleryUplaodPage from "../domains/admin/pages/content/Gallery/GalleryUpload/GalleryUplaod.jsx";
 import LocationPage from './../domains/admin/pages/content/Location/Location';
 import ContentDashboard from "../domains/admin/components/content/Dashboard/Dashboard.jsx";
 
+>>>>>>> dev
 
 const AdminRoutes = () => (
   <Routes>
@@ -58,6 +62,7 @@ const AdminRoutes = () => (
       <Route path="/workers" element={<WorkerDashboard />} />
       <Route path="/workers/add" element={<WorkerRegistration />} />
       <Route path="/workers/active" element={<ActiveWorkers />} />
+      <Route path="/workers/active/:id" element={<WorkerProfile />} />
       <Route path="/workers/archived" element={<ArchivedWorkers />} />
       <Route path="workers/modules" element={<WorkerModuleManagement />} />
       <Route path="/workers/modules/:id/add" element={<ModulesList />} />
