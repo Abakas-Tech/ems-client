@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaFilePdf, FaImage } from "react-icons/fa";
-
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import ActionButtons from "../../../../../shared/components/ActionButtons/ActionButtons";
-
-import { getWorkerProfile } from "../../../api/worker.api";
+import { deletePassport, getWorkerProfile } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
-
 import { useDelete } from "../../../../../context/Delete/useDelete";
-
 import { getWorkerStatuses } from "../../../api/meta.api";
 import {
   getWorkerCurrentStatus,
@@ -22,8 +18,10 @@ import CreateModal from "../../../../../shared/components/CreateModal/CreateModa
 
 /* helpers */
 
+// Utility to display a value or a fallback if it's null/undefined
 const fallback = (value) => value ?? "—";
 
+// Utility to format date strings into a nicer format or return a fallback
 const niceDate = (dateStr) => {
   if (!dateStr) return "—";
   try {
@@ -37,6 +35,7 @@ const niceDate = (dateStr) => {
   }
 };
 
+// Component to render a link for documents, showing an icon based on type
 const DocumentLink = ({ url, label, isImage = false }) => {
   if (!url) return <span className="text-muted">Not available</span>;
 
@@ -55,8 +54,109 @@ const DocumentLink = ({ url, label, isImage = false }) => {
   );
 };
 
+// Custom hook to generate edit handlers for different worker sections
+const useWorkerActions = (workerId) => {
+  const navigate = useNavigate();
+
+  const editPersonal = () =>
+    navigate(`/admin/workers/modules/${workerId}/personal`);
+  const editPassport = () =>
+    navigate(`/admin/workers/modules/${workerId}/passport`);
+  const editCoc = () => navigate(`/admin/workers/modules/${workerId}/coc`);
+  const editMedical = () =>
+    navigate(`/admin/workers/modules/${workerId}/medical`);
+  const editEmergency = () =>
+    navigate(`/admin/workers/modules/${workerId}/emergency-contact`);
+  const editVisa = () => navigate(`/admin/workers/modules/${workerId}/visa`);
+  const editLmis = () => navigate(`/admin/workers/modules/${workerId}/lmis`);
+  const editTravel = () =>
+    navigate(`/admin/workers/modules/${workerId}/travel-records`);
+  const editContract = () =>
+    navigate(`/admin/workers/modules/${workerId}/contract`);
+
+  return {
+    editPersonal,
+    editPassport,
+    editCoc,
+    editMedical,
+    editEmergency,
+    editVisa,
+    editLmis,
+    editTravel,
+    editContract,
+  };
+};
+
+// custom hook to generate delete handlers for different worker sections, with confirmation modals
+const useWorkerDeletes = (
+  workerId,
+  { showLoader, hideLoader, addMessage, openModal },
+) => {
+  const handleDelete =
+    (deleteFn, title = "Are you sure?") =>
+    async () => {
+      openModal(
+        async () => {
+          showLoader();
+          try {
+            const res = await deleteFn(workerId);
+            addMessage(res?.success, res?.message || "Deleted successfully");
+          } catch (err) {
+            addMessage(false, err.message);
+          } finally {
+            hideLoader();
+          }
+        },
+        { title, confirmText: "Delete" },
+      );
+    };
+
+  return {
+    // deletePersonal: handleDelete(
+    //   deletePersonal,
+    //   "Are you sure you want to delete this personal information?",
+    // ),
+
+    deletePassport: handleDelete(
+      deletePassport,
+      "Are you sure you want to delete this passport?",
+    ),
+    // deleteCoc: handleDelete(
+    //   deleteCoc,
+    //   "Are you sure you want to delete this COC?",
+    // ),
+    // deleteMedical: handleDelete(
+    //   deleteMedical,
+    //   "Are you sure you want to delete this medical info?",
+    // ),
+    // deleteEmergency: handleDelete(
+    //   deleteEmergency,
+    //   "Are you sure you want to delete this emergency contact?",
+    // ),
+    // deleteVisa: handleDelete(
+    //   deleteVisa,
+    //   "Are you sure you want to delete this visa?",
+    // ),
+    // deleteLmis: handleDelete(
+    //   deleteLmis,
+    //   "Are you sure you want to delete this LMIS info?",
+    // ),
+    // deleteTravel: handleDelete(
+    //   deleteTravel,
+    //   "Are you sure you want to delete this travel record?",
+    // ),
+    // deleteContract: handleDelete(
+    //   deleteContract,
+    //   "Are you sure you want to delete this contract?",
+    // ),
+  };
+};
+
+// Main component to display a worker's profile with all related information and actions
 const WorkerProfile = () => {
   const { id } = useParams();
+  // Initialize the toolboxes
+ 
   const navigate = useNavigate();
 
   const { showLoader, hideLoader } = useloader();
@@ -64,10 +164,17 @@ const WorkerProfile = () => {
   const { openModal } = useDelete();
 
   const [worker, setWorker] = useState(null);
-
   const [workerStatuses, setWorkerStatuses] = useState([]);
   const [allStatuses, setAllStatuses] = useState([]);
   const [showCreateStatusModal, setShowCreateStatusModal] = useState(false);
+
+   const actions = useWorkerActions(id);
+   const deletes = useWorkerDeletes(id, {
+     showLoader,
+     hideLoader,
+     addMessage,
+     openModal,
+   });
 
   const fetchWorker = async () => {
     try {
@@ -75,7 +182,7 @@ const WorkerProfile = () => {
       const { data } = await getWorkerProfile(id);
       setWorker(data);
     } catch (err) {
-      addMessage(false, err.message || "Failed to load worker profile");
+      addMessage(false, err.message);
     } finally {
       hideLoader();
     }
@@ -104,6 +211,7 @@ const WorkerProfile = () => {
     }
   };
 
+  // Initial data fetching when component mounts or when worker ID changes
   useEffect(() => {
     if (id) fetchWorker();
     fetchWorkerStatuses();
@@ -118,7 +226,6 @@ const WorkerProfile = () => {
       addMessage(false, "Please select a status");
       return;
     }
-
     showLoader();
     try {
       const res = await assignWorkerStatus(id, statusId);
@@ -134,15 +241,7 @@ const WorkerProfile = () => {
 
   // Handle revoking status
   const handleDeleteStatus = (statusItem) => {
-    // Check if statusItem.id exists, or if it's actually statusItem.status_id
-    const statusId = statusItem.id || statusItem.status_id;
-
-    if (!statusId) {
-      console.error("Status object missing ID:", statusItem);
-      addMessage(false, "Could not find the ID for this status.");
-      return;
-    }
-
+    const statusId = statusItem.id;
     openModal(
       async () => {
         showLoader();
@@ -182,7 +281,6 @@ const WorkerProfile = () => {
 
   // Utility to get a consistent color for a status badge based on its name
   const getConsistentColor = (name) => {
-    // These must match the keys in your Badge's BG_COLORS/TEXT_COLORS
     const availableColors = [
       "green",
       "blue",
@@ -195,7 +293,7 @@ const WorkerProfile = () => {
 
     if (!name) return "gray";
 
-    // Simple hashing to ensure "Medical Fit" always gets the same color
+    // Simple hash function to convert status name to a number
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -457,10 +555,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Personal Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => editPersonal(row) },
+                    { type: "edit", onClick: actions.editPersonal },
                     {
                       type: "delete",
-                      onClick: (row) => deletePersonal(row.id),
+                      // onClick: deletes.deletePersonal,
                     },
                   ]}
                 />
@@ -560,10 +658,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Passport Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => editPassport(row) },
+                    { type: "edit", onClick: actions.editPassport },
                     {
                       type: "delete",
-                      onClick: (row) => deletePassport(row.id),
+                      onClick: deletes.deletePassport,
                     },
                   ]}
                 />
@@ -616,8 +714,11 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">COC Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => editCoc(row) },
-                    { type: "delete", onClick: (row) => deleteCoc(row.id) },
+                    { type: "edit", onClick: actions.editCoc },
+                    {
+                      type: "delete",
+                      // onClick: deletes.deleteCoc,
+                    },
                   ]}
                 />
               </div>
@@ -674,10 +775,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Emergency Contact</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => editEmergency(row) },
+                    { type: "edit", onClick: actions.editEmergency },
                     {
                       type: "delete",
-                      onClick: (row) => deleteEmergency(row.id),
+                      // onClick: deletes.deleteEmergency,
                     },
                   ]}
                 />
@@ -730,8 +831,11 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Medical Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => editMedical(row) },
-                    { type: "delete", onClick: (row) => deleteMedical(row.id) },
+                    { type: "edit", onClick: actions.editMedical },
+                    {
+                      type: "delete",
+                      // onClick: deletes.deleteMedical
+                    },
                   ]}
                 />
               </div>
@@ -800,8 +904,11 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Visa Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => editVisa(row) },
-                    { type: "delete", onClick: (row) => deleteVisa(row.id) },
+                    { type: "edit", onClick: actions.editVisa },
+                    {
+                      type: "delete",
+                      // onClick: deleteVisa
+                    },
                   ]}
                 />
               </div>
@@ -858,8 +965,11 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">LMIS Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => editLmis(row) },
-                    { type: "delete", onClick: (row) => deleteLmis(row.id) },
+                    { type: "edit", onClick: actions.editLmis },
+                    {
+                      type: "delete",
+                      // onClick: deletes.deleteLmis
+                    },
                   ]}
                 />
               </div>
@@ -902,8 +1012,11 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Travel Records</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => editTravel(row) },
-                    { type: "delete", onClick: (row) => deleteTravel(row.id) },
+                    { type: "edit", onClick: actions.editTravel },
+                    {
+                      type: "delete",
+                      // onClick: deletes.deleteTravel
+                    },
                   ]}
                 />
               </div>
@@ -1023,10 +1136,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Contracts</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: (row) => editContract(row) },
+                    { type: "edit", onClick: actions.editContract },
                     {
                       type: "delete",
-                      onClick: (row) => deleteContract(row.id),
+                      // onClick: deletes.deleteContract,
                     },
                   ]}
                 />
@@ -1137,6 +1250,6 @@ const WorkerProfile = () => {
       </div>
     </div>
   );
-};
+};;
 
 export default WorkerProfile;
