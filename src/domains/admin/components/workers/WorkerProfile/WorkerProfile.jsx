@@ -180,6 +180,31 @@ const WorkerProfile = () => {
     },
   ];
 
+  // Utility to get a consistent color for a status badge based on its name
+  const getConsistentColor = (name) => {
+    // These must match the keys in your Badge's BG_COLORS/TEXT_COLORS
+    const availableColors = [
+      "green",
+      "blue",
+      "yellow",
+      "red",
+      "gray",
+      "dark",
+      "cyan",
+    ];
+
+    if (!name) return "gray";
+
+    // Simple hashing to ensure "Medical Fit" always gets the same color
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const index = Math.abs(hash) % availableColors.length;
+    return availableColors[index];
+  };
+
   if (!worker) return null;
 
   /* data extraction */
@@ -342,21 +367,22 @@ const WorkerProfile = () => {
 
       {/* Header */}
       <div className="mb-4 border-0">
-        <div className="row align-items-center">
-          <div className="col-md-2 text-center mb-4 mb-md-0">
+        <div className="row align-items-center flex-column flex-md-row">
+          {/* Photo */}
+          <div className="col-auto text-center mb-3 mb-md-0">
             <img
               src={photoUrl}
               alt={`${fullName} photo`}
               className="rounded-circle object-fit-cover"
-              width="140"
-              height="140"
+              style={{ width: "140px", height: "140px" }}
               onError={(e) => {
                 e.target.src = "https://via.placeholder.com/140?text=Error";
               }}
             />
           </div>
 
-          <div className="col-12 col-md-10">
+          {/* Text */}
+          <div className="col">
             <h4 className="fw-bold mb-1">{fullName}</h4>
 
             <p className="text-muted mb-1">
@@ -404,7 +430,7 @@ const WorkerProfile = () => {
                     >
                       <Badge
                         content={status.name}
-                        color="cyan"
+                        color={getConsistentColor(status.name)}
                         onDelete={() => handleDeleteStatus(status)}
                         solid
                       />
