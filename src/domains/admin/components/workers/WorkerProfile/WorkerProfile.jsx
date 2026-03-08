@@ -204,7 +204,7 @@ const WorkerProfile = () => {
   // Fetch all worker statuses for status change options
   const fetchAllStatuses = async () => {
     try {
-      const response = await getWorkerStatuses({ page: 1, limit: 100 });
+      const response = await getWorkerStatuses({ page: 1, limit: 1000 });
       setAllStatuses(response?.data || []);
     } catch (err) {
       addMessage(false, err.message);
