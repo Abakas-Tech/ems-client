@@ -15,6 +15,7 @@ import ResponseProvider from "./context/Response/ResponseProvider.jsx";
 import ConfirmDeleteProvider from "./context/Delete/DeleteProvider";
 import ProfileProvider from "./context/Profile/ProfileProvider.jsx";
 import DemoInfoProvider from "./context/Demo/DemoInfoProvider";
+import NotificationProvider from "./context/Notification/NotificationProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -25,7 +26,9 @@ createRoot(document.getElementById("root")).render(
             <ResponseProvider>
               <ProfileProvider>
                 <ConfirmDeleteProvider>
-                  <App />
+                  <NotificationProvider>
+                    <App />
+                  </NotificationProvider>
                 </ConfirmDeleteProvider>
               </ProfileProvider>
             </ResponseProvider>
