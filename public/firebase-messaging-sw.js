@@ -18,30 +18,18 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+// SINGLE listener for background notifications
 messaging.onBackgroundMessage((payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message ",
-    payload,
-  );
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: "/og-image.png",
-  };
+  console.log("[SW] Background message received", payload);
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-// THIS IS THE KEY FOR BACKGROUND
-messaging.onBackgroundMessage((payload) => {
-  console.log("Background message received", payload);
-
-  const notificationTitle = payload.notification.title || "New Message";
+  const notificationTitle = payload.notification.title || "New Notification";
   const notificationOptions = {
     body: payload.notification.body || "You have a new update",
-    icon: "/logo192.png", // Make sure this exists in public folder
+    icon: "/image.png", // Use the same icon as your foreground notification
+    badge: "/image.png", // The small icon shown in the status bar on mobile
+    tag: payload.messageId, // CRITICAL: Prevents duplicate popups for the same message
+    data: payload.data, // Pass data through so you can handle clicks
   };
 
-  // This command forces the browser to show the system popup
   self.registration.showNotification(notificationTitle, notificationOptions);
 });

@@ -148,12 +148,6 @@ const NotificationPage = () => {
           /* Bulk Mode UI: Locked Recipients */
           <div
             className="form-control d-flex align-items-center justify-content-between"
-            style={{
-              backgroundColor: "#f8f9fa",
-              border: "1px dashed #dee2e6",
-              borderRadius: "8px",
-              height: "45px",
-            }}
           >
             <span className="text-primary fw-bold">
               <i className="bi bi-people-fill me-2"></i>
