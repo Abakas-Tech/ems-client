@@ -31,6 +31,7 @@ import LanguagePage from "../domains/admin/pages/meta/LanguagePage/LanguagePage.
 import WorkerStatusPage from "../domains/admin/pages/meta/WorkerStatusPage/WorkerStatusPage.jsx";
 import CityPage from "../domains/admin/pages/meta/CityPage/CityPage.jsx";
 import WorkerMetaPage from "../domains/admin/pages/WorkerMetaPage/WorkerMetaPage.jsx";
+import WorkerProfile from "../domains/admin/pages/workers/WorkerProfile/WorkerProfile.jsx";
 import SocialMediaPage from "../domains/admin/pages/content/SocialMedia/SocialMedia.jsx";
 import GalleryListPage from './../domains/admin/pages/content/Gallery/Gallery/Gallery';
 import GalleryUplaodPage from "../domains/admin/pages/content/Gallery/GalleryUpload/GalleryUplaod.jsx";
