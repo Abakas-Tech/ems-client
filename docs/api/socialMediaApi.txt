@@ -1,0 +1,240 @@
+1. Create or Update Social Media
+
+Creates or updates social media information.
+
+The system stores social media information in a single database record.
+If no record exists, the request will create one.
+If a record already exists, the request will update it.
+
+Contact numbers allow a maximum of two numbers.
+If two numbers are provided they must be separated using a slash "/".
+
+Endpoint
+POST /api/social-media
+
+Content Type
+application/json
+
+Request Example
+
+{
+  "facebook_username": "company.page",
+  "instagram_username": "company.official",
+  "telegram_username": "company_support",
+  "tiktok_username": "company.tiktok",
+  "linkedin_username": "company-linkedin",
+  "youtube_channel": "companychannel",
+  "twitter_username": "company_x",
+  "whatsapp_number": "+251922222222",
+  "contact_number": "+251900000000/+251911111111"
+}
+
+Successful Response (Created)
+
+Status: 201 Created
+
+{
+  "success": true,
+  "message": "Social media created successfully",
+  "data": {
+    "id": 1,
+    "facebook_username": "company.page",
+    "instagram_username": "company.official",
+    "telegram_username": "company_support",
+    "tiktok_username": "company.tiktok",
+    "linkedin_username": "company-linkedin",
+    "youtube_channel": "companychannel",
+    "twitter_username": "company_x",
+    "whatsapp_number": "+251922222222",
+    "contact_number": "+251900000000/+251911111111",
+    "updated_at": "2026-03-06T12:00:00Z"
+  }
+}
+
+Successful Response (Updated)
+
+Status: 200 OK
+
+{
+  "success": true,
+  "message": "Social media updated successfully",
+  "data": {
+    "id": 1,
+    "facebook_username": "company.page",
+    "instagram_username": "company.official",
+    "telegram_username": "company_support",
+    "tiktok_username": "company.tiktok",
+    "linkedin_username": "company-linkedin",
+    "youtube_channel": "companychannel",
+    "twitter_username": "company_x",
+    "whatsapp_number": "+251922222222",
+    "contact_number": "+251900000000/+251911111111",
+    "updated_at": "2026-03-06T12:10:00Z"
+  }
+}
+
+
+
+2. Get Social Media Information
+
+Returns the stored social media information.
+
+Only one record exists in the system.
+
+Endpoint
+GET /api/social-media
+
+Example Request
+GET /api/social-media
+
+Successful Response
+
+Status: 200 OK
+
+{
+  "success": true,
+  "message": "Social media retrieved successfully",
+  "data": {
+    "id": 1,
+    "facebook_username": "company.page",
+    "instagram_username": "company.official",
+    "telegram_username": "company_support",
+    "tiktok_username": "company.tiktok",
+    "linkedin_username": "company-linkedin",
+    "youtube_channel": "companychannel",
+    "twitter_username": "company_x",
+    "whatsapp_number": "+251922222222",
+    "contact_number": "+251900000000/+251911111111"
+  }
+}
+
+Empty Response
+
+If no social media record exists.
+
+{
+  "success": true,
+  "message": "Social media retrieved successfully",
+  "data": null
+}
+
+
+
+3. Delete Social Media Information
+
+Deletes the stored social media record.
+
+Endpoint
+DELETE /api/social-media
+
+Example Request
+DELETE /api/social-media
+
+Successful Response
+
+{
+  "success": true,
+  "message": "Social media deleted successfully"
+}
+
+
+
+Validation Rules
+
+
+Create / Update Validation
+
+facebook_username
+optional
+string
+min length 2
+max length 100
+allowed characters: letters, numbers, ".", "_", "-"
+trim whitespace
+
+instagram_username
+optional
+string
+min length 2
+max length 100
+allowed characters: letters, numbers, ".", "_"
+trim whitespace
+
+telegram_username
+optional
+string
+min length 2
+max length 100
+allowed characters: letters, numbers, "_"
+trim whitespace
+
+tiktok_username
+optional
+string
+min length 2
+max length 100
+allowed characters: letters, numbers, ".", "_"
+trim whitespace
+
+linkedin_username
+optional
+string
+min length 2
+max length 100
+allowed characters: letters, numbers, "-", "_"
+trim whitespace
+
+youtube_channel
+optional
+string
+min length 2
+max length 100
+allowed characters: letters, numbers, "-", "_"
+trim whitespace
+
+twitter_username
+optional
+string
+min length 2
+max length 100
+allowed characters: letters, numbers, "_"
+trim whitespace
+
+
+whatsapp_number
+optional
+string
+must contain valid phone number format
+example:
++251911111111
+
+
+
+contact_number
+optional
+string
+must contain valid phone number format
+maximum two numbers allowed
+two numbers must be separated by "/"
+example:
++251900000000
+or
++251900000000/+251911111111
+
+
+Phone Number Rules
+
+must start with "+" followed by country code
+only numbers allowed after "+"
+minimum length 10
+maximum length 15
+
+Example valid phone numbers
+
++251911111111
++251922222222
+
+
+General Rule
+
+At least one field must be provided when creating or updating social media.

@@ -14,7 +14,7 @@ General Information
 Base URL: /api/
 --------------------------------------------------
 •	Authentication: JWT Bearer Token in Authorization header required for all endpoints.
-•	Content-Type: JSON for requests/responses unless stated (file uploads use multipart/form-data).
+•	Content-Type: JSON for requests/Responses unless stated (file uploads use multipart/form-data).
 •	Timestamps: ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ).
 •	IDs: BIGINT UNSIGNED.
 •	Enums: Case-sensitive strings.
@@ -917,7 +917,7 @@ Request:
   - coc_assessment_date (string, required): ISO 8601 date (YYYY-MM-DD)
   - coc_issue_date (string, required): ISO 8601 date
   - coc_expiry_date (string, required): ISO 8601 date (must be after issue date)
-  - coc_document (file, required): COC document file (PDF or image)
+  - coc_document_url (file, required): COC document file (PDF or image)
 
 Response:
 201 Created

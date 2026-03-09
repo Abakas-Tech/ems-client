@@ -5,13 +5,13 @@ import { listWorkers } from "../../../api/worker.api";
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 
-import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/response/UseResponse";
+import useloader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 const WorkerModuleManagement = () => {
   const navigate = useNavigate();
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
   const [workers, setWorkers] = useState([]);

@@ -1,20 +1,62 @@
-const BADGE_COLORS = {
-  green: "text-success",
-  blue: "text-primary",
-  yellow: "text-warning",
-  red: "text-danger",
-  cyan: "text-info",
-  gray: "text-muted",
-  dark: "text-dark",
-  purple: "text-secondary",
+import React, { useMemo } from "react";
+import styles from "./Badge.module.css";
+
+const TEXT_COLORS = {
+  green: "text-success border-success",
+  blue: "text-primary border-primary",
+  yellow: "text-warning border-warning",
+  red: "text-danger border-danger",
+  cyan: "text-info border-info",
+  gray: "text-muted border-secondary",
+  dark: "text-dark border-dark",
+  purple: "text-secondary border-secondary",
 };
 
-const Badge = ({ content = "—", color = "gray" }) => {
-  const colorClass = BADGE_COLORS[color] || BADGE_COLORS.gray;
+const BG_COLORS = {
+  green: "bg-success text-white border-success",
+  blue: "bg-primary text-white border-primary",
+  yellow: "bg-warning text-dark border-warning",
+  red: "bg-danger text-white border-danger",
+  gray: "bg-secondary text-white border-secondary",
+  dark: "bg-dark text-white border-dark",
+  cyan: "bg-info text-white border-info",
+};
+
+const Badge = ({ content, color = "gray", solid = false, onDelete }) => {
+  const badgeClass = useMemo(() => {
+    const activeMap = solid ? BG_COLORS : TEXT_COLORS;
+    return activeMap[color] || activeMap.gray;
+  }, [color, solid]);
+
+  const displayContent = content ? String(content).toUpperCase() : "—";
+  const closeBtnColor = solid ? "" : "text-danger";
+
+  // Combine module classes with Bootstrap utilities
+  const containerClasses = [
+    "badge",
+    "border",
+    "fw-semibold",
+    styles["badge-container"],
+    onDelete ? styles["is-editable"] : "",
+    badgeClass,
+  ].join(" ");
 
   return (
-    <span className={`badge border fw-semibold ${colorClass}`}>
-      {String(content).toUpperCase()}
+    <span className={containerClasses}>
+      {displayContent}
+
+      {onDelete && (
+        <button
+          type="button"
+          className={`btn p-0 d-flex align-items-center justify-content-center ${styles["delete-button"]} ${closeBtnColor}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+        >
+          &times;
+        </button>
+      )}
     </span>
   );
 };

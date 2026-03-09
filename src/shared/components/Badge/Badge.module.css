@@ -1,0 +1,30 @@
+.badge-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: middle;
+  padding-right: 8px; 
+}
+
+/* Modifier for when the delete button is present */
+.is-editable {
+  padding-right: 4px;
+}
+
+.delete-button {
+  width: 14px;
+  height: 14px;
+  font-size: 20px;
+  line-height: 0;
+  border: none;
+  background: transparent;
+  color: currentColor;
+  margin-bottom: 2px; 
+  outline: none;
+}
+
+/* Ensure the button doesn't stretch or shrink */
+.delete-button:focus {
+  outline: none;
+  box-shadow: none;
+}

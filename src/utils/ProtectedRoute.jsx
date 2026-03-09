@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { hasAccessToken, setAccessToken } from "./axios";
 import { refreshTokenApi } from "../domains/admin/api/auth.api";
-import useLoader from "./../context/Loader/useLoader";
+import useloader from "./../context/Loader/useLoader";
 
 const ProtectedRoute = ({ children }) => {
   const [checking, setChecking] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
 
   useEffect(() => {
     const restoreToken = async () => {

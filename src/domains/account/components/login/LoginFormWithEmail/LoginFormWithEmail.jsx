@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginWithEmail } from "../../../api/auth.api";
-import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/Response/useResponse";
+import useloader from "../../../../../context/Loader/useLoader";
 
 import PasswordInput from "../../../../../shared/components/PasswordInput/PasswordInput";
 import { setAccessToken } from "../../../../../utils/axios";
+import useResponse from "../../../../../context/Response/useResponse";
 
 const LoginFormWithEmail = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
-
 
   const validateInputs = () => {
     if (!email || !password) {

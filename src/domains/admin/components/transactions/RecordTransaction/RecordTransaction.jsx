@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createTransaction, updateTransaction } from "../../../api/finance.api";
 import useProfile from "../../../../../context/Profile/useProfile";
-import useLoader from "../../../../../context/Loader/useLoader";
+import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
@@ -11,7 +11,7 @@ const RecordTransaction = ({
   onSuccess,
   onCancel,
 }) => {
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { profile } = useProfile();
 

@@ -21,102 +21,109 @@ function MetaDataDashboard() {
 
       <div className="container">
         <div className="row justify-content-center g-lg-3 g-4">
-          {/* Add Worker */}
+          {/* Country */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-            <div className="agents-grid card rounded-3 border p-4 text-center">
-              <div className="mt-4 mb-3">
-                <Link to="/admin/meta-data/add-country">
+            <Link
+              to="/admin/meta-data/country"
+              className="text-decoration-none text-dark"
+            >
+              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+                <div className="mt-4 mb-3">
                   <IoMdGlobe className="text-info" size={50} />
-                </Link>
+                </div>
+                <h5 className="fr-can-name lh-base mb-2">Country</h5>
               </div>
-              <h5 className="fr-can-name lh-base mb-2">
-                <Link to="/admin/meta-data/add-country">Add Country</Link>
-              </h5>
-            </div>
+            </Link>
           </div>
 
-          {/* Active Workers */}
+          {/* Language */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-            <div className="agents-grid card rounded-3 border p-4 text-center">
-              <div className="mt-4 mb-3">
-                <Link to="/admin/meta-data/add-language">
+            <Link
+              to="/admin/meta-data/language"
+              className="text-decoration-none text-dark"
+            >
+              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+                <div className="mt-4 mb-3">
                   <IoLanguage className="text-info" size={50} />
-                </Link>
+                </div>
+                <h5 className="fr-can-name lh-base mb-2">Language</h5>
               </div>
-              <h5 className="fr-can-name lh-base mb-2">
-                <Link to="/admin/meta-data/add-language">Add Language</Link>
-              </h5>
-            </div>
+            </Link>
           </div>
 
-          {/* Add Modules */}
+          {/* Region */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-            <div className="agents-grid card rounded-3 border p-4 text-center">
-              <div className="mt-4 mb-3">
-                <Link to="/admin/meta-data/add-region">
+            <Link
+              to="/admin/meta-data/region"
+              className="text-decoration-none text-dark"
+            >
+              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+                <div className="mt-4 mb-3">
                   <FaMap className="text-info" size={50} />
-                </Link>
+                </div>
+                <h5 className="fr-can-name lh-base mb-2">Region</h5>
               </div>
-              <h5 className="fr-can-name lh-base mb-2">
-                <Link to="/admin/meta-data/add-region">Add Region</Link>
-              </h5>
-            </div>
+            </Link>
           </div>
 
-          {/* Archived Workers */}
+          {/* City */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-            <div className="agents-grid card rounded-3 border p-4 text-center">
-              <div className="mt-4 mb-3">
-                <Link to="/admin/meta-data/add-city">
+            <Link
+              to="/admin/meta-data/city"
+              className="text-decoration-none text-dark"
+            >
+              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+                <div className="mt-4 mb-3">
                   <FaMapLocationDot className="text-info" size={50} />
-                </Link>
+                </div>
+                <h5 className="fr-can-name lh-base mb-2">City</h5>
               </div>
-              <h5 className="fr-can-name lh-base mb-2">
-                <Link to="/admin/meta-data/add-city">Add City</Link>
-              </h5>
-            </div>
+            </Link>
           </div>
 
-          {/* Archived Workers */}
+          {/* Job Position */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-            <div className="agents-grid card rounded-3 border p-4 text-center">
-              <div className="mt-4 mb-3">
-                <Link to="/admin/meta-data/add-job-position">
+            <Link
+              to="/admin/meta-data/job-position"
+              className="text-decoration-none text-dark"
+            >
+              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+                <div className="mt-4 mb-3">
                   <MdOutlineWorkOutline className="text-info" size={50} />
-                </Link>
+                </div>
+                <h5 className="fr-can-name lh-base mb-2">Job Position</h5>
               </div>
-              <h5 className="fr-can-name lh-base mb-2">
-                <Link to="/admin/meta-data/add-job-position">Add Job Position</Link>
-              </h5>
-            </div>
+            </Link>
           </div>
 
-          {/* Archived Workers */}
+          {/* Skill */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-            <div className="agents-grid card rounded-3 border p-4 text-center">
-              <div className="mt-4 mb-3">
-                <Link to="/admin/meta-data/add-skill">
+            <Link
+              to="/admin/meta-data/skill"
+              className="text-decoration-none text-dark"
+            >
+              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+                <div className="mt-4 mb-3">
                   <GiBrain className="text-info" size={50} />
-                </Link>
+                </div>
+                <h5 className="fr-can-name lh-base mb-2">Skill</h5>
               </div>
-              <h5 className="fr-can-name lh-base mb-2">
-                <Link to="/admin/meta-data/add-skill">Add Skill</Link>
-              </h5>
-            </div>
+            </Link>
           </div>
 
-          {/* Archived Workers */}
+          {/* Worker Status */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-            <div className="agents-grid card rounded-3 border p-4 text-center">
-              <div className="mt-4 mb-3">
-                <Link to="/admin/meta-data/add-status">
+            <Link
+              to="/admin/meta-data/worker-status"
+              className="text-decoration-none text-dark"
+            >
+              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+                <div className="mt-4 mb-3">
                   <FiActivity className="text-info" size={50} />
-                </Link>
+                </div>
+                <h5 className="fr-can-name lh-base mb-2">Status</h5>
               </div>
-              <h5 className="fr-can-name lh-base mb-2">
-                <Link to="/admin/meta-data/add-status">Add Status</Link>
-              </h5>
-            </div>
+            </Link>
           </div>
         </div>
       </div>

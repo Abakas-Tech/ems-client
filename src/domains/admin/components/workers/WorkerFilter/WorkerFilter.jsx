@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import { getRegions } from "../../../api/meta.api";
-import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/response/UseResponse";
+import useloader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
 import styles from "./WorkerFilter.module.css";
 
 const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
   const [statuses, setStatuses] = useState([]);
@@ -20,7 +20,7 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
     const fetchMeta = async () => {
       showLoader();
       try {
-        const response  = await getWorkerStatuses()
+        const response = await getWorkerStatuses();
         const statusData = response?.data || [];
         const regionResponse = await getRegions();
         const regionData = regionResponse?.data || [];

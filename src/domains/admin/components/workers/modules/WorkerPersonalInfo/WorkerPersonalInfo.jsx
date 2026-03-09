@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { updateWorker } from "../../../../api/worker.api";
 import { getRegions, getCities } from "../../../../api/meta.api";
-import useLoader from "../../../../../../context/Loader/useLoader";
+import useloader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 
 function WorkerPersonalInfo() {
   const Navigate = useNavigate();
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { id } = useParams();
 
@@ -295,7 +295,10 @@ function WorkerPersonalInfo() {
 
       const response = await updateWorker(dataToSend, id);
 
-      addMessage(response?.success, response?.message || "Personal information added successfully");
+      addMessage(
+        response?.success,
+        response?.message || "Personal information added successfully",
+      );
 
       // Clear form and photos after successful submission
       setFormData({
@@ -320,7 +323,6 @@ function WorkerPersonalInfo() {
       setPhoto3x4(null);
       setPhotoStanding(null);
     } catch (err) {
-     
       addMessage(false, err.message);
     } finally {
       setSubmitLoading(false);
