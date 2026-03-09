@@ -1,0 +1,185 @@
+Gallery API Documentation
+1. Create Gallery Item
+
+Uploads an image with title and optional description. Gallery stores a maximum 10 images.
+
+Endpoint:
+POST /api/gallery
+
+Content Type:
+multipart/form-data
+
+Request Example:
+
+title: "Company Building"
+description: "Main office building"
+file: file.jpg
+
+Successful Response:
+Status: 201 Created
+
+{
+  "success": true,
+  "message": "Gallery item created successfully",
+  "data": {
+    "id": 1,
+    "title": "Company Building",
+    "description": "Main office building",
+    "image_url": "/uploads/gallery/171920193.jpg",
+    "created_at": "2026-03-06T10:20:00Z"
+  }
+}
+
+Behavior When Limit is Exceeded:
+Status: 400 Bad Request
+
+{
+  "success": false,
+  "message": "Gallery limit reached. Maximum 10 items allowed."
+}
+
+Validation Rules (Create):
+
+title: required, string, min length 2, max length 50, trim whitespace
+
+description: optional, string, max length 200, trim whitespace
+
+file: required, file type: jpg, jpeg, png, webp, max size 5MB
+
+2. Get All Gallery Items
+
+Returns all gallery items.
+
+Endpoint:
+GET /api/gallery
+
+Example Request:
+
+GET /api/gallery
+
+Successful Response:
+Status: 200 OK
+
+{
+  "success": true,
+  "message": "Gallery items retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "title": "Company Building",
+      "description": "Main office building",
+      "image_url": "/uploads/gallery/171920193.jpg",
+      "created_at": "2026-03-06T10:20:00Z"
+    },
+    {
+      "id": 2,
+      "title": "Meeting Room",
+      "description": "Conference room",
+      "image_url": "/uploads/gallery/171920195.jpg",
+      "created_at": "2026-03-06T11:10:00Z"
+    }
+  ]
+}
+
+Empty Gallery Response:
+
+{
+  "success": true,
+  "message": "Gallery items retrieved successfully",
+  "data": []
+}
+3. Get Single Gallery Item
+
+Returns a single gallery item.
+
+Endpoint:
+GET /api/gallery/:id
+
+Example Request:
+
+GET /api/gallery/1
+
+Successful Response:
+
+{
+  "success": true,
+  "message": "Gallery item fetched successfully",
+  "data": {
+    "id": 1,
+    "title": "Company Building",
+    "description": "Main office building",
+    "image_url": "/uploads/gallery/171920193.jpg",
+    "created_at": "2026-03-06T10:20:00Z"
+  }
+}
+
+Not Found Response:
+
+{
+  "success": false,
+  "message": "Gallery item not found"
+}
+4. Update Gallery Item
+
+Allows updating metadata and image. File is required.
+
+Endpoint:
+PUT /api/gallery/:id
+
+Content Type:
+multipart/form-data
+
+Request Example:
+
+title: "Updated Title"
+description: "Updated description"
+file: new-image.jpg
+
+Successful Response:
+
+{
+  "success": true,
+  "message": "Gallery item updated successfully",
+  "data": {
+    "id": 1,
+    "title": "Updated Title",
+    "description": "Updated description",
+    "image_url": "/uploads/gallery/171920400.jpg",
+    "created_at": "2026-03-06T10:20:00Z"
+  }
+}
+
+Validation Rules (Update):
+
+title: optional, string, min length 2, max length 50, trim whitespace
+
+description: optional, string, max length 200, trim whitespace
+
+file: required, file type: jpg, jpeg, png, webp, max size 5MB
+
+5. Delete Single Gallery Item
+
+Endpoint:
+DELETE /api/gallery/:id
+
+Example Request:
+
+DELETE /api/gallery/1
+
+Successful Response:
+
+{
+  "success": true,
+  "message": "Gallery item deleted successfully"
+}
+6. Delete All Gallery Items
+
+Endpoint:
+DELETE /api/gallery
+
+Successful Response:
+
+{
+  "success": true,
+  "message": "All gallery items deleted successfully"
+}

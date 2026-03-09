@@ -12081,6 +12081,24 @@ th.next.available,
   ._arrow_1qx3w_1 {
     display: none !important;
   }
+  #printable-report,
+  #printable-report * {
+    visibility: visible;
+  }
+  #printable-report {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none !important; /* Remove shadows for clean PDF */
+    border: none !important;
+  }
+  /* Hide the Print Button itself during printing */
+  .card-footer,
+  .btn,
+  .back-button {
+    display: none !important;
+  }
 }
 /* Container for the notification list */
 .notification-row:hover {

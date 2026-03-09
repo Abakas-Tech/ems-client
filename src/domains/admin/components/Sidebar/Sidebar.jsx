@@ -30,7 +30,13 @@ const menuItems = [
   { label: "Files", path: "/admin/my-files", icon: "bi bi-files" },
   { label: "Meta Data", path: "/admin/meta-data", icon: "bi bi-database-add" },
   { label: "Notifications", path: "/admin/notifications", icon: "bi bi-bell" },
+  {
+    label: "Public Content",
+    path: "/admin/public-content",
+    icon: "bi bi-layout-text-sidebar-reverse",
+  },
   { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
+
   { label: "Log Out", path: "#", icon: "bi bi-power", isLogout: true },
 ];
 
@@ -68,9 +74,8 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
     <div className={styles.content}>
       <ul className={styles.nav}>
         {filteredItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = location.pathname.startsWith(item.path);
           const liClass = isActive ? "active" : "";
-
           if (item.isLogout) {
             return (
               <li key={item.label} className={liClass}>

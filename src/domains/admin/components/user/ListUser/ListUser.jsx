@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import { getUsers, deleteUser, updateUser } from "../../../api/user.api";
 import { getPermission } from "../../../api/permission.api";
-import useLoader from "../../../../../context/Loader/useLoader";
+import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterUser from "./../../../components/user/FilterUser/FilterUser";
@@ -17,7 +17,7 @@ const ROLE_COLOR = {
 };
 
 const ListUser = () => {
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
   const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -168,7 +168,7 @@ const ListUser = () => {
         ...row,
         permissions: permResponse?.data || [],
       };
-      navigate("/admin/create-user", {
+      navigate("/admin/user-management/create-user", {
         state: { isEditMode: true, userData: userDataWithPermissions },
       });
     } catch (err) {
@@ -179,7 +179,9 @@ const ListUser = () => {
   };
 
   const handleCreateUser = () => {
-    navigate("/admin/create-user", { state: { isEditMode: false } });
+    navigate("/admin/user-management/create-user", {
+      state: { isEditMode: false },
+    });
   };
 
   const columns = [

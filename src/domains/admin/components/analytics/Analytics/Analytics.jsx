@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import StatCard from "../StatCard/StatCard";
 import AnalyticsFilter from "../AnalyticsFilter/AnalyticsFilter";
 import fetchDashboardData from "../../../api/analytics.api";
-import useLoader from "../../../../../context/Loader/useLoader";
+import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 
 const Analytics = () => {
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
   const [data, setData] = useState(null);
   const [filters, setFilters] = useState({
-    period: "monthly",
+    period: "yearly",
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
   });

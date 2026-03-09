@@ -8,8 +8,8 @@ import {
 
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 
-import useLoader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/response/UseResponse";
+import useloader from "../../../../../context/Loader/useLoader";
+import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
@@ -17,7 +17,7 @@ import BackButton from "../../../../../shared/components/BackButton/BackButton";
 const ActiveWorkers = () => {
   const navigate = useNavigate();
   const { openModal } = useDelete();
-  const { showLoader, hideLoader } = useLoader();
+  const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
   const [workers, setWorkers] = useState([]);

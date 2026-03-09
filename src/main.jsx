@@ -9,9 +9,9 @@ import { BrowserRouter } from "react-router-dom";
 
 import "./index.css";
 import App from "./App.jsx";
-import LoaderProvider from "./context/Loader/LoaderProvider";
+import LoaderProvider from "./context/loader/LoaderProvider";
 import LogoutProvider from "./context/Logout/LogoutProvider.jsx";
-import ResponseProvider from "./context/response/ResponseProvider.jsx";
+import ResponseProvider from "./context/Response/ResponseProvider.jsx";
 import ConfirmDeleteProvider from "./context/Delete/DeleteProvider";
 import ProfileProvider from "./context/Profile/ProfileProvider.jsx";
 import DemoInfoProvider from "./context/Demo/DemoInfoProvider";
