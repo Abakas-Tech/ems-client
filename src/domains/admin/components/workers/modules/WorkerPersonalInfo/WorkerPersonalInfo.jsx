@@ -350,9 +350,7 @@ function WorkerPersonalInfo() {
         <div className="col-lg-12 col-md-12">
           <BackButton onClick={goBack} />
           <form className="form-submit" onSubmit={handleSubmit}>
-            <h2 className="fw-bold text-dark mb-1">
-              Worker Personal Information
-            </h2>
+            <h2 className="fw-bold text-dark mb-3">Personal Information</h2>
             <div className="submit-section">
               <div className="row">
                 {/* Sex */}
