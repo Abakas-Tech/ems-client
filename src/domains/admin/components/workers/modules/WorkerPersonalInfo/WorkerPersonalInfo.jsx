@@ -141,6 +141,14 @@ function WorkerPersonalInfo() {
     if (name === "photo_standing_url") setPhotoStanding(files[0]);
   };
 
+  const nameRegex = /^[A-Za-z\s]+$/;
+
+  const educationRegex = /^[A-Za-z\s.]+$/;
+
+  const isOnlyAlphabetsAndSpaces = (value) => {
+    if (!value || value.trim() === "") return true;
+    return nameRegex.test(value.trim());
+  };
   // Frontend validation
   const validatePersonalInfo = (data) => {
     // sex (required)
@@ -176,11 +184,18 @@ function WorkerPersonalInfo() {
     // place_of_birth
     if (data.place_of_birth && data.place_of_birth.trim().length > 100) {
       return "Place of birth must be at most 100 characters";
+    } else if (
+      data.place_of_birth &&
+      !isOnlyAlphabetsAndSpaces(data.place_of_birth)
+    ) {
+      return "Place of birth must contain only letters and spaces";
     }
 
     // religion
     if (data.religion && data.religion.trim().length > 50) {
       return "Religion must be at most 50 characters";
+    } else if (data.religion && !isOnlyAlphabetsAndSpaces(data.religion)) {
+      return "Religion must contain only letters and spaces";
     }
 
     // marital_status
@@ -192,8 +207,8 @@ function WorkerPersonalInfo() {
     }
 
     // nationality
-    if (data.nationality && typeof data.nationality !== "string") {
-      return "Nationality must be a string";
+    if (data.nationality && !isOnlyAlphabetsAndSpaces(data.nationality)) {
+      return "Nationality must contain only letters and spaces";
     }
 
     // address
@@ -204,6 +219,8 @@ function WorkerPersonalInfo() {
     // education
     if (data.education && data.education.trim().length > 100) {
       return "Education must be at most 100 characters";
+    } else if (data.education && !educationRegex.test(data.education.trim())) {
+      return "Education must contain only letters, spaces, and dots";
     }
 
     // number_of_children
@@ -214,18 +231,29 @@ function WorkerPersonalInfo() {
       }
     }
 
-    // height_cm (required in UI)
-    const h = Number(data.height_cm);
-    if (isNaN(h) || h < 100 || h > 250) {
-      return "Height must be between 100 and 250 cm";
+    // validate only if provided
+    if (
+      data.height_cm !== "" &&
+      data.height_cm !== null &&
+      data.height_cm !== undefined
+    ) {
+      const h = Number(data.height_cm);
+      if (isNaN(h) || h < 100 || h > 250) {
+        return "Height must be between 100 and 250 cm";
+      }
     }
 
-    // weight_kg (required)
-    const w = Number(data.weight_kg);
-    if (isNaN(w) || w < 30 || w > 200) {
-      return "Weight must be between 30 and 200 kg";
+    // validate only if provided
+    if (
+      data.weight_kg !== "" &&
+      data.weight_kg !== null &&
+      data.weight_kg !== undefined
+    ) {
+      const w = Number(data.weight_kg);
+      if (isNaN(w) || w < 30 || w > 200) {
+        return "Weight must be between 30 and 200 kg";
+      }
     }
-
     // Photos (required)
     if (!photo3x4) return "Photo 3x4 is required";
     if (!photoStanding) return "Photo Standing is required";
@@ -592,7 +620,6 @@ function WorkerPersonalInfo() {
                     onChange={handleFileChange}
                     required
                   />
-                 
                 </div>
               </div>
             </div>
