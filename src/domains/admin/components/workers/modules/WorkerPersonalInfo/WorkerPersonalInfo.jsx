@@ -155,7 +155,6 @@ function WorkerPersonalInfo() {
       return "Sex must be Male or Female";
     }
 
-
     // region_id (optional but valid if provided)
     if (data.region_id && data.region_id !== "") {
       const v = Number(data.region_id);
@@ -561,9 +560,7 @@ function WorkerPersonalInfo() {
 
                 {/* Height */}
                 <div className="form-group col-md-6">
-                  <label>
-                    Height (cm) <span className="text-danger">*</span>
-                  </label>
+                  <label>Height (cm)</label>
                   <input
                     type="number"
                     name="height_cm"
@@ -576,9 +573,7 @@ function WorkerPersonalInfo() {
 
                 {/* Weight */}
                 <div className="form-group col-md-6">
-                  <label>
-                    Weight (kg) <span className="text-danger">*</span>
-                  </label>
+                  <label>Weight (kg)</label>
                   <input
                     type="number"
                     name="weight_kg"
