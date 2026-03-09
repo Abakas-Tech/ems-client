@@ -316,6 +316,68 @@ const deleteMedicalRecord = async (workerId) => {
   }
 };
 
+// Create LMIS
+const createLmis = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/${workerId}/lmis`,
+      formData,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to create LMIS information",
+    );
+  }
+};
+
+// Update LMIS
+const updateLmis = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/${workerId}/lmis`,
+      formData,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update LMIS information",
+    );
+  }
+};
+
+// Get LMIS details
+const getLmisDetails = async (workerId) => {
+  try {
+    const response = await axiosInstance.get(`/workers/${workerId}/lmis`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get LMIS information",
+    );
+  }
+};
+
+// Delete LMIS
+const deleteLmis = async (workerId) => {
+  try {
+    const response = await axiosInstance.delete(`/workers/${workerId}/lmis`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete LMIS information",
+    );
+  }
+};
+
 export {
   deleteWorker,
   createWorker,
@@ -338,4 +400,8 @@ export {
   updateMedicalRecord,
   getMedicalDetails,
   deleteMedicalRecord,
+  createLmis,
+  updateLmis,
+  getLmisDetails,
+  deleteLmis,
 };

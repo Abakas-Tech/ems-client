@@ -38,6 +38,7 @@ import GalleryListPage from './../domains/admin/pages/content/Gallery/Gallery/Ga
 import GalleryUplaodPage from "../domains/admin/pages/content/Gallery/GalleryUpload/GalleryUplaod.jsx";
 import LocationPage from './../domains/admin/pages/content/Location/Location';
 import ContentDashboard from "../domains/admin/components/content/Dashboard/Dashboard.jsx";
+import Lmis from './../domains/admin/pages/workers/modules/Lmis/Lmis';
 
 
 const AdminRoutes = () => (
@@ -84,6 +85,7 @@ const AdminRoutes = () => (
       <Route path="workers/modules/:id/passport" element={<Passport />} />
       <Route path="workers/modules/:id/coc" element={<Coc />} />
       <Route path="workers/modules/:id/medical" element={<Medical />} />
+      <Route path="workers/modules/:id/lmis" element={<Lmis />} />
       <Route path="/meta-data" element={<MetaDataDashboard />} />
       <Route path="/public-content" element={<ContentDashboard/>} />
       <Route path="/public-content/social-media" element={<SocialMediaPage />} />

@@ -4,7 +4,7 @@ import { FaFilePdf, FaImage } from "react-icons/fa";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import ActionButtons from "../../../../../shared/components/ActionButtons/ActionButtons";
-import { deletePassport, getWorkerProfile, deleteCoc } from "../../../api/worker.api";
+import { deletePassport, getWorkerProfile, deleteCoc,deleteLmis } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
@@ -68,7 +68,10 @@ const useWorkerActions = (workerId) => {
   const editEmergency = () =>
     navigate(`/admin/workers/modules/${workerId}/emergency-contact`);
   const editVisa = () => navigate(`/admin/workers/modules/${workerId}/visa`);
-  const editLmis = () => navigate(`/admin/workers/modules/${workerId}/lmis`);
+ const editLmis = (lmis) =>
+   navigate(`/admin/workers/modules/${workerId}/lmis`, {
+     state: { lmis },
+   });
   const editTravel = () =>
     navigate(`/admin/workers/modules/${workerId}/travel-records`);
   const editContract = () =>
@@ -142,10 +145,10 @@ const useWorkerDeletes = (
     //   deleteVisa,
     //   "Are you sure you want to delete this visa?",
     // ),
-    // deleteLmis: handleDelete(
-    //   deleteLmis,
-    //   "Are you sure you want to delete this LMIS info?",
-    // ),
+    deleteLmis: handleDelete(
+      deleteLmis,
+      "Are you sure you want to delete this LMIS info?",
+    ),
     // deleteTravel: handleDelete(
     //   deleteTravel,
     //   "Are you sure you want to delete this travel record?",
@@ -976,10 +979,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">LMIS Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editLmis },
+                    { type: "edit", onClick: () => actions.editLmis(lmisObj) },
                     {
                       type: "delete",
-                      // onClick: deletes.deleteLmis
+                      onClick: deletes.deleteLmis
                     },
                   ]}
                 />
