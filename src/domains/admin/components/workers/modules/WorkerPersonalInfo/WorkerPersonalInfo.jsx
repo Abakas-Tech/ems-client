@@ -151,14 +151,10 @@ function WorkerPersonalInfo() {
   };
   // Frontend validation
   const validatePersonalInfo = (data) => {
-    // sex (required)
-    if (!data.sex) return "Sex is required";
     if (!["Male", "Female"].includes(data.sex)) {
       return "Sex must be Male or Female";
     }
 
-    // status_id (required)
-    if (!data.status_id) return "Worker status is required";
 
     // region_id (optional but valid if provided)
     if (data.region_id && data.region_id !== "") {
