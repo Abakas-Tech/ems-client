@@ -1,7 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { updateWorker } from "../../../../api/worker.api";
-import { getRegions, getCities } from "../../../../api/meta.api";
+import { createPersonalInfo } from "../../../../api/worker.api";
+import {
+  getRegions,
+  getCities,
+  getWorkerStatuses,
+} from "../../../../api/meta.api"; // ← added getWorkerStatuses
 import useloader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
@@ -10,27 +15,28 @@ function WorkerPersonalInfo() {
   const Navigate = useNavigate();
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
-  const { id } = useParams();
+  const { id } = useParams(); // worker ID
 
   const [regions, setRegions] = useState([]);
   const [regionsError] = useState(null);
   const [cities, setCities] = useState([]);
+  const [statuses, setStatuses] = useState([]); // ← new: for worker statuses
 
   const [formData, setFormData] = useState({
-    personal_information: {
-      region_id: "",
-      city_id: "",
-      date_of_birth: "",
-      place_of_birth: "",
-      religion: "",
-      marital_status: "",
-      nationality: "Ethiopian",
-      address: "",
-      education: "",
-      number_of_children: 0,
-      height_cm: "",
-      weight_kg: "",
-    },
+    region_id: "",
+    city_id: "",
+    date_of_birth: "",
+    place_of_birth: "",
+    religion: "",
+    marital_status: "",
+    nationality: "Ethiopian",
+    address: "",
+    education: "",
+    number_of_children: 0,
+    height_cm: "",
+    weight_kg: "",
+    sex: "",
+    status_id: "",
   });
 
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -41,6 +47,7 @@ function WorkerPersonalInfo() {
   const goBack = () => {
     Navigate(-1);
   };
+
   // Load regions
   useEffect(() => {
     const loadRegions = async () => {
@@ -56,19 +63,41 @@ function WorkerPersonalInfo() {
       }
     };
     loadRegions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Load worker statuses (just like in registration)
+  useEffect(() => {
+    const loadStatuses = async () => {
+      showLoader();
+      try {
+        const response = await getWorkerStatuses();
+        setStatuses(response.data || []);
+      } catch (err) {
+        setStatuses([]);
+        addMessage(false, err.message);
+      } finally {
+        hideLoader();
+      }
+    };
+    loadStatuses();
   }, []);
 
   // Load cities when region changes
   useEffect(() => {
-    const regionId = formData.personal_information.region_id;
-    if (!regionId) return setCities([]);
+    const regionId = Number(formData.region_id);
 
     const loadCities = async () => {
       showLoader();
       try {
-        const response = await getCities(regionId);
-        setCities(response.data || []);
+        const response = await getCities({ region_id: regionId });
+
+        // Force array
+        const cityList = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+            ? response.data
+            : [];
+        setCities(cityList);
       } catch (err) {
         addMessage(false, err.message);
         setCities([]);
@@ -76,37 +105,32 @@ function WorkerPersonalInfo() {
         hideLoader();
       }
     };
-    loadCities();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.personal_information.region_id]);
 
-  // Handle form field changes
+    loadCities();
+  }, [formData.region_id]);
+
+  // Handle text/select changes
   const handleTextChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith("personal_")) {
-      const field = name.replace("personal_", "");
+
+    // For ID fields
+    if (name === "region_id" || name === "city_id" || name === "status_id") {
       setFormData((prev) => ({
         ...prev,
-        personal_information: { ...prev.personal_information, [field]: value },
+        [name]: value ? Number(value) : "",
       }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  // Handle number inputs separately to allow empty string (for optional fields)
+  // Handle number inputs (allow empty string for optional)
   const handleNumberChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith("personal_")) {
-      const field = name.replace("personal_", "");
-      setFormData((prev) => ({
-        ...prev,
-        personal_information: {
-          ...prev.personal_information,
-          [field]: value === "" ? "" : Number(value),
-        },
-      }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value === "" ? "" : Number(value),
+    }));
   };
 
   // Handle file inputs
@@ -117,107 +141,102 @@ function WorkerPersonalInfo() {
     if (name === "photo_standing_url") setPhotoStanding(files[0]);
   };
 
-  // Frontend validation function
-  const validatePersonalInfo = (pi) => {
-    // region_id
-    if (pi.region_id !== null && pi.region_id !== "") {
-      const v = Number(pi.region_id);
-      if (!Number.isInteger(v) || v <= 0) {
-        return "Region must be a positive integer";
-      }
+  // Frontend validation
+  const validatePersonalInfo = (data) => {
+    // sex (required)
+    if (!data.sex) return "Sex is required";
+    if (!["Male", "Female"].includes(data.sex)) {
+      return "Sex must be Male or Female";
     }
 
-    // city_id
-    if (pi.city_id !== null && pi.city_id !== "") {
-      const v = Number(pi.city_id);
-      if (!Number.isInteger(v) || v <= 0) {
+    // status_id (required)
+    if (!data.status_id) return "Worker status is required";
+
+    // region_id (optional but valid if provided)
+    if (data.region_id && data.region_id !== "") {
+      const v = Number(data.region_id);
+      if (!Number.isInteger(v) || v <= 0)
+        return "Region must be a positive integer";
+    }
+
+    // city_id (optional but valid if provided)
+    if (data.city_id && data.city_id !== "") {
+      const v = Number(data.city_id);
+      if (!Number.isInteger(v) || v <= 0)
         return "City must be a positive integer";
-      }
     }
 
     // date_of_birth
-    if (pi.date_of_birth) {
-      const dob = new Date(pi.date_of_birth);
-      if (isNaN(dob.getTime())) {
-        return "Date of birth must be a valid ISO date";
-      }
-      if (dob >= new Date()) {
-        return "Date of birth must be in the past";
-      }
+    if (data.date_of_birth) {
+      const dob = new Date(data.date_of_birth);
+      if (isNaN(dob.getTime())) return "Date of birth must be a valid date";
+      if (dob >= new Date()) return "Date of birth must be in the past";
     }
 
     // place_of_birth
-    if (pi.place_of_birth) {
-      if (pi.place_of_birth.trim().length > 100) {
-        return "Place of birth must be at most 100 characters";
-      }
+    if (data.place_of_birth && data.place_of_birth.trim().length > 100) {
+      return "Place of birth must be at most 100 characters";
     }
 
     // religion
-    if (pi.religion) {
-      if (pi.religion.trim().length > 50) {
-        return "Religion must be at most 50 characters";
-      }
+    if (data.religion && data.religion.trim().length > 50) {
+      return "Religion must be at most 50 characters";
     }
 
     // marital_status
-    if (pi.marital_status) {
+    if (data.marital_status) {
       const allowed = ["Single", "Married", "Divorced", "Widowed"];
-      if (!allowed.includes(pi.marital_status)) {
+      if (!allowed.includes(data.marital_status)) {
         return "Marital status must be Single, Married, Divorced, or Widowed";
       }
     }
 
-    // sex
-    if (pi.sex) {
-      if (!["Male", "Female"].includes(pi.sex)) {
-        return "Sex must be Male or Female";
-      }
-    }
-
     // nationality
-    if (pi.nationality) {
-      if (typeof pi.nationality !== "string") {
-        return "Nationality must be a string";
-      }
+    if (data.nationality && typeof data.nationality !== "string") {
+      return "Nationality must be a string";
     }
 
     // address
-    if (pi.address) {
-      if (pi.address.trim().length > 500) {
-        return "Address must be at most 500 characters";
-      }
+    if (data.address && data.address.trim().length > 500) {
+      return "Address must be at most 500 characters";
     }
 
     // education
-    if (pi.education) {
-      if (pi.education.trim().length > 100) {
-        return "Education must be at most 100 characters";
-      }
+    if (data.education && data.education.trim().length > 100) {
+      return "Education must be at most 100 characters";
     }
 
     // number_of_children
-    if (pi.number_of_children !== null && pi.number_of_children !== "") {
-      const v = Number(pi.number_of_children);
+    if (data.number_of_children !== "" && data.number_of_children !== null) {
+      const v = Number(data.number_of_children);
       if (!Number.isInteger(v) || v < 0) {
         return "Number of children must be 0 or a positive integer";
       }
     }
 
-    // height_cm
-    if (pi.height_cm !== null && pi.height_cm !== "") {
-      const v = Number(pi.height_cm);
-      if (isNaN(v) || v < 100 || v > 250) {
-        return "Height must be between 100 and 250 cm";
-      }
+    // height_cm (required in UI)
+    const h = Number(data.height_cm);
+    if (isNaN(h) || h < 100 || h > 250) {
+      return "Height must be between 100 and 250 cm";
     }
 
-    // weight_kg
-    if (pi.weight_kg !== null && pi.weight_kg !== "") {
-      const v = Number(pi.weight_kg);
-      if (isNaN(v) || v < 30 || v > 200) {
-        return "Weight must be between 30 and 200 kg";
-      }
+    // weight_kg (required)
+    const w = Number(data.weight_kg);
+    if (isNaN(w) || w < 30 || w > 200) {
+      return "Weight must be between 30 and 200 kg";
+    }
+
+    // Photos (required)
+    if (!photo3x4) return "Photo 3x4 is required";
+    if (!photoStanding) return "Photo Standing is required";
+
+    // File type check
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (photo3x4 && !allowedTypes.includes(photo3x4.type)) {
+      return "Photo 3x4 must be a JPEG or PNG image";
+    }
+    if (photoStanding && !allowedTypes.includes(photoStanding.type)) {
+      return "Photo Standing must be a JPEG, JPG or PNG image";
     }
 
     return null;
@@ -226,9 +245,7 @@ function WorkerPersonalInfo() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const pi = formData.personal_information;
-
-    const error = validatePersonalInfo(pi);
+    const error = validatePersonalInfo(formData);
     if (error) {
       addMessage(false, error);
       return;
@@ -236,89 +253,63 @@ function WorkerPersonalInfo() {
 
     setSubmitLoading(true);
     showLoader();
+
     try {
       const dataToSend = new FormData();
 
-      const pi = formData.personal_information;
-
-      // IDs – send only if provided
-      if (pi.region_id) {
-        dataToSend.append("personal_information[region_id]", pi.region_id);
+      // Only append fields if they have values (prevents '' issues)
+      if (formData.sex) dataToSend.append("sex", formData.sex);
+      if (formData.status_id)
+        dataToSend.append("status_id", formData.status_id);
+      if (formData.region_id)
+        dataToSend.append("region_id", formData.region_id);
+      if (formData.city_id) dataToSend.append("city_id", formData.city_id);
+      if (formData.date_of_birth)
+        dataToSend.append("date_of_birth", formData.date_of_birth);
+      if (formData.place_of_birth)
+        dataToSend.append("place_of_birth", formData.place_of_birth);
+      if (formData.religion) dataToSend.append("religion", formData.religion);
+      if (formData.marital_status)
+        dataToSend.append("marital_status", formData.marital_status);
+      dataToSend.append("nationality", formData.nationality || "Ethiopian");
+      if (formData.address) dataToSend.append("address", formData.address);
+      if (formData.education)
+        dataToSend.append("education", formData.education);
+      if (formData.number_of_children !== "") {
+        dataToSend.append("number_of_children", formData.number_of_children);
       }
-      if (pi.city_id) {
-        dataToSend.append("personal_information[city_id]", pi.city_id);
-      }
-      if (pi.status_id) {
-        dataToSend.append("personal_information[status_id]", pi.status_id);
-      }
+      dataToSend.append("height_cm", formData.height_cm);
+      dataToSend.append("weight_kg", formData.weight_kg);
 
-      // Date of Birth – send only if provided and valid
-      if (pi.date_of_birth) {
-        dataToSend.append(
-          "personal_information[date_of_birth]",
-          pi.date_of_birth,
-        );
-      }
-
-      // Text fields – send even if empty
-      dataToSend.append(
-        "personal_information[place_of_birth]",
-        pi.place_of_birth || "",
-      );
-      dataToSend.append("personal_information[religion]", pi.religion || "");
-      dataToSend.append(
-        "personal_information[marital_status]",
-        pi.marital_status || "",
-      );
-      dataToSend.append(
-        "personal_information[nationality]",
-        pi.nationality || "Ethiopian",
-      );
-      dataToSend.append("personal_information[address]", pi.address || "");
-      dataToSend.append("personal_information[education]", pi.education || "");
-
-      // Numbers – send as string (express/joi will coerce)
-      dataToSend.append(
-        "personal_information[number_of_children]",
-        pi.number_of_children ?? "",
-      );
-      dataToSend.append("personal_information[height_cm]", pi.height_cm ?? "");
-      dataToSend.append("personal_information[weight_kg]", pi.weight_kg ?? "");
-
-      // Files – send only if a new file is selected
-      if (photo3x4 instanceof File) {
+      // Files (required)
+      if (photo3x4 instanceof File)
         dataToSend.append("photo_3x4_url", photo3x4);
-      }
-      if (photoStanding instanceof File) {
+      if (photoStanding instanceof File)
         dataToSend.append("photo_standing_url", photoStanding);
-      }
 
-      const response = await updateWorker(dataToSend, id);
+      const response = await createPersonalInfo(id, dataToSend);
 
       addMessage(
         response?.success,
         response?.message || "Personal information added successfully",
       );
 
-      // Clear form and photos after successful submission
+      // Reset form
       setFormData({
-        personal_information: {
-          region_id: "",
-          city_id: "",
-          status_id: "",
-          date_of_birth: "",
-          place_of_birth: "",
-          religion: "",
-          marital_status: "",
-          nationality: "Ethiopian",
-          address: "",
-          education: "",
-          number_of_children: "",
-          height_cm: "",
-          weight_kg: "",
-        },
-        photo_3x4_url: null,
-        photo_standing_url: null,
+        region_id: "",
+        city_id: "",
+        date_of_birth: "",
+        place_of_birth: "",
+        religion: "",
+        marital_status: "",
+        nationality: "Ethiopian",
+        address: "",
+        education: "",
+        number_of_children: 0,
+        height_cm: "",
+        weight_kg: "",
+        sex: "",
+        status_id: "",
       });
       setPhoto3x4(null);
       setPhotoStanding(null);
@@ -341,6 +332,51 @@ function WorkerPersonalInfo() {
             </h2>
             <div className="submit-section">
               <div className="row">
+                {/* Sex */}
+                <div className="form-group col-md-6">
+                  <label>
+                    Sex <span className="text-danger">*</span>
+                  </label>
+                  <select
+                    name="sex"
+                    className="form-control"
+                    value={formData.sex}
+                    onChange={handleTextChange}
+                    required
+                  >
+                    <option value="">Select sex</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+
+                {/* Status - fetched from backend */}
+                <div className="form-group col-md-6">
+                  <label>
+                    Worker Status <span className="text-danger">*</span>
+                  </label>
+                  {statuses.length === 0 ? (
+                    <div className="form-control text-muted">
+                      Loading statuses...
+                    </div>
+                  ) : (
+                    <select
+                      name="status_id"
+                      className="form-control"
+                      value={formData.status_id}
+                      onChange={handleTextChange}
+                      required
+                    >
+                      <option value="">Select status</option>
+                      {statuses.map((status) => (
+                        <option key={status.id} value={status.id}>
+                          {status.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+
                 {/* Region */}
                 <div className="form-group col-md-6">
                   <label>
@@ -354,9 +390,9 @@ function WorkerPersonalInfo() {
                     </div>
                   ) : (
                     <select
-                      name="personal_region_id"
+                      name="region_id"
                       className="form-control"
-                      value={formData.personal_information.region_id}
+                      value={formData.region_id}
                       onChange={handleTextChange}
                       required
                     >
@@ -374,22 +410,26 @@ function WorkerPersonalInfo() {
                 <div className="form-group col-md-6">
                   <label>City</label>
                   <select
-                    name="personal_city_id"
+                    name="city_id"
                     className="form-control"
-                    value={formData.personal_information.city_id}
+                    value={formData.city_id}
                     onChange={handleTextChange}
-                    disabled={!formData.personal_information.region_id}
+                    disabled={!formData.region_id}
                   >
                     <option value="">
-                      {formData.personal_information.region_id
+                      {formData.region_id
                         ? "Select city"
                         : "Select region first"}
                     </option>
-                    {cities.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
+                    {Array.isArray(cities) && cities.length > 0 ? (
+                      cities.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>No cities available</option>
+                    )}
                   </select>
                 </div>
 
@@ -398,9 +438,9 @@ function WorkerPersonalInfo() {
                   <label>Date of Birth</label>
                   <input
                     type="date"
-                    name="personal_date_of_birth"
+                    name="date_of_birth"
                     className="form-control"
-                    value={formData.personal_information.date_of_birth}
+                    value={formData.date_of_birth}
                     onChange={handleTextChange}
                   />
                 </div>
@@ -410,21 +450,21 @@ function WorkerPersonalInfo() {
                   <label>Place of Birth</label>
                   <input
                     type="text"
-                    name="personal_place_of_birth"
+                    name="place_of_birth"
                     className="form-control"
-                    value={formData.personal_information.place_of_birth}
+                    value={formData.place_of_birth}
                     onChange={handleTextChange}
                   />
                 </div>
 
                 {/* Religion */}
                 <div className="form-group col-md-6">
-                  <label>Religion </label>
+                  <label>Religion</label>
                   <input
                     type="text"
-                    name="personal_religion"
+                    name="religion"
                     className="form-control"
-                    value={formData.personal_information.religion}
+                    value={formData.religion}
                     onChange={handleTextChange}
                   />
                 </div>
@@ -433,9 +473,9 @@ function WorkerPersonalInfo() {
                 <div className="form-group col-md-6">
                   <label>Marital Status</label>
                   <select
-                    name="personal_marital_status"
+                    name="marital_status"
                     className="form-control"
-                    value={formData.personal_information.marital_status}
+                    value={formData.marital_status}
                     onChange={handleTextChange}
                   >
                     <option value="">Select status</option>
@@ -451,9 +491,9 @@ function WorkerPersonalInfo() {
                   <label>Nationality</label>
                   <input
                     type="text"
-                    name="personal_nationality"
+                    name="nationality"
                     className="form-control"
-                    value={formData.personal_information.nationality}
+                    value={formData.nationality}
                     onChange={handleTextChange}
                   />
                 </div>
@@ -463,9 +503,9 @@ function WorkerPersonalInfo() {
                   <label>Address</label>
                   <input
                     type="text"
-                    name="personal_address"
+                    name="address"
                     className="form-control"
-                    value={formData.personal_information.address}
+                    value={formData.address}
                     onChange={handleTextChange}
                   />
                 </div>
@@ -475,9 +515,9 @@ function WorkerPersonalInfo() {
                   <label>Education</label>
                   <input
                     type="text"
-                    name="personal_education"
+                    name="education"
                     className="form-control"
-                    value={formData.personal_information.education}
+                    value={formData.education}
                     onChange={handleTextChange}
                   />
                 </div>
@@ -487,9 +527,9 @@ function WorkerPersonalInfo() {
                   <label>Number of Children</label>
                   <input
                     type="number"
-                    name="personal_number_of_children"
+                    name="number_of_children"
                     className="form-control"
-                    value={formData.personal_information.number_of_children}
+                    value={formData.number_of_children}
                     onChange={handleNumberChange}
                     min="0"
                   />
@@ -502,52 +542,57 @@ function WorkerPersonalInfo() {
                   </label>
                   <input
                     type="number"
-                    name="personal_height_cm"
+                    name="height_cm"
                     className="form-control"
-                    value={formData.personal_information.height_cm}
+                    value={formData.height_cm}
                     onChange={handleNumberChange}
                     step="0.01"
-                    required
                   />
                 </div>
 
                 {/* Weight */}
                 <div className="form-group col-md-6">
                   <label>
-                    Weight (kg)<span className="text-danger">*</span>
+                    Weight (kg) <span className="text-danger">*</span>
                   </label>
                   <input
                     type="number"
-                    name="personal_weight_kg"
+                    name="weight_kg"
                     className="form-control"
-                    value={formData.personal_information.weight_kg}
+                    value={formData.weight_kg}
                     onChange={handleNumberChange}
                     step="0.01"
-                    required
                   />
                 </div>
 
-                {/* Photos */}
+                {/* Photos - required */}
                 <div className="form-group col-md-6">
-                  <label>Photo 3x4</label>
+                  <label>
+                    Photo 3x4 <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="file"
                     name="photo_3x4_url"
                     accept="image/*"
                     className="form-control"
                     onChange={handleFileChange}
+                    required
                   />
                 </div>
 
                 <div className="form-group col-md-6">
-                  <label>Photo Standing</label>
+                  <label>
+                    Photo Standing <span className="text-danger">*</span>
+                  </label>
                   <input
                     type="file"
                     name="photo_standing_url"
                     accept="image/*"
                     className="form-control"
                     onChange={handleFileChange}
+                    required
                   />
+                 
                 </div>
               </div>
             </div>
@@ -559,7 +604,7 @@ function WorkerPersonalInfo() {
                   type="submit"
                   disabled={submitLoading}
                 >
-                  Add Personal Information
+                  Save Personal Information
                 </button>
               </div>
             </div>

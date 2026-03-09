@@ -1,5 +1,104 @@
 import { axiosInstance } from "../../../utils/axios";
 
+const registerWorkerCore = async (payload) => {
+  try {
+    const response = await axiosInstance.post("/workers/register", payload);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to register worker core",
+    );
+  }
+};
+
+const getWorkerBasic = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/workers/${id}/basic`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get worker basic info",
+    );
+  }
+};
+
+ const updateWorkerBasic = async (id, payload) => {
+  try {
+    const response = await axiosInstance.patch(`/workers/${id}/basic`, payload);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update worker basic info",
+    );
+  }
+};
+
+// ── Personal Information ─────────────────────────────────────
+
+ const createPersonalInfo = async (id, payload) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/${id}/personal-info`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to create personal information",
+    );
+  }
+};
+
+ const getPersonalInfo = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/workers/${id}/personal-info`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get personal information",
+    );
+  }
+};
+
+ const updatePersonalInfo = async (id, payload) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/${id}/personal-info`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update personal information",
+    );
+  }
+};
+
+ const deletePersonalInfo = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/workers/${id}/personal-info`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete personal information",
+    );
+  }
+};
+
 // Create worker
 const createWorker = async (formData) => {
   try {
@@ -317,6 +416,13 @@ const deleteMedicalRecord = async (workerId) => {
 };
 
 export {
+  registerWorkerCore,
+  getWorkerBasic,
+  updateWorkerBasic,
+  createPersonalInfo,
+  getPersonalInfo,
+  updatePersonalInfo,
+  deletePersonalInfo,
   deleteWorker,
   createWorker,
   listArchivedWorkers,
