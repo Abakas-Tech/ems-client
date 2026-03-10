@@ -141,7 +141,7 @@ function Passport() {
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Worker Passport Information</h2>
+        <h2 className="fw-bold text-dark mb-3">Passport Information</h2>
 
         <div className="row">
           <div className="form-group col-md-6">
