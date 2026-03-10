@@ -50,7 +50,7 @@ export const setupPushNotifications = async () => {
 
 export const listenToForegroundNotifications = (callback) => {
   return onMessage(messaging, (payload) => {
-    // console.log("ALIVE: New foreground notification:", payload);
+    console.log("ALIVE: New foreground notification:", payload);
 
     const CustomToast = ({ t, payload }) => {
       const navigate = useNavigate();
