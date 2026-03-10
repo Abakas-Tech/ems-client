@@ -4,7 +4,11 @@ import { FaFilePdf, FaImage } from "react-icons/fa";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import ActionButtons from "../../../../../shared/components/ActionButtons/ActionButtons";
-import { deletePassport, getWorkerProfile, deleteCoc } from "../../../api/worker.api";
+import {
+  deletePassport,
+  getWorkerProfile,
+  deleteCoc,
+} from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
@@ -58,10 +62,14 @@ const DocumentLink = ({ url, label, isImage = false }) => {
 const useWorkerActions = (workerId) => {
   const navigate = useNavigate();
 
-  const editPersonal = () =>
-    navigate(`/admin/workers/modules/${workerId}/personal`);
-  const editPassport = () =>
-    navigate(`/admin/workers/modules/${workerId}/passport`);
+  const editPersonal = (personal) =>
+    navigate(`/admin/workers/modules/${workerId}/personal`, {
+      state: { personal },
+    });
+  const editPassport = (passport) =>
+    navigate(`/admin/workers/modules/${workerId}/passport`, {
+      state: { passport },
+    });
   const editCoc = () => navigate(`/admin/workers/modules/${workerId}/coc`);
   const editMedical = () =>
     navigate(`/admin/workers/modules/${workerId}/medical`);
@@ -161,7 +169,7 @@ const useWorkerDeletes = (
 const WorkerProfile = () => {
   const { id } = useParams();
   // Initialize the toolboxes
- 
+
   const navigate = useNavigate();
 
   const { showLoader, hideLoader } = useloader();
@@ -173,7 +181,7 @@ const WorkerProfile = () => {
   const [allStatuses, setAllStatuses] = useState([]);
   const [showCreateStatusModal, setShowCreateStatusModal] = useState(false);
 
-// Fetch worker profile data
+  // Fetch worker profile data
   const fetchWorker = async () => {
     try {
       showLoader();
@@ -187,17 +195,17 @@ const WorkerProfile = () => {
   };
 
   // Get action handlers and delete handlers for the worker
-     const actions = useWorkerActions(id);
-     const deletes = useWorkerDeletes(
-       id,
-       {
-         showLoader,
-         hideLoader,
-         addMessage,
-         openModal,
-       },
-       fetchWorker,
-     );
+  const actions = useWorkerActions(id);
+  const deletes = useWorkerDeletes(
+    id,
+    {
+      showLoader,
+      hideLoader,
+      addMessage,
+      openModal,
+    },
+    fetchWorker,
+  );
 
   // Fetch assigned statuses
   const fetchWorkerStatuses = async () => {
@@ -566,7 +574,11 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Personal Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editPersonal },
+                    {
+                      type: "edit",
+                      onClick: () =>
+                        actions.editPersonal(worker.personal_information),
+                    },
                     {
                       type: "delete",
                       // onClick: deletes.deletePersonal,
@@ -1261,6 +1273,6 @@ const WorkerProfile = () => {
       </div>
     </div>
   );
-};;
+};
 
 export default WorkerProfile;

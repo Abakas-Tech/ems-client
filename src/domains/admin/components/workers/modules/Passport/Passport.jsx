@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useloader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
@@ -6,6 +6,7 @@ import BackButton from "../../../../../../shared/components/BackButton/BackButto
 import { createPassport } from "../../../../api/worker.api";
 
 function Passport() {
+  const fileInputRef = useRef(null);
   const { id } = useParams();
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useloader();
@@ -124,6 +125,9 @@ function Passport() {
         passport_issuing_country: "Ethiopia",
       });
       setPassportScan(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -200,6 +204,7 @@ function Passport() {
             <input
               type="file"
               name="passport_scan"
+              ref={fileInputRef}
               className="form-control"
               accept="image/*,.pdf"
               onChange={handleFileChange}

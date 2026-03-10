@@ -39,7 +39,7 @@ const getWorkerBasic = async (id) => {
   }
 };
 
-// ── Personal Information ─────────────────────────────────────
+// Personal Information
 
  const createPersonalInfo = async (id, payload) => {
   try {
@@ -57,6 +57,7 @@ const getWorkerBasic = async (id) => {
   }
 };
 
+// get worker personal info
  const getPersonalInfo = async (id) => {
   try {
     const response = await axiosInstance.get(`/workers/${id}/personal-info`);
@@ -70,6 +71,7 @@ const getWorkerBasic = async (id) => {
   }
 };
 
+// update worker personal info
  const updatePersonalInfo = async (id, payload) => {
   try {
     const response = await axiosInstance.patch(
@@ -86,6 +88,7 @@ const getWorkerBasic = async (id) => {
   }
 };
 
+// delete worker personal info
  const deletePersonalInfo = async (id) => {
   try {
     const response = await axiosInstance.delete(`/workers/${id}/personal-info`);
@@ -99,19 +102,6 @@ const getWorkerBasic = async (id) => {
   }
 };
 
-// Create worker
-const createWorker = async (formData) => {
-  try {
-    const response = await axiosInstance.post("/workers", formData);
-    return response.data;
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to create worker",
-    );
-  }
-};
 
 // List archived workers (paginated + filters)
 const listArchivedWorkers = async (params = {}) => {
@@ -169,19 +159,6 @@ const restoreWorker = async (id) => {
   }
 };
 
-// Update worker
-const updateWorker = async (Payload, id) => {
-  try {
-    const response = await axiosInstance.patch(`/workers/${id}`, Payload);
-    return response.data;
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to update worker",
-    );
-  }
-};
 
 // Get single active worker profile
 const getWorkerProfile = async (id) => {
@@ -424,10 +401,10 @@ export {
   updatePersonalInfo,
   deletePersonalInfo,
   deleteWorker,
-  createWorker,
+  // createWorker,
   listArchivedWorkers,
   deleteArchivedWorker,
-  updateWorker,
+  // updateWorker,
   listWorkers,
   getWorkerProfile,
   getArchivedWorkerProfile,
