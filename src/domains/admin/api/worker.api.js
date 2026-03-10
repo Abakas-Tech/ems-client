@@ -378,6 +378,134 @@ const deleteLmis = async (workerId) => {
   }
 };
 
+// Create Travel Record
+const createTravel = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/${workerId}/travel`,
+      formData,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to create travel record",
+    );
+  }
+};
+
+// Update Travel Record (Partial)
+const updateTravel = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/${workerId}/travel`,
+      formData,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update travel record",
+    );
+  }
+};
+
+// Get Travel Details
+const getTravelDetails = async (workerId) => {
+  try {
+    const response = await axiosInstance.get(`/workers/${workerId}/travel`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get travel record",
+    );
+  }
+};
+
+// Delete Travel Record
+const deleteTravel = async (workerId) => {
+  try {
+    const response = await axiosInstance.delete(`/workers/${workerId}/travel`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete travel record",
+    );
+  }
+};
+
+// Create a new contract for a worker
+const createContract = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/${workerId}/contract`,
+      formData
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to create contract"
+    );
+  }
+};
+
+// Update an existing contract (partial)
+const updateContract = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/${workerId}/contract`,
+      formData
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update contract"
+    );
+  }
+};
+
+// Get contract details by worker and contract ID
+const getContractDetails = async (workerId, contractId) => {
+  try {
+    const response = await axiosInstance.get(
+      `/workers/${workerId}/${contractId}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get contract details"
+    );
+  }
+};
+
+// Delete a contract
+const deleteContract = async (workerId) => {
+  try {
+    const response = await axiosInstance.delete(
+      `/workers/${workerId}/contract`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete contract"
+    );
+  }
+};
+
 export {
   deleteWorker,
   createWorker,
@@ -400,8 +528,19 @@ export {
   updateMedicalRecord,
   getMedicalDetails,
   deleteMedicalRecord,
+  //lmis
   createLmis,
   updateLmis,
   getLmisDetails,
   deleteLmis,
+  //travel
+  createTravel,
+  updateTravel,
+  getTravelDetails,
+  deleteTravel,
+  //contract
+  createContract,
+  updateContract,
+  getContractDetails,
+  deleteContract
 };

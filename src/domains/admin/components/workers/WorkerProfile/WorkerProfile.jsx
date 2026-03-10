@@ -4,7 +4,14 @@ import { FaFilePdf, FaImage } from "react-icons/fa";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import ActionButtons from "../../../../../shared/components/ActionButtons/ActionButtons";
-import { deletePassport, getWorkerProfile, deleteCoc,deleteLmis } from "../../../api/worker.api";
+import {
+  deletePassport,
+  getWorkerProfile,
+  deleteCoc,
+  deleteLmis,
+  deleteTravel,
+  deleteContract
+} from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
@@ -68,14 +75,16 @@ const useWorkerActions = (workerId) => {
   const editEmergency = () =>
     navigate(`/admin/workers/modules/${workerId}/emergency-contact`);
   const editVisa = () => navigate(`/admin/workers/modules/${workerId}/visa`);
- const editLmis = (lmis) =>
-   navigate(`/admin/workers/modules/${workerId}/lmis`, {
-     state: { lmis },
-   });
-  const editTravel = () =>
-    navigate(`/admin/workers/modules/${workerId}/travel-records`);
-  const editContract = () =>
-    navigate(`/admin/workers/modules/${workerId}/contract`);
+  const editLmis = (lmis) =>
+    navigate(`/admin/workers/modules/${workerId}/lmis`, {
+      state: { lmis },
+    });
+  const editTravel = (travel) =>
+    navigate(`/admin/workers/modules/${workerId}/travel-records`, {
+      state: { travel },
+    });
+  const editContract = (contract) =>
+    navigate(`/admin/workers/modules/${workerId}/contract`,{state:{contract}});
 
   return {
     editPersonal,
@@ -96,7 +105,8 @@ const useWorkerDeletes = (
   { showLoader, hideLoader, addMessage, openModal },
   onSuccess,
 ) => {
-  const handleDelete =
+  const 
+  handleDelete =
     (deleteFn, title = "Are you sure?") =>
     async () => {
       openModal(
@@ -149,14 +159,14 @@ const useWorkerDeletes = (
       deleteLmis,
       "Are you sure you want to delete this LMIS info?",
     ),
-    // deleteTravel: handleDelete(
-    //   deleteTravel,
-    //   "Are you sure you want to delete this travel record?",
-    // ),
-    // deleteContract: handleDelete(
-    //   deleteContract,
-    //   "Are you sure you want to delete this contract?",
-    // ),
+    deleteTravel: handleDelete(
+      deleteTravel,
+      "Are you sure you want to delete this travel record?",
+    ),
+    deleteContract: handleDelete(
+      deleteContract,
+      "Are you sure you want to delete this contract?",
+    ),
   };
 };
 
@@ -164,7 +174,7 @@ const useWorkerDeletes = (
 const WorkerProfile = () => {
   const { id } = useParams();
   // Initialize the toolboxes
- 
+
   const navigate = useNavigate();
 
   const { showLoader, hideLoader } = useloader();
@@ -176,7 +186,7 @@ const WorkerProfile = () => {
   const [allStatuses, setAllStatuses] = useState([]);
   const [showCreateStatusModal, setShowCreateStatusModal] = useState(false);
 
-// Fetch worker profile data
+  // Fetch worker profile data
   const fetchWorker = async () => {
     try {
       showLoader();
@@ -190,17 +200,17 @@ const WorkerProfile = () => {
   };
 
   // Get action handlers and delete handlers for the worker
-     const actions = useWorkerActions(id);
-     const deletes = useWorkerDeletes(
-       id,
-       {
-         showLoader,
-         hideLoader,
-         addMessage,
-         openModal,
-       },
-       fetchWorker,
-     );
+  const actions = useWorkerActions(id);
+  const deletes = useWorkerDeletes(
+    id,
+    {
+      showLoader,
+      hideLoader,
+      addMessage,
+      openModal,
+    },
+    fetchWorker,
+  );
 
   // Fetch assigned statuses
   const fetchWorkerStatuses = async () => {
@@ -982,7 +992,7 @@ const WorkerProfile = () => {
                     { type: "edit", onClick: () => actions.editLmis(lmisObj) },
                     {
                       type: "delete",
-                      onClick: deletes.deleteLmis
+                      onClick: deletes.deleteLmis,
                     },
                   ]}
                 />
@@ -1026,11 +1036,11 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Travel Records</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editTravel },
                     {
-                      type: "delete",
-                      // onClick: deletes.deleteTravel
+                      type: "edit",
+                      onClick: () => actions.editTravel(travelRecords),
                     },
+                    { type: "delete", onClick: deletes.deleteTravel },
                   ]}
                 />
               </div>
@@ -1150,10 +1160,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Contracts</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editContract },
+                    { type: "edit", onClick:()=> actions.editContract(contractsList) },
                     {
                       type: "delete",
-                      // onClick: deletes.deleteContract,
+                      onClick: deletes.deleteContract,
                     },
                   ]}
                 />
@@ -1264,6 +1274,6 @@ const WorkerProfile = () => {
       </div>
     </div>
   );
-};;
+};
 
 export default WorkerProfile;
