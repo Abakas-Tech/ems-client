@@ -12,6 +12,7 @@ import {
   deleteTravel,
   deleteContract,
   deleteGuarantor,
+  deleteVisa,
 } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -74,8 +75,11 @@ const useWorkerActions = (workerId) => {
   const editMedical = () =>
     navigate(`/admin/workers/modules/${workerId}/medical`);
   const editEmergency = (guarantor) =>
-    navigate(`/admin/workers/modules/${workerId}/emergency-contact`,{state:{guarantor}});
-  const editVisa = () => navigate(`/admin/workers/modules/${workerId}/visa`);
+    navigate(`/admin/workers/modules/${workerId}/emergency-contact`, {
+      state: { guarantor },
+    });
+  const editVisa = (visa) =>
+    navigate(`/admin/workers/modules/${workerId}/visa`, { state: { visa } });
   const editLmis = (lmis) =>
     navigate(`/admin/workers/modules/${workerId}/lmis`, {
       state: { lmis },
@@ -85,7 +89,9 @@ const useWorkerActions = (workerId) => {
       state: { travel },
     });
   const editContract = (contract) =>
-    navigate(`/admin/workers/modules/${workerId}/contract`,{state:{contract}});
+    navigate(`/admin/workers/modules/${workerId}/contract`, {
+      state: { contract },
+    });
 
   return {
     editPersonal,
@@ -106,8 +112,7 @@ const useWorkerDeletes = (
   { showLoader, hideLoader, addMessage, openModal },
   onSuccess,
 ) => {
-  const 
-  handleDelete =
+  const handleDelete =
     (deleteFn, title = "Are you sure?") =>
     async () => {
       openModal(
@@ -152,10 +157,10 @@ const useWorkerDeletes = (
       deleteGuarantor,
       "Are you sure you want to delete this emergency contact?",
     ),
-    // deleteVisa: handleDelete(
-    //   deleteVisa,
-    //   "Are you sure you want to delete this visa?",
-    // ),
+    deleteVisa: handleDelete(
+      deleteVisa,
+      "Are you sure you want to delete this visa?",
+    ),
     deleteLmis: handleDelete(
       deleteLmis,
       "Are you sure you want to delete this LMIS info?",
@@ -800,7 +805,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Emergency Contact</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick:()=> actions.editEmergency(emergency) },
+                    {
+                      type: "edit",
+                      onClick: () => actions.editEmergency(emergency),
+                    },
                     {
                       type: "delete",
                       onClick: deletes.deleteEmergency,
@@ -929,10 +937,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Visa Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editVisa },
+                    { type: "edit", onClick:()=> actions.editVisa(visa) },
                     {
                       type: "delete",
-                      // onClick: deleteVisa
+                      onClick: deleteVisa
                     },
                   ]}
                 />
@@ -1161,7 +1169,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Contracts</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick:()=> actions.editContract(contractsList) },
+                    {
+                      type: "edit",
+                      onClick: () => actions.editContract(contractsList),
+                    },
                     {
                       type: "delete",
                       onClick: deletes.deleteContract,

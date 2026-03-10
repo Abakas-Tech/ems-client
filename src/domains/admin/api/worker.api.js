@@ -570,6 +570,59 @@ const deleteGuarantor = async (workerId) => {
   }
 };
 
+// CREATE VISA
+ const createVisa = async (workerId, visaData) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/${workerId}/visa`,
+      visaData,
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Create visa error");
+  }
+};
+
+
+// UPDATE VISA
+ const updateVisa = async (workerId, visaData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/${workerId}/visa`,
+      visaData,
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Update visa error");
+  }
+};
+
+
+// GET VISA
+ const getVisa = async (workerId) => {
+  try {
+    const response = await axiosInstance.get(`/workers/${workerId}/visa`);
+
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Fetch visa error");
+  }
+};
+
+
+// DELETE VISA
+ const deleteVisa = async (workerId) => {
+  try {
+    const response = await axiosInstance.delete(`/workers/${workerId}/visa`);
+
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Delete visa error");
+  }
+};
+
 export {
   deleteWorker,
   createWorker,
@@ -612,4 +665,9 @@ export {
   updateGuarantor,
   getGuarantorDetails,
   deleteGuarantor,
+  //visa
+  createVisa,
+  updateVisa,
+  getVisa,
+  deleteVisa
 };
