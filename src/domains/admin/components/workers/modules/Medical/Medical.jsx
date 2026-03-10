@@ -277,7 +277,7 @@ function Medical() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {submitLoading ? "Saving..." : buttonText}
+            {buttonText}
           </button>
         </div>
       </form>
