@@ -378,7 +378,7 @@ const getMedicalDetails = async (workerId) => {
 };
 
 // Delete medical record
-const deleteMedicalRecord = async (workerId) => {
+const deleteMedical = async (workerId) => {
   try {
     const response = await axiosInstance.delete(`/workers/${workerId}/medical`);
     return response.data;
@@ -419,5 +419,5 @@ export {
   createMedicalRecord,
   updateMedicalRecord,
   getMedicalDetails,
-  deleteMedicalRecord,
+  deleteMedical,
 };

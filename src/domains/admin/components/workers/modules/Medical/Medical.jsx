@@ -1,26 +1,41 @@
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useRef } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import useloader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
-import { createMedicalRecord } from "../../../../api/worker.api";
+import {
+  createMedicalRecord,
+  updateMedicalRecord,
+} from "../../../../api/worker.api";
 
 function Medical() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
+  // Receive raw medical object — same pattern as passport/coc
+  const existingMedical = location.state?.medical || null;
+  const isEditMode = Boolean(existingMedical);
+
   const [formData, setFormData] = useState({
-    medical_status: "",
-    medical_center: "",
-    medical_report_number: "",
-    medical_issue_date: "",
-    medical_expiry_date: "",
+    medical_status: existingMedical?.medical_status || "",
+    medical_center: existingMedical?.medical_center || "",
+    medical_report_number: existingMedical?.medical_report_number || "",
+    medical_issue_date: existingMedical?.issue_date || "",
+    medical_expiry_date: existingMedical?.expiry_date || "",
   });
 
   const [medicalFile, setMedicalFile] = useState(null);
+  const [existingFileUrl, setExistingFileUrl] = useState(
+    existingMedical?.file?.url || null,
+  );
+
   const [submitLoading, setSubmitLoading] = useState(false);
+
+  const fileInputRef = useRef(null);
 
   const goBack = () => navigate(-1);
 
@@ -36,7 +51,8 @@ function Medical() {
   };
 
   const validateMedical = () => {
-    const { medical_status, medical_issue_date, medical_expiry_date } = formData;
+    const { medical_status, medical_issue_date, medical_expiry_date } =
+      formData;
 
     if (!["fit", "unfit", "pending"].includes(medical_status)) {
       return "Medical status must be fit, unfit, or pending";
@@ -47,46 +63,33 @@ function Medical() {
 
     if (medical_issue_date) {
       const issue = new Date(medical_issue_date);
-
-      if (isNaN(issue.getTime())) {
-        return "Issue date must be a valid date";
-      }
-
-      if (issue > today) {
-        return "Issue date cannot be in the future";
-      }
+      if (isNaN(issue.getTime())) return "Issue date must be valid";
+      if (issue > today) return "Issue date cannot be in the future";
     }
 
     if (medical_expiry_date) {
       const expiry = new Date(medical_expiry_date);
-
-      if (isNaN(expiry.getTime())) {
-        return "Expiry date must be a valid date";
-      }
+      if (isNaN(expiry.getTime())) return "Expiry date must be valid";
     }
 
     if (medical_issue_date && medical_expiry_date) {
       const issue = new Date(medical_issue_date);
       const expiry = new Date(medical_expiry_date);
-
-      if (expiry <= issue) {
-        return "Expiry date must be after issue date";
-      }
+      if (expiry <= issue) return "Expiry date must be after issue date";
     }
 
-    if (!medicalFile) {
-      return "Medical file is required";
-    }
+    // File required only on create
+    if (!isEditMode && !medicalFile) return "Medical file is required";
 
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/jpg",
-      "application/pdf",
-    ];
-
-    if (!allowedTypes.includes(medicalFile.type)) {
-      return "Medical file must be an image or PDF";
+    if (medicalFile) {
+      const allowed = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "application/pdf",
+      ];
+      if (!allowed.includes(medicalFile.type))
+        return "Medical file must be JPG, PNG or PDF";
     }
 
     return null;
@@ -94,7 +97,6 @@ function Medical() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const error = validateMedical();
     if (error) {
       addMessage(false, error);
@@ -112,39 +114,51 @@ function Medical() {
       if (formData.medical_center) {
         dataToSend.append("medical_center", formData.medical_center);
       }
-
       if (formData.medical_report_number) {
         dataToSend.append(
           "medical_report_number",
           formData.medical_report_number,
         );
       }
-
       if (formData.medical_issue_date) {
         dataToSend.append("medical_issue_date", formData.medical_issue_date);
       }
-
       if (formData.medical_expiry_date) {
         dataToSend.append("medical_expiry_date", formData.medical_expiry_date);
       }
 
-      dataToSend.append("medical_file_url", medicalFile);
+      // Append file only if new one selected
+      if (medicalFile) {
+        dataToSend.append("medical_file_url", medicalFile);
+      }
 
-      const response = await createMedicalRecord(id, dataToSend);
+      let response;
+      if (isEditMode) {
+        response = await updateMedicalRecord(id, dataToSend);
+        addMessage(
+          response?.success,
+          response?.message || "Medical information updated successfully",
+        );
+      } else {
+        response = await createMedicalRecord(id, dataToSend);
+        addMessage(
+          response?.success,
+          response?.message || "Medical information created successfully",
+        );
 
-      addMessage(
-        response?.success,
-        response?.message || "Medical information created successfully",
-      );
+        // Reset only on create
+        setFormData({
+          medical_status: "",
+          medical_center: "",
+          medical_report_number: "",
+          medical_issue_date: "",
+          medical_expiry_date: "",
+        });
+        setMedicalFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
 
-      setFormData({
-        medical_status: "",
-        medical_center: "",
-        medical_report_number: "",
-        issue_date: "",
-        expiry_date: "",
-      });
-      setMedicalFile(null);
+      goBack();
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -153,12 +167,17 @@ function Medical() {
     }
   };
 
+  const title = isEditMode
+    ? "Edit Medical Information"
+    : "Add Medical Information";
+  const buttonText = isEditMode ? "Update Medical" : "Add Medical";
+
   return (
     <section className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Worker Medical Information</h2>
+        <h2 className="fw-bold text-dark mb-3">{title}</h2>
 
         <div className="row">
           <div className="form-group col-md-6">
@@ -205,9 +224,9 @@ function Medical() {
             <label>Issue Date</label>
             <input
               type="date"
-              name="issue_date"
+              name="medical_issue_date"
               className="form-control"
-              value={formData.issue_date}
+              value={formData.medical_issue_date}
               onChange={handleChange}
             />
           </div>
@@ -216,24 +235,38 @@ function Medical() {
             <label>Expiry Date</label>
             <input
               type="date"
-              name="expiry_date"
+              name="medical_expiry_date"
               className="form-control"
-              value={formData.expiry_date}
+              value={formData.medical_expiry_date}
               onChange={handleChange}
             />
           </div>
 
           <div className="form-group col-md-6">
             <label>
-              Medical File <span className="text-danger">*</span>
+              Medical File{" "}
+              {isEditMode ? "" : <span className="text-danger">*</span>}
+              {isEditMode && existingFileUrl && (
+                <small className="d-block text-muted">
+                  Current file:{" "}
+                  <a
+                    href={existingFileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
             </label>
             <input
               type="file"
+              ref={fileInputRef}
               name="medical_file"
               className="form-control"
               accept="image/*,.pdf"
               onChange={handleFileChange}
-              required
+              required={!isEditMode}
             />
           </div>
         </div>
@@ -244,7 +277,7 @@ function Medical() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            Add Medical Information
+            {submitLoading ? "Saving..." : buttonText}
           </button>
         </div>
       </form>

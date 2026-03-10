@@ -9,6 +9,7 @@ import {
   getWorkerProfile,
   deleteCoc,
   deletePersonalInfo,
+  deleteMedical,
 } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -77,8 +78,10 @@ const useWorkerActions = (workerId) => {
     navigate(`/admin/workers/modules/${workerId}/coc`, {
       state: { coc },
     });
-  const editMedical = () =>
-    navigate(`/admin/workers/modules/${workerId}/medical`);
+  const editMedical = (medical) =>
+    navigate(`/admin/workers/modules/${workerId}/medical`, {
+      state: { medical },
+    });
   const editEmergency = () =>
     navigate(`/admin/workers/modules/${workerId}/emergency-contact`);
   const editVisa = () => navigate(`/admin/workers/modules/${workerId}/visa`);
@@ -144,10 +147,10 @@ const useWorkerDeletes = (
       deleteCoc,
       "Are you sure you want to delete this COC?",
     ),
-    // deleteMedical: handleDelete(
-    //   deleteMedical,
-    //   "Are you sure you want to delete this medical info?",
-    // ),
+    deleteMedical: handleDelete(
+      deleteMedical,
+      "Are you sure you want to delete this medical info?",
+    ),
     // deleteEmergency: handleDelete(
     //   deleteEmergency,
     //   "Are you sure you want to delete this emergency contact?",
@@ -867,10 +870,15 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Medical Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editMedical },
+                    {
+                      type: "edit",
+                      onClick: () => {
+                        actions.editMedical(medicalObj);
+                      },
+                    },
                     {
                       type: "delete",
-                      // onClick: deletes.deleteMedical
+                      onClick: deletes.deleteMedical
                     },
                   ]}
                 />
