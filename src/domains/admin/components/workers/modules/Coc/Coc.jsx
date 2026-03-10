@@ -1,26 +1,38 @@
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useRef } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import useloader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
-import { createCoc } from "../../../../api/worker.api";
+import { createCoc, updateCoc } from "../../../../api/worker.api";
 
 function Coc() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
+  // Receive raw coc object — same as passport/lmis
+  const existingCoc = location.state?.coc || null;
+  const isEditMode = Boolean(existingCoc);
+
   const [formData, setFormData] = useState({
-    coc_number: "",
-    coc_assessment_center: "",
-    coc_assessment_date: "",
-    coc_issue_date: "",
-    coc_expiry_date: "",
+    coc_number: existingCoc?.coc_number || "",
+    coc_assessment_center: existingCoc?.assessment_center || "",
+    coc_assessment_date: existingCoc?.assessment_date || "",
+    coc_issue_date: existingCoc?.issue_date || "",
+    coc_expiry_date: existingCoc?.expiry_date || "",
   });
 
   const [cocDocument, setCocDocument] = useState(null);
+  const [existingDocumentUrl, setExistingDocumentUrl] = useState(
+    existingCoc?.document?.url || null,
+  );
+
   const [submitLoading, setSubmitLoading] = useState(false);
+
+  const fileInputRef = useRef(null);
 
   const goBack = () => navigate(-1);
 
@@ -39,62 +51,38 @@ function Coc() {
     const assessmentCenter = formData.coc_assessment_center?.trim();
     const cocNumber = formData.coc_number?.trim();
 
-    const assessmentDateRaw = formData.coc_assessment_date;
-    const issueDateRaw = formData.coc_issue_date;
-    const expiryDateRaw = formData.coc_expiry_date;
+    if (!assessmentCenter) return "Assessment center is required";
 
-    if (!assessmentCenter) {
-      return "COC assessment center is required";
-    }
+    if (cocNumber && (cocNumber.length < 3 || cocNumber.length > 50))
+      return "COC number must be 3–50 characters";
 
-    if (cocNumber && (cocNumber.length < 3 || cocNumber.length > 50)) {
-      return "COC number must be between 3 and 50 characters";
-    }
-
-    const assessmentDate = new Date(assessmentDateRaw);
-    const issueDate = new Date(issueDateRaw);
-    const expiryDate = new Date(expiryDateRaw);
-
+    const assessmentDate = new Date(formData.coc_assessment_date);
+    const issueDate = new Date(formData.coc_issue_date);
+    const expiryDate = new Date(formData.coc_expiry_date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    if (isNaN(assessmentDate.getTime())) {
-      return "COC assessment date must be a valid date";
-    }
+    if (isNaN(assessmentDate.getTime())) return "Invalid assessment date";
+    if (assessmentDate > today) return "Assessment date cannot be in future";
 
-    if (assessmentDate > today) {
-      return "COC assessment date cannot be in the future";
-    }
+    if (isNaN(issueDate.getTime())) return "Invalid issue date";
+    if (issueDate > today) return "Issue date cannot be in future";
 
-    if (isNaN(issueDate.getTime())) {
-      return "COC issue date must be a valid date";
-    }
+    if (isNaN(expiryDate.getTime())) return "Invalid expiry date";
+    if (expiryDate <= issueDate) return "Expiry must be after issue date";
 
-    if (issueDate > today) {
-      return "COC issue date cannot be in the future";
-    }
+    // File required only on create
+    if (!isEditMode && !cocDocument) return "COC document is required";
 
-    if (isNaN(expiryDate.getTime())) {
-      return "COC expiry date must be a valid date";
-    }
-
-    if (expiryDate <= issueDate) {
-      return "COC expiry date must be after issue date";
-    }
-
-    if (!cocDocument) {
-      return "COC document file is required";
-    }
-
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/jpg",
-      "application/pdf",
-    ];
-
-    if (!allowedTypes.includes(cocDocument.type)) {
-      return "COC document must be an image or PDF file";
+    if (cocDocument) {
+      const allowed = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "application/pdf",
+      ];
+      if (!allowed.includes(cocDocument.type))
+        return "COC document must be JPG, PNG or PDF";
     }
 
     return null;
@@ -102,7 +90,6 @@ function Coc() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const error = validateCoc();
     if (error) {
       addMessage(false, error);
@@ -115,34 +102,57 @@ function Coc() {
     try {
       const dataToSend = new FormData();
 
-      if (formData.coc_number) {
-        dataToSend.append("coc_number", formData.coc_number);
-      }
-
       dataToSend.append(
         "coc_assessment_center",
         formData.coc_assessment_center,
       );
-      dataToSend.append("coc_assessment_date", formData.coc_assessment_date);
-      dataToSend.append("coc_issue_date", formData.coc_issue_date);
-      dataToSend.append("coc_expiry_date", formData.coc_expiry_date);
-      dataToSend.append("coc_document_url", cocDocument);
 
-      const response = await createCoc(id, dataToSend);
+      if (formData.coc_number) {
+        dataToSend.append("coc_number", formData.coc_number);
+      }
 
-      addMessage(
-        response?.success,
-        response?.message || "COC created successfully",
-      );
+      if (formData.coc_assessment_date) {
+        dataToSend.append("coc_assessment_date", formData.coc_assessment_date);
+      }
+      if (formData.coc_issue_date) {
+        dataToSend.append("coc_issue_date", formData.coc_issue_date);
+      }
+      if (formData.coc_expiry_date) {
+        dataToSend.append("coc_expiry_date", formData.coc_expiry_date);
+      }
 
-      setFormData({
-        coc_number: "",
-        coc_assessment_center: "",
-        coc_assessment_date: "",
-        coc_issue_date: "",
-        coc_expiry_date: "",
-      });
-      setCocDocument(null);
+      // Append file only if new one selected
+      if (cocDocument) {
+        dataToSend.append("coc_document_url", cocDocument);
+      }
+
+      let response;
+      if (isEditMode) {
+        response = await updateCoc(id, dataToSend);
+        addMessage(
+          response?.success,
+          response?.message || "COC updated successfully",
+        );
+      } else {
+        response = await createCoc(id, dataToSend);
+        addMessage(
+          response?.success,
+          response?.message || "COC created successfully",
+        );
+
+        // Reset only on create
+        setFormData({
+          coc_number: "",
+          coc_assessment_center: "",
+          coc_assessment_date: "",
+          coc_issue_date: "",
+          coc_expiry_date: "",
+        });
+        setCocDocument(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+
+      goBack();
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -151,14 +161,15 @@ function Coc() {
     }
   };
 
+  const title = isEditMode ? "Edit COC Information" : "Add COC Information";
+  const buttonText = isEditMode ? "Update COC" : "Add COC";
+
   return (
     <section className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">
-          Worker Certificate of Competency (COC)
-        </h2>
+        <h2 className="fw-bold text-dark mb-3">{title}</h2>
 
         <div className="row">
           <div className="form-group col-md-6">
@@ -230,15 +241,29 @@ function Coc() {
 
           <div className="form-group col-md-6">
             <label>
-              COC Document <span className="text-danger">*</span>
+              COC Document{" "}
+              {isEditMode ? "" : <span className="text-danger">*</span>}
+              {isEditMode && existingDocumentUrl && (
+                <small className="d-block text-muted">
+                  Current document:{" "}
+                  <a
+                    href={existingDocumentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
             </label>
             <input
               type="file"
+              ref={fileInputRef}
               name="coc_document"
               className="form-control"
               accept="image/*,.pdf"
               onChange={handleFileChange}
-              required
+              required={!isEditMode}
             />
           </div>
         </div>
@@ -249,7 +274,7 @@ function Coc() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            Add COC
+            {submitLoading ? "Saving..." : buttonText}
           </button>
         </div>
       </form>

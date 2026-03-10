@@ -8,6 +8,7 @@ import {
   deletePassport,
   getWorkerProfile,
   deleteCoc,
+  deletePersonalInfo,
 } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -72,7 +73,10 @@ const useWorkerActions = (workerId) => {
       state: { passport },
     });
 
-  const editCoc = () => navigate(`/admin/workers/modules/${workerId}/coc`);
+  const editCoc = (coc) =>
+    navigate(`/admin/workers/modules/${workerId}/coc`, {
+      state: { coc },
+    });
   const editMedical = () =>
     navigate(`/admin/workers/modules/${workerId}/medical`);
   const editEmergency = () =>
@@ -127,10 +131,10 @@ const useWorkerDeletes = (
     };
 
   return {
-    // deletePersonal: handleDelete(
-    //   deletePersonal,
-    //   "Are you sure you want to delete this personal information?",
-    // ),
+    deletePersonal: handleDelete(
+      deletePersonalInfo,
+      "Are you sure you want to delete this personal information?",
+    ),
 
     deletePassport: handleDelete(
       deletePassport,
@@ -582,7 +586,7 @@ const WorkerProfile = () => {
                     },
                     {
                       type: "delete",
-                      // onClick: deletes.deletePersonal,
+                      onClick: deletes.deletePersonal,
                     },
                   ]}
                 />
@@ -743,7 +747,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">COC Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editCoc },
+                    {
+                      type: "edit",
+                      onClick: () => actions.editCoc(cocObj),
+                    },
                     {
                       type: "delete",
                       onClick: deletes.deleteCoc,
