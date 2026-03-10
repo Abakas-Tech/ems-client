@@ -10,7 +10,8 @@ import {
   deleteCoc,
   deleteLmis,
   deleteTravel,
-  deleteContract
+  deleteContract,
+  deleteGuarantor,
 } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -72,8 +73,8 @@ const useWorkerActions = (workerId) => {
   const editCoc = () => navigate(`/admin/workers/modules/${workerId}/coc`);
   const editMedical = () =>
     navigate(`/admin/workers/modules/${workerId}/medical`);
-  const editEmergency = () =>
-    navigate(`/admin/workers/modules/${workerId}/emergency-contact`);
+  const editEmergency = (guarantor) =>
+    navigate(`/admin/workers/modules/${workerId}/emergency-contact`,{state:{guarantor}});
   const editVisa = () => navigate(`/admin/workers/modules/${workerId}/visa`);
   const editLmis = (lmis) =>
     navigate(`/admin/workers/modules/${workerId}/lmis`, {
@@ -147,10 +148,10 @@ const useWorkerDeletes = (
     //   deleteMedical,
     //   "Are you sure you want to delete this medical info?",
     // ),
-    // deleteEmergency: handleDelete(
-    //   deleteEmergency,
-    //   "Are you sure you want to delete this emergency contact?",
-    // ),
+    deleteEmergency: handleDelete(
+      deleteGuarantor,
+      "Are you sure you want to delete this emergency contact?",
+    ),
     // deleteVisa: handleDelete(
     //   deleteVisa,
     //   "Are you sure you want to delete this visa?",
@@ -799,10 +800,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Emergency Contact</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editEmergency },
+                    { type: "edit", onClick:()=> actions.editEmergency(emergency) },
                     {
                       type: "delete",
-                      // onClick: deletes.deleteEmergency,
+                      onClick: deletes.deleteEmergency,
                     },
                   ]}
                 />

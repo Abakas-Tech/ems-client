@@ -445,14 +445,14 @@ const createContract = async (workerId, formData) => {
   try {
     const response = await axiosInstance.post(
       `/workers/${workerId}/contract`,
-      formData
+      formData,
     );
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to create contract"
+        "Failed to create contract",
     );
   }
 };
@@ -462,14 +462,14 @@ const updateContract = async (workerId, formData) => {
   try {
     const response = await axiosInstance.patch(
       `/workers/${workerId}/contract`,
-      formData
+      formData,
     );
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to update contract"
+        "Failed to update contract",
     );
   }
 };
@@ -478,14 +478,14 @@ const updateContract = async (workerId, formData) => {
 const getContractDetails = async (workerId, contractId) => {
   try {
     const response = await axiosInstance.get(
-      `/workers/${workerId}/${contractId}`
+      `/workers/${workerId}/${contractId}`,
     );
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to get contract details"
+        "Failed to get contract details",
     );
   }
 };
@@ -494,14 +494,78 @@ const getContractDetails = async (workerId, contractId) => {
 const deleteContract = async (workerId) => {
   try {
     const response = await axiosInstance.delete(
-      `/workers/${workerId}/contract`
+      `/workers/${workerId}/contract`,
     );
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to delete contract"
+        "Failed to delete contract",
+    );
+  }
+};
+
+// Create guarantor information for a worker
+const createGuarantor = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/${workerId}/guarantor`,
+      formData,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to create guarantor information",
+    );
+  }
+};
+
+// Update existing guarantor information (partial)
+const updateGuarantor = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/${workerId}/guarantor`,
+      formData,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update guarantor information",
+    );
+  }
+};
+
+// Get guarantor details for a worker
+const getGuarantorDetails = async (workerId) => {
+  try {
+    const response = await axiosInstance.get(`/workers/${workerId}/guarantor`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get guarantor details",
+    );
+  }
+};
+
+// Delete guarantor information
+const deleteGuarantor = async (workerId) => {
+  try {
+    const response = await axiosInstance.delete(
+      `/workers/${workerId}/guarantor`,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete guarantor information",
     );
   }
 };
@@ -542,5 +606,10 @@ export {
   createContract,
   updateContract,
   getContractDetails,
-  deleteContract
+  deleteContract,
+  //guarantor
+  createGuarantor,
+  updateGuarantor,
+  getGuarantorDetails,
+  deleteGuarantor,
 };
