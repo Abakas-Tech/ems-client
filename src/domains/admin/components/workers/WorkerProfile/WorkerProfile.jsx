@@ -66,10 +66,12 @@ const useWorkerActions = (workerId) => {
     navigate(`/admin/workers/modules/${workerId}/personal`, {
       state: { personal },
     });
+
   const editPassport = (passport) =>
     navigate(`/admin/workers/modules/${workerId}/passport`, {
       state: { passport },
     });
+
   const editCoc = () => navigate(`/admin/workers/modules/${workerId}/coc`);
   const editMedical = () =>
     navigate(`/admin/workers/modules/${workerId}/medical`);
@@ -576,8 +578,7 @@ const WorkerProfile = () => {
                   actions={[
                     {
                       type: "edit",
-                      onClick: () =>
-                        actions.editPersonal(worker.personal_information),
+                      onClick: () => actions.editPersonal(personal),
                     },
                     {
                       type: "delete",
@@ -681,7 +682,12 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Passport Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editPassport },
+                    {
+                      type: "edit",
+
+                      onClick: () => actions.editPassport(passportObj),
+                    },
+
                     {
                       type: "delete",
                       onClick: deletes.deletePassport,

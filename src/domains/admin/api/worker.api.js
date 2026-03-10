@@ -26,7 +26,7 @@ const getWorkerBasic = async (id) => {
   }
 };
 
- const updateWorkerBasic = async (id, payload) => {
+const updateWorkerBasic = async (id, payload) => {
   try {
     const response = await axiosInstance.patch(`/workers/${id}/basic`, payload);
     return response.data;
@@ -41,7 +41,7 @@ const getWorkerBasic = async (id) => {
 
 // Personal Information
 
- const createPersonalInfo = async (id, payload) => {
+const createPersonalInfo = async (id, payload) => {
   try {
     const response = await axiosInstance.post(
       `/workers/${id}/personal-info`,
@@ -58,7 +58,7 @@ const getWorkerBasic = async (id) => {
 };
 
 // get worker personal info
- const getPersonalInfo = async (id) => {
+const getPersonalInfo = async (id) => {
   try {
     const response = await axiosInstance.get(`/workers/${id}/personal-info`);
     return response.data;
@@ -72,7 +72,7 @@ const getWorkerBasic = async (id) => {
 };
 
 // update worker personal info
- const updatePersonalInfo = async (id, payload) => {
+const updatePersonalInfo = async (id, payload) => {
   try {
     const response = await axiosInstance.patch(
       `/workers/${id}/personal-info`,
@@ -89,7 +89,7 @@ const getWorkerBasic = async (id) => {
 };
 
 // delete worker personal info
- const deletePersonalInfo = async (id) => {
+const deletePersonalInfo = async (id) => {
   try {
     const response = await axiosInstance.delete(`/workers/${id}/personal-info`);
     return response.data;
@@ -101,7 +101,6 @@ const getWorkerBasic = async (id) => {
     );
   }
 };
-
 
 // List archived workers (paginated + filters)
 const listArchivedWorkers = async (params = {}) => {
@@ -159,11 +158,11 @@ const restoreWorker = async (id) => {
   }
 };
 
-
 // Get single active worker profile
 const getWorkerProfile = async (id) => {
   try {
     const response = await axiosInstance.get(`/workers/${id}`);
+    console.log(response);
     return response.data;
   } catch (error) {
     throw new Error(
