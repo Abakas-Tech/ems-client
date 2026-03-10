@@ -15,7 +15,6 @@ function Contract() {
   const { addMessage } = useResponse();
 
   const existingContract = location.state?.contract?.[0] || null;
-  console.log(existingContract);
   const isEditMode = Boolean(existingContract);
 
   const [employers, setEmployers] = useState([]);
@@ -153,7 +152,7 @@ function Contract() {
       }
 
       const response = isEditMode
-        ? await updateContract(id, existingContract.id, dataToSend)
+        ? await updateContract(id, dataToSend)
         : await createContract(id, dataToSend);
 
       addMessage(
@@ -194,7 +193,7 @@ function Contract() {
             >
               <option value="">Select Employer</option>
               {employers.map((emp) => (
-                <option key={emp.id} value={emp.id}>
+                <option key={emp.employer_id} value={Number(emp.employer_id)}>
                   {emp.full_name || emp.email}
                 </option>
               ))}
@@ -212,7 +211,7 @@ function Contract() {
             >
               <option value="">Select Partner</option>
               {partners.map((partner) => (
-                <option key={partner.id} value={partner.id}>
+                <option key={partner.partner_id} value={Number(partner.partner_id)}>
                   {partner.full_name || partner.email}
                 </option>
               ))}
