@@ -45,23 +45,18 @@ function Guarantor() {
 
   /* VALIDATION FOLLOWING BACKEND JOI */
   const validateGuarantor = () => {
-    if (!formData.guarantor_name) return "Guarantor name is required";
-
     if (formData.guarantor_name.length > 150)
-      return "Guarantor name cannot exceed 150 characters";
+      return "Name cannot exceed 150 characters";
 
     if (formData.relation && formData.relation.length > 200)
       return "Relation cannot exceed 200 characters";
 
     const phoneRegex = /^(?:\+251[79]\d{8}|09\d{8})$/;
 
-    if (!formData.guarantor_phone_number)
-      return "Guarantor phone number is required";
-
     if (!phoneRegex.test(formData.guarantor_phone_number))
-      return "Phone must be Ethiopian format";
+      return "Phone must be valid format";
 
-    if (!isEditMode && !idScanFile) return "Guarantor ID scan file is required";
+    if (!isEditMode && !idScanFile) return "ID scan file is required";
 
     if (idScanFile) {
       const allowedTypes = [
@@ -110,8 +105,8 @@ function Guarantor() {
         response?.success,
         response?.message ||
           (isEditMode
-            ? "Guarantor updated successfully"
-            : "Guarantor created successfully"),
+            ? "Emergency contact updated successfully"
+            : "Emergency contact created successfully"),
       );
 
       navigate(-1);
@@ -128,7 +123,7 @@ function Guarantor() {
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Worker Guarantor Information</h2>
+        <h2 className="fw-bold text-dark mb-3">Emergency Contact Information</h2>
 
         <div className="row">
           {/* GUARANTOR NAME */}
@@ -142,6 +137,7 @@ function Guarantor() {
               name="guarantor_name"
               className="form-control"
               placeholder="Enter guarantor full name"
+              required
               value={formData.guarantor_name}
               onChange={handleChange}
             />
@@ -172,6 +168,7 @@ function Guarantor() {
               name="guarantor_phone_number"
               className="form-control"
               placeholder="+2519XXXXXXXX or 09XXXXXXXX"
+              required
               value={formData.guarantor_phone_number}
               onChange={handleChange}
             />
@@ -214,11 +211,7 @@ function Guarantor() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {submitLoading
-              ? "Saving..."
-              : isEditMode
-                ? "Update Guarantor"
-                : "Add Guarantor"}
+            {isEditMode ? "Update emergency contact " : "Add emergency conatct"}
           </button>
         </div>
       </form>

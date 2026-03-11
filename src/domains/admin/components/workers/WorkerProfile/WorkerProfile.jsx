@@ -937,10 +937,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Visa Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick:()=> actions.editVisa },
+                    { type: "edit", onClick:()=> actions.editVisa(visa) },
                     {
                       type: "delete",
-                      onClick: deleteVisa
+                      onClick: deletes.deleteVisa
                     },
                   ]}
                 />

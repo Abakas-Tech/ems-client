@@ -39,11 +39,11 @@ function Visa() {
   };
 
   const handleFileChange = (e) => {
-   const file = e.target.files?.[0];
+    const file = e.target.files?.[0];
 
-   if (file) {
-     setVisaFile(file);
-   }
+    if (file) {
+      setVisaFile(file);
+    }
   };
 
   /* VALIDATION BASED ON JOI */
@@ -132,7 +132,7 @@ function Visa() {
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Worker Visa Information</h2>
+        <h2 className="fw-bold text-dark mb-3">Visa Information</h2>
 
         <div className="row">
           {/* VISA NUMBER */}
@@ -224,11 +224,7 @@ function Visa() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {submitLoading
-              ? "Saving..."
-              : isEditMode
-                ? "Update Visa"
-                : "Add Visa"}
+            {isEditMode ? "Update Visa" : "Add Visa"}
           </button>
         </div>
       </form>

@@ -71,7 +71,6 @@ function Contract() {
   }, []);
 
   const validateContract = () => {
-    if (!formData.employer_id) return "Employer is required";
     if (
       !Number.isInteger(Number(formData.employer_id)) ||
       Number(formData.employer_id) <= 0
@@ -86,34 +85,60 @@ function Contract() {
         return "Partner ID must be a positive integer or empty";
     }
 
-    if (!formData.contract_start_date) return "Contract start date is required";
-    const startDate = new Date(formData.contract_start_date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (isNaN(startDate.getTime()))
-      return "Contract start date must be a valid date";
-    if (startDate < today) return "Contract start date cannot be in the past";
 
-    if (!formData.contract_end_date) return "Contract end date is required";
-    const endDate = new Date(formData.contract_end_date);
-    if (isNaN(endDate.getTime()))
-      return "Contract end date must be a valid date";
-    if (endDate <= startDate)
-      return "Contract end date must be after start date";
+    const startDate = formData.contract_start_date
+      ? new Date(formData.contract_start_date)
+      : null;
+
+    const endDate = formData.contract_end_date
+      ? new Date(formData.contract_end_date)
+      : null;
+
+    /* END DATE CANNOT EXIST WITHOUT START DATE */
+    if (!startDate && endDate)
+      return "Contract start date must be provided if end date exists";
+
+    /* VALIDATE START DATE IF PROVIDED */
+    if (startDate) {
+      if (isNaN(startDate.getTime()))
+        return "Contract start date must be a valid date";
+
+      startDate.setHours(0, 0, 0, 0);
+
+      if (startDate < today) return "Contract start date cannot be in the past";
+    }
+
+    /* VALIDATE END DATE IF PROVIDED */
+    if (endDate) {
+      if (isNaN(endDate.getTime()))
+        return "Contract end date must be a valid date";
+
+      endDate.setHours(0, 0, 0, 0);
+
+      if (endDate <= startDate)
+        return "Contract end date must be after start date";
+    }
 
     if (!formData.monthly_salary) return "Monthly salary is required";
+
     const salary = Number(formData.monthly_salary);
+
     if (isNaN(salary) || salary <= 0)
       return "Monthly salary must be a positive number";
+
     const decimalParts = formData.monthly_salary.toString().split(".");
     if (decimalParts[1]?.length > 2)
       return "Monthly salary cannot have more than 2 decimal places";
 
     const validStatuses = ["pending", "approved", "rejected", "terminated"];
+
     if (!formData.status || !validStatuses.includes(formData.status))
       return `Status must be one of: ${validStatuses.join(", ")}`;
 
     if (!isEditMode && !contractFile) return "Contract file is required";
+
     if (contractFile) {
       const allowedTypes = [
         "image/jpeg",
@@ -121,13 +146,13 @@ function Contract() {
         "image/jpg",
         "application/pdf",
       ];
+
       if (!allowedTypes.includes(contractFile.type))
         return "Contract file must be JPEG, PNG, or PDF";
     }
 
     return null;
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -177,7 +202,7 @@ function Contract() {
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Worker Contract Information</h2>
+        <h2 className="fw-bold text-dark mb-3">Contract Information</h2>
 
         <div className="row">
           {/* EMPLOYER SELECT */}
@@ -188,6 +213,7 @@ function Contract() {
             <select
               name="employer_id"
               className="form-control"
+              required
               value={formData.employer_id}
               onChange={handleChange}
             >
@@ -211,7 +237,10 @@ function Contract() {
             >
               <option value="">Select Partner</option>
               {partners.map((partner) => (
-                <option key={partner.partner_id} value={Number(partner.partner_id)}>
+                <option
+                  key={partner.partner_id}
+                  value={Number(partner.partner_id)}
+                >
                   {partner.full_name || partner.email}
                 </option>
               ))}
@@ -219,9 +248,7 @@ function Contract() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Contract Start Date <span className="text-danger">*</span>
-            </label>
+            <label>Contract Start Date</label>
             <input
               type="date"
               name="contract_start_date"
@@ -232,9 +259,7 @@ function Contract() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Contract End Date <span className="text-danger">*</span>
-            </label>
+            <label>Contract End Date</label>
             <input
               type="date"
               name="contract_end_date"
@@ -253,6 +278,7 @@ function Contract() {
               step="0.01"
               name="monthly_salary"
               className="form-control"
+              required
               value={formData.monthly_salary}
               onChange={handleChange}
             />
@@ -260,7 +286,7 @@ function Contract() {
 
           <div className="form-group col-md-6">
             <label>
-              Status <span className="text-danger">*</span>
+              Status {!isEditMode && <span className="text-danger">*</span>}
             </label>
             <select
               name="status"
@@ -296,11 +322,7 @@ function Contract() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {submitLoading
-              ? "Saving..."
-              : isEditMode
-                ? "Update Contract"
-                : "Add Contract"}
+            {isEditMode ? "Update Contract" : "Add Contract"}
           </button>
         </div>
       </form>

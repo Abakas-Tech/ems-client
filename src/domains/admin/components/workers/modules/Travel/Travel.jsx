@@ -46,61 +46,73 @@ function Travel() {
     }
   };
 
- const validateTravel = () => {
-   // String length validations
-   if (formData.ticket_number && formData.ticket_number.length > 100)
-     return "Ticket number cannot exceed 100 characters";
+  const validateTravel = () => {
+    // String length validations
+    if (formData.ticket_number && formData.ticket_number.length > 100)
+      return "Ticket number cannot exceed 100 characters";
 
-   if (formData.agent_name && formData.agent_name.length > 150)
-     return "Agent name cannot exceed 150 characters";
+    if (formData.agent_name && formData.agent_name.length > 150)
+      return "Agent name cannot exceed 150 characters";
 
-   if (formData.agent_email && formData.agent_email.length > 255)
-     return "Agent email cannot exceed 255 characters";
+    if (formData.agent_email && formData.agent_email.length > 255)
+      return "Agent email cannot exceed 255 characters";
 
-   if (formData.agent_phone_number && formData.agent_phone_number.length > 20)
-     return "Agent phone number cannot exceed 20 characters";
+    if (formData.agent_phone_number && formData.agent_phone_number.length > 20)
+      return "Agent phone number cannot exceed 20 characters";
 
-   // Ticket file required for create mode
-   if (!isEditMode && !ticketFile) return "Ticket file is required";
+    // Ticket file required for create mode
+    if (!isEditMode && !ticketFile) return "Ticket file is required";
 
-   if (ticketFile) {
-     const allowedTypes = [
-       "image/jpeg",
-       "image/png",
-       "image/jpg",
-       "application/pdf",
-     ];
-     if (!allowedTypes.includes(ticketFile.type))
-       return "Ticket file must be a JPEG, PNG, or PDF file";
-   }
+    if (ticketFile) {
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "application/pdf",
+      ];
+      if (!allowedTypes.includes(ticketFile.type))
+        return "Ticket file must be a JPEG, PNG, or PDF file";
+    }
+    // Date validations
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
 
-   // Date validations
-   const now = new Date();
-   const departureDate = formData.departure_date
-     ? new Date(formData.departure_date)
-     : null;
-   const arrivalDate = formData.arrival_date
-     ? new Date(formData.arrival_date)
-     : null;
+    const departureDate = formData.departure_date
+      ? new Date(formData.departure_date)
+      : null;
 
-   if (!departureDate || isNaN(departureDate.getTime()))
-     return "Departure date must be a valid date";
+    const arrivalDate = formData.arrival_date
+      ? new Date(formData.arrival_date)
+      : null;
 
-   // Departure date cannot be in the past
-   if (departureDate.setHours(0, 0, 0, 0) < now.setHours(0, 0, 0, 0))
-     return "Departure date cannot be in the past";
+    /* Arrival cannot exist without departure */
+    if (!departureDate && arrivalDate) {
+      return "Departure date must be provided if arrival date is set";
+    }
 
-   // Arrival date validation
-   if (arrivalDate) {
-     if (isNaN(arrivalDate.getTime()))
-       return "Arrival date must be a valid date";
+    /* Validate departure if provided */
+    if (departureDate) {
+      if (isNaN(departureDate.getTime()))
+        return "Departure date must be a valid date";
 
-     if (arrivalDate <= departureDate)
-       return "Arrival date must be after departure date";
-   }
+      departureDate.setHours(0, 0, 0, 0);
 
-   return null;
- };
+      if (departureDate < now) return "Departure date cannot be in the past";
+    }
+
+    /* Validate arrival if provided */
+    if (arrivalDate) {
+      if (isNaN(arrivalDate.getTime()))
+        return "Arrival date must be a valid date";
+
+      arrivalDate.setHours(0, 0, 0, 0);
+
+      if (arrivalDate <= departureDate)
+        return "Arrival date must be after departure date";
+    }
+
+    return null;
+  };;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -151,17 +163,18 @@ function Travel() {
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">
-          Worker Travel Information
-        </h2>
+        <h2 className="fw-bold text-dark mb-3">Travel Information</h2>
 
         <div className="row">
           <div className="form-group col-md-6">
-            <label>Ticket Number</label>
+            <label>
+              Ticket Number <span className="text-danger">*</span>
+            </label>
             <input
               type="text"
               name="ticket_number"
               className="form-control"
+              required
               value={formData.ticket_number}
               onChange={handleChange}
             />
@@ -265,11 +278,7 @@ function Travel() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {submitLoading
-              ? "Saving..."
-              : isEditMode
-                ? "Update Travel Info"
-                : "Add Travel Info"}
+            {isEditMode ? "Update Travel Info" : "Add Travel Info"}
           </button>
         </div>
       </form>

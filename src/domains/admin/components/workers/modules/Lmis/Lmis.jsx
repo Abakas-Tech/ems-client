@@ -44,10 +44,6 @@ function Lmis() {
   const validateLmis = () => {
     const labourId = formData.lmis_labour_id.trim();
 
-    if (!labourId) {
-      return "LMIS labour ID is required";
-    }
-
     if (labourId.length > 100) {
       return "LMIS labour ID cannot exceed 100 characters";
     }
@@ -131,9 +127,7 @@ function Lmis() {
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">
-          Worker Labour Market Information System (LMIS)
-        </h2>
+        <h2 className="fw-bold text-dark mb-3">LMIS Informatio</h2>
 
         <div className="row">
           <div className="form-group col-md-6">
@@ -185,11 +179,7 @@ function Lmis() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {submitLoading
-              ? "Saving..."
-              : isEditMode
-                ? "Update LMIS"
-                : "Add LMIS"}
+            {isEditMode ? "Update LMIS" : "Add LMIS"}
           </button>
         </div>
       </form>
