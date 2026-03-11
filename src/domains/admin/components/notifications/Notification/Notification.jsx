@@ -12,6 +12,7 @@ import NotificationItem from "../NotificationItem/NotificationItem";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 import useNotification from "../../../../../context/Notification/useNotification";
+import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 
 const NotificationPage = () => {
   const location = useLocation();
@@ -39,6 +40,7 @@ const NotificationPage = () => {
     if (incomingBulkIds && incomingBulkIds.length > 0) {
       setShowCompose(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incomingBulkIds]);
 
   const loadNotifications = async () => {
@@ -260,7 +262,8 @@ const NotificationPage = () => {
             Manage and send system-wide alerts
           </p>
         </div>
-        <button
+        <RoleButton
+          visibleTo={[2,1]}
           className="btn btn-main px-4 py-2 rounded-3 shadow-sm text-white fw-bold mt-3 mt-md-0"
           onClick={() => {
             setSearchTerm("");
@@ -268,7 +271,7 @@ const NotificationPage = () => {
           }}
         >
           <i className="bi bi-send-plus me-2"></i> Send Alert
-        </button>
+        </RoleButton>
       </div>
 
       <div className="card border-0 shadow-sm overflow-hidden rounded-4">
