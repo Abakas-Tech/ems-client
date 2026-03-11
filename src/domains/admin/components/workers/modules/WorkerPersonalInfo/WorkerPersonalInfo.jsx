@@ -13,6 +13,15 @@ import useloader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 
+// helper function
+const renderLabel = (text, required = false) => {
+  return (
+    <label>
+      {text} {required && <span className="text-danger">*</span>}
+    </label>
+  );
+};
+
 function WorkerPersonalInfo() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -24,6 +33,7 @@ function WorkerPersonalInfo() {
   // Receive the raw personal object — same pattern as LMIS / Passport
   const existingPersonal = location.state?.personal || null;
   const isEditMode = Boolean(existingPersonal);
+  const isCreate = !isEditMode;
 
   const [regions, setRegions] = useState([]);
   const [cities, setCities] = useState([]);
@@ -322,9 +332,7 @@ function WorkerPersonalInfo() {
         <div className="row">
           {/* Sex */}
           <div className="form-group col-md-6">
-            <label>
-              Sex <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Sex", isCreate)}
             <select
               name="sex"
               className="form-control"
@@ -341,9 +349,7 @@ function WorkerPersonalInfo() {
           {/* Worker Status */}
           {!isEditMode && (
             <div className="form-group col-md-6">
-              <label>
-                Worker Status <span className="text-danger">*</span>
-              </label>
+              {renderLabel("Sex", isCreate)}
               {statuses.length === 0 ? (
                 <div className="form-control text-muted">
                   Loading statuses...
@@ -369,9 +375,7 @@ function WorkerPersonalInfo() {
 
           {/* Region */}
           <div className="form-group col-md-6">
-            <label>
-              Region <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Region", isCreate)}
             {regions.length === 0 ? (
               <div className="form-control text-muted">Loading regions...</div>
             ) : (
@@ -544,8 +548,17 @@ function WorkerPersonalInfo() {
 
           {/* Photo 3x4 */}
           <div className="form-group col-md-6">
+            {renderLabel("Photo 3x4", isCreate)}
+            <input
+              type="file"
+              name="photo_3x4_url"
+              accept="image/*"
+              className="form-control"
+              onChange={handleFileChange}
+              required={!isEditMode}
+            />
+
             <label>
-              Photo 3x4{" "}
               {isEditMode ? "" : <span className="text-danger">*</span>}
               {isEditMode && existingPersonal?.photo_3x4?.url && !photo3x4 && (
                 <small className="d-block text-muted">
@@ -560,20 +573,21 @@ function WorkerPersonalInfo() {
                 </small>
               )}
             </label>
+          </div>
+
+          {/* Photo Standing */}
+          <div className="form-group col-md-6">
+            {renderLabel("Photo Standing", isCreate)}
             <input
               type="file"
-              name="photo_3x4_url"
+              name="photo_standing_url"
               accept="image/*"
               className="form-control"
               onChange={handleFileChange}
               required={!isEditMode}
             />
-          </div>
 
-          {/* Photo Standing */}
-          <div className="form-group col-md-6">
             <label>
-              Photo Standing{" "}
               {isEditMode ? "" : <span className="text-danger">*</span>}
               {isEditMode &&
                 existingPersonal?.photo_standing?.url &&
@@ -590,14 +604,6 @@ function WorkerPersonalInfo() {
                   </small>
                 )}
             </label>
-            <input
-              type="file"
-              name="photo_standing_url"
-              accept="image/*"
-              className="form-control"
-              onChange={handleFileChange}
-              required={!isEditMode}
-            />
           </div>
         </div>
 
