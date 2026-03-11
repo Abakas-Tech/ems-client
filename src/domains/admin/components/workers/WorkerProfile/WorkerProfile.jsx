@@ -27,6 +27,24 @@ import CreateModal from "../../../../../shared/components/CreateModal/CreateModa
 // Utility to display a value or a fallback if it's null/undefined
 const fallback = (value) => value ?? "—";
 
+// Returns true if all values in the object are null, undefined, or "—"
+const isModuleEmpty = (module) => {
+  if (module == null) return true; // null or undefined
+
+  if (Array.isArray(module)) {
+    return module.length === 0; // empty array
+  }
+
+  if (typeof module === "object") {
+    return Object.values(module).every(
+      (val) => val === null || val === undefined || val === "—",
+    );
+  }
+
+  // For any other type (string, number) treat as empty if falsy
+  return !module;
+};
+
 // Utility to format date strings into a nicer format or return a fallback
 const niceDate = (dateStr) => {
   if (!dateStr) return "—";
@@ -66,21 +84,21 @@ const useWorkerActions = (workerId) => {
 
   const editPersonal = (personal) =>
     navigate(`/admin/workers/modules/${workerId}/personal`, {
-      state: { personal },
+      state: { personal: personal || null },
     });
 
   const editPassport = (passport) =>
     navigate(`/admin/workers/modules/${workerId}/passport`, {
-      state: { passport },
+      state: { passport: passport || null },
     });
 
   const editCoc = (coc) =>
     navigate(`/admin/workers/modules/${workerId}/coc`, {
-      state: { coc },
+      state: { coc: coc || null },
     });
   const editMedical = (medical) =>
     navigate(`/admin/workers/modules/${workerId}/medical`, {
-      state: { medical },
+      state: { medical: medical || null },
     });
   const editEmergency = () =>
     navigate(`/admin/workers/modules/${workerId}/emergency-contact`);
@@ -586,16 +604,26 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Personal Information</h3>
                 <ActionButtons
-                  actions={[
-                    {
-                      type: "edit",
-                      onClick: () => actions.editPersonal(personal),
-                    },
-                    {
-                      type: "delete",
-                      onClick: deletes.deletePersonal,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(personalInfo)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => {
+                              actions.editPersonal(null);
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => {
+                              actions.editPersonal(personal);
+                            },
+                          },
+                          { type: "delete", onClick: deletes.deletePersonal },
+                        ]
+                  }
                 />
               </div>
 
@@ -692,18 +720,26 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Passport Information</h3>
                 <ActionButtons
-                  actions={[
-                    {
-                      type: "edit",
-
-                      onClick: () => actions.editPassport(passportObj),
-                    },
-
-                    {
-                      type: "delete",
-                      onClick: deletes.deletePassport,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(passportObj)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => {
+                              actions.editPassport(null);
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => {
+                              actions.editPassport(passportObj);
+                            },
+                          },
+                          { type: "delete", onClick: deletes.deletePassport },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">
@@ -753,16 +789,26 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">COC Information</h3>
                 <ActionButtons
-                  actions={[
-                    {
-                      type: "edit",
-                      onClick: () => actions.editCoc(cocObj),
-                    },
-                    {
-                      type: "delete",
-                      onClick: deletes.deleteCoc,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(cocObj)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => {
+                              actions.editCoc(null);
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => {
+                              actions.editCoc(cocObj);
+                            },
+                          },
+                          { type: "delete", onClick: deletes.deleteCoc },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">
@@ -873,18 +919,26 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Medical Information</h3>
                 <ActionButtons
-                  actions={[
-                    {
-                      type: "edit",
-                      onClick: () => {
-                        actions.editMedical(medicalObj);
-                      },
-                    },
-                    {
-                      type: "delete",
-                      onClick: deletes.deleteMedical,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(medicalObj)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => actions.editMedical(null),
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => {
+                              {
+                                actions.editMedical(medicalObj);
+                              }
+                            },
+                          },
+                          { type: "delete", onClick: deletes.deleteMedical },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">

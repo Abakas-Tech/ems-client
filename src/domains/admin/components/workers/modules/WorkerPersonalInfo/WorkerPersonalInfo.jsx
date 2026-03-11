@@ -349,7 +349,7 @@ function WorkerPersonalInfo() {
           {/* Worker Status */}
           {!isEditMode && (
             <div className="form-group col-md-6">
-              {renderLabel("Sex", isCreate)}
+              {renderLabel("Status", isCreate)}
               {statuses.length === 0 ? (
                 <div className="form-control text-muted">
                   Loading statuses...
@@ -588,7 +588,6 @@ function WorkerPersonalInfo() {
             />
 
             <label>
-              {isEditMode ? "" : <span className="text-danger">*</span>}
               {isEditMode &&
                 existingPersonal?.photo_standing?.url &&
                 !photoStanding && (
