@@ -175,7 +175,6 @@ function WorkerPersonalInfo() {
   const validatePersonalInfo = () => {
     if (!["Male", "Female"].includes(formData.sex))
       return "Sex must be Male or Female";
-    if (!formData.status_id) return "Worker status is required";
 
     if (
       formData.region_id &&

@@ -9,7 +9,7 @@
 
 /* 
 git add .
-git commit -m "Worker Status - only show when creating (not editing) "
+git commit -m "Remove unnecessary frontend validation for status"
 git push
 
 */
