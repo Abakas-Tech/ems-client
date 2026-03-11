@@ -340,29 +340,33 @@ function WorkerPersonalInfo() {
           </div>
 
           {/* Worker Status */}
-          <div className="form-group col-md-6">
-            <label>
-              Worker Status <span className="text-danger">*</span>
-            </label>
-            {statuses.length === 0 ? (
-              <div className="form-control text-muted">Loading statuses...</div>
-            ) : (
-              <select
-                name="status_id"
-                className="form-control"
-                value={formData.status_id}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select status</option>
-                {statuses.map((status) => (
-                  <option key={status.id} value={status.id}>
-                    {status.name}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
+          {!isEditMode && (
+            <div className="form-group col-md-6">
+              <label>
+                Worker Status <span className="text-danger">*</span>
+              </label>
+              {statuses.length === 0 ? (
+                <div className="form-control text-muted">
+                  Loading statuses...
+                </div>
+              ) : (
+                <select
+                  name="status_id"
+                  className="form-control"
+                  value={formData.status_id}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select status</option>
+                  {statuses.map((status) => (
+                    <option key={status.id} value={status.id}>
+                      {status.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          )}
 
           {/* Region */}
           <div className="form-group col-md-6">
