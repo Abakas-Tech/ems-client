@@ -25,6 +25,7 @@ function Coc() {
   // Receive raw coc object — same as passport/lmis
   const existingCoc = location.state?.coc || null;
   const isEditMode = Boolean(existingCoc);
+  const isCreate = !isEditMode;
 
   const [formData, setFormData] = useState({
     coc_number: existingCoc?.coc_number || "",
@@ -193,9 +194,7 @@ function Coc() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Assessment Center <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Assessment Center", isCreate)}
             <input
               type="text"
               name="coc_assessment_center"
@@ -207,9 +206,7 @@ function Coc() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Assessment Date <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Assessment Date", isCreate)}
             <input
               type="date"
               name="coc_assessment_date"
@@ -221,9 +218,7 @@ function Coc() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Issue Date <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Issue Date ", isCreate)}
             <input
               type="date"
               name="coc_issue_date"
@@ -235,9 +230,7 @@ function Coc() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Expiry Date <span className="text-danger">*</span>
-            </label>
+            {renderLabel(" Expiry Date  ", isCreate)}
             <input
               type="date"
               name="coc_expiry_date"
@@ -249,8 +242,17 @@ function Coc() {
           </div>
 
           <div className="form-group col-md-6">
+            {renderLabel(" COC Document  ", isCreate)}
+            <input
+              type="file"
+              ref={fileInputRef}
+              name="coc_document"
+              className="form-control"
+              accept="image/*,.pdf"
+              onChange={handleFileChange}
+              required={!isEditMode}
+            />
             <label>
-              COC Document{" "}
               {isEditMode ? "" : <span className="text-danger">*</span>}
               {isEditMode && existingDocumentUrl && (
                 <small className="d-block text-muted">
@@ -265,15 +267,6 @@ function Coc() {
                 </small>
               )}
             </label>
-            <input
-              type="file"
-              ref={fileInputRef}
-              name="coc_document"
-              className="form-control"
-              accept="image/*,.pdf"
-              onChange={handleFileChange}
-              required={!isEditMode}
-            />
           </div>
         </div>
 
