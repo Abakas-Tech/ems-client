@@ -1,9 +1,18 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import useloader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createPassport, updatePassport } from "../../../../api/worker.api";
+
+// helper function
+const renderLabel = (text, required = false) => {
+  return (
+    <label>
+      {text} {required && <span className="text-danger">*</span>}
+    </label>
+  );
+};
 
 function Passport() {
   const fileInputRef = useRef(null);
@@ -17,6 +26,7 @@ function Passport() {
   // Receive the raw passport object (same pattern as LMIS)
   const existingPassport = location.state?.passport || null;
   const isEditMode = Boolean(existingPassport);
+  const isCreate = !isEditMode;
 
   const [formData, setFormData] = useState({
     passport_number: existingPassport?.passport_number || "",
@@ -152,9 +162,7 @@ function Passport() {
 
         <div className="row">
           <div className="form-group col-md-6">
-            <label>
-              Passport Number <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Passport Number", isCreate)}
             <input
               type="text"
               name="passport_number"
@@ -166,7 +174,7 @@ function Passport() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>Issuing Country</label>
+            {renderLabel("Issuing Country", isCreate)}
             <input
               type="text"
               name="passport_issuing_country"
@@ -177,9 +185,7 @@ function Passport() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Issue Date <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Issue Date", isCreate)}
             <input
               type="date"
               name="passport_issue_date"
@@ -191,9 +197,7 @@ function Passport() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Expiry Date <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Expiry Date", isCreate)}
             <input
               type="date"
               name="passport_expiry_date"
@@ -205,8 +209,16 @@ function Passport() {
           </div>
 
           <div className="form-group col-md-6">
+            {renderLabel("Passport Scan", isCreate)}
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="form-control"
+              accept="image/*,.pdf"
+              onChange={handleFileChange}
+              required={!isEditMode}
+            />
             <label>
-              Passport Scan{" "}
               {isEditMode ? "" : <span className="text-danger">*</span>}
               {isEditMode && existingScanUrl && (
                 <small className="d-block text-muted">
@@ -221,14 +233,6 @@ function Passport() {
                 </small>
               )}
             </label>
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="form-control"
-              accept="image/*,.pdf"
-              onChange={handleFileChange}
-              required={!isEditMode}
-            />
           </div>
         </div>
 

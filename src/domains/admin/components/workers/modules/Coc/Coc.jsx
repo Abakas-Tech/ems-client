@@ -5,6 +5,15 @@ import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createCoc, updateCoc } from "../../../../api/worker.api";
 
+// helper function
+const renderLabel = (text, required = false) => {
+  return (
+    <label>
+      {text} {required && <span className="text-danger">*</span>}
+    </label>
+  );
+};
+
 function Coc() {
   const { id } = useParams();
   const navigate = useNavigate();
