@@ -132,7 +132,7 @@ function Lmis() {
         <div className="row">
           <div className="form-group col-md-6">
             <label>
-              LMIS Labour ID <span className="text-danger">*</span>
+             Labour ID <span className="text-danger">*</span>
             </label>
 
             <input
@@ -159,7 +159,7 @@ function Lmis() {
 
           <div className="form-group col-md-6">
             <label>
-              LMIS QR Code{" "}
+               QR Code{" "}
               {!isEditMode && <span className="text-danger">*</span>}
             </label>
 

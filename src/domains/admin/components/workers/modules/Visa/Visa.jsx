@@ -151,7 +151,7 @@ function Visa() {
 
           {/* ISSUE DATE */}
           <div className="form-group col-md-6">
-            <label>Visa Issue Date</label>
+            <label>Issue Date</label>
 
             <input
               type="date"
@@ -164,7 +164,7 @@ function Visa() {
 
           {/* EXPIRY DATE */}
           <div className="form-group col-md-6">
-            <label>Visa Expiry Date</label>
+            <label>Expiry Date</label>
 
             <input
               type="date"
@@ -177,7 +177,7 @@ function Visa() {
 
           {/* REFERENCE NUMBER */}
           <div className="form-group col-md-6">
-            <label>Visa Reference Number</label>
+            <label>Reference Number</label>
 
             <input
               type="text"
@@ -191,7 +191,7 @@ function Visa() {
 
           {/* REFERENCE DATE */}
           <div className="form-group col-md-6">
-            <label>Visa Reference Date</label>
+            <label>Reference Date</label>
 
             <input
               type="date"

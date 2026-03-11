@@ -248,7 +248,7 @@ function Contract() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>Contract Start Date</label>
+            <label>Start Date</label>
             <input
               type="date"
               name="contract_start_date"
@@ -259,7 +259,7 @@ function Contract() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>Contract End Date</label>
+            <label>End Date</label>
             <input
               type="date"
               name="contract_end_date"

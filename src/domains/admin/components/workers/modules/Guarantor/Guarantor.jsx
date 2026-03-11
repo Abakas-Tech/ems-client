@@ -129,7 +129,7 @@ function Guarantor() {
           {/* GUARANTOR NAME */}
           <div className="form-group col-md-6">
             <label>
-              Guarantor Name <span className="text-danger">*</span>
+               Name <span className="text-danger">*</span>
             </label>
 
             <input
@@ -160,14 +160,14 @@ function Guarantor() {
           {/* PHONE */}
           <div className="form-group col-md-6">
             <label>
-              Guarantor Phone Number <span className="text-danger">*</span>
+            Phone Number <span className="text-danger">*</span>
             </label>
 
             <input
               type="text"
               name="guarantor_phone_number"
               className="form-control"
-              placeholder="+2519XXXXXXXX or 09XXXXXXXX"
+              placeholder="+2519XXXXXXX"
               required
               value={formData.guarantor_phone_number}
               onChange={handleChange}
@@ -176,7 +176,7 @@ function Guarantor() {
 
           {/* ADDRESS */}
           <div className="form-group col-md-6">
-            <label>Guarantor Address</label>
+            <label>Address</label>
 
             <input
               name="guarantor_address"
@@ -191,7 +191,7 @@ function Guarantor() {
           {/* FILE */}
           <div className="form-group col-md-6">
             <label>
-              Guarantor ID Scan{" "}
+               ID Scan{" "}
               {!isEditMode && <span className="text-danger">*</span>}
             </label>
 
