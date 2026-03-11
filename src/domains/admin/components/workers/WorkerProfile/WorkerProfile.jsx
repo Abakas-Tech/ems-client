@@ -331,6 +331,8 @@ const WorkerProfile = () => {
     return availableColors[index];
   };
 
+  const latestStatus = workerStatuses[workerStatuses.length - 1];
+
   if (!worker) return null;
 
   /* data extraction */
@@ -516,10 +518,12 @@ const WorkerProfile = () => {
             </p>
 
             <p className="text-muted mb-2">
-              <strong>Passport No:</strong> {passportInfo.number}
+              <strong>Passport No:</strong> {passportInfo?.number}
             </p>
-
-            <Badge content={statusName} color="green" />
+            <Badge
+              content={latestStatus?.name || "No Status"}
+              color={getConsistentColor(latestStatus?.name)}
+            />
           </div>
         </div>
       </div>
@@ -878,7 +882,7 @@ const WorkerProfile = () => {
                     },
                     {
                       type: "delete",
-                      onClick: deletes.deleteMedical
+                      onClick: deletes.deleteMedical,
                     },
                   ]}
                 />
