@@ -8,6 +8,15 @@ import {
   updateMedicalRecord,
 } from "../../../../api/worker.api";
 
+// helper function
+const renderLabel = (text, required = false) => {
+  return (
+    <label>
+      {text} {required && <span className="text-danger">*</span>}
+    </label>
+  );
+};
+
 function Medical() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -19,6 +28,7 @@ function Medical() {
   // Receive raw medical object — same pattern as passport/coc
   const existingMedical = location.state?.medical || null;
   const isEditMode = Boolean(existingMedical);
+  const isCreate = !isEditMode;
 
   const [formData, setFormData] = useState({
     medical_status: existingMedical?.medical_status || "",
@@ -181,9 +191,8 @@ function Medical() {
 
         <div className="row">
           <div className="form-group col-md-6">
-            <label>
-              Medical Status <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Medical Status", isCreate)}
+
             <select
               name="medical_status"
               className="form-control"
@@ -243,9 +252,17 @@ function Medical() {
           </div>
 
           <div className="form-group col-md-6">
+            {renderLabel(" Medical File", isCreate)}
+            <input
+              type="file"
+              ref={fileInputRef}
+              name="medical_file"
+              className="form-control"
+              accept="image/*,.pdf"
+              onChange={handleFileChange}
+              required={!isEditMode}
+            />
             <label>
-              Medical File{" "}
-              {isEditMode ? "" : <span className="text-danger">*</span>}
               {isEditMode && existingFileUrl && (
                 <small className="d-block text-muted">
                   Current file:{" "}
@@ -259,15 +276,6 @@ function Medical() {
                 </small>
               )}
             </label>
-            <input
-              type="file"
-              ref={fileInputRef}
-              name="medical_file"
-              className="form-control"
-              accept="image/*,.pdf"
-              onChange={handleFileChange}
-              required={!isEditMode}
-            />
           </div>
         </div>
 
