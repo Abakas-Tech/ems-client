@@ -5,6 +5,7 @@ import ScrollToTop from "../shared/components/ScrollToTop/ScrollToTop.jsx";
 import AdminRoutes from "./AdminRoutes.jsx";
 import NotFound from "../shared/components/NotFound/NotFound.jsx";
 import AuthRoutes from "./AuthRoutes.jsx";
+import PublicRoutes from "./PublicRoutes.jsx";
 
 function AppRouter() {
   return (
@@ -14,6 +15,7 @@ function AppRouter() {
       <Routes>
         {/* Auth Routes (unprotected) */}
         <Route path="/auth/*" element={<AuthRoutes />} />
+        <Route path="/public/*" element={<PublicRoutes />} />
 
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />

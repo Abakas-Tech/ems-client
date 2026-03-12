@@ -1,0 +1,176 @@
+
+.galleryTitle {
+  position: relative;
+  display: inline-block;
+  text-transform: uppercase;
+  color: var(--maincolor);
+  border-top: none;
+  
+}
+
+.galleryTitle::before {
+  position: absolute;
+  content: "";
+  width: calc(100% + 80px);
+  height: 2px;
+  top: 4px;
+  left: -40px;
+  background: var(--maincolor);
+  z-index: -1;
+}
+
+.galleryTitle::after {
+  position: absolute;
+  content: "";
+  width: calc(100% + 120px);
+  height: 2px;
+  bottom: 5px;
+  left: -60px;
+  background: var(--maincolor);
+  z-index: -1;
+}
+/* Gallery */
+
+.galleryCard {
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.galleryImage {
+  height: 300px;
+  object-fit: cover;
+}
+
+.overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
+}
+
+/* Modal */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+/* MOBILE FIRST */
+
+.modalWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1300px;
+  padding: 0 10px;
+}
+
+.imageContainer {
+  display: flex;
+  justify-content: center;
+  height: auto;
+}
+
+.modalImage {
+  max-width: 90vw;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+/* Close Button */
+
+.closeButton {
+  position: absolute;
+  top: -15px;
+  right: 20px;
+  font-size: 42px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  z-index: 20;
+}
+
+/* Modal Info */
+
+.modalInfo {
+  position: static;
+  margin-top: 20px;
+  max-width: 90%;
+  color: white;
+}
+
+.modalInfo h4 {
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+.modalInfo p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Navigation */
+
+.navButton {
+  position: absolute;
+  top: 35%;
+  transform: translateY(-50%);
+  font-size: 46px;
+  border: none;
+  background: none;
+  color: white;
+  cursor: pointer;
+  margin: 0 0.3rem;
+}
+
+.left {
+  left: 10px;
+}
+
+.right {
+  right: 10px;
+}
+
+/* DESKTOP / LARGE SCREEN */
+
+@media (min-width: 700px) {
+
+  .modalWrapper {
+    padding: 0 80px;
+  }
+
+  .imageContainer {
+    height: 60vh;
+    margin-bottom: 2rem;
+  }
+
+  .left {
+    left: -60px;
+  }
+
+  .right {
+    right: -60px;
+  }
+
+  .closeButton {
+    top: -100px;
+    right: 10px;
+  }
+
+  .modalInfo {
+    position: absolute;
+    bottom: -70px;
+    left: 0;
+    max-width: 800px;
+    margin: 0 1rem;
+  }
+
+  .navButton {
+    top: 50%;
+  }
+}
