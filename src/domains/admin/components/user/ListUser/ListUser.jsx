@@ -284,19 +284,21 @@ const ListUser = () => {
             </div>
           </div>
           <div className="gap-2 d-flex">
-            <button
+            <RoleButton
+            visibleTo={[1,2]}
               className="btn btn-main btn-sm text-white px-3 fw-bold"
               disabled={selectedUserIds.length === 0}
               onClick={handleBulkNotify}
             >
               Send Bulk Alert
-            </button>
-            <button
+            </RoleButton>
+            <RoleButton
+            visibleTo={[1,2]}
               className="btn btn-light btn-sm border"
               onClick={handleExitSelection}
             >
               Cancel
-            </button>
+            </RoleButton>
           </div>
         </div>
       )}
