@@ -1,4 +1,9 @@
-import { FaFolderPlus, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import {
+  FaFolderPlus,
+  FaChevronLeft,
+  FaChevronRight,
+  FaBell,
+} from "react-icons/fa";
 import { AiOutlineFolderView } from "react-icons/ai";
 
 const ACTION_CONFIG = {
@@ -9,7 +14,7 @@ const ACTION_CONFIG = {
   },
   edit: {
     className: "btn-outline-primary",
-    icon: <i className="fa-solid fa-pen-to-square"></i>, 
+    icon: <i className="fa-solid fa-pen-to-square"></i>,
     title: "Edit",
   },
   delete: {
@@ -30,7 +35,7 @@ const ACTION_CONFIG = {
 
   addModule: {
     className: "btn-outline-info",
-    icon: <FaFolderPlus/>,
+    icon: <FaFolderPlus />,
     title: "Add Module",
   },
 
@@ -46,7 +51,7 @@ const ACTION_CONFIG = {
   },
   viewModule: {
     className: "btn-outline-info",
-    icon: <AiOutlineFolderView/>,
+    icon: <AiOutlineFolderView />,
     title: "View Module",
   },
   leftArrow: {
@@ -56,10 +61,14 @@ const ACTION_CONFIG = {
   },
   rightArrow: {
     className: "btn-outline-info",
-    icon:<FaChevronRight />,
+    icon: <FaChevronRight />,
     title: "Next",
   },
-  
+  notify: {
+    className: "btn-outline-info",
+    icon: <FaBell />,
+    title: "Notify",
+  },
 };
 
 const ActionButtons = ({ actions = [], row }) => {
