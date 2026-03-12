@@ -219,7 +219,6 @@ function Passport() {
               required={!isEditMode}
             />
             <label>
-              {isEditMode ? "" : <span className="text-danger">*</span>}
               {isEditMode && existingScanUrl && (
                 <small className="d-block text-muted">
                   Current scan:{" "}

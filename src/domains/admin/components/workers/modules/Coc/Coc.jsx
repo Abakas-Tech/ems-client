@@ -253,7 +253,6 @@ function Coc() {
               required={!isEditMode}
             />
             <label>
-              {isEditMode ? "" : <span className="text-danger">*</span>}
               {isEditMode && existingDocumentUrl && (
                 <small className="d-block text-muted">
                   Current document:{" "}

@@ -559,7 +559,6 @@ function WorkerPersonalInfo() {
             />
 
             <label>
-              {isEditMode ? "" : <span className="text-danger">*</span>}
               {isEditMode && existingPersonal?.photo_3x4?.url && !photo3x4 && (
                 <small className="d-block text-muted">
                   Current photo:{" "}

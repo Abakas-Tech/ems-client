@@ -29,10 +29,10 @@ const fallback = (value) => value ?? "—";
 
 // Returns true if all values in the object are null, undefined, or "—"
 const isModuleEmpty = (module) => {
-  if (module == null) return true; // null or undefined
+  if (module == null) return true;
 
   if (Array.isArray(module)) {
-    return module.length === 0; // empty array
+    return module.length === 0;
   }
 
   if (typeof module === "object") {
@@ -41,7 +41,6 @@ const isModuleEmpty = (module) => {
     );
   }
 
-  // For any other type (string, number) treat as empty if falsy
   return !module;
 };
 
@@ -84,21 +83,21 @@ const useWorkerActions = (workerId) => {
 
   const editPersonal = (personal) =>
     navigate(`/admin/workers/modules/${workerId}/personal`, {
-      state: { personal: personal || null },
+      state: { personal },
     });
 
   const editPassport = (passport) =>
     navigate(`/admin/workers/modules/${workerId}/passport`, {
-      state: { passport: passport || null },
+      state: { passport },
     });
 
   const editCoc = (coc) =>
     navigate(`/admin/workers/modules/${workerId}/coc`, {
-      state: { coc: coc || null },
+      state: { coc },
     });
   const editMedical = (medical) =>
     navigate(`/admin/workers/modules/${workerId}/medical`, {
-      state: { medical: medical || null },
+      state: { medical },
     });
   const editEmergency = () =>
     navigate(`/admin/workers/modules/${workerId}/emergency-contact`);
@@ -381,8 +380,6 @@ const WorkerProfile = () => {
   const travelRecords = travel_records || [];
   const contractsList = contracts || [];
 
-  const statusName = statusObj?.name ?? "—";
-
   const photoUrl =
     personal?.photo_3x4?.url ||
     "https://placehold.co/600x400/000000/FFF?text=No+Photo";
@@ -529,7 +526,7 @@ const WorkerProfile = () => {
 
           {/* Text */}
           <div className="col">
-            <h4 className="fw-bold mb-1">{fullName}</h4>
+            <h3 className="fw-bold mb-1">{fullName}</h3>
 
             <p className="text-muted mb-1">
               <strong>Phone:</strong> {phone}
