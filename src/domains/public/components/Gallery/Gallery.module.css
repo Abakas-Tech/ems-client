@@ -1,5 +1,5 @@
 
-.galleryTitle {
+.gallery-title {
   position: relative;
   display: inline-block;
   text-transform: uppercase;
@@ -9,9 +9,7 @@
   
 }
 
-/* .galleryTitle::before {
 
-} */
 
 .title{
    position: relative;
@@ -43,7 +41,7 @@
 } */
 /* Gallery */
 
-.galleryCard {
+.gallery-card {
   cursor: pointer;
   overflow: hidden;
 }
