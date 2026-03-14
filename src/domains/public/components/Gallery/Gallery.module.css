@@ -5,10 +5,19 @@
   text-transform: uppercase;
   color: var(--maincolor);
   border-top: none;
+
   
 }
 
-.galleryTitle::before {
+/* .galleryTitle::before {
+
+} */
+
+.title{
+   position: relative;
+  display: inline-block;
+}
+.title::before{
   position: absolute;
   content: "";
   width: calc(100% + 80px);
@@ -16,10 +25,9 @@
   top: 4px;
   left: -40px;
   background: var(--maincolor);
-  z-index: -1;
+  z-index: 1;
 }
-
-.galleryTitle::after {
+.title::after{
   position: absolute;
   content: "";
   width: calc(100% + 120px);
@@ -27,8 +35,12 @@
   bottom: 5px;
   left: -60px;
   background: var(--maincolor);
-  z-index: -1;
+  z-index: 1;
 }
+
+/* .galleryTitle::after {
+
+} */
 /* Gallery */
 
 .galleryCard {

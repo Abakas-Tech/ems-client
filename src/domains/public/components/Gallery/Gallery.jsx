@@ -36,6 +36,7 @@ const Gallery = () => {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
+    
   }, [selectedIndex, galleryItems]);
 
   const openModal = (index) => setSelectedIndex(index);
@@ -59,10 +60,12 @@ const Gallery = () => {
         {/* Header */}
         <div className="row mb-5">
           <div className="col-12 text-center">
-            <h5 className={` bg-white px-3 ${styles.galleryTitle}`}>
-              Our Gallery
-            </h5>
-            <div className="gallery-line"></div>
+            <div className={styles.title}>
+              <h5 className={` bg-white px-3 ${styles.galleryTitle}`}>
+                Our Gallery
+              </h5>
+            </div>
+
             <h2 className="fw-bold">Capturing memorable moments</h2>
             <p className="">
               Explore our gallery of stunning photographs that tell stories,
