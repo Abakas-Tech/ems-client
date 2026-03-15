@@ -3,13 +3,18 @@ import { Link } from "react-router-dom";
 import { getSocialMedias } from "../../../domains/public/api/socialMedia.api";
 
 const Footer = () => {
-  const [agentData, setAgentData] = useState({
-    agent_name: "Hussen Agent",
-    agent_email: "support@agent.com",
-    agent_phone: "0918241535",
+  const [agencyData, setAgencyData] = useState({
+    agency_name: "Sultan",
+    agency_email: "support@agency.com",
+    agency_phone: "0918241535",
     address: "Addiss Ababa, Ethiopia",
     facebook_username: "",
+    instagram_username: "",
     telegram_username: "",
+    tiktok_username: "",
+    linkedin_username: "",
+    youtube_username: "",
+    twitter_username: "",
     whatsapp_username: "",
   });
 
@@ -18,10 +23,15 @@ const Footer = () => {
       try {
         const data = await getSocialMedias();
 
-        setAgentData((prev) => ({
+        setAgencyData((prev) => ({
           ...prev,
           facebook_username: data?.facebook_username || "",
+          instagram_username: data?.instagram_username || "",
           telegram_username: data?.telegram_username || "",
+          tiktok_username: data?.tiktok_username || "",
+          linkedin_username: data?.linkedin_username || "",
+          youtube_username: data?.youtube_username || "",
+          twitter_username: data?.twitter_username || "",
           whatsapp_username: data?.whatsapp_username || "",
         }));
       } catch (error) {
@@ -32,18 +42,50 @@ const Footer = () => {
     loadSocialMedia();
   }, []);
 
-  // Dynamic social links
-  const facebookUrl = agentData.facebook_username
-    ? `https://facebook.com/${agentData.facebook_username}`
-    : null;
+  const socialLinks = {
+    facebook: agencyData.facebook_username
+      ? `https://facebook.com/${agencyData.facebook_username}`
+      : null,
 
-  const telegramUrl = agentData.telegram_username
-    ? `https://t.me/${agentData.telegram_username}`
-    : null;
+    instagram: agencyData.instagram_username
+      ? `https://instagram.com/${agencyData.instagram_username}`
+      : null,
 
-  const whatsappUrl = agentData.whatsapp_username
-    ? `https://wa.me/${agentData.whatsapp_username.replace(/\D/g, "")}`
-    : null;
+    telegram: agencyData.telegram_username
+      ? `https://t.me/${agencyData.telegram_username}`
+      : null,
+
+    tiktok: agencyData.tiktok_username
+      ? `https://tiktok.com/@${agencyData.tiktok_username}`
+      : null,
+
+    linkedin: agencyData.linkedin_username
+      ? `https://linkedin.com/in/${agencyData.linkedin_username}`
+      : null,
+
+    youtube: agencyData.youtube_username
+      ? `https://youtube.com/@${agencyData.youtube_username}`
+      : null,
+
+    twitter: agencyData.twitter_username
+      ? `https://twitter.com/${agencyData.twitter_username}`
+      : null,
+
+    whatsapp: agencyData.whatsapp_username
+      ? `https://wa.me/${agencyData.whatsapp_username.replace(/\D/g, "")}`
+      : null,
+  };
+
+  const socialIcons = {
+    facebook: "fa-facebook",
+    instagram: "fa-instagram",
+    telegram: "fa-telegram",
+    tiktok: "fa-tiktok",
+    linkedin: "fa-linkedin",
+    youtube: "fa-youtube",
+    twitter: "fa-twitter",
+    whatsapp: "fa-whatsapp",
+  };
 
   return (
     <footer className="dark-footer skin-dark-footer">
@@ -58,9 +100,9 @@ const Footer = () => {
                 </Link>
 
                 <div className="footer-add">
-                  <p>{agentData.address}</p>
-                  <p>{agentData.agent_phone}</p>
-                  <p>{agentData.agent_email}</p>
+                  <p>{agencyData.address}</p>
+                  <p>{agencyData.agency_phone}</p>
+                  <p>{agencyData.agency_email}</p>
                 </div>
               </div>
             </div>
@@ -132,40 +174,14 @@ const Footer = () => {
             {/* Social icons */}
             <div className="col-lg-6 col-md-6 text-center text-md-end">
               <ul className="d-inline-flex d-md-flex justify-content-center justify-content-md-end flex-wrap mb-0 me-4">
-                {facebookUrl && (
-                  <li className="me-3 mb-2 mb-md-0">
-                    <a
-                      href={facebookUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <i className="fa-brands fa-facebook"></i>
-                    </a>
-                  </li>
-                )}
-
-                {whatsappUrl && (
-                  <li className="me-3 mb-2 mb-md-0">
-                    <a
-                      href={whatsappUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <i className="fa-brands fa-whatsapp"></i>
-                    </a>
-                  </li>
-                )}
-
-                {telegramUrl && (
-                  <li className="mb-2 mb-md-0">
-                    <a
-                      href={telegramUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <i className="fa-brands fa-telegram"></i>
-                    </a>
-                  </li>
+                {Object.entries(socialLinks).map(([platform, url]) =>
+                  url ? (
+                    <li key={platform} className="me-3 mb-2 mb-md-0">
+                      <a href={url} target="_blank" rel="noopener noreferrer">
+                        <i className={`fa-brands ${socialIcons[platform]}`}></i>
+                      </a>
+                    </li>
+                  ) : null,
                 )}
               </ul>
             </div>
