@@ -1,10 +1,9 @@
-import React, { useState} from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-// import logo from "../../../assets/img/logo.svg";
-// import { fetchAgentProfile } from "../../../domains/public/api/profile.api";
+import { getSocialMedias } from "../../../domains/public/api/socialMedia.api";
 
 const Footer = () => {
-  const [agentData] = useState({
+  const [agentData, setAgentData] = useState({
     agent_name: "Hussen Agent",
     agent_email: "support@agent.com",
     agent_phone: "0918241535",
@@ -14,43 +13,34 @@ const Footer = () => {
     whatsapp_username: "",
   });
 
-  // useEffect(() => {
-  //   const loadAgentProfile = async () => {
-  //     try {
-  //       const profile = await fetchAgentProfile();
-  //       setAgentData({
-  //         agent_name: profile.agent_name,
-  //         agent_email: profile.agent_email,
-  //         agent_phone: profile.agent_phone,
-  //         address: profile.address,
-  //         facebook_username: profile.facebook_username || "",
-  //         telegram_username: profile.telegram_username || "",
-  //         whatsapp_username: profile.whatsapp_username || "",
-  //       });
-  //     } catch {
-  //       // fallback to safe empty values in case of failure
-  //       setAgentData({
-  //         agent_name: "",
-  //         agent_email: "",
-  //         agent_phone: "",
-  //         address: "",
-  //         facebook_username: "",
-  //         telegram_username: "",
-  //         whatsapp_username: "",
-  //       });
-  //     }
-  //   };
+  useEffect(() => {
+    const loadSocialMedia = async () => {
+      try {
+        const data = await getSocialMedias();
 
-  //   loadAgentProfile();
-  // }, []);
+        setAgentData((prev) => ({
+          ...prev,
+          facebook_username: data?.facebook_username || "",
+          telegram_username: data?.telegram_username || "",
+          whatsapp_username: data?.whatsapp_username || "",
+        }));
+      } catch (error) {
+        console.error("Failed to load social medias:", error.message);
+      }
+    };
+
+    loadSocialMedia();
+  }, []);
 
   // Dynamic social links
   const facebookUrl = agentData.facebook_username
     ? `https://facebook.com/${agentData.facebook_username}`
     : null;
+
   const telegramUrl = agentData.telegram_username
     ? `https://t.me/${agentData.telegram_username}`
     : null;
+
   const whatsappUrl = agentData.whatsapp_username
     ? `https://wa.me/${agentData.whatsapp_username.replace(/\D/g, "")}`
     : null;
@@ -64,11 +54,9 @@ const Footer = () => {
             <div className="col-lg-4 col-md-4">
               <div className="footer-widget">
                 <Link className="nav-footer-logo" to="/">
-                  {/* <span className="svg-icon text-light svg-icon-2hx">
-                    <img src={logo} alt="Resido Logo" className="img-fluid" />
-                  </span> */}
                   <h5 className="fs-2 fw-bold text-light ms-1 my-0">Resido</h5>
                 </Link>
+
                 <div className="footer-add">
                   <p>{agentData.address}</p>
                   <p>{agentData.agent_phone}</p>
@@ -121,11 +109,12 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
       {/* Footer Bottom */}
       <div className="footer-bottom">
         <div className="container">
           <div className="row align-items-center">
-            {/* Left side text */}
+            {/* Left side */}
             <div className="col-lg-6 col-md-6 text-center text-md-start mb-2 mb-md-0">
               <p className="mb-0">
                 © 2025 Resido. Developed by{" "}
@@ -140,8 +129,8 @@ const Footer = () => {
               </p>
             </div>
 
-            {/* Right side social icons */}
-            <div className="col-lg-6 col-md-6 text-center text-md-end ">
+            {/* Social icons */}
+            <div className="col-lg-6 col-md-6 text-center text-md-end">
               <ul className="d-inline-flex d-md-flex justify-content-center justify-content-md-end flex-wrap mb-0 me-4">
                 {facebookUrl && (
                   <li className="me-3 mb-2 mb-md-0">
@@ -154,6 +143,7 @@ const Footer = () => {
                     </a>
                   </li>
                 )}
+
                 {whatsappUrl && (
                   <li className="me-3 mb-2 mb-md-0">
                     <a
@@ -165,6 +155,7 @@ const Footer = () => {
                     </a>
                   </li>
                 )}
+
                 {telegramUrl && (
                   <li className="mb-2 mb-md-0">
                     <a

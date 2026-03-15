@@ -4,7 +4,7 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import { FaBars } from "react-icons/fa";
 
-import logo from "../../../../assets/img/logo/sultan-logo.png";
+import logo from "../../../../assets/img/logo/sultan-logo.svg";
 import useProfile from "../../../../context/Profile/useProfile";
 
 const MainHeader = () => {
