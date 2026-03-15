@@ -38,6 +38,7 @@ import GalleryListPage from "./../domains/admin/pages/content/Gallery/Gallery/Ga
 import GalleryUplaodPage from "../domains/admin/pages/content/Gallery/GalleryUpload/GalleryUplaod.jsx";
 import LocationPage from "./../domains/admin/pages/content/Location/Location";
 import ContentDashboard from "../domains/admin/components/content/Dashboard/Dashboard.jsx";
+import useProfile from "../context/Profile/useProfile.jsx";
 import Lmis from './../domains/admin/pages/workers/modules/Lmis/Lmis';
 import Travel from "../domains/admin/pages/workers/modules/Travel/Travel.jsx";
 import Contract from "../domains/admin/pages/workers/modules/Contract/Contract.jsx";
@@ -45,43 +46,50 @@ import Guarantor from "../domains/admin/pages/workers/modules/Guarantor/Guaranto
 import Visa from "../domains/admin/pages/workers/modules/Visa/Visa.jsx";
 
 
-
-const AdminRoutes = () => (
-  <Routes>
-    <Route
-      element={
-        <ProtectedRoute>
-          <AdminLayout />
-        </ProtectedRoute>
-      }
-    >
-      <Route path="settings" element={<ChangePasswordPage />} />
-      <Route path="user-management/create-user" element={<CreateUser />} />
-      <Route path="my-profile" element={<Profile />} />
-      <Route path="user-management" element={<ListUser />} />
-      <Route path="dashboard" element={<Analytics />} />
-      <Route path="my-files" element={<Files />} />
-      <Route path="finances" element={<Finances />} />
-      <Route path="notifications" element={<Notifications />} />
-      <Route path="*" element={<NotFound />} />
-      <Route path="/workers" element={<WorkerDashboard />} />
-      <Route path="/workers/add" element={<WorkerRegistration />} />
-      <Route path="/workers/active" element={<ActiveWorkers />} />
-      <Route path="/workers/active/:id" element={<WorkerProfile />} />
-      <Route path="/workers/archived" element={<ArchivedWorkers />} />
-      <Route path="workers/modules" element={<WorkerModuleManagement />} />
-      <Route path="/workers/modules/:id/add" element={<ModulesList />} />
-      <Route path="/meta-data/country" element={<CountryPage />} />
-      <Route path="/meta-data/region" element={<RegionPage />} />
-      <Route path="/meta-data/skill" element={<SkillPage />} />
-      <Route path="/meta-data/job-position" element={<JobPostionPage />} />
-      <Route path="/meta-data/language" element={<LanguagePage />} />
-      <Route path="/meta-data/worker-status" element={<WorkerStatusPage />} />
-      <Route path="/meta-data/city" element={<CityPage />} />
+const AdminRoutes = () => {
+  const { profile } = useProfile();
+  const role = profile?.role_id;
+  return (
+    <Routes>
       <Route
-        path="/workers/modules/:worker_id/attributes"
-        element={<WorkerMetaPage />}
-      />
+        element={
+          <ProtectedRoute>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="settings" element={<ChangePasswordPage />} />
+        <Route path="user-management/create-user" element={<CreateUser />} />
+        <Route path="my-profile" element={<Profile />} />
+        <Route path="user-management" element={<ListUser />} />
+        <Route path="dashboard" element={<Analytics />} />
+        <Route path="my-files" element={<Files />} />
+        <Route path="finances" element={<Finances />} />
+        <Route path="notifications" element={<Notifications />} />
+        <Route path="*" element={<NotFound />} />
+        <Route
+          path="/workers"
+          element={
+            role === 3 || role === 5 ? <ActiveWorkers /> : <WorkerDashboard />
+          }
+        />
+        <Route path="/workers/add" element={<WorkerRegistration />} />
+        <Route path="/workers/active" element={<ActiveWorkers />} />
+        <Route path="/workers/active/:id" element={<WorkerProfile />} />
+        <Route path="/workers/archived" element={<ArchivedWorkers />} />
+        <Route path="workers/modules" element={<WorkerModuleManagement />} />
+        <Route path="/workers/modules/:id/add" element={<ModulesList />} />
+        <Route path="/meta-data/country" element={<CountryPage />} />
+        <Route path="/meta-data/region" element={<RegionPage />} />
+        <Route path="/meta-data/skill" element={<SkillPage />} />
+        <Route path="/meta-data/job-position" element={<JobPostionPage />} />
+        <Route path="/meta-data/language" element={<LanguagePage />} />
+        <Route path="/meta-data/worker-status" element={<WorkerStatusPage />} />
+        <Route path="/meta-data/city" element={<CityPage />} />
+        <Route
+          path="/workers/modules/:worker_id/attributes"
+          element={<WorkerMetaPage />}
+        />
 
       <Route
         path="/workers/modules/:id/personal"
@@ -112,9 +120,10 @@ const AdminRoutes = () => (
         element={<GalleryUplaodPage />}
       />
 
-      <Route path="*" element={<NotFound />} />
-    </Route>
-  </Routes>
-);
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
+  );
+};
 
 export default AdminRoutes;
