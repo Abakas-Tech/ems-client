@@ -26,7 +26,7 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    label: "Worker",
+    label: "Workers",
     path: "/admin/workers",
     icon: "bi bi-file-earmark-person-fill",
     roles: [
@@ -34,6 +34,8 @@ const MENU_CONFIG = [
       ROLES.EMPLOYEE,
       ROLES.PARTNER,
       ROLES.EMPLOYER,
+      ROLES.WORKER,
+
     ],
   },
   {
