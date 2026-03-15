@@ -19,6 +19,7 @@ import ListUser from "./../domains/admin/pages/user/ListUser/ListUser";
 import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
 import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
 import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
+import Notifications from "../domains/admin/pages/NotificationPage/NotificationPage.jsx";
 import Passport from "../domains/admin/pages/workers/modules/Passport/Passport.jsx";
 import Coc from "../domains/admin/pages/workers/modules/Coc/Coc.jsx";
 import Medical from "../domains/admin/pages/workers/modules/Medical/Medical.jsx";
@@ -38,6 +39,7 @@ import GalleryUplaodPage from "../domains/admin/pages/content/Gallery/GalleryUpl
 import LocationPage from "./../domains/admin/pages/content/Location/Location";
 import ContentDashboard from "../domains/admin/components/content/Dashboard/Dashboard.jsx";
 
+
 const AdminRoutes = () => (
   <Routes>
     <Route
@@ -54,6 +56,7 @@ const AdminRoutes = () => (
       <Route path="dashboard" element={<Analytics />} />
       <Route path="my-files" element={<Files />} />
       <Route path="finances" element={<Finances />} />
+      <Route path="notifications" element={<Notifications />} />
       <Route path="*" element={<NotFound />} />
       <Route path="/workers" element={<WorkerDashboard />} />
       <Route path="/workers/add" element={<WorkerRegistration />} />

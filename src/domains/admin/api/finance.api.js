@@ -53,11 +53,19 @@ const deleteTransaction = async (id) => {
     throw new Error(error.response?.data?.message || "Submission failed");
   }
 };
-
+const fetchFinanceSummary = async () => {
+  try {
+    const response = await axiosInstance.get(`/reports/finance`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Error fetching summary");
+  }
+};
 export {
   fetchTransactions,
   fetchTransactionDetails,
   createTransaction,
   updateTransaction,
   deleteTransaction,
+  fetchFinanceSummary,
 };

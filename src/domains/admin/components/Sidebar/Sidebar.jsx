@@ -29,6 +29,7 @@ const menuItems = [
   },
   { label: "Files", path: "/admin/my-files", icon: "bi bi-files" },
   { label: "Meta Data", path: "/admin/meta-data", icon: "bi bi-database-add" },
+  { label: "Notifications", path: "/admin/notifications", icon: "bi bi-bell" },
   {
     label: "Public Content",
     path: "/admin/public-content",

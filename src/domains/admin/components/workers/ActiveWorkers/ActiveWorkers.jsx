@@ -23,11 +23,13 @@ const ActiveWorkers = () => {
   const [workers, setWorkers] = useState([]);
   const [filters, setFilters] = useState({});
 
-  // pagination (inputs)
+  // --- Selection Mode States ---
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
+
+  // pagination
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
-
-  // pagination (response)
   const [totalItems, setTotalItems] = useState(0);
 
   // Fetch Workers
@@ -47,13 +49,47 @@ const ActiveWorkers = () => {
     } finally {
       hideLoader();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);
 
-  // Initial fetch + refetch on change
   useEffect(() => {
     fetchWorkers();
   }, [fetchWorkers]);
+
+  // --- Selection Handlers ---
+  const handleRowDoubleClick = (row) => {
+    if (!isSelectionMode) {
+      setIsSelectionMode(true);
+      setSelectedWorkerIds([row.id]);
+    }
+  };
+
+  const handleSelectRow = (id) => {
+    setSelectedWorkerIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  };
+
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedWorkerIds(workers.map((w) => w.id));
+    } else {
+      setSelectedWorkerIds([]);
+    }
+  };
+
+  const handleBulkNotify = () => {
+    navigate("/admin/notifications", {
+      state: {
+        bulkIds: selectedWorkerIds,
+        bulkType: "worker", // Hardcoded for this page
+      },
+    });
+  };
+
+  const handleExitSelection = () => {
+    setIsSelectionMode(false);
+    setSelectedWorkerIds([]);
+  };
 
   // Filter handlers
   const handleFilterChange = (f) => {
@@ -61,13 +97,12 @@ const ActiveWorkers = () => {
     setPage(1);
   };
 
-  // Clear filters
   const handleClear = () => {
     setFilters({});
     setPage(1);
   };
 
-  // View worker
+  // View, Archive, Delete handlers (existing logic)
   const handleView = async (id) => {
     showLoader();
     try {
@@ -80,7 +115,6 @@ const ActiveWorkers = () => {
     }
   };
 
-  // Archive worker
   const handleArchive = (id) => {
     openModal(
       async () => {
@@ -102,7 +136,6 @@ const ActiveWorkers = () => {
     );
   };
 
-  // Permanent delete
   const handleDelete = (id) => {
     openModal(
       async () => {
@@ -129,11 +162,6 @@ const ActiveWorkers = () => {
     navigate(-1);
   };
 
-  // Action handler for adding a module to a worker
-  const handleAddModule = (id) => {
-    navigate(`/admin/workers/modules/${id}/add`);
-  };
-
   return (
     <div className="dashboard-wraper">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
@@ -147,8 +175,78 @@ const ActiveWorkers = () => {
         </div>
       </div>
 
+      {/* Floating Selection Bar */}
+      {isSelectionMode && (
+        <div
+          className="d-flex justify-content-between align-items-center shadow-lg border-0 rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top px-4 py-3"
+          style={{
+            zIndex: 1000,
+            top: "20px",
+            backgroundColor: "rgba(255, 255, 255, 0.95)", // Glass effect
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(0, 0, 0, 0.05)",
+            maxWidth: "900px",
+            margin: "0 auto",
+            width: "95%", // Ensures padding on mobile
+          }}
+        >
+          {/* Left Side: Status Info */}
+          <div className="d-flex align-items-center">
+            <div
+              className="rounded-3 d-flex align-items-center justify-content-center me-3"
+              style={{
+                width: "45px",
+                height: "45px",
+                backgroundColor: "rgba(var(--maincolor-rgb), 0.1)", // Light version of your main color
+                color: "var(--maincolor)",
+              }}
+            >
+              <i className="bi bi-person-check-fill fs-4"></i>
+            </div>
+            <div>
+              <h6
+                className="mb-0 fw-bold text-dark"
+                style={{ letterSpacing: "-0.3px" }}
+              >
+                Bulk Action Mode
+              </h6>
+              <p className="mb-0 text-muted small fw-medium">
+                <span style={{ color: "var(--maincolor)" }}>
+                  {selectedWorkerIds.length}
+                </span>{" "}
+                workers ready for notification
+              </p>
+            </div>
+          </div>
+
+          {/* Right Side: Actions */}
+          <div className="gap-2 d-flex">
+            <button
+              className="btn btn-main btn-sm text-white px-3 fw-bold"
+              disabled={selectedWorkerIds.length === 0}
+              onClick={handleBulkNotify}
+            >
+              {" "}
+              Send Bulk Alert
+            </button>
+            <button
+              className="btn btn-light btn-sm border"
+              onClick={handleExitSelection}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       <ListingComponent
         showAvater={true}
+        // Selection Props
+        isSelectionMode={isSelectionMode}
+        selectedIds={selectedWorkerIds}
+        onSelectRow={handleSelectRow}
+        onSelectAll={handleSelectAll}
+        onRowDoubleClick={handleRowDoubleClick}
         filtersComponent={
           <ActiveWorkersFilters
             filters={filters}
@@ -163,22 +261,12 @@ const ActiveWorkers = () => {
           { header: "Status", accessor: "status" },
         ]}
         actions={[
-          {
-            type: "view",
-            onClick: (row) => handleView(row.id),
-          },
-          {
-            type: "archive",
-            onClick: (row) => handleArchive(row.id),
-          },
-          {
-            type: "delete",
-            onClick: (row) => handleDelete(row.id),
-          },
-
+          { type: "view", onClick: (row) => handleView(row.id) },
+          { type: "archive", onClick: (row) => handleArchive(row.id) },
+          { type: "delete", onClick: (row) => handleDelete(row.id) },
           {
             type: "addModule",
-            onClick: (row) => handleAddModule(row.id),
+            onClick: (row) => navigate(`/admin/workers/modules/${row.id}/add`),
           },
         ]}
         emptyState={{

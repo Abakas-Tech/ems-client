@@ -12028,50 +12028,126 @@ th.next.available,
   background: color-mix(in srgb, var(--greencolor), transparent 90%);
 }
 @media print {
-  /* 1. Hide everything by default, then show ONLY the receipt */
-  body * {
+  /* 1. Hide the entire root app first */
+  #root * {
     visibility: hidden;
   }
 
+  /* 2. Target the receipt and its content only */
   #printable-receipt,
   #printable-receipt * {
-    visibility: visible;
+    visibility: visible !important;
   }
 
-  /* 2. Position the receipt at the very top left of the page */
+  /* 3. Force the receipt to ignore all parent margins and padding */
   #printable-receipt {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 99999;
+    background-color: white !important;
+  }
+
+  /* 4. Kill the layout gaps (the 280px sidebar space) */
+  .flex-grow-1 {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 5. Clean up the page and hide the print button inside the receipt */
+  @page {
+    margin: 0;
+  }
+
+  body,
+  html {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  /* Hide common layout elements specifically */
+  header,
+  ._sidebar_1kaik_1,
+  .d-navigation,
+  .card-footer,
+  button,
+  ._arrow_1qx3w_1 {
+    display: none !important;
+  }
+  #printable-report,
+  #printable-report * {
+    visibility: visible;
+  }
+  #printable-report {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    width: 100%;
+    box-shadow: none !important; /* Remove shadows for clean PDF */
+    border: none !important;
   }
-
-  /* 3. Hide common layout wrappers that might have background colors or borders */
-  header,
-  .header,
-  .navbar,
-  .d-navigation,
-  .sidebar,
-  footer,
+  /* Hide the Print Button itself during printing */
   .card-footer,
-  button {
+  .btn,
+  .back-button {
     display: none !important;
   }
+}
+/* Container for the notification list */
+.notification-row:hover {
+  background-color: #f8f9fa !important;
+}
 
-  /* 4. Reset spacing on body/html to prevent white gaps */
-  html,
-  body {
-    height: auto;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible;
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.form-control::placeholder {
-  color: #333;
-  font-style: italic;
-  font-weight: 100;
+/* Custom Scrollbar for a cleaner look */
+div::-webkit-scrollbar {
+  width: 6px;
+}
+div::-webkit-scrollbar-track {
+  background: transparent;
+}
+div::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+div::-webkit-scrollbar-thumb:hover {
+  background: #d0d0d0;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+/* Add this to your CSS for a real chat "nub" */
+.message-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -10px;
+  width: 20px;
+  height: 20px;
+  background: inherit;
+  border-bottom-right-radius: 15px;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
 }

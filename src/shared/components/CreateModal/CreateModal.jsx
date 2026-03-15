@@ -21,6 +21,7 @@ const CreateModal = ({
   fields = [],
   title = "",
   btnLabel = "Create",
+  renderCustomField,
 }) => {
   const modalRef = useRef(null);
   const [shake, setShake] = useState("idle");
@@ -34,12 +35,16 @@ const CreateModal = ({
 
   // Sync inputValues if fields change
   useEffect(() => {
-    const newValues = {};
-    fields.forEach((field) => {
-      newValues[field.name] = field.value || "";
+    setInputValues((prev) => {
+      const newValues = { ...prev };
+      fields.forEach((field) => {
+        if (!(field.name in prev)) {
+          newValues[field.name] = field.value || "";
+        }
+      });
+      return newValues;
     });
-    setInputValues(newValues);
-  }, [fields]);
+  }, [fields.length]);
 
   // Shake on clicking outside
   const handleOverlayClick = (e) => {
@@ -48,6 +53,19 @@ const CreateModal = ({
       setTimeout(() => setShake("idle"), 500);
     }
   };
+  useEffect(() => {
+    if (show) {
+      const vals = {};
+      fields.forEach((field) => {
+        // Logic: Use initialValue if provided, else field.value, else empty string
+        vals[field.name] =
+          field.initialValue !== undefined
+            ? field.initialValue
+            : field.value || "";
+      });
+      setInputValues(vals);
+    }
+  }, [show, fields]);
 
   useEffect(() => {
     if (show) {
@@ -108,14 +126,19 @@ const CreateModal = ({
               <h6>
                 {field.label} <span className="text-danger">*</span>
               </h6>
-
-              {field.type === "select" ? (
+              {field.type === "custom" && renderCustomField ? (
+                renderCustomField(field, inputValues, handleChange)
+              ) : field.type === "select" ? (
                 <select
                   className="form-control"
-                  value={inputValues[field.name]}
+                  value={inputValues[field.name] || ""}
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   required
-                  style={{ backgroundColor: "#EDF1FB" }}
+                  disabled={!!field.disabled}
+                  style={{
+                    backgroundColor: field.disabled ? "#f0f0f0" : "#EDF1FB",
+                    cursor: field.disabled ? "not-allowed" : "default",
+                  }}
                 >
                   <option value="">Select {field.label}</option>
                   {field.options?.map((option) => (
@@ -124,6 +147,16 @@ const CreateModal = ({
                     </option>
                   ))}
                 </select>
+              ) : field.type === "textarea" ? (
+                <textarea
+                  className="form-control"
+                  rows="4"
+                  value={inputValues[field.name]}
+                  onChange={(e) => handleChange(field.name, e.target.value)}
+                  required
+                  disabled={!!field.disabled}
+                  style={{ backgroundColor: "#EDF1FB" }}
+                />
               ) : (
                 <input
                   type={field.type || "text"}

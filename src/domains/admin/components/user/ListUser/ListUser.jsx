@@ -20,6 +20,8 @@ const ListUser = () => {
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
   const navigate = useNavigate();
 
   const [users, setUsers] = useState([]);
@@ -69,8 +71,59 @@ const ListUser = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
+  // Triggered by first double-click
+  const handleRowDoubleClick = (row) => {
+    if (!isSelectionMode) {
+      setIsSelectionMode(true);
+      setSelectedUserIds([row.id]); // Select the first one automatically
+    }
+  };
+  const handleSelectRow = (id) => {
+    setSelectedUserIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  };
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedUserIds(users.map((u) => u.id));
+    } else {
+      setSelectedUserIds([]);
+    }
+  };
+
+  const handleExitSelection = () => {
+    setIsSelectionMode(false);
+    setSelectedUserIds([]);
+  };
   const handlePageChange = (newPage) => {
     fetchUsers(newPage);
+  };
+
+  // 1. Updated handler to accept an optional single user row
+  const handleNotify = (row = null) => {
+    let idsToNotify = [];
+    let roleType = filters.role_id || "employee";
+    let full_name = "";
+
+    if (row && row.id) {
+      // Handle the case where a single user is clicked for id nad name
+      idsToNotify = [row.id];
+      full_name = row.full_name || "";
+      roleType = ROLE_MAP[row.role_id].toLowerCase() || roleType;
+    } else {
+      // Handle the case where multiple users are selected
+      idsToNotify = selectedUserIds;
+    }
+
+    if (idsToNotify.length === 0) return;
+    console.log(full_name);
+    navigate("/admin/notifications", {
+      state: {
+        bulkIds: idsToNotify,
+        bulkType: roleType,
+        bulkName: full_name,
+      },
+    });
   };
 
   const handleFilterChange = (e) => {
@@ -177,6 +230,7 @@ const ListUser = () => {
 
   const actions = [
     { type: "edit", onClick: handleEdit },
+    { type: "notify", onClick: (row) => handleNotify(row) },
     { type: "archive", onClick: handleStatusToggle, showOn: true },
     { type: "restore", onClick: handleStatusToggle, showOn: false },
     { type: "delete", onClick: handleDelete },
@@ -206,12 +260,76 @@ const ListUser = () => {
           + Create User
         </button>
       </div>
-
+      {isSelectionMode && (
+        <div
+          className="d-flex justify-content-between align-items-center shadow-lg border-0 rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top px-4 py-3"
+          style={{
+            zIndex: 1000,
+            top: "20px",
+            backgroundColor: "rgba(255, 255, 255, 0.95)", // Glass effect
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(0, 0, 0, 0.05)",
+            maxWidth: "900px",
+            margin: "0 auto",
+            width: "95%", // Ensures padding on mobile
+          }}
+        >
+          {/* Left Side: Status Info */}
+          <div className="d-flex align-items-center">
+            <div
+              className="rounded-3 d-flex align-items-center justify-content-center me-3"
+              style={{
+                width: "45px",
+                height: "45px",
+                backgroundColor: "rgba(var(--maincolor-rgb), 0.1)", // Light version of your main color
+                color: "var(--maincolor)",
+              }}
+            >
+              <i className="bi bi-person-check-fill fs-4"></i>
+            </div>
+            <div>
+              <h6
+                className="mb-0 fw-bold text-dark"
+                style={{ letterSpacing: "-0.3px" }}
+              >
+                Bulk Action Mode
+              </h6>
+              <p className="mb-0 text-muted small fw-medium">
+                <span style={{ color: "var(--maincolor)" }}>
+                  {selectedUserIds.length}
+                </span>{" "}
+                Users ready for notification
+              </p>
+            </div>
+          </div>
+          <div className="gap-2 d-flex">
+            <button
+              className="btn btn-main btn-sm text-white px-3 fw-bold"
+              disabled={selectedUserIds.length === 0}
+              onClick={handleNotify}
+            >
+              Send Bulk Alert
+            </button>
+            <button
+              className="btn btn-light btn-sm border"
+              onClick={handleExitSelection}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
       <ListingComponent
         data={users}
         columns={columns}
-        actions={actions}
+        actions={isSelectionMode ? [] : actions}
         emptyState={emptyState}
+        // Selection Props
+        isSelectionMode={isSelectionMode}
+        selectedIds={selectedUserIds}
+        onSelectRow={handleSelectRow}
+        onSelectAll={handleSelectAll}
+        onRowDoubleClick={handleRowDoubleClick}
         showAvater={true}
         filtersComponent={
           <FilterUser
