@@ -1,5 +1,6 @@
 import "./App.css";
 import AppRouter from "./routes/AppRouter";
+import Hero from "../src/domains/public/components/Hero/Hero.jsx";
 function App() {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker
@@ -17,6 +18,7 @@ function App() {
   return (
     <>
       <AppRouter />
+      <Hero/>
     </>
   );
 }
