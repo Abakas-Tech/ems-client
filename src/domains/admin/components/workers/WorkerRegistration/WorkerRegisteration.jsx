@@ -103,6 +103,8 @@ function WorkerRegistration() {
         phone_number: "",
         email: "",
       });
+
+   
     } catch (err) {
       addMessage(false, err.message);
     } finally {

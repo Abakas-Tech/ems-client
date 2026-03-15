@@ -139,7 +139,7 @@ function WorkerPersonalInfo() {
     }
   }, [isEditMode, existingPersonal?.region?.id]);
 
-  // Add this after the other useEffects
+
   useEffect(() => {
     if (isEditMode && existingPersonal?.status?.id) {
       setFormData((prev) => ({
