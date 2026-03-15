@@ -38,6 +38,12 @@ import GalleryListPage from "./../domains/admin/pages/content/Gallery/Gallery/Ga
 import GalleryUplaodPage from "../domains/admin/pages/content/Gallery/GalleryUpload/GalleryUplaod.jsx";
 import LocationPage from "./../domains/admin/pages/content/Location/Location";
 import ContentDashboard from "../domains/admin/components/content/Dashboard/Dashboard.jsx";
+import Lmis from './../domains/admin/pages/workers/modules/Lmis/Lmis';
+import Travel from "../domains/admin/pages/workers/modules/Travel/Travel.jsx";
+import Contract from "../domains/admin/pages/workers/modules/Contract/Contract.jsx";
+import Guarantor from "../domains/admin/pages/workers/modules/Guarantor/Guarantor.jsx";
+import Visa from "../domains/admin/pages/workers/modules/Visa/Visa.jsx";
+
 
 
 const AdminRoutes = () => (
@@ -84,6 +90,11 @@ const AdminRoutes = () => (
       <Route path="workers/modules/:id/passport" element={<Passport />} />
       <Route path="workers/modules/:id/coc" element={<Coc />} />
       <Route path="workers/modules/:id/medical" element={<Medical />} />
+      <Route path="workers/modules/:id/lmis" element={<Lmis />} />
+      <Route path="workers/modules/:id/travel-records" element={<Travel/>} />
+      <Route path="workers/modules/:id/contract" element={<Contract/>} />
+      <Route path="workers/modules/:id/emergency-contact" element={<Guarantor/>} />
+      <Route path="workers/modules/:id/visa" element={<Visa/>} />
       <Route path="/meta-data" element={<MetaDataDashboard />} />
       <Route path="/public-content" element={<ContentDashboard />} />
       <Route

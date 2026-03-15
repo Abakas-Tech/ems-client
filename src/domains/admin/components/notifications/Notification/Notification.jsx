@@ -39,6 +39,7 @@ const NotificationPage = () => {
     if (incomingBulkIds && incomingBulkIds.length > 0) {
       setShowCompose(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incomingBulkIds]);
 
   const loadNotifications = async () => {
@@ -269,6 +270,7 @@ const NotificationPage = () => {
           </p>
         </div>
         <button
+          visibleTo={[2,1]}
           className="btn btn-main px-4 py-2 rounded-3 shadow-sm text-white fw-bold mt-3 mt-md-0"
           onClick={() => {
             setSearchTerm("");

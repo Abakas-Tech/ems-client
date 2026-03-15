@@ -8,6 +8,7 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterUser from "./../../../components/user/FilterUser/FilterUser";
 import Badge from "../../../../../shared/components/Badge/Badge";
+import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 
 const ROLE_MAP = { 2: "Employee", 3: "Partner", 5: "Employer" };
 const ROLE_COLOR = {
@@ -252,13 +253,14 @@ const ListUser = () => {
             users.
           </p>
         </div>
-        <button
+        <RoleButton
+          visibleTo={[2,1]}
           className="btn btn-main"
           style={{ whiteSpace: "nowrap" }}
           onClick={handleCreateUser}
         >
           + Create User
-        </button>
+        </RoleButton>
       </div>
       {isSelectionMode && (
         <div
@@ -303,19 +305,21 @@ const ListUser = () => {
             </div>
           </div>
           <div className="gap-2 d-flex">
-            <button
+            <RoleButton
+            visibleTo={[1,2]}
               className="btn btn-main btn-sm text-white px-3 fw-bold"
               disabled={selectedUserIds.length === 0}
               onClick={handleNotify}
             >
               Send Bulk Alert
-            </button>
-            <button
+            </RoleButton>
+            <RoleButton
+            visibleTo={[1,2]}
               className="btn btn-light btn-sm border"
               onClick={handleExitSelection}
             >
               Cancel
-            </button>
+            </RoleButton>
           </div>
         </div>
       )}

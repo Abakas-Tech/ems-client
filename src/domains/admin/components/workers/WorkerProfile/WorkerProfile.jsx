@@ -8,6 +8,11 @@ import {
   deletePassport,
   getWorkerProfile,
   deleteCoc,
+  deleteLmis,
+  deleteTravel,
+  deleteContract,
+  deleteGuarantor,
+  deleteVisa,
   deletePersonalInfo,
   deleteMedical,
 } from "../../../api/worker.api";
@@ -81,6 +86,25 @@ const DocumentLink = ({ url, label, isImage = false }) => {
 const useWorkerActions = (workerId) => {
   const navigate = useNavigate();
 
+ 
+  const editEmergency = (guarantor) =>
+    navigate(`/admin/workers/modules/${workerId}/emergency-contact`, {
+      state: { guarantor },
+    });
+  const editVisa = (visa) =>
+    navigate(`/admin/workers/modules/${workerId}/visa`, { state: { visa } });
+  const editLmis = (lmis) =>
+    navigate(`/admin/workers/modules/${workerId}/lmis`, {
+      state: { lmis },
+    });
+  const editTravel = (travel) =>
+    navigate(`/admin/workers/modules/${workerId}/travel-records`, {
+      state: { travel },
+    });
+  const editContract = (contract) =>
+    navigate(`/admin/workers/modules/${workerId}/contract`, {
+      state: { contract },
+    });
   const editPersonal = (personal) =>
     navigate(`/admin/workers/modules/${workerId}/personal`, {
       state: { personal },
@@ -99,14 +123,6 @@ const useWorkerActions = (workerId) => {
     navigate(`/admin/workers/modules/${workerId}/medical`, {
       state: { medical },
     });
-  const editEmergency = () =>
-    navigate(`/admin/workers/modules/${workerId}/emergency-contact`);
-  const editVisa = () => navigate(`/admin/workers/modules/${workerId}/visa`);
-  const editLmis = () => navigate(`/admin/workers/modules/${workerId}/lmis`);
-  const editTravel = () =>
-    navigate(`/admin/workers/modules/${workerId}/travel-records`);
-  const editContract = () =>
-    navigate(`/admin/workers/modules/${workerId}/contract`);
 
   return {
     editPersonal,
@@ -164,30 +180,30 @@ const useWorkerDeletes = (
       deleteCoc,
       "Are you sure you want to delete this COC?",
     ),
+    deleteEmergency: handleDelete(
+      deleteGuarantor,
+      "Are you sure you want to delete this emergency contact?",
+    ),
+    deleteVisa: handleDelete(
+      deleteVisa,
+      "Are you sure you want to delete this visa?",
+    ),
+    deleteLmis: handleDelete(
+      deleteLmis,
+      "Are you sure you want to delete this LMIS info?",
+    ),
+    deleteTravel: handleDelete(
+      deleteTravel,
+      "Are you sure you want to delete this travel record?",
+    ),
+    deleteContract: handleDelete(
+      deleteContract,
+      "Are you sure you want to delete this contract?",
+    ),
     deleteMedical: handleDelete(
       deleteMedical,
       "Are you sure you want to delete this medical info?",
     ),
-    // deleteEmergency: handleDelete(
-    //   deleteEmergency,
-    //   "Are you sure you want to delete this emergency contact?",
-    // ),
-    // deleteVisa: handleDelete(
-    //   deleteVisa,
-    //   "Are you sure you want to delete this visa?",
-    // ),
-    // deleteLmis: handleDelete(
-    //   deleteLmis,
-    //   "Are you sure you want to delete this LMIS info?",
-    // ),
-    // deleteTravel: handleDelete(
-    //   deleteTravel,
-    //   "Are you sure you want to delete this travel record?",
-    // ),
-    // deleteContract: handleDelete(
-    //   deleteContract,
-    //   "Are you sure you want to delete this contract?",
-    // ),
   };
 };
 
@@ -861,10 +877,13 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Emergency Contact</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editEmergency },
+                    {
+                      type: "edit",
+                      onClick: () => actions.editEmergency(emergency),
+                    },
                     {
                       type: "delete",
-                      // onClick: deletes.deleteEmergency,
+                      onClick: deletes.deleteEmergency,
                     },
                   ]}
                 />
@@ -1003,10 +1022,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Visa Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editVisa },
+                    { type: "edit", onClick:()=> actions.editVisa(visa) },
                     {
                       type: "delete",
-                      // onClick: deleteVisa
+                      onClick: deletes.deleteVisa
                     },
                   ]}
                 />
@@ -1064,10 +1083,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">LMIS Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editLmis },
+                    { type: "edit", onClick: () => actions.editLmis(lmisObj) },
                     {
                       type: "delete",
-                      // onClick: deletes.deleteLmis
+                      onClick: deletes.deleteLmis,
                     },
                   ]}
                 />
@@ -1111,11 +1130,11 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Travel Records</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editTravel },
                     {
-                      type: "delete",
-                      // onClick: deletes.deleteTravel
+                      type: "edit",
+                      onClick: () => actions.editTravel(travelRecords),
                     },
+                    { type: "delete", onClick: deletes.deleteTravel },
                   ]}
                 />
               </div>
@@ -1235,10 +1254,13 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Contracts</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick: actions.editContract },
+                    {
+                      type: "edit",
+                      onClick: () => actions.editContract(contractsList),
+                    },
                     {
                       type: "delete",
-                      // onClick: deletes.deleteContract,
+                      onClick: deletes.deleteContract,
                     },
                   ]}
                 />
