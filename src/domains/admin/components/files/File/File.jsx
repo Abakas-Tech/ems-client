@@ -11,6 +11,7 @@ import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
+import FileDetail from "../FileDetail/FileDetail";
 
 const File = () => {
   const { showLoader, hideLoader } = useloader();
@@ -24,6 +25,7 @@ const File = () => {
     total: 0,
     pagination: {},
   });
+  const [selectedFile, setSelectedFile] = useState(null);
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
@@ -136,10 +138,15 @@ const File = () => {
       }
     });
   };
+  const handleViewDetail = (row) => {
+    setSelectedFile(row);
+    setView("detail");
+  };
 
   return (
     <div className="dashboard-wraper">
-      {view !== "list" ? (
+      {/* Handle Create/Edit View */}
+      {(view === "create" || view === "edit") && (
         <FileUpload
           isEditMode={view === "edit"}
           initialData={editingFile}
@@ -149,7 +156,18 @@ const File = () => {
             setEditingFile(null);
           }}
         />
-      ) : (
+      )}
+      {/* Handle Detail View */}
+      {view === "detail" && (
+        <FileDetail
+          file={selectedFile}
+          onBack={() => {
+            setView("list");
+            setSelectedFile(null);
+          }}
+        />
+      )}
+      {view === "list" && (
         <>
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
             <div>
@@ -195,7 +213,11 @@ const File = () => {
             ]}
             actions={[
               {
-                type: "rename", // Changed from 'rename' to match standard ActionButtons
+                type: "view",
+                onClick: (row) => handleViewDetail(row),
+              },
+              {
+                type: "edit",
                 onClick: (row) => {
                   setEditingFile(row);
                   setView("edit");

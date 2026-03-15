@@ -1,15 +1,103 @@
 import { axiosInstance } from "../../../utils/axios";
 
-// Create worker
-const createWorker = async (formData) => {
+const registerWorkerCore = async (payload) => {
   try {
-    const response = await axiosInstance.post("/workers", formData);
+    const response = await axiosInstance.post("/workers/register", payload);
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to create worker",
+        "Failed to register worker core",
+    );
+  }
+};
+
+const getWorkerBasic = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/workers/${id}/basic`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get worker basic info",
+    );
+  }
+};
+
+const updateWorkerBasic = async (id, payload) => {
+  try {
+    const response = await axiosInstance.patch(`/workers/${id}/basic`, payload);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update worker basic info",
+    );
+  }
+};
+
+// Personal Information
+
+const createPersonalInfo = async (id, payload) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/${id}/personal-info`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to create personal information",
+    );
+  }
+};
+
+// get worker personal info
+const getPersonalInfo = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/workers/${id}/personal-info`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get personal information",
+    );
+  }
+};
+
+// update worker personal info
+const updatePersonalInfo = async (id, payload) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/${id}/personal-info`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update personal information",
+    );
+  }
+};
+
+// delete worker personal info
+const deletePersonalInfo = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/workers/${id}/personal-info`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete personal information",
     );
   }
 };
@@ -70,24 +158,11 @@ const restoreWorker = async (id) => {
   }
 };
 
-// Update worker
-const updateWorker = async (Payload, id) => {
-  try {
-    const response = await axiosInstance.patch(`/workers/${id}`, Payload);
-    return response.data;
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to update worker",
-    );
-  }
-};
-
 // Get single active worker profile
 const getWorkerProfile = async (id) => {
   try {
     const response = await axiosInstance.get(`/workers/${id}`);
+    console.log(response);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -303,7 +378,7 @@ const getMedicalDetails = async (workerId) => {
 };
 
 // Delete medical record
-const deleteMedicalRecord = async (workerId) => {
+const deleteMedical = async (workerId) => {
   try {
     const response = await axiosInstance.delete(`/workers/${workerId}/medical`);
     return response.data;
@@ -624,11 +699,18 @@ const deleteGuarantor = async (workerId) => {
 };
 
 export {
+  registerWorkerCore,
+  getWorkerBasic,
+  updateWorkerBasic,
+  createPersonalInfo,
+  getPersonalInfo,
+  updatePersonalInfo,
+  deletePersonalInfo,
   deleteWorker,
-  createWorker,
+  // createWorker,
   listArchivedWorkers,
   deleteArchivedWorker,
-  updateWorker,
+  // updateWorker,
   listWorkers,
   getWorkerProfile,
   getArchivedWorkerProfile,
@@ -670,4 +752,5 @@ export {
   updateVisa,
   getVisa,
   deleteVisa
+  deleteMedical,
 };

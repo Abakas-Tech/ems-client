@@ -13,6 +13,8 @@ import {
   deleteContract,
   deleteGuarantor,
   deleteVisa,
+  deletePersonalInfo,
+  deleteMedical,
 } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -29,6 +31,23 @@ import CreateModal from "../../../../../shared/components/CreateModal/CreateModa
 
 // Utility to display a value or a fallback if it's null/undefined
 const fallback = (value) => value ?? "—";
+
+// Returns true if all values in the object are null, undefined, or "—"
+const isModuleEmpty = (module) => {
+  if (module == null) return true;
+
+  if (Array.isArray(module)) {
+    return module.length === 0;
+  }
+
+  if (typeof module === "object") {
+    return Object.values(module).every(
+      (val) => val === null || val === undefined || val === "—",
+    );
+  }
+
+  return !module;
+};
 
 // Utility to format date strings into a nicer format or return a fallback
 const niceDate = (dateStr) => {
@@ -67,13 +86,7 @@ const DocumentLink = ({ url, label, isImage = false }) => {
 const useWorkerActions = (workerId) => {
   const navigate = useNavigate();
 
-  const editPersonal = () =>
-    navigate(`/admin/workers/modules/${workerId}/personal`);
-  const editPassport = () =>
-    navigate(`/admin/workers/modules/${workerId}/passport`);
-  const editCoc = () => navigate(`/admin/workers/modules/${workerId}/coc`);
-  const editMedical = () =>
-    navigate(`/admin/workers/modules/${workerId}/medical`);
+ 
   const editEmergency = (guarantor) =>
     navigate(`/admin/workers/modules/${workerId}/emergency-contact`, {
       state: { guarantor },
@@ -91,6 +104,24 @@ const useWorkerActions = (workerId) => {
   const editContract = (contract) =>
     navigate(`/admin/workers/modules/${workerId}/contract`, {
       state: { contract },
+    });
+  const editPersonal = (personal) =>
+    navigate(`/admin/workers/modules/${workerId}/personal`, {
+      state: { personal },
+    });
+
+  const editPassport = (passport) =>
+    navigate(`/admin/workers/modules/${workerId}/passport`, {
+      state: { passport },
+    });
+
+  const editCoc = (coc) =>
+    navigate(`/admin/workers/modules/${workerId}/coc`, {
+      state: { coc },
+    });
+  const editMedical = (medical) =>
+    navigate(`/admin/workers/modules/${workerId}/medical`, {
+      state: { medical },
     });
 
   return {
@@ -136,10 +167,10 @@ const useWorkerDeletes = (
     };
 
   return {
-    // deletePersonal: handleDelete(
-    //   deletePersonal,
-    //   "Are you sure you want to delete this personal information?",
-    // ),
+    deletePersonal: handleDelete(
+      deletePersonalInfo,
+      "Are you sure you want to delete this personal information?",
+    ),
 
     deletePassport: handleDelete(
       deletePassport,
@@ -149,10 +180,6 @@ const useWorkerDeletes = (
       deleteCoc,
       "Are you sure you want to delete this COC?",
     ),
-    // deleteMedical: handleDelete(
-    //   deleteMedical,
-    //   "Are you sure you want to delete this medical info?",
-    // ),
     deleteEmergency: handleDelete(
       deleteGuarantor,
       "Are you sure you want to delete this emergency contact?",
@@ -172,6 +199,10 @@ const useWorkerDeletes = (
     deleteContract: handleDelete(
       deleteContract,
       "Are you sure you want to delete this contract?",
+    ),
+    deleteMedical: handleDelete(
+      deleteMedical,
+      "Are you sure you want to delete this medical info?",
     ),
   };
 };
@@ -333,6 +364,8 @@ const WorkerProfile = () => {
     return availableColors[index];
   };
 
+  const latestStatus = workerStatuses[workerStatuses.length - 1];
+
   if (!worker) return null;
 
   /* data extraction */
@@ -362,8 +395,6 @@ const WorkerProfile = () => {
   const lmisObj = lmis || {};
   const travelRecords = travel_records || [];
   const contractsList = contracts || [];
-
-  const statusName = statusObj?.name ?? "—";
 
   const photoUrl =
     personal?.photo_3x4?.url ||
@@ -511,17 +542,19 @@ const WorkerProfile = () => {
 
           {/* Text */}
           <div className="col">
-            <h4 className="fw-bold mb-1">{fullName}</h4>
+            <h3 className="fw-bold mb-1">{fullName}</h3>
 
             <p className="text-muted mb-1">
               <strong>Phone:</strong> {phone}
             </p>
 
             <p className="text-muted mb-2">
-              <strong>Passport No:</strong> {passportInfo.number}
+              <strong>Passport No:</strong> {passportInfo?.number}
             </p>
-
-            <Badge content={statusName} color="green" />
+            <Badge
+              content={latestStatus?.name || "No Status"}
+              color={getConsistentColor(latestStatus?.name)}
+            />
           </div>
         </div>
       </div>
@@ -584,13 +617,26 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Personal Information</h3>
                 <ActionButtons
-                  actions={[
-                    { type: "edit", onClick: actions.editPersonal },
-                    {
-                      type: "delete",
-                      // onClick: deletes.deletePersonal,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(personalInfo)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => {
+                              actions.editPersonal(null);
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => {
+                              actions.editPersonal(personal);
+                            },
+                          },
+                          { type: "delete", onClick: deletes.deletePersonal },
+                        ]
+                  }
                 />
               </div>
 
@@ -687,13 +733,26 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Passport Information</h3>
                 <ActionButtons
-                  actions={[
-                    { type: "edit", onClick: actions.editPassport },
-                    {
-                      type: "delete",
-                      onClick: deletes.deletePassport,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(passportObj)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => {
+                              actions.editPassport(null);
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => {
+                              actions.editPassport(passportObj);
+                            },
+                          },
+                          { type: "delete", onClick: deletes.deletePassport },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">
@@ -743,13 +802,26 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">COC Information</h3>
                 <ActionButtons
-                  actions={[
-                    { type: "edit", onClick: actions.editCoc },
-                    {
-                      type: "delete",
-                      onClick: deletes.deleteCoc,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(cocObj)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => {
+                              actions.editCoc(null);
+                            },
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => {
+                              actions.editCoc(cocObj);
+                            },
+                          },
+                          { type: "delete", onClick: deletes.deleteCoc },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">
@@ -863,13 +935,26 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Medical Information</h3>
                 <ActionButtons
-                  actions={[
-                    { type: "edit", onClick: actions.editMedical },
-                    {
-                      type: "delete",
-                      // onClick: deletes.deleteMedical
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(medicalObj)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => actions.editMedical(null),
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => {
+                              {
+                                actions.editMedical(medicalObj);
+                              }
+                            },
+                          },
+                          { type: "delete", onClick: deletes.deleteMedical },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">

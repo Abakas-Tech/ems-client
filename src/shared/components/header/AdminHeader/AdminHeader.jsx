@@ -4,7 +4,6 @@ import useNotification from "../../../../context/Notification/useNotification";
 import { FaBars } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProfileCell from "../../ProfileCell/ProfileCell";
-import { setupPushNotifications } from "../../../../utils/push-notifications";
 const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard" },
   { label: "My Profile", path: "/admin/my-profile" },
@@ -28,17 +27,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    getNotifications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
   
-  // Setup push notifications only one times when profile is available
-  useEffect(() => {
-    if (profile) {
-      setupPushNotifications(profile);
-    }
-  }, []);
 
   // Create a reusable Bell component to avoid code duplication
   const NotificationBell = () => (

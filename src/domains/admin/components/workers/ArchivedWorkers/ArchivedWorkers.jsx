@@ -157,7 +157,7 @@ const ArchivedWorkers = () => {
           { header: "Status", accessor: "status" },
         ]}
         actions={[
-          { type: "view", onClick: (row) => handleView(row.id) },
+          
           { type: "restore", onClick: (row) => handleRestore(row.id) },
           { type: "delete", onClick: (row) => handleDelete(row.id) },
         ]}

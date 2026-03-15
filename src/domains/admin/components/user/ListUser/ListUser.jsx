@@ -91,20 +91,40 @@ const ListUser = () => {
       setSelectedUserIds([]);
     }
   };
-  const handleBulkNotify = () => {
-    navigate("/admin/notifications", {
-      state: {
-        bulkIds: selectedUserIds,
-        bulkType: filters.role_id || "employee",
-      },
-    });
-  };
+
   const handleExitSelection = () => {
     setIsSelectionMode(false);
     setSelectedUserIds([]);
   };
   const handlePageChange = (newPage) => {
     fetchUsers(newPage);
+  };
+
+  // 1. Updated handler to accept an optional single user row
+  const handleNotify = (row = null) => {
+    let idsToNotify = [];
+    let roleType = filters.role_id || "employee";
+    let full_name = "";
+
+    if (row && row.id) {
+      // Handle the case where a single user is clicked for id nad name
+      idsToNotify = [row.id];
+      full_name = row.full_name || "";
+      roleType = ROLE_MAP[row.role_id].toLowerCase() || roleType;
+    } else {
+      // Handle the case where multiple users are selected
+      idsToNotify = selectedUserIds;
+    }
+
+    if (idsToNotify.length === 0) return;
+    console.log(full_name);
+    navigate("/admin/notifications", {
+      state: {
+        bulkIds: idsToNotify,
+        bulkType: roleType,
+        bulkName: full_name,
+      },
+    });
   };
 
   const handleFilterChange = (e) => {
@@ -211,6 +231,7 @@ const ListUser = () => {
 
   const actions = [
     { type: "edit", onClick: handleEdit },
+    { type: "notify", onClick: (row) => handleNotify(row) },
     { type: "archive", onClick: handleStatusToggle, showOn: true },
     { type: "restore", onClick: handleStatusToggle, showOn: false },
     { type: "delete", onClick: handleDelete },
@@ -288,7 +309,7 @@ const ListUser = () => {
             visibleTo={[1,2]}
               className="btn btn-main btn-sm text-white px-3 fw-bold"
               disabled={selectedUserIds.length === 0}
-              onClick={handleBulkNotify}
+              onClick={handleNotify}
             >
               Send Bulk Alert
             </RoleButton>
@@ -305,7 +326,7 @@ const ListUser = () => {
       <ListingComponent
         data={users}
         columns={columns}
-        actions={actions}
+        actions={isSelectionMode ? [] : actions}
         emptyState={emptyState}
         // Selection Props
         isSelectionMode={isSelectionMode}

@@ -2,6 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import NotificationContext from "./NotificationContext";
 import { fetchNotifications } from "../../domains/admin/api/notification.api";
 import useProfile from "../Profile/useProfile";
+import {
+  setupPushNotifications,
+  listenToForegroundNotifications,
+} from "../../utils/push-notifications"; // Adjust path
 
 const NotificationProvider = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -22,14 +26,24 @@ const NotificationProvider = ({ children }) => {
   };
   useEffect(() => {
     if (!profile) return;
+
+    // Setup push notifications
+    setupPushNotifications();
     getNotifications();
 
+    // Listen for foreground notifications
+    const unsubscribe = listenToForegroundNotifications(() => {
+      getNotifications();
+    });
     // Poll every 60 seconds
-    const interval = setInterval(getNotifications, 40000);
+    const interval = setInterval(getNotifications, 60000);
 
     // Clean up on unmount
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      if (unsubscribe) unsubscribe();
+      clearInterval(interval);
+    };
+  }, [profile]);
 
   return (
     <NotificationContext.Provider

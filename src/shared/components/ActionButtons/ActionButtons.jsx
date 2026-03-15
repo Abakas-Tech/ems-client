@@ -1,5 +1,5 @@
 import React from "react";
-import { FaFolderPlus, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaFolderPlus, FaChevronLeft, FaChevronRight, FaBell, } from "react-icons/fa";
 import { AiOutlineFolderView } from "react-icons/ai";
 import ACTION_ROLE_CONFIG from "../../../config/btn.config";
 import useProfile from "../../../context/Profile/useProfile";
@@ -67,6 +67,11 @@ const ActionButtons = ({ actions = [], row }) => {
       icon: <FaChevronRight />,
       title: "Next",
     },
+      notify: {
+    className: "btn-outline-info",
+    icon: <FaBell />,
+    title: "Notify",
+  },
   };
 
   // Filter actions by role only (ignore showOn)

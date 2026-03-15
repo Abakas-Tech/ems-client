@@ -5,3 +5,11 @@
 /* lightbox */
 @import "yet-another-react-lightbox/styles.css";
 @import "yet-another-react-lightbox/plugins/thumbnails.css";
+
+
+/* 
+git add .
+git commit -m "Remove astrics from medical comp. if it's editing mode, and pull the view button below input filed"
+git push
+
+*/
