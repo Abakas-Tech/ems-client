@@ -1,4 +1,4 @@
-import ROLES  from "./role.config";
+import ROLES from "./role.config";
 
 const MENU_CONFIG = [
   {
@@ -35,7 +35,6 @@ const MENU_CONFIG = [
       ROLES.PARTNER,
       ROLES.EMPLOYER,
       ROLES.WORKER,
-
     ],
   },
   {
@@ -48,7 +47,7 @@ const MENU_CONFIG = [
     label: "Files",
     path: "/admin/my-files",
     icon: "bi bi-files",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.PARTNER],
   },
   {
     label: "Meta Data",
