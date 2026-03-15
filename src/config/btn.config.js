@@ -1,0 +1,30 @@
+import ROLES from "./role.config";
+
+// Which roles can see which actions
+const ACTION_ROLE_CONFIG = {
+  edit: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  delete: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  archive: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  restore: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  addModule: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  rename: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  download: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.PARTNER],
+  leftArrow: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  rightArrow: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  viewModule: [
+    ROLES.ADMIN,
+    ROLES.EMPLOYEE,
+    ROLES.PARTNER,
+    ROLES.WORKER,
+    ROLES.EMPLOYER,
+  ],
+  view: [
+    ROLES.ADMIN,
+    ROLES.EMPLOYEE,
+    ROLES.PARTNER,
+    ROLES.WORKER,
+    ROLES.EMPLOYER,
+  ],
+};
+
+export default ACTION_ROLE_CONFIG;
