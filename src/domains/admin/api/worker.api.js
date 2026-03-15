@@ -726,7 +726,6 @@ export {
   createMedicalRecord,
   updateMedicalRecord,
   getMedicalDetails,
-  deleteMedicalRecord,
   //lmis
   createLmis,
   updateLmis,
@@ -751,6 +750,6 @@ export {
   createVisa,
   updateVisa,
   getVisa,
-  deleteVisa
+  deleteVisa,
   deleteMedical,
 };

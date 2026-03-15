@@ -373,7 +373,6 @@ const WorkerProfile = () => {
   const {
     full_name: fullName = "—",
     phone_number: phone = "—",
-    status,
     personal_information,
     passport,
     coc,
@@ -385,7 +384,6 @@ const WorkerProfile = () => {
     contracts,
   } = worker;
 
-  const statusObj = status || {};
   const personal = personal_information || {};
   const passportObj = passport || {};
   const cocObj = coc || {};
