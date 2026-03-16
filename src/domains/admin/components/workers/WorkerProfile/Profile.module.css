@@ -1,0 +1,35 @@
+/* WorkerStatuses.module.css or global CSS */
+
+/* Wrapper around Badge + delete button */
+.status-badge-wrapper {
+  position: relative;
+  display: inline-block; /* keeps badge and delete on the same line */
+}
+
+/* Style the Badge itself */
+.status-badge-wrapper .badge {
+  padding-right: 1.5rem; /* space for the delete button inside the pill */
+  position: relative; /* ensures delete button positions correctly relative to badge */
+}
+
+/* Style the delete button coming from ActionButtons */
+.status-badge-wrapper .delete-button {
+  position: absolute;
+  top: 50%; /* vertically center inside badge */
+  right: 0.25rem; /* small spacing from right edge */
+  transform: translateY(-50%);
+  font-size: 0.8rem; /* matches old badge delete size */
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  line-height: 1;
+  padding: 0;
+  display: flex; /* align × perfectly */
+  align-items: center;
+  justify-content: center;
+}
+
+/* Optional: hover effect for delete button */
+.status-badge-wrapper .delete-button:hover {
+  color: #dc3545; /* Bootstrap danger color */
+}

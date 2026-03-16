@@ -26,6 +26,7 @@ import {
   deleteWorkerStatus,
 } from "../../../api/workerMeta.api";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 
 /* helpers */
 
@@ -86,7 +87,6 @@ const DocumentLink = ({ url, label, isImage = false }) => {
 const useWorkerActions = (workerId) => {
   const navigate = useNavigate();
 
- 
   const editEmergency = (guarantor) =>
     navigate(`/admin/workers/modules/${workerId}/emergency-contact`, {
       state: { guarantor },
@@ -566,12 +566,13 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Statuses</h3>
 
-                <button
+                <RoleButton
+                  visibleTo={[2, 1]}
                   className="btn btn-main"
                   onClick={() => setShowCreateStatusModal(true)}
                 >
                   + Status
-                </button>
+                </RoleButton>
               </div>
 
               <div className="card-body">
@@ -1020,10 +1021,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Visa Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick:()=> actions.editVisa(visa) },
+                    { type: "edit", onClick: () => actions.editVisa(visa) },
                     {
                       type: "delete",
-                      onClick: deletes.deleteVisa
+                      onClick: deletes.deleteVisa,
                     },
                   ]}
                 />

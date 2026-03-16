@@ -5,6 +5,7 @@ import ScrollToTop from "../shared/components/ScrollToTop/ScrollToTop.jsx";
 import AdminRoutes from "./AdminRoutes.jsx";
 import NotFound from "../shared/components/NotFound/NotFound.jsx";
 import AuthRoutes from "./AuthRoutes.jsx";
+import WorkerRoutes from "./WorkerRoutes.jsx";
 
 function AppRouter() {
   return (
@@ -25,6 +26,16 @@ function AppRouter() {
             <>
               <Toaster position="top-right" reverseOrder={false} />
               <AdminRoutes />{" "}
+            </>
+          }
+        />
+
+        {/* Worker Routes (protected) */}
+        <Route
+          path="/my/*"
+          element={
+            <>
+              <WorkerRoutes />
             </>
           }
         />

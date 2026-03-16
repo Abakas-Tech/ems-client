@@ -4,8 +4,7 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import styles from "./Sidebar.module.css";
 import useProfile from "../../../../context/Profile/useProfile";
-import MENU_CONFIG from "../../../../config/menu.config";
-import ROLES from "../../../../config/role.config";
+import  MENU_CONFIG  from "../../../../config/menu.config";
 
 const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
   const location = useLocation();
@@ -31,17 +30,7 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
 
   const filteredItems = MENU_CONFIG.filter((item) =>
     item.roles.includes(user?.role_id),
-  ).map((item) => {
-    if (user?.role_id === ROLES.WORKER && item.path === "/admin/workers") {
-      return {
-        ...item,
-        label: "My Application",
-        icon: "bi bi-person-vcard-fill",
-        path: "/my/application",
-      };
-    }
-    return item;
-  });
+  );
 
   const renderMenu = (showLabels = true) => (
     <div className={styles.content}>
