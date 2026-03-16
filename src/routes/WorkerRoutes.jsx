@@ -18,8 +18,8 @@ function WorkerRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="application" element={<MyApplication />} />
-        <Route path="profile" element={<MyProfile />} />
+        <Route path="my-application" element={<MyApplication />} />
+        <Route path="my-profile" element={<MyProfile />} />
         <Route path="notifications" element={<MyNotifications />} />
         <Route path="*" element={<NotFound />} />
       </Route>

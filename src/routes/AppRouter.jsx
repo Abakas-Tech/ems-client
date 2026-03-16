@@ -32,7 +32,7 @@ function AppRouter() {
 
         {/* Worker Routes (protected) */}
         <Route
-          path="/my/*"
+          path="/worker/*"
           element={
             <>
               <WorkerRoutes />

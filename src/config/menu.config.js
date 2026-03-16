@@ -66,19 +66,19 @@ const MENU_CONFIG = [
 
   {
     label: "My Profile",
-    path: "/my/profile",
+    path: "/worker/my-profile",
     icon: "bi bi-person-bounding-box",
     roles: [ROLES.WORKER],
   },
   {
     label: "My Application",
-    path: "/my/application",
+    path: "/worker/my-application",
     icon: "bi bi-person-vcard-fill",
     roles: [ROLES.WORKER],
   },
   {
     label: "Notifications",
-    path: "/my/notifications",
+    path: "/worker/notifications",
     icon: "bi bi-bell",
     roles: [ROLES.WORKER],
   },
