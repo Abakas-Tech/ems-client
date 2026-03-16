@@ -96,7 +96,9 @@ const Footer = () => {
             <div className="col-lg-4 col-md-4">
               <div className="footer-widget">
                 <Link className="nav-footer-logo" to="/">
-                  <h5 className="fs-2 fw-bold text-light ms-1 my-0">Resido</h5>
+                  <h5 className="fs-2 fw-bold text-light ms-1 my-0">
+                    Sultan Agency
+                  </h5>
                 </Link>
 
                 <div className="footer-add">
@@ -159,7 +161,7 @@ const Footer = () => {
             {/* Left side */}
             <div className="col-lg-6 col-md-6 text-center text-md-start mb-2 mb-md-0">
               <p className="mb-0">
-                © 2025 Resido. Developed by{" "}
+                © 2025 Sultan Agency. Developed by{" "}
                 <a
                   href="https://abakastech.com/"
                   className="brand-link"
