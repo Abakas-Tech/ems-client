@@ -25,6 +25,7 @@ const ACTION_ROLE_CONFIG = {
     ROLES.WORKER,
     ROLES.EMPLOYER,
   ],
+  deleteBadge: [ROLES.ADMIN, ROLES.EMPLOYEE],
 };
 
 export default ACTION_ROLE_CONFIG;
