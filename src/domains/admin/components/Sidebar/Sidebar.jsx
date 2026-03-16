@@ -37,6 +37,7 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
         ...item,
         label: "My Application",
         icon: "bi bi-person-vcard-fill",
+        path: "/my/application",
       };
     }
     return item;
