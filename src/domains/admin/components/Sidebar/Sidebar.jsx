@@ -36,6 +36,7 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
       return {
         ...item,
         label: "My Application",
+        icon: "bi bi-person-vcard-fill",
       };
     }
     return item;
