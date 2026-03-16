@@ -29,7 +29,6 @@ const Badge = ({ content, color = "gray", solid = false, onDelete }) => {
   }, [color, solid]);
 
   const displayContent = content ? String(content).toUpperCase() : "—";
-  const closeBtnColor = solid ? "" : "text-danger";
 
   // Combine module classes with Bootstrap utilities
   const containerClasses = [
@@ -41,24 +40,7 @@ const Badge = ({ content, color = "gray", solid = false, onDelete }) => {
     badgeClass,
   ].join(" ");
 
-  return (
-    <span className={containerClasses}>
-      {displayContent}
-
-      {onDelete && (
-        <button
-          type="button"
-          className={`btn p-0 d-flex align-items-center justify-content-center ${styles["delete-button"]} ${closeBtnColor}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-        >
-          &times;
-        </button>
-      )}
-    </span>
-  );
+  return <span className={containerClasses}>{displayContent}</span>;
 };
 
 export default Badge;
