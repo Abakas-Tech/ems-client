@@ -131,7 +131,7 @@ const Contact = () => {
     <div className="container-xxl py-5 my-5 border-top" id="contact">
       <div className="container">
         <div className="text-center" data-aos="flip-down" data-aos-delay="0.1s">
-          <h6 className="pb-4 fs-1 fw-bold">Contact Us For Any Query</h6>
+          <h2 className="pb-4  fw-bold">Contact Us For Any Query</h2>
         </div>
         <div className="row g-4">
           <div

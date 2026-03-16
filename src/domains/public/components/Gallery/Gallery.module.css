@@ -1,52 +1,9 @@
-
-.gallery-title {
-  position: relative;
-  display: inline-block;
-  text-transform: uppercase;
-  color: var(--maincolor);
-  border-top: none;
-
-  
-}
-
-
-
-.title{
-   position: relative;
-  display: inline-block;
-}
-.title::before{
-  position: absolute;
-  content: "";
-  width: calc(100% + 80px);
-  height: 2px;
-  top: 4px;
-  left: -40px;
-  background: var(--maincolor);
-  z-index: 1;
-}
-.title::after{
-  position: absolute;
-  content: "";
-  width: calc(100% + 120px);
-  height: 2px;
-  bottom: 5px;
-  left: -60px;
-  background: var(--maincolor);
-  z-index: 1;
-}
-
-/* .galleryTitle::after {
-
-} */
-/* Gallery */
-
 .gallery-card {
   cursor: pointer;
   overflow: hidden;
 }
 
-.galleryImage {
+.gallery-image {
   height: 300px;
   object-fit: cover;
 }
@@ -57,7 +14,7 @@
 
 /* Modal */
 
-.modalOverlay {
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -72,28 +29,26 @@
 
 /* MOBILE FIRST */
 
-.modalWrapper {
+.modal-wrapper {
   position: relative;
   width: 100%;
   max-width: 1300px;
   padding: 0 10px;
 }
 
-.imageContainer {
+.image-container {
   display: flex;
   justify-content: center;
   height: auto;
 }
 
-.modalImage {
+.modal-image {
   max-width: 90vw;
   max-height: 70vh;
   object-fit: contain;
 }
 
-/* Close Button */
-
-.closeButton {
+.close-button {
   position: absolute;
   top: -15px;
   right: 20px;
@@ -107,26 +62,26 @@
 
 /* Modal Info */
 
-.modalInfo {
+.modal-info {
   position: static;
   margin-top: 20px;
   max-width: 90%;
   color: white;
 }
 
-.modalInfo h4 {
+.modal-info h4 {
   margin-bottom: 6px;
   color: #fff;
 }
 
-.modalInfo p {
+.modal-info p {
   margin: 0;
   line-height: 1.6;
 }
 
 /* Navigation */
 
-.navButton {
+.nav-button {
   position: absolute;
   top: 35%;
   transform: translateY(-50%);
@@ -146,15 +101,15 @@
   right: 10px;
 }
 
-/* DESKTOP / LARGE SCREEN */
+/* Desktop adjustments */
 
 @media (min-width: 700px) {
 
-  .modalWrapper {
+  .modal-wrapper {
     padding: 0 80px;
   }
 
-  .imageContainer {
+  .image-container {
     height: 60vh;
     margin-bottom: 2rem;
   }
@@ -167,12 +122,12 @@
     right: -60px;
   }
 
-  .closeButton {
+  .close-button {
     top: -100px;
     right: 10px;
   }
 
-  .modalInfo {
+  .modal-info {
     position: absolute;
     bottom: -70px;
     left: 0;
@@ -180,7 +135,7 @@
     margin: 0 1rem;
   }
 
-  .navButton {
+  .nav-button {
     top: 50%;
   }
 }
