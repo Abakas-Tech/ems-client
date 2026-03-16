@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelopeOpen } from "react-icons/fa";
 import sendContactEmail from "../../api/contact.api";
 import getLocation from "../../api/location.api";
+import getSocialMedia from "../../api/socialMedia.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import SendButton from "./../../../../shared/components/SendButton/SendButton";
@@ -25,23 +26,36 @@ const Contact = () => {
     name: "Hawassa Office",
   });
 
+  const [socialMedia, setSocialMedia] = useState({
+    email: "sultan@ems.com",
+    phone: "0911111111",
+  });
+
   useEffect(() => {
-    const fetchLocation = async () => {
+    const fetchData = async () => {
       try {
         const res = await getLocation();
-        if (res.success && res.data) {
-          setLocation({
-            latitude: res.data.latitude,
-            longitude: res.data.longitude,
-            address: res.data.address || location.address,
-            name: res.data.name || location.name,
-          });
+        if (res?.success && res?.data) {
+          setLocation((prev) => ({
+            latitude: res.data.latitude ?? prev.latitude,
+            longitude: res.data.longitude ?? prev.longitude,
+            address: res.data.address ?? prev.address,
+            name: res.data.name ?? prev.name,
+          }));
+        }
+
+        const media = await getSocialMedia();
+        if (media?.data) {
+          setSocialMedia((prev) => ({
+            email: media.data.email ?? prev.email,
+            phone: media.data.contact_number ?? prev.phone,
+          }));
         }
       } catch (err) {
-        console.warn("Location fetch failed:", err.message);
+        addMessage(false, err.message);
       }
     };
-    fetchLocation();
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -73,6 +87,10 @@ const Contact = () => {
         addMessage(false, "Email must be less than 150 characters");
         return false;
       }
+    }
+    if (!formData.phone || !formData.phone.trim() === "") {
+      addMessage(false, "Phone required");
+      return false;
     }
     if (formData.phone && formData.phone.length > 20) {
       addMessage(false, "Phone must be less than 20 characters");
@@ -148,7 +166,7 @@ const Contact = () => {
               </div>
               <div className="ms-3">
                 <h5 className="text-info">Mobile</h5>
-                <p className="mb-0">+012 345 67890</p>
+                <p className="mb-0">{socialMedia.phone}</p>
               </div>
             </div>
             <div className="d-flex align-items-center">
@@ -160,7 +178,7 @@ const Contact = () => {
               </div>
               <div className="ms-3">
                 <h5 className="text-info">Email</h5>
-                <p className="mb-0">info@example.com</p>
+                <p className="mb-0">{socialMedia.email}</p>
               </div>
             </div>
           </div>
@@ -224,6 +242,7 @@ const Contact = () => {
                       className="form-control"
                       id="phone"
                       placeholder="Phone"
+                      required
                       value={formData.phone}
                       onChange={handleChange}
                     />

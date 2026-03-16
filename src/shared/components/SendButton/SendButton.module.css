@@ -1,0 +1,41 @@
+.send-btn {
+  border-radius: 16px;
+  padding: 12px 20px;
+  overflow: hidden;
+  transition: all 1s ease;
+}
+
+.icon-wrapper {
+  display: flex;
+  transition: transform 1s ease;
+}
+
+.btn-text {
+  transition: all 0.7s ease;
+}
+
+.send-btn:hover .icon-wrapper {
+  animation: fly 1s ease-in-out infinite alternate;
+}
+
+.send-btn:hover .icon-wrapper svg {
+  transform: translateX(1.2em) rotate(45deg) scale(1.1);
+}
+
+.send-btn:hover .btn-text {
+  transform: translateX(5em);
+  opacity: 0;
+}
+
+.send-btn:active {
+  transform: scale(0.95);
+}
+
+@keyframes fly {
+  from {
+    transform: translateY(4px);
+  }
+  to {
+    transform: translateY(-4px);
+  }
+}
