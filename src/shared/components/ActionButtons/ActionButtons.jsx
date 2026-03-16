@@ -77,6 +77,11 @@ const ActionButtons = ({ actions = [], row }) => {
       icon: <FaBell />,
       title: "Notify",
     },
+    deleteBadge: {
+      className: "btn-outline-danger",
+      icon: <span>&times;</span>, 
+      title: "Delete",
+    },
   };
 
   // Filter actions by role only (ignore showOn)
