@@ -9,7 +9,7 @@
 
 /* 
 git add .
-git commit -m "fix sidebar logic, menu config, and profileProvider to successfully display worker profile "
+git commit -m "render the delete button only for admin and employee"
 git push
 
 */

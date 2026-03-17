@@ -19,6 +19,7 @@ import {
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
+import useProfile from "../../../../../context/Profile/useProfile";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import {
   getWorkerCurrentStatus,
@@ -221,6 +222,15 @@ const WorkerProfile = () => {
   const [workerStatuses, setWorkerStatuses] = useState([]);
   const [allStatuses, setAllStatuses] = useState([]);
   const [showCreateStatusModal, setShowCreateStatusModal] = useState(false);
+
+  const { profile } = useProfile();
+
+  const canDeleteStatus = [1, 2].includes(profile?.role_id);
+
+  console.log("PROFILE:", profile);
+
+  // const isAdminOrEmployee =
+  //   profile?.role_id === ROLES.ADMIN || profile?.role_id === ROLES.EMPLOYEE;
 
   // Fetch worker profile data
   const fetchWorker = async () => {
@@ -590,7 +600,9 @@ const WorkerProfile = () => {
                       <Badge
                         content={status.name}
                         color={getConsistentColor(status.name)}
-                        onDelete={() => handleDeleteStatus(status)}
+                        {...(canDeleteStatus && {
+                          onDelete: () => handleDeleteStatus(status),
+                        })}
                         solid
                       />
                     </span>
