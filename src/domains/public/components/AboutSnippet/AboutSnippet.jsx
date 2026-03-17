@@ -37,6 +37,14 @@ function About() {
               environment.
               learning and growth, where students thrive in a supportive
               environment.
+              Selam Academy is a beacon of knowledge and growth, dedicated to
+              nurturing the minds and talents of its students. It is a place of
+              learning and growth, where students thrive in a supportive
+              environment.
+              learning and growth, where students thrive in a supportive
+              environment.
+              learning and growth, where students thrive in a supportive
+              environment.
             </p>
             <p className="mb-4 text-justify">
               We stand as a symbol of enlightenment and development, committed
