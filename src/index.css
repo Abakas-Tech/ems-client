@@ -9,7 +9,7 @@
 
 /* 
 git add .
-git commit -m "render the delete button only for admin and employee"
+git commit -m "adjust backButton visibility in workerProfile , making it visible only for admin, employee, and partner"
 git push
 
 */

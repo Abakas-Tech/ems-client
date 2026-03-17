@@ -226,11 +226,7 @@ const WorkerProfile = () => {
   const { profile } = useProfile();
 
   const canDeleteStatus = [1, 2].includes(profile?.role_id);
-
-  console.log("PROFILE:", profile);
-
-  // const isAdminOrEmployee =
-  //   profile?.role_id === ROLES.ADMIN || profile?.role_id === ROLES.EMPLOYEE;
+  const backButtonVisibility = [1, 2, 3].includes(profile?.role_id);
 
   // Fetch worker profile data
   const fetchWorker = async () => {
@@ -529,7 +525,7 @@ const WorkerProfile = () => {
 
   return (
     <div className="dashboard-wraper">
-      <BackButton onClick={() => navigate(-1)} />
+      {backButtonVisibility && <BackButton onClick={() => navigate(-1)} />}
 
       {/* Header */}
       <div className="mb-4 border-0">
