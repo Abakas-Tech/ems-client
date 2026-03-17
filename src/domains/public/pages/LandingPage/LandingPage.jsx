@@ -1,14 +1,16 @@
-import React from 'react'
-import Testimonials from '../../components/Testimonials/Testimonials'
-import Hero from "../../../../domains/public/components/Hero/Hero"
+import React from "react";
+import Testimonials from "../../components/Testimonials/Testimonials";
+import Hero from "../../components/Hero/Hero";
+import HowItWorks from "../../components/HowItWorks/HowItWorks";
 
 function LandingPage() {
   return (
     <>
-      <Hero/>
-      <Testimonials/>
+      <Hero />
+      <HowItWorks />
+      <Testimonials />
     </>
-  )
+  );
 }
 
 export default LandingPage;
