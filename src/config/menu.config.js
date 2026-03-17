@@ -72,7 +72,7 @@ const MENU_CONFIG = [
   },
   {
     label: "My Application",
-    path: "/worker/my-application",
+    path: "/worker/my-application/:id",
     icon: "bi bi-person-vcard-fill",
     roles: [ROLES.WORKER],
   },

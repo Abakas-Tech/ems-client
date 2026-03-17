@@ -19,6 +19,7 @@ const ProfileProvider = ({ children }) => {
   };
   useEffect(() => {
     initAuth();
+    fetchProfile();
   }, []);
 
   return (

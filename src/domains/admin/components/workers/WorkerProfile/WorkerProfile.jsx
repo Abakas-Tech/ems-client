@@ -210,7 +210,6 @@ const useWorkerDeletes = (
 // Main component to display a worker's profile with all related information and actions
 const WorkerProfile = () => {
   const { id } = useParams();
-  // Initialize the toolboxes
 
   const navigate = useNavigate();
 
