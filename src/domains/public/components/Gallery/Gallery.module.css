@@ -64,9 +64,10 @@
 
 .modal-info {
   position: static;
-  margin-top: 20px;
+  margin: 10px ;
   max-width: 90%;
   color: white;
+
 }
 
 .modal-info h4 {

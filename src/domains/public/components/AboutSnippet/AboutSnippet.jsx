@@ -1,6 +1,7 @@
 import { FaArrowRight } from "react-icons/fa";
 import about from "../../../../assets/img/Banner/banner.jpg";
 import { useNavigate } from "react-router-dom";
+import ReadButton from "../../../../shared/components/ReadButton/ReadButton";
 
 function About() {
   const navigate = useNavigate();
@@ -67,14 +68,14 @@ function About() {
             </div>
 
             {/* Read More Button */}
-            <div>
-              <button
+         
+              <ReadButton
                 className="btn bg-info text-white"
                 onClick={goToAboutDetail}
               >
                 Read More
-              </button>
-            </div>
+              </ReadButton>
+          
           </div>
         </div>
       </div>

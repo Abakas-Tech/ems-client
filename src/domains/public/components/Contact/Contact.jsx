@@ -128,9 +128,9 @@ const Contact = () => {
   const mapSrc = `https://maps.google.com/maps?q=${location.latitude},${location.longitude}&z=15&output=embed`;
 
   return (
-    <div className="container-xxl py-5 my-5 border-top" id="contact">
-      <div className="container">
-        <div className="text-center" data-aos="flip-down" data-aos-delay="0.1s">
+    <div className="container py-5 my-5 border-top" id="contact">
+      <div className="">
+        <div className="text-center">
           <h2 className="pb-4  fw-bold">Contact Us For Any Query</h2>
         </div>
         <div className="row g-4">
@@ -246,7 +246,9 @@ const Contact = () => {
                       value={formData.phone}
                       onChange={handleChange}
                     />
-                    <label htmlFor="phone">Phone</label>
+                    <label htmlFor="phone">
+                      Phone <span className="text-danger">*</span>
+                    </label>
                   </div>
                 </div>
 
@@ -261,7 +263,9 @@ const Contact = () => {
                       onChange={handleChange}
                       required
                     ></textarea>
-                    <label htmlFor="message">Message</label>
+                    <label htmlFor="message">
+                      Message <span className="text-danger">*</span>
+                    </label>
                   </div>
                 </div>
 
