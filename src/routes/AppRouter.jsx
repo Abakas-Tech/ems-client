@@ -5,6 +5,8 @@ import ScrollToTop from "../shared/components/ScrollToTop/ScrollToTop.jsx";
 import AdminRoutes from "./AdminRoutes.jsx";
 import NotFound from "../shared/components/NotFound/NotFound.jsx";
 import AuthRoutes from "./AuthRoutes.jsx";
+import WorkerRoutes from "./WorkerRoutes.jsx";
+import PublicRoutes from "./PublicRoutes.jsx";
 
 function AppRouter() {
   return (
@@ -12,6 +14,9 @@ function AppRouter() {
       <ScrollToTop />
 
       <Routes>
+        {/* Public Routes (unprotected) */}
+        <Route path="/*" element={<PublicRoutes />} />
+
         {/* Auth Routes (unprotected) */}
         <Route path="/auth/*" element={<AuthRoutes />} />
 
@@ -25,6 +30,16 @@ function AppRouter() {
             <>
               <Toaster position="top-right" reverseOrder={false} />
               <AdminRoutes />{" "}
+            </>
+          }
+        />
+
+        {/* Worker Routes (protected) */}
+        <Route
+          path="/worker/*"
+          element={
+            <>
+              <WorkerRoutes />
             </>
           }
         />

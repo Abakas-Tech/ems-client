@@ -13,6 +13,7 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import useProfile from "../../../../../context/Profile/useProfile";
 
 const ActiveWorkers = () => {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ const ActiveWorkers = () => {
 
   const [workers, setWorkers] = useState([]);
   const [filters, setFilters] = useState({});
+  const { profile } = useProfile();
+  const role = profile?.role_id;
 
   // --- Selection Mode States ---
   const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -49,6 +52,7 @@ const ActiveWorkers = () => {
     } finally {
       hideLoader();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);
 
   useEffect(() => {
@@ -166,11 +170,18 @@ const ActiveWorkers = () => {
     <div className="dashboard-wraper">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
         <div className="mb-4">
-          <BackButton onClick={goBack} />
-          <h2 className="fw-bold text-dark mb-2">Active Workers</h2>
+          {role !== 3 && role !== 5 && <BackButton onClick={goBack} />}
+
+          <h2 className="fw-bold text-dark mb-2">
+            {" "}
+            {role == 5 ? "My workers" : "Active Workers"}
+          </h2>
           <p className="text-muted mb-0">
-            View and manage active workers, access detailed profiles, archive
-            records, or remove workers when needed.
+            {role === 5
+              ? "View the workers assigned to you and access their profiles."
+              : role === 3
+                ? "View active workers and access their profiles."
+                : "View and manage active workers, access detailed profiles, archive records, or remove workers when needed."}
           </p>
         </div>
       </div>
@@ -248,11 +259,13 @@ const ActiveWorkers = () => {
         onSelectAll={handleSelectAll}
         onRowDoubleClick={handleRowDoubleClick}
         filtersComponent={
-          <ActiveWorkersFilters
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onClear={handleClear}
-          />
+          role !== 5 ? (
+            <ActiveWorkersFilters
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onClear={handleClear}
+            />
+          ) : null
         }
         data={workers}
         columns={[

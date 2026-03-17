@@ -4,41 +4,7 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import styles from "./Sidebar.module.css";
 import useProfile from "../../../../context/Profile/useProfile";
-
-const menuItems = [
-  { label: "Dashboard", path: "/admin/dashboard", icon: "bi-speedometer2" },
-  {
-    label: "My Profile",
-    path: "/admin/my-profile",
-    icon: "bi bi-person-bounding-box",
-  },
-  {
-    label: "User Management",
-    path: "/admin/user-management",
-    icon: "bi bi-people",
-  },
-  {
-    label: "Worker",
-    path: "/admin/workers",
-    icon: "bi bi-file-earmark-person-fill",
-  },
-  {
-    label: "Finance",
-    path: "/admin/finances",
-    icon: "bi bi-wallet",
-  },
-  { label: "Files", path: "/admin/my-files", icon: "bi bi-files" },
-  { label: "Meta Data", path: "/admin/meta-data", icon: "bi bi-database-add" },
-  { label: "Notifications", path: "/admin/notifications", icon: "bi bi-bell" },
-  {
-    label: "Public Content",
-    path: "/admin/public-content",
-    icon: "bi bi-layout-text-sidebar-reverse",
-  },
-  { label: "Settings", path: "/admin/settings", icon: "bi-gear" },
-
-  { label: "Log Out", path: "#", icon: "bi bi-power", isLogout: true },
-];
+import MENU_CONFIG from "../../../../config/menu.config";
 
 const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
   const location = useLocation();
@@ -62,13 +28,9 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
     return () => clearTimeout(timer);
   }, [expanded]);
 
-  const filteredItems =
-    user?.role === "Employee"
-      ? menuItems.filter(
-          (item) =>
-            !["Dashboard", "Employees", "Payment History"].includes(item.label),
-        )
-      : menuItems;
+  const filteredItems = MENU_CONFIG.filter((item) =>
+    item.roles.includes(user?.role_id),
+  );
 
   const renderMenu = (showLabels = true) => (
     <div className={styles.content}>
@@ -86,10 +48,14 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
               </li>
             );
           }
-
+const path =
+  item.path.includes(":id") && user?.id
+    ? item.path.replace(":id", user.id)
+    : item.path;
           return (
             <li key={item.label} className={liClass}>
-              <Link to={item.path} className={styles.navLink} onClick={onClose}>
+              
+              <Link to={path} className={styles.navLink} onClick={onClose}>
                 <i className={`bi ${item.icon} ${styles.icon}`} />
                 {showLabels && (
                   <span className={styles.label}>{item.label}</span>

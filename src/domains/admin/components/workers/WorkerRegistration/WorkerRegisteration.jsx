@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { createWorker } from "../../../api/worker.api";
-import { getWorkerStatuses } from "../../../api/meta.api";
+import { registerWorkerCore } from "../../../api/worker.api"; // ← updated import
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
@@ -15,11 +14,8 @@ function WorkerRegistration() {
     full_name: "",
     phone_number: "",
     email: "",
-    personal_information: { sex: "", status_id: "" },
   });
 
-  const [statuses, setStatuses] = useState(null);
-  const [statusesError, setStatusesError] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   // Go back to previous page
@@ -27,45 +23,16 @@ function WorkerRegistration() {
     navigate(-1);
   };
 
-  // Fetch worker statuses on mount
-  useEffect(() => {
-    const loadStatuses = async () => {
-      showLoader();
-      try {
-        const response = await getWorkerStatuses();
-        setStatuses(response.data || []);
-        setStatusesError(null);
-      } catch (error) {
-        setStatuses([]);
-        setStatusesError("Could not load worker statuses");
-        addMessage(false, error.message);
-      } finally {
-        hideLoader();
-      }
-    };
-
-    loadStatuses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const handleTextChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith("personal_")) {
-      const field = name.replace("personal_", "");
-      setFormData((prev) => ({
-        ...prev,
-        personal_information: { ...prev.personal_information, [field]: value },
-      }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const nameRegex = /^[A-Za-z\s]+$/;
 
   const validateWorkerRegistration = ({ full_name, phone_number, email }) => {
     // Full name
-    if (!full_name || !full_name.trim()) {
+    if (!full_name.trim()) {
       return "Full name is required";
     }
 
@@ -76,11 +43,11 @@ function WorkerRegistration() {
     }
 
     if (!nameRegex.test(name)) {
-      return "Full name must contain letters only (no numbers or symbols)";
+      return "Full name must contain letters only";
     }
 
     // phone_number
-    if (!phone_number || !phone_number.trim()) {
+    if (!phone_number.trim()) {
       return "Phone number is required";
     }
 
@@ -109,7 +76,7 @@ function WorkerRegistration() {
       return;
     }
 
-    const { full_name, phone_number, personal_information, email } = formData;
+    const { full_name, phone_number, email } = formData;
 
     setSubmitLoading(true);
     showLoader();
@@ -120,14 +87,10 @@ function WorkerRegistration() {
         phone_number: phone_number.trim(),
         email: email.trim() || null,
         is_active: true,
-        personal_information: {
-          sex: personal_information.sex,
-          status_id: personal_information.status_id,
-        },
       };
 
-      // Send the request
-      const response = await createWorker(dataToSend);
+      // Send the request using the new core registration endpoint
+      const response = await registerWorkerCore(dataToSend);
 
       addMessage(
         response?.success,
@@ -139,8 +102,9 @@ function WorkerRegistration() {
         full_name: "",
         phone_number: "",
         email: "",
-        personal_information: { sex: "", status_id: "" },
       });
+
+   
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -148,6 +112,7 @@ function WorkerRegistration() {
       hideLoader();
     }
   };
+
   return (
     <div className="dashboard-wraper">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
@@ -156,7 +121,7 @@ function WorkerRegistration() {
           <h2 className="fw-bold text-dark mb-2">Add Worker</h2>
           <p className="text-muted mb-0">
             Register a new worker by providing their full name, phone number,
-            email, sex, and personal status
+            and email
           </p>
         </div>
       </div>
@@ -200,56 +165,6 @@ function WorkerRegistration() {
                 value={formData.email}
                 onChange={handleTextChange}
               />
-            </div>
-
-            <div className="form-group col-md-6">
-              <label>
-                Sex <span className="text-danger">*</span>
-              </label>
-              <select
-                name="personal_sex"
-                className="form-control"
-                value={formData.personal_information.sex}
-                onChange={handleTextChange}
-                required
-              >
-                <option value="">Select sex</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-            </div>
-
-            <div className="form-group col-md-6">
-              <label>
-                Worker Status <span className="text-danger">*</span>
-              </label>
-
-              {statuses === null ? (
-                <div className="form-control text-muted">
-                  Loading statuses...
-                </div>
-              ) : statusesError ? (
-                <div className="form-control text-danger">{statusesError}</div>
-              ) : statuses.length === 0 ? (
-                <div className="form-control text-muted">
-                  No statuses available
-                </div>
-              ) : (
-                <select
-                  name="personal_status_id"
-                  className="form-control"
-                  value={formData.personal_information.status_id}
-                  onChange={handleTextChange}
-                  required
-                >
-                  <option value="">Select status</option>
-                  {statuses.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-              )}
             </div>
           </div>
         </div>
