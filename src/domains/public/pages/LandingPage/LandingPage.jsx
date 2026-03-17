@@ -1,7 +1,7 @@
 import React from 'react'
 import Testimonials from '../../components/Testimonials/Testimonials'
 
-function gknbkldfn() {
+function LandingPage() {
   return (
     <>
       <Testimonials/>
@@ -9,4 +9,4 @@ function gknbkldfn() {
   )
 }
 
-export default dfgnkjdfv
+export default LandingPage;
