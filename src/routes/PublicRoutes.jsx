@@ -11,7 +11,7 @@ function PublicRoutes() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/about-detial" element={<AboutDetail />} />
+        {/* <Route path="/about-detial" element={<AboutDetail />} /> */}
       </Route>
 
       {/* fallback route */}
