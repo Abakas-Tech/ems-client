@@ -2,8 +2,8 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 
 import MainLayout from "../shared/layout/MainLayout/MainLayout";
-import AboutDetail from "../domains/public/pages/About/About";
-import NotFound from "../shared/pages/NotFound/NotFound";
+// import AboutDetail from "../domains/public/pages/About/About";
+import NotFound from "../shared/components/NotFound/NotFound";
 import LandingPage from "../domains/public/pages/Landing/landingpage";
 
 function PublicRoutes() {
