@@ -5,9 +5,9 @@ import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 
-import image1 from "./img/image-1.png";
-import image2 from "./img/image-2.png";
-import image3 from "./img/image-3.png";
+import image1 from "../../../../assets/img/testimonials/image-1.png";
+import image2 from "../../../../assets/img/testimonials/image-2.png";
+import image3 from "../../../../assets/img/testimonials/image-3.png";
 
 const testimonialData = [
   {
