@@ -9,7 +9,7 @@
 
 /* 
 git add .
-git commit -m "add public pages to the web page"
+git commit -m "update the main layout to use outlet; a special react router component to make it handle nested routes"
 git push
 
 */

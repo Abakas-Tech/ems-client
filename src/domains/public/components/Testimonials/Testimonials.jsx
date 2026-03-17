@@ -76,9 +76,9 @@ const Testimonials = () => {
               spaceBetween={30}
               autoplay={{ delay: 4000 }}
               breakpoints={{
-                0: { slidesPerView: 1 }, // phones
-                768: { slidesPerView: 2 }, // tablets
-                992: { slidesPerView: 3 }, // desktops
+                0: { slidesPerView: 1 }, 
+                768: { slidesPerView: 2 }, 
+                992: { slidesPerView: 3 }, 
               }}
               className="smart-textimonials smart-center"
             >
