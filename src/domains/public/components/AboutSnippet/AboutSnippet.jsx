@@ -26,13 +26,14 @@ function About() {
 
           {/* Content Section */}
           <div className="col-lg-6 d-flex flex-column justify-content-center">
-            <h6 className="text-uppercase d-inline-block  py-1 fw-semibold text-info">
-              About Us
-            </h6>
             <h2 className="mb-4 fw-bold">Selam Academy</h2>
             <p className="mb-4">
               Selam Academy is a beacon of knowledge and growth, dedicated to
               nurturing the minds and talents of its students. It is a place of
+              learning and growth, where students thrive in a supportive
+              environment.
+              learning and growth, where students thrive in a supportive
+              environment.
               learning and growth, where students thrive in a supportive
               environment.
             </p>
@@ -40,6 +41,8 @@ function About() {
               We stand as a symbol of enlightenment and development, committed
               to fostering the intellectual and creative abilities of its
               students. It serves as an educational hub where individuals
+              flourish, surrounded by a nurturing and encouraging atmosphere
+              that promotes both personal and academic growth.
               flourish, surrounded by a nurturing and encouraging atmosphere
               that promotes both personal and academic growth.
             </p>
