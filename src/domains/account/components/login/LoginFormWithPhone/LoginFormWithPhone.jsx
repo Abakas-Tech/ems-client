@@ -88,8 +88,9 @@ const LoginFormWithPhone = ({ role }) => {
       setPassportNumber("");
       if (role === "worker") {
         navigate("/worker/my-profile");
+      } else {
+        navigate("/admin/dashboard");
       }
-      navigate("/admin/dashboard");
     } catch (error) {
       addMessage(false, error.message);
     } finally {
