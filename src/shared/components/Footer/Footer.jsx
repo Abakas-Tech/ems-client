@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getSocialMedias } from "../../../domains/public/api/socialMedia.api";
-import logo from "../../../assets/img/logo/agency-logo.png";
+// import logo from "../../../assets/img/logo/agency-logo.png";
+import { getLocation } from "../../../domains/admin/api/location.api";
 
 const Footer = () => {
   const [agencyData, setAgencyData] = useState({
@@ -25,6 +26,9 @@ const Footer = () => {
         const response = await getSocialMedias();
         const data = response?.data;
 
+        const locationRes = await getLocation();
+        const location = locationRes?.data;
+
         setAgencyData((prev) => ({
           ...prev,
           agency_phone: data?.contact_number || "",
@@ -37,6 +41,7 @@ const Footer = () => {
           youtube_username: data?.youtube_channel || "",
           twitter_username: data?.twitter_username || "",
           whatsapp_username: data?.whatsapp_number || "",
+          address: location?.address || prev.address,
         }));
       } catch (error) {
         console.error("Failed to load social medias:", error.message);
@@ -109,7 +114,7 @@ const Footer = () => {
                 </Link>
 
                 <div className="footer-add">
-                  <p>{agencyData.address}</p>
+                  {agencyData.address && <p>{agencyData.address}</p>}
                   {agencyData.agency_phone && <p>{agencyData.agency_phone}</p>}
                   {agencyData.agency_email && <p>{agencyData.agency_email}</p>}
                 </div>
@@ -125,7 +130,7 @@ const Footer = () => {
                     <Link to="/">Home</Link>
                   </li>
                   <li>
-                    <Link to="/properties">Properties</Link>
+                    <Link to="/properties">Gallery</Link>
                   </li>
                   <li>
                     <Link to="/about">About</Link>
