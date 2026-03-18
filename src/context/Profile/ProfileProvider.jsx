@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import ProfileContext from "./ProfileContext";
 import { getProfile } from "../../domains/admin/api/profile.api";
-import { initAuth, hasAccessToken } from "../../utils/axios";
+import { initAuth } from "../../utils/axios";
 import useResponse from "../Response/useResponse";
 
 const ProfileProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const { addMessage } = useResponse();
 
   const fetchProfile = async () => {
     try {
-      if (!hasAccessToken()) return;
-
       const response = await getProfile();
       setProfile(response.data);
     } catch (error) {
@@ -21,16 +20,20 @@ const ProfileProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    initAuth();
-
-    // Only fetch profile if user is logged in
-    if (hasAccessToken()) {
-      fetchProfile();
-    }
+    const init = async () => {
+      const hasToken = await initAuth();
+      if (hasToken) {
+        await fetchProfile();
+      }
+      setCheckingAuth(false);
+    };
+    init();
   }, []);
 
   return (
-    <ProfileContext.Provider value={{ profile, setProfile, fetchProfile }}>
+    <ProfileContext.Provider
+      value={{ profile, setProfile, fetchProfile, checkingAuth }}
+    >
       {children}
     </ProfileContext.Provider>
   );

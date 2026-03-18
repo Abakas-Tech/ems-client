@@ -6,11 +6,12 @@ import { FaBars } from "react-icons/fa";
 
 import logo from "../../../../assets/img/logo/sultan-logo.svg";
 import useProfile from "../../../../context/Profile/useProfile";
-import useLoader from "../../../../context/Loader/useLoader";
+import { hasAccessToken } from "../../../../utils/axios";
 
 const MainHeader = () => {
-  const { profile, fetchProfile } = useProfile();
-  const { isLoading } = useLoader(); // track global loader
+  const { profile, checkingAuth } = useProfile();
+  const isAuth = hasAccessToken() || profile;
+
   const [isOpen, setIsOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -20,14 +21,29 @@ const MainHeader = () => {
     mobileBreakpoint: 992,
     overlay: true,
     overlayColor: "rgba(0, 0, 0, 0.5)",
-    drawerSize: "42%", // max width instead of full screen
-    animationDuration: 600, // slower smoothness
+    drawerSize: "42%",
+    animationDuration: 600,
   };
 
-  // Fetch profile safely on mount if not loaded
-  useEffect(() => {
-    if (!profile) fetchProfile();
-  }, [profile, fetchProfile]);
+  // Map role_id → dashboard/profile link
+  const roleDashboardMap = {
+    1: "/admin/dashboard", // admin
+    2: "/admin/dashboard", // employee
+    3: "/partner/my-profile", // partner
+    4: "/worker/my-profile", // worker
+    5: "/employer/my-profile", // employer
+  };
+
+  // Determine dashboard link and text
+  let dashboardLink = "/auth/login";
+  let dashboardText = "Sign In";
+
+  if (!checkingAuth && isAuth && profile) {
+    dashboardLink = roleDashboardMap[profile.role_id] || "/admin/dashboard";
+    dashboardText = "Dashboard";
+  }
+
+  const toggleMenu = () => setIsOpen(!isOpen);
 
   // Handle resize
   useEffect(() => {
@@ -50,8 +66,6 @@ const MainHeader = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const toggleMenu = () => setIsOpen(!isOpen);
-
   // Update body padding for fixed header
   useEffect(() => {
     const isFixed = location.pathname !== "/" && !isPortrait;
@@ -59,11 +73,6 @@ const MainHeader = () => {
   }, [location.pathname, isPortrait]);
 
   const isFixed = isScrolled || location.pathname !== "/";
-
-  // Decide link and text safely (avoid flash while loading)
-  const dashboardLink =
-    !isLoading && profile ? "/admin/dashboard" : "/auth/login";
-  const dashboardText = !isLoading && profile ? "Dashboard" : "Sign In";
 
   return (
     <header
@@ -82,7 +91,7 @@ const MainHeader = () => {
           <div className="nav-header">
             <Link className="nav-brand text-logo exchange" to="/">
               <img src={logo} alt="Logo" />
-              <h5 className="m-0">Resido</h5>
+              {/* <h5 className="m-0">Resido</h5> */}
             </Link>
 
             {isPortrait && (
