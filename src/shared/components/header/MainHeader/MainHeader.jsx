@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import { FaBars } from "react-icons/fa";
 
-import logo from "../../../../assets/img/logo/sultan-logo.svg";
+import logo from "../../../../assets/img/logo/logo.png";
 import useProfile from "../../../../context/Profile/useProfile";
 import { hasAccessToken } from "../../../../utils/axios";
 
@@ -25,13 +26,13 @@ const MainHeader = () => {
     animationDuration: 600,
   };
 
-  // Map role_id → dashboard/profile link
+  // Dynamic navigation based on role
   const roleDashboardMap = {
-    1: "/admin/dashboard", // admin
-    2: "/admin/dashboard", // employee
-    3: "/partner/my-profile", // partner
-    4: "/worker/my-profile", // worker
-    5: "/employer/my-profile", // employer
+    1: "/admin/dashboard",
+    2: "/admin/dashboard",
+    3: "/partner/my-profile",
+    4: "/worker/my-profile",
+    5: "/employer/my-profile",
   };
 
   // Determine dashboard link and text
@@ -90,7 +91,7 @@ const MainHeader = () => {
           {/* Nav Header */}
           <div className="nav-header">
             <Link className="nav-brand text-logo exchange" to="/">
-              <img src={logo} alt="Logo" />
+              <img src={logo} alt="Logo" style={{width: "80px"}}/>
               {/* <h5 className="m-0">Resido</h5> */}
             </Link>
 
