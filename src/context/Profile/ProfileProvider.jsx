@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProfileContext from "./ProfileContext";
 import { getProfile } from "../../domains/admin/api/profile.api";
-import { initAuth } from "../../utils/axios";
+import { initAuth, hasAccessToken } from "../../utils/axios";
 import useResponse from "../Response/useResponse";
 
 const ProfileProvider = ({ children }) => {
@@ -10,6 +10,8 @@ const ProfileProvider = ({ children }) => {
 
   const fetchProfile = async () => {
     try {
+      if (!hasAccessToken()) return;
+
       const response = await getProfile();
       setProfile(response.data);
     } catch (error) {
@@ -17,8 +19,14 @@ const ProfileProvider = ({ children }) => {
       setProfile(null);
     }
   };
+
   useEffect(() => {
     initAuth();
+
+    // Only fetch profile if user is logged in
+    if (hasAccessToken()) {
+      fetchProfile();
+    }
   }, []);
 
   return (
