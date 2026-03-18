@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getSocialMedias } from "../../../domains/public/api/socialMedia.api";
+import logo from "../../../assets/img/logo/agency-logo.png";
 
 const Footer = () => {
   const [agencyData, setAgencyData] = useState({
-    agency_name: "Sultan",
-    agency_email: "support@agency.com",
-    agency_phone: "0918241535",
-    address: "Addiss Ababa, Ethiopia",
+    agency_name: "Sultan Agency",
+    agency_email: "",
+    agency_phone: "",
+    address: "Addis Ababa, Ethiopia",
     facebook_username: "",
     instagram_username: "",
     telegram_username: "",
@@ -21,18 +22,21 @@ const Footer = () => {
   useEffect(() => {
     const loadSocialMedia = async () => {
       try {
-        const data = await getSocialMedias();
+        const response = await getSocialMedias();
+        const data = response?.data;
 
         setAgencyData((prev) => ({
           ...prev,
+          agency_phone: data?.contact_number || "",
+          agency_email: data?.email || "",
           facebook_username: data?.facebook_username || "",
           instagram_username: data?.instagram_username || "",
           telegram_username: data?.telegram_username || "",
           tiktok_username: data?.tiktok_username || "",
           linkedin_username: data?.linkedin_username || "",
-          youtube_username: data?.youtube_username || "",
+          youtube_username: data?.youtube_channel || "",
           twitter_username: data?.twitter_username || "",
-          whatsapp_username: data?.whatsapp_username || "",
+          whatsapp_username: data?.whatsapp_number || "",
         }));
       } catch (error) {
         console.error("Failed to load social medias:", error.message);
@@ -96,15 +100,18 @@ const Footer = () => {
             <div className="col-lg-4 col-md-4">
               <div className="footer-widget">
                 <Link className="nav-footer-logo" to="/">
+                  {/* If you want logo instead of text, uncomment below */}
+                  {/* <img src={logo} alt="logo" className="footer-logo" /> */}
+
                   <h5 className="fs-2 fw-bold text-light ms-1 my-0">
-                    Sultan Agency
+                    {agencyData.agency_name}
                   </h5>
                 </Link>
 
                 <div className="footer-add">
                   <p>{agencyData.address}</p>
-                  <p>{agencyData.agency_phone}</p>
-                  <p>{agencyData.agency_email}</p>
+                  {agencyData.agency_phone && <p>{agencyData.agency_phone}</p>}
+                  {agencyData.agency_email && <p>{agencyData.agency_email}</p>}
                 </div>
               </div>
             </div>
@@ -161,7 +168,8 @@ const Footer = () => {
             {/* Left side */}
             <div className="col-lg-6 col-md-6 text-center text-md-start mb-2 mb-md-0">
               <p className="mb-0">
-                © 2025 Sultan Agency. Developed by{" "}
+                © {new Date().getFullYear()} {agencyData.agency_name}. Developed
+                by{" "}
                 <a
                   href="https://abakastech.com/"
                   className="brand-link"

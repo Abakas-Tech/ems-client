@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { LogoutContext} from "./LogoutContext.jsx";
+import { LogoutContext } from "./LogoutContext.jsx";
 import { useNavigate } from "react-router-dom";
 import Logout from "./../../shared/global/Logout/Logout.jsx";
-import { logoutApi } from "../../domains/admin/api/auth.api.js"
+import { logoutApi } from "../../domains/admin/api/auth.api.js";
 import { setAccessToken } from "../../utils/axios.jsx";
+import useProfile from "../Profile/useProfile.jsx";
 
 const LogoutProvider = ({ children }) => {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-
+  const { setProfile } = useProfile();
 
   const logoutNow = async () => {
     try {
@@ -18,10 +19,12 @@ const LogoutProvider = ({ children }) => {
       // Clear in-memory access token
       setAccessToken(null);
 
+      //Clear global profile so header updates immediately
+      setProfile(null);
+
       // Smooth transition
       setTimeout(() => {
-   
-        navigate("/auth/login");
+        navigate("/");
       }, 50);
     } catch (error) {
       console.error("Logout failed:", error);

@@ -21,19 +21,19 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <DemoInfoProvider>
-        <LogoutProvider>
-          <LoaderProvider>
-            <ResponseProvider>
-              <ProfileProvider>
+        <ResponseProvider>
+          <ProfileProvider>
+            <LogoutProvider>
+              <LoaderProvider>
                 <ConfirmDeleteProvider>
                   <NotificationProvider>
                     <App />
                   </NotificationProvider>
                 </ConfirmDeleteProvider>
-              </ProfileProvider>
-            </ResponseProvider>
-          </LoaderProvider>
-        </LogoutProvider>
+              </LoaderProvider>
+            </LogoutProvider>
+          </ProfileProvider>
+        </ResponseProvider>
       </DemoInfoProvider>
     </BrowserRouter>
   </StrictMode>,

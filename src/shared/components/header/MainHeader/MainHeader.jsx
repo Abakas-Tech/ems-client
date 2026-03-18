@@ -6,9 +6,11 @@ import { FaBars } from "react-icons/fa";
 
 import logo from "../../../../assets/img/logo/sultan-logo.svg";
 import useProfile from "../../../../context/Profile/useProfile";
+import useLoader from "../../../../context/Loader/useLoader";
 
 const MainHeader = () => {
-  const { profile } = useProfile();
+  const { profile, fetchProfile } = useProfile();
+  const { isLoading } = useLoader(); // track global loader
   const [isOpen, setIsOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,6 +23,11 @@ const MainHeader = () => {
     drawerSize: "42%", // max width instead of full screen
     animationDuration: 600, // slower smoothness
   };
+
+  // Fetch profile safely on mount if not loaded
+  useEffect(() => {
+    if (!profile) fetchProfile();
+  }, [profile, fetchProfile]);
 
   // Handle resize
   useEffect(() => {
@@ -36,7 +43,7 @@ const MainHeader = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Handle scroll just for header styling (background/shadow)
+  // Handle scroll
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener("scroll", handleScroll);
@@ -45,17 +52,18 @@ const MainHeader = () => {
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  // Only update body padding when route or viewport changes
+  // Update body padding for fixed header
   useEffect(() => {
     const isFixed = location.pathname !== "/" && !isPortrait;
-    if (isFixed) {
-      document.body.style.paddingTop = "10px";
-    } else {
-      document.body.style.paddingTop = "";
-    }
+    document.body.style.paddingTop = isFixed ? "10px" : "";
   }, [location.pathname, isPortrait]);
 
   const isFixed = isScrolled || location.pathname !== "/";
+
+  // Decide link and text safely (avoid flash while loading)
+  const dashboardLink =
+    !isLoading && profile ? "/admin/dashboard" : "/auth/login";
+  const dashboardText = !isLoading && profile ? "Dashboard" : "Sign In";
 
   return (
     <header
@@ -63,7 +71,7 @@ const MainHeader = () => {
         isPortrait ? "navigation-portrait" : "navigation-landscape"
       } ${isFixed ? "header-fixed" : ""}`}
     >
-      <div className="container custom-container px-0 ">
+      <div className="container custom-container px-0">
         <nav
           id="navigation"
           className={`navigation ${
@@ -77,7 +85,6 @@ const MainHeader = () => {
               <h5 className="m-0">Resido</h5>
             </Link>
 
-            {/* Mobile toggle */}
             {isPortrait && (
               <div
                 className="pe-2"
@@ -135,15 +142,12 @@ const MainHeader = () => {
 
                 <li className="nav-menu-social add-listing">
                   <Link
-                    to={profile ? "/admin/dashboard" : "/auth/login"}
+                    to={dashboardLink}
                     className={
-                      location.pathname ===
-                      (profile ? "/admin/dashboard" : "/auth/login")
-                        ? "active"
-                        : ""
+                      location.pathname === dashboardLink ? "active" : ""
                     }
                   >
-                    {profile ? "Dashboard" : "Sign In"}
+                    {dashboardText}
                   </Link>
                 </li>
               </ul>
@@ -161,9 +165,7 @@ const MainHeader = () => {
               overlayColor={settings.overlayColor}
             >
               <div
-                className={`nav-menus-wrapper ${
-                  isOpen ? "nav-menus-wrapper-open" : ""
-                }`}
+                className={`nav-menus-wrapper ${isOpen ? "nav-menus-wrapper-open" : ""}`}
               >
                 <span
                   className="nav-menus-wrapper-close-button"
@@ -214,24 +216,19 @@ const MainHeader = () => {
                   </li>
                   <li>
                     <Link
-                      to={profile ? "/admin/dashboard" : "/auth/login"}
+                      to={dashboardLink}
                       className={
-                        location.pathname ===
-                        (profile ? "/admin/dashboard" : "/auth/login")
-                          ? "active"
-                          : ""
+                        location.pathname === dashboardLink ? "active" : ""
                       }
                       onClick={toggleMenu}
                     >
-                      {profile ? "Dashboard" : "Sign In"}
+                      {dashboardText}
                     </Link>
                   </li>
                 </ul>
               </div>
             </Drawer>
           )}
-
-          {/* Overlay (optional, handled by Drawer) */}
         </nav>
       </div>
     </header>
