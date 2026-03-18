@@ -119,7 +119,7 @@ const Footer = () => {
             {/* Navigations */}
             <div className="col-lg-4 col-md-4">
               <div className="footer-widget">
-                <h4 className="widget-title mb-0">Navigations</h4>
+                <h4 className="widget-title mb-0">Quick Links</h4>
                 <ul className="footer-menu">
                   <li>
                     <Link to="/">Home</Link>
