@@ -145,19 +145,19 @@ const Footer = () => {
             {/* Highlights */}
             <div className="col-lg-4 col-md-4">
               <div className="footer-widget">
-                <h4 className="widget-title mb-0">Highlights</h4>
+                <h4 className="widget-title mb-0">Services</h4>
                 <ul className="footer-menu">
                   <li>
-                    <Link to="/properties">Apartments</Link>
+                    <Link to="#services">Browse Jobs</Link>
                   </li>
                   <li>
-                    <Link to="/properties">Villas</Link>
+                    <Link to="#services">Apply for Work</Link>
                   </li>
                   <li>
-                    <Link to="/properties">Houses</Link>
+                    <Link to="#services">Check Visa Status</Link>
                   </li>
                   <li>
-                    <Link to="/properties">Lands</Link>
+                    <Link to="#services">Support</Link>
                   </li>
                 </ul>
               </div>
