@@ -12,8 +12,11 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import FileDetail from "../FileDetail/FileDetail";
+import Badge from "../../../../../shared/components/Badge/Badge";
+import useProfile from "../../../../../context/Profile/useProfile";
 
 const File = () => {
+  const { profile } = useProfile();
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
@@ -37,13 +40,14 @@ const File = () => {
 
   // Fetch files whenever filters change or we return to the list view
   useEffect(() => {
-    if (view === "list") {
+    if (view === "list" && profile) {
       fetchData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, view]);
+  }, [filters, view, profile]);
 
   const fetchData = async () => {
+    if (!profile) return;
     showLoader();
     try {
       const cleanFilters = {
@@ -51,14 +55,36 @@ const File = () => {
         limit: filters.limit,
         file_type: filters.file_type,
         category: filters.category,
-        search: filters.fileName, // mapping state to API expected key
+        search: filters.fileName,
       };
 
       const response = await fetchFiles(cleanFilters);
+      const rawFiles = response?.data.files || [];
 
-      // Ensure we match the data structure returned by your API
+      const processedFiles = rawFiles.map((file) => {
+        const isAdmin = Number(profile.role_id) === 1;
+        const isOwner = Number(file.uploaded_by) === Number(profile.id);
+        console.log(
+          "Checking Row:",
+          file.id,
+          "isAdmin:",
+          isAdmin,
+          "isOwner:",
+          isOwner,
+        );
+        // The logic: If you are Admin OR the Owner, the row is "Active"
+        // (which to the ListingComponent means "Show the Buttons")
+        const canModify = isAdmin || isOwner;
+
+        return {
+          ...file,
+          // We MUST use 'is_active' because the shared component is hardcoded to it
+          // is_active: canModify ? true : false,
+        };
+      });
+
       setFilesData({
-        files: response?.data.files || [],
+        files: processedFiles,
         total: response?.data.pagination?.total || 0,
         pagination: response?.data.pagination || {},
       });
@@ -202,6 +228,15 @@ const File = () => {
             columns={[
               { header: "Name", accessor: "file_name" },
               {
+                header: "Visibility",
+                render: (row) =>
+                  row.is_private ? (
+                    <Badge content="Private" color="red" icon="bi-lock-fill" />
+                  ) : (
+                    <Badge content="Public" color="blue" icon="bi-globe" />
+                  ),
+              },
+              {
                 header: "Type",
                 accessor: "file_type",
               },
@@ -222,14 +257,17 @@ const File = () => {
                   setEditingFile(row);
                   setView("edit");
                 },
+                showOn: false,
               },
               {
                 type: "download",
                 onClick: (row) => handleDownload(row),
               },
+
               {
                 type: "delete",
                 onClick: (row) => handleDelete(row.id),
+                showOn: true,
               },
             ]}
             emptyState={{

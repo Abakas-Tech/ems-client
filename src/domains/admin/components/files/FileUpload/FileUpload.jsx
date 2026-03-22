@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import useResponse from "../../../../../context/Response/useResponse";
-
+import useProfile from "../../../../../context/Profile/useProfile";
 const FileUpload = ({
   isEditMode = false,
   initialData = null,
@@ -9,11 +9,13 @@ const FileUpload = ({
   onCancel,
 }) => {
   const { addMessage } = useResponse();
+  const { profile } = useProfile();
 
   const [formData, setFormData] = useState({
     file_name: "",
     category: "",
     description: "",
+    is_private: 0,
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -33,13 +35,15 @@ const FileUpload = ({
         file_name: initialData.file_name || initialData.filename || "",
         category: initialData.category || "",
         description: extractDescription(initialData.description) || "",
+        is_private: initialData.is_private || 0,
       });
     }
   }, [isEditMode, initialData]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    const fieldValue = type === "checkbox" ? (checked ? 1 : 0) : value;
+    setFormData((prev) => ({ ...prev, [name]: fieldValue }));
   };
 
   const handleFileChange = (e) => {
@@ -106,6 +110,38 @@ const FileUpload = ({
 
       <div className="submit-section">
         <div className="row">
+          {/* Visibility Toggle */}
+          {profile?.role_id === 1 ||
+            (profile?.role_id === 2 && (
+              <div className="form-group col-md-12 mb-3">
+                <div className="form-check form-switch rounded-3 d-inline-flex align-items-center ">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    name="is_private"
+                    id="isPrivateToggle"
+                    checked={formData.is_private === 1}
+                    onChange={handleChange}
+                    style={{ cursor: "pointer", width: "3em", height: "1.5em" }}
+                  />
+                  <label
+                    className="form-check-label ms-3 fw-semibold"
+                    htmlFor="isPrivateToggle"
+                    style={{ cursor: "pointer" }}
+                  >
+                    {formData.is_private ? (
+                      <span className="text-danger">
+                        <i className="bi bi-lock-fill me-1"></i> Private
+                      </span>
+                    ) : (
+                      <span className="text-success">
+                        <i className="bi bi-globe me-1"></i> Public
+                      </span>
+                    )}
+                  </label>
+                </div>
+              </div>
+            ))}
           <div className="form-group col-md-6">
             <label>
               File Name <span className="text-danger">*</span>
@@ -120,7 +156,6 @@ const FileUpload = ({
               required
             />
           </div>
-
           <div className="form-group col-md-6">
             <label>
               Category <span className="text-danger">*</span>
@@ -141,7 +176,6 @@ const FileUpload = ({
               <option value="Other">Other</option>
             </select>
           </div>
-
           <div className="form-group col-md-12">
             <label>Description (Optional)</label>
             <textarea
@@ -153,7 +187,6 @@ const FileUpload = ({
               onChange={handleChange}
             ></textarea>
           </div>
-
           {!isEditMode && (
             <div className="form-group col-md-12">
               <label>
@@ -180,11 +213,13 @@ const FileUpload = ({
                   ></i>
                   <h5 className="mt-2">Click or Drag File Here</h5>
                   <p className="text-muted small mb-0">
-                    {selectedFile ?
+                    {selectedFile ? (
                       <strong className="text-success">
                         {selectedFile.name}
                       </strong>
-                    : "PDF, JPG, PNG or DOCX (Max 20MB)"}
+                    ) : (
+                      "PDF, JPG, PNG or DOCX (Max 20MB)"
+                    )}
                   </p>
                 </div>
               </div>
@@ -201,11 +236,11 @@ const FileUpload = ({
             disabled={submitLoading}
             style={{ backgroundColor: "var(--maincolor)" }}
           >
-            {submitLoading ?
-              "Processing..."
-            : isEditMode ?
-              "Update Details"
-            : "Start Upload"}
+            {submitLoading
+              ? "Processing..."
+              : isEditMode
+                ? "Update Details"
+                : "Start Upload"}
           </button>
           <button
             type="button"
