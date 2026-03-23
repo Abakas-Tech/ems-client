@@ -4,7 +4,7 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import styles from "./Sidebar.module.css";
 import useProfile from "../../../../context/Profile/useProfile";
-import  MENU_CONFIG  from "../../../../config/menu.config";
+import MENU_CONFIG from "../../../../config/menu.config";
 
 const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
   const location = useLocation();
@@ -48,10 +48,14 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
               </li>
             );
           }
-
+const path =
+  item.path.includes(":id") && user?.id
+    ? item.path.replace(":id", user.id)
+    : item.path;
           return (
             <li key={item.label} className={liClass}>
-              <Link to={item.path} className={styles.navLink} onClick={onClose}>
+              
+              <Link to={path} className={styles.navLink} onClick={onClose}>
                 <i className={`bi ${item.icon} ${styles.icon}`} />
                 {showLabels && (
                   <span className={styles.label}>{item.label}</span>

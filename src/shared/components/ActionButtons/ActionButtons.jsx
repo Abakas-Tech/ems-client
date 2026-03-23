@@ -8,6 +8,7 @@ import {
 import { AiOutlineFolderView } from "react-icons/ai";
 import ACTION_ROLE_CONFIG from "../../../config/btn.config";
 import useProfile from "../../../context/Profile/useProfile";
+import styles from "./ActionButtons.module.css";
 
 const ActionButtons = ({ actions = [], row }) => {
   const { profile } = useProfile();
@@ -76,6 +77,11 @@ const ActionButtons = ({ actions = [], row }) => {
       className: "btn-outline-info",
       icon: <FaBell />,
       title: "Notify",
+    },
+    deleteBadge: {
+      className: "btn p-0 d-flex align-items-center justify-content-center",
+      icon: <span className={styles["delete-button"]}>&times;</span>,
+      title: "Delete",
     },
   };
 

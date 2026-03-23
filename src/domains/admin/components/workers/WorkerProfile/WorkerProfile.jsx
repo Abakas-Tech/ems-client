@@ -19,6 +19,7 @@ import {
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
+import useProfile from "../../../../../context/Profile/useProfile";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import {
   getWorkerCurrentStatus,
@@ -26,6 +27,7 @@ import {
   deleteWorkerStatus,
 } from "../../../api/workerMeta.api";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 
 /* helpers */
 
@@ -86,7 +88,6 @@ const DocumentLink = ({ url, label, isImage = false }) => {
 const useWorkerActions = (workerId) => {
   const navigate = useNavigate();
 
- 
   const editEmergency = (guarantor) =>
     navigate(`/admin/workers/modules/${workerId}/emergency-contact`, {
       state: { guarantor },
@@ -210,7 +211,6 @@ const useWorkerDeletes = (
 // Main component to display a worker's profile with all related information and actions
 const WorkerProfile = () => {
   const { id } = useParams();
-  // Initialize the toolboxes
 
   const navigate = useNavigate();
 
@@ -222,6 +222,11 @@ const WorkerProfile = () => {
   const [workerStatuses, setWorkerStatuses] = useState([]);
   const [allStatuses, setAllStatuses] = useState([]);
   const [showCreateStatusModal, setShowCreateStatusModal] = useState(false);
+
+  const { profile } = useProfile();
+
+  const canDeleteStatus = [1, 2].includes(profile?.role_id);
+  const backButtonVisibility = [1, 2, 3].includes(profile?.role_id);
 
   // Fetch worker profile data
   const fetchWorker = async () => {
@@ -520,7 +525,7 @@ const WorkerProfile = () => {
 
   return (
     <div className="dashboard-wraper">
-      <BackButton onClick={() => navigate(-1)} />
+      {backButtonVisibility && <BackButton onClick={() => navigate(-1)} />}
 
       {/* Header */}
       <div className="mb-4 border-0">
@@ -566,12 +571,13 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Statuses</h3>
 
-                <button
+                <RoleButton
+                  visibleTo={[2, 1]}
                   className="btn btn-main"
                   onClick={() => setShowCreateStatusModal(true)}
                 >
                   + Status
-                </button>
+                </RoleButton>
               </div>
 
               <div className="card-body">
@@ -590,7 +596,9 @@ const WorkerProfile = () => {
                       <Badge
                         content={status.name}
                         color={getConsistentColor(status.name)}
-                        onDelete={() => handleDeleteStatus(status)}
+                        {...(canDeleteStatus && {
+                          onDelete: () => handleDeleteStatus(status),
+                        })}
                         solid
                       />
                     </span>
@@ -1020,10 +1028,10 @@ const WorkerProfile = () => {
                 <h3 className="fw-bold">Visa Information</h3>
                 <ActionButtons
                   actions={[
-                    { type: "edit", onClick:()=> actions.editVisa(visa) },
+                    { type: "edit", onClick: () => actions.editVisa(visa) },
                     {
                       type: "delete",
-                      onClick: deletes.deleteVisa
+                      onClick: deletes.deleteVisa,
                     },
                   ]}
                 />
