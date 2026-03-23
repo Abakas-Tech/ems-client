@@ -6,6 +6,7 @@ import useResponse from "../Response/useResponse";
 
 const ProfileProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const { addMessage } = useResponse();
 
   const fetchProfile = async () => {
@@ -17,12 +18,22 @@ const ProfileProvider = ({ children }) => {
       setProfile(null);
     }
   };
+
   useEffect(() => {
-    initAuth();
+    const init = async () => {
+      const hasToken = await initAuth();
+      if (hasToken) {
+        await fetchProfile();
+      }
+      setCheckingAuth(false);
+    };
+    init();
   }, []);
 
   return (
-    <ProfileContext.Provider value={{ profile, setProfile, fetchProfile }}>
+    <ProfileContext.Provider
+      value={{ profile, setProfile, fetchProfile, checkingAuth }}
+    >
       {children}
     </ProfileContext.Provider>
   );
