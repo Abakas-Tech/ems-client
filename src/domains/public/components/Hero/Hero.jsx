@@ -16,12 +16,6 @@ function Hero() {
                 Get 20% Off with Super Agent
               </div>
             </div>
-
-            <h1 className="text-white">
-              Find Your Dream House
-              <br />
-              {/* In <span className="text-primary">{text}|</span> */}
-            </h1>
           </div>
         </div>
       </div>

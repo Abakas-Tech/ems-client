@@ -1,22 +1,15 @@
 .hero-banner {
-  background-image: url('../../../../assets/img/banner/banner.png'); /* adjust path */
+  background-image: url("../../../../assets/img//banner//banener-img.png"); /* adjust path */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 100vh;      /* full viewport height */
+  min-height: 100vh; 
   display: flex;
   align-items: center;
   position: relative;
 }
 
-/* Optional overlay */
-.hero-banner::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.3); /* semi-transparent black */
-  z-index: 1;
-}
+
 
 .container {
   position: relative;
