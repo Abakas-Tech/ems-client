@@ -11,7 +11,6 @@ import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
-import FileDetail from "../FileDetail/FileDetail";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import useProfile from "../../../../../context/Profile/useProfile";
 
@@ -64,25 +63,13 @@ const File = () => {
       const processedFiles = rawFiles.map((file) => {
         const isAdmin = Number(profile.role_id) === 1;
         const isOwner = Number(file.uploaded_by) === Number(profile.id);
-        console.log(
-          "Checking Row:",
-          file.id,
-          "isAdmin:",
-          isAdmin,
-          "isOwner:",
-          isOwner,
-        );
-        // The logic: If you are Admin OR the Owner, the row is "Active"
-        // (which to the ListingComponent means "Show the Buttons")
-        const canModify = isAdmin || isOwner;
 
         return {
           ...file,
-          // We MUST use 'is_active' because the shared component is hardcoded to it
-          // is_active: canModify ? true : false,
+          // We keep this true so the ListingComponent filter lets it pass
+          is_active: !!(isAdmin || isOwner),
         };
       });
-
       setFilesData({
         files: processedFiles,
         total: response?.data.pagination?.total || 0,
@@ -138,13 +125,32 @@ const File = () => {
     }
   };
 
-  const handleDownload = (file) => {
+  const handleDownload = async (file) => {
     if (!file.file_url) return;
-    const link = document.createElement("a");
-    link.href = file.file_url;
-    link.download = file.file_name || "download";
-    link.target = "_blank";
-    link.click();
+
+    showLoader(); // Optional: show loader while fetching the file
+    try {
+      const response = await fetch(file.file_url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+
+      // Use the original filename or fallback
+      link.download = file.file_name || "download";
+
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      addMessage(false, "Failed to download file");
+    } finally {
+      hideLoader();
+    }
   };
 
   const handleDelete = (id) => {
@@ -164,11 +170,17 @@ const File = () => {
       }
     });
   };
-  const handleViewDetail = (row) => {
-    setSelectedFile(row);
-    setView("detail");
+  const handleViewDetail = (file) => {
+    if (!file.file_url) return;
+    const link = document.createElement("a");
+    link.href = file.file_url;
+    link.download = file.file_name || "download";
+    link.target = "_blank";
+    link.click();
   };
-
+  const handlePageChange = (newPage) => {
+    setFilters((prev) => ({ ...prev, page: newPage }));
+  };
   return (
     <div className="dashboard-wraper">
       {/* Handle Create/Edit View */}
@@ -180,16 +192,6 @@ const File = () => {
           onCancel={() => {
             setView("list");
             setEditingFile(null);
-          }}
-        />
-      )}
-      {/* Handle Detail View */}
-      {view === "detail" && (
-        <FileDetail
-          file={selectedFile}
-          onBack={() => {
-            setView("list");
-            setSelectedFile(null);
           }}
         />
       )}
@@ -257,7 +259,8 @@ const File = () => {
                   setEditingFile(row);
                   setView("edit");
                 },
-                showOn: false,
+                showOn: true,
+                bypassRole: true,
               },
               {
                 type: "download",
@@ -268,6 +271,7 @@ const File = () => {
                 type: "delete",
                 onClick: (row) => handleDelete(row.id),
                 showOn: true,
+                bypassRole: true,
               },
             ]}
             emptyState={{
@@ -280,6 +284,7 @@ const File = () => {
               total: filesData.total,
               onPageChange: (page) => setFilters((prev) => ({ ...prev, page })),
             }}
+            onPageChange={handlePageChange}
           />
         </>
       )}

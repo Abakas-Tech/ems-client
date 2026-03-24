@@ -90,7 +90,8 @@ const ActionButtons = ({ actions = [], row }) => {
     (actionObj) =>
       actionObj.type &&
       ACTION_CONFIG[actionObj.type] &&
-      ACTION_ROLE_CONFIG[actionObj.type]?.includes(role),
+      (ACTION_ROLE_CONFIG[actionObj.type]?.includes(role) ||
+        actionObj.bypassRole === true),
   );
 
   return (

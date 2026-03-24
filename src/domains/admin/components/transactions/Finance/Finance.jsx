@@ -58,7 +58,9 @@ const FinancePage = () => {
       }
     });
   };
-
+  const handlePageChange = (newPage) => {
+    setFilters((prev) => ({ ...prev, page: newPage }));
+  };
   if (view === "create" || view === "edit") {
     return (
       <RecordTransaction
@@ -197,6 +199,7 @@ const FinancePage = () => {
           title: "No transactions found",
           subtitle: "Start by recording your first agency transaction.",
         }}
+        onPageChange={handlePageChange}
       />
     </div>
   );
