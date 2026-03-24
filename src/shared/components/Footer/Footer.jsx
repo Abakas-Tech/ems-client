@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getSocialMedias } from "../../../domains/public/api/socialMedia.api";
+import getSocialMedias  from "../../../domains/public/api/socialMedia.api";
 // import logo from "../../../assets/img/logo/agency-logo.png";
 import { getLocation } from "../../../domains/admin/api/location.api";
 

@@ -11,7 +11,6 @@ import {
   deleteWorkerLanguage,
   addWorkerPosition,
   getWorkerPositions,
-  updateWorkerPosition,
   deleteWorkerPosition,
   addWorkerExperience,
   getWorkerExperiences,
@@ -51,7 +50,6 @@ const WorkerMeta = () => {
   const [allPositions, setAllPositions] = useState([]);
   const [showCreatePositionModal, setShowCreatePositionModal] = useState(false);
   const [showUpdatePositionModal, setShowUpdatePositionModal] = useState(false);
-  const [selectedPosition, setSelectedPosition] = useState(null);
   // State for Worker Experiences
   const [experiences, setExperiences] = useState([]);
   const [allCountries, setAllCountries] = useState([]);
@@ -351,21 +349,15 @@ const WorkerMeta = () => {
   };
   // Handle add position
   const handleAddPosition = async (inputValues) => {
-    const { position_id, years_of_experience } = inputValues;
+    const { position_id} = inputValues;
     if (!position_id) {
       addMessage(false, "Position is required");
-      return;
-    }
-    const years = Number(years_of_experience);
-    if (isNaN(years) || years < 0 || !Number.isInteger(years)) {
-      addMessage(false, "Years of experience must be a non-negative integer");
       return;
     }
     showLoader();
     try {
       const response = await addWorkerPosition(worker_id, {
         position_id,
-        years_of_experience: years,
       });
       addMessage(response?.success, response?.message);
       setShowCreatePositionModal(false);
@@ -376,36 +368,9 @@ const WorkerMeta = () => {
       hideLoader();
     }
   };
-  // Handle update position
-  const handleUpdatePosition = async (inputValues) => {
-    const { years_of_experience } = inputValues;
-    const years = Number(years_of_experience);
-    if (isNaN(years) || years < 0 || !Number.isInteger(years)) {
-      addMessage(false, "Years of experience must be a non-negative integer");
-      return;
-    }
-    showLoader();
-    try {
-      const response = await updateWorkerPosition(
-        worker_id,
-        selectedPosition.id,
-        { years_of_experience: years },
-      );
-      addMessage(response?.success, response?.message);
-      setShowUpdatePositionModal(false);
-      setSelectedPosition(null);
-      fetchWorkerPositions();
-    } catch (err) {
-      addMessage(false, err.message);
-    } finally {
-      hideLoader();
-    }
-  };
+
   // Handle edit position
-  const handleEditPosition = (row) => {
-    setSelectedPosition(row);
-    setShowUpdatePositionModal(true);
-  };
+
   // Handle delete position
   const handleDeletePosition = (row) => {
     openModal(async () => {
@@ -493,13 +458,8 @@ const WorkerMeta = () => {
       header: "Name",
       accessor: "name",
     },
-    {
-      header: "Years",
-      accessor: "years_of_experience",
-    },
   ];
   const actionsPositions = [
-    { type: "edit", onClick: handleEditPosition },
     { type: "delete", onClick: handleDeletePosition },
   ];
   const fieldsAddPositions = [
@@ -512,19 +472,8 @@ const WorkerMeta = () => {
         label: position.name,
       })),
     },
-    {
-      name: "years_of_experience",
-      label: "Years of Experience",
-      type: "number",
-    },
   ];
-  const fieldsUpdatePositions = [
-    {
-      name: "years_of_experience",
-      label: "Years of Experience",
-      type: "number",
-    },
-  ];
+
   const emptyStatePositions = {
     title: "No positions assigned",
   };
@@ -716,10 +665,7 @@ const WorkerMeta = () => {
             show={showUpdatePositionModal}
             onClose={() => {
               setShowUpdatePositionModal(false);
-              setSelectedPosition(null);
             }}
-            onCreate={handleUpdatePosition}
-            fields={fieldsUpdatePositions}
             title="Update Position"
             btnLabel="Update"
           />

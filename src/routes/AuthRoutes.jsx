@@ -1,19 +1,21 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import NotFound from "../shared/components/NotFound/NotFound.jsx";
-import ForgotPassword from "../domains/account/pages/ForgotPassword/ForgotPassword.jsx";
-import PasswordReset from "../domains/account/pages/PasswordReset/PasswordReset.jsx";
+import NotFound from "../shared/components/NotFound/NotFound";
 import Login from './../domains/account/pages/Login/Login';
-import MainLayout from './../shared/layout/MainLayout/MainLayout';
+import ForgotPassword from './../domains/account/pages/ForgotPassword/ForgotPassword';
+import PasswordReset from './../domains/account/pages/PasswordReset/PasswordReset';
 
 
-const AuthRoutes = () => (
-  <Routes element={<MainLayout/>}>
-    <Route path="/login" element={<Login />} />
-    <Route path="/request-otp" element={<ForgotPassword/>} />
-    <Route path="/reset-password" element={<PasswordReset/>} />
-    <Route path="*" element={<NotFound />} /> 
-  </Routes>
-);
+function PublicRoutes() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/request-otp" element={<ForgotPassword/>} />
+      <Route path="/reset-password" element={<PasswordReset/>} />
+      {/* fallback route */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
 
-export default AuthRoutes;
+export default PublicRoutes;

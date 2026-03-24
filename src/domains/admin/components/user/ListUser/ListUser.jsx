@@ -28,7 +28,7 @@ const ListUser = () => {
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
     search: "",
-    role_id: "",
+    role_id: "2",
     is_active: "",
   });
 
@@ -132,9 +132,9 @@ const ListUser = () => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleClearFilters = () => {
-    setFilters({ search: "", role_id: "", is_active: "" });
-  };
+const handleClearFilters = () => {
+  setFilters({ search: "", role_id: "2", is_active: "" });
+};
 
   const handleDelete = (row) => {
     openModal(async () => {
@@ -254,7 +254,7 @@ const ListUser = () => {
           </p>
         </div>
         <RoleButton
-          visibleTo={[2,1]}
+          visibleTo={[2, 1]}
           className="btn btn-main"
           style={{ whiteSpace: "nowrap" }}
           onClick={handleCreateUser}
@@ -306,7 +306,7 @@ const ListUser = () => {
           </div>
           <div className="gap-2 d-flex">
             <RoleButton
-            visibleTo={[1,2]}
+              visibleTo={[1, 2]}
               className="btn btn-main btn-sm text-white px-3 fw-bold"
               disabled={selectedUserIds.length === 0}
               onClick={handleNotify}
@@ -314,7 +314,7 @@ const ListUser = () => {
               Send Bulk Alert
             </RoleButton>
             <RoleButton
-            visibleTo={[1,2]}
+              visibleTo={[1, 2]}
               className="btn btn-light btn-sm border"
               onClick={handleExitSelection}
             >
@@ -346,8 +346,8 @@ const ListUser = () => {
           page: pagination.page,
           limit: pagination.limit,
           total: pagination.total,
-          onPageChange: handlePageChange,
         }}
+        onPageChange={handlePageChange}
       />
     </div>
   );
