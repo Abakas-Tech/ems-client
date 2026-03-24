@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelopeOpen } from "react-icons/fa";
 import sendContactEmail from "../../api/contact.api";
 import getLocation from "../../api/location.api";
-import getSocialMedia from "../../api/socialMedia.api";
+import getSocialMedias from "../../api/socialMedia.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import SendButton from "./../../../../shared/components/SendButton/SendButton";
+
 
 const Contact = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -44,7 +45,7 @@ const Contact = () => {
           }));
         }
 
-        const media = await getSocialMedia();
+        const media = await getSocialMedias();
         if (media?.data) {
           setSocialMedia((prev) => ({
             email: media.data.email ?? prev.email,
@@ -270,10 +271,12 @@ const Contact = () => {
                 </div>
 
                 <div className="col-12 w-100">
-                  <SendButton
+                  <button
                     type="submit"
-                    className="text-white w-100 d-flex justify-content-center align-items-center"
-                  />
+                    className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center"
+                  >
+                    Submit
+                  </button>
                 </div>
               </div>
             </form>

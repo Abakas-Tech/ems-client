@@ -12,6 +12,7 @@ import NotificationItem from "../NotificationItem/NotificationItem";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 import useNotification from "../../../../../context/Notification/useNotification";
+import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 
 const NotificationPage = () => {
   const location = useLocation();
@@ -23,7 +24,7 @@ const NotificationPage = () => {
   // --- Bulk Selection Data from Navigation State ---
   const incomingBulkIds = location.state?.bulkIds || null;
   const incomingType = location.state?.bulkType || null;
-
+  const incomingName = location.state?.bulkName || null;
   const [notifications, setNotifications] = useState({ data: [], total: 0 });
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showCompose, setShowCompose] = useState(false);
@@ -39,6 +40,7 @@ const NotificationPage = () => {
     if (incomingBulkIds && incomingBulkIds.length > 0) {
       setShowCompose(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incomingBulkIds]);
 
   const loadNotifications = async () => {
@@ -142,13 +144,23 @@ const NotificationPage = () => {
 
   // --- Custom Field Rendering (The Lock UI) ---
   const renderSearchField = useCallback(
-    (field, inputValues, handleChange) => (
-      <div className="position-relative">
-        {incomingBulkIds ? (
-          /* Bulk Mode UI: Locked Recipients */
-          <div
-            className="form-control d-flex align-items-center justify-content-between"
-          >
+    (field, inputValues, handleChange) => {
+      // 1. Single User Mode (Locked)
+      if (incomingBulkIds && incomingBulkIds.length === 1) {
+        return (
+          <div className="form-control d-flex align-items-center justify-content-between bg-light border-primary-subtle">
+            <div>
+              <i className="bi bi-person-fill text-primary me-2"></i>
+              <span className="fw-bold text-primary"> {incomingName}</span>
+            </div>
+          </div>
+        );
+      }
+
+      // 2. Bulk Mode (Locked)
+      if (incomingBulkIds && incomingBulkIds.length > 1) {
+        return (
+          <div className="form-control d-flex align-items-center justify-content-between bg-light">
             <span className="text-primary fw-bold">
               <i className="bi bi-people-fill me-2"></i>
               {incomingBulkIds.length} Selected Recipients
@@ -157,73 +169,77 @@ const NotificationPage = () => {
               Bulk Mode
             </span>
           </div>
-        ) : (
-          /* Single Mode UI: Standard Search */
-          <>
-            <input
-              type="text"
-              className="form-control"
-              placeholder={
-                inputValues.recipient_type
-                  ? "Type to search..."
-                  : "Choose a role first"
-              }
-              disabled={!inputValues.recipient_type}
-              value={searchTerm}
-              required={!inputValues.recipient_id}
-              style={{ backgroundColor: "#EDF1FB", borderRadius: "8px" }}
-              autoComplete="off"
-              onChange={(e) =>
-                handleUserSearch(e.target.value, inputValues.recipient_type)
-              }
-            />
-            {searchResults.length > 0 && (
-              <div
-                className="list-group position-absolute w-100 shadow-lg mt-1 z-3"
-                style={{ maxHeight: "200px", overflowY: "auto" }}
-              >
-                {searchResults.map((user) => (
-                  <button
-                    key={user.id}
-                    type="button"
-                    className="list-group-item list-group-item-action small py-1 px-3 d-flex justify-content-between align-items-center"
-                    onClick={() => {
-                      handleChange("recipient_id", user.id);
-                      setSearchTerm(user.name || `${user.full_name}`);
-                      setSearchResults([]);
-                    }}
-                  >
-                    <div className="text-start">
-                      <div className="fw-bold text-dark mb-0">
-                        {user.name || `${user.full_name}`}
-                      </div>
-                      <div
-                        className="text-muted"
-                        style={{ fontSize: "0.7rem" }}
-                      >
-                        {user.email || user.phone_number}
-                      </div>
+        );
+      }
+
+      // 3. Manual Search Mode (Empty State)
+      return (
+        <>
+          <input
+            type="text"
+            className="form-control"
+            placeholder={
+              inputValues.recipient_type
+                ? "Type to search..."
+                : "Choose a role first"
+            }
+            disabled={!inputValues.recipient_type}
+            value={searchTerm}
+            required={!inputValues.recipient_id}
+            style={{ backgroundColor: "#EDF1FB", borderRadius: "8px" }}
+            autoComplete="off"
+            onChange={(e) =>
+              handleUserSearch(e.target.value, inputValues.recipient_type)
+            }
+          />
+          {searchResults.length > 0 && (
+            <div
+              className="list-group position-absolute w-100 shadow-lg mt-1 z-3"
+              style={{ maxHeight: "200px", overflowY: "auto" }}
+            >
+              {searchResults.map((user) => (
+                <button
+                  key={user.id}
+                  type="button"
+                  className="list-group-item list-group-item-action small py-1 px-3 d-flex justify-content-between align-items-center"
+                  onClick={() => {
+                    handleChange("recipient_id", user.id);
+                    setSearchTerm(user.name || `${user.full_name}`);
+                    setSearchResults([]);
+                  }}
+                >
+                  <div className="text-start">
+                    <div className="fw-bold text-dark mb-0">
+                      {user.name || `${user.full_name}`}
                     </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    ),
+                    <div className="text-muted" style={{ fontSize: "0.7rem" }}>
+                      {user.email || user.phone_number}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </>
+      );
+    },
     [searchTerm, searchResults, incomingBulkIds],
   );
-
   // --- Modal Form Configuration ---
-  const fields = useMemo(
-    () => [
+  const fields = useMemo(() => {
+    // Determine the label for the Recipient ID field
+    let idLabel = "Find User";
+    if (incomingBulkIds) {
+      idLabel = incomingBulkIds.length === 1 ? "Recipient Info" : "Group Info";
+    }
+    const normalizedType = incomingType?.toString();
+    return [
       {
         name: "recipient_type",
         label: "Recipient Role",
         type: "select",
-        disabled: !!incomingBulkIds,
-        initialValue: incomingType || "",
+        disabled: !!incomingBulkIds, // Locked if IDs are passed
+        initialValue: normalizedType || "",
         options: [
           { value: "worker", label: "Worker" },
           { value: "3", label: "Partner" },
@@ -233,17 +249,17 @@ const NotificationPage = () => {
       },
       {
         name: "recipient_id",
-        label: incomingBulkIds ? "Recipients Info" : "Find User",
+        label: idLabel,
         type: "custom",
       },
       {
         name: "message",
         label: "Message Body",
         type: "textarea",
+        placeholder: "Write your message here...",
       },
-    ],
-    [incomingBulkIds, incomingType],
-  );
+    ];
+  }, [incomingBulkIds, incomingType]);
 
   return (
     <div className="dashboard-wraper">
@@ -254,7 +270,8 @@ const NotificationPage = () => {
             Manage and send system-wide alerts
           </p>
         </div>
-        <button
+        <RoleButton
+          visibleTo={[2,1]}
           className="btn btn-main px-4 py-2 rounded-3 shadow-sm text-white fw-bold mt-3 mt-md-0"
           onClick={() => {
             setSearchTerm("");
@@ -262,7 +279,7 @@ const NotificationPage = () => {
           }}
         >
           <i className="bi bi-send-plus me-2"></i> Send Alert
-        </button>
+        </RoleButton>
       </div>
 
       <div className="card border-0 shadow-sm overflow-hidden rounded-4">
@@ -355,17 +372,24 @@ const NotificationPage = () => {
           show={showCompose}
           onClose={() => {
             setShowCompose(false);
-            // Clear route state on close
             navigate(location.pathname, { replace: true, state: {} });
           }}
           onCreate={handleSend}
           title={
             incomingBulkIds
-              ? "Compose Bulk Notification"
-              : "Compose Notification"
+              ? incomingBulkIds.length === 1
+                ? "Direct Notification"
+                : "Bulk Notification"
+              : "New Notification"
           }
           fields={fields}
-          btnLabel={incomingBulkIds ? "Send Bulk Alert" : "Send Alert"}
+          btnLabel={
+            incomingBulkIds
+              ? incomingBulkIds.length === 1
+                ? "Send to User"
+                : "Send to Group"
+              : "Send Alert"
+          }
           renderCustomField={renderSearchField}
         />
       )}

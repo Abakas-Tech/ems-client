@@ -338,21 +338,23 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                 />
               </div>
               {/* Email */}
-              <div className="form-group col-md-6 mb-3">
-                <label>
-                  Email{" "}
-                  {role && requiredFields.email && role !== "5" && (
-                    <span className="text-danger">*</span>
-                  )}
-                </label>
-                <input
-                  type="email"
-                  className="form-control"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
 
+              {role!=="5" && (
+                <div className="form-group col-md-6 mb-3">
+                  <label>
+                    Email{" "}
+                    {requiredFields.email && (
+                      <span className="text-danger">*</span>
+                    )}
+                  </label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+              )}
               {/* Status (Edit Mode Only) */}
               {isEditMode && (
                 <div className="form-group col-md-6 mb-3">

@@ -1,14 +1,18 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import { FaBars } from "react-icons/fa";
 
-// import logo from "../../../assets/img/logo.svg";
+import logo from "../../../../assets/img/logo/logo.png";
 import useProfile from "../../../../context/Profile/useProfile";
+import { hasAccessToken } from "../../../../utils/axios";
 
 const MainHeader = () => {
-  const { profile} = useProfile();
+  const { profile, checkingAuth } = useProfile();
+  const isAuth = hasAccessToken() || profile;
+
   const [isOpen, setIsOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -18,9 +22,29 @@ const MainHeader = () => {
     mobileBreakpoint: 992,
     overlay: true,
     overlayColor: "rgba(0, 0, 0, 0.5)",
-    drawerSize: "42%", // max width instead of full screen
-    animationDuration: 600, // slower smoothness
+    drawerSize: "42%",
+    animationDuration: 600,
   };
+
+  // Dynamic navigation based on role
+  const roleDashboardMap = {
+    1: "/admin/dashboard",
+    2: "/admin/dashboard",
+    3: "/partner/my-profile",
+    4: "/worker/my-profile",
+    5: "/employer/my-profile",
+  };
+
+  // Determine dashboard link and text
+  let dashboardLink = "/auth/login";
+  let dashboardText = "Sign In";
+
+  if (!checkingAuth && isAuth && profile) {
+    dashboardLink = roleDashboardMap[profile.role_id] || "/admin/dashboard";
+    dashboardText = "Dashboard";
+  }
+
+  const toggleMenu = () => setIsOpen(!isOpen);
 
   // Handle resize
   useEffect(() => {
@@ -36,23 +60,17 @@ const MainHeader = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Handle scroll just for header styling (background/shadow)
+  // Handle scroll
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const toggleMenu = () => setIsOpen(!isOpen);
-
-  // Only update body padding when route or viewport changes
+  // Update body padding for fixed header
   useEffect(() => {
     const isFixed = location.pathname !== "/" && !isPortrait;
-    if (isFixed) {
-      document.body.style.paddingTop = "10px";
-    } else {
-      document.body.style.paddingTop = "";
-    }
+    document.body.style.paddingTop = isFixed ? "10px" : "";
   }, [location.pathname, isPortrait]);
 
   const isFixed = isScrolled || location.pathname !== "/";
@@ -63,7 +81,7 @@ const MainHeader = () => {
         isPortrait ? "navigation-portrait" : "navigation-landscape"
       } ${isFixed ? "header-fixed" : ""}`}
     >
-      <div className="container custom-container px-0 ">
+      <div className="container custom-container px-0">
         <nav
           id="navigation"
           className={`navigation ${
@@ -72,8 +90,11 @@ const MainHeader = () => {
         >
           {/* Nav Header */}
           <div className="nav-header">
-    
-            {/* Mobile toggle */}
+            <Link className="nav-brand text-logo exchange" to="/">
+              <img src={logo} alt="Logo" style={{width: "80px"}}/>
+              {/* <h5 className="m-0">Resido</h5> */}
+            </Link>
+
             {isPortrait && (
               <div
                 className="pe-2"
@@ -93,19 +114,6 @@ const MainHeader = () => {
           {/* Desktop Nav */}
           {!isPortrait && (
             <div className="nav-menus-wrapper">
-              {/* Desktop Sidebar Toggle (Hamburger Only) */}
-              <div
-                style={{
-                  fontSize: "22px",
-                  cursor: "pointer",
-                  color: "var(--maincolor)",
-                  marginRight: "18px",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <FaBars />
-              </div>
               <ul className="nav-menu align-to-right">
                 <li>
                   <Link
@@ -144,15 +152,12 @@ const MainHeader = () => {
 
                 <li className="nav-menu-social add-listing">
                   <Link
-                    to={profile ? "/admin/dashboard" : "/auth/login"}
+                    to={dashboardLink}
                     className={
-                      location.pathname ===
-                      (profile ? "/admin/dashboard" : "/auth/login")
-                        ? "active"
-                        : ""
+                      location.pathname === dashboardLink ? "active" : ""
                     }
                   >
-                    {profile ? "Dashboard" : "Sign In"}
+                    {dashboardText}
                   </Link>
                 </li>
               </ul>
@@ -170,9 +175,7 @@ const MainHeader = () => {
               overlayColor={settings.overlayColor}
             >
               <div
-                className={`nav-menus-wrapper ${
-                  isOpen ? "nav-menus-wrapper-open" : ""
-                }`}
+                className={`nav-menus-wrapper ${isOpen ? "nav-menus-wrapper-open" : ""}`}
               >
                 <span
                   className="nav-menus-wrapper-close-button"
@@ -223,24 +226,19 @@ const MainHeader = () => {
                   </li>
                   <li>
                     <Link
-                      to={profile ? "/admin/dashboard" : "/auth/login"}
+                      to={dashboardLink}
                       className={
-                        location.pathname ===
-                        (profile ? "/admin/dashboard" : "/auth/login")
-                          ? "active"
-                          : ""
+                        location.pathname === dashboardLink ? "active" : ""
                       }
                       onClick={toggleMenu}
                     >
-                      {profile ? "Dashboard" : "Sign In"}
+                      {dashboardText}
                     </Link>
                   </li>
                 </ul>
               </div>
             </Drawer>
           )}
-
-          {/* Overlay (optional, handled by Drawer) */}
         </nav>
       </div>
     </header>

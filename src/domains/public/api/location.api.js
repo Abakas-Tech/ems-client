@@ -10,7 +10,7 @@ const getLocation = async () => {
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Failed to get locatio info",
+      error.response?.data?.message || "Failed to get location info",
     );
   }
 };

@@ -8,6 +8,7 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterUser from "./../../../components/user/FilterUser/FilterUser";
 import Badge from "../../../../../shared/components/Badge/Badge";
+import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 
 const ROLE_MAP = { 2: "Employee", 3: "Partner", 5: "Employer" };
 const ROLE_COLOR = {
@@ -90,20 +91,40 @@ const ListUser = () => {
       setSelectedUserIds([]);
     }
   };
-  const handleBulkNotify = () => {
-    navigate("/admin/notifications", {
-      state: {
-        bulkIds: selectedUserIds,
-        bulkType: filters.role_id || "employee",
-      },
-    });
-  };
+
   const handleExitSelection = () => {
     setIsSelectionMode(false);
     setSelectedUserIds([]);
   };
   const handlePageChange = (newPage) => {
     fetchUsers(newPage);
+  };
+
+  // 1. Updated handler to accept an optional single user row
+  const handleNotify = (row = null) => {
+    let idsToNotify = [];
+    let roleType = filters.role_id || "employee";
+    let full_name = "";
+
+    if (row && row.id) {
+      // Handle the case where a single user is clicked for id nad name
+      idsToNotify = [row.id];
+      full_name = row.full_name || "";
+      roleType = ROLE_MAP[row.role_id].toLowerCase() || roleType;
+    } else {
+      // Handle the case where multiple users are selected
+      idsToNotify = selectedUserIds;
+    }
+
+    if (idsToNotify.length === 0) return;
+    console.log(full_name);
+    navigate("/admin/notifications", {
+      state: {
+        bulkIds: idsToNotify,
+        bulkType: roleType,
+        bulkName: full_name,
+      },
+    });
   };
 
   const handleFilterChange = (e) => {
@@ -210,6 +231,7 @@ const ListUser = () => {
 
   const actions = [
     { type: "edit", onClick: handleEdit },
+    { type: "notify", onClick: (row) => handleNotify(row) },
     { type: "archive", onClick: handleStatusToggle, showOn: true },
     { type: "restore", onClick: handleStatusToggle, showOn: false },
     { type: "delete", onClick: handleDelete },
@@ -231,13 +253,14 @@ const ListUser = () => {
             users.
           </p>
         </div>
-        <button
+        <RoleButton
+          visibleTo={[2,1]}
           className="btn btn-main"
           style={{ whiteSpace: "nowrap" }}
           onClick={handleCreateUser}
         >
           + Create User
-        </button>
+        </RoleButton>
       </div>
       {isSelectionMode && (
         <div
@@ -282,26 +305,28 @@ const ListUser = () => {
             </div>
           </div>
           <div className="gap-2 d-flex">
-            <button
+            <RoleButton
+            visibleTo={[1,2]}
               className="btn btn-main btn-sm text-white px-3 fw-bold"
               disabled={selectedUserIds.length === 0}
-              onClick={handleBulkNotify}
+              onClick={handleNotify}
             >
               Send Bulk Alert
-            </button>
-            <button
+            </RoleButton>
+            <RoleButton
+            visibleTo={[1,2]}
               className="btn btn-light btn-sm border"
               onClick={handleExitSelection}
             >
               Cancel
-            </button>
+            </RoleButton>
           </div>
         </div>
       )}
       <ListingComponent
         data={users}
         columns={columns}
-        actions={actions}
+        actions={isSelectionMode ? [] : actions}
         emptyState={emptyState}
         // Selection Props
         isSelectionMode={isSelectionMode}

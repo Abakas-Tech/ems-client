@@ -86,8 +86,11 @@ const LoginFormWithPhone = ({ role }) => {
       setPhoneNumber("");
       setNationalId("");
       setPassportNumber("");
-
-      navigate("/admin/dashboard");
+      if (role === "worker") {
+        navigate("/worker/my-profile");
+      } else {
+        navigate("/admin/dashboard");
+      }
     } catch (error) {
       addMessage(false, error.message);
     } finally {
