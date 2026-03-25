@@ -227,47 +227,47 @@ const SocialMedia = () => {
               {
                 label: "Facebook Username",
                 name: "facebook_username",
-                placeholder: "abakas.page",
+                placeholder: "e.g. abakas.page",
               },
               {
                 label: "Instagram Username",
                 name: "instagram_username",
-                placeholder: "abakas.official",
+                placeholder: "e.g. abakas.official",
               },
               {
                 label: "Telegram Username",
                 name: "telegram_username",
-                placeholder: "abakas_support",
+                placeholder: "e.g. @abakas_support",
               },
               {
                 label: "TikTok Username",
                 name: "tiktok_username",
-                placeholder: "abakas.tiktok",
+                placeholder: "e.g. abakas.tiktok",
               },
               {
                 label: "LinkedIn Username",
                 name: "linkedin_username",
-                placeholder: "abakas-company",
+                placeholder: "e.g. abakas-company",
               },
               {
                 label: "YouTube Channel",
                 name: "youtube_channel",
-                placeholder: "abakaschannel",
+                placeholder: "e.g. abakaschannel",
               },
               {
                 label: "Twitter Username",
                 name: "twitter_username",
-                placeholder: "abakas_x",
+                placeholder: "e.g. abakas_x",
               },
               {
                 label: "WhatsApp Number",
                 name: "whatsapp_number",
-                placeholder: "+251911111111",
+                placeholder: "e.g. +251911111111",
               },
               {
                 label: "Contact Number",
                 name: "contact_number",
-                placeholder: "+251900000000/+251911111111",
+                placeholder: "e.g. +251900000000 / +251911111111",
               },
             ].map((field) => (
               <div className="col-md-6" key={field.name}>
