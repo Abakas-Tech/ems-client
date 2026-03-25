@@ -144,7 +144,7 @@ const ArchivedWorkers = () => {
             render: (row) => <span className="fw-bold">{row.full_name}</span>,
           },
           { header: "Phone Number", accessor: "phone_number" },
-          { header: "Status", accessor: "status" },
+          { header: "Current Status", accessor: "status" },
         ]}
         actions={[
           { type: "restore", onClick: (row) => handleRestore(row.id) },
