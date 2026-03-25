@@ -221,20 +221,12 @@ const GalleryUpload = () => {
             <button
               className="btn btn-main px-5 rounded fw-bold text-white"
               type="submit"
-              disabled={submitLoading}
               style={{ backgroundColor: "var(--maincolor)" }}
+              disabled={submitLoading}
             >
               {isEditMode ? "Update Gallery Item" : "Create Gallery Item"}
             </button>
-
-            <button
-              type="button"
-              className="btn btn-outline-secondary  px-4 rounded fw-bold"
-              onClick={() => navigate("/admin/public-content/gallery")}
-            >
-              Cancel
-            </button>
-          </div>
+          </div>a
         </div>
       </form>
     </div>

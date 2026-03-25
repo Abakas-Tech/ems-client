@@ -1,7 +1,8 @@
 import React from "react";
 import { FaMapLocationDot } from "react-icons/fa6";
-import { FiImage } from "react-icons/fi";
-import { IoMdGlobe } from "react-icons/io";
+import { MdPermMedia } from "react-icons/md";
+import { FaShareAltSquare } from "react-icons/fa";
+
 import { Link } from "react-router-dom";
 
 function Dashboard() {
@@ -40,7 +41,7 @@ function Dashboard() {
             >
               <div className="agents-grid card rounded-3 border p-4 text-center h-100">
                 <div className="mt-4 mb-3">
-                  <FiImage className="text-info" size={50} />
+                  <MdPermMedia className="text-info" size={50} />
                 </div>
                 <h5 className="fr-can-name lh-base mb-2">Gallery</h5>
               </div>
@@ -55,7 +56,7 @@ function Dashboard() {
             >
               <div className="agents-grid card rounded-3 border p-4 text-center h-100">
                 <div className="mt-4 mb-3">
-                  <IoMdGlobe className="text-info" size={50} />
+                  <FaShareAltSquare className="text-info" size={50} />
                 </div>
                 <h5 className="fr-can-name lh-base mb-2">Social Media</h5>
               </div>
