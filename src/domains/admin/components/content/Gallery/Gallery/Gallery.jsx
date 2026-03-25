@@ -105,7 +105,7 @@ const Gallery = () => {
   return (
     <div className="dashboard-wraper">
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div>
           <BackButton onClick={goBack} />
           <h2>Gallery Management</h2>
