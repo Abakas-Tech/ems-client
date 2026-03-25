@@ -219,14 +219,14 @@ const GalleryUpload = () => {
         <div className="submit-section mt-4">
           <div className="form-group col-lg-12 col-md-12 d-flex gap-2">
             <button
-              className="btn btn-main px-5 rounded fw-bold text-white"
+              className="btn btn-main px-5 rounded"
               type="submit"
-              style={{ backgroundColor: "var(--maincolor)" }}
+              // style={{ backgroundColor: "var(--maincolor)" }}
               disabled={submitLoading}
             >
               {isEditMode ? "Update Gallery Item" : "Create Gallery Item"}
             </button>
-          </div>a
+          </div>
         </div>
       </form>
     </div>
