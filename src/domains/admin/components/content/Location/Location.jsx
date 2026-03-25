@@ -64,39 +64,39 @@ const Location = () => {
     setLocationData((prev) => ({ ...prev, [name]: value }));
   };
 
-const validateFields = () => {
-  const { name, latitude, longitude, address } = locationData;
+  const validateFields = () => {
+    const { name, latitude, longitude, address } = locationData;
 
-  // Name length check
-  if (name.trim().length < 2 || name.trim().length > 100) {
-    return addMessage(
-      false,
-      "Location name must be between 2 and 100 characters.",
-    );
-  }
+    // Name length check
+    if (name.trim().length < 2 || name.trim().length > 100) {
+      return addMessage(
+        false,
+        "Location name must be between 2 and 100 characters.",
+      );
+    }
 
-  // Latitude must be a number within -90 to 90
-  const lat = parseFloat(latitude);
-  if (isNaN(lat) || lat < -90 || lat > 90) {
-    return addMessage(false, "Latitude must be a number between -90 and 90.");
-  }
+    // Latitude must be a number within -90 to 90
+    const lat = parseFloat(latitude);
+    if (isNaN(lat) || lat < -90 || lat > 90) {
+      return addMessage(false, "Latitude must be a number between -90 and 90.");
+    }
 
-  // Longitude must be a number within -180 to 180
-  const lng = parseFloat(longitude);
-  if (isNaN(lng) || lng < -180 || lng > 180) {
-    return addMessage(
-      false,
-      "Longitude must be a number between -180 and 180.",
-    );
-  }
+    // Longitude must be a number within -180 to 180
+    const lng = parseFloat(longitude);
+    if (isNaN(lng) || lng < -180 || lng > 180) {
+      return addMessage(
+        false,
+        "Longitude must be a number between -180 and 180.",
+      );
+    }
 
-  // Address length check
-  if (address.trim().length < 3 || address.trim().length > 100) {
-    return addMessage(false, "Address must be between 3 and 100 characters.");
-  }
+    // Address length check
+    if (address.trim().length < 3 || address.trim().length > 100) {
+      return addMessage(false, "Address must be between 3 and 100 characters.");
+    }
 
-  return true;
-};
+    return true;
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -131,28 +131,34 @@ const validateFields = () => {
   };
 
   const handleDelete = async () => {
-    openModal(async () => {
-      showLoader();
+    openModal(
+      async () => {
+        showLoader();
 
-      try {
-        const response = await deleteLocation();
+        try {
+          const response = await deleteLocation();
 
-        addMessage(response?.success, response?.message);
+          addMessage(response?.success, response?.message);
 
-        setLocationData({
-          name: "",
-          latitude: "",
-          longitude: "",
-          address: "",
-        });
+          setLocationData({
+            name: "",
+            latitude: "",
+            longitude: "",
+            address: "",
+          });
 
-        setExistingData(null);
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+          setExistingData(null);
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this location?",
+        confirmText: "Delete",
+      },
+    );
   };
 
   return (
@@ -252,4 +258,3 @@ const validateFields = () => {
 };
 
 export default Location;
-
