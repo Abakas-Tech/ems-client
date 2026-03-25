@@ -163,13 +163,13 @@ const Location = () => {
 
   return (
     <div className="dashboard-wraper">
+      <div>
+        <BackButton onClick={goBack} />
+      </div>
       <div className="form-submit">
-        <h2>Location </h2>
-        <p className="text-muted">Manage company location information.</p>
+        <h2 className="fw-bold text-dark mb-2">Location </h2>
 
-        <div className="position-absolute top-0 end-0 mt-2">
-          <BackButton onClick={goBack} />
-        </div>
+        <p className="text-muted">Manage company location information.</p>
 
         <form onSubmit={handleSubmit}>
           <div className="row g-3">
