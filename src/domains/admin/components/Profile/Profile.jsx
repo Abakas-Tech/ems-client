@@ -151,7 +151,7 @@ const MyProfile = () => {
   return (
     <div className="dashboard-wraper">
       <div className="form-submit">
-        <h2>My Account</h2>
+        <h2>My Profile</h2>
         <p className="text-muted">Update your profile details.</p>
 
         {/* Profile Form */}
@@ -245,7 +245,7 @@ const MyProfile = () => {
           {/* Submit Button at Bottom */}
           <div className="mt-4">
             <button type="submit" className="btn btn-main px-5">
-              Save Changes
+              Add Profile
             </button>
           </div>
         </form>
