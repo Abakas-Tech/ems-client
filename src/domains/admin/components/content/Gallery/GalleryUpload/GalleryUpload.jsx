@@ -123,7 +123,7 @@ const GalleryUpload = () => {
   return (
     <div className="dashboard-wraper">
       {/* Page Header */}
-      <div >
+      <div>
         <div className="d-flex justify-content-between align-items-center">
           <div>
             <BackButton onClick={goBack} />
@@ -168,6 +168,7 @@ const GalleryUpload = () => {
                   rows="3"
                   value={formData.description}
                   onChange={handleChange}
+                  style={{ height: "170px" }}
                 ></textarea>
               </div>
 
