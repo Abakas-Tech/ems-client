@@ -152,12 +152,15 @@ const ArchivedWorkers = () => {
         }
         data={workers}
         columns={[
-          { header: "Name", accessor: "full_name" },
+          {
+            header: "Name",
+            accessor: "full_name",
+            render: (row) => <span className="fw-bold">{row.full_name}</span>,
+          },
           { header: "Phone Number", accessor: "phone_number" },
           { header: "Status", accessor: "status" },
         ]}
         actions={[
-          
           { type: "restore", onClick: (row) => handleRestore(row.id) },
           { type: "delete", onClick: (row) => handleDelete(row.id) },
         ]}

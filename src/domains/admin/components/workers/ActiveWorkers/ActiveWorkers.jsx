@@ -269,8 +269,12 @@ const ActiveWorkers = () => {
         }
         data={workers}
         columns={[
-          { header: "Name", accessor: "full_name" },
-          { header: "Phone Number", accessor: "phone_number" },
+          {
+            header: "Name",
+            accessor: "full_name",
+            render: (row) => <span className="fw-bold">{row.full_name}</span>,
+          },
+          { header: "Phone Number", accessor: "phone_number" },a
           { header: "Status", accessor: "status" },
         ]}
         actions={[
