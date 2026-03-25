@@ -187,29 +187,35 @@ const SocialMedia = () => {
   };
 
   const handleDelete = async () => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteSocialMedia();
-        addMessage(response?.success, response?.message);
-        setSocialData({
-          facebook_username: "",
-          instagram_username: "",
-          telegram_username: "",
-          tiktok_username: "",
-          linkedin_username: "",
-          youtube_channel: "",
-          twitter_username: "",
-          whatsapp_number: "",
-          contact_number: "",
-        });
-        setExistingData(null);
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteSocialMedia();
+          addMessage(response?.success, response?.message);
+          setSocialData({
+            facebook_username: "",
+            instagram_username: "",
+            telegram_username: "",
+            tiktok_username: "",
+            linkedin_username: "",
+            youtube_channel: "",
+            twitter_username: "",
+            whatsapp_number: "",
+            contact_number: "",
+          });
+          setExistingData(null);
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete ALL social media?",
+        confirmText: "Delete All",
+      },
+    );
   };
 
   return (
@@ -292,10 +298,10 @@ const SocialMedia = () => {
             {existingData && (
               <button
                 type="button"
-                className="btn btn-danger px-5"
+                className="btn btn-outline-danger"
                 onClick={handleDelete}
               >
-                Delete
+                Delete All
               </button>
             )}
           </div>
