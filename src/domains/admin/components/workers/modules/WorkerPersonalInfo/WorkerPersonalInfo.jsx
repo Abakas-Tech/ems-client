@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -138,7 +139,6 @@ function WorkerPersonalInfo() {
       loadInitialCities();
     }
   }, [isEditMode, existingPersonal?.region?.id]);
-
 
   useEffect(() => {
     if (isEditMode && existingPersonal?.status?.id) {
@@ -317,10 +317,8 @@ function WorkerPersonalInfo() {
 
   const title = isEditMode
     ? "Edit Personal Information"
-    : "Personal Information";
-  const buttonText = isEditMode
-    ? "Update Personal Information"
     : "Add Personal Information";
+  const buttonText = isEditMode ? "Update Personal " : "Add Personal ";
 
   return (
     <section className="dashboard-wraper">

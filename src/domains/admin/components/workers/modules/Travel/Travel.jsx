@@ -112,7 +112,7 @@ function Travel() {
     }
 
     return null;
-  };;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -163,7 +163,7 @@ function Travel() {
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Travel Information</h2>
+        <h2 className="fw-bold text-dark mb-3">Add Travel Records</h2>
 
         <div className="row">
           <div className="form-group col-md-6">
@@ -278,7 +278,7 @@ function Travel() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {isEditMode ? "Update Travel Info" : "Add Travel Info"}
+            {isEditMode ? "Update Travel" : "Add Travel"}
           </button>
         </div>
       </form>

@@ -150,7 +150,7 @@ function Passport() {
 
   const title = isEditMode
     ? "Edit Passport Information"
-    : "Passport Information";
+    : "Add Passport Information";
   const buttonText = isEditMode ? "Update Passport" : "Add Passport";
 
   return (

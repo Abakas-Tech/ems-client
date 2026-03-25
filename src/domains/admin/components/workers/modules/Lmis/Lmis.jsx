@@ -127,7 +127,7 @@ function Lmis() {
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">LMIS Informatio</h2>
+        <h2 className="fw-bold text-dark mb-3">Add LMIS Information</h2>
 
         <div className="row">
           <div className="form-group col-md-6">

@@ -132,7 +132,7 @@ function Visa() {
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Visa Information</h2>
+        <h2 className="fw-bold text-dark mb-3">Add Visa Information</h2>
 
         <div className="row">
           {/* VISA NUMBER */}
@@ -143,7 +143,6 @@ function Visa() {
               type="text"
               name="visa_number"
               className="form-control"
-              placeholder="Enter visa number"
               value={formData.visa_number}
               onChange={handleChange}
             />
@@ -183,7 +182,6 @@ function Visa() {
               type="text"
               name="visa_reference_number"
               className="form-control"
-              placeholder="Enter reference number"
               value={formData.visa_reference_number}
               onChange={handleChange}
             />

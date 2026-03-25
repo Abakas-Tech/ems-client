@@ -123,7 +123,7 @@ function Guarantor() {
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Emergency Contact</h2>
+        <h2 className="fw-bold text-dark mb-3">Add Emergency Contact</h2>
 
         <div className="row">
           {/* GUARANTOR NAME */}
@@ -206,7 +206,7 @@ function Guarantor() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {isEditMode ? "Update emergency contact " : "Add emergency conatct"}
+            {isEditMode ? "Update Emergency " : "Add Emergency"}
           </button>
         </div>
       </form>
