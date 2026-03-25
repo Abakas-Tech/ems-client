@@ -123,20 +123,19 @@ function Guarantor() {
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Emergency Contact Information</h2>
+        <h2 className="fw-bold text-dark mb-3">Emergency Contact</h2>
 
         <div className="row">
           {/* GUARANTOR NAME */}
           <div className="form-group col-md-6">
             <label>
-               Name <span className="text-danger">*</span>
+              Name <span className="text-danger">*</span>
             </label>
 
             <input
               type="text"
               name="guarantor_name"
               className="form-control"
-              placeholder="Enter guarantor full name"
               required
               value={formData.guarantor_name}
               onChange={handleChange}
@@ -151,7 +150,6 @@ function Guarantor() {
               type="text"
               name="relation"
               className="form-control"
-              placeholder="e.g Brother, Friend, Father"
               value={formData.relation}
               onChange={handleChange}
             />
@@ -160,14 +158,13 @@ function Guarantor() {
           {/* PHONE */}
           <div className="form-group col-md-6">
             <label>
-            Phone Number <span className="text-danger">*</span>
+              Phone Number <span className="text-danger">*</span>
             </label>
 
             <input
               type="text"
               name="guarantor_phone_number"
               className="form-control"
-              placeholder="+2519XXXXXXX"
               required
               value={formData.guarantor_phone_number}
               onChange={handleChange}
@@ -182,7 +179,6 @@ function Guarantor() {
               name="guarantor_address"
               className="form-control"
               rows="3"
-              placeholder="Enter guarantor address"
               value={formData.guarantor_address}
               onChange={handleChange}
             />
@@ -191,8 +187,7 @@ function Guarantor() {
           {/* FILE */}
           <div className="form-group col-md-6">
             <label>
-               ID Scan{" "}
-              {!isEditMode && <span className="text-danger">*</span>}
+              ID Scan {!isEditMode && <span className="text-danger">*</span>}
             </label>
 
             <input
