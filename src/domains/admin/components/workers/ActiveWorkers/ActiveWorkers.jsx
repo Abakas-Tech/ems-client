@@ -274,8 +274,9 @@ const ActiveWorkers = () => {
             accessor: "full_name",
             render: (row) => <span className="fw-bold">{row.full_name}</span>,
           },
-          { header: "Phone Number", accessor: "phone_number" },a
-          { header: "Status", accessor: "status" },
+          { header: "Phone Number", accessor: "phone_number" },
+          { header: "Passport Number", accessor: "phone_number" },
+          { header: "Current Status", accessor: "status" },
         ]}
         actions={[
           { type: "view", onClick: (row) => handleView(row.id) },
