@@ -137,20 +137,26 @@ const ListUser = () => {
   };
 
   const handleDelete = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteUser(row.id);
-        addMessage(response?.success, response?.message);
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteUser(row.id);
+          addMessage(response?.success, response?.message);
 
-        // Refresh current page after deletion
-        fetchUsers(pagination.page);
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+          // Refresh current page after deletion
+          fetchUsers(pagination.page);
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this user?",
+        confirmText: "Delete",
+      },
+    );
   };
   const handleStatusToggle = (row) => {
     const action = row.is_active ? "archive" : "restore";
@@ -254,7 +260,7 @@ const ListUser = () => {
           </p>
         </div>
         <RoleButton
-          visibleTo={[2,1]}
+          visibleTo={[2, 1]}
           className="btn btn-main"
           style={{ whiteSpace: "nowrap" }}
           onClick={handleCreateUser}
@@ -306,7 +312,7 @@ const ListUser = () => {
           </div>
           <div className="gap-2 d-flex">
             <RoleButton
-            visibleTo={[1,2]}
+              visibleTo={[1, 2]}
               className="btn btn-main btn-sm text-white px-3 fw-bold"
               disabled={selectedUserIds.length === 0}
               onClick={handleNotify}
@@ -314,7 +320,7 @@ const ListUser = () => {
               Send Bulk Alert
             </RoleButton>
             <RoleButton
-            visibleTo={[1,2]}
+              visibleTo={[1, 2]}
               className="btn btn-light btn-sm border"
               onClick={handleExitSelection}
             >
