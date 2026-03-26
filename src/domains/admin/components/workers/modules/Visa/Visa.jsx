@@ -15,6 +15,7 @@ function Visa() {
 
   const existingVisa = location.state?.visa || null;
   const isEditMode = Boolean(existingVisa);
+  const isCreate = !isEditMode;
 
   const [formData, setFormData] = useState({
     visa_number: existingVisa?.visa_number || "",
@@ -127,12 +128,15 @@ function Visa() {
     }
   };
 
+  const title = isEditMode ? "Edit Visa Information" : "Add Visa Information";
+  const buttonText = isEditMode ? "Update Visa" : "Add Visa";
+
   return (
     <section className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Add Visa Information</h2>
+        <h2 className="fw-bold text-dark mb-3">{title}</h2>
 
         <div className="row">
           {/* VISA NUMBER */}
@@ -222,7 +226,7 @@ function Visa() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {isEditMode ? "Update Visa" : "Add Visa"}
+            {buttonText}
           </button>
         </div>
       </form>

@@ -24,6 +24,7 @@ function Guarantor() {
 
   const existingGuarantor = location.state?.guarantor || null;
   const isEditMode = Boolean(existingGuarantor);
+  const isCreate = !isEditMode;
 
   const [formData, setFormData] = useState({
     guarantor_name: existingGuarantor?.guarantor_name || "",
@@ -33,6 +34,9 @@ function Guarantor() {
   });
 
   const [idScanFile, setIdScanFile] = useState(null);
+  const [existingGuarantorUrl, setExistingGuarantorUrl] = useState(
+    existingGuarantor?.id_scan?.url || null,
+  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -140,9 +144,7 @@ function Guarantor() {
         <div className="row">
           {/* GUARANTOR NAME */}
           <div className="form-group col-md-6">
-            <label>
-              Name <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Name", isCreate)}
 
             <input
               type="text"
@@ -169,9 +171,7 @@ function Guarantor() {
 
           {/* PHONE */}
           <div className="form-group col-md-6">
-            <label>
-              Phone Number <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Phone Number", isCreate)}
 
             <input
               type="text"
@@ -198,9 +198,7 @@ function Guarantor() {
 
           {/* FILE */}
           <div className="form-group col-md-6">
-            <label>
-              ID Scan {!isEditMode && <span className="text-danger">*</span>}
-            </label>
+            {renderLabel("ID Scan", isCreate)}
 
             <input
               type="file"
@@ -209,6 +207,21 @@ function Guarantor() {
               onChange={handleFileChange}
               required={!isEditMode}
             />
+
+            <label>
+              {isEditMode && existingGuarantorUrl && (
+                <small className="d-block text-muted">
+                  Current Id:{" "}
+                  <a
+                    href={existingGuarantorUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
+            </label>
           </div>
         </div>
 

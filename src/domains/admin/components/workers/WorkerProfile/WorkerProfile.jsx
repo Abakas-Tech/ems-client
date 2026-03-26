@@ -1036,13 +1036,25 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Visa Information</h3>
                 <ActionButtons
-                  actions={[
-                    { type: "edit", onClick: () => actions.editVisa(visa) },
-                    {
-                      type: "delete",
-                      onClick: deletes.deleteVisa,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(visaObj)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => actions.editVisa(null),
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => actions.editVisa(visa),
+                          },
+                          {
+                            type: "delete",
+                            onClick: deletes.deleteVisa,
+                          },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">
