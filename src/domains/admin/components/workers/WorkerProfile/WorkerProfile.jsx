@@ -507,11 +507,15 @@ const WorkerProfile = () => {
       endDate: niceDate(con.contract_end_date || con.end_date),
       status,
       statusBadge:
-        status === "active"
+        status === "approved"
           ? "bg-success"
           : status === "pending"
             ? "bg-warning"
-            : "bg-secondary",
+            : status === "rejected"
+              ? "bg-danger"
+              : status === "terminated"
+                ? "bg-dark"
+                : "bg-secondary",
       monthlySalary:
         con.monthly_salary != null ? `${con.monthly_salary} SAR` : "—",
       partnerName: fallback(con.partner_name),
