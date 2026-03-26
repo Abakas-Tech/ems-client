@@ -32,6 +32,9 @@ function Lmis() {
   });
 
   const [qrFile, setQrFile] = useState(null);
+  const [existingLmisUrl, setExistingLmisUrl] = useState(
+    existingLmis?.qr_code?.url || null,
+  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -178,6 +181,21 @@ function Lmis() {
               onChange={handleFileChange}
               required={!isEditMode}
             />
+
+            <label>
+              {isEditMode && existingLmisUrl && (
+                <small className="d-block text-muted">
+                  Current QR Code:{" "}
+                  <a
+                    href={existingLmisUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
+            </label>
           </div>
         </div>
 
