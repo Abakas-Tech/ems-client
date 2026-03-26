@@ -9,7 +9,7 @@ import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWo
 import File from "../domains/admin/pages/FileManager/FileManager.jsx";
 import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePassword.jsx";
 
-function WorkerRoutes() {
+function PartnerRoutes() {
   return (
     <Routes>
       <Route
@@ -19,7 +19,7 @@ function WorkerRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="workers" element={<ActiveWorkers />} />
+        <Route path="active-workers" element={<ActiveWorkers />} />
         <Route path="my-files" element={<File />} />
         <Route path="my-profile" element={<MyProfile />} />
         <Route path="notifications" element={<MyNotifications />} />
@@ -30,4 +30,4 @@ function WorkerRoutes() {
   );
 }
 
-export default WorkerRoutes;
+export default PartnerRoutes;

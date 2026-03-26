@@ -35,7 +35,7 @@ const MENU_CONFIG = [
     label: "Files",
     path: "/admin/my-files",
     icon: "bi bi-files",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.PARTNER],
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     label: "Meta Data",
@@ -47,7 +47,7 @@ const MENU_CONFIG = [
     label: "Notifications",
     path: "/admin/notifications",
     icon: "bi bi-bell",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.PARTNER, ROLES.EMPLOYER],
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.EMPLOYER],
   },
   {
     label: "Public Content",
@@ -55,11 +55,12 @@ const MENU_CONFIG = [
     icon: "bi bi-layout-text-sidebar-reverse",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
+
   {
     label: "Settings",
     path: "/admin/settings",
     icon: "bi-gear",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.PARTNER],
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
 
   // Worker Menus
@@ -93,14 +94,14 @@ const MENU_CONFIG = [
   },
 
   {
-    label: "Workers",
-    path: "/partner/workers",
+    label: "Active Workers",
+    path: "/partner/active-workers",
     icon: "bi bi-file-earmark-person-fill",
     roles: [ROLES.PARTNER],
   },
 
   {
-    label: "Files",
+    label: "File Manager",
     path: "/partner/my-files",
     icon: "bi bi-files",
     roles: [ROLES.PARTNER],
@@ -110,6 +111,13 @@ const MENU_CONFIG = [
     label: "Notifications",
     path: "/partner/notifications",
     icon: "bi bi-bell",
+    roles: [ROLES.PARTNER],
+  },
+
+  {
+    label: "Settings",
+    path: "/partner/settings",
+    icon: "bi-gear",
     roles: [ROLES.PARTNER],
   },
 
