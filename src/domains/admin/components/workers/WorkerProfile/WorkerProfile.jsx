@@ -1304,16 +1304,25 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Contracts</h3>
                 <ActionButtons
-                  actions={[
-                    {
-                      type: "edit",
-                      onClick: () => actions.editContract(contractsList),
-                    },
-                    {
-                      type: "delete",
-                      onClick: deletes.deleteContract,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(contractsList)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => actions.editContract(null),
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => actions.editContract(contractsList),
+                          },
+                          {
+                            type: "delete",
+                            onClick: deletes.deleteContract,
+                          },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">

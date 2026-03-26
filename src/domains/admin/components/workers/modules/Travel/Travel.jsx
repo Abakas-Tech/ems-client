@@ -38,7 +38,9 @@ function Travel() {
   });
 
   const [ticketFile, setTicketFile] = useState(null);
- const [existingTravelUrl] = useState(existingTravel?.ticket_file?.url || null);
+  const [existingTravelUrl] = useState(
+    existingTravel?.ticket_file?.url || null,
+  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -169,12 +171,14 @@ function Travel() {
     }
   };
 
+  const title = isEditMode ? "Edit Travel Records" : "Add Travel Records";
+  const buttonText = isEditMode ? "Update Travel" : "Add Travel";
   return (
     <section className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Add Travel Records</h2>
+        <h2 className="fw-bold text-dark mb-3">{title}</h2>
 
         <div className="row">
           <div className="form-group col-md-6">
@@ -299,7 +303,7 @@ function Travel() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {isEditMode ? "Update Travel" : "Add Travel"}
+            {buttonText}
           </button>
         </div>
       </form>
