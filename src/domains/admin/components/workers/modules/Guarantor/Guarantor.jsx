@@ -34,7 +34,7 @@ function Guarantor() {
   });
 
   const [idScanFile, setIdScanFile] = useState(null);
-  const [existingGuarantorUrl, setExistingGuarantorUrl] = useState(
+  const [existingGuarantorUrl] = useState(
     existingGuarantor?.id_scan?.url || null,
   );
   const [submitLoading, setSubmitLoading] = useState(false);

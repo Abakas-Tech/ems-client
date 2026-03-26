@@ -39,7 +39,7 @@ function Medical() {
   });
 
   const [medicalFile, setMedicalFile] = useState(null);
-  const [existingFileUrl, setExistingFileUrl] = useState(
+  const [existingFileUrl] = useState(
     existingMedical?.file?.url || null,
   );
 
