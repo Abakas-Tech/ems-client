@@ -625,7 +625,7 @@ const WorkerProfile = () => {
           <div className="col-12">
             <div className="card h-100  border rounded-4 border-info">
               <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Personal Information</h3>
+                <h3 className="fw-bold text-info">Personal Information</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(personalInfo)
@@ -741,7 +741,7 @@ const WorkerProfile = () => {
           <div className="col-12 col-md-6">
             <div className="card h-100 border rounded-4 border-info">
               <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Passport Information</h3>
+                <h3 className="fw-bold text-info">Passport Information</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(passportObj)
@@ -810,7 +810,7 @@ const WorkerProfile = () => {
           <div className="col-12 col-md-6">
             <div className="card h-100 border rounded-4 border-info">
               <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">COC Information</h3>
+                <h3 className="fw-bold text-info">COC Information</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(cocObj)
@@ -884,7 +884,7 @@ const WorkerProfile = () => {
           <div className="col-12 col-md-6">
             <div className="card h-100 border rounded-4 border-info">
               <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Emergency Contact</h3>
+                <h3 className="fw-bold text-info">Emergency Contact</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(emergencyObj)
@@ -952,7 +952,7 @@ const WorkerProfile = () => {
           <div className="col-12 col-md-6">
             <div className="card h-100 border rounded-4 border-info">
               <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Medical Information</h3>
+                <h3 className="fw-bold text-info">Medical Information</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(medicalObj)
@@ -1038,7 +1038,7 @@ const WorkerProfile = () => {
           <div className="col-12 col-md-6">
             <div className="card h-100 border rounded-4 border-info ">
               <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Visa Information</h3>
+                <h3 className="fw-bold text-info">Visa Information</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(visaObj)
@@ -1111,7 +1111,7 @@ const WorkerProfile = () => {
           <div className="col-12 col-md-6">
             <div className="card h-100 border rounded-4 border-info">
               <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">LMIS Information</h3>
+                <h3 className="fw-bold text-info">LMIS Information</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(lmisObj)
@@ -1170,7 +1170,7 @@ const WorkerProfile = () => {
           <div className="col-12 col-md-6">
             <div className="card h-100 border rounded-4 border-info">
               <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Travel Records</h3>
+                <h3 className="fw-bold text-info">Travel Records</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(travelRecords)
@@ -1306,7 +1306,7 @@ const WorkerProfile = () => {
           <div className="col-12 col-md-6">
             <div className="card h-100 border rounded-4 border-info">
               <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Contracts</h3>
+                <h3 className="fw-bold text-info">Contracts</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(contractsList)
