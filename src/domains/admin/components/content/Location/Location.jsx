@@ -244,7 +244,7 @@ const Location = () => {
             {existingData && (
               <button
                 type="button"
-                className="btn btn-danger px-5"
+                className="btn btn-outline-danger"
                 onClick={handleDelete}
               >
                 Delete
