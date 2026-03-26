@@ -158,7 +158,7 @@ const MyProfile = () => {
   return (
     <div className="dashboard-wraper">
       <div className="form-submit">
-        <h2>My Profile</h2>
+        <h2 className="fw-bold text-dark mb-2">My Profile</h2>
         <p className="text-muted">Update your profile details.</p>
 
         {/* Profile Form */}
@@ -253,7 +253,7 @@ const MyProfile = () => {
           <div className="mt-4">
             <button
               type="submit"
-              className="btn btn-main px-5"
+              className="btn btn-main px-4"
               disabled={submitLoading}
             >
               Save Changes

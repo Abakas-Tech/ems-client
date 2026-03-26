@@ -11,7 +11,7 @@ const MENU_CONFIG = [
     label: "My Profile",
     path: "/admin/my-profile",
     icon: "bi bi-person-bounding-box",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.PARTNER, ROLES.EMPLOYER],
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.EMPLOYER],
   },
   {
     label: "User Management",
@@ -23,7 +23,7 @@ const MENU_CONFIG = [
     label: "Workers",
     path: "/admin/workers",
     icon: "bi bi-file-earmark-person-fill",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.PARTNER, ROLES.EMPLOYER],
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.EMPLOYER],
   },
   {
     label: "Finance",
@@ -81,6 +81,36 @@ const MENU_CONFIG = [
     path: "/worker/notifications",
     icon: "bi bi-bell",
     roles: [ROLES.WORKER],
+  },
+
+  // Partner Menus
+
+  {
+    label: "My Profile",
+    path: "/partner/my-profile",
+    icon: "bi bi-person-bounding-box",
+    roles: [ROLES.PARTNER],
+  },
+
+  {
+    label: "Workers",
+    path: "/partner/workers",
+    icon: "bi bi-file-earmark-person-fill",
+    roles: [ROLES.PARTNER],
+  },
+
+  {
+    label: "Files",
+    path: "/partner/my-files",
+    icon: "bi bi-files",
+    roles: [ROLES.PARTNER],
+  },
+
+  {
+    label: "Notifications",
+    path: "/partner/notifications",
+    icon: "bi bi-bell",
+    roles: [ROLES.PARTNER],
   },
 
   {

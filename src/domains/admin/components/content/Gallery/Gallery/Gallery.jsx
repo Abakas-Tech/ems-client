@@ -116,7 +116,7 @@ const Gallery = () => {
       {/* Top Actions */}
       <div className="d-flex gap-2 mb-4 flex-wrap">
         <button
-          className="btn btn-main px-5"
+          className="btn btn-main px-4"
           onClick={handleAddNew}
           disabled={galleryItems.length >= 10}
         >

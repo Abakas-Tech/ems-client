@@ -237,7 +237,7 @@ const Location = () => {
           </div>
 
           <div className="mt-4 d-flex gap-3">
-            <button type="submit" className="btn btn-main px-5">
+            <button type="submit" className="btn btn-main px-4">
               {existingData ? "Update Location" : "Create Location"}
             </button>
 
