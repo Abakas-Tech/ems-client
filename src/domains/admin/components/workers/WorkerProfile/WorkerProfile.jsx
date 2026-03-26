@@ -571,9 +571,9 @@ const WorkerProfile = () => {
         <div className="row g-4">
           {/* Worker Statuses */}
           <div className="col-12">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Statuses</h3>
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold text-info">Statuses</h3>
 
                 <RoleButton
                   visibleTo={[2, 1]}
@@ -623,8 +623,8 @@ const WorkerProfile = () => {
 
           {/* PERSONAL */}
           <div className="col-12">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+            <div className="card h-100  border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Personal Information</h3>
                 <ActionButtons
                   actions={
@@ -739,8 +739,8 @@ const WorkerProfile = () => {
 
           {/* PASSPORT */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0 ">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Passport Information</h3>
                 <ActionButtons
                   actions={
@@ -808,8 +808,8 @@ const WorkerProfile = () => {
 
           {/* COC */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">COC Information</h3>
                 <ActionButtons
                   actions={
@@ -882,8 +882,8 @@ const WorkerProfile = () => {
 
           {/* Emergency Contact */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Emergency Contact</h3>
                 <ActionButtons
                   actions={
@@ -950,8 +950,8 @@ const WorkerProfile = () => {
 
           {/* Medical */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Medical Information</h3>
                 <ActionButtons
                   actions={
@@ -1036,8 +1036,8 @@ const WorkerProfile = () => {
 
           {/* Visa */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+            <div className="card h-100 border rounded-4 border-info ">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Visa Information</h3>
                 <ActionButtons
                   actions={
@@ -1109,8 +1109,8 @@ const WorkerProfile = () => {
 
           {/* LMIS */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">LMIS Information</h3>
                 <ActionButtons
                   actions={
@@ -1168,8 +1168,8 @@ const WorkerProfile = () => {
 
           {/* Travel Records */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Travel Records</h3>
                 <ActionButtons
                   actions={
@@ -1304,8 +1304,8 @@ const WorkerProfile = () => {
 
           {/* Contracts */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Contracts</h3>
                 <ActionButtons
                   actions={
