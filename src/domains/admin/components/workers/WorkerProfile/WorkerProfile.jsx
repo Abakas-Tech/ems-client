@@ -1168,13 +1168,25 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">Travel Records</h3>
                 <ActionButtons
-                  actions={[
-                    {
-                      type: "edit",
-                      onClick: () => actions.editTravel(travelRecords),
-                    },
-                    { type: "delete", onClick: deletes.deleteTravel },
-                  ]}
+                  actions={
+                    isModuleEmpty(travelRecords)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => actions.editTravel(null),
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => actions.editTravel(travelRecords),
+                          },
+                          {
+                            type: "delete",
+                            onClick: deletes.deleteTravel,
+                          },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">

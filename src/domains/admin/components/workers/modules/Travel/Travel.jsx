@@ -5,6 +5,15 @@ import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createTravel, updateTravel } from "../../../../api/worker.api";
 
+// helper function
+const renderLabel = (text, required = false) => {
+  return (
+    <label>
+      {text} {required && <span className="text-danger">*</span>}
+    </label>
+  );
+};
+
 function Travel() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -13,8 +22,9 @@ function Travel() {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
-  const existingTravel = location.state?.travel[0] || null;
+  const existingTravel = location.state?.travel?.[0] || null;
   const isEditMode = Boolean(existingTravel);
+  const isCreate = !isEditMode;
 
   const [formData, setFormData] = useState({
     ticket_number: existingTravel?.ticket_number || "",
@@ -167,9 +177,7 @@ function Travel() {
 
         <div className="row">
           <div className="form-group col-md-6">
-            <label>
-              Ticket Number <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Ticket Number", isCreate)}
             <input
               type="text"
               name="ticket_number"
@@ -258,10 +266,7 @@ function Travel() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Ticket File{" "}
-              {!isEditMode && <span className="text-danger">*</span>}
-            </label>
+            {renderLabel("Ticket File", isCreate)}
             <input
               type="file"
               className="form-control"
