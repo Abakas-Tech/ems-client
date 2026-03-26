@@ -4,7 +4,16 @@ import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createContract, updateContract } from "../../../../api/worker.api";
-import { getUsers } from "../../../../api/user.api"; // added
+import { getUsers } from "../../../../api/user.api";
+
+// helper function
+const renderLabel = (text, required = false) => {
+  return (
+    <label>
+      {text} {required && <span className="text-danger">*</span>}
+    </label>
+  );
+};
 
 function Contract() {
   const { id } = useParams();
@@ -16,6 +25,7 @@ function Contract() {
 
   const existingContract = location.state?.contract?.[0] || null;
   const isEditMode = Boolean(existingContract);
+  const isCreate = !isEditMode;
 
   const [employers, setEmployers] = useState([]);
   const [partners, setPartners] = useState([]);
@@ -207,9 +217,7 @@ function Contract() {
         <div className="row">
           {/* EMPLOYER SELECT */}
           <div className="form-group col-md-6">
-            <label>
-              Employer ID <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Employer", isCreate)}
             <select
               name="employer_id"
               className="form-control"
@@ -228,7 +236,7 @@ function Contract() {
 
           {/* PARTNER SELECT */}
           <div className="form-group col-md-6">
-            <label>Partner ID</label>
+            <label>Partner</label>
             <select
               name="partner_id"
               className="form-control"
@@ -270,9 +278,7 @@ function Contract() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Monthly Salary <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Monthly Salary", isCreate)}
             <input
               type="number"
               step="0.01"
@@ -285,9 +291,7 @@ function Contract() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Status {!isEditMode && <span className="text-danger">*</span>}
-            </label>
+            {renderLabel("Status", isCreate)}
             <select
               name="status"
               className="form-control"
@@ -302,10 +306,7 @@ function Contract() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Contract File{" "}
-              {!isEditMode && <span className="text-danger">*</span>}
-            </label>
+            {renderLabel("Contract File", isCreate)}
             <input
               type="file"
               className="form-control"
