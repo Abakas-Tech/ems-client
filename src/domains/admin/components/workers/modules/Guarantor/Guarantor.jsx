@@ -5,6 +5,15 @@ import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createGuarantor, updateGuarantor } from "../../../../api/worker.api";
 
+// helper function
+const renderLabel = (text, required = false) => {
+  return (
+    <label>
+      {text} {required && <span className="text-danger">*</span>}
+    </label>
+  );
+};
+
 function Guarantor() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -118,12 +127,15 @@ function Guarantor() {
     }
   };
 
+  const title = isEditMode ? "Edit Emergency Contact" : "Add Emergency Contact";
+  const buttonText = isEditMode ? "Update Emergency" : "Add Emergency";
+
   return (
     <section className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Add Emergency Contact</h2>
+        <h2 className="fw-bold text-dark mb-3">{title}</h2>
 
         <div className="row">
           {/* GUARANTOR NAME */}
@@ -206,7 +218,7 @@ function Guarantor() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {isEditMode ? "Update Emergency " : "Add Emergency"}
+            {buttonText}
           </button>
         </div>
       </form>
