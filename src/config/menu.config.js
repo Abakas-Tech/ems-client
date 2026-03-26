@@ -96,7 +96,7 @@ const MENU_CONFIG = [
   {
     label: "Active Workers",
     path: "/partner/active-workers",
-    icon: "bi bi-file-earmark-person-fill",
+    icon: "bi bi-people",
     roles: [ROLES.PARTNER],
   },
 
