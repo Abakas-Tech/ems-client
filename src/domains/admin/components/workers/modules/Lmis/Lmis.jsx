@@ -132,12 +132,15 @@ function Lmis() {
     }
   };
 
+  const title = isEditMode ? "Edit LMIS Information" : "Add LMIS Information";
+  const buttonText = isEditMode ? "Update LMIS" : "Add LMIS";
+
   return (
     <section className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Add LMIS Information</h2>
+        <h2 className="fw-bold text-dark mb-3">{title}</h2>
 
         <div className="row">
           <div className="form-group col-md-6">
@@ -184,7 +187,7 @@ function Lmis() {
             className="btn btn-main px-5 rounded"
             disabled={submitLoading}
           >
-            {isEditMode ? "Update LMIS" : "Add LMIS"}
+            {buttonText}
           </button>
         </div>
       </form>
