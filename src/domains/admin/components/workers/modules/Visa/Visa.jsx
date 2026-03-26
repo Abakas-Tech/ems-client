@@ -15,7 +15,6 @@ function Visa() {
 
   const existingVisa = location.state?.visa || null;
   const isEditMode = Boolean(existingVisa);
-  const isCreate = !isEditMode;
 
   const [formData, setFormData] = useState({
     visa_number: existingVisa?.visa_number || "",
@@ -27,7 +26,7 @@ function Visa() {
 
   const [visaFile, setVisaFile] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [existingVisaUrl, setExistingVisaUrl] = useState(
+  const [existingVisaUrl] = useState(
     existingVisa?.document?.url || null,
   );
 
@@ -238,10 +237,10 @@ function Visa() {
           </div>
         </div>
 
-        <div className="submit-section mt-4">
+        <div className="submit-section">
           <button
             type="submit"
-            className="btn btn-main px-5 rounded"
+            className="btn btn-main px-4 rounded"
             disabled={submitLoading}
           >
             {buttonText}
