@@ -1109,13 +1109,25 @@ const WorkerProfile = () => {
               <div className="card-header d-flex justify-content-between align-items-center pb-0">
                 <h3 className="fw-bold">LMIS Information</h3>
                 <ActionButtons
-                  actions={[
-                    { type: "edit", onClick: () => actions.editLmis(lmisObj) },
-                    {
-                      type: "delete",
-                      onClick: deletes.deleteLmis,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(lmisObj)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => actions.editLmis(null),
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => actions.editLmis(lmisObj),
+                          },
+                          {
+                            type: "delete",
+                            onClick: deletes.deleteLmis,
+                          },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">
