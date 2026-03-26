@@ -40,6 +40,9 @@ function Contract() {
   });
 
   const [contractFile, setContractFile] = useState(null);
+  const [existingContractUrl] = useState(
+    existingContract?.contract_upload?.url || null,
+  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -314,6 +317,20 @@ function Contract() {
               onChange={handleFileChange}
               required={!isEditMode}
             />
+            <label>
+              {isEditMode && existingContractUrl && (
+                <small className="d-block text-muted">
+                  Current Contract:{" "}
+                  <a
+                    href={existingContractUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
+            </label>
           </div>
         </div>
 
