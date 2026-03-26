@@ -27,6 +27,9 @@ function Visa() {
 
   const [visaFile, setVisaFile] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [existingVisaUrl, setExistingVisaUrl] = useState(
+    existingVisa?.document?.url || null,
+  );
 
   const goBack = () => navigate(-1);
 
@@ -217,6 +220,21 @@ function Visa() {
               onChange={handleFileChange}
               required={!isEditMode}
             />
+
+            <label>
+              {isEditMode && existingVisaUrl && (
+                <small className="d-block text-muted">
+                  Current Visa:{" "}
+                  <a
+                    href={existingVisaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
+            </label>
           </div>
         </div>
 
