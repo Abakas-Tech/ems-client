@@ -38,6 +38,7 @@ function Travel() {
   });
 
   const [ticketFile, setTicketFile] = useState(null);
+ const [existingTravelUrl] = useState(existingTravel?.ticket_file?.url || null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -274,6 +275,21 @@ function Travel() {
               onChange={handleFileChange}
               required={!isEditMode}
             />
+
+            <label>
+              {isEditMode && existingTravelUrl && (
+                <small className="d-block text-muted">
+                  Current Ticket:{" "}
+                  <a
+                    href={existingTravelUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
+            </label>
           </div>
         </div>
 
