@@ -8,7 +8,7 @@
 
 /* 
 git add .
-git commit -m "update protected route an login with email comp to properly navigare to /partner/my-profile"
+git commit -m "add role based navigation onto active workers to allow partner see details of a worker"
 git push
 
 */

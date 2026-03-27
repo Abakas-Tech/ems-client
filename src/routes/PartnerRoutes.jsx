@@ -8,6 +8,7 @@ import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import File from "../domains/admin/pages/FileManager/FileManager.jsx";
 import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePassword.jsx";
+import WorkerProfile from "../domains/admin/pages/workers/WorkerProfile/WorkerProfile.jsx";
 
 function PartnerRoutes() {
   return (
@@ -20,7 +21,8 @@ function PartnerRoutes() {
         }
       >
         <Route path="active-workers" element={<ActiveWorkers />} />
-        <Route path="my-files" element={<File />} />
+        <Route path="/active-workers/:id" element={<WorkerProfile />} />
+        <Route path="files" element={<File />} />
         <Route path="my-profile" element={<MyProfile />} />
         <Route path="notifications" element={<MyNotifications />} />
         <Route path="settings" element={<ChangePasswordPage />} />

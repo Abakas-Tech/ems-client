@@ -111,7 +111,19 @@ const ActiveWorkers = () => {
     showLoader();
     try {
       const workerProfile = await getWorkerProfile(id);
-      navigate(`/admin/workers/active/${id}`, { state: workerProfile });
+
+      // role based navigation
+      if (role === 3) {
+        // Partner
+        navigate(`/partner/active-workers/${id}`, {
+          state: workerProfile,
+        });
+      } else {
+        // Admin / Employee
+        navigate(`/admin/workers/active/${id}`, {
+          state: workerProfile,
+        });
+      }
     } catch (err) {
       addMessage(false, err.message);
     } finally {
