@@ -36,14 +36,35 @@ const ActiveWorkers = () => {
   const [totalItems, setTotalItems] = useState(0);
 
   // Fetch Workers
+  // Fetch Workers
   const fetchWorkers = useCallback(async () => {
     showLoader();
     try {
-      const res = await listWorkers({
+      const params = {
         ...filters,
         page,
         limit,
-      });
+      };
+
+      // === EMPLOYER FILTER (Corrected) ===
+      if (role === 5) {
+        // Since we don't have employer_id in profile yet, we send the user id (profile.id)
+        // The backend query will handle the join to employers table
+        if (profile?.id) {
+          params.employer_id = profile.id; // Send users.id
+          console.log(
+            "Sending employer user_id as employer_id filter:",
+            profile.id,
+          );
+        } else {
+          console.warn("No profile.id found for employer");
+        }
+      }
+
+      // Remove old debug logs or keep only important ones
+      console.log("Final params sent to backend:", params);
+
+      const res = await listWorkers(params);
 
       setWorkers(res?.data.items || []);
       setTotalItems(res?.data.meta?.total_items || 0);
@@ -52,8 +73,7 @@ const ActiveWorkers = () => {
     } finally {
       hideLoader();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, page, limit]);
+  }, [filters, page, limit, role, profile?.id]);
 
   useEffect(() => {
     fetchWorkers();
@@ -311,6 +331,6 @@ const ActiveWorkers = () => {
       />
     </div>
   );
-};
+};;
 
 export default ActiveWorkers;

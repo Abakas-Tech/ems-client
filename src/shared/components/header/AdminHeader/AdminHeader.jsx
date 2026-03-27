@@ -13,6 +13,7 @@ const menuItems = [
   { label: "Files", path: "/admin/my-files" },
   { label: "Collect Money", path: "/admin/collect-money" },
   { label: "Payment History", path: "/admin/payments" },
+  { label: "Notifications", path: "/admin/notifications" },
   { label: "Settings", path: "/admin/settings" },
 ];
 
@@ -26,8 +27,6 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
     fetchProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  
 
   // Create a reusable Bell component to avoid code duplication
   const NotificationBell = () => (

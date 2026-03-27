@@ -226,7 +226,7 @@ const WorkerProfile = () => {
   const { profile } = useProfile();
 
   const canDeleteStatus = [1, 2].includes(profile?.role_id);
-  const backButtonVisibility = [1, 2, 3].includes(profile?.role_id);
+  const backButtonVisibility = [1, 2, 3,5].includes(profile?.role_id);
 
   // Fetch worker profile data
   const fetchWorker = async () => {
