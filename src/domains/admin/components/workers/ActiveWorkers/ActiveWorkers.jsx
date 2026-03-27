@@ -138,6 +138,10 @@ const ActiveWorkers = () => {
         navigate(`/partner/active-workers/${id}`, {
           state: workerProfile,
         });
+      } else if (role === 5) {
+        navigate(`/employer/my-workers/${id}`, {
+          state: workerProfile,
+        });
       } else {
         // Admin / Employee
         navigate(`/admin/workers/active/${id}`, {
@@ -331,6 +335,6 @@ const ActiveWorkers = () => {
       />
     </div>
   );
-};;
+};
 
 export default ActiveWorkers;
