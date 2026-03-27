@@ -181,7 +181,7 @@ const ActiveWorkers = () => {
   return (
     <div className="dashboard-wraper">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-        <div className="mb-4">
+        <div className={`mb-${role === 5 ? "0" : "4"}`}>
           {role !== 3 && role !== 5 && <BackButton onClick={goBack} />}
 
           <h2 className="fw-bold text-dark mb-2">
