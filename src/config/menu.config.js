@@ -133,7 +133,7 @@ const MENU_CONFIG = [
   {
     label: "My Workers",
     path: "/employer/my-workers",
-    icon: "bi bi-file-earmark-person-fill",
+    icon: "bi bi-person-gear",
     roles: [ROLES.EMPLOYER],
   },
 
@@ -144,7 +144,7 @@ const MENU_CONFIG = [
     roles: [ROLES.EMPLOYER],
   },
 
-  // Common menu 
+  // Common menu
 
   {
     label: "Log Out",

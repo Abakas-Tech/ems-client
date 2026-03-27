@@ -28,11 +28,22 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const rolePathMap = {
+    1: "admin",
+    2: "employee",
+    3: "partner",
+    4: "worker",
+    5: "employer",
+  };
+
+  const roleBase = rolePathMap[Number(profile?.role_id)] || "admin";
+  const notificationPath = `/${roleBase}/notifications`;
+
   // Create a reusable Bell component to avoid code duplication
   const NotificationBell = () => (
     <button
       className="btn p-0 position-relative d-flex align-items-center justify-content-center"
-      onClick={() => navigate("/admin/notifications")}
+      onClick={() => navigate(notificationPath)}
       style={{
         border: "none",
         background: "transparent",
