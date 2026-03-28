@@ -76,7 +76,7 @@ const Gallery = () => {
     selectedIndex !== null ? galleryItems[selectedIndex] : null;
 
   return (
-    <section id="gallery" className="border-top my-5 py-5">
+    <section id="gallery" className="my-5 py-2">
       <div className="container">
         {/* Header */}
 
@@ -115,7 +115,7 @@ const Gallery = () => {
           ))}
 
           {galleryItems.length === 0 && (
-            <div className="col-12 text-center text-muted py-5">
+            <div className="col-12 text-center text-muted ">
               <p>No gallery items available.</p>
             </div>
           )}

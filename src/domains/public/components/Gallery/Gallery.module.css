@@ -24,7 +24,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1050;
+  z-index: 9999999990;
 }
 
 /* MOBILE FIRST */

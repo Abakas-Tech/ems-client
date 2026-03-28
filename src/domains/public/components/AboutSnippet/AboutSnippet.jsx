@@ -2,7 +2,6 @@ import { FaArrowRight } from "react-icons/fa";
 import about from "../../../../assets/img/Banner/banner.jpg";
 import { useNavigate } from "react-router-dom";
 
-
 function About() {
   const navigate = useNavigate();
 
@@ -10,62 +9,50 @@ function About() {
     navigate("/about-detail");
   };
 
+  const features = [
+    "Explore Verified Opportunities",
+    "Understand the Process Step-by-Step",
+    "Clear Requirements & Guidance",
+    "Track Your Journey with Confidence",
+    "Reliable Support & Communication",
+    "Stay Informed at Every Stage",
+  ];
+
   return (
-    <section id="about" className="py-5">
+    <section id="about" className="py-2">
       <div className="container">
-        {/* Row with stretch to equalize column heights */}
         <div className="row g-5 align-items-stretch">
-          {/* Image Section */}
+          {/* Image */}
           <div className="col-lg-6 d-flex">
             <img
               src={about}
-              alt="About Selam Academy"
+              alt="About Our Agency"
               className="img-fluid w-100 h-100"
               style={{ objectFit: "cover", borderRadius: "0.5rem" }}
             />
           </div>
 
-          {/* Content Section */}
+          {/* Content */}
           <div className="col-lg-6 d-flex flex-column justify-content-center">
-            <h2 className="mb-4 fw-bold">Selam Academy</h2>
+            <h2 className="mb-4 fw-bold">About us</h2>
             <p className="mb-4">
-              Selam Academy is a beacon of knowledge and growth, dedicated to
-              nurturing the minds and talents of its students. It is a place of
-              learning and growth, where students thrive in a supportive
-              environment.
-              learning and growth, where students thrive in a supportive
-              environment.
-              learning and growth, where students thrive in a supportive
-              environment.
-              Selam Academy is a beacon of knowledge and growth, dedicated to
-              nurturing the minds and talents of its students. It is a place of
-              learning and growth, where students thrive in a supportive
-              environment.
-              learning and growth, where students thrive in a supportive
-              environment.
-              learning and growth, where students thrive in a supportive
-              environment.
-            </p>
-            <p className="mb-4 text-justify">
-              We stand as a symbol of enlightenment and development, committed
-              to fostering the intellectual and creative abilities of its
-              students. It serves as an educational hub where individuals
-              flourish, surrounded by a nurturing and encouraging atmosphere
-              that promotes both personal and academic growth.
-              flourish, surrounded by a nurturing and encouraging atmosphere
-              that promotes both personal and academic growth.
+              We help people find trusted international job opportunities. Every
+              step is simple and clear, so you always know what to do next.
             </p>
 
-            {/* Features List */}
+            <p className="mb-4">
+              From checking requirements to preparing your applications, we
+              guide you with practical advice and useful information to make
+              your journey smooth and confident.
+            </p>
+
+            <p className="mb-4">
+              We stay with you all the way, giving updates and support, so
+              working abroad becomes easy, fair, and stress-free for everyone.
+            </p>
+            {/* Features */}
             <div className="row gy-2 gx-4 mb-4">
-              {[
-                "Comprehensive Curriculum",
-                "Student-Centered Approach",
-                "Practical Learning",
-                "Skilled Instructors",
-                "Interactive Learning Sessions",
-                "National Certification",
-              ].map((feature, idx) => (
+              {features.map((feature, idx) => (
                 <div className="col-sm-6" key={idx}>
                   <p className="mb-0">
                     <FaArrowRight className="text-info me-2" />
@@ -75,15 +62,12 @@ function About() {
               ))}
             </div>
 
-            {/* Read More Button */}
-         
-              <button
-                className="btn bg-info text-white w-50"
-                onClick={goToAboutDetail}
-              >
-                Read More
-              </button>
-          
+            <button
+              className="btn bg-info text-white w-35"
+              onClick={goToAboutDetail}
+            >
+              Learn More
+            </button>
           </div>
         </div>
       </div>

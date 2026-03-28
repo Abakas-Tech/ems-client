@@ -15,11 +15,11 @@ const MyProfile = () => {
     full_name: "",
     email: "",
     phone_number: "",
+    country: "",
   });
   const fileInputRef = useRef(null);
 
   const { showLoader, hideLoader } = useloader();
-  const [selectedFile, setSelectedFile] = useState(null);
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
@@ -29,6 +29,7 @@ const MyProfile = () => {
         full_name: profile?.full_name || "",
         email: profile?.email || "",
         phone_number: profile?.phone_number || "",
+        country: profile?.role_id == 3 ? profile?.country || "" : "",
       });
     }
   }, [profile]);
@@ -43,10 +44,18 @@ const MyProfile = () => {
     setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
+  const handleAvatarChange = async (file) => {
+    if (!file) return;
+
+    showLoader();
+    try {
+      const response = await uploadProfilePhoto(file);
+      addMessage(response?.success, response?.message);
+      await fetchProfile();
+    } catch (err) {
+      addMessage(false, err.message);
+    } finally {
+      hideLoader();
     }
   };
 
@@ -67,11 +76,12 @@ const MyProfile = () => {
   };
 
   const validateFields = () => {
-    const { full_name, email, phone_number, } = profileData;
+    const { full_name, email, phone_number, country } = profileData;
 
     const name = full_name?.trim();
     const mail = email?.trim();
     const phone = phone_number?.trim();
+    const countryVal = country?.trim();
 
     //full name validation
     if (!name) return addMessage(false, "Full name is required.");
@@ -86,26 +96,32 @@ const MyProfile = () => {
       );
 
     // email validation
-    if (profile?.role_id !== 4 && profile?.role_id !== 5) {
-      if (!mail) return addMessage(false, "Email is required.");
+    if (!mail) return addMessage(false, "Email is required.");
 
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net)$/i;
-
-      if (!emailPattern.test(mail)) {
-        return addMessage(false, "Email must be a valid .com or .net address.");
-      }
-    }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(mail))
+      return addMessage(false, "Please enter a valid email address.");
 
     if (!phone) return addMessage(false, "Phone number is required.");
 
     const phoneRegex = /^(?:\+?(251|974|966|971)[0-9]{7,12}|09[0-9]{8})$/;
 
     if (!phoneRegex.test(phone)) {
-      return addMessage(false, "Phone number is invalid");
+      return addMessage(
+        false,
+        "Phone number must start with 09 or include the country code (e.g. +2519xxx).",
+      );
     }
 
     if (phone.length < 7 || phone.length > 15)
-      return addMessage(false, "Phone number must be between 7 and 15 digits.")
+      return addMessage(false, "Phone number must be between 7 and 15 digits.");
+
+    if (profile?.role_id === 4) {
+      if (!countryVal) return addMessage(false, "Country is required.");
+
+      if (!/^[A-Za-z\s]+$/.test(countryVal))
+        return addMessage(false, "Country must contain letters only.");
+    }
 
     return true;
   };
@@ -114,32 +130,17 @@ const MyProfile = () => {
     e.preventDefault();
     if (!validateFields()) return;
 
-  const payload = { ...profileData };
-
-  // remove email for role 4 & 5
-  if (profile?.role_id === 4 || profile?.role_id === 5) {
-    delete payload.email;
-  }
-
-
+    const payload = { ...profileData };
+    if (profile?.role_id !== 4) delete payload.country;
 
     showLoader();
     try {
-      // 1. Update profile first
       const response = await updateProfile(payload);
-
-      // 2. Upload image ONLY if selected
-      if (selectedFile) {
-        await uploadProfilePhoto(selectedFile);
-      }
-
       addMessage(
         response?.success,
         response?.message || "Profile updated successfully!",
       );
-
       await fetchProfile();
-      setSelectedFile(null); // reset after upload
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -165,7 +166,7 @@ const MyProfile = () => {
                   className="form-control w-75 pt-3 px-3"
                   accept="image/*"
                   ref={fileInputRef}
-                  onChange={handleFileChange}
+                  onChange={(e) => handleAvatarChange(e.target.files[0])}
                 />
                 {profilePhoto && (
                   <button
@@ -223,6 +224,22 @@ const MyProfile = () => {
                 onChange={handleChange}
               />
             </div>
+
+            {profile?.role_id === 3 && profile.role_id === 5 && (
+              <div className="col-md-6">
+                <label>
+                  Country <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="country"
+                  required
+                  value={profileData.country}
+                  onChange={handleChange}
+                />
+              </div>
+            )}
           </div>
 
           {/* Submit Button at Bottom */}
