@@ -184,7 +184,6 @@ const RecordTransaction = ({
                 placeholder="Receipt # or Invoice #"
                 value={formData.reference}
                 onChange={handleChange}
-                required
               />
             </div>
 
