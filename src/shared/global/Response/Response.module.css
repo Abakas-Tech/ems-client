@@ -1,7 +1,7 @@
 /* Container for the alerts */
 .response-container {
   position: fixed;
-  top: 1rem;
+  top: 4rem;
   right: 1rem;
   z-index: 9999999999;
   display: flex;

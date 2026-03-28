@@ -28,7 +28,7 @@ const ListUser = () => {
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
     search: "",
-    role_id: "2",
+    role_id: "",
     is_active: "",
   });
 
@@ -147,7 +147,7 @@ const ListUser = () => {
   };
 
   const handleClearFilters = () => {
-    setFilters({ search: "", role_id: "2", is_active: "" });
+    setFilters({ search: "", is_active: "" });
   };
 
   const handleDelete = (row) => {
