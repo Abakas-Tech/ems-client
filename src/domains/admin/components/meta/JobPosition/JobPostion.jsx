@@ -105,18 +105,24 @@ const JobPosition = () => {
 
   // Handle deleting a job position
   const handleDelete = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteJobPosition(row.id);
-        addMessage(response?.success, response?.message);
-        fetchJobPositions();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteJobPosition(row.id);
+          addMessage(response?.success, response?.message);
+          fetchJobPositions();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this job position?",
+        confirmText: "Delete",
+      },
+    );
   };
 
   const handlePageChange = (newPage) => {
@@ -170,20 +176,17 @@ const JobPosition = () => {
         <div className="dashboard-wraper">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div className="flex-grow-1">
-              <h2 className="fw-bold text-dark mb-2">
-                Job Position 
-              </h2>
+              <h2 className="text-dark mb-2">Job Positions</h2>
               <p className="text-muted mb-0">
                 Manage job positions — create, rename, or delete entries as
                 needed.
               </p>
             </div>
-
-            <div className="position-absolute top-0 end-0 mt-2">
+            <div className="position-absolute top-0 end-0 mt-4 pt-2">
               <BackButton onClick={goBack} />
             </div>
             <button
-              className="btn btn-main w-40 w-auto m-4"
+              className="btn btn-main mt-3 mt-md-5 text-white w-50 d-flex align-items-center justify-content-center"
               onClick={() => setShowCreateModal(true)}
             >
               + Job Position

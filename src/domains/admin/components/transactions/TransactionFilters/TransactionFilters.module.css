@@ -1,6 +1,7 @@
-.filtersCard {
+.filters-card {
   border-radius: 12px;
   border: 1px solid #e5e7eb;
+  background-color: #fff;
 }
 
 .input {
@@ -12,37 +13,26 @@
     box-shadow 0.2s ease;
 }
 
-.dateLabel {
-  height: 42px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-  border-right: none;
-}
-
-/* Fix for input group border radius */
-.input-group > .input {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
 .input:focus {
   border-color: #007bff;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+  outline: none;
 }
 
-.clearBtn {
+.clear-btn {
   border-radius: 8px;
   transition: all 0.2s ease;
-  width: 70px;
   height: 42px;
   border: 1px solid #e0e0e0;
 }
 
-.clearBtn:hover {
+.clear-btn:hover {
   background-color: #f8f9fa;
   border-color: #007bff;
   color: #007bff;
+}
+
+.clear-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

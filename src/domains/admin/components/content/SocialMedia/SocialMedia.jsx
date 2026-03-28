@@ -23,6 +23,7 @@ const SocialMedia = () => {
     twitter_username: "",
     whatsapp_number: "",
     contact_number: "",
+    email: "", // added email
   });
 
   const [existingData, setExistingData] = useState(null);
@@ -49,6 +50,7 @@ const SocialMedia = () => {
           twitter_username: response.data?.twitter_username || "",
           whatsapp_number: response.data?.whatsapp_number || "",
           contact_number: response.data?.contact_number || "",
+          email: response.data?.email || "", // added email
         });
       } else {
         setExistingData(null);
@@ -81,6 +83,7 @@ const SocialMedia = () => {
     twitter_username: "Twitter Username",
     whatsapp_number: "WhatsApp Number",
     contact_number: "Contact Number",
+    email: "Email", // added email
   };
 
   const validateFields = (data) => {
@@ -106,6 +109,7 @@ const SocialMedia = () => {
     };
 
     const phonePattern = /^\+\d{9,14}$/;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // added email regex
 
     const validateContactNumber = (value) => {
       const numbers = value.split("/");
@@ -145,6 +149,11 @@ const SocialMedia = () => {
         }
       } else if (key === "contact_number") {
         if (!validateContactNumber(value)) {
+          addMessage(false, `${friendlyKey} is invalid`);
+          return false;
+        }
+      } else if (key === "email") {
+        if (!emailPattern.test(value)) {
           addMessage(false, `${friendlyKey} is invalid`);
           return false;
         }
@@ -274,6 +283,11 @@ const SocialMedia = () => {
                 label: "Contact Number",
                 name: "contact_number",
                 placeholder: "e.g. +251900000000 / +251911111111",
+              },
+              {
+                label: "Email",
+                name: "email", // added email field
+                placeholder: "example@company.com",
               },
             ].map((field) => (
               <div className="col-md-6" key={field.name}>

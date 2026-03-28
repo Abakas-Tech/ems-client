@@ -271,7 +271,7 @@ const NotificationPage = () => {
           </p>
         </div>
         <RoleButton
-          visibleTo={[2,1]}
+          visibleTo={[2, 1]}
           className="btn btn-main px-4 py-2 rounded-3 shadow-sm text-white fw-bold mt-3 mt-md-0"
           onClick={() => {
             setSearchTerm("");

@@ -1,8 +1,21 @@
 import { useEffect, useState } from "react";
-import { fetchFinanceSummary } from "../../../api/finance.api"; // Update this API call
+import { fetchFinanceSummary } from "../../../api/finance.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+
+// Move the helper outside the component so it's reusable
+const formatNumber = (num) => {
+  if (!num) return "0";
+  const n = Math.abs(num);
+  const sign = num < 0 ? "-" : "";
+
+  if (n >= 1000000)
+    return sign + (n / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+  if (n >= 1000) return sign + (n / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+
+  return sign + n.toLocaleString();
+};
 
 const FinanceReportSummary = ({ filters, onBack }) => {
   const [report, setReport] = useState(null);
@@ -13,37 +26,38 @@ const FinanceReportSummary = ({ filters, onBack }) => {
     const getSummary = async () => {
       showLoader();
       try {
-        // This calls the node function we wrote in the previous step
         const response = await fetchFinanceSummary(filters);
-        setReport(response.data.reportData); // Accessing the single row from SQL
+        setReport(response.data.reportData);
       } catch (err) {
         addMessage(false, err.message);
+        onBack();
       } finally {
         hideLoader();
       }
     };
     getSummary();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
+
   if (!report) return null;
 
   const isPositive = report.net_balance >= 0;
 
   return (
     <div className="dashboard-wraper">
-      <div className="d-flex justify-content-between align-items-center mb-4"></div>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 className="fw-bold text-dark mb-0">Financial Summary Report</h3>
+        <BackButton onClick={onBack} />
+      </div>
 
       <div
         className="card border-0 shadow-sm overflow-hidden"
         id="printable-report"
       >
-        <div>
-          <h3 className="fw-bold text-dark mb-4">Financial Summary Report</h3>
-        </div>
-        <BackButton onClick={onBack} />
         <div style={{ height: "6px", backgroundColor: "#0d6efd" }} />
 
         <div className="card-body p-4 p-md-5">
-          {/* Main Net Balance Header */}
+          {/* Main Net Balance Section */}
           <div className="text-center mb-5">
             <h6 className="text-uppercase text-muted small fw-bold mb-2">
               Net Balance
@@ -51,16 +65,17 @@ const FinanceReportSummary = ({ filters, onBack }) => {
             <h1
               className={`display-4 fw-bold ${isPositive ? "text-success" : "text-danger"}`}
             >
+              {/* Keep the full amount here for the main header, or use formatNumber if you prefer it short */}
               {report.net_balance?.toLocaleString()}{" "}
               <span className="h4">Birr</span>
             </h1>
-            <span className="badge bg-light text-dark border mt-2">
+            <span className="badge bg-light text-dark border mt-2 px-3 py-2">
               {report.total_transactions} Total Transactions
             </span>
           </div>
 
-          {/* Summary Grid */}
-          <div className="row g-4 mb-5">
+          {/* Summary Grid - Using formatNumber here */}
+          <div className="row g-4 mb-4">
             <SummaryCard
               title="Total Income"
               amount={report.total_income}
@@ -72,33 +87,30 @@ const FinanceReportSummary = ({ filters, onBack }) => {
               color="danger"
             />
             <SummaryCard
-              title="Commissions"
-              amount={report.total_commission}
-              color="primary"
-            />
-            <SummaryCard
-              title="VAT Collected"
+              title="Total VAT"
               amount={report.total_vat}
               color="warning"
             />
+            <SummaryCard
+              title="Total Commission"
+              amount={report.total_commission}
+              color="info"
+            />
           </div>
 
-          {/* Footer Info */}
-          <div className="p-3 border rounded-3 bg-light text-center">
-            <small className="text-muted">
-              Report generated on {new Date().toLocaleString()} • Database
-              Reference:{" "}
-              {report.total_transactions > 0 ? "Verified" : "No Data"}
+          <div className="bg-light rounded-3 p-3 text-center">
+            <small className="text-muted italic">
+              Report generated for selected filters.
             </small>
           </div>
         </div>
 
         <div className="card-footer bg-white border-top-0 p-4 text-center">
           <button
-            className="btn btn-primary px-4"
+            className="btn btn-outline-primary btn-sm px-4"
             onClick={() => window.print()}
           >
-            <i className="bi bi-file-earmark-pdf me-2"></i> Print Full Report
+            <i className="bi bi-printer me-2"></i> Print Report
           </button>
         </div>
       </div>
@@ -106,18 +118,18 @@ const FinanceReportSummary = ({ filters, onBack }) => {
   );
 };
 
-// Sub-component for clean cards
+// SummaryCard now uses formatNumber internaly
 const SummaryCard = ({ title, amount, color }) => (
-  <div className="col-md-3 col-sm-6">
+  <div className="col-md-6 col-lg-3">
+    {" "}
+    {/* Added col-lg-3 to fit 4 in a row on large screens */}
     <div
-      className={`p-3 border-start border-${color} border-4 bg-white shadow-sm rounded`}
+      className={`p-4 rounded-4 border-start border-4 border-${color} bg-white shadow-sm border h-100`}
     >
-      <label className="text-muted d-block small mb-1 fw-bold text-uppercase">
-        {title}
-      </label>
-      <h4 className={`mb-0 fw-bold text-${color}`}>
-        {amount?.toLocaleString()} <small className="fs-6">ETB</small>
-      </h4>
+      <h6 className="text-uppercase text-muted small fw-bold mb-2">{title}</h6>
+      <h3 className={`fw-bold text-${color} mb-0`}>
+        {formatNumber(amount)} <span className="h6 text-muted">Birr</span>
+      </h3>
     </div>
   </div>
 );

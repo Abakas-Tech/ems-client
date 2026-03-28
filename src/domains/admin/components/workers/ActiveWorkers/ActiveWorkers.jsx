@@ -60,8 +60,19 @@ const ActiveWorkers = () => {
     fetchWorkers();
   }, [fetchWorkers]);
 
+  // Record Transaction Handler
+  const handleRecordTransaction = (row) => {
+    navigate("/admin/finances", {
+      state: {
+        userId: row.id,
+        userName: row.full_name,
+        userRole: "worker",
+      },
+    });
+  };
   // --- Selection Handlers ---
   const handleRowDoubleClick = (row) => {
+    if (profile.role_id !== 1 && profile.role_id !== 2) return;
     if (!isSelectionMode) {
       setIsSelectionMode(true);
       setSelectedWorkerIds([row.id]);
@@ -82,11 +93,34 @@ const ActiveWorkers = () => {
     }
   };
 
-  const handleBulkNotify = () => {
+  const handleNotify = (row = null) => {
+    let idsToNotify = [];
+    let full_name = "";
+    const roleType = "worker"; // Hardcoded for this specific worker page
+
+    if (row && row.id) {
+      // Single worker click from action icon
+      idsToNotify = [row.id];
+      full_name = row.full_name || "";
+    } else {
+      // Bulk action click from top floating bar
+      idsToNotify = selectedWorkerIds;
+
+      if (idsToNotify.length === 1) {
+        const selectedWorker = workers.find((w) => w.id === idsToNotify[0]);
+        full_name = selectedWorker?.full_name || "";
+      } else if (idsToNotify.length > 1) {
+        full_name = "Multiple Workers";
+      }
+    }
+
+    if (idsToNotify.length === 0) return;
+
     navigate("/admin/notifications", {
       state: {
-        bulkIds: selectedWorkerIds,
-        bulkType: "worker", // Hardcoded for this page
+        bulkIds: idsToNotify,
+        bulkType: roleType,
+        bulkName: full_name,
       },
     });
   };
@@ -252,7 +286,7 @@ const ActiveWorkers = () => {
             <button
               className="btn btn-main btn-sm text-white px-3 fw-bold"
               disabled={selectedWorkerIds.length === 0}
-              onClick={handleBulkNotify}
+              onClick={handleNotify}
             >
               {" "}
               Send Bulk Alert
@@ -296,6 +330,11 @@ const ActiveWorkers = () => {
         ]}
         actions={[
           { type: "view", onClick: (row) => handleView(row.id) },
+          { type: "notify", onClick: (row) => handleNotify(row) },
+          {
+            type: "transaction",
+            onClick: (row) => handleRecordTransaction(row),
+          },
           { type: "archive", onClick: (row) => handleArchive(row.id) },
           { type: "delete", onClick: (row) => handleDelete(row.id) },
           {

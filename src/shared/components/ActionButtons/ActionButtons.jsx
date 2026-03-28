@@ -78,6 +78,11 @@ const ActionButtons = ({ actions = [], row }) => {
       icon: <FaBell />,
       title: "Notify",
     },
+    transaction: {
+      className: "btn-outline-success",
+      icon: <i className="fa-solid fa-wallet"></i>, // Or fa-money-bill-transfer
+      title: "Record Transaction",
+    },
     deleteBadge: {
       className: "btn p-0 d-flex align-items-center justify-content-center",
       icon: <span className={styles["delete-button"]}>&times;</span>,
@@ -90,7 +95,8 @@ const ActionButtons = ({ actions = [], row }) => {
     (actionObj) =>
       actionObj.type &&
       ACTION_CONFIG[actionObj.type] &&
-      ACTION_ROLE_CONFIG[actionObj.type]?.includes(role),
+      (ACTION_ROLE_CONFIG[actionObj.type]?.includes(role) ||
+        actionObj.bypassRole === true),
   );
 
   return (

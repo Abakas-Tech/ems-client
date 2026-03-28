@@ -11,7 +11,6 @@ import {
   deleteWorkerLanguage,
   addWorkerPosition,
   getWorkerPositions,
-  updateWorkerPosition,
   deleteWorkerPosition,
   addWorkerExperience,
   getWorkerExperiences,
@@ -51,7 +50,6 @@ const WorkerMeta = () => {
   const [allPositions, setAllPositions] = useState([]);
   const [showCreatePositionModal, setShowCreatePositionModal] = useState(false);
   const [showUpdatePositionModal, setShowUpdatePositionModal] = useState(false);
-  const [selectedPosition, setSelectedPosition] = useState(null);
   // State for Worker Experiences
   const [experiences, setExperiences] = useState([]);
   const [allCountries, setAllCountries] = useState([]);
@@ -224,21 +222,27 @@ const WorkerMeta = () => {
 
   // Handle delete experience
   const handleDeleteExperience = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteWorkerExperience(
-          worker_id,
-          row.country_id,
-        );
-        addMessage(response?.success, response?.message);
-        fetchWorkerExperiences();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteWorkerExperience(
+            worker_id,
+            row.country_id,
+          );
+          addMessage(response?.success, response?.message);
+          fetchWorkerExperiences();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this experience? ",
+        confirmText: "Delete",
+      },
+    );
   };
 
   // Handle assigning skill
@@ -266,18 +270,24 @@ const WorkerMeta = () => {
   };
   // Handle delete skill
   const handleDeleteSkill = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteWorkerSkill(worker_id, row.id);
-        addMessage(response?.success, response?.message);
-        fetchWorkerSkills();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteWorkerSkill(worker_id, row.id);
+          addMessage(response?.success, response?.message);
+          fetchWorkerSkills();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this skill?",
+        confirmText: "Delete",
+      },
+    );
   };
   // Handle add language
   const handleAddLanguage = async (inputValues) => {
@@ -336,36 +346,36 @@ const WorkerMeta = () => {
   };
   // Handle delete language
   const handleDeleteLanguage = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteWorkerLanguage(worker_id, row.id);
-        addMessage(response?.success, response?.message);
-        fetchWorkerLanguages();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteWorkerLanguage(worker_id, row.id);
+          addMessage(response?.success, response?.message);
+          fetchWorkerLanguages();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this language?",
+        confirmText: "Delete",
+      },
+    );
   };
   // Handle add position
   const handleAddPosition = async (inputValues) => {
-    const { position_id, years_of_experience } = inputValues;
+    const { position_id } = inputValues;
     if (!position_id) {
       addMessage(false, "Position is required");
-      return;
-    }
-    const years = Number(years_of_experience);
-    if (isNaN(years) || years < 0 || !Number.isInteger(years)) {
-      addMessage(false, "Years of experience must be a non-negative integer");
       return;
     }
     showLoader();
     try {
       const response = await addWorkerPosition(worker_id, {
         position_id,
-        years_of_experience: years,
       });
       addMessage(response?.success, response?.message);
       setShowCreatePositionModal(false);
@@ -376,50 +386,29 @@ const WorkerMeta = () => {
       hideLoader();
     }
   };
-  // Handle update position
-  const handleUpdatePosition = async (inputValues) => {
-    const { years_of_experience } = inputValues;
-    const years = Number(years_of_experience);
-    if (isNaN(years) || years < 0 || !Number.isInteger(years)) {
-      addMessage(false, "Years of experience must be a non-negative integer");
-      return;
-    }
-    showLoader();
-    try {
-      const response = await updateWorkerPosition(
-        worker_id,
-        selectedPosition.id,
-        { years_of_experience: years },
-      );
-      addMessage(response?.success, response?.message);
-      setShowUpdatePositionModal(false);
-      setSelectedPosition(null);
-      fetchWorkerPositions();
-    } catch (err) {
-      addMessage(false, err.message);
-    } finally {
-      hideLoader();
-    }
-  };
+
   // Handle edit position
-  const handleEditPosition = (row) => {
-    setSelectedPosition(row);
-    setShowUpdatePositionModal(true);
-  };
+
   // Handle delete position
   const handleDeletePosition = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteWorkerPosition(worker_id, row.id);
-        addMessage(response?.success, response?.message);
-        fetchWorkerPositions();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteWorkerPosition(worker_id, row.id);
+          addMessage(response?.success, response?.message);
+          fetchWorkerPositions();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this position?",
+        confirmText: "Delete",
+      },
+    );
   };
   // Columns, actions, fields, and empty states for skills, languages, positions and experiences
   // Skills
@@ -493,15 +482,8 @@ const WorkerMeta = () => {
       header: "Name",
       accessor: "name",
     },
-    {
-      header: "Years",
-      accessor: "years_of_experience",
-    },
   ];
-  const actionsPositions = [
-    { type: "edit", onClick: handleEditPosition },
-    { type: "delete", onClick: handleDeletePosition },
-  ];
+  const actionsPositions = [{ type: "delete", onClick: handleDeletePosition }];
   const fieldsAddPositions = [
     {
       name: "position_id",
@@ -512,19 +494,8 @@ const WorkerMeta = () => {
         label: position.name,
       })),
     },
-    {
-      name: "years_of_experience",
-      label: "Years of Experience",
-      type: "number",
-    },
   ];
-  const fieldsUpdatePositions = [
-    {
-      name: "years_of_experience",
-      label: "Years of Experience",
-      type: "number",
-    },
-  ];
+
   const emptyStatePositions = {
     title: "No positions assigned",
   };
@@ -563,46 +534,42 @@ const WorkerMeta = () => {
 
   return (
     <div className="dashboard-wraper">
-      <div className="position-absolute top-0 end-0 mt-2">
-        <BackButton onClick={goBack} />
-      </div>
-      {/* Worker Meta Header (optional) */}
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        {/* Title and description */}
-        <div className="flex-grow-1">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div className="mb-3">
+          <BackButton onClick={goBack} />
           <h2 className="fw-bold text-dark mb-2">Worker Meta</h2>
           <p className="text-muted mb-0">
             Assign skills, languages, positions, and experiences to this worker.
           </p>
         </div>
+      </div>
 
-        {/* Action buttons for all meta types */}
-        <div className="d-flex flex-wrap gap-2 mt-3 mt-md-4">
-          <button
-            className="btn btn-main"
-            onClick={() => setShowCreateSkillModal(true)}
-          >
-            + Skill
-          </button>
-          <button
-            className="btn btn-main"
-            onClick={() => setShowCreateLanguageModal(true)}
-          >
-            + Language
-          </button>
-          <button
-            className="btn btn-main"
-            onClick={() => setShowCreatePositionModal(true)}
-          >
-            + Position
-          </button>
-          <button
-            className="btn btn-main"
-            onClick={() => setShowCreateExperienceModal(true)}
-          >
-            + Experience
-          </button>
-        </div>
+      {/* Action buttons for all meta types */}
+      <div className="d-flex flex-wrap gap-2 mb-4  mt-md-2">
+        <button
+          className="btn btn-main"
+          onClick={() => setShowCreateSkillModal(true)}
+        >
+          + Skill
+        </button>
+        <button
+          className="btn btn-main"
+          onClick={() => setShowCreateLanguageModal(true)}
+        >
+          + Language
+        </button>
+        <button
+          className="btn btn-main"
+          onClick={() => setShowCreatePositionModal(true)}
+        >
+          + Position
+        </button>
+        <button
+          className="btn btn-main"
+          onClick={() => setShowCreateExperienceModal(true)}
+        >
+          + Experience
+        </button>
       </div>
 
       {/* Skills + Languages Section in a row on md+ screens */}
@@ -716,10 +683,7 @@ const WorkerMeta = () => {
             show={showUpdatePositionModal}
             onClose={() => {
               setShowUpdatePositionModal(false);
-              setSelectedPosition(null);
             }}
-            onCreate={handleUpdatePosition}
-            fields={fieldsUpdatePositions}
             title="Update Position"
             btnLabel="Update"
           />
