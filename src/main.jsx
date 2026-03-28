@@ -18,7 +18,7 @@ import DemoInfoProvider from "./context/Demo/DemoInfoProvider";
 import NotificationProvider from "./context/Notification/NotificationProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  // <StrictMode>
     <BrowserRouter>
       <DemoInfoProvider>
         <ResponseProvider>
@@ -36,5 +36,5 @@ createRoot(document.getElementById("root")).render(
         </ResponseProvider>
       </DemoInfoProvider>
     </BrowserRouter>
-  </StrictMode>,
+  // </StrictMode>,
 );

@@ -154,21 +154,27 @@ const File = () => {
   };
 
   const handleDelete = (id) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteFile(id);
-        addMessage(
-          response.success,
-          response.Message || "File deleted successfully!",
-        );
-        fetchData();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteFile(id);
+          addMessage(
+            response.success,
+            response.Message || "File deleted successfully!",
+          );
+          fetchData();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this file?",
+        confirmText: "Delete",
+      },
+    );
   };
   const handleViewDetail = (file) => {
     if (!file.file_url) return;
