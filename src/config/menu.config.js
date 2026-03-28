@@ -22,7 +22,7 @@ const MENU_CONFIG = [
   {
     label: "Workers",
     path: "/admin/workers",
-    icon: "bi bi-file-earmark-person-fill",
+    icon: "bi bi-person-check",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
@@ -32,7 +32,7 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    label: "Files",
+    label: "File Manager",
     path: "/admin/my-files",
     icon: "bi bi-files",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
@@ -73,7 +73,7 @@ const MENU_CONFIG = [
   },
   {
     label: "My Application",
-    path: "/worker/my-application/:id",
+    path: "/worker/my-application",
     icon: "bi bi-person-vcard-fill",
     roles: [ROLES.WORKER],
   },

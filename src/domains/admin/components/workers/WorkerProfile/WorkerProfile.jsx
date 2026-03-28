@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaFilePdf, FaImage } from "react-icons/fa";
@@ -210,7 +211,7 @@ const useWorkerDeletes = (
 
 // Main component to display a worker's profile with all related information and actions
 const WorkerProfile = () => {
-  const { id } = useParams();
+  const { id: paramId } = useParams();
 
   const navigate = useNavigate();
 
@@ -224,6 +225,9 @@ const WorkerProfile = () => {
   const [showCreateStatusModal, setShowCreateStatusModal] = useState(false);
 
   const { profile } = useProfile();
+
+  const isWorker = profile?.role_id === 4;
+  const id = isWorker ? profile?.id : paramId;
 
   const canDeleteStatus = [1, 2].includes(profile?.role_id);
   const backButtonVisibility = [1, 2, 3, 5].includes(profile?.role_id);
@@ -279,11 +283,15 @@ const WorkerProfile = () => {
 
   // Initial data fetching when component mounts or when worker ID changes
   useEffect(() => {
-    if (id) fetchWorker();
+    if (!id) return;
+    fetchWorker();
     fetchWorkerStatuses();
     fetchAllStatuses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  console.log("paramId:", paramId);
+  console.log("profile:", profile);
+  console.log("final id:", id);
 
   // Handle assigning status
   const handleAssignStatus = async (inputValues) => {
