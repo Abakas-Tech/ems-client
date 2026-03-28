@@ -1,5 +1,5 @@
 import { FaArrowRight } from "react-icons/fa";
-import about from "../../../../assets/img/Banner/banner.jpg";
+import about from "../../../../assets/img/logo/logo.jpg";
 import { useNavigate } from "react-router-dom";
 
 function About() {
