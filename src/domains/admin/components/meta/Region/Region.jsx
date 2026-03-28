@@ -110,7 +110,11 @@ const Region = () => {
       } finally {
         hideLoader();
       }
-    });
+    },
+  {
+    title: "Are you sure you want to delete this region?",
+    confirmText: "Delete",
+  });
   };
 
   const handlePageChange = (newPage) => {
@@ -164,17 +168,16 @@ const Region = () => {
         <div className="dashboard-wraper">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div className="flex-grow-1">
-              <h2 className="fw-bold text-dark mb-2">Region</h2>
+              <h2 className="text-dark mb-2">Regions</h2>
               <p className="text-muted mb-0">
                 Manage regions — create, rename, or delete entries as needed.
               </p>
             </div>
-
-            <div className="position-absolute top-0 end-0 mt-2">
+            <div className="position-absolute top-0 end-0 mt-4 pt-2">
               <BackButton onClick={goBack} />
             </div>
             <button
-              className="btn btn-main w-40 w-auto m-4"
+              className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
               onClick={() => setShowCreateModal(true)}
             >
               + Region

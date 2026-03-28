@@ -100,18 +100,24 @@ const Country = () => {
 
   // Handle deleting a country
   const handleDelete = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteCountry(row.id);
-        addMessage(response?.success, response?.message);
-        fetchCountries();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteCountry(row.id);
+          addMessage(response?.success, response?.message);
+          fetchCountries();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this country?",
+        confirmText: "Delete",
+      },
+    );
   };
   const handlePageChange = (newPage) => {
     fetchCountries(newPage, pagination.limit);
@@ -163,16 +169,16 @@ const Country = () => {
         <div className="dashboard-wraper">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div className="flex-grow-1">
-              <h2 className="fw-bold text-dark mb-2">Country</h2>
+              <h2 className="text-dark mb-2">Country</h2>
               <p className="text-muted mb-0">
                 Manage countries — create, rename, or delete entries as needed.
               </p>
             </div>
-            <div className="position-absolute top-0 end-0 mt-2">
+            <div className="position-absolute top-0 end-0 mt-4 pt-2">
               <BackButton onClick={goBack} />
             </div>
             <button
-              className="btn btn-main w-40 w-auto m-4"
+              className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
               onClick={() => setShowCreateModal(true)}
             >
               + Country

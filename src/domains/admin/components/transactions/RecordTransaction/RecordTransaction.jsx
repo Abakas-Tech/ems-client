@@ -4,6 +4,7 @@ import useProfile from "../../../../../context/Profile/useProfile";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import Badge from "../../../../../shared/components/Badge/Badge";
 
 const RecordTransaction = ({
   isEditMode = false,
@@ -16,12 +17,14 @@ const RecordTransaction = ({
   const { profile } = useProfile();
 
   const [formData, setFormData] = useState({
-    user_id: profile.id,
-    amount: "",
-    category: "",
+    // 1. Priority: Edit data > Incoming Worker data > null (Company transaction)
+    user_id: initialData?.userId || initialData?.user_id || null,
+    amount: initialData?.amount || "",
+    // 2. Default to 'commission' if coming from a worker profile, else empty
+    category: initialData?.userId ? "income" : initialData?.category || "",
     transaction_date: new Date().toISOString().split("T")[0],
-    reference: "",
-    description: "",
+    reference: initialData?.reference || "",
+    description: initialData?.description || "",
   });
 
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -104,14 +107,25 @@ const RecordTransaction = ({
     <section className="dashboard-wraper ">
       <form className="form-submit" onSubmit={handleSubmit}>
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h3>
+          <h2 className="text-dark mb-2">
             {isEditMode ? "Update Transaction" : "Record New Transaction"}
-          </h3>
+          </h2>
+
           <BackButton onClick={onCancel} />
         </div>
 
         <div className="submit-section">
           <div className="row">
+            {formData.user_id && !isEditMode && (
+              <div className="form-group col-md-12">
+                <div className="alert alert-info py-2">
+                  Recording transaction for worker:{" "}
+                  {initialData?.userName && !isEditMode && (
+                    <Badge content={initialData.userName} color="blue" />
+                  )}
+                </div>
+              </div>
+            )}
             <div className="form-group col-md-6">
               <label>
                 Amount <span className="text-danger">*</span>
@@ -192,27 +206,13 @@ const RecordTransaction = ({
         </div>
 
         <div className="submit-section mt-4">
-          <div className="form-group col-lg-12 col-md-12">
-            <button
-              className="btn btn-main px-5 rounded fw-bold text-white"
-              type="submit"
-              disabled={submitLoading}
-              style={{ backgroundColor: "var(--maincolor)" }}
-            >
-              {submitLoading
-                ? "Processing..."
-                : isEditMode
-                  ? "Update Record"
-                  : "Save Transaction"}
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-secondary ms-2 px-4 rounded"
-              onClick={onCancel}
-            >
-              Cancel
-            </button>
-          </div>
+          <button
+            className="btn btn-main px-5 rounded"
+            type="submit"
+            disabled={submitLoading}
+          >
+            {isEditMode ? "Update Record" : "Save Transaction"}
+          </button>
         </div>
       </form>
     </section>

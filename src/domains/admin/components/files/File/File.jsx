@@ -181,6 +181,9 @@ const File = () => {
   const handlePageChange = (newPage) => {
     setFilters((prev) => ({ ...prev, page: newPage }));
   };
+
+  const isInternalUser = profile?.role_id <= 2;
+
   return (
     <div className="dashboard-wraper">
       {/* Handle Create/Edit View */}
@@ -229,7 +232,7 @@ const File = () => {
             data={filesData.files}
             columns={[
               { header: "Name", accessor: "file_name" },
-              {
+              isInternalUser && {
                 header: "Visibility",
                 render: (row) =>
                   row.is_private ? (
@@ -247,7 +250,7 @@ const File = () => {
                 render: (row) => new Date(row.created_at).toLocaleDateString(),
               },
               { header: "Category", accessor: "category" },
-            ]}
+            ].filter(Boolean)}
             actions={[
               {
                 type: "view",

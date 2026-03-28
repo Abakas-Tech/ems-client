@@ -107,17 +107,31 @@ const ListUser = () => {
     let full_name = "";
 
     if (row && row.id) {
-      // Handle the case where a single user is clicked for id nad name
+      // Single user click (from the table row)
       idsToNotify = [row.id];
       full_name = row.full_name || "";
-      roleType = ROLE_MAP[row.role_id].toLowerCase() || roleType;
+      roleType = ROLE_MAP[row.role_id]?.toLowerCase() || roleType;
     } else {
-      // Handle the case where multiple users are selected
+      // Bulk action click (from the top bar)
       idsToNotify = selectedUserIds;
+
+      // If only one person is selected, let's grab their name for a better UX
+      if (idsToNotify.length === 1) {
+        const selectedUser = users.find((u) => u.id === idsToNotify[0]);
+        if (selectedUser) {
+          full_name = selectedUser.full_name || "";
+          roleType = ROLE_MAP[selectedUser.role_id]?.toLowerCase() || roleType;
+        }
+      } else if (idsToNotify.length > 1) {
+        // For multiple users, we usually just pass the role type from filters
+        full_name = "Multiple Users";
+        const firstSelected = users.find((u) => u.id === idsToNotify[0]);
+        roleType = ROLE_MAP[firstSelected?.role_id]?.toLowerCase() || roleType;
+      }
     }
 
     if (idsToNotify.length === 0) return;
-    console.log(full_name);
+
     navigate("/admin/notifications", {
       state: {
         bulkIds: idsToNotify,
@@ -132,9 +146,9 @@ const ListUser = () => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-const handleClearFilters = () => {
-  setFilters({ search: "", role_id: "2", is_active: "" });
-};
+  const handleClearFilters = () => {
+    setFilters({ search: "", role_id: "2", is_active: "" });
+  };
 
   const handleDelete = (row) => {
     openModal(async () => {

@@ -111,37 +111,36 @@ const FileUpload = ({
       <div className="submit-section">
         <div className="row">
           {/* Visibility Toggle */}
-          {profile?.role_id === 1 ||
-            (profile?.role_id === 2 && (
-              <div className="form-group col-md-12 mb-3">
-                <div className="form-check form-switch rounded-3 d-inline-flex align-items-center ">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    name="is_private"
-                    id="isPrivateToggle"
-                    checked={formData.is_private === 1}
-                    onChange={handleChange}
-                    style={{ cursor: "pointer", width: "3em", height: "1.5em" }}
-                  />
-                  <label
-                    className="form-check-label ms-3 fw-semibold"
-                    htmlFor="isPrivateToggle"
-                    style={{ cursor: "pointer" }}
-                  >
-                    {formData.is_private ? (
-                      <span className="text-danger">
-                        <i className="bi bi-lock-fill me-1"></i> Private
-                      </span>
-                    ) : (
-                      <span className="text-success">
-                        <i className="bi bi-globe me-1"></i> Public
-                      </span>
-                    )}
-                  </label>
-                </div>
+          {profile?.role_id <= 2 && (
+            <div className="form-group col-md-12 mb-3">
+              <div className="form-check form-switch rounded-3 d-inline-flex align-items-center ">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  name="is_private"
+                  id="isPrivateToggle"
+                  checked={formData.is_private === 1}
+                  onChange={handleChange}
+                  style={{ cursor: "pointer", width: "3em", height: "1.5em" }}
+                />
+                <label
+                  className="form-check-label ms-3  fw-semibold "
+                  htmlFor="isPrivateToggle"
+                  style={{ cursor: "pointer", height: "1em" }}
+                >
+                  {formData.is_private ? (
+                    <span className="text-danger pt-5">
+                      <i className="bi bi-lock-fill me-1"></i> Private
+                    </span>
+                  ) : (
+                    <span className="text-success">
+                      <i className="bi bi-globe me-1"></i> Public
+                    </span>
+                  )}
+                </label>
               </div>
-            ))}
+            </div>
+          )}
           <div className="form-group col-md-6">
             <label>
               File Name <span className="text-danger">*</span>
@@ -176,8 +175,8 @@ const FileUpload = ({
               <option value="Other">Other</option>
             </select>
           </div>
-          <div className="form-group col-md-12">
-            <label>Description (Optional)</label>
+          <div className={`form-group col-md-6 ${isEditMode && "col-md-12"}`}>
+            <label>Description</label>
             <textarea
               name="description"
               className="form-control"
@@ -185,10 +184,12 @@ const FileUpload = ({
               placeholder="Briefly describe the document contents"
               value={formData.description}
               onChange={handleChange}
+              style={{ height: "170px" }}
             ></textarea>
           </div>
+
           {!isEditMode && (
-            <div className="form-group col-md-12">
+            <div className="form-group col-md-6">
               <label>
                 Select File <span className="text-danger">*</span>
               </label>
@@ -231,23 +232,11 @@ const FileUpload = ({
       <div className="submit-section mt-4">
         <div className="form-group col-lg-12 col-md-12">
           <button
-            className="btn btn-main px-5 rounded fw-bold text-white"
+            className="btn btn-main px-4 rounded fw-bold"
             type="submit"
             disabled={submitLoading}
-            style={{ backgroundColor: "var(--maincolor)" }}
           >
-            {submitLoading
-              ? "Processing..."
-              : isEditMode
-                ? "Update Details"
-                : "Start Upload"}
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline-secondary ms-2 px-4 rounded"
-            onClick={onCancel}
-          >
-            Cancel
+            {isEditMode ? "Update Details" : "Start Upload"}
           </button>
         </div>
       </div>

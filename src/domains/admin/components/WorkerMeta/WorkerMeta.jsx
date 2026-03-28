@@ -222,21 +222,27 @@ const WorkerMeta = () => {
 
   // Handle delete experience
   const handleDeleteExperience = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteWorkerExperience(
-          worker_id,
-          row.country_id,
-        );
-        addMessage(response?.success, response?.message);
-        fetchWorkerExperiences();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteWorkerExperience(
+            worker_id,
+            row.country_id,
+          );
+          addMessage(response?.success, response?.message);
+          fetchWorkerExperiences();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this experience? ",
+        confirmText: "Delete",
+      },
+    );
   };
 
   // Handle assigning skill
@@ -264,18 +270,24 @@ const WorkerMeta = () => {
   };
   // Handle delete skill
   const handleDeleteSkill = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteWorkerSkill(worker_id, row.id);
-        addMessage(response?.success, response?.message);
-        fetchWorkerSkills();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteWorkerSkill(worker_id, row.id);
+          addMessage(response?.success, response?.message);
+          fetchWorkerSkills();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this skill?",
+        confirmText: "Delete",
+      },
+    );
   };
   // Handle add language
   const handleAddLanguage = async (inputValues) => {
@@ -334,22 +346,28 @@ const WorkerMeta = () => {
   };
   // Handle delete language
   const handleDeleteLanguage = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteWorkerLanguage(worker_id, row.id);
-        addMessage(response?.success, response?.message);
-        fetchWorkerLanguages();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteWorkerLanguage(worker_id, row.id);
+          addMessage(response?.success, response?.message);
+          fetchWorkerLanguages();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this language?",
+        confirmText: "Delete",
+      },
+    );
   };
   // Handle add position
   const handleAddPosition = async (inputValues) => {
-    const { position_id} = inputValues;
+    const { position_id } = inputValues;
     if (!position_id) {
       addMessage(false, "Position is required");
       return;
@@ -373,18 +391,24 @@ const WorkerMeta = () => {
 
   // Handle delete position
   const handleDeletePosition = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteWorkerPosition(worker_id, row.id);
-        addMessage(response?.success, response?.message);
-        fetchWorkerPositions();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteWorkerPosition(worker_id, row.id);
+          addMessage(response?.success, response?.message);
+          fetchWorkerPositions();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this position?",
+        confirmText: "Delete",
+      },
+    );
   };
   // Columns, actions, fields, and empty states for skills, languages, positions and experiences
   // Skills
@@ -459,9 +483,7 @@ const WorkerMeta = () => {
       accessor: "name",
     },
   ];
-  const actionsPositions = [
-    { type: "delete", onClick: handleDeletePosition },
-  ];
+  const actionsPositions = [{ type: "delete", onClick: handleDeletePosition }];
   const fieldsAddPositions = [
     {
       name: "position_id",
@@ -512,46 +534,42 @@ const WorkerMeta = () => {
 
   return (
     <div className="dashboard-wraper">
-      <div className="position-absolute top-0 end-0 mt-2">
-        <BackButton onClick={goBack} />
-      </div>
-      {/* Worker Meta Header (optional) */}
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        {/* Title and description */}
-        <div className="flex-grow-1">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div className="mb-3">
+          <BackButton onClick={goBack} />
           <h2 className="fw-bold text-dark mb-2">Worker Meta</h2>
           <p className="text-muted mb-0">
             Assign skills, languages, positions, and experiences to this worker.
           </p>
         </div>
+      </div>
 
-        {/* Action buttons for all meta types */}
-        <div className="d-flex flex-wrap gap-2 mt-3 mt-md-4">
-          <button
-            className="btn btn-main"
-            onClick={() => setShowCreateSkillModal(true)}
-          >
-            + Skill
-          </button>
-          <button
-            className="btn btn-main"
-            onClick={() => setShowCreateLanguageModal(true)}
-          >
-            + Language
-          </button>
-          <button
-            className="btn btn-main"
-            onClick={() => setShowCreatePositionModal(true)}
-          >
-            + Position
-          </button>
-          <button
-            className="btn btn-main"
-            onClick={() => setShowCreateExperienceModal(true)}
-          >
-            + Experience
-          </button>
-        </div>
+      {/* Action buttons for all meta types */}
+      <div className="d-flex flex-wrap gap-2 mb-4  mt-md-2">
+        <button
+          className="btn btn-main"
+          onClick={() => setShowCreateSkillModal(true)}
+        >
+          + Skill
+        </button>
+        <button
+          className="btn btn-main"
+          onClick={() => setShowCreateLanguageModal(true)}
+        >
+          + Language
+        </button>
+        <button
+          className="btn btn-main"
+          onClick={() => setShowCreatePositionModal(true)}
+        >
+          + Position
+        </button>
+        <button
+          className="btn btn-main"
+          onClick={() => setShowCreateExperienceModal(true)}
+        >
+          + Experience
+        </button>
       </div>
 
       {/* Skills + Languages Section in a row on md+ screens */}
