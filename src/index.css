@@ -6,4 +6,8 @@
 @import "yet-another-react-lightbox/styles.css";
 @import "yet-another-react-lightbox/plugins/thumbnails.css";
 
-
+/* 
+git add .
+git commit -m "remove hero jumpy behaviour on mobile and add modern stable viewport unit for hero banner"
+git push
+ */

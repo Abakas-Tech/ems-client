@@ -1,13 +1,14 @@
 .hero-banner {
   background-image: url("../../../../assets/img/banner/hero.png");
   background-size: cover;
-  background-position: center;
+  background-position: center center;
   background-repeat: no-repeat;
   min-height: 100vh;
   display: flex;
   align-items: center;
   position: relative;
   overflow: hidden;
+  will-change: transform;
 }
 
 /* Subtle overlay */
@@ -81,5 +82,8 @@
   .agency-type {
     font-size: 0.9rem;
     margin-bottom: 1.5rem;
+  }
+  .hero-banner {
+    min-height: 100svh; /* modern stable viewport */
   }
 }
