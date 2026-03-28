@@ -151,20 +151,26 @@ const ListUser = () => {
   };
 
   const handleDelete = (row) => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteUser(row.id);
-        addMessage(response?.success, response?.message);
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteUser(row.id);
+          addMessage(response?.success, response?.message);
 
-        // Refresh current page after deletion
-        fetchUsers(pagination.page);
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+          // Refresh current page after deletion
+          fetchUsers(pagination.page);
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Are you sure you want to delete this user?",
+        confirmText: "Delete",
+      },
+    );
   };
   const handleStatusToggle = (row) => {
     const action = row.is_active ? "archive" : "restore";

@@ -5,6 +5,15 @@ import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createTravel, updateTravel } from "../../../../api/worker.api";
 
+// helper function
+const renderLabel = (text, required = false) => {
+  return (
+    <label>
+      {text} {required && <span className="text-danger">*</span>}
+    </label>
+  );
+};
+
 function Travel() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -13,8 +22,9 @@ function Travel() {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
-  const existingTravel = location.state?.travel[0] || null;
+  const existingTravel = location.state?.travel?.[0] || null;
   const isEditMode = Boolean(existingTravel);
+  const isCreate = !isEditMode;
 
   const [formData, setFormData] = useState({
     ticket_number: existingTravel?.ticket_number || "",
@@ -28,6 +38,9 @@ function Travel() {
   });
 
   const [ticketFile, setTicketFile] = useState(null);
+  const [existingTravelUrl] = useState(
+    existingTravel?.ticket_file?.url || null,
+  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -112,7 +125,7 @@ function Travel() {
     }
 
     return null;
-  };;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -158,18 +171,18 @@ function Travel() {
     }
   };
 
+  const title = isEditMode ? "Edit Travel Records" : "Add Travel Records";
+  const buttonText = isEditMode ? "Update Travel" : "Add Travel";
   return (
     <section className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Travel Information</h2>
+        <h2 className="fw-bold text-dark mb-3">{title}</h2>
 
         <div className="row">
           <div className="form-group col-md-6">
-            <label>
-              Ticket Number <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Ticket Number", isCreate)}
             <input
               type="text"
               name="ticket_number"
@@ -258,10 +271,7 @@ function Travel() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Ticket File{" "}
-              {!isEditMode && <span className="text-danger">*</span>}
-            </label>
+            {renderLabel("Ticket File", isCreate)}
             <input
               type="file"
               className="form-control"
@@ -269,16 +279,31 @@ function Travel() {
               onChange={handleFileChange}
               required={!isEditMode}
             />
+
+            <label>
+              {isEditMode && existingTravelUrl && (
+                <small className="d-block text-muted">
+                  Current Ticket:{" "}
+                  <a
+                    href={existingTravelUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
+            </label>
           </div>
         </div>
 
-        <div className="submit-section mt-4">
+        <div className="submit-section">
           <button
             type="submit"
-            className="btn btn-main px-5 rounded"
+            className="btn btn-main px-4 rounded"
             disabled={submitLoading}
           >
-            {isEditMode ? "Update Travel Info" : "Add Travel Info"}
+            {buttonText}
           </button>
         </div>
       </form>

@@ -123,9 +123,10 @@ const GalleryUpload = () => {
   return (
     <div className="dashboard-wraper">
       {/* Page Header */}
-      <div className="mb-4">
+      <div>
         <div className="d-flex justify-content-between align-items-center">
           <div>
+            <BackButton onClick={goBack} />
             <h2>
               {isEditMode ? "Update Gallery Item" : "Create Gallery Item"}
             </h2>
@@ -135,7 +136,6 @@ const GalleryUpload = () => {
                 : "Fill in the details to add a new gallery item."}
             </p>
           </div>
-          <BackButton onClick={goBack} />
         </div>
       </div>
 
@@ -154,7 +154,6 @@ const GalleryUpload = () => {
                 className="form-control"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Example: Company Building"
                 required
               />
             </div>
@@ -162,14 +161,14 @@ const GalleryUpload = () => {
             {/* Description & Image Upload Side by Side */}
             <div className="col-md-12 d-flex flex-column flex-lg-row gap-3">
               <div className="form-group flex-fill">
-                <label>Description (Optional)</label>
+                <label>Description</label>
                 <textarea
                   name="description"
                   className="form-control"
-                  rows="5"
-                  placeholder="Example: Main office building entrance"
+                  rows="3"
                   value={formData.description}
                   onChange={handleChange}
+                  style={{ height: "170px" }}
                 ></textarea>
               </div>
 
@@ -220,20 +219,12 @@ const GalleryUpload = () => {
         <div className="submit-section mt-4">
           <div className="form-group col-lg-12 col-md-12 d-flex gap-2">
             <button
-              className="btn btn-main px-5 rounded fw-bold text-white"
+              className="btn btn-main px-4 rounded"
               type="submit"
+              // style={{ backgroundColor: "var(--maincolor)" }}
               disabled={submitLoading}
-              style={{ backgroundColor: "var(--maincolor)" }}
             >
               {isEditMode ? "Update Gallery Item" : "Create Gallery Item"}
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-outline-secondary  px-4 rounded fw-bold"
-              onClick={() => navigate("/admin/public-content/gallery")}
-            >
-              Cancel
             </button>
           </div>
         </div>

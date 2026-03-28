@@ -4,7 +4,16 @@ import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createContract, updateContract } from "../../../../api/worker.api";
-import { getUsers } from "../../../../api/user.api"; // added
+import { getUsers } from "../../../../api/user.api";
+
+// helper function
+const renderLabel = (text, required = false) => {
+  return (
+    <label>
+      {text} {required && <span className="text-danger">*</span>}
+    </label>
+  );
+};
 
 function Contract() {
   const { id } = useParams();
@@ -16,6 +25,7 @@ function Contract() {
 
   const existingContract = location.state?.contract?.[0] || null;
   const isEditMode = Boolean(existingContract);
+  const isCreate = !isEditMode;
 
   const [employers, setEmployers] = useState([]);
   const [partners, setPartners] = useState([]);
@@ -30,6 +40,9 @@ function Contract() {
   });
 
   const [contractFile, setContractFile] = useState(null);
+  const [existingContractUrl] = useState(
+    existingContract?.contract_upload?.url || null,
+  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -197,19 +210,22 @@ function Contract() {
     }
   };
 
+    const title = isEditMode
+      ? "Edit Contract Information"
+      : "Add Contract Information";
+  const buttonText = isEditMode ? "Update Contract" : "Add Contract";
+
   return (
     <section className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Contract Information</h2>
+        <h2 className="fw-bold text-dark mb-3">{title}</h2>
 
         <div className="row">
           {/* EMPLOYER SELECT */}
           <div className="form-group col-md-6">
-            <label>
-              Employer ID <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Employer", isCreate)}
             <select
               name="employer_id"
               className="form-control"
@@ -228,7 +244,7 @@ function Contract() {
 
           {/* PARTNER SELECT */}
           <div className="form-group col-md-6">
-            <label>Partner ID</label>
+            <label>Partner</label>
             <select
               name="partner_id"
               className="form-control"
@@ -270,9 +286,7 @@ function Contract() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Monthly Salary <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Monthly Salary", isCreate)}
             <input
               type="number"
               step="0.01"
@@ -285,9 +299,7 @@ function Contract() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Status {!isEditMode && <span className="text-danger">*</span>}
-            </label>
+            {renderLabel("Status", isCreate)}
             <select
               name="status"
               className="form-control"
@@ -302,10 +314,7 @@ function Contract() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-              Contract File{" "}
-              {!isEditMode && <span className="text-danger">*</span>}
-            </label>
+            {renderLabel("Contract File", isCreate)}
             <input
               type="file"
               className="form-control"
@@ -313,16 +322,30 @@ function Contract() {
               onChange={handleFileChange}
               required={!isEditMode}
             />
+            <label>
+              {isEditMode && existingContractUrl && (
+                <small className="d-block text-muted">
+                  Current Contract:{" "}
+                  <a
+                    href={existingContractUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
+            </label>
           </div>
         </div>
 
-        <div className="submit-section mt-4">
+        <div className="submit-section">
           <button
             type="submit"
-            className="btn btn-main px-5 rounded"
+            className="btn btn-main px-4 rounded"
             disabled={submitLoading}
           >
-            {isEditMode ? "Update Contract" : "Add Contract"}
+            {buttonText}
           </button>
         </div>
       </form>

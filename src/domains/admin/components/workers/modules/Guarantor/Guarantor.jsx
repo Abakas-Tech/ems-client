@@ -5,6 +5,15 @@ import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createGuarantor, updateGuarantor } from "../../../../api/worker.api";
 
+// helper function
+const renderLabel = (text, required = false) => {
+  return (
+    <label>
+      {text} {required && <span className="text-danger">*</span>}
+    </label>
+  );
+};
+
 function Guarantor() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -15,6 +24,7 @@ function Guarantor() {
 
   const existingGuarantor = location.state?.guarantor || null;
   const isEditMode = Boolean(existingGuarantor);
+  const isCreate = !isEditMode;
 
   const [formData, setFormData] = useState({
     guarantor_name: existingGuarantor?.guarantor_name || "",
@@ -24,6 +34,9 @@ function Guarantor() {
   });
 
   const [idScanFile, setIdScanFile] = useState(null);
+  const [existingGuarantorUrl] = useState(
+    existingGuarantor?.id_scan?.url || null,
+  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -118,25 +131,25 @@ function Guarantor() {
     }
   };
 
+  const title = isEditMode ? "Edit Emergency Contact" : "Add Emergency Contact";
+  const buttonText = isEditMode ? "Update Emergency" : "Add Emergency";
+
   return (
     <section className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Emergency Contact Information</h2>
+        <h2 className="fw-bold text-dark mb-3">{title}</h2>
 
         <div className="row">
           {/* GUARANTOR NAME */}
           <div className="form-group col-md-6">
-            <label>
-               Name <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Name", isCreate)}
 
             <input
               type="text"
               name="guarantor_name"
               className="form-control"
-              placeholder="Enter guarantor full name"
               required
               value={formData.guarantor_name}
               onChange={handleChange}
@@ -151,7 +164,6 @@ function Guarantor() {
               type="text"
               name="relation"
               className="form-control"
-              placeholder="e.g Brother, Friend, Father"
               value={formData.relation}
               onChange={handleChange}
             />
@@ -159,15 +171,12 @@ function Guarantor() {
 
           {/* PHONE */}
           <div className="form-group col-md-6">
-            <label>
-            Phone Number <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Phone Number", isCreate)}
 
             <input
               type="text"
               name="guarantor_phone_number"
               className="form-control"
-              placeholder="+2519XXXXXXX"
               required
               value={formData.guarantor_phone_number}
               onChange={handleChange}
@@ -182,7 +191,6 @@ function Guarantor() {
               name="guarantor_address"
               className="form-control"
               rows="3"
-              placeholder="Enter guarantor address"
               value={formData.guarantor_address}
               onChange={handleChange}
             />
@@ -190,10 +198,7 @@ function Guarantor() {
 
           {/* FILE */}
           <div className="form-group col-md-6">
-            <label>
-               ID Scan{" "}
-              {!isEditMode && <span className="text-danger">*</span>}
-            </label>
+            {renderLabel("ID Scan", isCreate)}
 
             <input
               type="file"
@@ -202,16 +207,31 @@ function Guarantor() {
               onChange={handleFileChange}
               required={!isEditMode}
             />
+
+            <label>
+              {isEditMode && existingGuarantorUrl && (
+                <small className="d-block text-muted">
+                  Current Id:{" "}
+                  <a
+                    href={existingGuarantorUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
+            </label>
           </div>
         </div>
 
-        <div className="submit-section mt-4">
+        <div className="submit-section">
           <button
             type="submit"
-            className="btn btn-main px-5 rounded"
+            className="btn btn-main px-4 rounded"
             disabled={submitLoading}
           >
-            {isEditMode ? "Update emergency contact " : "Add emergency conatct"}
+            {buttonText}
           </button>
         </div>
       </form>

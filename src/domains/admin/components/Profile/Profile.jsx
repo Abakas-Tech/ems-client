@@ -22,6 +22,8 @@ const MyProfile = () => {
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     if (profile) {
@@ -133,8 +135,12 @@ const MyProfile = () => {
     const payload = { ...profileData };
     if (profile?.role_id !== 4) delete payload.country;
 
+    setSubmitLoading(true);
     showLoader();
     try {
+      if (selectedFile) {
+        await uploadProfilePhoto(selectedFile);
+      }
       const response = await updateProfile(payload);
       addMessage(
         response?.success,
@@ -144,6 +150,7 @@ const MyProfile = () => {
     } catch (err) {
       addMessage(false, err.message);
     } finally {
+      setSubmitLoading(false);
       hideLoader();
     }
   };
@@ -151,7 +158,7 @@ const MyProfile = () => {
   return (
     <div className="dashboard-wraper">
       <div className="form-submit">
-        <h2>My Account</h2>
+        <h2 className="fw-bold text-dark mb-2">My Profile</h2>
         <p className="text-muted">Update your profile details.</p>
 
         {/* Profile Form */}
@@ -166,7 +173,7 @@ const MyProfile = () => {
                   className="form-control w-75 pt-3 px-3"
                   accept="image/*"
                   ref={fileInputRef}
-                  onChange={(e) => handleAvatarChange(e.target.files[0])}
+                  onChange={(e) => setSelectedFile(e.target.files[0])}
                 />
                 {profilePhoto && (
                   <button
@@ -244,7 +251,11 @@ const MyProfile = () => {
 
           {/* Submit Button at Bottom */}
           <div className="mt-4">
-            <button type="submit" className="btn btn-main px-5">
+            <button
+              type="submit"
+              className="btn btn-main px-4"
+              disabled={submitLoading}
+            >
               Save Changes
             </button>
           </div>

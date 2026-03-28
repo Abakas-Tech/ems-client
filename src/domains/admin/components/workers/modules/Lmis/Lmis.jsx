@@ -5,6 +5,15 @@ import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { createLmis, updateLmis } from "../../../../api/worker.api";
 
+// helper function
+const renderLabel = (text, required = false) => {
+  return (
+    <label>
+      {text} {required && <span className="text-danger">*</span>}
+    </label>
+  );
+};
+
 function Lmis() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -15,6 +24,7 @@ function Lmis() {
 
   const existingLmis = location.state?.lmis || null;
   const isEditMode = Boolean(existingLmis);
+  const isCreate = !isEditMode;
 
   const [formData, setFormData] = useState({
     lmis_labour_id: existingLmis?.labour_id || "",
@@ -22,6 +32,9 @@ function Lmis() {
   });
 
   const [qrFile, setQrFile] = useState(null);
+  const [existingLmisUrl] = useState(
+    existingLmis?.qr_code?.url || null,
+  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -122,18 +135,19 @@ function Lmis() {
     }
   };
 
+  const title = isEditMode ? "Edit LMIS Information" : "Add LMIS Information";
+  const buttonText = isEditMode ? "Update LMIS" : "Add LMIS";
+
   return (
     <section className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">LMIS Informatio</h2>
+        <h2 className="fw-bold text-dark mb-3">{title}</h2>
 
         <div className="row">
           <div className="form-group col-md-6">
-            <label>
-             Labour ID <span className="text-danger">*</span>
-            </label>
+            {renderLabel("Labour Id", isCreate)}
 
             <input
               type="text"
@@ -158,10 +172,7 @@ function Lmis() {
           </div>
 
           <div className="form-group col-md-6">
-            <label>
-               QR Code{" "}
-              {!isEditMode && <span className="text-danger">*</span>}
-            </label>
+            {renderLabel("QR Code", isCreate)}
 
             <input
               type="file"
@@ -170,16 +181,31 @@ function Lmis() {
               onChange={handleFileChange}
               required={!isEditMode}
             />
+
+            <label>
+              {isEditMode && existingLmisUrl && (
+                <small className="d-block text-muted">
+                  Current QR Code:{" "}
+                  <a
+                    href={existingLmisUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
+            </label>
           </div>
         </div>
 
-        <div className="submit-section mt-4">
+        <div className="submit-section">
           <button
             type="submit"
-            className="btn btn-main px-5 rounded"
+            className="btn btn-main px-4 rounded"
             disabled={submitLoading}
           >
-            {isEditMode ? "Update LMIS" : "Add LMIS"}
+            {buttonText}
           </button>
         </div>
       </form>

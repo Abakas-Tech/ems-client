@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import useloader from "../../../../../../context/Loader/useLoader";
@@ -150,7 +151,7 @@ function Passport() {
 
   const title = isEditMode
     ? "Edit Passport Information"
-    : "Passport Information";
+    : "Add Passport Information";
   const buttonText = isEditMode ? "Update Passport" : "Add Passport";
 
   return (
@@ -235,10 +236,10 @@ function Passport() {
           </div>
         </div>
 
-        <div className="submit-section mt-4">
+        <div className="submit-section">
           <button
             type="submit"
-            className="btn btn-main px-5 rounded"
+            className="btn btn-main px-4 rounded"
             disabled={submitLoading}
           >
             {buttonText}

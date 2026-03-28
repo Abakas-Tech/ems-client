@@ -68,7 +68,12 @@ const ProtectedRoute = ({ children }) => {
       currentMenu.roles &&
       !currentMenu.roles.includes(userRoleId)
     ) {
-      const fallback = "/admin/my-profile"; // default fallback page
+      let fallback = "/admin/my-profile";
+      if (userRoleId === 3) {
+        fallback = "/partner/my-profile";
+      } else {
+        fallback = "/admin/dashboard";
+      }
       return <Navigate to={fallback} replace />;
     }
   }

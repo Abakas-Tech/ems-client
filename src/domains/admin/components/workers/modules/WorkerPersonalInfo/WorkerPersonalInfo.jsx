@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   createPersonalInfo,
@@ -138,7 +139,6 @@ function WorkerPersonalInfo() {
       loadInitialCities();
     }
   }, [isEditMode, existingPersonal?.region?.id]);
-
 
   useEffect(() => {
     if (isEditMode && existingPersonal?.status?.id) {
@@ -317,10 +317,8 @@ function WorkerPersonalInfo() {
 
   const title = isEditMode
     ? "Edit Personal Information"
-    : "Personal Information";
-  const buttonText = isEditMode
-    ? "Update Personal Information"
     : "Add Personal Information";
+  const buttonText = isEditMode ? "Update Personal " : "Add Personal ";
 
   return (
     <section className="dashboard-wraper">
@@ -605,10 +603,10 @@ function WorkerPersonalInfo() {
           </div>
         </div>
 
-        <div className="submit-section mt-4">
+        <div className="submit-section">
           <button
             type="submit"
-            className="btn btn-main px-5 rounded"
+            className="btn btn-main px-4 rounded"
             disabled={submitLoading}
           >
             {buttonText}
