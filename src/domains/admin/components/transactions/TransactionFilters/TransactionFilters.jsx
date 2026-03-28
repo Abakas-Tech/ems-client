@@ -55,12 +55,14 @@ const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
           </div>
 
           {/* Clear Button */}
-          <div className="col-md-1 d-grid">
+
+          <div className="col-md-2 d-grid">
             <button
-              className={`btn btn-outline-secondary ${styles.clearBtn}`}
+              className={`btn btn-outline-secondary ${styles["clear-btn"]}`}
               onClick={onClear}
+              disabled={!filters.category && !filters.date_from && !filters.date_to}
             >
-              Clear
+              Clear Filters
             </button>
           </div>
         </div>

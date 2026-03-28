@@ -59,12 +59,15 @@ const FileFilters = ({ filters, onFilterChange, onClear }) => {
           </div>
 
           {/* Clear button */}
-          <div className="col-md-1 d-grid">
+          <div className="col-md-2 d-grid">
             <button
-              className={`btn btn-outline-secondary ${styles.clearBtn}`}
+              className={`btn btn-outline-secondary ${styles["clear-btn"]}`}
               onClick={onClear}
+              disabled={
+                !filters.fileName && !filters.file_type && !filters.category
+              }
             >
-              Clear
+              Clear Filters
             </button>
           </div>
         </div>
