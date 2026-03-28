@@ -53,11 +53,10 @@ const Contact = () => {
           }));
         }
       } catch (err) {
-        addMessage(false, err.message);
+       console.error(err);
       }
     };
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {
@@ -129,7 +128,7 @@ const Contact = () => {
   const mapSrc = `https://maps.google.com/maps?q=${location.latitude},${location.longitude}&z=15&output=embed`;
 
   return (
-    <div className="container py-5 my-5 border-top" id="contact">
+    <div className="container  my-5" id="contact">
       <div className="">
         <div className="text-center">
           <h2 className="pb-4  fw-bold">Contact Us For Any Query</h2>

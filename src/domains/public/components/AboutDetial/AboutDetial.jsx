@@ -3,76 +3,63 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
-  FaUniversity,
-  FaLightbulb,
   FaUsers,
-  FaLaptopCode,
   FaGlobe,
-  FaChartLine,
   FaShieldAlt,
   FaHandsHelping,
   FaBalanceScale,
   FaAward,
   FaPeopleArrows,
   FaBrain,
+  FaCheckCircle,
 } from "react-icons/fa";
 
-// Mission items
-const missions = [
-  {
-    icon: <FaUniversity size={45} />,
-    title: "Licensed & Compliant",
-    desc: "Operating under international labor regulations and government-approved recruitment standards.",
-  },
-  {
-    icon: <FaLightbulb size={45} />,
-    title: "Tailored Deployment",
-    desc: "Customized workforce solutions based on employer needs and market demand.",
-  },
+const publicFeatures = [
   {
     icon: <FaUsers size={45} />,
-    title: "Worker Protection",
-    desc: "Ensuring fair contracts, safety, and dignity for every worker abroad.",
-  },
-  {
-    icon: <FaLaptopCode size={45} />,
-    title: "Digital Recruitment",
-    desc: "Modern systems for faster screening, documentation, and deployment.",
+    title: "Accessible Opportunities",
+    desc: "We provide verified international job openings, making it easy for individuals to find suitable positions across multiple countries.",
   },
   {
     icon: <FaGlobe size={45} />,
-    title: "Global Opportunities",
-    desc: "Providing access to jobs across the Middle East, Europe, and Asia.",
+    title: "Global Reach",
+    desc: "Our network connects people with employers worldwide, creating opportunities beyond borders for career growth and experience.",
   },
   {
-    icon: <FaChartLine size={45} />,
-    title: "Proven Placement Success",
-    desc: "Consistent delivery of skilled manpower to international employers.",
+    icon: <FaShieldAlt size={45} />,
+    title: "Transparent Process",
+    desc: "Every step is clear and honest. We make sure you know the requirements, timelines, and expectations before you proceed.",
+  },
+  {
+    icon: <FaHandsHelping size={45} />,
+    title: "Guidance & Support",
+    desc: "From applications to preparation, we guide you through the process, helping you feel confident and ready at every stage.",
+  },
+  {
+    icon: <FaBalanceScale size={45} />,
+    title: "Fair Opportunities",
+    desc: "We ensure ethical and responsible recruitment practices, promoting equal chances for all candidates.",
+  },
+  {
+    icon: <FaAward size={45} />,
+    title: "Trusted Service",
+    desc: "Reliability and transparency are at our core, giving you peace of mind as you take steps toward your international career.",
   },
 ];
 
-// Slider settings
 const settings = {
   dots: true,
   infinite: true,
   arrows: false,
   speed: 500,
   slidesToShow: 3,
-  slidesToScroll: 1,
   autoplay: true,
   responsive: [
-    {
-      breakpoint: 992, // tablet
-      settings: { slidesToShow: 2, slidesToScroll: 1 },
-    },
-    {
-      breakpoint: 576, // mobile
-      settings: { slidesToShow: 1, slidesToScroll: 1 },
-    },
+    { breakpoint: 992, settings: { slidesToShow: 2 } },
+    { breakpoint: 576, settings: { slidesToShow: 1 } },
   ],
 };
 
-// Counter component
 const Counter = ({ target, label }) => {
   const [count, setCount] = useState(0);
 
@@ -103,75 +90,82 @@ const Counter = ({ target, label }) => {
 };
 
 function AboutDetail() {
-  // Fix slider recalculation on mount
   useEffect(() => {
     window.dispatchEvent(new Event("resize"));
   }, []);
 
   return (
-    <div className="container py-5">
+    <div className="container mt-3 py-5">
       {/* HERO */}
-      <div className="row align-items-center mb-5">
-        <div>
-          <h2 className="fw-bold text-info mb-3">Overseas Employment Agency</h2>
-          <p>
-            We are a government-recognized overseas employment agency
-            specializing in recruiting, training, and deploying skilled and
-            semi-skilled workers to international markets.
-          </p>
-          <p>
-            Our agency bridges the gap between global employers and local talent
-            by ensuring ethical recruitment, transparent processes, and full
-            worker support before and after deployment.
-          </p>
-        </div>
+      <div className="mb-5">
+        <h2 className="fw-bold text-info mb-3">About Us</h2>
+
+        <p className="mb-4">
+          We open doors to international opportunities by connecting individuals
+          with trusted employers around the world. Our mission is to make every
+          step simple, clear, and accessible so you can confidently plan your
+          career abroad.
+        </p>
+
+        <p className="mb-4">
+          Whether you are just starting your professional journey or preparing
+          for a new chapter in your career, we provide the guidance, resources,
+          and support you need to navigate each stage with clarity.
+        </p>
+
+        <p className="mb-4">
+          By offering accurate information and practical tips, we ensure that
+          each candidate understands the process fully, reducing uncertainty and
+          building confidence for the path ahead.
+        </p>
       </div>
 
-      {/* EXPERIENCE / STATS */}
+      {/* TRUST / STATS */}
       <div className="mb-5 pt-4 border-top">
-        <h3 className="text-info mb-4">Our Experience</h3>
+        <h3 className="text-info mb-4">Our Reach</h3>
+
         <div className="row g-4">
           <div className="col-md-3 col-6">
-            <Counter target={12} label="Years Experience" />
+            <Counter target={15} label="Years of Service" />
           </div>
           <div className="col-md-3 col-6">
-            <Counter target={8500} label="Workers Deployed" />
+            <Counter target={2000} label="People Supported" />
           </div>
           <div className="col-md-3 col-6">
-            <Counter target={25} label="Partner Countries" />
+            <Counter target={3} label="Countries Covered" />
           </div>
           <div className="col-md-3 col-6">
-            <Counter target={120} label="Global Employers" />
+            <Counter target={100} label="Transparency %" />
           </div>
         </div>
       </div>
 
-      {/* STORY */}
-      <div className="mb-5">
-        <h3 className="text-info mb-3">Our Journey</h3>
-        <p>
-          Since our establishment, we have successfully deployed thousands of
-          workers to countries such as UAE, Saudi Arabia, Qatar, and Europe. We
-          specialize in sectors including construction, hospitality, healthcare,
-          and domestic services.
-        </p>
-        <p>
-          Our growth is built on trust, compliance, and strong international
-          partnerships. We ensure every worker is properly trained, documented,
-          and prepared for overseas employment.
-        </p>
-      </div>
+      {/* WHAT WE OFFER */}
+      <div className="mb-5 pt-4">
+        <h3 className="text-info mb-4">What We Offer</h3>
 
-      {/* MISSION SLIDER */}
+        <div className="row g-3">
+          {[
+            "Access to verified international job opportunities",
+            "Clear explanation of requirements and application steps",
+            "Guidance to help you prepare for working abroad",
+            "Reliable updates and communication",
+            "Support throughout your journey",
+            "Simple and transparent process visibility",
+          ].map((text, idx) => (
+            <div className="col-12 col-md-6 d-flex align-items-start" key={idx}>
+              <FaCheckCircle className="text-info me-2 mt-1" size={20} />
+              <p className="mb-0">{text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* SLIDER */}
       <div className="mb-5 pt-4 border-top">
         <h3 className="text-info mb-4">Our Approach</h3>
-        <p className="mb-4">
-          We follow a structured recruitment process that ensures quality,
-          compliance, and worker safety from sourcing to deployment.
-        </p>
 
         <Slider {...settings}>
-          {missions.map((item, i) => (
+          {publicFeatures.map((item, i) => (
             <div key={i}>
               <div className="text-center p-3">
                 <div className="mb-3 text-info">{item.icon}</div>
@@ -183,69 +177,31 @@ function AboutDetail() {
         </Slider>
       </div>
 
-      {/* WHY CHOOSE US */}
+      {/* VALUES */}
       <div className="mb-5 pt-4 border-top">
-        <h3 className="text-info mb-4">Why Choose Us</h3>
-        <div className="row g-4">
-          {[
-            {
-              icon: <FaHandsHelping size={40} />,
-              title: "Ethical Recruitment",
-              desc: "No exploitation, no hidden fees — full transparency for workers and employers.",
-            },
-            {
-              icon: <FaShieldAlt size={40} />,
-              title: "Government Compliance",
-              desc: "Fully aligned with labor laws and international standards.",
-            },
-            {
-              icon: <FaGlobe size={40} />,
-              title: "Wide Global Network",
-              desc: "Strong employer partnerships across multiple countries.",
-            },
-            {
-              icon: <FaChartLine size={40} />,
-              title: "High Success Rate",
-              desc: "Efficient deployment with high employer satisfaction.",
-            },
-          ].map((item, idx) => (
-            <div className="col-md-6" key={idx}>
-              <div className="d-flex">
-                <div className="text-info me-3">{item.icon}</div>
-                <div>
-                  <h6 className="fw-bold">{item.title}</h6>
-                  <p className="small">{item.desc}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+        <h3 className="text-info mb-4">Our Values</h3>
 
-      {/* CORE VALUES */}
-      <div className="mb-5 pt-4 border-top">
-        <h3 className="text-info mb-4">Core Values</h3>
         <div className="row g-4">
           {[
-            {
-              icon: <FaBalanceScale size={40} />,
-              title: "Integrity",
-              desc: "Honest processes and transparent communication.",
-            },
             {
               icon: <FaPeopleArrows size={40} />,
-              title: "Partnership",
-              desc: "Building long-term relationships with employers and workers.",
+              title: "Accessibility",
+              desc: "We make opportunities easy to understand, ensuring everyone can access the information they need.",
+            },
+            {
+              icon: <FaBalanceScale size={40} />,
+              title: "Fairness",
+              desc: "Equal and ethical opportunities for all, promoting trust and responsibility in every process.",
             },
             {
               icon: <FaBrain size={40} />,
-              title: "Innovation",
-              desc: "Improving recruitment using modern tools and systems.",
+              title: "Clarity",
+              desc: "Providing clear, simple, and accurate information to guide decisions effectively.",
             },
             {
               icon: <FaAward size={40} />,
-              title: "Excellence",
-              desc: "Delivering high-quality manpower solutions consistently.",
+              title: "Trust",
+              desc: "Building confidence through honesty, transparency, and consistent support.",
             },
           ].map((item, idx) => (
             <div className="col-md-6" key={idx}>
@@ -264,14 +220,23 @@ function AboutDetail() {
       {/* IMPACT */}
       <div className="pt-4 border-top">
         <h3 className="text-info mb-3">Our Impact</h3>
-        <p>
-          We have transformed thousands of lives by connecting workers to
-          better-paying jobs abroad, supporting families and contributing to
-          national economic growth.
+
+        <p className="mb-4">
+          We simplify the journey to working abroad by providing clear,
+          reliable, and actionable information. This empowers individuals to
+          make informed decisions and pursue opportunities with confidence.
         </p>
-        <p>
-          Our commitment is to safe migration, ethical recruitment, and
-          sustainable employment opportunities worldwide.
+
+        <p className="mb-4">
+          Beyond offering job opportunities, we ensure every person understands
+          the process and feels supported at every stage. Our mission is to make
+          working internationally fair, transparent, and stress-free.
+        </p>
+
+        <p className="mb-4">
+          By combining guidance, updates, and practical tips, we reduce
+          uncertainty and help individuals successfully achieve their
+          international career goals.
         </p>
       </div>
     </div>
