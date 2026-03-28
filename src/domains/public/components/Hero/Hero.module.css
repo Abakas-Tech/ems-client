@@ -19,7 +19,7 @@
   background: linear-gradient(
     to right,
     rgba(14, 45, 91, 0.65) 0%,
-    rgba(0, 0, 0, 0.1) 70%,
+    rgba(0, 0, 0, 0.1) 50%,
     rgba(0, 0, 0, 0) 100%
   );
   z-index: 1;
@@ -68,6 +68,53 @@
   line-height: 1;
 }
 
+.ctaButton {
+  margin-top: 2rem;
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+
+  color: #fff;
+  background: linear-gradient(135deg, #0e2d5b, #1f6feb);
+  border: none;
+  border-radius: 50px;
+
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+.ctaButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+}
+
+.ctaButton:active {
+  transform: translateY(0px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+.ctaButton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: 0.5s;
+}
+.ctaButton:hover::after {
+  left: 100%;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .brand-name {
@@ -84,6 +131,6 @@
     margin-bottom: 1.5rem;
   }
   .hero-banner {
-    min-height: 100svh; /* modern stable viewport */
+    min-height: 100svh;
   }
 }

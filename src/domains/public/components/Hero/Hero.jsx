@@ -17,6 +17,10 @@ function Hero() {
                 <h2 className={styles["slogan-main"]}>Build Your Future</h2>
                 <h2 className={styles["slogan-sub"]}>Beyond Borders</h2>
               </div>
+
+              <div>
+                <button className={styles.ctaButton}>Get Started</button>
+              </div>
             </div>
           </div>
         </div>
