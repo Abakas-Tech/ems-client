@@ -13,6 +13,7 @@ const menuItems = [
   { label: "Files", path: "/admin/my-files" },
   { label: "Collect Money", path: "/admin/collect-money" },
   { label: "Payment History", path: "/admin/payments" },
+  { label: "Notifications", path: "/admin/notifications" },
   { label: "Settings", path: "/admin/settings" },
 ];
 
@@ -27,13 +28,22 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  
+  const rolePathMap = {
+    1: "admin",
+    2: "employee",
+    3: "partner",
+    4: "worker",
+    5: "employer",
+  };
+
+  const roleBase = rolePathMap[Number(profile?.role_id)] || "admin";
+  const notificationPath = `/${roleBase}/notifications`;
 
   // Create a reusable Bell component to avoid code duplication
   const NotificationBell = () => (
     <button
       className="btn p-0 position-relative d-flex align-items-center justify-content-center"
-      onClick={() => navigate("/admin/notifications")}
+      onClick={() => navigate(notificationPath)}
       style={{
         border: "none",
         background: "transparent",

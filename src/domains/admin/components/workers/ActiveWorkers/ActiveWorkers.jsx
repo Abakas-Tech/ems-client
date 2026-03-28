@@ -39,11 +39,13 @@ const ActiveWorkers = () => {
   const fetchWorkers = useCallback(async () => {
     showLoader();
     try {
-      const res = await listWorkers({
+      const params = {
         ...filters,
         page,
         limit,
-      });
+      };
+
+      const res = await listWorkers(params);
 
       setWorkers(res?.data.items || []);
       setTotalItems(res?.data.meta?.total_items || 0);
@@ -52,7 +54,6 @@ const ActiveWorkers = () => {
     } finally {
       hideLoader();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);
 
   useEffect(() => {
@@ -145,7 +146,23 @@ const ActiveWorkers = () => {
     showLoader();
     try {
       const workerProfile = await getWorkerProfile(id);
-      navigate(`/admin/workers/active/${id}`, { state: workerProfile });
+
+      // role based navigation
+      if (role === 3) {
+        // Partner
+        navigate(`/partner/active-workers/${id}`, {
+          state: workerProfile,
+        });
+      } else if (role === 5) {
+        navigate(`/employer/my-workers/${id}`, {
+          state: workerProfile,
+        });
+      } else {
+        // Admin / Employee
+        navigate(`/admin/workers/active/${id}`, {
+          state: workerProfile,
+        });
+      }
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -203,7 +220,7 @@ const ActiveWorkers = () => {
   return (
     <div className="dashboard-wraper">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-        <div className="mb-4">
+        <div className={`mb-${role === 5 ? "0" : "4"}`}>
           {role !== 3 && role !== 5 && <BackButton onClick={goBack} />}
 
           <h2 className="fw-bold text-dark mb-2">
@@ -303,9 +320,13 @@ const ActiveWorkers = () => {
         }
         data={workers}
         columns={[
-          { header: "Name", accessor: "full_name" },
+          {
+            header: "Name",
+            accessor: "full_name",
+            render: (row) => <span className="fw-bold">{row.full_name}</span>,
+          },
           { header: "Phone Number", accessor: "phone_number" },
-          { header: "Status", accessor: "status" },
+          { header: "Current Status", accessor: "status" },
         ]}
         actions={[
           { type: "view", onClick: (row) => handleView(row.id) },
@@ -322,8 +343,7 @@ const ActiveWorkers = () => {
           },
         ]}
         emptyState={{
-          title: "No active workers found",
-          subtitle: "Try adjusting the filters above or check back later.",
+          title: role === 5 ? "No worker is assigned to you yet" : "No Active workers found",
         }}
         pagination={{
           page,

@@ -26,6 +26,9 @@ function Visa() {
 
   const [visaFile, setVisaFile] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [existingVisaUrl] = useState(
+    existingVisa?.document?.url || null,
+  );
 
   const goBack = () => navigate(-1);
 
@@ -127,12 +130,15 @@ function Visa() {
     }
   };
 
+  const title = isEditMode ? "Edit Visa Information" : "Add Visa Information";
+  const buttonText = isEditMode ? "Update Visa" : "Add Visa";
+
   return (
     <section className="dashboard-wraper">
       <BackButton onClick={goBack} />
 
       <form className="form-submit" onSubmit={handleSubmit}>
-        <h2 className="fw-bold text-dark mb-3">Visa Information</h2>
+        <h2 className="fw-bold text-dark mb-3">{title}</h2>
 
         <div className="row">
           {/* VISA NUMBER */}
@@ -143,7 +149,6 @@ function Visa() {
               type="text"
               name="visa_number"
               className="form-control"
-              placeholder="Enter visa number"
               value={formData.visa_number}
               onChange={handleChange}
             />
@@ -183,7 +188,6 @@ function Visa() {
               type="text"
               name="visa_reference_number"
               className="form-control"
-              placeholder="Enter reference number"
               value={formData.visa_reference_number}
               onChange={handleChange}
             />
@@ -215,16 +219,31 @@ function Visa() {
               onChange={handleFileChange}
               required={!isEditMode}
             />
+
+            <label>
+              {isEditMode && existingVisaUrl && (
+                <small className="d-block text-muted">
+                  Current Visa:{" "}
+                  <a
+                    href={existingVisaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </a>
+                </small>
+              )}
+            </label>
           </div>
         </div>
 
-        <div className="submit-section mt-4">
+        <div className="submit-section">
           <button
             type="submit"
-            className="btn btn-main px-5 rounded"
+            className="btn btn-main px-4 rounded"
             disabled={submitLoading}
           >
-            {isEditMode ? "Update Visa" : "Add Visa"}
+            {buttonText}
           </button>
         </div>
       </form>

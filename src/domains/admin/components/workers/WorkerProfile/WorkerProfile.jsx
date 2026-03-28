@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaFilePdf, FaImage } from "react-icons/fa";
@@ -210,7 +211,7 @@ const useWorkerDeletes = (
 
 // Main component to display a worker's profile with all related information and actions
 const WorkerProfile = () => {
-  const { id } = useParams();
+  const { id: paramId } = useParams();
 
   const navigate = useNavigate();
 
@@ -225,8 +226,11 @@ const WorkerProfile = () => {
 
   const { profile } = useProfile();
 
+  const isWorker = profile?.role_id === 4;
+  const id = isWorker ? profile?.id : paramId;
+
   const canDeleteStatus = [1, 2].includes(profile?.role_id);
-  const backButtonVisibility = [1, 2, 3].includes(profile?.role_id);
+  const backButtonVisibility = [1, 2, 3, 5].includes(profile?.role_id);
 
   // Fetch worker profile data
   const fetchWorker = async () => {
@@ -279,11 +283,15 @@ const WorkerProfile = () => {
 
   // Initial data fetching when component mounts or when worker ID changes
   useEffect(() => {
-    if (id) fetchWorker();
+    if (!id) return;
+    fetchWorker();
     fetchWorkerStatuses();
     fetchAllStatuses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  console.log("paramId:", paramId);
+  console.log("profile:", profile);
+  console.log("final id:", id);
 
   // Handle assigning status
   const handleAssignStatus = async (inputValues) => {
@@ -507,11 +515,15 @@ const WorkerProfile = () => {
       endDate: niceDate(con.contract_end_date || con.end_date),
       status,
       statusBadge:
-        status === "active"
+        status === "approved"
           ? "bg-success"
           : status === "pending"
             ? "bg-warning"
-            : "bg-secondary",
+            : status === "rejected"
+              ? "bg-danger"
+              : status === "terminated"
+                ? "bg-dark"
+                : "bg-secondary",
       monthlySalary:
         con.monthly_salary != null ? `${con.monthly_salary} SAR` : "—",
       partnerName: fallback(con.partner_name),
@@ -567,9 +579,9 @@ const WorkerProfile = () => {
         <div className="row g-4">
           {/* Worker Statuses */}
           <div className="col-12">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Statuses</h3>
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold text-info">Statuses</h3>
 
                 <RoleButton
                   visibleTo={[2, 1]}
@@ -619,9 +631,9 @@ const WorkerProfile = () => {
 
           {/* PERSONAL */}
           <div className="col-12">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Personal Information</h3>
+            <div className="card h-100  border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold text-info">Personal Information</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(personalInfo)
@@ -735,9 +747,9 @@ const WorkerProfile = () => {
 
           {/* PASSPORT */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0 ">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Passport Information</h3>
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold text-info">Passport Information</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(passportObj)
@@ -804,9 +816,9 @@ const WorkerProfile = () => {
 
           {/* COC */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">COC Information</h3>
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold text-info">COC Information</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(cocObj)
@@ -878,20 +890,29 @@ const WorkerProfile = () => {
 
           {/* Emergency Contact */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Emergency Contact</h3>
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold text-info">Emergency Contact</h3>
                 <ActionButtons
-                  actions={[
-                    {
-                      type: "edit",
-                      onClick: () => actions.editEmergency(emergency),
-                    },
-                    {
-                      type: "delete",
-                      onClick: deletes.deleteEmergency,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(emergencyObj)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => actions.editEmergency(null),
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => actions.editEmergency(emergency),
+                          },
+                          {
+                            type: "delete",
+                            onClick: deletes.deleteEmergency,
+                          },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">
@@ -937,9 +958,9 @@ const WorkerProfile = () => {
 
           {/* Medical */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Medical Information</h3>
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold text-info">Medical Information</h3>
                 <ActionButtons
                   actions={
                     isModuleEmpty(medicalObj)
@@ -1023,17 +1044,29 @@ const WorkerProfile = () => {
 
           {/* Visa */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Visa Information</h3>
+            <div className="card h-100 border rounded-4 border-info ">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold text-info">Visa Information</h3>
                 <ActionButtons
-                  actions={[
-                    { type: "edit", onClick: () => actions.editVisa(visa) },
-                    {
-                      type: "delete",
-                      onClick: deletes.deleteVisa,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(visaObj)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => actions.editVisa(null),
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => actions.editVisa(visa),
+                          },
+                          {
+                            type: "delete",
+                            onClick: deletes.deleteVisa,
+                          },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">
@@ -1084,17 +1117,29 @@ const WorkerProfile = () => {
 
           {/* LMIS */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">LMIS Information</h3>
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold text-info">LMIS Information</h3>
                 <ActionButtons
-                  actions={[
-                    { type: "edit", onClick: () => actions.editLmis(lmisObj) },
-                    {
-                      type: "delete",
-                      onClick: deletes.deleteLmis,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(lmisObj)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => actions.editLmis(null),
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => actions.editLmis(lmisObj),
+                          },
+                          {
+                            type: "delete",
+                            onClick: deletes.deleteLmis,
+                          },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">
@@ -1131,17 +1176,29 @@ const WorkerProfile = () => {
 
           {/* Travel Records */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Travel Records</h3>
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold text-info">Travel Records</h3>
                 <ActionButtons
-                  actions={[
-                    {
-                      type: "edit",
-                      onClick: () => actions.editTravel(travelRecords),
-                    },
-                    { type: "delete", onClick: deletes.deleteTravel },
-                  ]}
+                  actions={
+                    isModuleEmpty(travelRecords)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => actions.editTravel(null),
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => actions.editTravel(travelRecords),
+                          },
+                          {
+                            type: "delete",
+                            onClick: deletes.deleteTravel,
+                          },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">
@@ -1255,20 +1312,29 @@ const WorkerProfile = () => {
 
           {/* Contracts */}
           <div className="col-12 col-md-6">
-            <div className="card h-100 shadow-sm border-0">
-              <div className="card-header d-flex justify-content-between align-items-center pb-0">
-                <h3 className="fw-bold">Contracts</h3>
+            <div className="card h-100 border rounded-4 border-info">
+              <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+                <h3 className="fw-bold text-info">Contracts</h3>
                 <ActionButtons
-                  actions={[
-                    {
-                      type: "edit",
-                      onClick: () => actions.editContract(contractsList),
-                    },
-                    {
-                      type: "delete",
-                      onClick: deletes.deleteContract,
-                    },
-                  ]}
+                  actions={
+                    isModuleEmpty(contractsList)
+                      ? [
+                          {
+                            type: "addModule",
+                            onClick: () => actions.editContract(null),
+                          },
+                        ]
+                      : [
+                          {
+                            type: "edit",
+                            onClick: () => actions.editContract(contractsList),
+                          },
+                          {
+                            type: "delete",
+                            onClick: deletes.deleteContract,
+                          },
+                        ]
+                  }
                 />
               </div>
               <div className="card-body">

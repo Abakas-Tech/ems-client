@@ -4,7 +4,6 @@ import {
   listArchivedWorkers,
   deleteArchivedWorker,
   restoreWorker,
-  getArchivedWorkerProfile,
 } from "../../../api/worker.api";
 
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
@@ -63,19 +62,6 @@ const ArchivedWorkers = () => {
   const handleClear = () => {
     setFilters({ status: "archived" });
     setPage(1);
-  };
-
-  // Action handlers
-  const handleView = async (id) => {
-    showLoader();
-    try {
-      const workerProfile = await getArchivedWorkerProfile(id);
-      navigate(`/admin/workers/archived/${id}`, { state: workerProfile });
-    } catch (err) {
-      addMessage(false, err.message || "Failed to load worker profile");
-    } finally {
-      hideLoader();
-    }
   };
 
   // Restore archived worker
@@ -152,12 +138,15 @@ const ArchivedWorkers = () => {
         }
         data={workers}
         columns={[
-          { header: "Name", accessor: "full_name" },
+          {
+            header: "Name",
+            accessor: "full_name",
+            render: (row) => <span className="fw-bold">{row.full_name}</span>,
+          },
           { header: "Phone Number", accessor: "phone_number" },
-          { header: "Status", accessor: "status" },
+          { header: "Current Status", accessor: "status" },
         ]}
         actions={[
-          
           { type: "restore", onClick: (row) => handleRestore(row.id) },
           { type: "delete", onClick: (row) => handleDelete(row.id) },
         ]}
