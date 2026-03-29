@@ -7,7 +7,6 @@ import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import SendButton from "./../../../../shared/components/SendButton/SendButton";
 
-
 const Contact = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -53,7 +52,7 @@ const Contact = () => {
           }));
         }
       } catch (err) {
-       console.error(err);
+        console.error(err);
       }
     };
     fetchData();
@@ -128,7 +127,11 @@ const Contact = () => {
   const mapSrc = `https://maps.google.com/maps?q=${location.latitude},${location.longitude}&z=15&output=embed`;
 
   return (
-    <div className="container  my-5" id="contact">
+    <div
+      className="container"
+      id="contact"
+      style={{ padding: "100px 0" }}
+    >
       <div className="">
         <div className="text-center">
           <h2 className="pb-4  fw-bold">Contact Us For Any Query</h2>

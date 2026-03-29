@@ -54,7 +54,11 @@ const testimonialData = [
 
 const Testimonials = () => {
   return (
-    <section className="gray-bg" id="testimonials">
+    <section
+      className="gray-bg"
+      id="testimonials"
+      style={{ padding: "100px 0" }}
+    >
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-7 col-md-10 text-center">
@@ -76,9 +80,9 @@ const Testimonials = () => {
               spaceBetween={30}
               autoplay={{ delay: 4000 }}
               breakpoints={{
-                0: { slidesPerView: 1 }, 
-                768: { slidesPerView: 2 }, 
-                992: { slidesPerView: 3 }, 
+                0: { slidesPerView: 1 },
+                768: { slidesPerView: 2 },
+                992: { slidesPerView: 3 },
               }}
               className="smart-textimonials smart-center"
             >

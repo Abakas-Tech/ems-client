@@ -3,7 +3,7 @@ import React from "react";
 function HowItWorks() {
   return (
     <>
-      <section id="how">
+      <section id="how" style={{ padding: "100px 0" }}>
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-xl-6 col-lg-7 col-md-10 text-center">

@@ -100,7 +100,7 @@ const Gallery = () => {
   };
 
   return (
-    <section id="gallery" className="py-2">
+    <div className="dashboard-wraper">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div>
@@ -208,7 +208,7 @@ const Gallery = () => {
           </div>
         </div>
       )}
-    </section>
+    </div>
   );
 };
 

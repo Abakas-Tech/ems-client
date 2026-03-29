@@ -8,9 +8,9 @@ function Hero() {
         <div className="row">
           <div className="col-xl-7 col-lg-9 col-md-12">
             <div className={styles["hero-content"]}>
-              <h1 className={styles["brand-name"]}>SULTAN JABIR MUHAMMED</h1>
+              <h1 className={styles["brand-name"]}>Global Trust</h1>
               <h2 className={styles["agency-type"]}>
-                FOREIGN EMPLOYMENT AGENCY
+                Overseas Employment Agent PLC.
               </h2>
 
               <div className={styles["slogan-wrapper"]}>
