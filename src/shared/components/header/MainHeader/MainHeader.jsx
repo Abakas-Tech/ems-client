@@ -130,7 +130,7 @@ const MainHeader = () => {
                       location.pathname === "/properties" ? "active" : ""
                     }
                   >
-                    Properties
+                    How it Works
                   </Link>
                 </li>
                 <li>
@@ -141,6 +141,26 @@ const MainHeader = () => {
                     About
                   </Link>
                 </li>
+
+                <li>
+                  <Link
+                    to="/about"
+                    className={location.pathname === "/about" ? "active" : ""}
+                  >
+                    Gallery
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    to="/about"
+                    className={location.pathname === "/about" ? "active" : ""}
+                  >
+                    Testimonials
+                  </Link>
+                </li>
+
+
                 <li>
                   <Link
                     to="/contact"
@@ -190,7 +210,7 @@ const MainHeader = () => {
                       className={location.pathname === "/" ? "active" : ""}
                       onClick={toggleMenu}
                     >
-                      Home
+                      Hero
                     </Link>
                   </li>
                   <li>
@@ -201,7 +221,7 @@ const MainHeader = () => {
                       }
                       onClick={toggleMenu}
                     >
-                      Properties
+                      How It Works
                     </Link>
                   </li>
                   <li>
@@ -213,6 +233,28 @@ const MainHeader = () => {
                       About
                     </Link>
                   </li>
+
+                   <li>
+                    <Link
+                      to="/about"
+                      className={location.pathname === "/about" ? "active" : ""}
+                      onClick={toggleMenu}
+                    >
+                      Gallery
+                    </Link>
+                  </li>
+
+                   <li>
+                    <Link
+                      to="/about"
+                      className={location.pathname === "/about" ? "active" : ""}
+                      onClick={toggleMenu}
+                    >
+                      Testimonials
+                    </Link>
+                  </li>
+
+
                   <li>
                     <Link
                       to="/contact"
