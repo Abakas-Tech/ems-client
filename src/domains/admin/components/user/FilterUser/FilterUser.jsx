@@ -27,7 +27,7 @@ const FilterUser = ({ filters, onFilterChange, onClear }) => {
               value={filters.role_id || ""}
               onChange={onFilterChange}
             >
-              <option value="2">All Users</option>
+              <option value="1">All Users</option>
               <option value="2">Employee</option>
               <option value="3">Partner</option>
               <option value="5">Employer</option>
