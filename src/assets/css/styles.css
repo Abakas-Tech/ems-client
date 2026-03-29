@@ -12054,7 +12054,7 @@ th.next.available,
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     padding: 0 !important;
     border: none !important;
     box-shadow: none !important;
@@ -12078,7 +12078,7 @@ th.next.available,
   }
 
   /* 5. Hide common UI elements */
-  header,
+  body > header,
   .sidebar,
   .d-navigation,
   .d-print-none,

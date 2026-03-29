@@ -44,6 +44,7 @@ import Travel from "../domains/admin/pages/workers/modules/Travel/Travel.jsx";
 import Contract from "../domains/admin/pages/workers/modules/Contract/Contract.jsx";
 import Guarantor from "../domains/admin/pages/workers/modules/Guarantor/Guarantor.jsx";
 import Visa from "../domains/admin/pages/workers/modules/Visa/Visa.jsx";
+import CV from "../Test/CV.jsx";
 
 const AdminRoutes = () => {
   const { profile } = useProfile();
@@ -62,7 +63,7 @@ const AdminRoutes = () => {
         <Route path="my-profile" element={<Profile />} />
         <Route path="user-management" element={<ListUser />} />
         <Route path="dashboard" element={<Analytics />} />
-        <Route path="my-files" element={<Files />} />
+        <Route path="my-files" element={<CV/>} />
         <Route
           path="finances"
           element={
