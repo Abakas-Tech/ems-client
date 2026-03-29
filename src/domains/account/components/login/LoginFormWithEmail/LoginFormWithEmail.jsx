@@ -7,7 +7,7 @@ import PasswordInput from "../../../../../shared/components/PasswordInput/Passwo
 import { setAccessToken } from "../../../../../utils/axios";
 import useResponse from "../../../../../context/Response/useResponse";
 
-const LoginFormWithEmail = ({ role }) => {
+const LoginFormWithEmail = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { showLoader, hideLoader } = useloader();
@@ -44,6 +44,7 @@ const LoginFormWithEmail = ({ role }) => {
       const { access_token } = response.data;
       setAccessToken(access_token);
       addMessage(response.success, response.message);
+      const { role } = response.data;
       if (role === "partner") {
         navigate("/partner/my-profile", { replace: true });
       } else {
