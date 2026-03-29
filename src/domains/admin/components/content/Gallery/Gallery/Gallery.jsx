@@ -61,8 +61,8 @@ const Gallery = () => {
       async () => {
         showLoader();
         try {
-          const response=await deleteGalleryItem(itemId);
-          addMessage(response?.success ,response?.message);
+          const response = await deleteGalleryItem(itemId);
+          addMessage(response?.success, response?.message);
           fetchGalleryItems();
         } catch (err) {
           addMessage(false, err.message);
@@ -71,10 +71,8 @@ const Gallery = () => {
         }
       },
       {
-      
         title: `Are you sure you want to delete this item`,
         confirmText: "Delete",
-    
       },
     );
   };
@@ -95,7 +93,6 @@ const Gallery = () => {
         }
       },
       {
-        
         title: "Are you sure you want to delete ALL gallery items?",
         confirmText: "Delete All",
       },
@@ -103,116 +100,114 @@ const Gallery = () => {
   };
 
   return (
-    <section id="gallery">
-      <div className="dashboard-wraper">
-        {/* Header */}
-        <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-          <div>
-            <BackButton onClick={goBack} />
-            <h2>Gallery Management</h2>
-            <p className="text-muted ">Manage gallery items efficiently</p>
-          </div>
+    <section id="gallery" className="py-2">
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+          <BackButton onClick={goBack} />
+          <h2>Gallery Management</h2>
+          <p className="text-muted ">Manage gallery items efficiently</p>
         </div>
+      </div>
 
-        {/* Top Actions */}
-        <div className="d-flex gap-2 mb-4 flex-wrap">
+      {/* Top Actions */}
+      <div className="d-flex gap-2 mb-4 flex-wrap">
+        <button
+          className="btn btn-main px-4"
+          onClick={handleAddNew}
+          disabled={galleryItems.length >= 10}
+        >
+          Add Gallery
+        </button>
+        {galleryItems.length > 0 && (
           <button
-            className="btn btn-main px-4"
-            onClick={handleAddNew}
-            disabled={galleryItems.length >= 10}
+            className="btn btn-outline-danger"
+            onClick={handleDeleteAll}
+            disabled={galleryItems.length === 0}
           >
-            Add Gallery
+            Delete All
           </button>
-          {galleryItems.length > 0 && (
-            <button
-              className="btn btn-outline-danger"
-              onClick={handleDeleteAll}
-              disabled={galleryItems.length === 0}
-            >
-              Delete All
-            </button>
-          )}
-        </div>
-
-        {galleryItems.length === 0 ? (
-          <div className="text-center text-muted py-5">
-            <p className="fs-5">No gallery items available.</p>
-          </div>
-        ) : (
-          <div className="row g-4 align-items-center">
-            {/* Left Panel */}
-            <div className="col-12 col-lg-4">
-              <h3>{galleryItems[currentIndex]?.title}</h3>
-              <p className="text-muted">
-                {galleryItems[currentIndex]?.description}
-              </p>
-              <div className="mt-2">
-                <ActionButtons
-                  actions={[
-                    {
-                      type: "edit",
-                      onClick: () => handleEdit(galleryItems[currentIndex]),
-                    },
-                    {
-                      type: "delete",
-                      onClick: () =>
-                        handleDelete(
-                          galleryItems[currentIndex].id,
-                          galleryItems[currentIndex].title,
-                        ),
-                    },
-                  ]}
-                />
-              </div>
-            </div>
-
-            {/* Right Panel */}
-            <div className="col-12 col-lg-8 d-flex justify-content-center align-items-center gap-3">
-              <ActionButtons
-                actions={[
-                  {
-                    type: "leftArrow",
-                    onClick: () => slider && slider.current?.prev(),
-                  },
-                ]}
-              />
-
-              <div
-                ref={sliderRef}
-                className="keen-slider"
-                style={{ width: "400px", height: "220px" }}
-              >
-                {galleryItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="keen-slider__slide d-flex justify-content-center align-items-center"
-                    style={{ width: "400px", height: "200px" }}
-                  >
-                    <img
-                      src={item.image_url}
-                      alt={item.title}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <ActionButtons
-                actions={[
-                  {
-                    type: "rightArrow",
-                    onClick: () => slider && slider.current?.next(),
-                  },
-                ]}
-              />
-            </div>
-          </div>
         )}
       </div>
+
+      {galleryItems.length === 0 ? (
+        <div className="text-center text-muted py-5">
+          <p className="fs-5">No gallery items available.</p>
+        </div>
+      ) : (
+        <div className="row g-4 align-items-center">
+          {/* Left Panel */}
+          <div className="col-12 col-lg-4">
+            <h3>{galleryItems[currentIndex]?.title}</h3>
+            <p className="text-muted">
+              {galleryItems[currentIndex]?.description}
+            </p>
+            <div className="mt-2">
+              <ActionButtons
+                actions={[
+                  {
+                    type: "edit",
+                    onClick: () => handleEdit(galleryItems[currentIndex]),
+                  },
+                  {
+                    type: "delete",
+                    onClick: () =>
+                      handleDelete(
+                        galleryItems[currentIndex].id,
+                        galleryItems[currentIndex].title,
+                      ),
+                  },
+                ]}
+              />
+            </div>
+          </div>
+
+          {/* Right Panel */}
+          <div className="col-12 col-lg-8 d-flex justify-content-center align-items-center gap-3">
+            <ActionButtons
+              actions={[
+                {
+                  type: "leftArrow",
+                  onClick: () => slider && slider.current?.prev(),
+                },
+              ]}
+            />
+
+            <div
+              ref={sliderRef}
+              className="keen-slider"
+              style={{ width: "400px", height: "220px" }}
+            >
+              {galleryItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="keen-slider__slide d-flex justify-content-center align-items-center"
+                  style={{ width: "400px", height: "200px" }}
+                >
+                  <img
+                    src={item.image_url}
+                    alt={item.title}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <ActionButtons
+              actions={[
+                {
+                  type: "rightArrow",
+                  onClick: () => slider && slider.current?.next(),
+                },
+              ]}
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 };

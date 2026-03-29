@@ -116,58 +116,58 @@ const MainHeader = () => {
             <div className="nav-menus-wrapper">
               <ul className="nav-menu align-to-right">
                 <li>
-                  <Link
-                    to="/"
+                  <a
+                    href="#home"
                     className={location.pathname === "/" ? "active" : ""}
                   >
                     Home
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link
-                    to="/properties"
+                  <a
+                    href="#how"
                     className={
                       location.pathname === "/properties" ? "active" : ""
                     }
                   >
                     How it Works
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link
-                    to="/about"
+                  <a
+                   href="#about"
                     className={location.pathname === "/about" ? "active" : ""}
                   >
                     About
-                  </Link>
+                  </a>
                 </li>
 
                 <li>
-                  <Link
-                    to="/about"
+                  <a
+                 href="#gallery"
                     className={location.pathname === "/about" ? "active" : ""}
                   >
                     Gallery
-                  </Link>
+                  </a>
                 </li>
 
                 <li>
-                  <Link
-                    to="/about"
+                  <a
+                   href="#testimonials"
                     className={location.pathname === "/about" ? "active" : ""}
                   >
                     Testimonials
-                  </Link>
+                  </a>
                 </li>
 
 
                 <li>
-                  <Link
-                    to="/contact"
+                  <a
+                    href="#contact"
                     className={location.pathname === "/contact" ? "active" : ""}
                   >
                     Contact
-                  </Link>
+                  </a>
                 </li>
 
                 <li className="nav-menu-social add-listing">

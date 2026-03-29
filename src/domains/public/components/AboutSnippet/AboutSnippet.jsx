@@ -1,5 +1,5 @@
 import { FaArrowRight } from "react-icons/fa";
-import about from "../../../../assets/img/logo/logo.jpg";
+import about from "../../../../assets/img/logo/logo.png";
 import { useNavigate } from "react-router-dom";
 
 function About() {
@@ -19,7 +19,7 @@ function About() {
   ];
 
   return (
-    <section id="about" className="py-2">
+    <section id="about">
       <div className="container">
         <div className="row g-5 align-items-stretch">
           {/* Image */}
