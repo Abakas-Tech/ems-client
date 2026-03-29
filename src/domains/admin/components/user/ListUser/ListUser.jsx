@@ -147,7 +147,7 @@ const ListUser = () => {
   };
 
   const handleClearFilters = () => {
-    setFilters({ search: "", role_id: "2", is_active: "" });
+    setFilters({ search: "",is_active: "" });
   };
 
   const handleDelete = (row) => {
