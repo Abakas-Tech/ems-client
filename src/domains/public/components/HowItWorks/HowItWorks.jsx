@@ -3,7 +3,7 @@ import React from "react";
 function HowItWorks() {
   return (
     <>
-      <section>
+      <section id="how">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-xl-6 col-lg-7 col-md-10 text-center">

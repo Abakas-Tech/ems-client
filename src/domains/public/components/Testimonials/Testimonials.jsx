@@ -54,7 +54,7 @@ const testimonialData = [
 
 const Testimonials = () => {
   return (
-    <section className="gray-bg">
+    <section className="gray-bg" id="testimonials">
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-7 col-md-10 text-center">

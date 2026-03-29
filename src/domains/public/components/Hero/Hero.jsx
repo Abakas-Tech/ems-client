@@ -3,7 +3,7 @@ import styles from "./Hero.module.css";
 
 function Hero() {
   return (
-    <section className={styles["hero-banner"]}>
+    <section className={styles["hero-banner"]} id="home">
       <div className="container">
         <div className="row">
           <div className="col-xl-7 col-lg-9 col-md-12">
