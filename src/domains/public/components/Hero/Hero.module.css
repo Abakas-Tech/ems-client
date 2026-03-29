@@ -11,17 +11,22 @@
   will-change: transform;
 }
 
-/* Subtle overlay */
 .hero-banner::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to right,
-    rgba(14, 45, 91, 0.65) 0%,
-    rgba(0, 0, 0, 0.1) 50%,
-    rgba(0, 0, 0, 0) 100%
-  );
+  background:
+    linear-gradient(
+      to right,
+      rgba(14, 45, 91, 0.5) 0%,
+      rgba(0, 0, 0, 0.1) 20%,
+      rgba(0, 0, 0, 0) 100%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(0, 0, 0, 0.35),
+      rgba(0, 0, 0, 0) 60%
+    );
   z-index: 1;
 }
 
@@ -78,7 +83,7 @@
   color: #fff;
   background: linear-gradient(135deg, #0e2d5b, #1f6feb);
   border: none;
-  border-radius: 50px;
+  border-radius: 15px;
 
   cursor: pointer;
   transition: all 0.3s ease;
