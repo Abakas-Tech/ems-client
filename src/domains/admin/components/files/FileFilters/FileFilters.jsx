@@ -53,7 +53,8 @@ const FileFilters = ({ filters, onFilterChange, onClear }) => {
               <option value="agreement">Agreements</option>
               <option value="report">Reports</option>
               <option value="policy">Policies</option>
-              <option value="circular">Circular</option>
+              <option value="CV">CVs</option>
+              <option value="Contract">Contracts</option>
               <option value="Other">Other</option>
             </select>
           </div>

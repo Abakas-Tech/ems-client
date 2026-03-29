@@ -646,7 +646,7 @@ const deleteGuarantor = async (workerId) => {
 };
 
 // CREATE VISA
- const createVisa = async (workerId, visaData) => {
+const createVisa = async (workerId, visaData) => {
   try {
     const response = await axiosInstance.post(
       `/workers/${workerId}/visa`,
@@ -659,9 +659,8 @@ const deleteGuarantor = async (workerId) => {
   }
 };
 
-
 // UPDATE VISA
- const updateVisa = async (workerId, visaData) => {
+const updateVisa = async (workerId, visaData) => {
   try {
     const response = await axiosInstance.patch(
       `/workers/${workerId}/visa`,
@@ -674,9 +673,8 @@ const deleteGuarantor = async (workerId) => {
   }
 };
 
-
 // GET VISA
- const getVisa = async (workerId) => {
+const getVisa = async (workerId) => {
   try {
     const response = await axiosInstance.get(`/workers/${workerId}/visa`);
 
@@ -686,9 +684,8 @@ const deleteGuarantor = async (workerId) => {
   }
 };
 
-
 // DELETE VISA
- const deleteVisa = async (workerId) => {
+const deleteVisa = async (workerId) => {
   try {
     const response = await axiosInstance.delete(`/workers/${workerId}/visa`);
 
@@ -697,7 +694,14 @@ const deleteGuarantor = async (workerId) => {
     throw new Error(error.response?.data?.message || "Delete visa error");
   }
 };
-
+const getWorkerCVData = async (workerId) => {
+  try {
+    const response = await axiosInstance.get(`/workers/cv/${workerId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to get CV data");
+  }
+};
 export {
   registerWorkerCore,
   getWorkerBasic,
@@ -752,4 +756,6 @@ export {
   getVisa,
   deleteVisa,
   deleteMedical,
+  // cv
+  getWorkerCVData,
 };

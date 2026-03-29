@@ -15,7 +15,61 @@
   object-fit: cover;
   border: 4px solid rgba(255, 255, 255, 0.25);
 }
+/* ===== ALIGN TOP SECTIONS (PHOTO vs LEFT) ===== */
+.topLeftGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
 
+/* Make right photo match height of left group */
+.topRightGroup {
+  display: flex;
+}
+
+.photoWrapper {
+  width: 100%;
+  display: flex;
+}
+
+/* 🔥 KEY: SAME HEIGHT AS LEFT */
+.standingPhoto {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Make both columns stretch equally */
+.mainContent {
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr;
+  gap: 24px;
+  padding: 30px;
+  background: #f1f5f9;
+  align-items: stretch; /* 🔥 IMPORTANT */
+}
+
+/* Ensure columns grow equally */
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: 100%;
+}
+
+/* 🔥 BALANCE SECTIONS */
+.leftColumn::after {
+  content: "";
+  flex-grow: 1;
+}
+
+/* Prevent right from stretching too long visually */
+.rightColumn {
+  justify-content: space-between;
+}
 .name {
   font-size: 30px;
   font-weight: 800;
@@ -63,7 +117,7 @@
   height: 420px;
   object-fit: cover;
   border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  /* box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); */
   background: white;
   padding: 6px;
 }
@@ -167,7 +221,7 @@
 /* Photo wrapper */
 .photoWrapper {
   background: white;
-  padding: 10px;
+  padding: 3px;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   display: flex;

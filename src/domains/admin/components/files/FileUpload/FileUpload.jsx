@@ -16,6 +16,7 @@ const FileUpload = ({
     category: "",
     description: "",
     is_private: 0,
+    worker_id: "",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -36,6 +37,7 @@ const FileUpload = ({
         category: initialData.category || "",
         description: extractDescription(initialData.description) || "",
         is_private: initialData.is_private || 0,
+        worker_id: initialData.worker_id || "",
       });
     }
   }, [isEditMode, initialData]);
@@ -171,7 +173,8 @@ const FileUpload = ({
               <option value="Agreement">Agreement</option>
               <option value="Report">Report</option>
               <option value="Policy">Policy</option>
-              <option value="Circular">Circular</option>
+              <option value="CV">CVs</option>
+              <option value="Contract">Contract</option>
               <option value="Other">Other</option>
             </select>
           </div>
