@@ -8,7 +8,7 @@ function HowItWorks() {
           <div className="row justify-content-center">
             <div className="col-xl-6 col-lg-7 col-md-10 text-center">
               <div className="sec-heading center">
-                <h2>How It Works?</h2>
+                <h2 className="fw-bold text-dark">How It Works?</h2>
                 <p>
                   At vero eos et accusamus et iusto odio dignissimos ducimus qui
                   blanditiis praesentium voluptatum deleniti atque corrupti quos
