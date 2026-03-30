@@ -226,11 +226,13 @@ const ListUser = () => {
   };
   // Record Transaction Handler
   const handleRecordTransaction = (row) => {
+    showLoader();
+    row.role_name = ROLE_MAP[row.role_id];
     navigate("/admin/finances", {
       state: {
         userId: row.id,
         userName: row.full_name,
-        userRole: "partner",
+        userRole: row.role_name,
       },
     });
   };
@@ -267,7 +269,6 @@ const ListUser = () => {
     {
       type: "transaction",
       onClick: (row) => handleRecordTransaction(row),
-      showOn: (row) => Number(row.role_id) === 3,
     },
   ];
 
