@@ -78,6 +78,12 @@ const MENU_CONFIG = [
     roles: [ROLES.WORKER],
   },
   {
+    label: "My CV",
+    path: `/worker/my-cv`,
+    icon: "bi bi-file-earmark-text",
+    roles: [ROLES.WORKER],
+  },
+  {
     label: "Notifications",
     path: "/worker/notifications",
     icon: "bi bi-bell",
