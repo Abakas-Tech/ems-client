@@ -61,8 +61,8 @@ const Gallery = () => {
       async () => {
         showLoader();
         try {
-          const response=await deleteGalleryItem(itemId);
-          addMessage(response?.success ,response?.message);
+          const response = await deleteGalleryItem(itemId);
+          addMessage(response?.success, response?.message);
           fetchGalleryItems();
         } catch (err) {
           addMessage(false, err.message);
@@ -71,10 +71,8 @@ const Gallery = () => {
         }
       },
       {
-      
         title: `Are you sure you want to delete this item`,
         confirmText: "Delete",
-    
       },
     );
   };
@@ -95,7 +93,6 @@ const Gallery = () => {
         }
       },
       {
-        
         title: "Are you sure you want to delete ALL gallery items?",
         confirmText: "Delete All",
       },
