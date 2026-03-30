@@ -10,8 +10,8 @@ function PublicRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/about-detail" element={<AboutDetail />} />
+        <Route index element={<LandingPage />} />
+        <Route path="about-detail" element={<AboutDetail />} />
       </Route>
 
       {/* fallback route */}

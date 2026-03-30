@@ -54,11 +54,7 @@ const testimonialData = [
 
 const Testimonials = () => {
   return (
-    <section
-      className="gray-bg"
-      id="testimonials"
-      style={{ padding: "100px 0" }}
-    >
+    <section className="pb-0" id="testimonials" style={{ padding: "100px 0" }}>
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-7 col-md-10 text-center">
@@ -88,7 +84,7 @@ const Testimonials = () => {
             >
               {testimonialData.map((item, index) => (
                 <SwiperSlide key={index}>
-                  <div className="item-box">
+                  <div className="item-box bg-light">
                     <div className="smart-tes-author">
                       <div className="st-author-box">
                         <div className="st-author-thumb">

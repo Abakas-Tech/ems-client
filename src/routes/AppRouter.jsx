@@ -22,7 +22,7 @@ function AppRouter() {
 
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<PublicRoutes />} />
+        <Route path="/*" element={<PublicRoutes />} />
 
         {/* Auth Routes */}
         <Route path="/auth/*" element={<AuthRoutes />} />

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import getSocialMedias  from "../../../domains/public/api/socialMedia.api";
-// import logo from "../../../assets/img/logo/agency-logo.png";
+import getSocialMedias from "../../../domains/public/api/socialMedia.api";
+import logo from "../../../assets/img/logo/footer-logo.png";
 import { getLocation } from "../../../domains/admin/api/location.api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Footer = () => {
   const [agencyData, setAgencyData] = useState({
-    agency_name: "Sultan Agency",
+    agency_name: "Global Trust Overseas Employment Agent Plc",
     agency_email: "",
     agency_phone: "",
     address: "Addis Ababa, Ethiopia",
@@ -92,28 +93,28 @@ const Footer = () => {
     tiktok: "fa-tiktok",
     linkedin: "fa-linkedin",
     youtube: "fa-youtube",
-    twitter: "fa-twitter",
+    twitter: "fa-x-twitter",
     whatsapp: "fa-whatsapp",
   };
 
   return (
     <footer className="dark-footer skin-dark-footer">
       <div>
-        <div className="container custome-footer">
+        <div className="container">
           <div className="row my-0">
             {/* Logo & Contact */}
-            <div className="col-lg-4 col-md-4">
+            <div className="col-lg-4 col-md-4 ">
               <div className="footer-widget">
                 <Link className="nav-footer-logo" to="/">
-                  {/* If you want logo instead of text, uncomment below */}
-                  {/* <img src={logo} alt="logo" className="footer-logo" /> */}
-
-                  <h5 className="fs-2 fw-bold text-light ms-1 my-0">
-                    {agencyData.agency_name}
-                  </h5>
+                  <img
+                    src={logo}
+                    alt="logo"
+                    className="footer-logo py-0"
+                    style={{ width: "120px" }}
+                  />
                 </Link>
 
-                <div className="footer-add">
+                <div className="footer-add ">
                   {agencyData.address && <p>{agencyData.address}</p>}
                   {agencyData.agency_phone && <p>{agencyData.agency_phone}</p>}
                   {agencyData.agency_email && <p>{agencyData.agency_email}</p>}
@@ -122,7 +123,7 @@ const Footer = () => {
             </div>
 
             {/* Navigations */}
-            <div className="col-lg-4 col-md-4">
+            <div className="col-lg-4 col-md-4 ">
               <div className="footer-widget">
                 <h4 className="widget-title mb-0">Quick Links</h4>
                 <ul className="footer-menu">
@@ -130,11 +131,15 @@ const Footer = () => {
                     <Link to="/">Home</Link>
                   </li>
                   <li>
-                    <Link to="/properties">Gallery</Link>
-                  </li>
-                  <li>
                     <Link to="/about">About</Link>
                   </li>
+                  <li>
+                    <Link to="/about">Services</Link>
+                  </li>
+                  <li>
+                    <Link to="/properties">Gallery</Link>
+                  </li>
+
                   <li>
                     <Link to="/contact">Contact</Link>
                   </li>
@@ -148,16 +153,19 @@ const Footer = () => {
                 <h4 className="widget-title mb-0">Services</h4>
                 <ul className="footer-menu">
                   <li>
-                    <Link to="#services">Browse Jobs</Link>
+                    <a href="#services">Job Placement</a>
                   </li>
                   <li>
-                    <Link to="#services">Apply for Work</Link>
+                    <a href="#services">Visa Processing</a>
                   </li>
                   <li>
-                    <Link to="#services">Check Visa Status</Link>
+                    <a href="#services">Check Visa Status</a>
                   </li>
                   <li>
-                    <Link to="#services">Support</Link>
+                    <a href="#services">Contract Arrangement</a>
+                  </li>
+                  <li>
+                    <a href="#services">Orientation</a>
                   </li>
                 </ul>
               </div>

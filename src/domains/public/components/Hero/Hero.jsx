@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./Hero.module.css";
 
+
 function Hero() {
   return (
     <section className={styles["hero-banner"]} id="home">
@@ -18,9 +19,17 @@ function Hero() {
                 <h2 className={styles["slogan-sub"]}>Beyond Borders</h2>
               </div>
 
-              <div>
-                <button className={styles.ctaButton}>Get Started</button>
-              </div>
+              <button
+                className={styles.ctaButton}
+                onClick={() => {
+                  const section = document.getElementById("contact");
+                  if (section) {
+                    section.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+              >
+                Get Started
+              </button>
             </div>
           </div>
         </div>

@@ -10,16 +10,16 @@ function About() {
   };
 
   const features = [
-    "Explore Verified Opportunities",
-    "Understand the Process Step-by-Step",
-    "Clear Requirements & Guidance",
-    "Track Your Journey with Confidence",
-    "Reliable Support & Communication",
-    "Stay Informed at Every Stage",
+    "Verified overseas job opportunities",
+    "Full visa & document processing",
+    "Contract verification with employers",
+    "Flight & deployment coordination",
+    "Pre-departure orientation & guidance",
+    "Continuous applicant support",
   ];
 
   return (
-    <section id="about" style={{ padding: "100px 0" }}>
+    <section id="about" style={{ padding: "100px 0" }} className="pb-0">
       <div className="container">
         <div className="row g-5 align-items-stretch">
           {/* Image */}
@@ -36,19 +36,25 @@ function About() {
           <div className="col-lg-6 d-flex flex-column justify-content-center">
             <h2 className="mb-4 fw-bold">About us</h2>
             <p className="mb-4">
-              We help people find trusted international job opportunities. Every
-              step is simple and clear, so you always know what to do next.
+              <span style={{ color: "#19699B" }} className="fw-bold">
+                Globa Trust Overseas Employment Agent Plc
+              </span>{" "}
+              is a licensed recruitment agency dedicated to connecting Ethiopian
+              workers with verified international job opportunities, especially
+              in Middle Eastern countries.
             </p>
 
             <p className="mb-4">
-              From checking requirements to preparing your applications, we
-              guide you with practical advice and useful information to make
-              your journey smooth and confident.
+              We manage the full employment process including job matching,
+              document preparation, visa processing, LMIS/work permits, contract
+              verification, and flight arrangements—ensuring a smooth and legal
+              deployment process.
             </p>
 
             <p className="mb-4">
-              We stay with you all the way, giving updates and support, so
-              working abroad becomes easy, fair, and stress-free for everyone.
+              Our goal is to make overseas employment safe, transparent, and
+              accessible by supporting applicants at every step until they
+              successfully reach their employers abroad.
             </p>
             {/* Features */}
             <div className="row gy-2 gx-4 mb-4">
@@ -63,7 +69,7 @@ function About() {
             </div>
 
             <button
-              className="btn bg-info text-white w-35"
+              className="btn bg-info text-white w-40 fw-bold"
               onClick={goToAboutDetail}
             >
               Learn More
