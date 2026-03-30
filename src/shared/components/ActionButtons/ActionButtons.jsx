@@ -88,6 +88,11 @@ const ActionButtons = ({ actions = [], row }) => {
       icon: <span className={styles["delete-button"]}>&times;</span>,
       title: "Delete",
     },
+    viewCV: {
+      className: "btn-outline-info",
+      icon: <i className="fa-solid fa-file-pdf"></i>,
+      title: "View CV",
+    },
   };
 
   // Filter actions by role only (ignore showOn)

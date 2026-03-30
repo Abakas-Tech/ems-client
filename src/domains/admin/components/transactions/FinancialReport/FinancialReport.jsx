@@ -100,7 +100,7 @@ const FinanceReportSummary = ({ filters, onBack }) => {
 
           <div className="bg-light rounded-3 p-3 text-center">
             <small className="text-muted italic">
-              Report generated for selected filters.
+              Report generated on {new Date().toLocaleString()}.
             </small>
           </div>
         </div>

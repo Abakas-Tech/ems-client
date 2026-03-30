@@ -194,25 +194,37 @@ const NotificationPage = () => {
           />
           {searchResults.length > 0 && (
             <div
-              className="list-group position-absolute w-100 shadow-lg mt-1 z-3"
-              style={{ maxHeight: "200px", overflowY: "auto" }}
+              className="list-group position-absolute shadow-lg mt-1 z-3 w-100"
+              style={{
+                maxHeight: "200px",
+                overflowY: "auto",
+                border: "1px solid #dee2e6",
+              }}
             >
               {searchResults.map((user) => (
                 <button
                   key={user.id}
                   type="button"
-                  className="list-group-item list-group-item-action small py-1 px-3 d-flex justify-content-between align-items-center"
+                  // Added w-100 and overflow-hidden here
+                  className="list-group-item list-group-item-action small py-2 px-3 d-flex align-items-center w-100 overflow-hidden"
                   onClick={() => {
                     handleChange("recipient_id", user.id);
                     setSearchTerm(user.name || `${user.full_name}`);
                     setSearchResults([]);
                   }}
                 >
-                  <div className="text-start">
-                    <div className="fw-bold text-dark mb-0">
+                  {/* 
+         CRITICAL: style={{ minWidth: 0 }} allows the flex child to shrink.
+         Without this, text-truncate will NOT work inside a d-flex container.
+      */}
+                  <div className="text-start w-100" style={{ minWidth: 0 }}>
+                    <div className="fw-bold text-dark mb-0 text-truncate">
                       {user.name || `${user.full_name}`}
                     </div>
-                    <div className="text-muted" style={{ fontSize: "0.7rem" }}>
+                    <div
+                      className="text-muted text-truncate"
+                      style={{ fontSize: "0.7rem", lineHeight: "1" }}
+                    >
                       {user.email || user.phone_number}
                     </div>
                   </div>

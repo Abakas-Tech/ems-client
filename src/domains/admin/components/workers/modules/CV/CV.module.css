@@ -1,0 +1,268 @@
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  color: white;
+  padding: 30px 35px;
+}
+
+.circularPhoto {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid rgba(255, 255, 255, 0.25);
+}
+/* ===== ALIGN TOP SECTIONS (PHOTO vs LEFT) ===== */
+.topLeftGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Make right photo match height of left group */
+.topRightGroup {
+  display: flex;
+}
+
+.photoWrapper {
+  width: 100%;
+  display: flex;
+}
+
+/* 🔥 KEY: SAME HEIGHT AS LEFT */
+.standingPhoto {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Make both columns stretch equally */
+.mainContent {
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr;
+  gap: 24px;
+  padding: 30px;
+  background: #f1f5f9;
+  align-items: stretch; /* 🔥 IMPORTANT */
+}
+
+/* Ensure columns grow equally */
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: 100%;
+}
+
+/* 🔥 BALANCE SECTIONS */
+.leftColumn::after {
+  content: "";
+  flex-grow: 1;
+}
+
+/* Prevent right from stretching too long visually */
+.rightColumn {
+  justify-content: space-between;
+}
+.name {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin: 0;
+  color: #eddede;
+}
+
+.title {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 6px;
+  letter-spacing: 2px;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.mainContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr 280px;
+  gap: 22px;
+  padding: 25px;
+  background: #f1f5f9;
+}
+
+/* Left + middle flexible content */
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* RIGHT SIDE IMAGE COLUMN */
+.photoColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+/* ===== STANDING IMAGE (FIXED ISSUE) ===== */
+.standingPhoto {
+  width: 100%;
+  max-width: 260px;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 16px;
+  /* box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); */
+  background: white;
+  padding: 6px;
+}
+
+/* ===== SECTION CARD ===== */
+.section {
+  background: white;
+  padding: 16px 18px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.section:hover {
+  transform: translateY(-2px);
+}
+
+/* Section title */
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #1e3a8a;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+/* underline accent */
+.sectionTitle::after {
+  content: "";
+  display: block;
+  width: 35px;
+  height: 3px;
+  background: #3b82f6;
+  margin-top: 4px;
+  border-radius: 3px;
+}
+.highlightContactTitle::after {
+  content: "";
+  display: block;
+  width: 35px;
+  height: 3px;
+  background: #3b82f6;
+  margin-top: 4px;
+  border-radius: 3px;
+}
+/* ===== TEXT ===== */
+.section p {
+  font-size: 13px;
+  color: #334155;
+  margin: 6px 0;
+  line-height: 1.45;
+}
+
+.section strong {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* ===== LIST STYLE ===== */
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.list li {
+  background: #e2e8f0;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+/* language level */
+.level {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* ===== SPECIAL GROUP (CONTACT CARD STYLE) ===== */
+.highlightSection {
+  background: linear-gradient(135deg, #50628d, #1e40af);
+  color: white;
+}
+
+.highlightSection p,
+.highlightSection strong {
+  color: white;
+}
+/* 2-column layout (wider + balanced) */
+.mainContent {
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr;
+  gap: 24px;
+  padding: 30px;
+  background: #f1f5f9;
+}
+
+/* Right column spacing */
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Photo wrapper */
+.photoWrapper {
+  background: white;
+  padding: 3px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: center;
+}
+
+/* Standing image (better proportion) */
+.standingPhoto {
+  width: 100%;
+  max-width: 260px;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* ===== PRINT ===== */
+@media print {
+  .mainContent {
+    grid-template-columns: 1fr 1fr 240px;
+    padding: 10px;
+    align-items: center;
+  }
+
+  .section {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+
+  .header {
+    padding: 20px;
+  }
+
+  .standingPhoto {
+    height: 360px;
+  }
+}

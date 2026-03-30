@@ -341,9 +341,18 @@ const ActiveWorkers = () => {
             type: "addModule",
             onClick: (row) => navigate(`/admin/workers/modules/${row.id}/add`),
           },
+          {
+            type: "viewCV",
+            onClick: (row) =>
+              window.open(row.cv_url, "_blank", "noopener,noreferrer"),
+            showOn: (row) => row.cv_url,
+          },
         ]}
         emptyState={{
-          title: role === 5 ? "No worker is assigned to you yet" : "No Active workers found",
+          title:
+            role === 5
+              ? "No worker is assigned to you yet"
+              : "No Active workers found",
         }}
         pagination={{
           page,

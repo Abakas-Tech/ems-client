@@ -224,7 +224,16 @@ const ListUser = () => {
       state: { isEditMode: false },
     });
   };
-
+  // Record Transaction Handler
+  const handleRecordTransaction = (row) => {
+    navigate("/admin/finances", {
+      state: {
+        userId: row.id,
+        userName: row.full_name,
+        userRole: "partner",
+      },
+    });
+  };
   const columns = [
     {
       header: "Name",
@@ -255,6 +264,11 @@ const ListUser = () => {
     { type: "archive", onClick: handleStatusToggle, showOn: true },
     { type: "restore", onClick: handleStatusToggle, showOn: false },
     { type: "delete", onClick: handleDelete },
+    {
+      type: "transaction",
+      onClick: (row) => handleRecordTransaction(row),
+      showOn: (row) => Number(row.role_id) === 3,
+    },
   ];
 
   const emptyState = {

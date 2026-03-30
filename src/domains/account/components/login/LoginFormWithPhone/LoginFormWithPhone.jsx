@@ -91,7 +91,9 @@ const LoginFormWithPhone = ({ role }) => {
       } else if (role === "employer") {
         navigate("/employer/my-profile");
       } else {
-        navigate("/admin/dashboard");
+        setTimeout(() => {
+          navigate("/admin/dashboard");
+        }, 5000);
       }
     } catch (error) {
       addMessage(false, error.message);

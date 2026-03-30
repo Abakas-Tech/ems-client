@@ -119,7 +119,8 @@ const RecordTransaction = ({
             {formData.user_id && !isEditMode && (
               <div className="form-group col-md-12">
                 <div className="alert alert-info py-2">
-                  Recording transaction for worker:{" "}
+                  Recording transaction for{" "}
+                  {`${initialData.userRole === "worker" ? "worker" : "partner"} `}
                   {initialData?.userName && !isEditMode && (
                     <Badge content={initialData.userName} color="blue" />
                   )}
@@ -184,7 +185,6 @@ const RecordTransaction = ({
                 placeholder="Receipt # or Invoice #"
                 value={formData.reference}
                 onChange={handleChange}
-                required
               />
             </div>
 

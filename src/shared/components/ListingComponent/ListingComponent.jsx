@@ -150,9 +150,15 @@ const ListingComponent = ({
                 >
                   <ActionButtons
                     actions={actions
-                      // Filter based on showOn
                       .filter((action) => {
+                        // 1. If no showOn is defined, show the button
                         if (action.showOn === undefined) return true;
+
+                        // 2. NEW: If showOn is a function, let the function decide (THIS IS THE KEY)
+                        if (typeof action.showOn === "function")
+                          return action.showOn(row);
+
+                        // 3. Otherwise, keep your original logic for true/false
                         return Boolean(row.is_active) === action.showOn;
                       })
                       // Preserve rename logic
@@ -219,7 +225,7 @@ const ListingComponent = ({
                 limit: pagination.limit,
                 total: pagination.total,
               }}
-              onPageChange={onPageChange} 
+              onPageChange={onPageChange}
             />
           )}
         </div>
