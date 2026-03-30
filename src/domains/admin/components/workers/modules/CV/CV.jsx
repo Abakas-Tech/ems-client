@@ -104,7 +104,7 @@ const CV = () => {
         <h2 className="text-dark mb-0">Worker CV</h2>
         <BackButton onClick={() => navigate(-1)} />
       </div>
-      <div className=" d-flex justify-content-end">
+      <div className="mb-3">
         <button
           className="btn btn-main mt-3 px-2 text-white w-45 d-flex align-items-center justify-content-center "
           onClick={handleGenerateAndUpload}
@@ -114,7 +114,7 @@ const CV = () => {
       </div>
 
       <div ref={cvRef} className="card border-0 shadow-sm overflow-hidden">
-        <div className="card-body p-0 pt-4 ">
+        <div className="card-body p-0 ">
           {/* HEADER */}
           <div className={styles.header}>
             <img src={worker.photo_3x4_url} className={styles.circularPhoto} />
@@ -134,12 +134,22 @@ const CV = () => {
                 <section
                   className={`${styles.section} ${styles.highlightSection}`}
                 >
-                  <h3 className={styles.sectionTitle}>CONTACT</h3>
-                  <p>📞 {worker.phone_number || "-"}</p>
-                  <p>✉️ {worker.email || "-"}</p>
+                  <h3
+                    className={`${styles.sectionTitle} ${styles.highlightContactTitle}`}
+                  >
+                    CONTACT
+                  </h3>
                   <p>
-                    📍 {worker.address || "-"} {worker.city_name || ""}{" "}
-                    {worker.region_name || ""}
+                    <i className="bi bi-telephone me-2"></i>
+                    {worker.phone_number}
+                  </p>
+                  <p>
+                    <i className="bi bi-envelope me-2"></i>
+                    {worker.email}
+                  </p>
+                  <p>
+                    <i className="bi bi-geo-alt me-2"></i>
+                    {worker.address}
                   </p>
                 </section>
 

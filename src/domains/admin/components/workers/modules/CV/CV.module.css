@@ -155,7 +155,15 @@
   margin-top: 4px;
   border-radius: 3px;
 }
-
+.highlightContactTitle::after {
+  content: "";
+  display: block;
+  width: 35px;
+  height: 3px;
+  background: #3b82f6;
+  margin-top: 4px;
+  border-radius: 3px;
+}
 /* ===== TEXT ===== */
 .section p {
   font-size: 13px;
@@ -194,7 +202,7 @@
 
 /* ===== SPECIAL GROUP (CONTACT CARD STYLE) ===== */
 .highlightSection {
-  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  background: linear-gradient(135deg, #50628d, #1e40af);
   color: white;
 }
 

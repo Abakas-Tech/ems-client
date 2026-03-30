@@ -323,7 +323,22 @@ const ActiveWorkers = () => {
           {
             header: "Name",
             accessor: "full_name",
-            render: (row) => <span className="fw-bold">{row.full_name}</span>,
+            render: (row) => (
+              <div className="d-flex align-items-center">
+                <span className="fw-bold me-2">{row.full_name}</span>
+                {row.cv_url && (
+                  <a
+                    href={row.cv_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="View CV"
+                    onClick={(e) => e.stopPropagation()} 
+                  >
+                    <i className="bi bi-file-pdf text-primary fs-5"></i>
+                  </a>
+                )}
+              </div>
+            ),
           },
           { header: "Phone Number", accessor: "phone_number" },
           { header: "Current Status", accessor: "status" },
@@ -343,7 +358,10 @@ const ActiveWorkers = () => {
           },
         ]}
         emptyState={{
-          title: role === 5 ? "No worker is assigned to you yet" : "No Active workers found",
+          title:
+            role === 5
+              ? "No worker is assigned to you yet"
+              : "No Active workers found",
         }}
         pagination={{
           page,
