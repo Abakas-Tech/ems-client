@@ -107,7 +107,7 @@ const CV = () => {
           {" "}
           {profile.role_id != 4 ? "Worker" : "My"} CV
         </h2>
-        <BackButton onClick={() => navigate(-1)} />
+        {profile.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
       </div>
       {profile.role_id != 4 && (
         <div className="mb-3">
