@@ -9,7 +9,7 @@ import useLoader from "../../../../../../context/Loader/useLoader";
 import { uploadFile } from "../../../../api/file.api";
 import { useRef } from "react";
 import useResponse from "../../../../../../context/Response/useResponse";
-
+import useProfile from "../../../../../../context/Profile/useProfile";
 const safeDate = (d) => (d ? d.slice(0, 10) : "-");
 
 const CV = () => {
@@ -19,18 +19,20 @@ const CV = () => {
   const [worker, setWorker] = useState(null);
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
+  const { profile } = useProfile();
 
   const fetchWorkerData = useCallback(async () => {
     showLoader();
     try {
-      const { data } = await getWorkerCVData(id);
+      const workerId = id ? id : profile.id;
+      const { data } = await getWorkerCVData(workerId);
       setWorker(data);
     } catch (err) {
       console.error(err);
     } finally {
       hideLoader();
     }
-  }, [id, showLoader, hideLoader]);
+  }, [id || profile]);
 
   const handleGenerateAndUpload = async () => {
     if (!cvRef.current) return;
@@ -94,24 +96,29 @@ const CV = () => {
 
   useEffect(() => {
     fetchWorkerData();
-  }, []);
+  }, [profile]);
 
   if (!worker) return null;
 
   return (
     <div className="dashboard-wraper">
-      <div className="d-flex justify-content-between align-items-center d-print-none">
-        <h2 className="text-dark mb-0">Worker CV</h2>
+      <div className="d-flex justify-content-between align-items-center d-print-none pb-2">
+        <h2 className="text-dark mb-0">
+          {" "}
+          {profile.role_id != 4 ? "Worker" : "My"} CV
+        </h2>
         <BackButton onClick={() => navigate(-1)} />
       </div>
-      <div className="mb-3">
-        <button
-          className="btn btn-main mt-3 px-2 text-white w-45 d-flex align-items-center justify-content-center "
-          onClick={handleGenerateAndUpload}
-        >
-          Generate & Upload
-        </button>
-      </div>
+      {profile.role_id != 4 && (
+        <div className="mb-3">
+          <button
+            className="btn btn-main mt-3 px-2 text-white w-45 d-flex align-items-center justify-content-center "
+            onClick={handleGenerateAndUpload}
+          >
+            Generate & Upload
+          </button>
+        </div>
+      )}
 
       <div ref={cvRef} className="card border-0 shadow-sm overflow-hidden">
         <div className="card-body p-0 ">

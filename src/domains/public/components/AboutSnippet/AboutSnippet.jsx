@@ -19,7 +19,7 @@ function About() {
   ];
 
   return (
-    <section id="about" className="py-2">
+    <section id="about" style={{ padding: "100px 0" }}>
       <div className="container">
         <div className="row g-5 align-items-stretch">
           {/* Image */}

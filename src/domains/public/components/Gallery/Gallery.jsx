@@ -76,7 +76,7 @@ const Gallery = () => {
     selectedIndex !== null ? galleryItems[selectedIndex] : null;
 
   return (
-    <section id="gallery" className="my-5 py-2">
+    <section id="gallery" style={{ padding: "100px 0" }}>
       <div className="container">
         {/* Header */}
 

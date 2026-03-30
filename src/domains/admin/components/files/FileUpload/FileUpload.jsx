@@ -102,7 +102,6 @@ const FileUpload = ({
       setSubmitLoading(false);
     }
   };
-
   return (
     <form className="form-submit" onSubmit={handleSubmit}>
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -113,7 +112,7 @@ const FileUpload = ({
       <div className="submit-section">
         <div className="row">
           {/* Visibility Toggle */}
-          {profile?.role_id <= 2 && (
+          {profile?.role_id <= 2 && !formData.worker_id && (
             <div className="form-group col-md-12 mb-3">
               <div className="form-check form-switch rounded-3 d-inline-flex align-items-center ">
                 <input

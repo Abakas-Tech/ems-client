@@ -2,6 +2,19 @@ import ROLES from "./role.config";
 
 const MENU_CONFIG = [
   {
+    label: "Home",
+    icon: "bi bi-globe",
+    path: "/",
+    roles: [
+      ROLES.EMPLOYER,
+      ROLES.ADMIN,
+      ROLES.EMPLOYEE,
+      ROLES.WORKER,
+      ROLES.PARTNER,
+    ],
+  },
+
+  {
     label: "Dashboard",
     path: "/admin/dashboard",
     icon: "bi-speedometer2",
@@ -75,6 +88,12 @@ const MENU_CONFIG = [
     label: "My Application",
     path: "/worker/my-application",
     icon: "bi bi-person-vcard-fill",
+    roles: [ROLES.WORKER],
+  },
+  {
+    label: "My CV",
+    path: `/worker/my-cv`,
+    icon: "bi bi-file-earmark-text",
     roles: [ROLES.WORKER],
   },
   {
