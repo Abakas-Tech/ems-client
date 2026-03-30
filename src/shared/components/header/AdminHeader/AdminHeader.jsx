@@ -36,7 +36,14 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
     5: "employer",
   };
 
-  const roleBase = rolePathMap[Number(profile?.role_id)] || "admin";
+  // Use role_id consistently
+  const roleId = profile?.role_id;
+
+  // If 1 or 2, force "admin", otherwise lookup map
+  const roleBase = [1, 2].includes(roleId)
+    ? "admin"
+    : rolePathMap[roleId] || "admin";
+
   const notificationPath = `/${roleBase}/notifications`;
 
   // Create a reusable Bell component to avoid code duplication
