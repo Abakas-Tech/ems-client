@@ -127,7 +127,7 @@ const Contact = () => {
   const mapSrc = `https://maps.google.com/maps?q=${location.latitude},${location.longitude}&z=15&output=embed`;
 
   return (
-    <div
+    <section
       className="container"
       id="contact"
       style={{ padding: "100px 0" }}
@@ -285,7 +285,7 @@ const Contact = () => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

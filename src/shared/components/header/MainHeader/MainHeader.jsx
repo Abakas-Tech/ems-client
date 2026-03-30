@@ -205,66 +205,66 @@ const MainHeader = () => {
                 </span>
                 <ul className="nav-menu align-to-right">
                   <li>
-                    <Link
-                      to="/"
+                    <a
+                      href="#home"
                       className={location.pathname === "/" ? "active" : ""}
                       onClick={toggleMenu}
                     >
                       Hero
-                    </Link>
+                    </a>
                   </li>
                   <li>
-                    <Link
-                      to="/properties"
+                    <a
+                     href="#how"
                       className={
                         location.pathname === "/properties" ? "active" : ""
                       }
                       onClick={toggleMenu}
                     >
                       How It Works
-                    </Link>
+                    </a>
                   </li>
                   <li>
-                    <Link
-                      to="/about"
+                    <a
+                      href="#about"
                       className={location.pathname === "/about" ? "active" : ""}
                       onClick={toggleMenu}
                     >
                       About
-                    </Link>
+                    </a>
                   </li>
 
                    <li>
-                    <Link
-                      to="/about"
+                    <a
+                    href="#gallery"
                       className={location.pathname === "/about" ? "active" : ""}
                       onClick={toggleMenu}
                     >
                       Gallery
-                    </Link>
+                    </a>
                   </li>
 
                    <li>
-                    <Link
-                      to="/about"
+                    <a
+                     href="#testimonials"
                       className={location.pathname === "/about" ? "active" : ""}
                       onClick={toggleMenu}
                     >
                       Testimonials
-                    </Link>
+                    </a>
                   </li>
 
 
                   <li>
-                    <Link
-                      to="/contact"
+                    <a
+                     href="#contact"
                       className={
                         location.pathname === "/contact" ? "active" : ""
                       }
                       onClick={toggleMenu}
                     >
                       Contact
-                    </Link>
+                    </a>
                   </li>
                   <li>
                     <Link
