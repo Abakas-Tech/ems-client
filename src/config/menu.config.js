@@ -46,7 +46,7 @@ const MENU_CONFIG = [
   },
   {
     label: "File Manager",
-    path: "/admin/my-files",
+    path: "/admin/files",
     icon: "bi bi-files",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },

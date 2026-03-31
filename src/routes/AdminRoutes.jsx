@@ -63,7 +63,7 @@ const AdminRoutes = () => {
         <Route path="my-profile" element={<Profile />} />
         <Route path="user-management" element={<ListUser />} />
         <Route path="dashboard" element={<Analytics />} />
-        <Route path="my-files" element={<Files/>} />
+        <Route path="files" element={<Files/>} />
         <Route
           path="finances"
           element={
