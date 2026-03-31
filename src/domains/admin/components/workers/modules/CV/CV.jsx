@@ -190,6 +190,7 @@ const CV = () => {
               {/* PASSPORT */}
               <section className={styles.section}>
                 <h3 className={styles.sectionTitle}>PASSPORT</h3>
+
                 <p>
                   <strong>No:</strong> {worker.passport_number || "-"}
                 </p>
@@ -201,6 +202,17 @@ const CV = () => {
                   <strong>Expires:</strong>{" "}
                   {safeDate(worker.passport_expiry_date)}
                 </p>
+
+                {/* ✅ Passport Scan Image */}
+                {worker.passport_scan_url && (
+                  <div className={styles.passportImageWrapper}>
+                    <img
+                      src={worker.passport_scan_url}
+                      alt="Passport Scan"
+                      className={styles.passportImage}
+                    />
+                  </div>
+                )}
               </section>
 
               {/* MEDICAL */}

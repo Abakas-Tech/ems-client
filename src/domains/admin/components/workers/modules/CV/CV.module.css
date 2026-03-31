@@ -245,24 +245,19 @@
   border-radius: 12px;
 }
 
-/* ===== PRINT ===== */
-@media print {
-  .mainContent {
-    grid-template-columns: 1fr 1fr 240px;
-    padding: 10px;
-    align-items: center;
-  }
+/* ===== PASSPORT IMAGE ===== */
+.passportImageWrapper {
+  margin-top: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
 
-  .section {
-    box-shadow: none;
-    border: 1px solid #e5e7eb;
-  }
-
-  .header {
-    padding: 20px;
-  }
-
-  .standingPhoto {
-    height: 360px;
-  }
+/* Clean, not too big */
+.passportImage {
+  width: 100%;
+  height: 140px; /* 🔥 Controlled height */
+  object-fit: cover;
+  display: block;
 }
