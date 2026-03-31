@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import getSocialMedias from "../../../domains/public/api/socialMedia.api";
 import logo from "../../../assets/img/logo/footer-logo.png";
 import { getLocation } from "../../../domains/admin/api/location.api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Footer = () => {
   const [agencyData, setAgencyData] = useState({
@@ -131,17 +130,17 @@ const Footer = () => {
                     <Link to="/">Home</Link>
                   </li>
                   <li>
-                    <Link to="/about">About</Link>
+                    <a href="#about">About</a>
                   </li>
                   <li>
-                    <Link to="/about">Services</Link>
+                    <a href="#services">Services</a>
                   </li>
                   <li>
-                    <Link to="/properties">Gallery</Link>
+                    <a href="#gallery">Gallery</a>
                   </li>
 
                   <li>
-                    <Link to="/contact">Contact</Link>
+                    <a href="#contact">Contact</a>
                   </li>
                 </ul>
               </div>

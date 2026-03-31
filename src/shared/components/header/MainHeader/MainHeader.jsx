@@ -16,6 +16,8 @@ const MainHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("home"); // ✅ NEW
+
   const location = useLocation();
 
   const settings = {
@@ -35,7 +37,6 @@ const MainHeader = () => {
     5: "/employer/my-profile",
   };
 
-  // Determine dashboard link and text
   let dashboardLink = "/auth/login";
   let dashboardText = "Sign In";
 
@@ -45,6 +46,11 @@ const MainHeader = () => {
   }
 
   const toggleMenu = () => setIsOpen(!isOpen);
+
+  // ✅ CLICK HANDLER (NEW)
+  const handleClick = (section) => {
+    setActiveSection(section);
+  };
 
   // Handle resize
   useEffect(() => {
@@ -60,9 +66,41 @@ const MainHeader = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Handle scroll
+  // Handle scroll (existing)
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // ✅ ACTIVE SECTION SCROLL LOGIC (NEW)
+  useEffect(() => {
+    const sections = [
+      "home",
+      "how",
+      "services",
+      "about",
+      "gallery",
+      "testimonials",
+      "contact",
+    ];
+
+    const handleScroll = () => {
+      let current = "home";
+
+      sections.forEach((id) => {
+        const section = document.getElementById(id);
+        if (section) {
+          const top = section.offsetTop - 120;
+          if (window.scrollY >= top) {
+            current = id;
+          }
+        }
+      });
+
+      setActiveSection(current);
+    };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -91,8 +129,7 @@ const MainHeader = () => {
           {/* Nav Header */}
           <div className="nav-header">
             <Link className="nav-brand text-logo exchange" to="/">
-              <img src={logo} alt="Logo" style={{width: "80px"}}/>
-              {/* <h5 className="m-0">Resido</h5> */}
+              <img src={logo} alt="Logo" style={{ width: "80px" }} />
             </Link>
 
             {isPortrait && (
@@ -118,28 +155,28 @@ const MainHeader = () => {
                 <li>
                   <a
                     href="#home"
-                    className={location.pathname === "/" ? "active" : ""}
+                    className={activeSection === "home" ? "active" : ""}
+                    onClick={() => handleClick("home")}
                   >
                     Home
                   </a>
                 </li>
+
                 <li>
                   <a
                     href="#how"
-                    className={
-                      location.pathname === "/properties" ? "active" : ""
-                    }
+                    className={activeSection === "how" ? "active" : ""}
+                    onClick={() => handleClick("how")}
                   >
                     Process
                   </a>
                 </li>
 
-                 <li>
+                <li>
                   <a
                     href="#services"
-                    className={
-                      location.pathname === "/properties" ? "active" : ""
-                    }
+                    className={activeSection === "services" ? "active" : ""}
+                    onClick={() => handleClick("services")}
                   >
                     Services
                   </a>
@@ -147,8 +184,9 @@ const MainHeader = () => {
 
                 <li>
                   <a
-                   href="#about"
-                    className={location.pathname === "/about" ? "active" : ""}
+                    href="#about"
+                    className={activeSection === "about" ? "active" : ""}
+                    onClick={() => handleClick("about")}
                   >
                     About
                   </a>
@@ -156,8 +194,9 @@ const MainHeader = () => {
 
                 <li>
                   <a
-                 href="#gallery"
-                    className={location.pathname === "/about" ? "active" : ""}
+                    href="#gallery"
+                    className={activeSection === "gallery" ? "active" : ""}
+                    onClick={() => handleClick("gallery")}
                   >
                     Gallery
                   </a>
@@ -165,18 +204,19 @@ const MainHeader = () => {
 
                 <li>
                   <a
-                   href="#testimonials"
-                    className={location.pathname === "/about" ? "active" : ""}
+                    href="#testimonials"
+                    className={activeSection === "testimonials" ? "active" : ""}
+                    onClick={() => handleClick("testimonials")}
                   >
                     Testimonials
                   </a>
                 </li>
 
-
                 <li>
                   <a
                     href="#contact"
-                    className={location.pathname === "/contact" ? "active" : ""}
+                    className={activeSection === "contact" ? "active" : ""}
+                    onClick={() => handleClick("contact")}
                   >
                     Contact
                   </a>
@@ -196,7 +236,7 @@ const MainHeader = () => {
             </div>
           )}
 
-          {/* Mobile Nav with Drawer */}
+          {/* Mobile Nav */}
           {isPortrait && (
             <Drawer
               open={isOpen}
@@ -207,7 +247,9 @@ const MainHeader = () => {
               overlayColor={settings.overlayColor}
             >
               <div
-                className={`nav-menus-wrapper ${isOpen ? "nav-menus-wrapper-open" : ""}`}
+                className={`nav-menus-wrapper ${
+                  isOpen ? "nav-menus-wrapper-open" : ""
+                }`}
               >
                 <span
                   className="nav-menus-wrapper-close-button"
@@ -215,82 +257,31 @@ const MainHeader = () => {
                 >
                   ✕
                 </span>
+
                 <ul className="nav-menu align-to-right">
-                  <li>
-                    <a
-                      href="#home"
-                      className={location.pathname === "/" ? "active" : ""}
-                      onClick={toggleMenu}
-                    >
-                      Hero
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                     href="#how"
-                      className={
-                        location.pathname === "/properties" ? "active" : ""
-                      }
-                      onClick={toggleMenu}
-                    >
-                      Process
-                    </a>
-                  </li>
+                  {[
+                    "home",
+                    "how",
+                    "services",
+                    "about",
+                    "gallery",
+                    "testimonials",
+                    "contact",
+                  ].map((section) => (
+                    <li key={section}>
+                      <a
+                        href={`#${section}`}
+                        className={activeSection === section ? "active" : ""}
+                        onClick={() => {
+                          handleClick(section);
+                          toggleMenu();
+                        }}
+                      >
+                        {section.charAt(0).toUpperCase() + section.slice(1)}
+                      </a>
+                    </li>
+                  ))}
 
-                   <li>
-                    <a
-                     href="#services"
-                      className={
-                        location.pathname === "/properties" ? "active" : ""
-                      }
-                      onClick={toggleMenu}
-                    >
-                      Services
-                    </a>
-                  </li>
-
-                  <li>
-                    <a
-                      href="#about"
-                      className={location.pathname === "/about" ? "active" : ""}
-                      onClick={toggleMenu}
-                    >
-                      About
-                    </a>
-                  </li>
-
-                   <li>
-                    <a
-                    href="#gallery"
-                      className={location.pathname === "/about" ? "active" : ""}
-                      onClick={toggleMenu}
-                    >
-                      Gallery
-                    </a>
-                  </li>
-
-                   <li>
-                    <a
-                     href="#testimonials"
-                      className={location.pathname === "/about" ? "active" : ""}
-                      onClick={toggleMenu}
-                    >
-                      Testimonials
-                    </a>
-                  </li>
-
-
-                  <li>
-                    <a
-                     href="#contact"
-                      className={
-                        location.pathname === "/contact" ? "active" : ""
-                      }
-                      onClick={toggleMenu}
-                    >
-                      Contact
-                    </a>
-                  </li>
                   <li>
                     <Link
                       to={dashboardLink}
