@@ -91,7 +91,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
       ? `${nameParts[0]} ${nameParts[1][0]}`
       : nameParts[0] || "";
 
-  // ✅ NEW: Dynamic path label
+  //  Dynamic path label
   const formatPathLabel = (pathname) => {
     if (!pathname) return "";
 
