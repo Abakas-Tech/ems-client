@@ -126,7 +126,7 @@ const Contact = () => {
 
   return (
     <section
-      className="container px-0 "
+      className="container px-3 px-lg-0 "
       id="contact"
       style={{ padding: "100px 0" }}
     >
@@ -137,10 +137,7 @@ const Contact = () => {
           </h2>
         </div>
         <div className="row g-4 gy-5">
-          <div
-            className="col-lg-4 col-md-6m"
-           
-          >
+          <div className="col-lg-4 col-md-6m">
             <h3 className="mt-0 fw-bold">Get In Touch</h3>
             <p className="mb-4">
               Have a question or need assistance? We are here to help! Reach out

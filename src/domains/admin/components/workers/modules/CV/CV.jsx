@@ -10,7 +10,7 @@ import { uploadFile } from "../../../../api/file.api";
 import { useRef } from "react";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
-const safeDate = (d) => (d ? d.slice(0, 10) : "-");
+const safeDate = (d) => (d ? d.slice(0, 10) : "—");
 
 const CV = () => {
   const { id } = useParams();
@@ -103,13 +103,13 @@ const CV = () => {
   return (
     <div className="dashboard-wraper">
       <div className="d-flex justify-content-between align-items-center d-print-none pb-2">
-        <h2 className="text-dark mb-0">
+        <h2 className="text-dark mb-2">
           {" "}
-          {profile.role_id != 4 ? "Worker" : "My"} CV
+          {profile?.role_id != 4 ? "Worker" : "My"} CV
         </h2>
-        {profile.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
+        {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
       </div>
-      {profile.role_id != 4 && (
+      {profile?.role_id != 4 && (
         <div className="mb-3">
           <button
             className="btn btn-main mt-3 px-2 text-white w-45 d-flex align-items-center justify-content-center "
@@ -127,7 +127,7 @@ const CV = () => {
             <img src={worker.photo_3x4_url} className={styles.circularPhoto} />
             <div>
               <h1 className={styles.name}>{worker.full_name}</h1>
-              <p className={styles.title}>
+              <p className={`{styles.title} fw-bold`}>
                 {worker.primary_positions?.join(" • ") || "DOMESTIC WORKER"}
               </p>
             </div>
@@ -167,23 +167,23 @@ const CV = () => {
                     <strong>DOB:</strong> {safeDate(worker.date_of_birth)}
                   </p>
                   <p>
-                    <strong>Place:</strong> {worker.place_of_birth || "-"}
+                    <strong>Place:</strong> {worker.place_of_birth || "—"}
                   </p>
                   <p>
-                    <strong>Nationality:</strong> {worker.nationality || "-"}
+                    <strong>Nationality:</strong> {worker.nationality || "—"}
                   </p>
                   <p>
-                    <strong>Sex:</strong> {worker.sex || "-"}
+                    <strong>Sex:</strong> {worker.sex || "—"}
                   </p>
                   <p>
-                    <strong>Religion:</strong> {worker.religion || "-"}
+                    <strong>Religion:</strong> {worker.religion || "—"}
                   </p>
                   <p>
-                    <strong>Status:</strong> {worker.marital_status || "-"}
+                    <strong>Status:</strong> {worker.marital_status || "—"}
                   </p>
                   <p>
-                    <strong>Height/Weight:</strong> {worker.height_cm || "-"}cm
-                    / {worker.weight_kg || "-"}kg
+                    <strong>Height/Weight:</strong> {worker.height_cm || "—"}cm
+                    / {worker.weight_kg || "—"}kg
                   </p>
                 </section>
               </div>
@@ -191,7 +191,7 @@ const CV = () => {
               <section className={styles.section}>
                 <h3 className={styles.sectionTitle}>PASSPORT</h3>
                 <p>
-                  <strong>No:</strong> {worker.passport_number || "-"}
+                  <strong>No:</strong> {worker.passport_number || "—"}
                 </p>
                 <p>
                   <strong>Issued:</strong>{" "}
@@ -207,10 +207,10 @@ const CV = () => {
               <section className={styles.section}>
                 <h3 className={styles.sectionTitle}>MEDICAL</h3>
                 <p>
-                  <strong>Status:</strong> {worker.medical_status || "-"}
+                  <strong>Status:</strong> {worker.medical_status || "—"}
                 </p>
                 <p>
-                  <strong>Center:</strong> {worker.medical_center || "-"}
+                  <strong>Center:</strong> {worker.medical_center || "—"}
                 </p>
                 <p>
                   <strong>Date:</strong> {safeDate(worker.medical_issue_date)}
@@ -220,7 +220,7 @@ const CV = () => {
               <section className={styles.section}>
                 <h3 className={styles.sectionTitle}>COC</h3>
                 <p>
-                  <strong>No:</strong> {worker.coc_number || "-"}
+                  <strong>No:</strong> {worker.coc_number || "—"}
                 </p>
                 <p>
                   <strong>Issued:</strong> {safeDate(worker.coc_issue_date)}
@@ -267,7 +267,7 @@ const CV = () => {
               <section className={styles.section}>
                 <h3 className={styles.sectionTitle}>VISA</h3>
                 <p>
-                  <strong>No:</strong> {worker.visa_number || "-"}
+                  <strong>No:</strong> {worker.visa_number || "—"}
                 </p>
                 <p>
                   <strong>Issued:</strong> {safeDate(worker.visa_issue_date)}
@@ -281,13 +281,13 @@ const CV = () => {
               <section className={styles.section}>
                 <h3 className={styles.sectionTitle}>CONTRACT</h3>
                 <p>
-                  <strong>Employer:</strong> {worker.employer_name_en || "-"}
+                  <strong>Employer:</strong> {worker.employer_name_en || "—"}
                 </p>
                 <p>
-                  <strong>Arabic:</strong> {worker.employer_name_ar || "-"}
+                  <strong>Arabic:</strong> {worker.employer_name_ar || "—"}
                 </p>
                 <p>
-                  <strong>Salary:</strong> {worker.monthly_salary || "-"}
+                  <strong>Salary:</strong> {worker.monthly_salary || "—"}
                 </p>
                 <p>
                   <strong>Period:</strong>{" "}
@@ -300,7 +300,7 @@ const CV = () => {
               <section className={styles.section}>
                 <h3 className={styles.sectionTitle}>TRAVEL</h3>
                 <p>
-                  <strong>Ticket:</strong> {worker.ticket_number || "-"}
+                  <strong>Ticket:</strong> {worker.ticket_number || "—"}
                 </p>
                 <p>
                   <strong>Date:</strong> {safeDate(worker.departure_date)}
@@ -318,16 +318,16 @@ const CV = () => {
               </section>
 
               {/* GUARANTOR */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>GUARANTOR</h3>
+              <section className={`mb-2 ${styles.section}`}>
+                <h3 className={styles.sectionTitle}>EMERGENCY CONTACT</h3>
                 <p>
-                  <strong>Name:</strong> {worker.guarantor_name || "-"}
+                  <strong>Name:</strong> {worker.guarantor_name || "—"}
                 </p>
                 <p>
-                  <strong>Relation:</strong> {worker.guarantor_relation || "-"}
+                  <strong>Relation:</strong> {worker.guarantor_relation || "—"}
                 </p>
                 <p>
-                  <strong>Phone:</strong> {worker.guarantor_phone_number || "-"}
+                  <strong>Phone:</strong> {worker.guarantor_phone_number || "—"}
                 </p>
               </section>
             </div>

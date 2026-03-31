@@ -47,10 +47,10 @@
   font-weight: 900;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: #f0c56c;
+  color: #ffcc33;
 }
 .brand-name span {
-  color: #08355f;
+  /* color: #08355f; */
 }
 /* Agency Type */
 .agency-type {
