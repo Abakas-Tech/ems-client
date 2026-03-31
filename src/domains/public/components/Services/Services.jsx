@@ -41,15 +41,21 @@ const services = [
 
 const Services = () => {
   return (
-    <section id="services" className="mb-0 pb-0">
+    <section
+      id="services"
+      className="mb-0 pb-0"
+      aria-labelledby="services-title"
+    >
       <div className="container">
         {/* Heading */}
         <div className="row justify-content-center">
           <div className="col-lg-7 col-md-10 text-center">
             <div className="sec-heading center">
-              <h2 className="fw-bold">Our Services</h2>
+              <h2 id="services-title" className="fw-bold">
+                Our Services
+              </h2>
               <p>
-                Globa Trust Overseas Employment Agent Plc provides end-to-end
+                Global Trust Overseas Employment Agent Plc provides end-to-end
                 overseas employment solutions, ensuring safe, legal, and
                 reliable deployment of Ethiopian workers abroad.
               </p>
@@ -65,6 +71,7 @@ const Services = () => {
               className="col-lg-4 col-md-6"
               data-aos="fade-up"
               data-aos-delay={(index + 1) * 100}
+              aria-label={`${service.title} service`}
             >
               <div
                 className="service-item position-relative h-100 shadow p-4 rounded hover-up text-center bg-white custom-shadow"
@@ -73,6 +80,7 @@ const Services = () => {
                 <div
                   className="icon mb-3"
                   style={{ color: "var(--maincolor)" }}
+                  aria-hidden="true"
                 >
                   <i className={`${service.icon} fs-1`}></i>
                 </div>

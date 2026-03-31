@@ -18,32 +18,32 @@ const publicFeatures = [
   {
     icon: <FaUsers size={45} />,
     title: "Accessible Opportunities",
-    desc: "We provide verified international job openings, making it easy for individuals to find suitable positions across multiple countries.",
+    desc: "We provide verified international job openings, making it easy for Ethiopian workers to find suitable positions across multiple countries.",
   },
   {
     icon: <FaGlobe size={45} />,
     title: "Global Reach",
-    desc: "Our network connects people with employers worldwide, creating opportunities beyond borders for career growth and experience.",
+    desc: "Our network connects candidates with employers worldwide, creating career opportunities beyond borders.",
   },
   {
     icon: <FaShieldAlt size={45} />,
     title: "Transparent Process",
-    desc: "Every step is clear and honest. We make sure you know the requirements, timelines, and expectations before you proceed.",
+    desc: "We maintain clarity and honesty at every step, ensuring candidates understand requirements, timelines, and expectations.",
   },
   {
     icon: <FaHandsHelping size={45} />,
     title: "Guidance & Support",
-    desc: "From applications to preparation, we guide you through the process, helping you feel confident and ready at every stage.",
+    desc: "From applications to pre-departure preparation, we guide candidates throughout the entire process, building confidence and readiness.",
   },
   {
     icon: <FaBalanceScale size={45} />,
     title: "Fair Opportunities",
-    desc: "We ensure ethical and responsible recruitment practices, promoting equal chances for all candidates.",
+    desc: "We adhere to ethical and responsible recruitment practices, offering equal chances for all applicants.",
   },
   {
     icon: <FaAward size={45} />,
     title: "Trusted Service",
-    desc: "Reliability and transparency are at our core, giving you peace of mind as you take steps toward your international career.",
+    desc: "Reliability and transparency are at our core, providing peace of mind as candidates pursue international careers.",
   },
 ];
 
@@ -104,9 +104,10 @@ function AboutDetail() {
           We open doors to international employment opportunities by connecting
           Ethiopian workers with trusted and verified employers across the
           Middle East and other global destinations. As a licensed overseas
-          employment agency, our mission is to make every step of the journey—
-          from application to deployment — simple, transparent, and accessible,
-          so each candidate can confidently plan and pursue a career abroad.
+          employment agency, our mission is to make every step of the
+          journey—from application to deployment—simple, transparent, and
+          accessible, so candidates can confidently plan and advance their
+          careers abroad.
         </p>
 
         <p className="mb-4">
@@ -114,17 +115,16 @@ function AboutDetail() {
           better opportunities overseas, we provide end-to-end support tailored
           to your needs. From document preparation and job matching to visa
           processing, contract verification, and pre-departure guidance, our
-          experienced team ensures that you are well-prepared and informed at
-          every stage of the process.
+          experienced team ensures you are fully prepared and informed at every
+          stage of the process.
         </p>
 
         <p className="mb-4">
           We are committed to transparency, accuracy, and worker protection. By
           providing clear information, regular updates, and practical guidance,
           we help reduce uncertainty and build trust throughout the journey. Our
-          goal is to ensure that every candidate travels safely, understands
-          their rights, and reaches their employer with confidence and peace of
-          mind.
+          goal is to ensure every candidate travels safely, understands their
+          rights, and reaches their employer with confidence and peace of mind.
         </p>
       </div>
 
@@ -155,11 +155,11 @@ function AboutDetail() {
         <div className="row g-3">
           {[
             "Access to verified international job opportunities",
-            "Clear explanation of requirements and application steps",
-            "Guidance to help you prepare for working abroad",
+            "Clear guidance on requirements and application steps",
+            "Support to prepare for working abroad",
             "Reliable updates and communication",
-            "Support throughout your journey",
-            "Simple and transparent process visibility",
+            "Continuous assistance throughout the journey",
+            "Transparent and easy-to-follow process",
           ].map((text, idx) => (
             <div className="col-12 col-md-6 d-flex align-items-start" key={idx}>
               <FaCheckCircle className="text-info me-2 mt-1" size={20} />
@@ -168,6 +168,7 @@ function AboutDetail() {
           ))}
         </div>
       </div>
+
       {/* SLIDER */}
       <div className="mb-5 pt-4 border-top">
         <h3 className="text-info mb-4">Our Approach</h3>
@@ -199,17 +200,17 @@ function AboutDetail() {
             {
               icon: <FaBalanceScale size={40} />,
               title: "Fairness",
-              desc: "Equal and ethical opportunities for all, promoting trust and responsibility in every process.",
+              desc: "We provide equal and ethical opportunities for all, promoting trust and responsibility in every process.",
             },
             {
               icon: <FaBrain size={40} />,
               title: "Clarity",
-              desc: "Providing clear, simple, and accurate information to guide decisions effectively.",
+              desc: "We offer clear, concise, and accurate information to guide informed decisions effectively.",
             },
             {
               icon: <FaAward size={40} />,
               title: "Trust",
-              desc: "Building confidence through honesty, transparency, and consistent support.",
+              desc: "We build confidence through honesty, transparency, and consistent support.",
             },
           ].map((item, idx) => (
             <div className="col-md-6" key={idx}>
@@ -230,26 +231,25 @@ function AboutDetail() {
         <h3 className="text-info mb-3">Our Impact</h3>
 
         <p className="mb-4">
-          We play a vital role in creating life-changing opportunities by
-          connecting Ethiopian workers with secure and verified employment
-          abroad. Through our structured and transparent processes, we help
-          individuals move from local job limitations to stable international
-          careers, improving their income, experience, and quality of life.
+          We create life-changing opportunities by connecting Ethiopian workers
+          with secure and verified international employment. Our structured and
+          transparent processes help individuals move from local job limitations
+          to stable overseas careers, improving income, experience, and quality
+          of life.
         </p>
 
         <p className="mb-4">
-          Beyond job placement, we ensure every candidate clearly understands
-          each step of the journey—from documentation and visa processing to
-          contract signing and final deployment. Our continuous support reduces
-          confusion, prevents exploitation, and builds trust, making overseas
-          employment safer and more reliable.
+          Beyond job placement, we ensure every candidate fully understands each
+          step—from documentation and visa processing to contract signing and
+          deployment. Our ongoing support reduces confusion, prevents
+          exploitation, and ensures safer overseas employment.
         </p>
 
         <p className="mb-4">
           By providing accurate information, timely updates, and hands-on
-          guidance, we minimize delays and uncertainties in the process. Our
-          impact is measured not only by successful deployments, but by the
-          confidence, safety, and long-term success of the workers we serve.
+          guidance, we minimize delays and uncertainties. Our impact is measured
+          not only by successful placements but by the confidence, safety, and
+          long-term success of the workers we serve.
         </p>
       </div>
     </div>
