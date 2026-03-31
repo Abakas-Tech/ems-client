@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import { FaBars } from "react-icons/fa";
@@ -16,10 +16,37 @@ const MainHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("home"); // ✅ NEW
+  const [activeSection, setActiveSection] = useState("home");
 
   const location = useLocation();
+  const navigate = useNavigate();
 
+  // Scroll helper
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  // Handle navigation click
+  const handleNavClick = (id) => {
+    if (location.pathname === "/") {
+      // Already on home, just scroll and update URL hash
+      scrollToSection(id);
+      window.history.replaceState(null, "", `/#${id}`);
+    } else {
+      // Navigate to home first
+      navigate("/", { replace: false });
+      // Wait for home page to render, then scroll and update URL hash
+      setTimeout(() => {
+        scrollToSection(id);
+        window.history.replaceState(null, "", `/#${id}`);
+      }, 150);
+    }
+    setIsOpen(false);
+    document.body.classList.remove("no-scroll");
+  };
   const settings = {
     mobileBreakpoint: 992,
     overlay: true,
@@ -47,7 +74,7 @@ const MainHeader = () => {
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  // ✅ CLICK HANDLER (NEW)
+  // Handle menu item click
   const handleClick = (section) => {
     setActiveSection(section);
   };
@@ -73,7 +100,7 @@ const MainHeader = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ ACTIVE SECTION SCROLL LOGIC (NEW)
+  // ACTIVE SECTION SCROLL LOGIC (NEW)
   useEffect(() => {
     const sections = [
       "home",
@@ -181,7 +208,6 @@ const MainHeader = () => {
                     Services
                   </a>
                 </li>
-
                 <li>
                   <a
                     href="#about"
@@ -191,7 +217,6 @@ const MainHeader = () => {
                     About
                   </a>
                 </li>
-
                 <li>
                   <a
                     href="#gallery"
@@ -201,7 +226,6 @@ const MainHeader = () => {
                     Gallery
                   </a>
                 </li>
-
                 <li>
                   <a
                     href="#testimonials"
@@ -288,7 +312,6 @@ const MainHeader = () => {
                       className={
                         location.pathname === dashboardLink ? "active" : ""
                       }
-                      onClick={toggleMenu}
                     >
                       {dashboardText}
                     </Link>

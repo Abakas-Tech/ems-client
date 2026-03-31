@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, } from "react";
 import useProfile from "../../../../context/Profile/useProfile";
 import useNotification from "../../../../context/Notification/useNotification";
 import { FaBars } from "react-icons/fa";
@@ -19,7 +19,7 @@ const menuItems = [
 
 const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   const { fetchProfile, profile } = useProfile();
-  const { unreadCount, getNotifications } = useNotification();
+  const { unreadCount } = useNotification();
   const location = useLocation();
   const navigate = useNavigate();
 

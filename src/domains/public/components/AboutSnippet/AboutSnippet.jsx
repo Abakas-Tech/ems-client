@@ -26,19 +26,20 @@ function About() {
           <div className="col-lg-6 d-flex">
             <img
               src={about}
-              alt="About Our Agency"
+              alt="Global Trust Overseas Employment Agency office and staff"
               className="img-fluid w-100 h-100"
               style={{ objectFit: "cover", borderRadius: "0.5rem" }}
+              loading="lazy"
             />
           </div>
 
           {/* Content */}
           <div className="col-lg-6 d-flex flex-column justify-content-center">
-            <h2 className="mb-4 fw-bold">About us</h2>
+            <h2 className="mb-4 fw-bold">About Us</h2>
             <p className="mb-4">
-              <span style={{ color: "#19699B" }} className="fw-bold">
-                Globa Trust Overseas Employment Agent Plc
-              </span>{" "}
+              <strong style={{ color: "#19699B" }}>
+                Global Trust Overseas Employment Agent Plc
+              </strong>{" "}
               is a licensed recruitment agency dedicated to connecting Ethiopian
               workers with verified international job opportunities, especially
               in Middle Eastern countries.
@@ -56,12 +57,16 @@ function About() {
               accessible by supporting applicants at every step until they
               successfully reach their employers abroad.
             </p>
+
             {/* Features */}
             <div className="row gy-2 gx-4 mb-4">
               {features.map((feature, idx) => (
                 <div className="col-sm-6" key={idx}>
                   <p className="mb-0">
-                    <FaArrowRight className="text-info me-2" />
+                    <FaArrowRight
+                      className="text-info me-2"
+                      aria-hidden="true"
+                    />
                     {feature}
                   </p>
                 </div>
@@ -71,6 +76,8 @@ function About() {
             <button
               className="btn bg-info text-white w-40 fw-bold"
               onClick={goToAboutDetail}
+              title="Learn more about Global Trust Overseas"
+              aria-label="Learn more about Global Trust Overseas"
             >
               Learn More
             </button>
