@@ -48,7 +48,10 @@ function WorkerPersonalInfo() {
     status_id: existingPersonal?.status?.id
       ? Number(existingPersonal.status.id)
       : "",
-    sex: existingPersonal?.sex || "",
+    sex: existingPersonal?.sex
+      ? existingPersonal.sex.charAt(0).toUpperCase() +
+        existingPersonal.sex.slice(1).toLowerCase()
+      : "",
     date_of_birth: existingPersonal?.date_of_birth || "",
     place_of_birth: existingPersonal?.place_of_birth || "",
     religion: existingPersonal?.religion || "",
