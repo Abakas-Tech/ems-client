@@ -319,31 +319,6 @@ const Contact = () => {
           </div>
         </div>
       </div>
-
-      {/* Structured Data */}
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "LocalBusiness",
-          name: "Global Trust Overseas Employment Agent Plc",
-          image: "https://yourdomain.com/assets/img/logo/logo.png",
-          "@id": "https://yourdomain.com",
-          url: "https://yourdomain.com",
-          telephone: socialMedia.phone,
-          email: socialMedia.email,
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: location.address,
-            addressLocality: location.name,
-            addressCountry: "ET",
-          },
-          geo: {
-            "@type": "GeoCoordinates",
-            latitude: location.latitude,
-            longitude: location.longitude,
-          },
-        })}
-      </script>
     </section>
   );
 };
