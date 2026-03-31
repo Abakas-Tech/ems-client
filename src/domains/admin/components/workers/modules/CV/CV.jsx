@@ -115,7 +115,7 @@ const CV = () => {
             className="btn btn-main mt-3 px-2 text-white w-45 d-flex align-items-center justify-content-center "
             onClick={handleGenerateAndUpload}
           >
-            Generate & Upload
+            {worker.cv_url ? "Update CV" : "Generate CV"}
           </button>
         </div>
       )}

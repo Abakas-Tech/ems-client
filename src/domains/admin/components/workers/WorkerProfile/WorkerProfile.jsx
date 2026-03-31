@@ -289,10 +289,6 @@ const WorkerProfile = () => {
     fetchAllStatuses();
   }, [id]);
 
-  console.log("paramId:", paramId);
-  console.log("profile:", profile);
-  console.log("final id:", id);
-
   // Handle assigning status
   const handleAssignStatus = async (inputValues) => {
     const statusId = inputValues.status_id;
