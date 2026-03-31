@@ -3,7 +3,11 @@ import styles from "./HowItWorks.module.css";
 
 function HowItWorks() {
   return (
-    <section id="how" className={`styles["how-section"] pb-0`}>
+    <section
+      id="how"
+      className={`styles["how-section"] pb-0`}
+     
+    >
       <div className="container">
         {/* HEADER */}
         <div className="row justify-content-center">

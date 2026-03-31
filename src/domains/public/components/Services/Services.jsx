@@ -41,11 +41,7 @@ const services = [
 
 const Services = () => {
   return (
-    <section
-      id="services"
-      className="mb-0 pb-0"
-      aria-labelledby="services-title"
-    >
+    <section id="services" className="pb-0" aria-labelledby="services-title">
       <div className="container">
         {/* Heading */}
         <div className="row justify-content-center">
