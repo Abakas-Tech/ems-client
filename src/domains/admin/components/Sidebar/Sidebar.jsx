@@ -20,7 +20,7 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
     if (expanded) {
       timer = setTimeout(() => {
         setShowLabels(true);
-      }, 150);
+      }, 130);
     } else {
       setShowLabels(false);
     }
