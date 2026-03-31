@@ -125,7 +125,7 @@ const Contact = () => {
   const mapSrc = `https://maps.google.com/maps?q=${location.latitude},${location.longitude}&z=15&output=embed`;
 
   return (
-    <section
+    <dev
       className="container px-0 "
       id="contact"
       style={{ padding: "100px 0" }}
@@ -322,32 +322,7 @@ const Contact = () => {
           </div>
         </div>
       </div>
-
-      {/* Structured Data */}
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "LocalBusiness",
-          name: "Global Trust Overseas Employment Agent Plc",
-          image: "https://yourdomain.com/assets/img/logo/logo.png",
-          "@id": "https://yourdomain.com",
-          url: "https://yourdomain.com",
-          telephone: socialMedia.phone,
-          email: socialMedia.email,
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: location.address,
-            addressLocality: location.name,
-            addressCountry: "ET",
-          },
-          geo: {
-            "@type": "GeoCoordinates",
-            latitude: location.latitude,
-            longitude: location.longitude,
-          },
-        })}
-      </script>
-    </section>
+    </dev>
   );
 };
 
