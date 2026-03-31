@@ -28,23 +28,18 @@ const MainHeader = () => {
   };
 
   // Handle navigation click
-const handleNavClick = (id) => {
-  if (location.pathname === "/") {
-    // Already on home, just scroll and update URL hash
-    scrollToSection(id);
-    window.history.replaceState(null, "", `/#${id}`);
-  } else {
-    // Navigate to home first
-    navigate("/", { replace: false });
-    // Wait for home page to render, then scroll and update URL hash
-    setTimeout(() => {
+  const handleNavClick = (id) => {
+    if (location.pathname === "/") {
       scrollToSection(id);
-      window.history.replaceState(null, "", `/#${id}`);
-    }, 150);
-  }
-  setIsOpen(false); // Close drawer if mobile
-  document.body.classList.remove("no-scroll");
-};
+    } else {
+      navigate("/", { replace: false });
+      // Wait for home page to render, then scroll
+      setTimeout(() => scrollToSection(id), 150);
+    }
+    setIsOpen(false); // Close drawer if mobile
+    document.body.classList.remove("no-scroll");
+  };
+
   const settings = {
     mobileBreakpoint: 992,
     overlay: true,

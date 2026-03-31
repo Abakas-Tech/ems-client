@@ -48,7 +48,7 @@ function HowItWorks() {
 
               <div className={styles["step-content"]}>
                 <h4>Register</h4>
-                <p>
+                <p className="text-muted">
                   Visit the agency, register and submit your application details
                   to get started with the process.
                 </p>
@@ -89,7 +89,7 @@ function HowItWorks() {
 
               <div className={styles["step-content"]}>
                 <h4>Processing</h4>
-                <p>
+                <p className="text-muted">
                   Your application is reviewed, verified, and prepared by the
                   agency for approval.
                 </p>
@@ -115,7 +115,7 @@ function HowItWorks() {
 
               <div className={styles["step-content"]}>
                 <h4>Deployment</h4>
-                <p>
+                <p className="text-muted">
                   Once approved, you are deployed to your destination country to
                   begin your job.
                 </p>
