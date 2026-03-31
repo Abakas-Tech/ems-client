@@ -63,7 +63,7 @@ const AdminRoutes = () => {
         <Route path="my-profile" element={<Profile />} />
         <Route path="user-management" element={<ListUser />} />
         <Route path="dashboard" element={<Analytics />} />
-        <Route path="files" element={<Files/>} />
+        <Route path="files" element={<Files />} />
         <Route
           path="finances"
           element={
@@ -112,7 +112,7 @@ const AdminRoutes = () => {
           path="workers/modules/:id/emergency-contact"
           element={<Guarantor />}
         />
-         <Route path="workers/modules/:id/cv" element={<CV/>} />
+        <Route path="workers/modules/:id/cv" element={<CV />} />
         <Route path="workers/modules/:id/visa" element={<Visa />} />
         <Route path="/meta-data" element={<MetaDataDashboard />} />
         <Route path="/public-content" element={<ContentDashboard />} />
