@@ -217,7 +217,7 @@ const Contact = () => {
             data-aos-delay="0.3s"
           >
             <iframe
-              className="position-relative rounded w-100 h-100"
+              className="position-relative rounded w-100 h-100 pb-3"
               src={mapSrc}
               frameBorder="0"
               style={{ minHeight: "300px", border: "0" }}
