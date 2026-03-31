@@ -130,9 +130,21 @@ const MainHeader = () => {
                       location.pathname === "/properties" ? "active" : ""
                     }
                   >
-                    How it Works
+                    Process
                   </a>
                 </li>
+
+                 <li>
+                  <a
+                    href="#services"
+                    className={
+                      location.pathname === "/properties" ? "active" : ""
+                    }
+                  >
+                    Services
+                  </a>
+                </li>
+
                 <li>
                   <a
                    href="#about"
@@ -221,9 +233,22 @@ const MainHeader = () => {
                       }
                       onClick={toggleMenu}
                     >
-                      How It Works
+                      Process
                     </a>
                   </li>
+
+                   <li>
+                    <a
+                     href="#services"
+                      className={
+                        location.pathname === "/properties" ? "active" : ""
+                      }
+                      onClick={toggleMenu}
+                    >
+                      Services
+                    </a>
+                  </li>
+
                   <li>
                     <a
                       href="#about"

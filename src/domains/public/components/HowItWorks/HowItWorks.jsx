@@ -3,14 +3,14 @@ import styles from "./HowItWorks.module.css";
 
 function HowItWorks() {
   return (
-    <section id="how" className={styles["how-section"]}>
+    <section id="how" className={`styles["how-section"] pb-0`}>
       <div className="container">
         {/* HEADER */}
         <div className="row justify-content-center">
           <div className="col-xl-6 col-lg-7 col-md-10 text-center">
             <div className={styles["section-heading"]}>
               <h2>How It Works</h2>
-              <p>
+              <p className="mb-5">
                 Follow these simple steps to complete your overseas employment
                 journey smoothly and efficiently.
               </p>
@@ -49,8 +49,8 @@ function HowItWorks() {
               <div className={styles["step-content"]}>
                 <h4>Register</h4>
                 <p>
-                  Visit the agency, register and  submit your application details to get
-                  started with the process.
+                  Visit the agency, register and submit your application details
+                  to get started with the process.
                 </p>
               </div>
             </div>
@@ -64,14 +64,24 @@ function HowItWorks() {
               <div className={styles["icon-wrapper"]}>
                 <div className={`${styles["icon-box"]} ${styles["warning"]}`}>
                   <svg width="45" height="45" viewBox="0 0 24 24" fill="none">
+                    {/* Document */}
                     <path
-                      d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z"
-                      fill="currentColor"
+                      d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      fill="none"
                     />
+
+                    {/* Fold corner */}
+                    <path d="M14 2v6h6" stroke="currentColor" strokeWidth="2" />
+
+                    {/* Check / process line */}
                     <path
-                      d="M19.4 15a7.97 7.97 0 0 0 .1-2l2-1.5-2-3.5-2.4.5a8.1 8.1 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5c-.6.2-1.2.5-1.7 1l-2.4-.5-2 3.5 2 1.5a7.97 7.97 0 0 0 .1 2l-2 1.5 2 3.5 2.4-.5c.5.4 1.1.8 1.7 1l.3 2.5h4l.3-2.5c.6-.2 1.2-.5 1.7-1l2.4.5 2-3.5-2-1.5z"
-                      fill="currentColor"
-                      opacity="0.3"
+                      d="M9 13l2 2 4-4"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 </div>

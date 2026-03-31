@@ -76,17 +76,20 @@ const Gallery = () => {
     selectedIndex !== null ? galleryItems[selectedIndex] : null;
 
   return (
-    <section id="gallery" style={{ padding: "100px 0" }}>
+    <section id="gallery" style={{ padding: "100px 0" }} className="pb-0">
       <div className="container">
         {/* Header */}
 
-        <div className="row mb-5">
-          <div className="col-12 text-center">
-            <h2 className="fw-bold">Capturing memorable moments</h2>
-            <p>
-              Explore our gallery of stunning photographs that tell stories,
-              evoke emotions, and preserve memories from every special occasion.
-            </p>
+        <div className="row mb-5 justify-content-center">
+          <div className="col-lg-7 col-md-10 text-center">
+            <div className="sec-heading-center">
+              <h2 className="fw-bold">Capturing memorable moments</h2>
+              <p>
+                Explore our gallery of stunning photographs that tell stories,
+                evoke emotions, and preserve memories from every special
+                occasion.
+              </p>
+            </div>
           </div>
         </div>
 

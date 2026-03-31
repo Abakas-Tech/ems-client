@@ -95,28 +95,36 @@ function AboutDetail() {
   }, []);
 
   return (
-    <div className="container mt-3 py-5">
+    <div className="container mt-5 py-5">
       {/* HERO */}
       <div className="mb-5">
         <h2 className="fw-bold text-info mb-3">About Us</h2>
 
         <p className="mb-4">
-          We open doors to international opportunities by connecting individuals
-          with trusted employers around the world. Our mission is to make every
-          step simple, clear, and accessible so you can confidently plan your
-          career abroad.
+          We open doors to international employment opportunities by connecting
+          Ethiopian workers with trusted and verified employers across the
+          Middle East and other global destinations. As a licensed overseas
+          employment agency, our mission is to make every step of the journey—
+          from application to deployment — simple, transparent, and accessible,
+          so each candidate can confidently plan and pursue a career abroad.
         </p>
 
         <p className="mb-4">
-          Whether you are just starting your professional journey or preparing
-          for a new chapter in your career, we provide the guidance, resources,
-          and support you need to navigate each stage with clarity.
+          Whether you are entering the workforce for the first time or seeking
+          better opportunities overseas, we provide end-to-end support tailored
+          to your needs. From document preparation and job matching to visa
+          processing, contract verification, and pre-departure guidance, our
+          experienced team ensures that you are well-prepared and informed at
+          every stage of the process.
         </p>
 
         <p className="mb-4">
-          By offering accurate information and practical tips, we ensure that
-          each candidate understands the process fully, reducing uncertainty and
-          building confidence for the path ahead.
+          We are committed to transparency, accuracy, and worker protection. By
+          providing clear information, regular updates, and practical guidance,
+          we help reduce uncertainty and build trust throughout the journey. Our
+          goal is to ensure that every candidate travels safely, understands
+          their rights, and reaches their employer with confidence and peace of
+          mind.
         </p>
       </div>
 
@@ -222,21 +230,26 @@ function AboutDetail() {
         <h3 className="text-info mb-3">Our Impact</h3>
 
         <p className="mb-4">
-          We simplify the journey to working abroad by providing clear,
-          reliable, and actionable information. This empowers individuals to
-          make informed decisions and pursue opportunities with confidence.
+          We play a vital role in creating life-changing opportunities by
+          connecting Ethiopian workers with secure and verified employment
+          abroad. Through our structured and transparent processes, we help
+          individuals move from local job limitations to stable international
+          careers, improving their income, experience, and quality of life.
         </p>
 
         <p className="mb-4">
-          Beyond offering job opportunities, we ensure every person understands
-          the process and feels supported at every stage. Our mission is to make
-          working internationally fair, transparent, and stress-free.
+          Beyond job placement, we ensure every candidate clearly understands
+          each step of the journey—from documentation and visa processing to
+          contract signing and final deployment. Our continuous support reduces
+          confusion, prevents exploitation, and builds trust, making overseas
+          employment safer and more reliable.
         </p>
 
         <p className="mb-4">
-          By combining guidance, updates, and practical tips, we reduce
-          uncertainty and help individuals successfully achieve their
-          international career goals.
+          By providing accurate information, timely updates, and hands-on
+          guidance, we minimize delays and uncertainties in the process. Our
+          impact is measured not only by successful deployments, but by the
+          confidence, safety, and long-term success of the workers we serve.
         </p>
       </div>
     </div>

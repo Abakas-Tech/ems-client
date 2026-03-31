@@ -1,16 +1,21 @@
 {
-  "name": "Mager Properties",
-  "short_name": "MagerPro",
-  "description": "Mager Properties Real Estate Web App helps property consultants and agents manage listings, track client inquiries, and organize property sales efficiently. Visit https://magerproperty.com for more information.",
+  "name": "Global Trust Overseas Jobs",
+  "short_name": "Global Trust",
+  "description": "Apply for verified overseas jobs with Global Trust Overseas Employment Agent Plc. Safe and legal job opportunities for Ethiopians with full visa processing and full support.",
+
   "lang": "en",
   "dir": "ltr",
-  "start_url": "/?source=pwa",
+
+  "start_url": "/?source=pwa&utm_campaign=app_install",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#004AAD",
-  "theme_color": "#004AAD",
-  "categories": ["business", "productivity", "real-estate"],
+
+  "background_color": "#C5CBD1",
+  "theme_color": "#C5CBD1",
+
+  "categories": ["business", "jobs", "employment"],
+
   "icons": [
     {
       "src": "/icons/192.png",
@@ -37,34 +42,64 @@
       "purpose": "any maskable"
     }
   ],
+
   "shortcuts": [
     {
-      "name": "Dashboard",
-      "short_name": "Dashboard",
-      "description": "Open the property management dashboard",
-      "url": "/dashboard",
+      "name": "Notifications",
+      "short_name": "Alerts",
+      "description": "View job alerts and updates",
+      "url": "/notifications",
       "icons": [
         {
-          "src": "/icons/icon-192.png",
+          "src": "/icons/192.png",
           "sizes": "192x192",
           "type": "image/png"
         }
       ]
     },
     {
-      "name": "Add Property",
-      "short_name": "Add",
-      "description": "Quickly create a new property listing",
-      "url": "/admin/submit-property",
+      "name": "Application Status",
+      "short_name": "Status",
+      "description": "Track your job application progress",
+      "url": "/application-status",
       "icons": [
         {
-          "src": "/icons/icon-192.png",
+          "src": "/icons/192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Open your personal dashboard",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/icons/192.png",
           "sizes": "192x192",
           "type": "image/png"
         }
       ]
     }
   ],
+
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Homepage - Explore overseas job opportunities"
+    },
+    {
+      "src": "/screenshots/service.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Services - Full employment support process"
+    }
+  ],
+
   "related_applications": [],
   "prefer_related_applications": false
 }

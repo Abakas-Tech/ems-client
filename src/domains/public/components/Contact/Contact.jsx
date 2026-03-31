@@ -127,11 +127,7 @@ const Contact = () => {
   const mapSrc = `https://maps.google.com/maps?q=${location.latitude},${location.longitude}&z=15&output=embed`;
 
   return (
-    <section
-      className="container"
-      id="contact"
-      style={{ padding: "100px 0" }}
-    >
+    <section className="container" id="contact" style={{ padding: "100px 0" }}>
       <div className="">
         <div className="text-center">
           <h2 className="pb-4  fw-bold">Contact Us For Any Query</h2>
@@ -275,7 +271,7 @@ const Contact = () => {
                 <div className="col-12 w-100">
                   <button
                     type="submit"
-                    className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center"
+                    className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center fw-bold"
                   >
                     Submit
                   </button>
