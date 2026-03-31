@@ -16,8 +16,6 @@ const MainHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(window.innerWidth <= 992);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
-
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -32,21 +30,16 @@ const MainHeader = () => {
   // Handle navigation click
   const handleNavClick = (id) => {
     if (location.pathname === "/") {
-      // Already on home, just scroll and update URL hash
       scrollToSection(id);
-      window.history.replaceState(null, "", `/#${id}`);
     } else {
-      // Navigate to home first
       navigate("/", { replace: false });
-      // Wait for home page to render, then scroll and update URL hash
-      setTimeout(() => {
-        scrollToSection(id);
-        window.history.replaceState(null, "", `/#${id}`);
-      }, 150);
+      // Wait for home page to render, then scroll
+      setTimeout(() => scrollToSection(id), 150);
     }
-    setIsOpen(false);
+    setIsOpen(false); // Close drawer if mobile
     document.body.classList.remove("no-scroll");
   };
+
   const settings = {
     mobileBreakpoint: 992,
     overlay: true,
@@ -64,6 +57,7 @@ const MainHeader = () => {
     5: "/employer/my-profile",
   };
 
+  // Determine dashboard link and text
   let dashboardLink = "/auth/login";
   let dashboardText = "Sign In";
 
@@ -73,11 +67,6 @@ const MainHeader = () => {
   }
 
   const toggleMenu = () => setIsOpen(!isOpen);
-
-  // Handle menu item click
-  const handleClick = (section) => {
-    setActiveSection(section);
-  };
 
   // Handle resize
   useEffect(() => {
@@ -93,41 +82,9 @@ const MainHeader = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Handle scroll (existing)
+  // Handle scroll
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // ACTIVE SECTION SCROLL LOGIC (NEW)
-  useEffect(() => {
-    const sections = [
-      "home",
-      "how",
-      "services",
-      "about",
-      "gallery",
-      "testimonials",
-      "contact",
-    ];
-
-    const handleScroll = () => {
-      let current = "home";
-
-      sections.forEach((id) => {
-        const section = document.getElementById(id);
-        if (section) {
-          const top = section.offsetTop - 120;
-          if (window.scrollY >= top) {
-            current = id;
-          }
-        }
-      });
-
-      setActiveSection(current);
-    };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -157,6 +114,7 @@ const MainHeader = () => {
           <div className="nav-header">
             <Link className="nav-brand text-logo exchange" to="/">
               <img src={logo} alt="Logo" style={{ width: "80px" }} />
+              {/* <h5 className="m-0">Resido</h5> */}
             </Link>
 
             {isPortrait && (
@@ -181,66 +139,57 @@ const MainHeader = () => {
               <ul className="nav-menu align-to-right">
                 <li>
                   <a
-                    href="#home"
-                    className={activeSection === "home" ? "active" : ""}
-                    onClick={() => handleClick("home")}
+                    onClick={() => handleNavClick("home")}
+                    style={{ cursor: "pointer" }}
+                    className={location.pathname === "/" ? "active" : ""}
                   >
                     Home
                   </a>
                 </li>
-
                 <li>
                   <a
-                    href="#how"
-                    className={activeSection === "how" ? "active" : ""}
-                    onClick={() => handleClick("how")}
+                    onClick={() => handleNavClick("how")}
+                    style={{ cursor: "pointer" }}
                   >
                     Process
                   </a>
                 </li>
-
                 <li>
                   <a
-                    href="#services"
-                    className={activeSection === "services" ? "active" : ""}
-                    onClick={() => handleClick("services")}
+                    onClick={() => handleNavClick("services")}
+                    style={{ cursor: "pointer" }}
                   >
                     Services
                   </a>
                 </li>
                 <li>
                   <a
-                    href="#about"
-                    className={activeSection === "about" ? "active" : ""}
-                    onClick={() => handleClick("about")}
+                    onClick={() => handleNavClick("about")}
+                    style={{ cursor: "pointer" }}
                   >
                     About
                   </a>
                 </li>
                 <li>
                   <a
-                    href="#gallery"
-                    className={activeSection === "gallery" ? "active" : ""}
-                    onClick={() => handleClick("gallery")}
+                    onClick={() => handleNavClick("gallery")}
+                    style={{ cursor: "pointer" }}
                   >
                     Gallery
                   </a>
                 </li>
                 <li>
                   <a
-                    href="#testimonials"
-                    className={activeSection === "testimonials" ? "active" : ""}
-                    onClick={() => handleClick("testimonials")}
+                    onClick={() => handleNavClick("testimonials")}
+                    style={{ cursor: "pointer" }}
                   >
                     Testimonials
                   </a>
                 </li>
-
                 <li>
                   <a
-                    href="#contact"
-                    className={activeSection === "contact" ? "active" : ""}
-                    onClick={() => handleClick("contact")}
+                    onClick={() => handleNavClick("contact")}
+                    style={{ cursor: "pointer" }}
                   >
                     Contact
                   </a>
@@ -260,7 +209,7 @@ const MainHeader = () => {
             </div>
           )}
 
-          {/* Mobile Nav */}
+          {/* Mobile Nav with Drawer */}
           {isPortrait && (
             <Drawer
               open={isOpen}
@@ -281,31 +230,63 @@ const MainHeader = () => {
                 >
                   ✕
                 </span>
-
                 <ul className="nav-menu align-to-right">
-                  {[
-                    "home",
-                    "how",
-                    "services",
-                    "about",
-                    "gallery",
-                    "testimonials",
-                    "contact",
-                  ].map((section) => (
-                    <li key={section}>
-                      <a
-                        href={`#${section}`}
-                        className={activeSection === section ? "active" : ""}
-                        onClick={() => {
-                          handleClick(section);
-                          toggleMenu();
-                        }}
-                      >
-                        {section.charAt(0).toUpperCase() + section.slice(1)}
-                      </a>
-                    </li>
-                  ))}
-
+                  <li>
+                    <a
+                      onClick={() => handleNavClick("home")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Hero
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={() => handleNavClick("how")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Process
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={() => handleNavClick("services")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Services
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={() => handleNavClick("about")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      About
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={() => handleNavClick("gallery")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Gallery
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={() => handleNavClick("testimonials")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Testimonials
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={() => handleNavClick("contact")}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Contact
+                    </a>
+                  </li>
                   <li>
                     <Link
                       to={dashboardLink}
