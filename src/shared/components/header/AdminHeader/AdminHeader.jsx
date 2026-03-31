@@ -8,6 +8,8 @@ const menuItems = [
   { label: "Dashboard", path: "/admin/dashboard" },
   { label: "My Profile", path: "/admin/my-profile" },
   { label: "User ", path: "/admin/user-management" },
+  { label: "Meta Data ", path: "/admin/meta-data" },
+  { label: "Public Content ", path: "/admin/public-content" },
   { label: "Worker", path: "/admin/workers" },
   { label: "Finance", path: "/admin/finances" },
   { label: "Files", path: "/admin/my-files" },
