@@ -1,7 +1,4 @@
 import { useEffect, useState } from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import {
   FaUsers,
   FaGlobe,
@@ -13,6 +10,7 @@ import {
   FaBrain,
   FaCheckCircle,
 } from "react-icons/fa";
+import styles from "./AboutDetail.module.css";
 
 const brandColor = "#4484BA";
 
@@ -49,27 +47,12 @@ const publicFeatures = [
   },
 ];
 
-const settings = {
-  dots: true,
-  infinite: true,
-  arrows: false,
-  speed: 500,
-  slidesToShow: 3,
-  autoplay: true,
-  responsive: [
-    { breakpoint: 992, settings: { slidesToShow: 2 } },
-    { breakpoint: 576, settings: { slidesToShow: 1 } },
-  ],
-};
-
 const Counter = ({ target, label }) => {
   const [count, setCount] = useState(0);
-
   useEffect(() => {
     let start = 0;
     const duration = 2000;
     const increment = target / (duration / 20);
-
     const timer = setInterval(() => {
       start += increment;
       if (start >= target) {
@@ -79,7 +62,6 @@ const Counter = ({ target, label }) => {
         setCount(Math.floor(start));
       }
     }, 20);
-
     return () => clearInterval(timer);
   }, [target]);
 
@@ -93,7 +75,7 @@ const Counter = ({ target, label }) => {
   );
 };
 
-function AboutDetail() {
+export default function AboutDetail() {
   useEffect(() => {
     window.dispatchEvent(new Event("resize"));
   }, []);
@@ -110,11 +92,11 @@ function AboutDetail() {
           We open doors to international employment opportunities by connecting
           Ethiopian workers with trusted and verified employers across the
           Middle East and other global destinations. As a licensed overseas
-          employment agency, our mission is to make every step of the journey—
-          from application to deployment — simple, transparent, and accessible,
-          so each candidate can confidently plan and pursue a career abroad.
+          employment agency, our mission is to make every step of the
+          journey—from application to deployment—simple, transparent, and
+          accessible, so each candidate can confidently plan and pursue a career
+          abroad.
         </p>
-
         <p className="mb-4">
           Whether you are entering the workforce for the first time or seeking
           better opportunities overseas, we provide end-to-end support tailored
@@ -123,7 +105,6 @@ function AboutDetail() {
           experienced team ensures that you are well-prepared and informed at
           every stage of the process.
         </p>
-
         <p className="mb-4">
           We are committed to transparency, accuracy, and worker protection. By
           providing clear information, regular updates, and practical guidance,
@@ -134,7 +115,7 @@ function AboutDetail() {
         </p>
       </div>
 
-      {/* TRUST / STATS */}
+      {/* Our Reach */}
       <div className="mb-5 pt-4 border-top">
         <h3 className=" mb-4" style={{ color: brandColor }}>
           Our Reach
@@ -156,7 +137,7 @@ function AboutDetail() {
         </div>
       </div>
 
-      {/* WHAT WE OFFER */}
+      {/* What We Offer */}
       <div className="mb-5 pt-4">
         <h3 className=" mb-4" style={{ color: brandColor }}>
           What We Offer
@@ -182,28 +163,33 @@ function AboutDetail() {
           ))}
         </div>
       </div>
-      {/* SLIDER */}
+
+      {/* Our Approach - Slider */}
       <div className="mb-5 pt-4 border-top">
         <h3 className="mb-4" style={{ color: brandColor }}>
           Our Approach
         </h3>
-
-        <Slider {...settings}>
-          {publicFeatures.map((item, i) => (
-            <div key={i}>
-              <div className="text-center p-3">
-                <div className="mb-3 " style={{ color: brandColor }}>
-                  {item.icon}
+        <div className={styles.scrollWrapper}>
+          <div className={styles.scrollTrack}>
+            {[...publicFeatures, ...publicFeatures].map((feature, index) => (
+              <div className={styles.featureCard} key={index}>
+                <div className="text-center p-4">
+                  <div
+                    className={styles.iconWrapper}
+                    style={{ color: brandColor }}
+                  >
+                    {feature.icon}
+                  </div>
+                  <h6 className="fw-bold mb-3">{feature.title}</h6>
+                  <p className="small mb-0">{feature.desc}</p>
                 </div>
-                <h6 className="fw-bold">{item.title}</h6>
-                <p className="small">{item.desc}</p>
               </div>
-            </div>
-          ))}
-        </Slider>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* VALUES */}
+      {/* Our Values */}
       <div className="mb-5 pt-4 border-top">
         <h3 className=" mb-4" style={{ color: brandColor }}>
           Our Values
@@ -247,7 +233,7 @@ function AboutDetail() {
         </div>
       </div>
 
-      {/* IMPACT */}
+      {/* Our Impact */}
       <div className="pt-4 border-top">
         <h3 className=" mb-3" style={{ color: brandColor }}>
           Our Impact
@@ -260,7 +246,6 @@ function AboutDetail() {
           individuals move from local job limitations to stable international
           careers, improving their income, experience, and quality of life.
         </p>
-
         <p className="mb-4">
           Beyond job placement, we ensure every candidate clearly understands
           each step of the journey—from documentation and visa processing to
@@ -268,7 +253,6 @@ function AboutDetail() {
           confusion, prevents exploitation, and builds trust, making overseas
           employment safer and more reliable.
         </p>
-
         <p className="mb-4">
           By providing accurate information, timely updates, and hands-on
           guidance, we minimize delays and uncertainties in the process. Our
@@ -279,5 +263,3 @@ function AboutDetail() {
     </div>
   );
 }
-
-export default AboutDetail;
