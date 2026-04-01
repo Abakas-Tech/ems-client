@@ -45,19 +45,25 @@ const MyProfile = () => {
   };
 
   const handleDeleteAvatar = async () => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteProfilePhoto();
-        addMessage(response?.success, response?.message);
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteProfilePhoto();
+          addMessage(response?.success, response?.message);
 
-        await fetchProfile();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+          await fetchProfile();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Do you want to delete your profile photo?",
+        confirmText: "Yes", 
+      },
+    );
   };
 
   const validateFields = () => {
