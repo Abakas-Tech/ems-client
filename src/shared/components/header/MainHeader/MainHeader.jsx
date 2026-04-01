@@ -124,7 +124,7 @@ const MainHeader = () => {
                 style={{
                   fontSize: "24px",
                   cursor: "pointer",
-                  color: "var(--maincolor)",
+                  color: "#4484BA",
                   marginRight: "10px",
                 }}
               >

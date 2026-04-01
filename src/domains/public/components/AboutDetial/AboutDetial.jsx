@@ -99,7 +99,7 @@ function AboutDetail() {
   }, []);
 
   return (
-    <div className="container mt-5 py-5">
+    <div className="container mt-5 py-4">
       {/* HERO */}
       <div className="mb-5">
         <h2 className="fw-bold  mb-3" style={{ color: brandColor }}>
@@ -172,7 +172,11 @@ function AboutDetail() {
             "Simple and transparent process visibility",
           ].map((text, idx) => (
             <div className="col-12 col-md-6 d-flex align-items-start" key={idx}>
-              <FaCheckCircle className="text-info me-2 mt-1" size={20} />
+              <FaCheckCircle
+                className=" me-2 mt-1"
+                size={20}
+                style={{ color: brandColor }}
+              />
               <p className="mb-0">{text}</p>
             </div>
           ))}
@@ -180,13 +184,17 @@ function AboutDetail() {
       </div>
       {/* SLIDER */}
       <div className="mb-5 pt-4 border-top">
-        <h3 className="text-info mb-4">Our Approach</h3>
+        <h3 className="mb-4" style={{ color: brandColor }}>
+          Our Approach
+        </h3>
 
         <Slider {...settings}>
           {publicFeatures.map((item, i) => (
             <div key={i}>
               <div className="text-center p-3">
-                <div className="mb-3 text-info">{item.icon}</div>
+                <div className="mb-3 " style={{ color: brandColor }}>
+                  {item.icon}
+                </div>
                 <h6 className="fw-bold">{item.title}</h6>
                 <p className="small">{item.desc}</p>
               </div>

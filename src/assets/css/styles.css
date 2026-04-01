@@ -2862,7 +2862,7 @@ nav a:hover {
 .header-transparent.header-fixed .nav-menu > .active > a,
 .header-transparent.header-fixed .nav-menu > .focus > a,
 .header-transparent.header-fixed .nav-menu > li:hover > a {
-  color: var(--maincolor) !important;
+  color: #4484BA !important;
 }
 .nav-menu > li > a > [class*="ion-"],
 .nav-menu > li > a > i {

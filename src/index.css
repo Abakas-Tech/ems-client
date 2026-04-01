@@ -6,8 +6,10 @@
 @import "yet-another-react-lightbox/styles.css";
 @import "yet-another-react-lightbox/plugins/thumbnails.css";
 
-/* 
-git add .
-git commit -m "adjest scroll height upon click"
-git push
- */
+.slick-slider {
+  overflow: hidden;
+}
+
+.slick-list {
+  overflow: hidden;
+}
