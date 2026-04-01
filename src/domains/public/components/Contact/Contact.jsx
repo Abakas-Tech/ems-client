@@ -146,8 +146,12 @@ const Contact = () => {
 
             <div className="d-flex align-items-center mb-3 mt-4">
               <div
-                className="d-flex align-items-center justify-content-center flex-shrink-0 bg-info"
-                style={{ width: "50px", height: "50px" }}
+                className="d-flex align-items-center justify-content-center flex-shrink-0"
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  backgroundColor: "#4484BA",
+                }}
               >
                 <FaMapMarkerAlt
                   className="text-white"
@@ -156,15 +160,19 @@ const Contact = () => {
                 />
               </div>
               <div className="ms-3">
-                <h5 className="text-info">{location.name}</h5>
+                <h5 style={{ color: "#4484BA" }}>{location.name}</h5>
                 <p className="mb-0">{location.address}</p>
               </div>
             </div>
 
             <div className="d-flex align-items-center mb-3">
               <div
-                className="d-flex align-items-center justify-content-center flex-shrink-0 bg-info"
-                style={{ width: "50px", height: "50px" }}
+                className="d-flex align-items-center justify-content-center flex-shrink-0"
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  backgroundColor: "#4484BA",
+                }}
               >
                 <FaPhoneAlt
                   className="text-white"
@@ -173,7 +181,7 @@ const Contact = () => {
                 />
               </div>
               <div className="ms-3">
-                <h5 className="text-info">Mobile</h5>
+                <h5 style={{ color: "#4484BA" }}>Mobile</h5>
                 <p className="mb-0">
                   <a
                     href={`tel:${socialMedia.phone}`}
@@ -187,8 +195,12 @@ const Contact = () => {
 
             <div className="d-flex align-items-center">
               <div
-                className="d-flex align-items-center justify-content-center flex-shrink-0 bg-info"
-                style={{ width: "50px", height: "50px" }}
+                className="d-flex align-items-center justify-content-center flex-shrink-0"
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  backgroundColor: "#4484BA",
+                }}
               >
                 <FaEnvelopeOpen
                   className="text-white"
@@ -197,7 +209,7 @@ const Contact = () => {
                 />
               </div>
               <div className="ms-3">
-                <h5 className="text-info">Email</h5>
+                <h5 style={{ color: "#4484BA" }}>Email</h5>
                 <p className="mb-0">
                   <a
                     href={`mailto:${socialMedia.email}`}
@@ -309,7 +321,8 @@ const Contact = () => {
                 <div className="col-12 w-100">
                   <button
                     type="submit"
-                    className="btn btn-info text-white w-100 d-flex fw-bold"
+                    className="btn  text-white w-100 d-flex fw-bold"
+                    style={{ backgroundColor: "#4484BA" }}
                   >
                     Submit
                   </button>

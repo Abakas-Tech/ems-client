@@ -14,6 +14,8 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 
+const brandColor = "#4484BA";
+
 const publicFeatures = [
   {
     icon: <FaUsers size={45} />,
@@ -83,7 +85,9 @@ const Counter = ({ target, label }) => {
 
   return (
     <div className="text-center">
-      <h2 className="text-info fw-bold">{count}+</h2>
+      <h2 className=" fw-bold" style={{ color: brandColor }}>
+        {count}+
+      </h2>
       <p className="mb-0">{label}</p>
     </div>
   );
@@ -98,7 +102,9 @@ function AboutDetail() {
     <div className="container mt-5 py-5">
       {/* HERO */}
       <div className="mb-5">
-        <h2 className="fw-bold text-info mb-3">About Us</h2>
+        <h2 className="fw-bold  mb-3" style={{ color: brandColor }}>
+          About Us
+        </h2>
 
         <p className="mb-4">
           We open doors to international employment opportunities by connecting
@@ -130,7 +136,9 @@ function AboutDetail() {
 
       {/* TRUST / STATS */}
       <div className="mb-5 pt-4 border-top">
-        <h3 className="text-info mb-4">Our Reach</h3>
+        <h3 className=" mb-4" style={{ color: brandColor }}>
+          Our Reach
+        </h3>
 
         <div className="row g-4">
           <div className="col-md-3 col-6">
@@ -150,7 +158,9 @@ function AboutDetail() {
 
       {/* WHAT WE OFFER */}
       <div className="mb-5 pt-4">
-        <h3 className="text-info mb-4">What We Offer</h3>
+        <h3 className=" mb-4" style={{ color: brandColor }}>
+          What We Offer
+        </h3>
 
         <div className="row g-3">
           {[
@@ -187,7 +197,9 @@ function AboutDetail() {
 
       {/* VALUES */}
       <div className="mb-5 pt-4 border-top">
-        <h3 className="text-info mb-4">Our Values</h3>
+        <h3 className=" mb-4" style={{ color: brandColor }}>
+          Our Values
+        </h3>
 
         <div className="row g-4">
           {[
@@ -214,7 +226,9 @@ function AboutDetail() {
           ].map((item, idx) => (
             <div className="col-md-6" key={idx}>
               <div className="d-flex">
-                <div className="text-info me-3">{item.icon}</div>
+                <div className=" me-3" style={{ color: brandColor }}>
+                  {item.icon}
+                </div>
                 <div>
                   <h6 className="fw-bold">{item.title}</h6>
                   <p className="small">{item.desc}</p>
@@ -227,7 +241,9 @@ function AboutDetail() {
 
       {/* IMPACT */}
       <div className="pt-4 border-top">
-        <h3 className="text-info mb-3">Our Impact</h3>
+        <h3 className=" mb-3" style={{ color: brandColor }}>
+          Our Impact
+        </h3>
 
         <p className="mb-4">
           We play a vital role in creating life-changing opportunities by

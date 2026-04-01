@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerWorkerCore } from "../../../api/worker.api"; // ← updated import
+import { registerWorkerCore } from "../../../api/worker.api"; 
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
@@ -47,8 +47,8 @@ function WorkerRegistration() {
     }
 
     // phone_number
-    if (!phone_number.trim()) {
-      return "Phone number is required";
+    if (!phone_number.trim() || phone_number.length < 10) {
+      return "Phone number is required (10 digit minimum)";
     }
 
     const phonePattern = /^(?:\+251[79]\d{8}|09\d{8}|07\d{8})$/;
@@ -104,7 +104,7 @@ function WorkerRegistration() {
         email: "",
       });
 
-   
+      goBack();
     } catch (err) {
       addMessage(false, err.message);
     } finally {

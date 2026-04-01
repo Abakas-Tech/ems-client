@@ -35,7 +35,7 @@ function About() {
 
           {/* Content */}
           <div className="col-lg-6 d-flex flex-column justify-content-center">
-            <h2 className="mb-4 fw-bold">About Us</h2>
+            <h2 className="mb-2 fw-bold">About Us</h2>
             <p className="mb-4">
               <strong style={{ color: "#19699B" }}>
                 Global Trust Overseas Employment Agent Plc
@@ -64,8 +64,9 @@ function About() {
                 <div className="col-sm-6" key={idx}>
                   <p className="mb-0">
                     <FaArrowRight
-                      className="text-info me-2"
+                      className=" me-2"
                       aria-hidden="true"
+                      style={{ color: "#4484BA" }}
                     />
                     {feature}
                   </p>
@@ -74,10 +75,11 @@ function About() {
             </div>
 
             <button
-              className="btn bg-info text-white w-40 fw-bold"
+              className="btn text-white w-40 fw-bold"
               onClick={goToAboutDetail}
               title="Learn more about Global Trust Overseas"
               aria-label="Learn more about Global Trust Overseas"
+              style={{ backgroundColor: "#4484BA" }}
             >
               Learn More
             </button>
