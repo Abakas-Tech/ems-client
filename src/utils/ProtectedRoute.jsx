@@ -6,16 +6,17 @@ import useloader from "./../context/Loader/useLoader";
 import useProfile from "../context/Profile/useProfile";
 import MENU_CONFIG from "../config/menu.config";
 
-// Helper to match dynamic paths like /admin/files/:id
-const matchPath = (menuPath, currentPath) => {
-  const menuParts = menuPath.replace(/\/$/, "").split("/");
-  const currentParts = currentPath.replace(/\/$/, "").split("/");
+// Match main route segment after the first folder
+const matchMainRoute = (menuPath, currentPath) => {
+  const menuParts = menuPath.replace(/\/$/, "").split("/").filter(Boolean);
+  const currentParts = currentPath
+    .replace(/\/$/, "")
+    .split("/")
+    .filter(Boolean);
 
-  if (menuParts.length !== currentParts.length) return false;
+  if (!menuParts[1] || !currentParts[1]) return false;
 
-  return menuParts.every(
-    (part, i) => part.startsWith(":") || part === currentParts[i],
-  );
+  return menuParts[1] === currentParts[1];
 };
 
 const ProtectedRoute = ({ children }) => {
@@ -55,7 +56,6 @@ const ProtectedRoute = ({ children }) => {
     };
 
     restoreToken();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (checking) return null;
@@ -66,33 +66,22 @@ const ProtectedRoute = ({ children }) => {
   const currentPath = location.pathname;
 
   if (profile && userRoleId) {
-    // Find menu that matches current path
-    const currentMenu = MENU_CONFIG.find((menu) =>
-      matchPath(menu.path, currentPath),
+    const mainMenu = MENU_CONFIG.find((menu) =>
+      matchMainRoute(menu.path, currentPath),
     );
 
-    //  Role-based protection
-    if (
-      currentMenu &&
-      currentMenu.roles &&
-      !currentMenu.roles.includes(userRoleId)
-    ) {
+    // Role-based protection
+    if (mainMenu && mainMenu.roles && !mainMenu.roles.includes(userRoleId)) {
       let fallback = "/admin/my-profile";
       if (userRoleId === 3) fallback = "/partner/my-profile";
       else fallback = "/admin/dashboard";
       return <Navigate to={fallback} replace />;
     }
 
-    // 2 Employee permission check (role_id = 2)
-    if (userRoleId === 2) {
-      // If the route exists in MENU_CONFIG but has a permission requirement
-      if (currentMenu?.permission) {
-        const permValue = Number(userPermissions[currentMenu.permission]);
-        if (!permValue) return <Navigate to="/admin/my-profile" replace />;
-      }
-
-      // If route is not even in MENU_CONFIG (hidden menu) → block access
-      if (!currentMenu) return <Navigate to="/admin/my-profile" replace />;
+    // Employee permission check (role_id = 2)
+    if (userRoleId === 2 && mainMenu?.permission) {
+      const permValue = Number(userPermissions[mainMenu.permission]);
+      if (!permValue) return <Navigate to="/admin/my-profile" replace />;
     }
   }
 

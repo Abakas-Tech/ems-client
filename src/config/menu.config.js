@@ -59,7 +59,7 @@ const MENU_CONFIG = [
     label: "Meta Data",
     path: "/admin/meta-data",
     icon: "bi bi-database-add",
-    roles: [ROLES.ADMIN],
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     label: "Notifications",
