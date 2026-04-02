@@ -186,7 +186,7 @@ const FileUpload = ({
               placeholder="Briefly describe the document contents"
               value={formData.description}
               onChange={handleChange}
-              style={{ height: "170px" }}
+              style={{ height: "150px" }}
             ></textarea>
           </div>
 

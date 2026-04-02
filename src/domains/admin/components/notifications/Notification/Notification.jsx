@@ -194,7 +194,7 @@ const NotificationPage = () => {
           />
           {searchResults.length > 0 && (
             <div
-              className="list-group position-absolute shadow-lg mt-1 z-3 w-100"
+              className="list-group position-absolute shadow-lg mt-1 z-3 w-auto"
               style={{
                 maxHeight: "200px",
                 overflowY: "auto",
@@ -206,17 +206,13 @@ const NotificationPage = () => {
                   key={user.id}
                   type="button"
                   // Added w-100 and overflow-hidden here
-                  className="list-group-item list-group-item-action small py-2 px-3 d-flex align-items-center w-100 overflow-hidden"
+                  className="list-group-item list-group-item-action small py-2 px-5 ps-3  d-flex align-items-center w-100 overflow-hidden"
                   onClick={() => {
                     handleChange("recipient_id", user.id);
                     setSearchTerm(user.name || `${user.full_name}`);
                     setSearchResults([]);
                   }}
                 >
-                  {/* 
-         CRITICAL: style={{ minWidth: 0 }} allows the flex child to shrink.
-         Without this, text-truncate will NOT work inside a d-flex container.
-      */}
                   <div className="text-start w-100" style={{ minWidth: 0 }}>
                     <div className="fw-bold text-dark mb-0 text-truncate">
                       {user.name || `${user.full_name}`}

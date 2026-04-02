@@ -36,8 +36,7 @@ const FinanceReportSummary = ({ filters, onBack }) => {
       }
     };
     getSummary();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, []);
 
   if (!report) return null;
 

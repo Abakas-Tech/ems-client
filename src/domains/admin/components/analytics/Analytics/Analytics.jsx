@@ -33,6 +33,8 @@ const Analytics = () => {
   ];
 
   useEffect(() => {
+    // check if years are not exsiting in filters validate
+    if (!filters.year) return;
     loadDashboard();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
@@ -62,7 +64,7 @@ const Analytics = () => {
   // Handle clear
   const handleClear = () => {
     setFilters({
-      period: "monthly",
+      period: "yearly",
       year: new Date().getFullYear(),
       month: new Date().getMonth() + 1,
     });
@@ -97,7 +99,7 @@ const Analytics = () => {
         </div>
         <StatCard
           title="Total Registered"
-          value={data.workers.total_registered}
+          value={data.workers.registered_this_period}
           icon="bi bi-people"
           colorClass="widget-1"
         />
@@ -177,10 +179,16 @@ const Analytics = () => {
           colorClass="widget-3"
         />
         <StatCard
-          title="Pending QR Codes"
-          value={data.operations.pending_qr_codes}
+          title="LMIS Approved"
+          value={data.operations.lmis_approved}
           icon="bi bi-qr-code"
           colorClass="widget-4"
+        />
+        <StatCard
+          title="Total Users"
+          value={data.workers.total_non_workers}
+          icon="bi bi-person-badge"
+          colorClass="widget-1"
         />
       </div>
     </div>
