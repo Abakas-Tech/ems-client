@@ -45,8 +45,8 @@ const Analytics = () => {
     try {
       const result = await fetchDashboardData(filters);
       setData(result.data);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch {
+  
     } finally {
       hideLoader();
     }
