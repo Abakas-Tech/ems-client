@@ -6,10 +6,6 @@
 @import "yet-another-react-lightbox/styles.css";
 @import "yet-another-react-lightbox/plugins/thumbnails.css";
 
-.slick-slider {
-  overflow: hidden;
-}
-
-.slick-list {
-  overflow: hidden;
+html{
+  overflow-x: hidden;
 }

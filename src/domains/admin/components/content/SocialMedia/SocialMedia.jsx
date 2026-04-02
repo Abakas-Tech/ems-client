@@ -319,7 +319,7 @@ const SocialMedia = () => {
             {existingData && (
               <button
                 type="button"
-                className="btn btn-outline-danger"
+                className="btn btn-outline-danger px-1 px-lg-4"
                 onClick={handleDelete}
               >
                 Delete All

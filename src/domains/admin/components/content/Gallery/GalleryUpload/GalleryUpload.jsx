@@ -132,7 +132,7 @@ const GalleryUpload = () => {
           <div>
             <BackButton onClick={goBack} />
             <h2>
-              {isEditMode ? "Update Gallery Item" : "Create Gallery Item"}
+              {isEditMode ? "Update Item" : "Create Item"}
             </h2>
             <p className="text-muted">
               {isEditMode
@@ -228,7 +228,7 @@ const GalleryUpload = () => {
               // style={{ backgroundColor: "var(--maincolor)" }}
               disabled={submitLoading}
             >
-              {isEditMode ? "Update Gallery Item" : "Create Gallery Item"}
+              {isEditMode ? "Update Item" : "Create Item"}
             </button>
           </div>
         </div>

@@ -6,6 +6,7 @@ import Contact from "./../../components/Contact/Contact";
 import Gallery from "./../../components/Gallery/Gallery";
 import AboutSnippet from "../../components/AboutSnippet/AboutSnippet";
 import Services from "../../components/Services/Services";
+import Promotion from "../../components/Promotion/Promotion";
 
 function LandingPage() {
   return (
@@ -14,6 +15,7 @@ function LandingPage() {
       <HowItWorks />
       <Services />
       <AboutSnippet />
+      <Promotion />
       <Gallery />
       <Testimonials />
       <Contact />

@@ -2846,7 +2846,7 @@ nav a:hover {
 }
 
 .hover-up:hover {
-  transform: translateY(-8px); /* moves card up */
+  transform: translateY(-8px);
 }
 
 .header-transparent.dark .nav-menu > .active > a,

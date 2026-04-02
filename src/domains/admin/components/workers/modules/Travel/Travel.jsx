@@ -171,7 +171,9 @@ function Travel() {
     }
   };
 
-  const title = isEditMode ? "Edit Travel Records" : "Add Travel Records";
+  const title = isEditMode
+    ? "Edit Travel Information"
+    : "Add Travel Information";
   const buttonText = isEditMode ? "Update Travel" : "Add Travel";
   return (
     <section className="dashboard-wraper">

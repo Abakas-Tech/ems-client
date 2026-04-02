@@ -92,7 +92,7 @@ const MainHeader = () => {
   // Update body padding for fixed header
   useEffect(() => {
     const isFixed = location.pathname !== "/" && !isPortrait;
-    document.body.style.paddingTop = isFixed ? "30px" : "";
+    document.body.style.paddingTop = isFixed ? "10px" : "";
   }, [location.pathname, isPortrait]);
 
   const isFixed = isScrolled || location.pathname !== "/";
