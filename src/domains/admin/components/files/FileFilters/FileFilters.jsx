@@ -3,7 +3,7 @@ import styles from "./FileFilters.module.css"; // modular css
 
 const FileFilters = ({ filters, onFilterChange, onClear }) => {
   return (
-    <div className={`card shadow-sm mb-4 ${styles.filtersCard}`}>
+    <div className={`card shadow-sm mb-4 ${styles["filters-card"]}`}>
       <div className="card-body">
         <div className="row g-3 align-items-center">
           {/* File name search */}

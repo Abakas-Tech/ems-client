@@ -1,13 +1,13 @@
 import React from "react";
-import styles from "./TransactionFilters.module.css"; // Using the same style logic
+import styles from "../../workers/WorkerFilter/WorkerFilter.module.css"; 
 
 const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
   return (
-    <div className={`card shadow-sm mb-4 ${styles.filtersCard}`}>
+    <div className={`card shadow-sm mb-4 ${styles["filters-card"]}`}>
       <div className="card-body">
         <div className="row g-3 align-items-center">
           {/* Category Dropdown */}
-          <div className="col-md-3">
+          <div className="col-md-4">
             <select
               name="category"
               className={`form-select ${styles.input}`}

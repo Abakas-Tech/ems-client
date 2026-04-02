@@ -34,8 +34,8 @@
   position: relative;
   z-index: 2;
   text-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.22),
-    0 4px 20px rgba(0, 0, 0, 0.22);
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 4px 20px rgba(0, 0, 0, 0.2);
 }
 .hero-content * {
   color: white;
@@ -47,14 +47,15 @@
   font-weight: 900;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: #ffcc33;
+  color: #db933e;
+  text-shadow: none;
 }
 .brand-name span {
-  color: #0c6ab1;
+  color: #105491;
 }
 /* Agency Type */
 .agency-type {
-  font-size: 2rem;
+  font-size: 2.5rem;
   letter-spacing: 2px;
   font-weight: 600;
   opacity: 0.95;
@@ -135,10 +136,11 @@
   }
 
   .agency-type {
-    font-size: 0.9rem;
+    font-size: 1.5rem;
     margin-bottom: 1.5rem;
   }
   .hero-banner {
     min-height: 100svh;
   }
+ 
 }

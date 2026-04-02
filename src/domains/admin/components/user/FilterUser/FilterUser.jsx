@@ -1,8 +1,9 @@
+import styles from "../../workers/WorkerFilter/WorkerFilter.module.css";
 const FilterUser = ({ filters, onFilterChange, onClear }) => {
   const isDisabled = Object.values(filters).every((v) => !v);
 
   return (
-    <div className="card shadow-sm mb-4 rounded-3 border border-light">
+    <div className={`card shadow-sm mb-4 ${styles["filters-card"]}`}>
       <div className="card-body">
         <div className="row g-3 align-items-center">
           {/* Search */}
@@ -22,7 +23,7 @@ const FilterUser = ({ filters, onFilterChange, onClear }) => {
           <div className="col-md-3">
             <select
               name="role_id"
-              className="form-select form-select-sm py-2"
+              className={`form-select ${styles.input}`}
               style={{ height: "42px" }}
               value={filters.role_id || ""}
               onChange={onFilterChange}
@@ -38,7 +39,7 @@ const FilterUser = ({ filters, onFilterChange, onClear }) => {
           <div className="col-md-3">
             <select
               name="is_active"
-              className="form-select form-select-sm py-2"
+              className={`form-select ${styles.input}`}
               style={{ height: "42px" }}
               value={filters.is_active || ""}
               onChange={onFilterChange}
@@ -52,12 +53,12 @@ const FilterUser = ({ filters, onFilterChange, onClear }) => {
           <div className="col-md-2 d-grid">
             <button
               type="button"
-              className="btn btn-outline-secondary"
+              className={`btn btn-outline-secondary ${styles["clear-btn"]}`}
               style={{ height: "42px" }}
               onClick={onClear}
               disabled={isDisabled}
             >
-              Clear
+              Clear Filters
             </button>
           </div>
         </div>

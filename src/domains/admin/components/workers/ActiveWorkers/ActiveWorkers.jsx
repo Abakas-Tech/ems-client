@@ -358,8 +358,8 @@ const ActiveWorkers = () => {
           page,
           limit,
           total: totalItems,
-          onPageChange: setPage,
         }}
+        onPageChange={setPage}
       />
     </div>
   );

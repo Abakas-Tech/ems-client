@@ -38,7 +38,7 @@ function About() {
             <h2 className="mb-2 fw-bold">About Us</h2>
             <p className="mb-4">
               <strong style={{ color: "#19699B" }}>
-                Global Trust Overseas Employment Agent Plc
+                Global Trust Overseas Employment Agency Plc
               </strong>{" "}
               is a licensed recruitment agency dedicated to connecting Ethiopian
               workers with verified international job opportunities, especially

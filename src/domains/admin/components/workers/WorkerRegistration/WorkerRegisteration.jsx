@@ -172,7 +172,7 @@ function WorkerRegistration() {
         <div className="submit-section">
           <div className="form-group col-lg-12 col-md-12 mt-4">
             <button
-              className="btn btn-main px-5 rounded"
+              className="btn btn-main px-4 rounded"
               type="submit"
               disabled={submitLoading}
             >

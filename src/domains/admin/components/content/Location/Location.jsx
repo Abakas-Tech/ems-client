@@ -23,6 +23,7 @@ const Location = () => {
   });
 
   const [existingData, setExistingData] = useState(null);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
@@ -109,6 +110,7 @@ const Location = () => {
       address: locationData.address.trim(),
     };
 
+    setSubmitLoading(true);
     showLoader();
 
     try {
@@ -126,6 +128,7 @@ const Location = () => {
     } catch (err) {
       addMessage(false, err.message);
     } finally {
+      setSubmitLoading(false);
       hideLoader();
     }
   };
@@ -237,7 +240,11 @@ const Location = () => {
           </div>
 
           <div className="mt-4 d-flex gap-3">
-            <button type="submit" className="btn btn-main px-4">
+            <button
+              type="submit"
+              className="btn btn-main px-4"
+              disabled={submitLoading}
+            >
               {existingData ? "Update Location" : "Create Location"}
             </button>
 

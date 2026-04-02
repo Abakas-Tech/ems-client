@@ -14,10 +14,10 @@ function Hero() {
             <div className={styles["hero-content"]}>
               <h1 className={styles["brand-name"]}>
                 {" "}
-                <span>Global</span> Trust
+                <span>Global—</span>Trust
               </h1>
               <h2 className={styles["agency-type"]}>
-                Overseas Employment Agent PLC
+                Overseas Employment Agency PLC
               </h2>
 
               <div className={styles["slogan-wrapper"]}>

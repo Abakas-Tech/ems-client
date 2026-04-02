@@ -41,6 +41,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [originalPermissions, setOriginalPermissions] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useloader();
@@ -203,6 +204,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     e.preventDefault();
     if (!validateFields()) return;
 
+    setSubmitLoading(true);
     showLoader();
     try {
       let payload = removeEmptyFields({
@@ -259,6 +261,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     } catch (error) {
       addMessage(false, error.message);
     } finally {
+      setSubmitLoading(false);
       hideLoader();
     }
   };
@@ -339,7 +342,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
               </div>
               {/* Email */}
 
-              {role!=="5" && (
+              {role !== "5" && (
                 <div className="form-group col-md-6 mb-3">
                   <label>
                     Email{" "}
@@ -477,7 +480,11 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
               {/* Submit */}
               <div className="form-group col-lg-12 text-start mt-4">
-                <button type="submit" className="btn btn-main px-5 rounded">
+                <button
+                  type="submit"
+                  className="btn btn-main px-4 rounded"
+                  disabled={submitLoading}
+                >
                   {isEditMode ? "Update User" : "Create User"}
                 </button>
               </div>

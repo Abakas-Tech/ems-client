@@ -157,8 +157,8 @@ const ArchivedWorkers = () => {
           page,
           limit,
           total: totalItems,
-          onPageChange: setPage,
         }}
+        onPageChange={setPage}
       />
     </div>
   );
