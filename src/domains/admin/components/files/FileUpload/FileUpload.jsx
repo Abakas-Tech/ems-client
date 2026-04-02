@@ -105,7 +105,7 @@ const FileUpload = ({
   return (
     <form className="form-submit" onSubmit={handleSubmit}>
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3>{isEditMode ? "Update File Details" : "Upload New File"}</h3>
+        <h2 className="text-dark fw-bold">{isEditMode ? "Update File Details" : "Upload New File"}</h2>
         <BackButton onClick={onCancel} />
       </div>
 

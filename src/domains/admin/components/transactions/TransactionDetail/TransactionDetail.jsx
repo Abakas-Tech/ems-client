@@ -45,7 +45,7 @@ const TransactionDetail = ({ transactionId, onBack }) => {
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4 d-print-none">
         <div>
-          <h2 className="text-dark mb-1">Transaction Receipt</h2>
+          <h2 className="text-dark mb-1"> Transaction Receipt</h2>
         </div>
         <BackButton onClick={onBack} />
       </div>

@@ -107,7 +107,7 @@ const RecordTransaction = ({
     <section className="dashboard-wraper ">
       <form className="form-submit" onSubmit={handleSubmit}>
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2 className="text-dark mb-2">
+          <h2 className="text-dark fw-bold mb-2">
             {isEditMode ? "Update Transaction" : "Record New Transaction"}
           </h2>
 

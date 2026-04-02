@@ -237,7 +237,7 @@ const SocialMedia = () => {
         <div>
           <BackButton onClick={goBack} />
         </div>
-        <h2>Social Media</h2>
+        <h2 className="text-dark fw-bold">Social Media</h2>
         <p className="text-muted">Manage company social media accounts.</p>
 
         <form onSubmit={handleSubmit}>
@@ -314,7 +314,7 @@ const SocialMedia = () => {
               className="btn btn-main px-4"
               disabled={submitLoading}
             >
-              {existingData ? "Update" : "Create"}
+              {existingData ? "Update" : "Create"}f
             </button>
 
             {existingData && (

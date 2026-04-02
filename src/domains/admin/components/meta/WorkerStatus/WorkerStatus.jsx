@@ -177,7 +177,7 @@ const WorkerStatus = () => {
         <div className="dashboard-wraper">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div className="flex-grow-1">
-              <h2 className="text-dark mb-2">Worker Status</h2>
+              <h2 className="fw-bold text-dark mb-2">Worker Status</h2>
               <p className="text-muted mb-0">
                 Manage worker statuses — create, rename, or delete entries as
                 needed.
@@ -187,8 +187,9 @@ const WorkerStatus = () => {
               <BackButton onClick={goBack} />
             </div>
             <button
-              className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
+              className="btn btn-main mt-3 mt-md-5  text-white w-50 w-sm-45 d-flex align-items-center justify-content-center"
               onClick={() => setShowCreateModal(true)}
+              style={{ whiteSpace: "nowrap" }}
             >
               + Worker Status
             </button>
