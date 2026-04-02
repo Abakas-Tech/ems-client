@@ -2,25 +2,47 @@ import React from "react";
 import { Helmet } from "react-helmet";
 
 const SEOHelmet = ({
-  title = "Abakas | Real Estate Agent Web App",
-  description = "Abakas | Real Estate Agent Web App Real Estate Web App helps consultants and agents manage listings, track client inquiries, and organize property sales efficiently. Visit https://agent.abakastech.com for more information.",
-  keywords = "Abakas | Real Estate Agent Web App, real estate, property consultants, real estate agents, property management, house for sale, buy property, property investment, magerproperty.com",
-  canonical = "https://agent.abakastech.com",
-  ogTitle = "Abakas | Real Estate Agent Web App | Real Estate Consultants",
-  ogDescription = "Professional real estate consultancy offering property management, listings, and sales insights. Visit https://agent.abakastech.com to explore opportunities.",
-  ogUrl = "https://agent.abakastech.com",
-  ogImage = "https://agent.abakastech.com/og-image.png", // ✅ replace with your hosted image (recommended 1200x630)
+  title = "Global Trust Overseas | Overseas Jobs for Ethiopians | Verified Recruitment Agency",
+  description = "Global Trust Overseas Employment Agency Plc connects Ethiopian workers with verified international job opportunities. We provide full visa processing, contract verification, LMIS/work permits, and safe deployment to Middle Eastern countries.",
+  keywords = "overseas jobs Ethiopia, jobs in Middle East for Ethiopians, recruitment agency Ethiopia, work abroad Ethiopia, Middle East jobs Ethiopia, visa processing Ethiopia, LMIS Ethiopia, overseas employment Ethiopia, legal recruitment Ethiopia, Global Trust Overseas",
+  canonical = "https://globaltrustoverseas.com/",
+  ogTitle = "Verified Overseas Jobs for Ethiopians | Global Trust Overseas",
+  ogDescription = "Apply for safe and verified overseas jobs with full support: job matching, visa processing, contract verification, and travel coordination.",
+  ogUrl = "https://globaltrustoverseas.com/",
+  ogImage = "https://globaltrustoverseas.com/image.png", // replace with your hosted image (1200x630 recommended)
   structuredData = {
     "@context": "https://schema.org",
-    "@type": "RealEstateAgent",
-    name: "Abakas | Real Estate Agent Web App",
-    url: "https://agent.abakastech.com",
-    logo: "https://agent.abakastech.com/logo.png",
+    "@type": "LocalBusiness",
+    name: "Global Trust Overseas Employment Agency Plc",
+    url: "https://globaltrustoverseas.com",
+    logo: "https://globaltrustoverseas.com/logo.png",
     description:
-      "Professional real estate consultancy offering property management, listings, and sales insights.",
+      "Licensed recruitment agency connecting Ethiopian workers with verified international job opportunities, especially in the Middle East.",
     sameAs: [
-      "https://www.facebook.com/magerproperty",
-      "https://www.linkedin.com/company/magerproperty",
+      "https://www.facebook.com/globaltrustoverseas",
+      "https://twitter.com/globaltrustoverseas",
+      "https://www.linkedin.com/company/global-trust-overseas",
+    ],
+    telephone: "+251-11-1234567",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Bole Rd",
+      addressLocality: "Addis Ababa",
+      addressCountry: "Ethiopia",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 9.03,
+      longitude: 38.74,
+    },
+    openingHours: "Mo-Su 09:00-18:00",
+    serviceType: [
+      "Overseas Job Placement",
+      "Visa Processing",
+      "LMIS / Work Permit Processing",
+      "Contract Verification",
+      "Flight & Deployment Coordination",
+      "Pre-departure Orientation",
     ],
   },
 }) => (
@@ -37,10 +59,7 @@ const SEOHelmet = ({
     <meta property="og:type" content="website" />
     <meta property="og:url" content={ogUrl} />
     <meta property="og:image" content={ogImage} />
-    <meta
-      property="og:site_name"
-      content="Abakas | Real Estate Agent Web App"
-    />
+    <meta property="og:site_name" content="Global Trust Overseas" />
 
     {/* Twitter Meta */}
     <meta name="twitter:card" content="summary_large_image" />
