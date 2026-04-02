@@ -69,7 +69,7 @@ const Services = () => {
               >
                 <div
                   className="icon mb-3"
-                  style={{ color: "var(--maincolor)" }}
+                  style={{ color: "#4484BA" }}
                   aria-hidden="true"
                 >
                   <i className={`${service.icon} fs-1`}></i>

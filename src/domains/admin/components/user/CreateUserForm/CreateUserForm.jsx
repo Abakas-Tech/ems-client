@@ -12,20 +12,14 @@ import useResponse from "../../../../../context/Response/useResponse";
 const PERMISSIONS = [
   "manage_users",
   "manage_workers",
-  "manage_partners",
   "manage_finance",
   "manage_analytics",
-  "manage_system_settings",
-  "manage_audit_logs",
 ];
 const PERMISSION_LABELS = {
   manage_users: "Manage Users",
   manage_workers: "Manage Workers",
-  manage_partners: "Manage Partners",
   manage_finance: "Manage Finance",
   manage_analytics: "Manage Analytics",
-  manage_system_settings: "System Settings",
-  manage_audit_logs: "Audit Logs",
 };
 
 const CreateUserForm = ({ isEditMode = false, userData = null }) => {
@@ -41,6 +35,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [originalPermissions, setOriginalPermissions] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useloader();
@@ -90,11 +85,10 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     setSelectAll(false);
   };
 
-  const handlePhoneChange = (value) => {
-    const numericValue = value.replace(/\D/g, "");
-    setPhoneNumber(numericValue);
-  };
-
+const handlePhoneChange = (value) => {
+  const cleanedValue = value.replace(/[^\d+\-\s()]/g, "");
+  setPhoneNumber(cleanedValue);
+};
   const togglePermission = (permission) => {
     if (selectedPermissions.includes(permission)) {
       setSelectedPermissions(
@@ -149,9 +143,14 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       );
       return false;
     }
+     const phoneRegex =
+       /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
+
+  
+  
     // Phone number: digits only, length 7–15
-    if (phoneNumber && !/^\d+$/.test(phoneNumber)) {
-      addMessage(false, "Phone number can contain digits only.");
+    if (phoneNumber && !phoneRegex.test(phoneNumber)) {
+      addMessage(false, "Phone number is invalid.");
       return false;
     }
     if (phoneNumber && (phoneNumber.length < 7 || phoneNumber.length > 15)) {
@@ -203,6 +202,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     e.preventDefault();
     if (!validateFields()) return;
 
+    setSubmitLoading(true);
     showLoader();
     try {
       let payload = removeEmptyFields({
@@ -259,6 +259,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     } catch (error) {
       addMessage(false, error.message);
     } finally {
+      setSubmitLoading(false);
       hideLoader();
     }
   };
@@ -339,7 +340,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
               </div>
               {/* Email */}
 
-              {role!=="5" && (
+              {role !== "5" && (
                 <div className="form-group col-md-6 mb-3">
                   <label>
                     Email{" "}
@@ -446,7 +447,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   <h5 className="fw-bold">Assign Permissions</h5>
                   <div className="row">
                     {PERMISSIONS.map((permission) => (
-                      <div key={permission} className="col-md-4 mb-2">
+                      <div key={permission} className="col-md-6 mb-2">
                         <div className="form-check">
                           <input
                             type="checkbox"
@@ -477,7 +478,11 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
               {/* Submit */}
               <div className="form-group col-lg-12 text-start mt-4">
-                <button type="submit" className="btn btn-main px-5 rounded">
+                <button
+                  type="submit"
+                  className="btn btn-main px-4 rounded"
+                  disabled={submitLoading}
+                >
                   {isEditMode ? "Update User" : "Create User"}
                 </button>
               </div>

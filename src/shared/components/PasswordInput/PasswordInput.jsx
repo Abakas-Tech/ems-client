@@ -19,7 +19,7 @@ const PasswordInput = ({
         variant === "floating" ? "form-floating" : "form-group"
       } ${icon_input && styles.icon_input}`}
     >
-      {variant === "standard" && <label htmlFor={id}>{label}</label>}
+      {variant === "standard" && <label htmlFor={id}>{label} {required && <span className="text-danger">*</span>}</label>}
       <input
         id={id}
         type={show ? "password" : "text"}

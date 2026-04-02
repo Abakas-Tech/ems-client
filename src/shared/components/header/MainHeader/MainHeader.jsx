@@ -92,7 +92,7 @@ const MainHeader = () => {
   // Update body padding for fixed header
   useEffect(() => {
     const isFixed = location.pathname !== "/" && !isPortrait;
-    document.body.style.paddingTop = isFixed ? "10px" : "";
+    document.body.style.paddingTop = isFixed ? "30px" : "";
   }, [location.pathname, isPortrait]);
 
   const isFixed = isScrolled || location.pathname !== "/";
@@ -124,7 +124,7 @@ const MainHeader = () => {
                 style={{
                   fontSize: "24px",
                   cursor: "pointer",
-                  color: "var(--maincolor)",
+                  color: "#4484BA",
                   marginRight: "10px",
                 }}
               >

@@ -6,6 +6,18 @@ import useloader from "./../context/Loader/useLoader";
 import useProfile from "../context/Profile/useProfile";
 import MENU_CONFIG from "../config/menu.config";
 
+// Helper to match dynamic paths like /admin/files/:id
+const matchPath = (menuPath, currentPath) => {
+  const menuParts = menuPath.replace(/\/$/, "").split("/");
+  const currentParts = currentPath.replace(/\/$/, "").split("/");
+
+  if (menuParts.length !== currentParts.length) return false;
+
+  return menuParts.every(
+    (part, i) => part.startsWith(":") || part === currentParts[i],
+  );
+};
+
 const ProtectedRoute = ({ children }) => {
   const [checking, setChecking] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
@@ -47,34 +59,40 @@ const ProtectedRoute = ({ children }) => {
   }, []);
 
   if (checking) return null;
-
   if (!isAuth) return <Navigate to="/auth/login" replace />;
 
-  // Role-based protection using menu config
   const userRoleId = profile?.role_id;
+  const userPermissions = profile?.permissions || {};
+  const currentPath = location.pathname;
 
-  // Only check if profile and role exist
   if (profile && userRoleId) {
-    // Find menu that matches current path (normalize path)
-    const currentMenu = MENU_CONFIG.find((menu) => {
-      const menuPath = menu.path.replace(/\/$/, ""); // remove trailing slash
-      const currentPath = location.pathname.replace(/\/$/, "");
-      return currentPath === menuPath || currentPath.startsWith(menuPath + "/");
-    });
+    // Find menu that matches current path
+    const currentMenu = MENU_CONFIG.find((menu) =>
+      matchPath(menu.path, currentPath),
+    );
 
-    // If a matching menu exists and role not allowed → redirect
+    //  Role-based protection
     if (
       currentMenu &&
       currentMenu.roles &&
       !currentMenu.roles.includes(userRoleId)
     ) {
       let fallback = "/admin/my-profile";
-      if (userRoleId === 3) {
-        fallback = "/partner/my-profile";
-      } else {
-        fallback = "/admin/dashboard";
-      }
+      if (userRoleId === 3) fallback = "/partner/my-profile";
+      else fallback = "/admin/dashboard";
       return <Navigate to={fallback} replace />;
+    }
+
+    // 2 Employee permission check (role_id = 2)
+    if (userRoleId === 2) {
+      // If the route exists in MENU_CONFIG but has a permission requirement
+      if (currentMenu?.permission) {
+        const permValue = Number(userPermissions[currentMenu.permission]);
+        if (!permValue) return <Navigate to="/admin/my-profile" replace />;
+      }
+
+      // If route is not even in MENU_CONFIG (hidden menu) → block access
+      if (!currentMenu) return <Navigate to="/admin/my-profile" replace />;
     }
   }
 

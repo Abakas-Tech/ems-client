@@ -1,4 +1,3 @@
-// src/components/workers/ActiveWorkersFilters.jsx
 import React, { useEffect, useState } from "react";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import { getRegions } from "../../../api/meta.api";

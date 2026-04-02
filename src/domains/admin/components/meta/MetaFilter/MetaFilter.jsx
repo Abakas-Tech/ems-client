@@ -1,13 +1,14 @@
+import styles from "../../workers/WorkerFilter/WorkerFilter.module.css";
 const MetaFilter = ({ filter = {}, onFilterChange, onClear, extraField }) => {
   const isDisabled = Object.values(filter).every((v) => !v);
 
   // Determine input widths dynamically based on extraField
   const nameCol = extraField ? 5 : 10; // Name input
-  const extraCol = extraField ? 5 : 0; // Extra field 
+  const extraCol = extraField ? 5 : 0; // Extra field
   const buttonCol = 2; // Clear button
 
   return (
-    <div className="card shadow-sm mb-4 rounded-3 border border-light pe-md-3">
+    <div className="card shadow-sm mb-4 rounded-3 border border pe-md-3">
       <div className="card-body">
         <div className="row g-3 align-items-center">
           {/* Name Search */}
@@ -15,7 +16,7 @@ const MetaFilter = ({ filter = {}, onFilterChange, onClear, extraField }) => {
             <input
               type="text"
               name="name"
-              className="form-control form-control-sm py-2"
+              className="form-control form-control-sm py-2 rounded-2"
               style={{ height: "42px" }}
               placeholder="Search by name"
               value={filter.name || ""}
@@ -28,7 +29,7 @@ const MetaFilter = ({ filter = {}, onFilterChange, onClear, extraField }) => {
             <div className={`col-12 col-md-${extraCol}`}>
               <select
                 name={extraField.name}
-                className="form-control form-control-sm py-2"
+                className="form-control form-control-sm py-2 rounded-2"
                 style={{ height: "42px" }}
                 value={filter[extraField.name] || ""}
                 onChange={onFilterChange}
@@ -47,7 +48,7 @@ const MetaFilter = ({ filter = {}, onFilterChange, onClear, extraField }) => {
           <div className={`col-12 col-md-${buttonCol} d-grid`}>
             <button
               type="button"
-              className="btn btn-outline-secondary w-100"
+              className={`btn btn-outline-secondary ${styles["clear-btn"]}`}
               style={{ height: "42px" }}
               onClick={onClear}
               disabled={isDisabled}

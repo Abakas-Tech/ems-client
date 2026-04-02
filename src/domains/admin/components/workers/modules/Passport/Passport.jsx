@@ -82,10 +82,9 @@ function Passport() {
         "image/jpeg",
         "image/png",
         "image/jpg",
-        "application/pdf",
       ];
       if (!allowed.includes(passportScan.type))
-        return "Only JPG, PNG or PDF allowed";
+        return "Only JPG, JPEG or PNG are allowed";
     }
 
     return null;

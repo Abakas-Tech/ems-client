@@ -1,4 +1,6 @@
 import { axiosInstance } from "../../../utils/axios";
+import Country from './../components/meta/Country/Country';
+import JobPosition from './../components/meta/JobPosition/JobPostion';
 
 // skill apis
 
@@ -224,10 +226,10 @@ const getWorkerExperiences = async (workerId) => {
 };
 
 // Remove experience
-const deleteWorkerExperience = async (workerId, experienceId) => {
+const deleteWorkerExperience = async (workerId, CountryId,JobPositionId) => {
   try {
     const response = await axiosInstance.delete(
-      `/workers/meta/${workerId}/experiences/${experienceId}`,
+      `/workers/meta/${workerId}/experiences/${CountryId}/${JobPositionId}`,
     );
     return response.data;
   } catch (error) {

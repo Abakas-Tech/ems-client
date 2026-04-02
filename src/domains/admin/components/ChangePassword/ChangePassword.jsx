@@ -9,6 +9,7 @@ const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [submitLoading, setSubmitLoading] = useState(false);
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
@@ -19,10 +20,15 @@ const ChangePassword = () => {
       addMessage(false, "All fields are required.");
       return false;
     }
+       if (oldPassword.length < 8) {
+         addMessage(false, "Old password must be at least 8 characters.");
+         return false;
+       }
     if (newPassword !== confirmPassword) {
       addMessage(false, "Passwords do not match.");
       return false;
     }
+ 
     if (newPassword.length < 8) {
       addMessage(false, "New password must be at least 8 characters.");
       return false;
@@ -34,6 +40,7 @@ const ChangePassword = () => {
     e.preventDefault();
     if (!validateFields()) return;
 
+    setSubmitLoading(true);
     showLoader();
     try {
       const response = await changePassword({
@@ -50,6 +57,7 @@ const ChangePassword = () => {
     } catch (error) {
       addMessage(false, error.message);
     } finally {
+      setSubmitLoading(false);
       hideLoader();
     }
     // Instead of API call, show demo modal
@@ -112,7 +120,11 @@ const ChangePassword = () => {
 
               {/* Submit Button */}
               <div className="form-group col-lg-12 col-md-12 text-start">
-                <button type="submit" className="btn btn-main px-5 rounded">
+                <button
+                  type="submit"
+                  className="btn btn-main px-4 rounded"
+                  disabled={submitLoading}
+                >
                   Save Changes
                 </button>
               </div>

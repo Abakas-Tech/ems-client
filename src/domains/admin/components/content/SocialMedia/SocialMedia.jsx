@@ -27,6 +27,7 @@ const SocialMedia = () => {
   });
 
   const [existingData, setExistingData] = useState(null);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
@@ -177,6 +178,7 @@ const SocialMedia = () => {
       }
     });
 
+    setSubmitLoading(true);
     showLoader();
     try {
       const response = await createOrUpdateSocialMedia(payload);
@@ -191,6 +193,7 @@ const SocialMedia = () => {
     } catch (err) {
       addMessage(false, err.message);
     } finally {
+      setSubmitLoading(false);
       hideLoader();
     }
   };
@@ -221,7 +224,7 @@ const SocialMedia = () => {
         }
       },
       {
-        title: "Are you sure you want to delete ALL social media?",
+        title: "Are you sure you want to delete All social media?",
         confirmText: "Delete All",
       },
     );
@@ -305,7 +308,11 @@ const SocialMedia = () => {
           </div>
 
           <div className="mt-4 d-flex gap-3">
-            <button type="submit" className="btn btn-main px-5">
+            <button
+              type="submit"
+              className="btn btn-main px-4"
+              disabled={submitLoading}
+            >
               {existingData ? "Update Social Media" : "Create Social Media"}
             </button>
 

@@ -41,7 +41,7 @@ const ArchivedWorkers = () => {
       setWorkers(res?.data.items || []);
       setTotalItems(res?.data.meta?.total_items || 0);
     } catch (err) {
-      addMessage(false, err.message || "Failed to load archived workers");
+      addMessage(false, err.message);
     } finally {
       hideLoader();
     }
@@ -157,8 +157,8 @@ const ArchivedWorkers = () => {
           page,
           limit,
           total: totalItems,
-          onPageChange: setPage,
         }}
+        onPageChange={setPage}
       />
     </div>
   );

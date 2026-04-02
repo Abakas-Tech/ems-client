@@ -2,7 +2,7 @@ import styles from "../../files/FileFilters/FileFilters.module.css"; // Reuse yo
 
 const AnalyticsFilters = ({ filters, onFilterChange, onClear, months }) => {
   return (
-    <div className={`card shadow-sm mb-4 ${styles.filtersCard}`}>
+    <div className={`card shadow-sm mb-4 ${styles["filters-card"]}`}>
       <div className="card-body">
         <div className="row g-3 align-items-center">
           {/* View Type dropdown */}
@@ -19,7 +19,7 @@ const AnalyticsFilters = ({ filters, onFilterChange, onClear, months }) => {
           </div>
 
           {/* Select Month - Only shows if period is monthly */}
-          <div className="col-md-4">
+          <div className="col-md-3">
             <select
               name="month"
               className={`form-select ${styles.input}`}
@@ -49,12 +49,12 @@ const AnalyticsFilters = ({ filters, onFilterChange, onClear, months }) => {
           </div>
 
           {/* Clear button */}
-          <div className="col-md-1 d-grid">
+          <div className="col-md-2 d-grid">
             <button
-              className={`btn btn-outline-secondary ${styles.clearBtn}`}
+              className={`btn btn-outline-secondary ${styles["clear-btn"]}`}
               onClick={onClear}
             >
-              Reset
+              Clear Filters
             </button>
           </div>
         </div>

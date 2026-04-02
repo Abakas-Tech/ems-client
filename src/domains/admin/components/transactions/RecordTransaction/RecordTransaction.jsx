@@ -206,7 +206,7 @@ const RecordTransaction = ({
 
         <div className="submit-section mt-4">
           <button
-            className="btn btn-main px-5 rounded"
+            className="btn btn-main px-4 rounded"
             type="submit"
             disabled={submitLoading}
           >
