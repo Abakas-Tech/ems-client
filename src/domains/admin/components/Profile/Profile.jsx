@@ -25,17 +25,28 @@ const MyProfile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
-    if (profile) {
-      setProfileData({
-        full_name: profile?.full_name || "",
-        email: profile?.email || "",
-        phone_number: profile?.phone_number || "",
-      });
+    try {
+      if (profile) {
+        setProfileData({
+          full_name: profile?.full_name || "",
+          email: profile?.email || "",
+          phone_number: profile?.phone_number || "",
+        });
+      }
+    } catch (err) {
+      addMessage(false, err.message);
     }
   }, [profile]);
 
   useEffect(() => {
-    fetchProfile();
+    const loadProfile = async () => {
+      try {
+        await fetchProfile();
+      } catch (err) {
+        addMessage(false, err.message);
+      }
+    };
+    loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -51,7 +62,6 @@ const MyProfile = () => {
         try {
           const response = await deleteProfilePhoto();
           addMessage(response?.success, response?.message);
-
           await fetchProfile();
         } catch (err) {
           addMessage(false, err.message);
@@ -61,7 +71,7 @@ const MyProfile = () => {
       },
       {
         title: "Do you want to delete your profile photo?",
-        confirmText: "Delete", 
+        confirmText: "Delete",
       },
     );
   };
@@ -73,41 +83,35 @@ const MyProfile = () => {
     const mail = email?.trim();
     const phone = phone_number?.trim();
 
-    //full name validation
     if (!name) return addMessage(false, "Full name is required.");
-
     if (!/^[A-Za-z\s]+$/.test(name))
       return addMessage(false, "Full name must contain letters only.");
-
     if (name.length < 2 || name.length > 50)
       return addMessage(
         false,
         "Full name must be between 2 and 50 characters.",
       );
 
-    // email validation
     if (profile?.role_id !== 4 && profile?.role_id !== 5) {
       if (!mail) return addMessage(false, "Email is required.");
-
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailPattern.test(mail))
         return addMessage(false, "Please enter a valid email address.");
     }
+
     if (!phone) return addMessage(false, "Phone number is required.");
-
-   const phoneRegex =
-     /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
-
-    if (!phoneRegex.test(phone)) {
+    const phoneRegex =
+      /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
+    if (!phoneRegex.test(phone))
       return addMessage(false, "Phone number is invalid.");
-    }
-
     if (phone.length < 8 || phone.length > 15)
       return addMessage(false, "Phone number must be between 7 and 15 digits.");
 
     return true;
   };
+
   const profilePhoto = profile?.profile_photo_url;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateFields()) return;
@@ -119,14 +123,26 @@ const MyProfile = () => {
     showLoader();
     try {
       if (selectedFile) {
-        await uploadProfilePhoto(selectedFile);
+        try {
+          await uploadProfilePhoto(selectedFile);
+        } catch (err) {
+          addMessage(false, "Failed to upload profile photo: " + err.message);
+        }
       }
-      const response = await updateProfile(payload);
-      addMessage(
-        response?.success,
-        response?.message || "Profile updated successfully!",
-      );
-      await fetchProfile();
+      try {
+        const response = await updateProfile(payload);
+        addMessage(
+          response?.success,
+          response?.message || "Profile updated successfully!",
+        );
+      } catch (err) {
+        addMessage(false, "Failed to update profile: " + err.message);
+      }
+      try {
+        await fetchProfile();
+      } catch (err) {
+        addMessage(false, "Failed to fetch profile: " + err.message);
+      }
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -141,10 +157,8 @@ const MyProfile = () => {
         <h2 className="fw-bold text-dark mb-2">My Profile</h2>
         <p className="text-muted">Update your profile details.</p>
 
-        {/* Profile Form */}
         <form onSubmit={handleSubmit}>
           <div className="row g-3">
-            {/* File Upload Input */}
             <div className="col-md-6">
               <label>Profile Image</label>
               <div className="input-group">
@@ -157,7 +171,7 @@ const MyProfile = () => {
                 />
                 {profilePhoto && (
                   <button
-                    className="form-control btn  border-0 pt-3"
+                    className="form-control btn border-0 pt-3"
                     type="button"
                     onClick={handleDeleteAvatar}
                     title="Delete Image"
@@ -168,7 +182,6 @@ const MyProfile = () => {
               </div>
             </div>
 
-            {/* Row 1: Full Name + Email */}
             <div className="col-md-6">
               <label>
                 Full Name <span className="text-danger">*</span>
@@ -182,6 +195,7 @@ const MyProfile = () => {
                 onChange={handleChange}
               />
             </div>
+
             {profile?.role_id !== 5 && profile?.role_id !== 4 && (
               <div className="col-md-6">
                 <label>
@@ -213,7 +227,6 @@ const MyProfile = () => {
             </div>
           </div>
 
-          {/* Submit Button at Bottom */}
           <div className="mt-4">
             <button
               type="submit"
