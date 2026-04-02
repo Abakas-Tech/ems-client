@@ -101,9 +101,8 @@ const GalleryUpload = () => {
     const payload = new FormData();
     payload.append("title", formData.title);
 
-    if (formData.description?.trim()) {
-      payload.append("description", formData.description.trim());
-    }
+      payload.append("description", formData.description);
+  
 
     if (selectedFile) payload.append("file", selectedFile);
 
@@ -132,7 +131,7 @@ const GalleryUpload = () => {
           <div>
             <BackButton onClick={goBack} />
             <h2>
-              {isEditMode ? "Update Gallery Item" : "Create Gallery Item"}
+              {isEditMode ? "Update Gallery" : "Create Gallery"}
             </h2>
             <p className="text-muted">
               {isEditMode

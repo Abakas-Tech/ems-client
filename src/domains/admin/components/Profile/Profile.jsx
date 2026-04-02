@@ -61,7 +61,7 @@ const MyProfile = () => {
       },
       {
         title: "Do you want to delete your profile photo?",
-        confirmText: "Yes", 
+        confirmText: "Delete", 
       },
     );
   };
@@ -102,7 +102,7 @@ const MyProfile = () => {
       return addMessage(false, "Phone number is invalid.");
     }
 
-    if (phone.length < 7 || phone.length > 15)
+    if (phone.length < 8 || phone.length > 15)
       return addMessage(false, "Phone number must be between 7 and 15 digits.");
 
     return true;

@@ -8,6 +8,7 @@ import useloader from "../../../../../context/Loader/useLoader";
 import { useNavigate } from "react-router-dom";
 import BackButton from "./../../../../../shared/components/BackButton/BackButton";
 import useResponse from "../../../../../context/Response/useResponse";
+import useProfile from "../../../../../context/Profile/useProfile";
 
 const PERMISSIONS = [
   "manage_users",
@@ -36,7 +37,8 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
-
+  const { profile } = useProfile();
+  const userId = profile?.id;
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
@@ -85,10 +87,10 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     setSelectAll(false);
   };
 
-const handlePhoneChange = (value) => {
-  const cleanedValue = value.replace(/[^\d+\-\s()]/g, "");
-  setPhoneNumber(cleanedValue);
-};
+  const handlePhoneChange = (value) => {
+    const cleanedValue = value.replace(/[^\d+\-\s()]/g, "");
+    setPhoneNumber(cleanedValue);
+  };
   const togglePermission = (permission) => {
     if (selectedPermissions.includes(permission)) {
       setSelectedPermissions(
@@ -143,11 +145,9 @@ const handlePhoneChange = (value) => {
       );
       return false;
     }
-     const phoneRegex =
-       /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
+    const phoneRegex =
+      /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
 
-  
-  
     // Phone number: digits only, length 7–15
     if (phoneNumber && !phoneRegex.test(phoneNumber)) {
       addMessage(false, "Phone number is invalid.");
@@ -442,9 +442,10 @@ const handlePhoneChange = (value) => {
               )}
 
               {/* Employee Permissions */}
-              {role === "2" && (
+              {role === "2" && (!userData || userId !== userData?.id) && (
                 <div className="col-12 mt-4">
                   <h5 className="fw-bold">Assign Permissions</h5>
+
                   <div className="row">
                     {PERMISSIONS.map((permission) => (
                       <div key={permission} className="col-md-6 mb-2">
@@ -462,6 +463,7 @@ const handlePhoneChange = (value) => {
                       </div>
                     ))}
                   </div>
+
                   <div className="d-flex justify-content-end mt-3">
                     <div className="form-check">
                       <input
@@ -475,7 +477,6 @@ const handlePhoneChange = (value) => {
                   </div>
                 </div>
               )}
-
               {/* Submit */}
               <div className="form-group col-lg-12 text-start mt-4">
                 <button
