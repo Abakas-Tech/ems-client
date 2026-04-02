@@ -12,20 +12,14 @@ import useResponse from "../../../../../context/Response/useResponse";
 const PERMISSIONS = [
   "manage_users",
   "manage_workers",
-  "manage_partners",
   "manage_finance",
   "manage_analytics",
-  "manage_system_settings",
-  "manage_audit_logs",
 ];
 const PERMISSION_LABELS = {
   manage_users: "Manage Users",
   manage_workers: "Manage Workers",
-  manage_partners: "Manage Partners",
   manage_finance: "Manage Finance",
   manage_analytics: "Manage Analytics",
-  manage_system_settings: "System Settings",
-  manage_audit_logs: "Audit Logs",
 };
 
 const CreateUserForm = ({ isEditMode = false, userData = null }) => {
@@ -453,7 +447,7 @@ const handlePhoneChange = (value) => {
                   <h5 className="fw-bold">Assign Permissions</h5>
                   <div className="row">
                     {PERMISSIONS.map((permission) => (
-                      <div key={permission} className="col-md-4 mb-2">
+                      <div key={permission} className="col-md-6 mb-2">
                         <div className="form-check">
                           <input
                             type="checkbox"

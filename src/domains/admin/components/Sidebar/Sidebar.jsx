@@ -10,7 +10,6 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
   const location = useLocation();
   const [showLabels, setShowLabels] = useState(expanded);
   const { profile } = useProfile();
-
   const user = profile;
 
   // Handle label animation
@@ -28,9 +27,18 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
     return () => clearTimeout(timer);
   }, [expanded]);
 
-  const filteredItems = MENU_CONFIG.filter((item) =>
+  //   role-based filter
+  let filteredItems = MENU_CONFIG.filter((item) =>
     item.roles.includes(user?.role_id),
   );
+
+  //  Add extra permission filter ONLY for Employee 
+  if (user?.role_id === 2) {
+    const userPermissions = user.permissions || {};
+    filteredItems = filteredItems.filter((item) =>
+      item.permission ? userPermissions[item.permission] === 1 : true,
+    );
+  }
 
   const renderMenu = (showLabels = true) => (
     <div className={styles.content}>
@@ -51,13 +59,12 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
               </li>
             );
           }
-const path =
-  item.path.includes(":id") && user?.id
-    ? item.path.replace(":id", user.id)
-    : item.path;
+          const path =
+            item.path.includes(":id") && user?.id
+              ? item.path.replace(":id", user.id)
+              : item.path;
           return (
             <li key={item.label} className={liClass}>
-              
               <Link to={path} className={styles.navLink} onClick={onClose}>
                 <i className={`bi ${item.icon} ${styles.icon}`} />
                 {showLabels && (
@@ -98,6 +105,6 @@ const path =
       )}
     </>
   );
-};
+};;
 
 export default Sidebar;
