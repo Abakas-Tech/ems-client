@@ -238,61 +238,66 @@ const ActiveWorkers = () => {
       </div>
 
       {/* Floating Selection Bar */}
+
+      {/* Floating Selection Bar */}
       {isSelectionMode && (
         <div
-          className="d-flex justify-content-between align-items-center shadow-lg border-0 rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top px-4 py-3"
+          className="d-flex flex-column flex-md-row justify-content-between align-items-center shadow-lg border rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top px-3 px-md-4 py-3"
           style={{
-            zIndex: 1000,
-            top: "20px",
-            backgroundColor: "rgba(255, 255, 255, 0.95)", // Glass effect
-            backdropFilter: "blur(10px)",
-            border: "1px solid rgba(0, 0, 0, 0.05)",
-            maxWidth: "900px",
+            zIndex: 1050,
+            // Moves closer to top on mobile to save space
+            top: window.innerWidth < 768 ? "10px" : "20px",
+            backgroundColor: "rgba(255, 255, 255, 0.98)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(var(--maincolor-rgb), 0.15)",
+            maxWidth: "1100px",
             margin: "0 auto",
-            width: "95%", // Ensures padding on mobile
+            width: "95%",
+            transition: "all 0.3s ease",
           }}
         >
           {/* Left Side: Status Info */}
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center mb-3 mb-md-0 w-100 w-md-auto justify-content-start">
             <div
-              className="rounded-3 d-flex align-items-center justify-content-center me-3"
+              className="rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm"
               style={{
-                width: "45px",
+                minWidth: "45px",
                 height: "45px",
-                backgroundColor: "rgba(var(--maincolor-rgb), 0.1)", // Light version of your main color
+                backgroundColor: "rgba(var(--maincolor-rgb), 0.1)",
                 color: "var(--maincolor)",
               }}
             >
-              <i className="bi bi-person-check-fill fs-4"></i>
+              <i className="bi bi-person-check-fill fs-5"></i>
             </div>
             <div>
               <h6
                 className="mb-0 fw-bold text-dark"
-                style={{ letterSpacing: "-0.3px" }}
+                style={{ fontSize: "1rem" }}
               >
                 Bulk Action Mode
               </h6>
               <p className="mb-0 text-muted small fw-medium">
-                <span style={{ color: "var(--maincolor)" }}>
+                <span className="fw-bold" style={{ color: "var(--maincolor)" }}>
                   {selectedWorkerIds.length}
                 </span>{" "}
-                workers ready for notification
+                {selectedWorkerIds.length === 1 ? "worker" : "workers"} selected
+                for notification
               </p>
             </div>
           </div>
 
           {/* Right Side: Actions */}
-          <div className="gap-2 d-flex">
+          <div className="gap-2 d-flex w-100 w-md-auto justify-content-between justify-content-md-end">
             <button
-              className="btn btn-main btn-sm text-white px-3 fw-bold"
+              className="btn btn-main btn-sm text-white px-4 fw-bold flex-grow-1 flex-md-grow-0 py-2 py-md-1"
               disabled={selectedWorkerIds.length === 0}
               onClick={handleNotify}
             >
-              {" "}
               Send Bulk Alert
             </button>
+
             <button
-              className="btn btn-light btn-sm border"
+              className="btn btn-outline-secondary btn-sm border flex-grow-1 flex-md-grow-0 py-2 py-md-1"
               onClick={handleExitSelection}
             >
               Cancel
@@ -300,7 +305,6 @@ const ActiveWorkers = () => {
           </div>
         </div>
       )}
-
       <ListingComponent
         showAvater={true}
         // Selection Props
