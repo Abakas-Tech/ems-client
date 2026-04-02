@@ -269,6 +269,7 @@ const ListUser = () => {
     {
       type: "transaction",
       onClick: (row) => handleRecordTransaction(row),
+      showOn: (row) => row.is_active === 1,
     },
   ];
 
