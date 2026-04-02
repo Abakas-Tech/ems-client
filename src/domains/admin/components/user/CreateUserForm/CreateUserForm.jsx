@@ -91,11 +91,10 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     setSelectAll(false);
   };
 
-  const handlePhoneChange = (value) => {
-    const numericValue = value.replace(/\D/g, "");
-    setPhoneNumber(numericValue);
-  };
-
+const handlePhoneChange = (value) => {
+  const cleanedValue = value.replace(/[^\d+\-\s()]/g, "");
+  setPhoneNumber(cleanedValue);
+};
   const togglePermission = (permission) => {
     if (selectedPermissions.includes(permission)) {
       setSelectedPermissions(
@@ -150,9 +149,14 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       );
       return false;
     }
+     const phoneRegex =
+       /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
+
+  
+  
     // Phone number: digits only, length 7–15
-    if (phoneNumber && !/^\d+$/.test(phoneNumber)) {
-      addMessage(false, "Phone number can contain digits only.");
+    if (phoneNumber && !phoneRegex.test(phoneNumber)) {
+      addMessage(false, "Phone number is invalid.");
       return false;
     }
     if (phoneNumber && (phoneNumber.length < 7 || phoneNumber.length > 15)) {
