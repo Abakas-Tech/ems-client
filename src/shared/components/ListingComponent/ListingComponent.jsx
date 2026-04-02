@@ -36,13 +36,19 @@ const ListingComponent = ({
     setTempValue("");
   };
 
-  const saveRename = (row) => {
-    if (pendingRenameHandler && tempValue.trim() !== "") {
-      pendingRenameHandler(row, tempValue);
-    }
-    cancelRename();
-  };
+const saveRename = (row, accessor) => {
+  const originalValue = row[accessor];
 
+  if (
+    pendingRenameHandler &&
+    tempValue.trim() !== "" &&
+    tempValue.trim() !== String(originalValue).trim() // check for change
+  ) {
+    pendingRenameHandler(row, tempValue.trim());
+  }
+
+  cancelRename();
+};
   // renderTable as arrow function
   const renderTable = () => (
     <table

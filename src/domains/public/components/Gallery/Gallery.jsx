@@ -105,13 +105,14 @@ const Gallery = () => {
                   if (e.key === "Enter") openModal(index);
                 }}
               >
-                <img
-                  src={item.image_url}
-                  alt={item.title || "Gallery Image"}
-                  loading="lazy"
-                  className={`card-img-top ${styles["gallery-image"]}`}
-                />
-
+                <div className={styles["image-wrapper"]}>
+                  <img
+                    src={item.image_url}
+                    alt={item.title || "Gallery Image"}
+                    loading="lazy"
+                    className={`card-img-top ${styles["gallery-image"]}`}
+                  />
+                </div>
                 <div
                   className={`card-img-overlay d-flex align-items-end ${styles.overlay}`}
                 >

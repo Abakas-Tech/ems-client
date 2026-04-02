@@ -229,6 +229,7 @@ const WorkerMeta = () => {
           const response = await deleteWorkerExperience(
             worker_id,
             row.country_id,
+            row.job_position_id,
           );
           addMessage(response?.success, response?.message);
           fetchWorkerExperiences();

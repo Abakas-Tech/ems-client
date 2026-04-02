@@ -45,19 +45,25 @@ const MyProfile = () => {
   };
 
   const handleDeleteAvatar = async () => {
-    openModal(async () => {
-      showLoader();
-      try {
-        const response = await deleteProfilePhoto();
-        addMessage(response?.success, response?.message);
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const response = await deleteProfilePhoto();
+          addMessage(response?.success, response?.message);
 
-        await fetchProfile();
-      } catch (err) {
-        addMessage(false, err.message);
-      } finally {
-        hideLoader();
-      }
-    });
+          await fetchProfile();
+        } catch (err) {
+          addMessage(false, err.message);
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: "Do you want to delete your profile photo?",
+        confirmText: "Yes", 
+      },
+    );
   };
 
   const validateFields = () => {
@@ -89,7 +95,8 @@ const MyProfile = () => {
     }
     if (!phone) return addMessage(false, "Phone number is required.");
 
-    const phoneRegex = /^(?:\+?(251|974|966|971)[0-9]{7,12}|09[0-9]{8})$/;
+   const phoneRegex =
+     /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
 
     if (!phoneRegex.test(phone)) {
       return addMessage(false, "Phone number is invalid.");

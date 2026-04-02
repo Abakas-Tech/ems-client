@@ -98,10 +98,14 @@ const GalleryUpload = () => {
     showLoader(); // show loader
 
     try {
-      const payload = new FormData();
-      payload.append("title", formData.title);
-      payload.append("description", formData.description);
-      if (selectedFile) payload.append("file", selectedFile);
+    const payload = new FormData();
+    payload.append("title", formData.title);
+
+    if (formData.description?.trim()) {
+      payload.append("description", formData.description.trim());
+    }
+
+    if (selectedFile) payload.append("file", selectedFile);
 
       if (isEditMode) {
         const response = await updateGalleryItem(id, payload);
@@ -179,9 +183,9 @@ const GalleryUpload = () => {
                 <div
                   className="primary-dropzone p-4 border rounded-3 text-center position-relative"
                   style={{
-                    backgroundColor: "#DAEDFE",
+                    backgroundColor: "#EDF1FB",
                     border: "2px dashed #dee2e6",
-                    minHeight: "150px",
+                    minHeight: "168px",
                   }}
                 >
                   <input

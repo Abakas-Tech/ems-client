@@ -20,10 +20,15 @@ const ChangePassword = () => {
       addMessage(false, "All fields are required.");
       return false;
     }
+       if (oldPassword.length < 8) {
+         addMessage(false, "Old password must be at least 8 characters.");
+         return false;
+       }
     if (newPassword !== confirmPassword) {
       addMessage(false, "Passwords do not match.");
       return false;
     }
+ 
     if (newPassword.length < 8) {
       addMessage(false, "New password must be at least 8 characters.");
       return false;
