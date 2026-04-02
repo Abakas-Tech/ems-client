@@ -26,9 +26,7 @@ function Visa() {
 
   const [visaFile, setVisaFile] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [existingVisaUrl] = useState(
-    existingVisa?.document?.url || null,
-  );
+  const [existingVisaUrl] = useState(existingVisa?.document?.url || null);
 
   const goBack = () => navigate(-1);
 
@@ -60,12 +58,18 @@ function Visa() {
     )
       return "Reference number cannot exceed 100 characters";
 
-    if (formData.visa_issue_date && formData.visa_expiry_date) {
-      if (
-        new Date(formData.visa_expiry_date) <=
-        new Date(formData.visa_issue_date)
-      )
+    const { visa_issue_date, visa_expiry_date } = formData;
+
+    // Expiry date cannot exist without issue date
+    if (visa_expiry_date && !visa_issue_date) {
+      return "Visa issue date must be provided if expiry date exists";
+    }
+
+    // Validate expiry after issue if both exist
+    if (visa_issue_date && visa_expiry_date) {
+      if (new Date(visa_expiry_date) <= new Date(visa_issue_date)) {
         return "Visa expiry date must be greater than issue date";
+      }
     }
 
     if (!isEditMode && !visaFile) return "Visa scan document is required";
@@ -84,7 +88,6 @@ function Visa() {
 
     return null;
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 

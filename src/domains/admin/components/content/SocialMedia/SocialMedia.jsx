@@ -109,7 +109,8 @@ const SocialMedia = () => {
       twitter: /^[a-zA-Z0-9_]{2,100}$/,
     };
 
-    const phonePattern = /^\+\d{9,14}$/;
+    const phonePattern =  /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
+
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // added email regex
 
     const validateContactNumber = (value) => {
@@ -313,7 +314,7 @@ const SocialMedia = () => {
               className="btn btn-main px-4"
               disabled={submitLoading}
             >
-              {existingData ? "Update Social Media" : "Create Social Media"}
+              {existingData ? "Update" : "Create"}
             </button>
 
             {existingData && (
@@ -322,7 +323,7 @@ const SocialMedia = () => {
                 className="btn btn-outline-danger px-1 px-lg-4"
                 onClick={handleDelete}
               >
-                Delete All
+                Delete
               </button>
             )}
           </div>

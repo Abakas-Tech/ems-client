@@ -11,31 +11,47 @@ const formatNumber = (num) => {
 const StatCard = ({ title, value, icon, colorClass }) => {
   const [displayValue, setDisplayValue] = useState(0);
 
-  // Animated Counter Logic
   useEffect(() => {
-    let start = 0;
-    const end = parseInt(value);
-    if (start === end) return;
+    const targetValue = parseInt(value) || 0;
 
-    let timer = setInterval(() => {
-      start += Math.ceil(end / 20); // Increment speed
-      if (start >= end) {
+    // If the displayed value is already what we want, do nothing
+    if (displayValue === targetValue) return;
+
+    // Animation speed settings
+    const duration = 500; // ms
+    const frameRate = 30; // ms
+    const totalFrames = duration / frameRate;
+
+    // Calculate how much to change per frame
+    const increment = (targetValue - displayValue) / totalFrames;
+
+    let current = displayValue;
+    const timer = setInterval(() => {
+      current += increment;
+
+      // Check if we've reached or passed the target
+      if (
+        (increment > 0 && current >= targetValue) ||
+        (increment < 0 && current <= targetValue) ||
+        increment === 0
+      ) {
         clearInterval(timer);
-        setDisplayValue(end);
+        setDisplayValue(targetValue);
       } else {
-        setDisplayValue(start);
+        setDisplayValue(Math.floor(current));
       }
-    }, 30);
+    }, frameRate);
 
     return () => clearInterval(timer);
-  }, [value]);
+  }, [value]); // Note: displayValue is omitted here to prevent infinite loops
 
   return (
     <div className="col-lg-3 col-md-6 col-sm-12 mb-4">
       <div className={`stat-card-v2 ${colorClass}`}>
         <div className="stat-card-body">
           <div className="stat-info">
-            <h3 className="fw-bold mb-0">{formatNumber(displayValue) || 0}</h3>
+            {/* Added || 0 just in case to prevent empty h3 */}
+            <h3 className="fw-bold mb-0">{formatNumber(displayValue)}</h3>
             <p className="text-muted small fw-bold text-uppercase mb-0">
               {title}
             </p>
@@ -44,7 +60,6 @@ const StatCard = ({ title, value, icon, colorClass }) => {
             <i className={icon}></i>
           </div>
         </div>
-        {/* Full square decorative border/accent */}
         <div className="stat-border-line"></div>
       </div>
     </div>

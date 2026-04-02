@@ -259,6 +259,94 @@
 .passportImage {
   width: 100%;
   height: 140px; /* 🔥 Controlled height */
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+}
+/* ============================================= */
+/* MOBILE RESPONSIVE (DO NOT TOUCH DESKTOP) */
+/* ============================================= */
+@media (max-width: 768px) {
+  /* MAIN LAYOUT → STACK */
+  .mainContent {
+    grid-template-columns: 1fr !important;
+    padding: 15px;
+    gap: 16px;
+  }
+
+  /* HEADER */
+  .header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .circularPhoto {
+    width: 90px;
+    height: 90px;
+  }
+
+  .name {
+    font-size: 22px;
+  }
+
+  .title {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  /* COLUMNS FULL WIDTH */
+  .leftColumn,
+  .rightColumn {
+    width: 100%;
+  }
+
+  /* REMOVE HEIGHT BALANCE LOGIC (important for mobile) */
+  .leftColumn::after {
+    display: none;
+  }
+
+  .rightColumn {
+    justify-content: flex-start;
+  }
+
+  /* IMAGE FIX */
+  .photoWrapper {
+    justify-content: center;
+  }
+
+  .standingPhoto {
+    max-width: 200px;
+    height: auto;
+  }
+
+  /* PASSPORT IMAGE */
+  .passportImage {
+    height: 120px;
+  }
+
+  /* SECTION */
+  .section {
+    padding: 14px;
+  }
+
+  /* TEXT */
+  .section p {
+    font-size: 12px;
+  }
+
+  /* SKILLS / LANGUAGES */
+  .list {
+    gap: 4px;
+  }
+
+  .list li {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  /* BUTTON FIX */
+  .btn {
+    width: 100% !important;
+  }
 }

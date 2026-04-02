@@ -36,8 +36,7 @@ const FinanceReportSummary = ({ filters, onBack }) => {
       }
     };
     getSummary();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, []);
 
   if (!report) return null;
 
@@ -46,7 +45,7 @@ const FinanceReportSummary = ({ filters, onBack }) => {
   return (
     <div className="dashboard-wraper">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold text-dark mb-0">Summary Report</h2>
+        <h2 className="fw-bold text-dark mb-0">Financial Report</h2>
         <BackButton onClick={onBack} />
       </div>
 

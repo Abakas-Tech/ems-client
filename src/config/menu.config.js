@@ -1,4 +1,5 @@
 import ROLES from "./role.config";
+import PERMISSIONS from "./permission.config";
 
 const MENU_CONFIG = [
   {
@@ -19,6 +20,7 @@ const MENU_CONFIG = [
     path: "/admin/dashboard",
     icon: "bi-speedometer2",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_ANALYTICS,
   },
   {
     label: "My Profile",
@@ -31,18 +33,21 @@ const MENU_CONFIG = [
     path: "/admin/user-management",
     icon: "bi bi-people",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_USERS,
   },
   {
     label: "Workers",
     path: "/admin/workers",
     icon: "bi bi-person-check",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_WORKERS,
   },
   {
     label: "Finance",
     path: "/admin/finances",
     icon: "bi bi-wallet",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_FINANCE,
   },
   {
     label: "File Manager",
@@ -54,7 +59,7 @@ const MENU_CONFIG = [
     label: "Meta Data",
     path: "/admin/meta-data",
     icon: "bi bi-database-add",
-    roles: [ROLES.ADMIN],
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     label: "Notifications",

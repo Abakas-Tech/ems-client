@@ -39,21 +39,31 @@ const CV = () => {
 
     showLoader();
     try {
-      // 1. Capture at a lower scale (1.5 instead of 2)
-      const canvas = await html2canvas(cvRef.current, {
+      const element = cvRef.current;
+
+      /* 1. FORCE DESKTOP WIDTH */
+      const originalWidth = element.style.width;
+      element.style.width = "1200px"; // force desktop layout
+
+      /* 2. WAIT FOR RENDER */
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      /* 3. CAPTURE */
+      const canvas = await html2canvas(element, {
         useCORS: true,
-        scale: 1.5, // Reduced from 2 to save space
+        scale: 1.5,
+        windowWidth: 1200,
       });
 
-      // 2. Use JPEG instead of PNG (JPEG is much smaller for photos)
-      // 0.7 is the quality (70%). Adjust this if it's still too large.
+      /* 4. RESTORE WIDTH */
+      element.style.width = originalWidth;
+
       const imgData = canvas.toDataURL("image/jpeg", 0.7);
 
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      // 3. Use 'FAST' compression in jsPDF
       pdf.addImage(
         imgData,
         "JPEG",
@@ -66,27 +76,26 @@ const CV = () => {
       );
 
       const pdfBlob = pdf.output("blob");
+
       const fileName = `${worker.full_name.replace(/\s+/g, "_")}_CV.pdf`;
 
-      // Check size in console to debug
-      console.log(
-        "Final PDF Size:",
-        (pdfBlob.size / 1024 / 1024).toFixed(2),
-        "MB",
-      );
-
-      const file = new File([pdfBlob], fileName, { type: "application/pdf" });
+      const file = new File([pdfBlob], fileName, {
+        type: "application/pdf",
+      });
 
       const formData = new FormData();
       formData.append("file", file);
       formData.append("file_name", fileName);
       formData.append("category", "CV");
       formData.append("is_private", 0);
-      formData.append("description", `CV for ${worker.full_name} Generated`);
+      formData.append("description", `CV for ${worker.full_name}`);
       formData.append("worker_id", worker.id);
 
       await uploadFile(formData);
-      addMessage(true, "CV generated and uploaded successfully!");
+
+      const response = worker.cv_url ? "updated" : "generated";
+
+      addMessage(true, "CV " + response + " and uploaded successfully!");
     } catch (err) {
       addMessage(false, "Failed to generate PDF");
     } finally {
@@ -112,10 +121,10 @@ const CV = () => {
       {profile?.role_id != 4 && (
         <div className="mb-3">
           <button
-            className="btn btn-main mt-3 px-2 text-white w-45 d-flex align-items-center justify-content-center "
+            className="btn btn-main mt-3 px-4  text-white w-auto d-flex align-items-center justify-content-center "
             onClick={handleGenerateAndUpload}
           >
-            {worker.cv_url ? "Update CV" : "Generate CV"}
+            {worker.cv_url ? "Update CV" : "Generate & Upload CV"}
           </button>
         </div>
       )}
@@ -203,7 +212,7 @@ const CV = () => {
                   {safeDate(worker.passport_expiry_date)}
                 </p>
 
-                {/* ✅ Passport Scan Image */}
+                {/* Passport Scan Image */}
                 {worker.passport_scan_url && (
                   <div className={styles.passportImageWrapper}>
                     <img
