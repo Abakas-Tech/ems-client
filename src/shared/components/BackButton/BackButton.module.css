@@ -15,3 +15,9 @@
   margin-right: 36px;
   margin-top: 0px;
 }
+
+@media (max-width: 576px) {
+  .arrow {
+    margin-right: 12px;
+  }
+}
