@@ -43,11 +43,9 @@ const TransactionDetail = ({ transactionId, onBack }) => {
   return (
     <div className="dashboard-wraper">
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4 d-print-none">
-        <div>
-          <h2 className="text-dark mb-1"> Transaction Receipt</h2>
-        </div>
-        <BackButton onClick={onBack} />
+      <div className="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center gap-2 mb-3">
+        <h2 className="text-dark fw-bold mb-0">Transaction Detail</h2>
+        <BackButton Button onClick={onBack} />
       </div>
 
       <div
