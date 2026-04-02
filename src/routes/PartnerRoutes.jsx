@@ -21,7 +21,7 @@ function PartnerRoutes() {
         }
       >
         <Route path="active-workers" element={<ActiveWorkers />} />
-        <Route path="/active-workers/:id" element={<WorkerProfile />} />
+        <Route path="active-workers/:id" element={<WorkerProfile />} />
         <Route path="files" element={<File />} />
         <Route path="my-profile" element={<MyProfile />} />
         <Route path="notifications" element={<MyNotifications />} />
