@@ -21,7 +21,7 @@ function About() {
   return (
     <section id="about" style={{ padding: "100px 0" }} className="pb-0">
       <div className="container">
-        <div className="row g-5 align-items-stretch">
+        <div className="row g-3 align-items-stretch">
           {/* Image */}
           <div className="col-lg-6 d-flex">
             <img

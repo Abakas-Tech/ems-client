@@ -123,6 +123,12 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
 
           <div className="d-flex align-items-center gap-3">
             <NotificationBell />
+            <ProfileCell
+              profile={{
+                firstName: profile?.full_name,
+                image: profile?.profile_photo_url,
+              }}
+            />
 
             <div className="text-end">
               <div className="fw-semibold" style={{ fontSize: "0.9rem" }}>
@@ -135,13 +141,6 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
                 {profile?.role}
               </div>
             </div>
-
-            <ProfileCell
-              profile={{
-                firstName: profile?.full_name,
-                image: profile?.profile_photo_url,
-              }}
-            />
 
             <button
               className="btn btn-link p-0 fs-5 fw-bold"
