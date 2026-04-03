@@ -314,7 +314,7 @@ const SocialMedia = () => {
               className="btn btn-main px-4"
               disabled={submitLoading}
             >
-              {existingData ? "Update" : "Create"}f
+              {existingData ? "Update" : "Create"}
             </button>
 
             {existingData && (

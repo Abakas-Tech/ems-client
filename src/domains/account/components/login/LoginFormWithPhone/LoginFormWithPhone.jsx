@@ -159,7 +159,8 @@ const LoginFormWithPhone = ({ role }) => {
             {/* Submit */}
             <button
               type="submit"
-              className="btn btn-main fw-medium w-100 rounded-2"
+              className="btn text-white fw-medium w-100 rounded-2"
+              style={{ backgroundColor: "#1163A8" }}
             >
               Log In
             </button>

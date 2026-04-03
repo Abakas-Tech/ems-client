@@ -13,7 +13,7 @@ function Promotion() {
   return (
     <section style={{ padding: "30px 0 0" }}>
       <div className="container">
-        <div className="row g-5 align-items-stretch">
+        <div className="row g-3 align-items-stretch">
           {/* Left Content */}
           <div className="col-lg-6 d-flex flex-column justify-content-center h-100">
             <h2 className="mb-2 fw-bold">
