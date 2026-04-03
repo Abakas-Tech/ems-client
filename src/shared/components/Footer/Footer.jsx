@@ -6,7 +6,7 @@ import { getLocation } from "../../../domains/admin/api/location.api";
 
 const Footer = () => {
   const [agencyData, setAgencyData] = useState({
-    agency_name: "Global Trust Overseas Employment Agent Plc",
+    agency_name: "Global Trust Overseas Employment Agency Plc",
     agency_email: "",
     agency_phone: "",
     address: "Addis Ababa, Ethiopia",
