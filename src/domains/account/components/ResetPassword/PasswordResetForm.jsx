@@ -4,6 +4,7 @@ import useloader from "../../../../context/Loader/useLoader";
 // import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
 import useResponse from "../../../../context/Response/useResponse";
+import { passwordResetConfirm } from "../../api/auth.api";
 
 const PasswordResetForm = ({ email }) => {
   const [otp, setOtp] = useState("");
@@ -83,7 +84,7 @@ const PasswordResetForm = ({ email }) => {
 
     showLoader();
     try {
-      const response = await password.passwordResetConfirm({
+      const response = await passwordResetConfirm({
         email,
         otp,
         password,
