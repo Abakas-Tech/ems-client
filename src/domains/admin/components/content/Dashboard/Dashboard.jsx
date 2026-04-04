@@ -21,7 +21,7 @@ function Dashboard() {
           {/* Location */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <Link
-              to="/admin/public-content/location"
+              to="/admin/content/location"
               className="text-decoration-none text-dark"
             >
               <div className="agents-grid card rounded-3 border p-4 text-center h-100">
@@ -36,7 +36,7 @@ function Dashboard() {
           {/* Gallery */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <Link
-              to="/admin/public-content/gallery"
+              to="/admin/content/gallery"
               className="text-decoration-none text-dark"
             >
               <div className="agents-grid card rounded-3 border p-4 text-center h-100">
@@ -51,7 +51,7 @@ function Dashboard() {
           {/* Social Media */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <Link
-              to="/admin/public-content/social-media"
+              to="/admin/content/social-media"
               className="text-decoration-none text-dark"
             >
               <div className="agents-grid card rounded-3 border p-4 text-center h-100">

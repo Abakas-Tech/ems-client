@@ -69,7 +69,7 @@ const MENU_CONFIG = [
   },
   {
     label: "Public Content",
-    path: "/admin/public-content",
+    path: "/admin/content",
     icon: "bi bi-layout-text-sidebar-reverse",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },

@@ -107,10 +107,10 @@ const initAuth = async () => {
       setAccessToken(newAccessToken);
       return true;
     }
-  } catch  {
+  } catch {
     setAccessToken(null);
   }
   return false;
 };
 
-export { axiosInstance, setAccessToken, hasAccessToken , initAuth };
+export { axiosInstance, setAccessToken, hasAccessToken, initAuth };
