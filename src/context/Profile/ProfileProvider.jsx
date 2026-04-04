@@ -15,7 +15,6 @@ const ProfileProvider = ({ children }) => {
       setProfile(response.data);
     } catch (error) {
       addMessage(false, error.message);
-      setProfile(null);
     }
   };
 
@@ -28,6 +27,7 @@ const ProfileProvider = ({ children }) => {
       setCheckingAuth(false);
     };
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

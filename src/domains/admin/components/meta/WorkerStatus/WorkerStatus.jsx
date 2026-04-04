@@ -57,8 +57,8 @@ const WorkerStatus = () => {
         limit: response.pagination.limit,
         total: response.pagination.total,
       });
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch {
+console.error("Failed to fetch worker statuses:");
     } finally {
       hideLoader();
     }

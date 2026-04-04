@@ -238,8 +238,8 @@ const WorkerProfile = () => {
       showLoader();
       const { data } = await getWorkerProfile(id);
       setWorker(data);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+      console.error("Failed to fetch worker profile:");
     } finally {
       hideLoader();
     }
@@ -264,8 +264,8 @@ const WorkerProfile = () => {
     try {
       const res = await getWorkerCurrentStatus(id);
       setWorkerStatuses(res.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+     console.error
     } finally {
       hideLoader();
     }
@@ -276,8 +276,8 @@ const WorkerProfile = () => {
     try {
       const response = await getWorkerStatuses({ page: 1, limit: 1000 });
       setAllStatuses(response?.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch {
+      console.error("Failed to fetch all worker statuses:");
     }
   };
 

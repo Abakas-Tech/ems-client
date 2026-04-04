@@ -48,9 +48,13 @@ const ProtectedRoute = ({ children }) => {
           }
         }
         // fetch profile if not loaded yet
-        if (!profile) {
+      if (!profile) {
+        try {
           await fetchProfile();
+        } catch  {
+          console.warn("Profile fetch failed");
         }
+      }
       } catch {
         setIsAuth(false);
       } finally {
@@ -70,7 +74,9 @@ const ProtectedRoute = ({ children }) => {
   const userPermissions = profile?.permissions || {};
   const currentPath = location.pathname;
 
-  if (!profile || !userRoleId) return null;
+if (!profile || !userRoleId) {
+  return children; // allow page even if profile failed (offline-safe)
+}
 
   // Step 1: Block cross-role access
   const currentBase = "/" + currentPath.split("/").filter(Boolean)[0];

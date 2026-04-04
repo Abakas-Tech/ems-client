@@ -27,7 +27,6 @@ const File = () => {
     total: 0,
     pagination: {},
   });
-  const [selectedFile, setSelectedFile] = useState(null);
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
@@ -75,8 +74,8 @@ const File = () => {
         total: response?.data.pagination?.total || 0,
         pagination: response?.data.pagination || {},
       });
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+console.error("Failed to fetch files:")
     } finally {
       hideLoader();
     }
@@ -146,7 +145,7 @@ const File = () => {
       // Clean up
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-    } catch (err) {
+    } catch  {
       addMessage(false, "Failed to download file");
     } finally {
       hideLoader();

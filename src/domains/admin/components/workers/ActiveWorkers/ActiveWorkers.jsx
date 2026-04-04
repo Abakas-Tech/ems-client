@@ -50,10 +50,11 @@ const ActiveWorkers = () => {
       setWorkers(res?.data.items || []);
       setTotalItems(res?.data.meta?.total_items || 0);
     } catch (err) {
-      addMessage(false, err.message);
+      console.error("Failed to fetch workers:", err);
     } finally {
       hideLoader();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);
 
   useEffect(() => {
@@ -163,8 +164,8 @@ const ActiveWorkers = () => {
           state: workerProfile,
         });
       }
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch {
+    console.error("Failed to fetch worker profile:");
     } finally {
       hideLoader();
     }

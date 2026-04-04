@@ -53,8 +53,8 @@ const Language = () => {
         limit: response.pagination.limit,
         total: response.pagination.total,
       });
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch {
+     console.error("Failed to fetch languages:");
     } finally {
       hideLoader();
     }

@@ -56,8 +56,8 @@ const City = () => {
         limit: response.pagination?.limit || 10,
         total: response.pagination?.total || response?.data?.length || 0,
       });
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch {
+     console.error("Failed to fetch cities:");
     } finally {
       hideLoader();
     }

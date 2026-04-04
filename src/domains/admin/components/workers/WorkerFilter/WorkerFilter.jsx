@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import { getRegions } from "../../../api/meta.api";
 import useloader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/Response/useResponse";
+
 import styles from "./WorkerFilter.module.css";
 
 const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
   const { showLoader, hideLoader } = useloader();
-  const { addMessage } = useResponse();
 
   const [statuses, setStatuses] = useState([]);
   const [regions, setRegions] = useState([]);
@@ -28,8 +27,8 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
 
         setStatuses(statusData);
         setRegions(regionData);
-      } catch (err) {
-        addMessage(false, err.message);
+      } catch {
+        console.error("Failed to fetch worker statuses or regions:");
         setStatuses([]);
         setRegions([]);
       } finally {

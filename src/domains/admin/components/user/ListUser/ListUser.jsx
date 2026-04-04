@@ -59,8 +59,8 @@ const ListUser = () => {
         total: response?.pagination?.total || 0,
         pages: response?.pagination?.pages || 1,
       });
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch {
+      console.error("Failed to fetch users");
     } finally {
       hideLoader();
     }

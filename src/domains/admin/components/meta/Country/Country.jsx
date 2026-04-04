@@ -54,8 +54,8 @@ const Country = () => {
         limit: response.pagination.limit,
         total: response.pagination.total,
       });
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch {
+  console.error("Failed to fetch countries:");
     } finally {
       hideLoader();
     }

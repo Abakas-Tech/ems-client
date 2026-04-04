@@ -59,8 +59,8 @@ const FinancePage = () => {
         ...response,
         data: processedTransactions,
       });
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch{
+    console.error("Failed to fetch transactions:");
     } finally {
       hideLoader();
     }

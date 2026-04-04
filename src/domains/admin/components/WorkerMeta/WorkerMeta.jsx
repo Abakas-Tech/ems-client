@@ -75,8 +75,8 @@ const WorkerMeta = () => {
     try {
       const response = await getWorkerExperiences(worker_id);
       setExperiences(response?.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+     console.error("Failed to fetch worker experiences:");
     } finally {
       hideLoader();
     }
@@ -87,8 +87,8 @@ const WorkerMeta = () => {
     try {
       const response = await getCountries({ page: 1, limit: 100 });
       setAllCountries(response?.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+   console.error("Failed to fetch countries:");
     }
   };
   // Fetch all job positions
@@ -96,8 +96,8 @@ const WorkerMeta = () => {
     try {
       const response = await getJobPositions({ page: 1, limit: 100 });
       setAllJobPositions(response?.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+  console.error("Failed to fetch job positions:");
     }
   };
   // Fetch assigned skills
@@ -106,8 +106,9 @@ const WorkerMeta = () => {
     try {
       const response = await getWorkerSkills(worker_id);
       setSkills(response?.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+      console.error("Failed to fetch worker skills:");
+    
     } finally {
       hideLoader();
     }
@@ -117,8 +118,8 @@ const WorkerMeta = () => {
     try {
       const response = await getSkills({ page: 1, limit: 100 });
       setAllSkills(response?.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+      console.error("Failed to fetch all skills:");
     }
   };
   // Fetch assigned languages
@@ -127,8 +128,8 @@ const WorkerMeta = () => {
     try {
       const response = await getWorkerLanguages(worker_id);
       setLanguages(response?.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+  console.error("Failed to fetch worker languages:");
     } finally {
       hideLoader();
     }
@@ -138,8 +139,8 @@ const WorkerMeta = () => {
     try {
       const response = await getLanguages({ page: 1, limit: 100 });
       setAllLanguages(response?.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+      console.error("Failed to fetch all languages:");
     }
   };
   // Fetch assigned positions
@@ -148,8 +149,8 @@ const WorkerMeta = () => {
     try {
       const response = await getWorkerPositions(worker_id);
       setPositions(response?.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+    console.error("Failed to fetch worker positions:");
     } finally {
       hideLoader();
     }
@@ -159,8 +160,8 @@ const WorkerMeta = () => {
     try {
       const response = await getJobPositions({ page: 1, limit: 100 });
       setAllPositions(response?.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch  {
+    console.error("Failed to fetch all positions:");
     }
   };
   useEffect(() => {

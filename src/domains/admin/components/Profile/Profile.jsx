@@ -10,7 +10,7 @@ import {
 } from "../../api/profilePhoto.api";
 
 const MyProfile = () => {
-  const { fetchProfile, profile } = useProfile();
+  const {profile } = useProfile();
   const [profileData, setProfileData] = useState({
     full_name: "",
     email: "",
@@ -38,17 +38,7 @@ const MyProfile = () => {
     }
   }, [profile]);
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        await fetchProfile();
-      } catch (err) {
-        addMessage(false, err.message);
-      }
-    };
-    loadProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,7 +52,6 @@ const MyProfile = () => {
         try {
           const response = await deleteProfilePhoto();
           addMessage(response?.success, response?.message);
-          await fetchProfile();
         } catch (err) {
           addMessage(false, err.message);
         } finally {
@@ -138,11 +127,7 @@ const MyProfile = () => {
       } catch (err) {
         addMessage(false, "Failed to update profile: " + err.message);
       }
-      try {
-        await fetchProfile();
-      } catch (err) {
-        addMessage(false, "Failed to fetch profile: " + err.message);
-      }
+    
     } catch (err) {
       addMessage(false, err.message);
     } finally {

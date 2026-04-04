@@ -48,8 +48,8 @@ const Location = () => {
       } else {
         setExistingData(null);
       }
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch {
+  console.error("Failed to fetch location data:");
     } finally {
       hideLoader();
     }

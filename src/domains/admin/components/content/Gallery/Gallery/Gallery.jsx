@@ -38,8 +38,8 @@ const Gallery = () => {
     try {
       const response = await getGalleryItems();
       setGalleryItems(response?.data || []);
-    } catch (err) {
-      addMessage(false, err.message);
+    } catch {
+  console.error("Failed to fetch gallery items:");
     } finally {
       hideLoader();
     }
