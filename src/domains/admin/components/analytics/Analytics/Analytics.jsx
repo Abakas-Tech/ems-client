@@ -3,12 +3,8 @@ import StatCard from "../StatCard/StatCard";
 import AnalyticsFilter from "../AnalyticsFilter/AnalyticsFilter";
 import fetchDashboardData from "../../../api/analytics.api";
 import useloader from "../../../../../context/Loader/useLoader";
-import useResponse from "../../../../../context/Response/useResponse";
-
 const Analytics = () => {
   const { showLoader, hideLoader } = useloader();
-  const { addMessage } = useResponse();
-
   const [data, setData] = useState(null);
   const [filters, setFilters] = useState({
     period: "yearly",
@@ -45,8 +41,10 @@ const Analytics = () => {
     try {
       const result = await fetchDashboardData(filters);
       setData(result.data);
-    } catch {
-  
+    } 
+  catch {
+      console.error("Failed to fetch dashboard data");
+    
     } finally {
       hideLoader();
     }
