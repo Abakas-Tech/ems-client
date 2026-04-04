@@ -44,7 +44,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const { addMessage } = useResponse();
 
   const handleBack = () => {
-    navigate("/admin/user-management");
+    navigate(-1);
   };
 
   // Prefill data in Edit Mode
@@ -254,7 +254,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       }
 
       addMessage(true, response.message);
-      navigate("/admin/user-management");
+      navigate(-1);
       if (!isEditMode) resetForm();
     } catch (error) {
       addMessage(false, error.message);
@@ -270,7 +270,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         <div className="d-flex justify-content-between align-items-start mb-3">
           <div>
             <h2 className="fw-bold text-dark mb-2">
-              {isEditMode ? "Update User" : "Create New User"}
+              {isEditMode ? "Update User" : "Create User"}
             </h2>
             <p className="text-muted">
               {isEditMode

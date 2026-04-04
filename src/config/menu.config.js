@@ -29,8 +29,8 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    label: "User Management",
-    path: "/admin/user-management",
+    label: "Users",
+    path: "/admin/users",
     icon: "bi bi-people",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
     permission: PERMISSIONS.MANAGE_USERS,

@@ -59,9 +59,9 @@ const AdminRoutes = () => {
         }
       >
         <Route path="settings" element={<ChangePasswordPage />} />
-        <Route path="user-management/create-user" element={<CreateUser />} />
+        <Route path="users/create-user" element={<CreateUser />} />
         <Route path="my-profile" element={<Profile />} />
-        <Route path="user-management" element={<ListUser />} />
+        <Route path="users" element={<ListUser />} />
         <Route path="dashboard" element={<Analytics />} />
         <Route path="files" element={<Files />} />
         <Route

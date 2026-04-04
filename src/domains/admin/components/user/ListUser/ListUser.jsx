@@ -209,7 +209,7 @@ const ListUser = () => {
         ...row,
         permissions: permResponse?.data || [],
       };
-      navigate("/admin/user-management/create-user", {
+      navigate("/admin/users/create-user", {
         state: { isEditMode: true, userData: userDataWithPermissions },
       });
     } catch (err) {
@@ -220,7 +220,7 @@ const ListUser = () => {
   };
 
   const handleCreateUser = () => {
-    navigate("/admin/user-management/create-user", {
+    navigate("/admin/users/create-user", {
       state: { isEditMode: false },
     });
   };
