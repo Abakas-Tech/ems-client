@@ -81,6 +81,13 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
 
+  {
+    label: "User Manual",
+    path: "/admin/user-manual",
+    icon: "bi bi-journal-code",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  },
+
   // Worker Menus
 
   {
