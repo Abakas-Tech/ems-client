@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import BackButton from "../../../../shared/components/BackButton/BackButton";
+import styles from "./UserManual.module.css";
 
 const UserManual = () => {
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -86,11 +87,11 @@ const UserManual = () => {
             {tutorials.map((item, index) => (
               <div key={index} className="col-12 col-md-6 col-lg-4">
                 <button
-                  className="manual-card w-100 p-4 border rounded-4 bg-white text-start"
+                  className={`w-100 p-4 border rounded-4 bg-white text-start ${styles["manual-card"]}`}
                   onClick={() => setSelectedVideo(item)}
                 >
                   <div className="d-flex align-items-center">
-                    <i className={`bi ${item.icon} fs-3 me-3 text-primary`}></i>
+                    <i className={`bi ${item.icon} fs-3 me-3 text-info`}></i>
                     <div>
                       <h6 className="mb-1 fw-bold">{item.title}</h6>
                       <small className="text-muted">{item.desc}</small>
