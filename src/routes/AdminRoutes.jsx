@@ -45,6 +45,7 @@ import Contract from "../domains/admin/pages/workers/modules/Contract/Contract.j
 import Guarantor from "../domains/admin/pages/workers/modules/Guarantor/Guarantor.jsx";
 import Visa from "../domains/admin/pages/workers/modules/Visa/Visa.jsx";
 import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx";
+import UserManual from "../domains/admin/pages/UserManual/UserManual.jsx";
 
 const AdminRoutes = () => {
   const { profile } = useProfile();
@@ -116,20 +117,16 @@ const AdminRoutes = () => {
         <Route path="workers/modules/:id/visa" element={<Visa />} />
         <Route path="/meta-data" element={<MetaDataDashboard />} />
         <Route path="/content" element={<ContentDashboard />} />
-        <Route
-          path="/content/social-media"
-          element={<SocialMediaPage />}
-        />
+        <Route path="/content/social-media" element={<SocialMediaPage />} />
         <Route path="/content/location" element={<LocationPage />} />
         <Route path="/content/gallery" element={<GalleryListPage />} />
-        <Route
-          path="/content/gallery/create"
-          element={<GalleryUplaodPage />}
-        />
+        <Route path="/content/gallery/create" element={<GalleryUplaodPage />} />
         <Route
           path="/content/gallery/edit/:id"
           element={<GalleryUplaodPage />}
         />
+
+        <Route path="user-manual" element={<UserManual />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>
