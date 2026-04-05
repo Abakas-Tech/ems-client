@@ -6,19 +6,64 @@ const UserManual = () => {
 
   const tutorials = [
     {
-      title: "How to Register Workers",
-      icon: "bi-person-plus",
+      title: "Dashboard",
+      desc: "See overall system information",
+      icon: "bi-speedometer2",
       video: "https://www.youtube.com/embed/VIDEO_ID_1",
     },
     {
-      title: "Managing Workers",
-      icon: "bi-people",
+      title: "Profile",
+      desc: "Update name, phone, email",
+      icon: "bi bi-person-bounding-box",
       video: "https://www.youtube.com/embed/VIDEO_ID_2",
     },
     {
-      title: "Sending Notifications",
-      icon: "bi-bell",
+      title: "Users",
+      desc: "Manage employers, staff, partners",
+      icon: "bi-people",
       video: "https://www.youtube.com/embed/VIDEO_ID_3",
+    },
+    {
+      title: "Employees",
+      desc: "Manage workers going abroad",
+      icon: "bi bi-person-check",
+      video: "https://www.youtube.com/embed/VIDEO_ID_4",
+    },
+    {
+      title: "Finance",
+      desc: "Transactions and reports",
+      icon: "bi bi-wallet",
+      video: "https://www.youtube.com/embed/VIDEO_ID_5",
+    },
+    {
+      title: "File Manager",
+      desc: "Upload and manage files",
+      icon: "bi bi-files",
+      video: "https://www.youtube.com/embed/VIDEO_ID_6",
+    },
+    {
+      title: "Meta Data",
+      desc: "Country, region, skills, status...",
+      icon: "bi bi-database-add",
+      video: "https://www.youtube.com/embed/VIDEO_ID_7",
+    },
+    {
+      title: "Notifications",
+      desc: "Send and manage alerts",
+      icon: "bi-bell",
+      video: "https://www.youtube.com/embed/VIDEO_ID_8",
+    },
+    {
+      title: "Public Content",
+      desc: "Gallery, location, social media",
+      icon: "bi bi-layout-text-sidebar-reverse",
+      video: "https://www.youtube.com/embed/VIDEO_ID_9",
+    },
+    {
+      title: "Settings",
+      desc: "Change password",
+      icon: "bi-gear",
+      video: "https://www.youtube.com/embed/VIDEO_ID_10",
     },
   ];
 
@@ -32,7 +77,7 @@ const UserManual = () => {
           <div className="mb-4">
             <h2 className="fw-bold text-dark mb-2">User Manual</h2>
             <p className="text-muted mb-0">
-              Select a topic to watch how it works.
+              Select a section to learn how it works.
             </p>
           </div>
 
@@ -41,14 +86,14 @@ const UserManual = () => {
             {tutorials.map((item, index) => (
               <div key={index} className="col-12 col-md-6 col-lg-4">
                 <button
-                  className="w-100 p-4 border rounded-4 shadow-sm bg-white text-start"
+                  className="manual-card w-100 p-4 border rounded-4 bg-white text-start"
                   onClick={() => setSelectedVideo(item)}
                 >
                   <div className="d-flex align-items-center">
                     <i className={`bi ${item.icon} fs-3 me-3 text-primary`}></i>
                     <div>
                       <h6 className="mb-1 fw-bold">{item.title}</h6>
-                      <small className="text-muted">Click to watch</small>
+                      <small className="text-muted">{item.desc}</small>
                     </div>
                   </div>
                 </button>
@@ -61,7 +106,7 @@ const UserManual = () => {
           {/* Video View */}
           <div className="mb-3">
             <h4 className="fw-bold">{selectedVideo.title}</h4>
-            <p className="text-muted">Follow the video tutorial below</p>
+            <p className="text-muted">{selectedVideo.desc}</p>
           </div>
 
           <div className="ratio ratio-16x9 rounded-4 overflow-hidden shadow">
@@ -72,7 +117,6 @@ const UserManual = () => {
             ></iframe>
           </div>
 
-          {/* Back to list */}
           <div className="mt-3">
             <button
               className="btn btn-outline-secondary"
