@@ -117,15 +117,6 @@ const UserManual = () => {
               allowFullScreen
             ></iframe>
           </div>
-
-          <div className="mt-3">
-            <button
-              className="btn btn-outline-secondary"
-              onClick={() => setSelectedVideo(null)}
-            >
-              Back to Topics
-            </button>
-          </div>
         </>
       )}
     </div>
