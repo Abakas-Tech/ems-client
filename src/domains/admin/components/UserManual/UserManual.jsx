@@ -70,7 +70,7 @@ const UserManual = () => {
 
   return (
     <div className="dashboard-wraper">
-      <BackButton onClick={() => setSelectedVideo(null)} />
+      {selectedVideo && <BackButton onClick={() => setSelectedVideo(null)} />}
 
       {!selectedVideo ? (
         <>
