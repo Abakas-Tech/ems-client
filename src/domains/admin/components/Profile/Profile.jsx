@@ -10,7 +10,7 @@ import {
 } from "../../api/profilePhoto.api";
 
 const MyProfile = () => {
-  const {profile } = useProfile();
+  const { profile, fetchProfile } = useProfile();
   const [profileData, setProfileData] = useState({
     full_name: "",
     email: "",
@@ -24,21 +24,30 @@ const MyProfile = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
+  // Initial fetch on mount
   useEffect(() => {
-    try {
-      if (profile) {
-        setProfileData({
-          full_name: profile?.full_name || "",
-          email: profile?.email || "",
-          phone_number: profile?.phone_number || "",
-        });
+    const fetchUserProfile = async () => {
+      try {
+        await fetchProfile();
+      } catch {
+        console.error("Failed to fetch profile data.");
       }
-    } catch (err) {
-      addMessage(false, err.message);
+    };
+
+    fetchUserProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Update local state whenever profile changes
+  useEffect(() => {
+    if (profile) {
+      setProfileData({
+        full_name: profile?.full_name || "",
+        email: profile?.email || "",
+        phone_number: profile?.phone_number || "",
+      });
     }
   }, [profile]);
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,6 +61,7 @@ const MyProfile = () => {
         try {
           const response = await deleteProfilePhoto();
           addMessage(response?.success, response?.message);
+          await fetchProfile(); // refetch profile after deleting photo
         } catch (err) {
           addMessage(false, err.message);
         } finally {
@@ -124,10 +134,10 @@ const MyProfile = () => {
           response?.success,
           response?.message || "Profile updated successfully!",
         );
+        await fetchProfile(); // refetch profile after updating
       } catch (err) {
         addMessage(false, "Failed to update profile: " + err.message);
       }
-    
     } catch (err) {
       addMessage(false, err.message);
     } finally {
