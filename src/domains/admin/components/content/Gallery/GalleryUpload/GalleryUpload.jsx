@@ -114,7 +114,7 @@ const GalleryUpload = () => {
         addMessage(response?.success, response?.message);
       }
 
-      navigate("/admin/public-content/gallery");
+      navigate(-1);
     } catch (err) {
       addMessage(false, err.message || "Failed to process gallery item");
     } finally {

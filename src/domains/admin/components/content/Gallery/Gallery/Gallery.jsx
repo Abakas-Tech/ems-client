@@ -51,10 +51,10 @@ const Gallery = () => {
   }, []);
   const goBack = () => navigate(-1);
 
-  const handleAddNew = () => navigate("/admin/public-content/gallery/create");
+  const handleAddNew = () => navigate("/admin/content/gallery/create");
 
   const handleEdit = (item) =>
-    navigate(`/admin/public-content/gallery/edit/${item.id}`);
+    navigate(`/admin/content/gallery/edit/${item.id}`);
 
   const handleDelete = (itemId) => {
     openModal(
