@@ -5,7 +5,7 @@ import {
   getCities,
   updateCity,
   createCity,
-  getRegions,
+  getWeredas, //  changed
 } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -15,13 +15,13 @@ import CreateModal from "../../../../../shared/components/CreateModal/CreateModa
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import { useNavigate } from "react-router-dom";
 
-// Validation for city name and region
-const validateCity = (name, regionId) => {
+//  Validation updated
+const validateCity = (name, weredaId) => {
   if (!name || !name.trim()) return "City name is required";
   if (name.length < 2) return "City name must be at least 2 characters";
   if (name.length > 100) return "City name cannot exceed 100 characters";
   if (!/^[A-Za-z\s]+$/.test(name)) return "City name can only contain letters";
-  if (!regionId) return "Region must be selected";
+  if (!weredaId) return "Wereda must be selected"; // ✅ label changed
   return null;
 };
 
@@ -31,20 +31,24 @@ const City = () => {
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
-  const [filter, setFilter] = useState({ name: "", region_id: "" });
+  // filter updated
+  const [filter, setFilter] = useState({ name: "", wereda_id: "" });
+
   const [cities, setCities] = useState([]);
-  const [regions, setRegions] = useState([]);
+
+  // renamed
+  const [weredas, setWeredas] = useState([]);
+
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     total: 0,
   });
+
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // Go back to previous page
-  const goBack = () => {
-    navigate(-1);
-  };
+  const goBack = () => navigate(-1);
+
   // Fetch cities
   const fetchCities = async (page = 1, limit = 10) => {
     showLoader();
@@ -57,38 +61,38 @@ const City = () => {
         total: response.pagination?.total || response?.data?.length || 0,
       });
     } catch {
-     console.error("Failed to fetch cities:");
+      console.error("Failed to fetch cities:");
     } finally {
       hideLoader();
     }
   };
 
-  // Fetch regions for dropdown
-  const fetchRegions = async () => {
+  // Fetch weredas instead of regions
+  const fetchWeredas = async () => {
     try {
-      const response = await getRegions({ page: 1, limit: 100 });
-      setRegions(response?.data || []);
+      const response = await getWeredas({ page: 1, limit: 100 });
+      setWeredas(response?.data || []);
     } catch (err) {
       addMessage(false, err.message);
     }
   };
 
   useEffect(() => {
-    fetchRegions();
+    fetchWeredas(); // changed
     fetchCities();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
-  // Handle city rename
+  // Handle rename
   const handleRename = async (row, newName) => {
-    const error = validateCity(newName, row.region_id);
+    const error = validateCity(newName, row.wereda_id);
     if (error) return addMessage(false, error);
 
     showLoader();
     try {
       const response = await updateCity(row.id, {
         name: newName,
-        region_id: row.region_id,
+        wereda_id: row.wereda_id, // ✅ changed
       });
       addMessage(response?.success, response?.message);
       fetchCities();
@@ -99,15 +103,14 @@ const City = () => {
     }
   };
 
-  // Handle filter change
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilter((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleClearFilters = () => setFilter({ name: "", region_id: "" });
+  // clear updated
+  const handleClearFilters = () => setFilter({ name: "", wereda_id: "" });
 
-  // Handle delete city
   const handleDelete = (row) => {
     openModal(
       async () => {
@@ -129,18 +132,19 @@ const City = () => {
     );
   };
 
-  // Handle page change
-  const handlePageChange = (newPage) => fetchCities(newPage, pagination.limit);
+  const handlePageChange = (newPage) =>
+    fetchCities(newPage, pagination.limit);
 
-  // Handle create city
+  // Handle create
   const handleCreate = async (inputValues) => {
-    const { name, region_id } = inputValues;
-    const error = validateCity(name, region_id);
+    const { name, wereda_id } = inputValues;
+
+    const error = validateCity(name, wereda_id);
     if (error) return addMessage(false, error);
 
     showLoader();
     try {
-      const response = await createCity({ name, region_id });
+      const response = await createCity({ name, wereda_id }); // changed
       addMessage(response?.success, response?.message);
       fetchCities();
     } catch (err) {
@@ -150,9 +154,10 @@ const City = () => {
     }
   };
 
+  //columns updated
   const columns = [
     { header: "City Name", accessor: "name", renameable: true },
-    { header: "Region", accessor: "region_name" },
+    { header: "Wereda", accessor: "wereda_name" }, // changed
   ];
 
   const actions = [
@@ -160,21 +165,30 @@ const City = () => {
     { type: "delete", onClick: handleDelete },
   ];
 
+  //fields updated
   const fields = [
     {
-      name: "region_id",
-      label: "Region",
+      name: "wereda_id",
+      label: "Wereda",
       type: "select",
-      options: regions.map((r) => ({ value: r.id, label: r.name })),
+      options: weredas.map((w) => ({
+        value: w.id,
+        label: w.name,
+      })),
     },
     { name: "name", label: "City Name" },
   ];
+
   const extraField = {
-    name: "region_id",
-    label: "Region",
+    name: "wereda_id",
+    label: "Wereda",
     type: "select",
-    options: regions.map((r) => ({ value: r.id, label: r.name })),
+    options: weredas.map((w) => ({
+      value: w.id,
+      label: w.name,
+    })),
   };
+
   const emptyState = {
     title: "No cities found",
     subtitle: "Add cities to see them listed here",
@@ -191,11 +205,13 @@ const City = () => {
                 Manage cities — create, rename, or delete entries as needed.
               </p>
             </div>
+
             <div className="position-absolute top-0 end-0 mt-4 pt-2">
               <BackButton onClick={goBack} />
             </div>
+
             <button
-              className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
+              className="btn btn-main mt-3 mt-md-5 text-white w-45 d-flex align-items-center justify-content-center"
               onClick={() => setShowCreateModal(true)}
             >
               + City
@@ -219,7 +235,6 @@ const City = () => {
             }
           />
 
-          {/* Create City Modal */}
           <CreateModal
             show={showCreateModal}
             onClose={() => setShowCreateModal(false)}
