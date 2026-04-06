@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import {
-  deleteCity,
+  deleteSubCity,
+  getSubCities,
+  updateSubCity,
+  createSubCity,
   getCities,
-  updateCity,
-  createCity,
-  getWeredas, //  changed
 } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -15,87 +15,83 @@ import CreateModal from "../../../../../shared/components/CreateModal/CreateModa
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import { useNavigate } from "react-router-dom";
 
-//  Validation updated
-const validateCity = (name, weredaId) => {
-  if (!name || !name.trim()) return "City name is required";
-  if (name.length < 2) return "City name must be at least 2 characters";
-  if (name.length > 100) return "City name cannot exceed 100 characters";
-  if (!/^[A-Za-z\s]+$/.test(name)) return "City name can only contain letters";
-  if (!weredaId) return "Wereda must be selected"; // ✅ label changed
+// Validation for Sub-City name and city
+const validateSubCity = (name, cityId) => {
+  if (!name || !name.trim()) return "Sub-City name is required";
+  if (name.length < 2) return "Sub-City name must be at least 2 characters";
+  if (name.length > 100) return "Sub-City name cannot exceed 100 characters";
+  if (!/^[A-Za-z\s]+$/.test(name))
+    return "Sub-City name can only contain letters";
+  if (!cityId) return "City must be selected";
   return null;
 };
 
-const City = () => {
+const SubCity = () => {
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
-  // filter updated
-  const [filter, setFilter] = useState({ name: "", wereda_id: "" });
-
+  const [filter, setFilter] = useState({ name: "", city_id: "" });
+  const [subCities, setSubCities] = useState([]);
   const [cities, setCities] = useState([]);
-
-  // renamed
-  const [weredas, setWeredas] = useState([]);
-
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     total: 0,
   });
-
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  // Go back to previous page
   const goBack = () => navigate(-1);
 
-  // Fetch cities
-  const fetchCities = async (page = 1, limit = 10) => {
+  // Fetch Sub-Cities
+  const fetchSubCities = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getCities({ ...filter, page, limit });
-      setCities(response?.data || []);
+      const response = await getSubCities({ ...filter, page, limit });
+      setSubCities(response?.data || []);
       setPagination({
         page: response.pagination?.page || 1,
         limit: response.pagination?.limit || 10,
         total: response.pagination?.total || response?.data?.length || 0,
       });
     } catch {
-      console.error("Failed to fetch cities:");
+      console.error("Failed to fetch sub-cities:");
     } finally {
       hideLoader();
     }
   };
 
-  // Fetch weredas instead of regions
-  const fetchWeredas = async () => {
+  // Fetch cities for dropdown
+  const fetchCities = async () => {
     try {
-      const response = await getWeredas({ page: 1, limit: 100 });
-      setWeredas(response?.data || []);
+      const response = await getCities({ page: 1, limit: 100 });
+      setCities(response?.data || []);
     } catch (err) {
       addMessage(false, err.message);
     }
   };
 
   useEffect(() => {
-    fetchWeredas(); // changed
     fetchCities();
+    fetchSubCities();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
-  // Handle rename
+  // Handle Sub-City rename
   const handleRename = async (row, newName) => {
-    const error = validateCity(newName, row.wereda_id);
+    const error = validateSubCity(newName, row.city_id);
     if (error) return addMessage(false, error);
 
     showLoader();
     try {
-      const response = await updateCity(row.id, {
+      const response = await updateSubCity(row.id, {
         name: newName,
-        wereda_id: row.wereda_id, // ✅ changed
+        city_id: row.city_id,
       });
       addMessage(response?.success, response?.message);
-      fetchCities();
+      fetchSubCities();
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -108,17 +104,17 @@ const City = () => {
     setFilter((prev) => ({ ...prev, [name]: value }));
   };
 
-  // clear updated
-  const handleClearFilters = () => setFilter({ name: "", wereda_id: "" });
+  const handleClearFilters = () => setFilter({ name: "", city_id: "" });
 
+  // Handle delete Sub-City
   const handleDelete = (row) => {
     openModal(
       async () => {
         showLoader();
         try {
-          const response = await deleteCity(row.id);
+          const response = await deleteSubCity(row.id);
           addMessage(response?.success, response?.message);
-          fetchCities();
+          fetchSubCities();
         } catch (err) {
           addMessage(false, err.message);
         } finally {
@@ -126,27 +122,27 @@ const City = () => {
         }
       },
       {
-        title: "Are you sure you want to delete this city?",
+        title: "Are you sure you want to delete this sub-city?",
         confirmText: "Delete",
       },
     );
   };
 
+  // Handle page change
   const handlePageChange = (newPage) =>
-    fetchCities(newPage, pagination.limit);
+    fetchSubCities(newPage, pagination.limit);
 
-  // Handle create
+  // Handle create Sub-City
   const handleCreate = async (inputValues) => {
-    const { name, wereda_id } = inputValues;
-
-    const error = validateCity(name, wereda_id);
+    const { name, city_id } = inputValues;
+    const error = validateSubCity(name, city_id);
     if (error) return addMessage(false, error);
 
     showLoader();
     try {
-      const response = await createCity({ name, wereda_id }); // changed
+      const response = await createSubCity({ name, city_id });
       addMessage(response?.success, response?.message);
-      fetchCities();
+      fetchSubCities();
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -154,10 +150,9 @@ const City = () => {
     }
   };
 
-  //columns updated
   const columns = [
-    { header: "City Name", accessor: "name", renameable: true },
-    { header: "Wereda", accessor: "wereda_name" }, // changed
+    { header: "Sub-City Name", accessor: "name", renameable: true },
+    { header: "City", accessor: "city_name" },
   ];
 
   const actions = [
@@ -165,33 +160,26 @@ const City = () => {
     { type: "delete", onClick: handleDelete },
   ];
 
-  //fields updated
   const fields = [
     {
-      name: "wereda_id",
-      label: "Wereda",
+      name: "city_id",
+      label: "City",
       type: "select",
-      options: weredas.map((w) => ({
-        value: w.id,
-        label: w.name,
-      })),
+      options: cities.map((c) => ({ value: c.id, label: c.name })),
     },
-    { name: "name", label: "City Name" },
+    { name: "name", label: "Sub-City Name" },
   ];
 
   const extraField = {
-    name: "wereda_id",
-    label: "Wereda",
+    name: "city_id",
+    label: "City",
     type: "select",
-    options: weredas.map((w) => ({
-      value: w.id,
-      label: w.name,
-    })),
+    options: cities.map((c) => ({ value: c.id, label: c.name })),
   };
 
   const emptyState = {
-    title: "No cities found",
-    subtitle: "Add cities to see them listed here",
+    title: "No sub-cities found",
+    subtitle: "Add sub-cities to see them listed here",
   };
 
   return (
@@ -200,26 +188,24 @@ const City = () => {
         <div className="dashboard-wraper">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div className="flex-grow-1">
-              <h2 className="fw-bold text-dark mb-2">Cities</h2>
+              <h2 className="fw-bold text-dark mb-2">Sub-Cities</h2>
               <p className="text-muted mb-0">
-                Manage cities — create, rename, or delete entries as needed.
+                Manage sub-cities — create, rename, or delete entries as needed.
               </p>
             </div>
-
             <div className="position-absolute top-0 end-0 mt-4 pt-2">
               <BackButton onClick={goBack} />
             </div>
-
             <button
               className="btn btn-main mt-3 mt-md-5 text-white w-45 d-flex align-items-center justify-content-center"
               onClick={() => setShowCreateModal(true)}
             >
-              + City
+              + Sub-City
             </button>
           </div>
 
           <ListingComponent
-            data={cities}
+            data={subCities}
             columns={columns}
             actions={actions}
             emptyState={emptyState}
@@ -240,7 +226,7 @@ const City = () => {
             onClose={() => setShowCreateModal(false)}
             onCreate={handleCreate}
             fields={fields}
-            title="Create New City"
+            title="Create New Sub-City"
           />
         </div>
       </div>
@@ -248,4 +234,4 @@ const City = () => {
   );
 };
 
-export default City;
+export default SubCity;

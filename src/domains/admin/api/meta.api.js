@@ -214,6 +214,151 @@ const deleteCity = async (id) => {
   }
 };
 
+// Weredas API
+
+// Get all Weredas
+const getWeredas = async (params = {}) => {
+  try {
+    const response = await axiosInstance.get("/meta/Weredas", { params });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch Weredas"
+    );
+  }
+};
+
+// Get woreda by ID
+const getWoredaById = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/meta/Weredas/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch woreda"
+    );
+  }
+};
+
+// Create woreda
+const createWoreda = async (data) => {
+  try {
+    const response = await axiosInstance.post("/meta/Weredas", data);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to create woreda"
+    );
+  }
+};
+
+// Update woreda
+const updateWoreda = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`/meta/Weredas/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update woreda"
+    );
+  }
+};
+
+// Delete woreda
+const deleteWoreda = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/meta/Weredas/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete woreda"
+    );
+  }
+};
+
+
+// Sub-Cities API
+
+// Get all sub-cities
+const getSubCities = async (params = {}) => {
+  try {
+    const response = await axiosInstance.get("/meta/sub-cities", { params });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch sub-cities"
+    );
+  }
+};
+
+// Get sub-city by ID
+const getSubCityById = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/meta/sub-cities/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch sub-city"
+    );
+  }
+};
+
+// Create sub-city
+const createSubCity = async (data) => {
+  try {
+    const response = await axiosInstance.post("/meta/sub-cities", data);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to create sub-city"
+    );
+  }
+};
+
+// Update sub-city
+const updateSubCity = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`/meta/sub-cities/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update sub-city"
+    );
+  }
+};
+
+// Delete sub-city
+const deleteSubCity = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/meta/sub-cities/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete sub-city"
+    );
+  }
+};
+
 // skills api
 // Get all skills
 const getSkills = async (params = {}) => {
@@ -532,6 +677,18 @@ export {
   createRegion,
   updateRegion,
   deleteRegion,
+  // Weredas
+  getWeredas,
+  getWoredaById,
+  createWoreda,
+  updateWoreda,
+  deleteWoreda,
+  // sub-cities
+  getSubCities,
+  getSubCityById,
+  createSubCity,
+  updateSubCity,
+  deleteSubCity,
   // cities
   getCities,
   getCityById,

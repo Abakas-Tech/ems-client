@@ -98,8 +98,7 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
             <button className={styles.drawerClose} onClick={onClose}>
               <i className="bi bi-x-lg"></i>
             </button>
-
-            {renderMenu(true)}
+            <div className="mt-3">{renderMenu(true)}</div>
           </div>
         </Drawer>
       )}

@@ -45,6 +45,8 @@ import Contract from "../domains/admin/pages/workers/modules/Contract/Contract.j
 import Guarantor from "../domains/admin/pages/workers/modules/Guarantor/Guarantor.jsx";
 import Visa from "../domains/admin/pages/workers/modules/Visa/Visa.jsx";
 import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx";
+import WeredaPage from "../domains/admin/pages/meta/WeredaPage/WeredaPage.jsx";
+import SubCityPage from "../domains/admin/pages/meta/SubCityPage/SubCityPage.jsx";
 
 const AdminRoutes = () => {
   const { profile } = useProfile();
@@ -88,6 +90,7 @@ const AdminRoutes = () => {
         <Route path="/employees/modules/:id/add" element={<ModulesList />} />
         <Route path="/meta-data/country" element={<CountryPage />} />
         <Route path="/meta-data/region" element={<RegionPage />} />
+        <Route path="/meta-data/wereda" element={<WeredaPage />} />
         <Route path="/meta-data/skill" element={<SkillPage />} />
         <Route path="/meta-data/job-position" element={<JobPostionPage />} />
         <Route path="/meta-data/language" element={<LanguagePage />} />
@@ -96,6 +99,7 @@ const AdminRoutes = () => {
           element={<WorkerStatusPage />}
         />
         <Route path="/meta-data/city" element={<CityPage />} />
+        <Route path="/meta-data/sub-city" element={<SubCityPage />} />
         <Route
           path="/employee/modules/:worker_id/attributes"
           element={<WorkerMetaPage />}
