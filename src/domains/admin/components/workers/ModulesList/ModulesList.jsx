@@ -65,7 +65,7 @@ function ModulesList() {
               to={`/admin/workers/modules/${id}/${mod.path}`}
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div className="agents-grid card rounded-4 border p-4 text-center h-100">
                 <div className="mt-4 mb-3">
                   {React.cloneElement(mod.icon, {
                     className: "text-info",

@@ -36,7 +36,7 @@ function WorkerDashboard() {
               to="/admin/workers/active"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100 shadow-sm-hover">
+              <div className="agents-grid card rounded-4 border p-4 text-center h-100 shadow-sm-hover">
                 <div className="mt-4 mb-3">
                   <FaUsers className="text-info" size={50} />
                 </div>
@@ -50,7 +50,7 @@ function WorkerDashboard() {
               to="/admin/workers/archived"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100 shadow-sm-hover">
+              <div className="agents-grid card rounded-4 border p-4 text-center h-100 shadow-sm-hover">
                 <div className="mt-4 mb-3">
                   <FaUserSlash className="text-info" size={50} />
                 </div>

@@ -4,6 +4,7 @@ import { MdPermMedia } from "react-icons/md";
 import { FaShareAltSquare } from "react-icons/fa";
 
 import { Link } from "react-router-dom";
+import styles from "../../UserManual/UserManual.module.css";
 
 function Dashboard() {
   return (
@@ -24,7 +25,9 @@ function Dashboard() {
               to="/admin/content/location"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div
+                className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}
+              >
                 <div className="mt-4 mb-3">
                   <FaMapLocationDot className="text-info" size={50} />
                 </div>
@@ -39,7 +42,9 @@ function Dashboard() {
               to="/admin/content/gallery"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div
+                className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}
+              >
                 <div className="mt-4 mb-3">
                   <MdPermMedia className="text-info" size={50} />
                 </div>
@@ -54,7 +59,9 @@ function Dashboard() {
               to="/admin/content/social-media"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div
+                className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}
+              >
                 <div className="mt-4 mb-3">
                   <FaShareAltSquare className="text-info" size={50} />
                 </div>
