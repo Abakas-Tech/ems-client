@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import {
-  deleteCity,
-  getCities,
-  updateCity,
-  createCity,
+  deleteWoreda,
+  getWeredas,
+  updateWoreda,
+  createWoreda,
   getRegions,
 } from "../../../api/meta.api";
 import useLoader from "../../../../../context/Loader/useLoader";
@@ -15,24 +15,25 @@ import CreateModal from "../../../../../shared/components/CreateModal/CreateModa
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import { useNavigate } from "react-router-dom";
 
-// Validation for city name and region
-const validateCity = (name, regionId) => {
-  if (!name || !name.trim()) return "City name is required";
-  if (name.length < 2) return "City name must be at least 2 characters";
-  if (name.length > 100) return "City name cannot exceed 100 characters";
-  if (!/^[A-Za-z\s]+$/.test(name)) return "City name can only contain letters";
+// Validation for Woreda name and region
+const validateWoreda = (name, regionId) => {
+  if (!name || !name.trim()) return "Woreda name is required";
+  if (name.length < 2) return "Woreda name must be at least 2 characters";
+  if (name.length > 100) return "Woreda name cannot exceed 100 characters";
+  if (!/^[A-Za-z\s]+$/.test(name))
+    return "Woreda name can only contain letters";
   if (!regionId) return "Region must be selected";
   return null;
 };
 
-const City = () => {
+const Wereda = () => {
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
   const [filter, setFilter] = useState({ name: "", region_id: "" });
-  const [cities, setCities] = useState([]);
+  const [Weredas, setWeredas] = useState([]);
   const [regions, setRegions] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -42,28 +43,27 @@ const City = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Go back to previous page
-  const goBack = () => {
-    navigate(-1);
-  };
-  // Fetch cities
-  const fetchCities = async (page = 1, limit = 10) => {
+  const goBack = () => navigate(-1);
+
+  // Fetch Weredas
+  const fetchWeredas = async (page = 1, limit = 10) => {
     showLoader();
     try {
-      const response = await getCities({ ...filter, page, limit });
-      setCities(response?.data || []);
+      const response = await getWeredas({ ...filter, page, limit });
+      setWeredas(response?.data || []);
       setPagination({
         page: response.pagination?.page || 1,
         limit: response.pagination?.limit || 10,
         total: response.pagination?.total || response?.data?.length || 0,
       });
     } catch {
-     console.error("Failed to fetch cities:");
+      console.error("Failed to fetch Weredas:");
     } finally {
       hideLoader();
     }
   };
 
-  // Fetch regions for dropdown
+  // Fetch regions
   const fetchRegions = async () => {
     try {
       const response = await getRegions({ page: 1, limit: 100 });
@@ -75,23 +75,22 @@ const City = () => {
 
   useEffect(() => {
     fetchRegions();
-    fetchCities();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchWeredas();
   }, [filter]);
 
-  // Handle city rename
+  // Rename Woreda
   const handleRename = async (row, newName) => {
-    const error = validateCity(newName, row.region_id);
+    const error = validateWoreda(newName, row.region_id);
     if (error) return addMessage(false, error);
 
     showLoader();
     try {
-      const response = await updateCity(row.id, {
+      const response = await updateWoreda(row.id, {
         name: newName,
         region_id: row.region_id,
       });
       addMessage(response?.success, response?.message);
-      fetchCities();
+      fetchWeredas();
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -99,23 +98,20 @@ const City = () => {
     }
   };
 
-  // Handle filter change
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilter((prev) => ({ ...prev, [name]: value }));
   };
-
   const handleClearFilters = () => setFilter({ name: "", region_id: "" });
 
-  // Handle delete city
   const handleDelete = (row) => {
     openModal(
       async () => {
         showLoader();
         try {
-          const response = await deleteCity(row.id);
+          const response = await deleteWoreda(row.id);
           addMessage(response?.success, response?.message);
-          fetchCities();
+          fetchWeredas();
         } catch (err) {
           addMessage(false, err.message);
         } finally {
@@ -123,26 +119,24 @@ const City = () => {
         }
       },
       {
-        title: "Are you sure you want to delete this city?",
+        title: "Are you sure you want to delete this woreda?",
         confirmText: "Delete",
       },
     );
   };
 
-  // Handle page change
-  const handlePageChange = (newPage) => fetchCities(newPage, pagination.limit);
+  const handlePageChange = (newPage) => fetchWeredas(newPage, pagination.limit);
 
-  // Handle create city
   const handleCreate = async (inputValues) => {
     const { name, region_id } = inputValues;
-    const error = validateCity(name, region_id);
+    const error = validateWoreda(name, region_id);
     if (error) return addMessage(false, error);
 
     showLoader();
     try {
-      const response = await createCity({ name, region_id });
+      const response = await createWoreda({ name, region_id });
       addMessage(response?.success, response?.message);
-      fetchCities();
+      fetchWeredas();
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -151,7 +145,7 @@ const City = () => {
   };
 
   const columns = [
-    { header: "City Name", accessor: "name", renameable: true },
+    { header: "Woreda Name", accessor: "name", renameable: true },
     { header: "Region", accessor: "region_name" },
   ];
 
@@ -167,17 +161,19 @@ const City = () => {
       type: "select",
       options: regions.map((r) => ({ value: r.id, label: r.name })),
     },
-    { name: "name", label: "City Name" },
+    { name: "name", label: "Woreda Name" },
   ];
+
   const extraField = {
     name: "region_id",
     label: "Region",
     type: "select",
     options: regions.map((r) => ({ value: r.id, label: r.name })),
   };
+
   const emptyState = {
-    title: "No cities found",
-    subtitle: "Add cities to see them listed here",
+    title: "No Weredas found",
+    subtitle: "Add Weredas to see them listed here",
   };
 
   return (
@@ -186,24 +182,24 @@ const City = () => {
         <div className="dashboard-wraper">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div className="flex-grow-1">
-              <h2 className="fw-bold text-dark mb-2">Cities</h2>
+              <h2 className="fw-bold text-dark mb-2">Weredas</h2>
               <p className="text-muted mb-0">
-                Manage cities — create, rename, or delete entries as needed.
+                Manage Weredas — create, rename, or delete entries as needed.
               </p>
             </div>
             <div className="position-absolute top-0 end-0 mt-4 pt-2">
               <BackButton onClick={goBack} />
             </div>
             <button
-              className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
+              className="btn btn-main mt-3 mt-md-5 text-white w-45 d-flex align-items-center justify-content-center"
               onClick={() => setShowCreateModal(true)}
             >
-              + City
+              + Woreda
             </button>
           </div>
 
           <ListingComponent
-            data={cities}
+            data={Weredas}
             columns={columns}
             actions={actions}
             emptyState={emptyState}
@@ -219,13 +215,12 @@ const City = () => {
             }
           />
 
-          {/* Create City Modal */}
           <CreateModal
             show={showCreateModal}
             onClose={() => setShowCreateModal(false)}
             onCreate={handleCreate}
             fields={fields}
-            title="Create New City"
+            title="Create New Woreda"
           />
         </div>
       </div>
@@ -233,4 +228,4 @@ const City = () => {
   );
 };
 
-export default City;
+export default Wereda;

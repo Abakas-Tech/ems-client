@@ -214,18 +214,18 @@ const deleteCity = async (id) => {
   }
 };
 
-// Woredas API
+// Weredas API
 
-// Get all woredas
-const getWoredas = async (params = {}) => {
+// Get all Weredas
+const getWeredas = async (params = {}) => {
   try {
-    const response = await axiosInstance.get("/meta/woredas", { params });
+    const response = await axiosInstance.get("/meta/Weredas", { params });
     return response.data;
   } catch (error) {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to fetch woredas"
+        "Failed to fetch Weredas"
     );
   }
 };
@@ -233,7 +233,7 @@ const getWoredas = async (params = {}) => {
 // Get woreda by ID
 const getWoredaById = async (id) => {
   try {
-    const response = await axiosInstance.get(`/meta/woredas/${id}`);
+    const response = await axiosInstance.get(`/meta/Weredas/${id}`);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -247,7 +247,7 @@ const getWoredaById = async (id) => {
 // Create woreda
 const createWoreda = async (data) => {
   try {
-    const response = await axiosInstance.post("/meta/woredas", data);
+    const response = await axiosInstance.post("/meta/Weredas", data);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -261,7 +261,7 @@ const createWoreda = async (data) => {
 // Update woreda
 const updateWoreda = async (id, data) => {
   try {
-    const response = await axiosInstance.put(`/meta/woredas/${id}`, data);
+    const response = await axiosInstance.put(`/meta/Weredas/${id}`, data);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -275,7 +275,7 @@ const updateWoreda = async (id, data) => {
 // Delete woreda
 const deleteWoreda = async (id) => {
   try {
-    const response = await axiosInstance.delete(`/meta/woredas/${id}`);
+    const response = await axiosInstance.delete(`/meta/Weredas/${id}`);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -677,8 +677,8 @@ export {
   createRegion,
   updateRegion,
   deleteRegion,
-  // woredas
-  getWoredas,
+  // Weredas
+  getWeredas,
   getWoredaById,
   createWoreda,
   updateWoreda,
