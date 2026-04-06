@@ -21,7 +21,7 @@ function WorkerDashboard() {
               to="/admin/workers/add"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100 shadow-sm-hover">
+              <div className="agents-grid card rounded-4 border p-4 text-center h-100 shadow-sm-hover">
                 <div className="mt-4 mb-3">
                   <FaUserPlus className="text-info" size={50} />
                 </div>

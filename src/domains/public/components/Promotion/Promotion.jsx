@@ -21,17 +21,16 @@ function Promotion() {
             </h2>
 
             <p className="mb-4" style={{ lineHeight: "1.7" }}>
-              We believe that working abroad should be an opportunity filled
-              with confidence—not uncertainty. That’s why we focus on making
-              every step of the journey clear, guided, and accessible for every
-              applicant.
+              We believe working abroad should bring confidence, not
+              uncertainty, so we make every step clear, guided, and accessible
+              for every applicant.
             </p>
 
             <p className="mb-4" style={{ lineHeight: "1.7" }}>
-              From the moment you begin your application to the day you reach
-              your employer, our role is to ensure you understand the process,
-              know what to expect, and feel supported throughout. We simplify
-              complex procedures into clear steps so you can move forward with
+              From the start of your application to your arrival with your
+              employer, we ensure you understand the process, know what to
+              expect, and feel supported throughout by simplifying complex
+              procedures into clear steps so you can move forward with
               confidence.
             </p>
 
@@ -51,11 +50,10 @@ function Promotion() {
           </div>
 
           {/* Right Video */}
-          <div className="col-lg-6 d-flex pb-0">
-            <div className="ratio ratio-16x9">
+          <div className="col-lg-6 pb-0">
+            <div className="ratio ratio-16x9 rounded-4 overflow-hidden shadow">
               <iframe
-                /* Added autoplay=1 and mute=1 to the URL */
-                src="https://www.youtube.com/embed/ePLajxLpUNk?autoplay=1&mute=1&si=rUEPSbkFvP9rpYzL"
+                src="https://www.youtube.com/embed/XtDmY9OhTgw?autoplay=1&mute=1&si=rUEPSbkFvP9rpYzL"
                 title="YouTube video player"
                 allow="autoplay; encrypted-media"
                 allowFullScreen

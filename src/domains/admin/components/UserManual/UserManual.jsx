@@ -10,7 +10,7 @@ const UserManual = () => {
       title: "Dashboard",
       desc: "See overall system information",
       icon: "bi-speedometer2",
-      video: "https://www.youtube.com/embed/VIDEO_ID_1",
+      video: "https://www.youtube.com/embed/XtDmY9OhTgw",
     },
     {
       title: "Profile",
@@ -106,7 +106,7 @@ const UserManual = () => {
         <>
           {/* Video View */}
           <div className="mb-3">
-            <h4 className="fw-bold">{selectedVideo.title}</h4>
+            <h2 className="fw-bold">{selectedVideo.title}</h2>
             <p className="text-muted">{selectedVideo.desc}</p>
           </div>
 

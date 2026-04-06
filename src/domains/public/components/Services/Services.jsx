@@ -41,7 +41,7 @@ const services = [
 
 const Services = () => {
   return (
-    <section id="services" className="pb-0" aria-labelledby="services-title">
+    <section id="services" className="pb-3" aria-labelledby="services-title">
       <div className="container">
         {/* Heading */}
         <div className="row justify-content-center">
@@ -64,7 +64,7 @@ const Services = () => {
           {services.map((service, index) => (
             <div key={index} className="col-lg-4 col-md-6">
               <div
-                className="service-item position-relative h-100 shadow p-4 rounded hover-up text-center bg-white "
+                className="service-item position-relative h-100 shadow p-4 rounded-4 hover-up text-center bg-white "
                 style={{ border: "2px solid #f0f0f0" }}
               >
                 <div
