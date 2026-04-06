@@ -41,7 +41,7 @@ function About() {
                 Global Trust Overseas Employment Agency Plc
               </strong>{" "}
               is a licensed recruitment agency dedicated to connecting Ethiopian
-              workers with verified international job opportunities, especially
+              employees with verified international job opportunities, especially
               in Middle Eastern countries.
             </p>
 

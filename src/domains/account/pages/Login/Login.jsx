@@ -49,7 +49,7 @@ function Login() {
                       setSelectedRole("worker");
                     }}
                   >
-                    Worker
+                    Employee
                   </Link>{" "}
                   or an{" "}
                   <Link

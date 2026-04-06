@@ -37,8 +37,8 @@ function ModulesList() {
     { name: "LMIS", icon: <IoDocumentAttach />, path: `lmis` },
     { name: "Travel Records", icon: <FaPlane />, path: `travel-records` },
     { name: "Contract", icon: <FaFileContract />, path: `contract` },
-    { name: "CV", icon: <FaFileAlt />, path: `cv` },
     { name: "Attributes", icon: <FiGrid />, path: `attributes` },
+    { name: "CV", icon: <FaFileAlt />, path: `cv` },
   ];
 
   // Go back to previous page
@@ -51,9 +51,9 @@ function ModulesList() {
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
         <div className="mb-4">
           <BackButton onClick={goBack} />
-          <h2 className="fw-bold text-dark mb-2">Add Worker Modules</h2>
+          <h2 className="fw-bold text-dark mb-2">Add employee Modules</h2>
           <p className="text-muted mb-0">
-            Assign or manage modules for this worker. Select the modules they
+            Assign or manage modules for this employee. Select the modules they
             should have and update their profile as needed.
           </p>
         </div>
@@ -62,7 +62,7 @@ function ModulesList() {
         {modules.map((mod, index) => (
           <div key={index} className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <Link
-              to={`/admin/workers/modules/${id}/${mod.path}`}
+              to={`/admin/employee/modules/${id}/${mod.path}`}
               className="text-decoration-none text-dark"
             >
               <div className="agents-grid card rounded-3 border p-4 text-center h-100">

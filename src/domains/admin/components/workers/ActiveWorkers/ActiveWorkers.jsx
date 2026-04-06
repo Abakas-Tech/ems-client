@@ -50,7 +50,7 @@ const ActiveWorkers = () => {
       setWorkers(res?.data.items || []);
       setTotalItems(res?.data.meta?.total_items || 0);
     } catch (err) {
-      console.error("Failed to fetch workers:", err);
+      console.error("Failed to fetch employees:", err);
     } finally {
       hideLoader();
     }
@@ -67,7 +67,7 @@ const ActiveWorkers = () => {
       state: {
         userId: row.id,
         userName: row.full_name,
-        userRole: "worker",
+        userRole: "employee",
       },
     });
   };
@@ -151,21 +151,21 @@ const ActiveWorkers = () => {
       // role based navigation
       if (role === 3) {
         // Partner
-        navigate(`/partner/active-workers/${id}`, {
+        navigate(`/partner/active-employees/${id}`, {
           state: workerProfile,
         });
       } else if (role === 5) {
-        navigate(`/employer/my-workers/${id}`, {
+        navigate(`/employer/my-employees/${id}`, {
           state: workerProfile,
         });
       } else {
         // Admin / Employee
-        navigate(`/admin/workers/active/${id}`, {
+        navigate(`/admin/employees/active/${id}`, {
           state: workerProfile,
         });
       }
     } catch {
-    console.error("Failed to fetch worker profile:");
+      console.error("Failed to fetch worker profile:");
     } finally {
       hideLoader();
     }
@@ -178,7 +178,7 @@ const ActiveWorkers = () => {
           const response = await deleteWorker(id, false);
           addMessage(
             response?.success,
-            response?.message || "Worker archived successfully",
+            response?.message || "Employee archived successfully",
           );
           fetchWorkers();
         } catch (err) {
@@ -186,7 +186,7 @@ const ActiveWorkers = () => {
         }
       },
       {
-        title: "Are you sure you want to archive this worker?",
+        title: "Are you sure you want to archive this employee?",
         confirmText: "Archive",
       },
     );
@@ -199,7 +199,7 @@ const ActiveWorkers = () => {
           const response = await deleteWorker(id, true);
           addMessage(
             response?.success,
-            response?.message || "Worker deleted successfully",
+            response?.message || "Employee deleted successfully",
           );
           fetchWorkers();
         } catch (err) {
@@ -207,7 +207,7 @@ const ActiveWorkers = () => {
         }
       },
       {
-        title: "Are you sure you want to delete this worker?",
+        title: "Are you sure you want to delete this employee?",
         confirmText: "Delete",
       },
     );
@@ -226,14 +226,14 @@ const ActiveWorkers = () => {
 
           <h2 className="fw-bold text-dark mb-2">
             {" "}
-            {role == 5 ? "My workers" : "Active Workers"}
+            {role == 5 ? "My Employees" : "Active Employees"}
           </h2>
           <p className="text-muted mb-0">
             {role === 5
-              ? "View the workers assigned to you and access their profiles."
+              ? "View the employees assigned to you and access their profiles."
               : role === 3
-                ? "View active workers and access their profiles."
-                : "View and manage active workers, access detailed profiles, archive records, or remove workers when needed."}
+                ? "View active employees and access their profiles."
+                : "View and manage active employees, access detailed profiles, archive records, or remove employees when needed."}
           </p>
         </div>
       </div>
@@ -281,8 +281,8 @@ const ActiveWorkers = () => {
                 <span className="fw-bold" style={{ color: "var(--maincolor)" }}>
                   {selectedWorkerIds.length}
                 </span>{" "}
-                {selectedWorkerIds.length === 1 ? "worker" : "workers"} selected
-                for notification
+                {selectedWorkerIds.length === 1 ? "employee" : "employees"}{" "}
+                selected for notification
               </p>
             </div>
           </div>
@@ -344,7 +344,7 @@ const ActiveWorkers = () => {
           { type: "delete", onClick: (row) => handleDelete(row.id) },
           {
             type: "addModule",
-            onClick: (row) => navigate(`/admin/workers/modules/${row.id}/add`),
+            onClick: (row) => navigate(`/admin/employees/modules/${row.id}/add`),
           },
           {
             type: "viewCV",
@@ -356,8 +356,8 @@ const ActiveWorkers = () => {
         emptyState={{
           title:
             role === 5
-              ? "No worker is assigned to you yet"
-              : "No Active workers found",
+              ? "No employees is assigned to you yet"
+              : "No Active employees found",
         }}
         pagination={{
           page,

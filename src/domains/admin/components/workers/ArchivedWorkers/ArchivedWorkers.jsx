@@ -72,16 +72,16 @@ const ArchivedWorkers = () => {
           const response = await restoreWorker(id);
           addMessage(
             response?.success,
-            response?.message || "Worker restored successfully",
+            response?.message || "Employee restored successfully",
           );
           setWorkers((prev) => prev.filter((w) => w.id !== id));
           setTotalItems((prev) => prev - 1);
         } catch (err) {
-          addMessage(false, err.message || "Failed to restore worker");
+          addMessage(false, err.message || "Failed to restore employee");
         }
       },
       {
-        title: "Are you sure you want to restore this worker?",
+        title: "Are you sure you want to restore this employee?",
         confirmText: "Restore",
       },
     );
@@ -95,16 +95,16 @@ const ArchivedWorkers = () => {
           const response = await deleteArchivedWorker(id);
           addMessage(
             response?.success,
-            response?.message || "Worker deleted successfully",
+            response?.message || "Employee deleted successfully",
           );
           setWorkers((prev) => prev.filter((w) => w.id !== id));
           setTotalItems((prev) => prev - 1);
         } catch (err) {
-          addMessage(false, err.message || "Failed to delete worker");
+          addMessage(false, err.message || "Failed to delete employee");
         }
       },
       {
-        title: "Are you sure you want to delete this worker permanently?",
+        title: "Are you sure you want to delete this employee permanently?",
         confirmText: "Delete",
       },
     );
@@ -120,9 +120,9 @@ const ArchivedWorkers = () => {
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
         <div className="mb-4">
           <BackButton onClick={goBack} />
-          <h2 className="fw-bold text-dark mb-2">Archived Workers</h2>
+        <h2 className="fw-bold text-dark mb-2">Archived Employees</h2>
           <p className="text-muted mb-0">
-            Browse archived workers, view detailed profiles, restore records, or
+            Browse archived employees, view detailed profiles, restore records, or
             permanently delete them.
           </p>
         </div>
@@ -151,7 +151,7 @@ const ArchivedWorkers = () => {
           { type: "delete", onClick: (row) => handleDelete(row.id) },
         ]}
         emptyState={{
-          title: "No archived workers found",
+          title: "No archived employees found",
         }}
         pagination={{
           page,

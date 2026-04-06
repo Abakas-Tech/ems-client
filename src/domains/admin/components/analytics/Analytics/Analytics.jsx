@@ -94,7 +94,7 @@ const Analytics = () => {
       <div className="row mt-4">
         <div className="col-12">
           <h6 className="fw-bold text-muted text-uppercase mb-3">
-            Worker Metrics
+            Employee Metrics
           </h6>
         </div>
         <StatCard

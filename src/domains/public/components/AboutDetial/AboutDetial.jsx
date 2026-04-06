@@ -90,7 +90,7 @@ export default function AboutDetail() {
 
         <p className="mb-4">
           We open doors to international employment opportunities by connecting
-          Ethiopian workers with trusted and verified employers across the
+          Ethiopian employees with trusted and verified employers across the
           Middle East and other global destinations. As a licensed overseas
           employment agency, our mission is to make every step of the
           journey—from application to deployment—simple, transparent, and
@@ -106,7 +106,7 @@ export default function AboutDetail() {
           every stage of the process.
         </p>
         <p className="mb-4">
-          We are committed to transparency, accuracy, and worker protection. By
+          We are committed to transparency, accuracy, and employees protection. By
           providing clear information, regular updates, and practical guidance,
           we help reduce uncertainty and build trust throughout the journey. Our
           goal is to ensure that every candidate travels safely, understands
@@ -241,7 +241,7 @@ export default function AboutDetail() {
 
         <p className="mb-4">
           We play a vital role in creating life-changing opportunities by
-          connecting Ethiopian workers with secure and verified employment
+          connecting Ethiopian employees with secure and verified employment
           abroad. Through our structured and transparent processes, we help
           individuals move from local job limitations to stable international
           careers, improving their income, experience, and quality of life.
@@ -257,7 +257,7 @@ export default function AboutDetail() {
           By providing accurate information, timely updates, and hands-on
           guidance, we minimize delays and uncertainties in the process. Our
           impact is measured not only by successful deployments, but by the
-          confidence, safety, and long-term success of the workers we serve.
+          confidence, safety, and long-term success of the employees we serve.
         </p>
       </div>
     </div>

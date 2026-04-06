@@ -61,7 +61,7 @@ const WorkerModuleManagement = () => {
 
   // Action handler for adding a module to a worker
   const handleAddModule = (id) => {
-    navigate(`/admin/workers/modules/${id}/add`);
+    navigate(`/admin/employees/modules/${id}/add`);
   };
 
   // Go back to previous page
@@ -74,9 +74,9 @@ const WorkerModuleManagement = () => {
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
         <div className="mb-4">
           <BackButton onClick={goBack} />
-          <h2 className="fw-bold text-dark mb-2">Add Worker Modules</h2>
+          <h2 className="fw-bold text-dark mb-2">Add employee Modules</h2>
           <p className="text-muted mb-0">
-            View the list of workers and assign or manage modules for each
+            View the list of employees and assign or manage modules for each
             profile.
           </p>
         </div>
@@ -99,7 +99,7 @@ const WorkerModuleManagement = () => {
           { type: "addModule", onClick: (row) => handleAddModule(row.id) },
         ]}
         emptyState={{
-          title: "No active workers found",
+          title: "No active employees found",
           subtitle: "Try adjusting the filters above or check back later.",
         }}
         pagination={{
