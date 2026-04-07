@@ -4,7 +4,7 @@ const services = [
   {
     title: "Overseas Job Placement",
     description:
-      "We connect qualified Ethiopian workers with trusted employers in Middle Eastern countries and beyond.",
+      "We connect qualified Ethiopian employees with trusted employers in Middle Eastern countries and beyond.",
     icon: "bi bi-briefcase",
   },
   {
@@ -22,19 +22,19 @@ const services = [
   {
     title: "Contract Arrangement",
     description:
-      "We ensure transparent employment contracts between workers and verified overseas employers.",
+      "We ensure transparent employment contracts between employees and verified overseas employers.",
     icon: "bi bi-file-text",
   },
   {
     title: "Flight & Deployment Coordination",
     description:
-      "We organize flight bookings and full deployment logistics until workers safely reach their employers.",
+      "We organize flight bookings and full deployment logistics until employees safely reach their employers.",
     icon: "bi bi-airplane",
   },
   {
     title: "Pre-Departure Orientation",
     description:
-      "We prepare workers with essential training, cultural guidance, and job readiness before departure.",
+      "We prepare employees with essential training, cultural guidance, and job readiness before departure.",
     icon: "bi bi-people",
   },
 ];
@@ -53,7 +53,7 @@ const Services = () => {
               <p>
                 Global Trust Overseas Employment Agent Plc provides end-to-end
                 overseas employment solutions, ensuring safe, legal, and
-                reliable deployment of Ethiopian workers abroad.
+                reliable deployment of Ethiopian employees abroad.
               </p>
             </div>
           </div>

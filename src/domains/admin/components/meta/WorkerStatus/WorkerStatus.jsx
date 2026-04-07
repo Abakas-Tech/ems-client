@@ -16,13 +16,13 @@ import BackButton from "../../../../../shared/components/BackButton/BackButton";
 
 // Validation for worker status name
 const validateWorkerStatusName = (name) => {
-  if (!name || !name.trim()) return "Worker status name is required";
+  if (!name || !name.trim()) return "Employee status name is required";
   if (name.length < 2)
-    return "Worker status name must be at least 2 characters";
+    return "Employee status name must be at least 2 characters";
   if (name.length > 100)
-    return "Worker status name cannot exceed 100 characters";
+    return "Employee status name cannot exceed 100 characters";
   if (!/^[A-Za-z\s]+$/.test(name))
-    return "Worker status name can only contain letters";
+    return "Employee status name can only contain letters";
   return null;
 };
 
@@ -58,7 +58,7 @@ const WorkerStatus = () => {
         total: response.pagination.total,
       });
     } catch {
-console.error("Failed to fetch worker statuses:");
+console.error("Failed to fetch employee statuses:");
     } finally {
       hideLoader();
     }
@@ -120,7 +120,7 @@ console.error("Failed to fetch worker statuses:");
         }
       },
       {
-        title: "Are you sure you want to delete this worker status?",
+        title: "Are you sure you want to delete this employee status?",
         confirmText: "Delete",
       },
     );
@@ -153,7 +153,7 @@ console.error("Failed to fetch worker statuses:");
 
   const columns = [
     {
-      header: "Worker Status Name",
+      header: "Employee Status Name",
       accessor: "name",
       renameable: true,
     },
@@ -164,11 +164,11 @@ console.error("Failed to fetch worker statuses:");
     { type: "delete", onClick: handleDelete },
   ];
 
-  const fields = [{ name: "name", label: "Worker Status Name" }];
+  const fields = [{ name: "name", label: "Employee Status Name" }];
 
   const emptyState = {
-    title: "No worker statuses found",
-    subtitle: "Add worker statuses to see them listed here",
+    title: "No employee statuses found",
+    subtitle: "Add employee statuses to see them listed here",
   };
 
   return (
@@ -177,9 +177,9 @@ console.error("Failed to fetch worker statuses:");
         <div className="dashboard-wraper">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
             <div className="flex-grow-1">
-              <h2 className="fw-bold text-dark mb-2">Worker Status</h2>
+              <h2 className="fw-bold text-dark mb-2">Employee Status</h2>
               <p className="text-muted mb-0">
-                Manage worker statuses — create, rename, or delete entries as
+                Manage employee statuses — create, rename, or delete entries as
                 needed.
               </p>
             </div>
@@ -191,7 +191,7 @@ console.error("Failed to fetch worker statuses:");
               onClick={() => setShowCreateModal(true)}
               style={{ whiteSpace: "nowrap" }}
             >
-              + Worker Status
+              + Employee Status
             </button>
           </div>
 
@@ -220,7 +220,7 @@ console.error("Failed to fetch worker statuses:");
             onClose={() => setShowCreateModal(false)}
             onCreate={handleCreate}
             fields={fields}
-            title="Create New Worker Status"
+            title="Create New Employee Status"
           />
         </div>
       </div>

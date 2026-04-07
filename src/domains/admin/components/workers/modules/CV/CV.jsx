@@ -83,9 +83,11 @@ const CV = () => {
         type: "application/pdf",
       });
 
+      const originalName = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
+
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("file_name", fileName);
+      formData.append("file_name", originalName);
       formData.append("category", "CV");
       formData.append("is_private", 0);
       formData.append("description", `CV for ${worker.full_name}`);
@@ -114,7 +116,7 @@ const CV = () => {
       <div className="d-flex justify-content-between align-items-center d-print-none pb-2">
         <h2 className="text-dark mb-2">
           {" "}
-          {profile?.role_id != 4 ? "Worker" : "My"} CV
+          {profile?.role_id != 4 ? "Employee" : "My"} CV
         </h2>
         {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
       </div>
@@ -137,7 +139,7 @@ const CV = () => {
             <div>
               <h1 className={styles.name}>{worker.full_name}</h1>
               <p className={`{styles.title} fw-bold`}>
-                {worker.primary_positions?.join(" • ") || "DOMESTIC WORKER"}
+                {worker.primary_positions?.join(" • ") || "DOMESTIC EMPLOYEE"}
               </p>
             </div>
           </div>

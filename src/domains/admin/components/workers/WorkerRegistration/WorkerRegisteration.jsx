@@ -94,7 +94,7 @@ function WorkerRegistration() {
 
       addMessage(
         response?.success,
-        response?.message || "Worker registered successfully",
+        response?.message || "Employee registered successfully",
       );
 
       // Reset form
@@ -118,9 +118,9 @@ function WorkerRegistration() {
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
         <div className="mb-4">
           <BackButton onClick={goBack} />
-          <h2 className="fw-bold text-dark mb-2">Add Worker</h2>
+          <h2 className="fw-bold text-dark mb-2">Add Employee</h2>
           <p className="text-muted mb-0">
-            Register a new worker by providing their full name, phone number,
+            Register a new employee by providing their full name, phone number,
             and email
           </p>
         </div>
@@ -176,7 +176,7 @@ function WorkerRegistration() {
               type="submit"
               disabled={submitLoading}
             >
-              Register Worker
+              Register Employee
             </button>
           </div>
         </div>

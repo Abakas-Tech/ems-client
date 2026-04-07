@@ -29,7 +29,7 @@ function AppRouter() {
 
         {/* Protected Routes */}
         <Route path="/admin/*" element={<AdminRoutes />} />
-        <Route path="/worker/*" element={<WorkerRoutes />} />
+        <Route path="/employee/*" element={<WorkerRoutes />} />
         <Route path="/partner/*" element={<PartnerRoutes />} />
         <Route path="/employer/*" element={<EmployerRoutes />} />
 

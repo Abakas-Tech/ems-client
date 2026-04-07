@@ -90,39 +90,39 @@ const useWorkerActions = (workerId) => {
   const navigate = useNavigate();
 
   const editEmergency = (guarantor) =>
-    navigate(`/admin/workers/modules/${workerId}/emergency-contact`, {
+    navigate(`/admin/employees/modules/${workerId}/emergency-contact`, {
       state: { guarantor },
     });
   const editVisa = (visa) =>
-    navigate(`/admin/workers/modules/${workerId}/visa`, { state: { visa } });
+    navigate(`/admin/employees/modules/${workerId}/visa`, { state: { visa } });
   const editLmis = (lmis) =>
-    navigate(`/admin/workers/modules/${workerId}/lmis`, {
+    navigate(`/admin/employees/modules/${workerId}/lmis`, {
       state: { lmis },
     });
   const editTravel = (travel) =>
-    navigate(`/admin/workers/modules/${workerId}/travel-records`, {
+    navigate(`/admin/employees/modules/${workerId}/travel-records`, {
       state: { travel },
     });
   const editContract = (contract) =>
-    navigate(`/admin/workers/modules/${workerId}/contract`, {
+    navigate(`/admin/employees/modules/${workerId}/contract`, {
       state: { contract },
     });
   const editPersonal = (personal) =>
-    navigate(`/admin/workers/modules/${workerId}/personal`, {
+    navigate(`/admin/employees/modules/${workerId}/personal`, {
       state: { personal },
     });
 
   const editPassport = (passport) =>
-    navigate(`/admin/workers/modules/${workerId}/passport`, {
+    navigate(`/admin/employees/modules/${workerId}/passport`, {
       state: { passport },
     });
 
   const editCoc = (coc) =>
-    navigate(`/admin/workers/modules/${workerId}/coc`, {
+    navigate(`/admin/employees/modules/${workerId}/coc`, {
       state: { coc },
     });
   const editMedical = (medical) =>
-    navigate(`/admin/workers/modules/${workerId}/medical`, {
+    navigate(`/admin/employees/modules/${workerId}/medical`, {
       state: { medical },
     });
 
@@ -239,7 +239,7 @@ const WorkerProfile = () => {
       const { data } = await getWorkerProfile(id);
       setWorker(data);
     } catch  {
-      console.error("Failed to fetch worker profile:");
+      console.error("Failed to fetch employee profile:");
     } finally {
       hideLoader();
     }
@@ -277,7 +277,7 @@ const WorkerProfile = () => {
       const response = await getWorkerStatuses({ page: 1, limit: 1000 });
       setAllStatuses(response?.data || []);
     } catch {
-      console.error("Failed to fetch all worker statuses:");
+      console.error("Failed to fetch all employee statuses:");
     }
   };
 

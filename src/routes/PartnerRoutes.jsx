@@ -20,8 +20,8 @@ function PartnerRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="active-workers" element={<ActiveWorkers />} />
-        <Route path="active-workers/:id" element={<WorkerProfile />} />
+        <Route path="active-employees" element={<ActiveWorkers />} />
+        <Route path="active-employees/:id" element={<WorkerProfile />} />
         <Route path="files" element={<File />} />
         <Route path="my-profile" element={<MyProfile />} />
         <Route path="notifications" element={<MyNotifications />} />

@@ -53,7 +53,7 @@ const MainHeader = () => {
     1: "/admin/dashboard",
     2: "/admin/dashboard",
     3: "/partner/my-profile",
-    4: "/worker/my-profile",
+    4: "/employee/my-profile",
     5: "/employer/my-profile",
   };
 

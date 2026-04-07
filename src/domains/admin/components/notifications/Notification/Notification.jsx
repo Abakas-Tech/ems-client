@@ -111,8 +111,8 @@ const NotificationPage = () => {
         2: "employee",
         3: "partner",
         5: "employer",
-        worker: "worker",
-        employee: "employee", // Handle cases where it might already be a string
+        worker: "employee",
+        employee: "staff", // Handle cases where it might already be a string
         partner: "partner",
         employer: "employer",
       };
@@ -249,10 +249,10 @@ const NotificationPage = () => {
         disabled: !!incomingBulkIds, // Locked if IDs are passed
         initialValue: normalizedType || "",
         options: [
-          { value: "worker", label: "Worker" },
+          { value: "worker", label: "Employee" },
           { value: "3", label: "Partner" },
           { value: "5", label: "Employer" },
-          { value: "2", label: "Employee" },
+          { value: "2", label: "Staff" },
         ],
       },
       {

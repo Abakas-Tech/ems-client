@@ -5,7 +5,6 @@ import { FaBars } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProfileCell from "../../ProfileCell/ProfileCell";
 
-
 const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   const { fetchProfile, profile } = useProfile();
   const { unreadCount } = useNotification();
@@ -76,9 +75,9 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
 
   const roleMap = {
     1: "Admin",
-    2: "Employee",
+    2: "Staff",
     3: "Partner",
-    4: "Worker",
+    4: "Employee",
     5: "Employer",
   };
 

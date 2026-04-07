@@ -13,9 +13,9 @@ const TransactionDetail = ({ transactionId, onBack }) => {
 
   const ROLE_MAP = {
     1: "Admin",
-    2: "Employee",
+    2: "Staff",
     3: "Partner",
-    4: "Worker",
+    4: "Employee",
     5: "Employer",
   };
 

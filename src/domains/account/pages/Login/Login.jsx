@@ -14,7 +14,7 @@ function Login() {
   
         <div>
           {showIdentifierLogin ? (
-            <div className="login-page d-flex flex-column justify-content-center align-items-center rounded min-vh-100">
+            <div className="login-page d-flex flex-column justify-content-center align-items-center rounded min-vh-100 m-3">
               <LoginFormWithPhone role={selectedRole} />
 
               {/* Back to Admin Login */}
@@ -35,7 +35,7 @@ function Login() {
               </div>
             </div>
           ) : (
-            <div className="login-page d-flex flex-column justify-content-center align-items-center rounded  min-vh-100">
+            <div className="login-page d-flex flex-column justify-content-center align-items-center rounded  min-vh-100 m-3">
               <LoginFormWithEmail />
 
               {/* Navigation question to Worker/Employer login */}
@@ -49,7 +49,7 @@ function Login() {
                       setSelectedRole("worker");
                     }}
                   >
-                    Worker
+                    Employee
                   </Link>{" "}
                   or an{" "}
                   <Link

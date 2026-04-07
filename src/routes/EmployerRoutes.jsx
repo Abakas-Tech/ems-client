@@ -18,8 +18,8 @@ function EmployerRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="my-workers" element={<ActiveWorkers />} />
-        <Route path="/my-workers/:id" element={<WorkerProfile />} />
+        <Route path="my-employees" element={<ActiveWorkers />} />
+        <Route path="/my-employees/:id" element={<WorkerProfile />} />
         <Route path="my-profile" element={<MyProfile />} />
         <Route path="notifications" element={<MyNotifications />} />
         <Route path="*" element={<NotFound />} />

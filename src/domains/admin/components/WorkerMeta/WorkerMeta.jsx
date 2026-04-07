@@ -76,7 +76,7 @@ const WorkerMeta = () => {
       const response = await getWorkerExperiences(worker_id);
       setExperiences(response?.data || []);
     } catch  {
-     console.error("Failed to fetch worker experiences:");
+     console.error("Failed to fetch employee experiences:");
     } finally {
       hideLoader();
     }
@@ -107,7 +107,7 @@ const WorkerMeta = () => {
       const response = await getWorkerSkills(worker_id);
       setSkills(response?.data || []);
     } catch  {
-      console.error("Failed to fetch worker skills:");
+      console.error("Failed to fetch employee skills:");
     
     } finally {
       hideLoader();
@@ -129,7 +129,7 @@ const WorkerMeta = () => {
       const response = await getWorkerLanguages(worker_id);
       setLanguages(response?.data || []);
     } catch  {
-  console.error("Failed to fetch worker languages:");
+  console.error("Failed to fetch employee languages:");
     } finally {
       hideLoader();
     }
@@ -150,7 +150,7 @@ const WorkerMeta = () => {
       const response = await getWorkerPositions(worker_id);
       setPositions(response?.data || []);
     } catch  {
-    console.error("Failed to fetch worker positions:");
+    console.error("Failed to fetch employee positions:");
     } finally {
       hideLoader();
     }
@@ -539,9 +539,9 @@ const WorkerMeta = () => {
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
         <div className="mb-3">
           <BackButton onClick={goBack} />
-          <h2 className="fw-bold text-dark mb-2">Worker Meta</h2>
+          <h2 className="fw-bold text-dark mb-2">Employee Meta</h2>
           <p className="text-muted mb-0">
-            Assign skills, languages, positions, and experiences to this worker.
+            Assign skills, languages, positions, and experiences to this employee.
           </p>
         </div>
       </div>
@@ -582,7 +582,7 @@ const WorkerMeta = () => {
             <div className="flex-grow-1">
               <h3 className="fw-bold text-dark mb-2">Skills</h3>
               <p className="text-muted mb-0">
-                Assign or remove skills for this worker.
+                Assign or remove skills for this employee.
               </p>
             </div>
             {/* <button
@@ -614,7 +614,7 @@ const WorkerMeta = () => {
             <div className="flex-grow-1">
               <h3 className="fw-bold text-dark mb-2">Languages</h3>
               <p className="text-muted mb-0">
-                Add, update, or remove languages for this worker.
+                Add, update, or remove languages for this employee.
               </p>
             </div>
             {/* <button
@@ -657,7 +657,7 @@ const WorkerMeta = () => {
             <div className="flex-grow-1">
               <h3 className="fw-bold text-dark mb-2">Positions</h3>
               <p className="text-muted mb-0">
-                Add, update, or remove positions for this worker.
+                Add, update, or remove positions for this employee.
               </p>
             </div>
             {/* <button
@@ -695,7 +695,7 @@ const WorkerMeta = () => {
             <div className="flex-grow-1">
               <h3 className="fw-bold text-dark mb-2">Experiences</h3>
               <p className="text-muted mb-0">
-                Add or remove previous work experiences for this worker.
+                Add or remove previous work experiences for this employee.
               </p>
             </div>
             {/* <button

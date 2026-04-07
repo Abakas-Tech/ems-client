@@ -18,7 +18,7 @@ const PERMISSIONS = [
 ];
 const PERMISSION_LABELS = {
   manage_users: "Manage Users",
-  manage_workers: "Manage Workers",
+  manage_workers: "Manage Employees",
   manage_finance: "Manage Finance",
   manage_analytics: "Manage Analytics",
 };
@@ -275,7 +275,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
             <p className="text-muted">
               {isEditMode
                 ? "Update user details and permissions."
-                : "Add a new employee, partner, or employer and assign permissions."}
+                : "Add a new staff, partner, or employer and assign permissions."}
             </p>
           </div>
           <BackButton onClick={handleBack} />
@@ -316,7 +316,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   disabled={isEditMode}
                 >
                   <option value="">Select Role</option>
-                  <option value="2">Employee</option>
+                  <option value="2">Staff</option>
                   <option value="3">Partner</option>
                   <option value="5">Employer</option>
                 </select>

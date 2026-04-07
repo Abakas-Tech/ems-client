@@ -176,6 +176,7 @@ console.error("Failed to fetch files:")
     );
   };
   const handleViewDetail = (file) => {
+    console.log(file)
     if (!file.file_url) return;
     const link = document.createElement("a");
     link.href = file.file_url;

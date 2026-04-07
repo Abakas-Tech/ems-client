@@ -81,7 +81,7 @@ const Gallery = () => {
               </h2>
               <p>
                 Explore our gallery of professional photographs capturing
-                Ethiopian workers, events, and milestones—preserving memories of
+                Ethiopian employees, events, and milestones—preserving memories of
                 every special occasion.
               </p>
             </div>

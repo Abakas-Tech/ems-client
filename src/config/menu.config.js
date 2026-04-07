@@ -36,8 +36,8 @@ const MENU_CONFIG = [
     permission: PERMISSIONS.MANAGE_USERS,
   },
   {
-    label: "Workers",
-    path: "/admin/workers",
+    label: "Employees",
+    path: "/admin/employees",
     icon: "bi bi-person-check",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
     permission: PERMISSIONS.MANAGE_WORKERS,
@@ -92,25 +92,25 @@ const MENU_CONFIG = [
 
   {
     label: "My Profile",
-    path: "/worker/my-profile",
+    path: "/employee/my-profile",
     icon: "bi bi-person-bounding-box",
     roles: [ROLES.WORKER],
   },
   {
     label: "My Application",
-    path: "/worker/my-application",
+    path: "/employee/my-application",
     icon: "bi bi-person-vcard-fill",
     roles: [ROLES.WORKER],
   },
   {
     label: "My CV",
-    path: `/worker/my-cv`,
+    path: `/employee/my-cv`,
     icon: "bi bi-file-earmark-text",
     roles: [ROLES.WORKER],
   },
   {
     label: "Notifications",
-    path: "/worker/notifications",
+    path: "/employee/notifications",
     icon: "bi bi-bell",
     roles: [ROLES.WORKER],
   },
@@ -125,8 +125,8 @@ const MENU_CONFIG = [
   },
 
   {
-    label: "Active Workers",
-    path: "/partner/active-workers",
+    label: "Active Employees",
+    path: "/partner/active-employees",
     icon: "bi bi-people",
     roles: [ROLES.PARTNER],
   },
@@ -162,8 +162,8 @@ const MENU_CONFIG = [
   },
 
   {
-    label: "My Workers",
-    path: "/employer/my-workers",
+    label: "My Employees",
+    path: "/employer/my-employees",
     icon: "bi bi-person-gear",
     roles: [ROLES.EMPLOYER],
   },

@@ -5,6 +5,8 @@ import { IoLanguage } from "react-icons/io5";
 import { MdOutlineWorkOutline } from "react-icons/md";
 import { GiBrain } from "react-icons/gi";
 import { FaMap } from "react-icons/fa";
+import { AiOutlineApartment } from "react-icons/ai";
+import { RiMapPinLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { FiCheckCircle, FiActivity } from "react-icons/fi";
 import styles from "../../UserManual/UserManual.module.css";
@@ -66,6 +68,20 @@ function MetaDataDashboard() {
               </div>
             </Link>
           </div>
+          {/* Woreda */}
+          <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+            <Link
+              to="/admin/meta-data/wereda"
+              className="text-decoration-none text-dark"
+            >
+              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+                <div className="mt-4 mb-3">
+                  <AiOutlineApartment className="text-info" size={50} />
+                </div>
+                <h5 className="fr-can-name lh-base mb-2">Woreda</h5>
+              </div>
+            </Link>
+          </div>
 
           {/* City */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
@@ -78,6 +94,20 @@ function MetaDataDashboard() {
                   <FaMapLocationDot className="text-info" size={50} />
                 </div>
                 <h5 className="fr-can-name lh-base mb-2">City</h5>
+              </div>
+            </Link>
+          </div>
+          {/* Sub-City */}
+          <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+            <Link
+              to="/admin/meta-data/sub-city"
+              className="text-decoration-none text-dark"
+            >
+              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+                <div className="mt-4 mb-3">
+                  <RiMapPinLine className="text-info" size={50} />
+                </div>
+                <h5 className="fr-can-name lh-base mb-2">Sub-City</h5>
               </div>
             </Link>
           </div>
@@ -115,7 +145,7 @@ function MetaDataDashboard() {
           {/* Worker Status */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <Link
-              to="/admin/meta-data/worker-status"
+              to="/admin/meta-data/employee-status"
               className="text-decoration-none text-dark"
             >
               <div className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}>

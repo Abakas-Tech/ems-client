@@ -7,10 +7,10 @@ function WorkerDashboard() {
   return (
     <div className=" dashboard-wraper">
       <div className="mb-4">
-        <h2 className="fw-bold text-dark mb-1">Worker Management</h2>
+        <h2 className="fw-bold text-dark mb-1">Employees Management</h2>
         <p className="text-muted mb-0">
-          Add new workers, manage active profiles, review archived records, and
-          configure worker modules.
+          Add new employees, manage active profiles, review archived records,
+          and configure employee modules.
         </p>
       </div>
 
@@ -19,7 +19,7 @@ function WorkerDashboard() {
           {/* Add Worker */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <Link
-              to="/admin/workers/add"
+              to="/admin/employees/add"
               className="text-decoration-none text-dark"
             >
               <div
@@ -28,7 +28,7 @@ function WorkerDashboard() {
                 <div className="mt-4 mb-3">
                   <FaUserPlus className="text-info" size={50} />
                 </div>
-                <h5 className="fr-can-name lh-base mb-2">Add Worker</h5>
+                <h5 className="fr-can-name lh-base mb-2">Add Employee</h5>
               </div>
             </Link>
           </div>
@@ -36,7 +36,7 @@ function WorkerDashboard() {
           {/* Active Workers */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <Link
-              to="/admin/workers/active"
+              to="/admin/employees/active"
               className="text-decoration-none text-dark"
             >
               <div
@@ -45,14 +45,14 @@ function WorkerDashboard() {
                 <div className="mt-4 mb-3">
                   <FaUsers className="text-info" size={50} />
                 </div>
-                <h5 className="fr-can-name lh-base mb-2">Active Workers</h5>
+                <h5 className="fr-can-name lh-base mb-2">Active Employees</h5>
               </div>
             </Link>
           </div>
           {/* Archived Workers */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <Link
-              to="/admin/workers/archived"
+              to="/admin/employees/archived"
               className="text-decoration-none text-dark"
             >
               <div
@@ -61,7 +61,7 @@ function WorkerDashboard() {
                 <div className="mt-4 mb-3">
                   <FaUserSlash className="text-info" size={50} />
                 </div>
-                <h5 className="fr-can-name lh-base mb-2">Archived Workers</h5>
+                <h5 className="fr-can-name lh-base mb-2">Archived Employees</h5>
               </div>
             </Link>
           </div>

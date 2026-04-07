@@ -28,7 +28,7 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
         setStatuses(statusData);
         setRegions(regionData);
       } catch {
-        console.error("Failed to fetch worker statuses or regions:");
+        console.error("Failed to fetch employee statuses or regions:");
         setStatuses([]);
         setRegions([]);
       } finally {

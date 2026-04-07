@@ -19,7 +19,7 @@ const ProtectedRoute = ({ children }) => {
     1: "/admin/dashboard",
     2: "/admin/my-profile",
     3: "/partner/my-profile",
-    4: "/worker/my-profile",
+    4: "/employee/my-profile",
     5: "/employer/my-profile",
   };
 
@@ -27,7 +27,7 @@ const ProtectedRoute = ({ children }) => {
     1: "/admin",
     2: "/admin",
     3: "/partner",
-    4: "/worker",
+    4: "/employee",
     5: "/employer",
   };
 

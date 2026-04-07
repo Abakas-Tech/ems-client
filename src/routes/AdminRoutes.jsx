@@ -46,6 +46,8 @@ import Guarantor from "../domains/admin/pages/workers/modules/Guarantor/Guaranto
 import Visa from "../domains/admin/pages/workers/modules/Visa/Visa.jsx";
 import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx";
 import UserManual from "../domains/admin/pages/UserManual/UserManual.jsx";
+import WeredaPage from "../domains/admin/pages/meta/WeredaPage/WeredaPage.jsx";
+import SubCityPage from "../domains/admin/pages/meta/SubCityPage/SubCityPage.jsx";
 
 const AdminRoutes = () => {
   const { profile } = useProfile();
@@ -76,45 +78,53 @@ const AdminRoutes = () => {
         <Route path="notifications" element={<Notifications />} />
         <Route path="*" element={<NotFound />} />
         <Route
-          path="/workers"
+          path="/employees"
           element={
             role === 3 || role === 5 ? <ActiveWorkers /> : <WorkerDashboard />
           }
         />
-        <Route path="/workers/add" element={<WorkerRegistration />} />
-        <Route path="/workers/active" element={<ActiveWorkers />} />
-        <Route path="/workers/active/:id" element={<WorkerProfile />} />
-        <Route path="/workers/archived" element={<ArchivedWorkers />} />
-        <Route path="workers/modules" element={<WorkerModuleManagement />} />
-        <Route path="/workers/modules/:id/add" element={<ModulesList />} />
+        <Route path="/employees/add" element={<WorkerRegistration />} />
+        <Route path="/employees/active" element={<ActiveWorkers />} />
+        <Route path="/employees/active/:id" element={<WorkerProfile />} />
+        <Route path="/employees/archived" element={<ArchivedWorkers />} />
+        <Route path="/employees/modules" element={<WorkerModuleManagement />} />
+        <Route path="/employees/modules/:id/add" element={<ModulesList />} />
         <Route path="/meta-data/country" element={<CountryPage />} />
         <Route path="/meta-data/region" element={<RegionPage />} />
+        <Route path="/meta-data/wereda" element={<WeredaPage />} />
         <Route path="/meta-data/skill" element={<SkillPage />} />
         <Route path="/meta-data/job-position" element={<JobPostionPage />} />
         <Route path="/meta-data/language" element={<LanguagePage />} />
-        <Route path="/meta-data/worker-status" element={<WorkerStatusPage />} />
-        <Route path="/meta-data/city" element={<CityPage />} />
         <Route
-          path="/workers/modules/:worker_id/attributes"
+          path="/meta-data/employee-status"
+          element={<WorkerStatusPage />}
+        />
+        <Route path="/meta-data/city" element={<CityPage />} />
+        <Route path="/meta-data/sub-city" element={<SubCityPage />} />
+        <Route
+          path="/employee/modules/:worker_id/attributes"
           element={<WorkerMetaPage />}
         />
 
         <Route
-          path="/workers/modules/:id/personal"
+          path="employee/modules/:id/personal"
           element={<WorkerPesonalInfo />}
         />
-        <Route path="workers/modules/:id/passport" element={<Passport />} />
-        <Route path="workers/modules/:id/coc" element={<Coc />} />
-        <Route path="workers/modules/:id/medical" element={<Medical />} />
-        <Route path="workers/modules/:id/lmis" element={<Lmis />} />
-        <Route path="workers/modules/:id/travel-records" element={<Travel />} />
-        <Route path="workers/modules/:id/contract" element={<Contract />} />
+        <Route path="employee/modules/:id/passport" element={<Passport />} />
+        <Route path="employee/modules/:id/coc" element={<Coc />} />
+        <Route path="employee/modules/:id/medical" element={<Medical />} />
+        <Route path="employee/modules/:id/lmis" element={<Lmis />} />
         <Route
-          path="workers/modules/:id/emergency-contact"
+          path="employee/modules/:id/travel-records"
+          element={<Travel />}
+        />
+        <Route path="employee/modules/:id/contract" element={<Contract />} />
+        <Route
+          path="employee/modules/:id/emergency-contact"
           element={<Guarantor />}
         />
-        <Route path="workers/modules/:id/cv" element={<CV />} />
-        <Route path="workers/modules/:id/visa" element={<Visa />} />
+        <Route path="employee/modules/:id/cv" element={<CV />} />
+        <Route path="employee/modules/:id/visa" element={<Visa />} />
         <Route path="/meta-data" element={<MetaDataDashboard />} />
         <Route path="/content" element={<ContentDashboard />} />
         <Route path="/content/social-media" element={<SocialMediaPage />} />

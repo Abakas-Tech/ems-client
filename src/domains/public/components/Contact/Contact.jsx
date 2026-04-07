@@ -5,6 +5,7 @@ import getLocation from "../../api/location.api";
 import getSocialMedias from "../../api/socialMedia.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
 const Contact = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -19,8 +20,8 @@ const Contact = () => {
   });
 
   const [location, setLocation] = useState({
-    latitude: "7.0559381",
-    longitude: "38.4902358",
+    latitude: 7.0559381,
+    longitude: 38.4902358,
     address: "Hawassa",
     name: "Hawassa Office",
   });
@@ -28,6 +29,11 @@ const Contact = () => {
   const [socialMedia, setSocialMedia] = useState({
     email: "sultan@ems.com",
     phone: "0911111111",
+  });
+
+  // ✅ Google Maps loader for Vite
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
 
   useEffect(() => {
@@ -122,21 +128,18 @@ const Contact = () => {
     }
   };
 
-  const mapSrc = `https://maps.google.com/maps?q=${location.latitude},${location.longitude}&z=15&output=embed`;
-
   return (
     <section
-      className="container px-3 px-lg-0 "
+      className="container px-3 px-lg-0"
       id="contact"
       style={{ padding: "100px 0" }}
     >
-      <div className="">
+      <div>
         <div className="text-center">
-          <h2 id="contact-title" className="pb-4 fw-bold">
-            Contact Us For Any Query
-          </h2>
+          <h2 className="pb-4 fw-bold">Contact Us For Any Query</h2>
         </div>
         <div className="row g-4 gy-5">
+          {/* Contact Info */}
           <div className="col-lg-4 col-md-6m">
             <h3 className="mt-0 fw-bold">Get In Touch</h3>
             <p className="mb-4">
@@ -144,100 +147,53 @@ const Contact = () => {
               to us for any inquiries, and we will get back to you promptly.
             </p>
 
-            <div className="d-flex align-items-center mb-3 mt-4">
-              <div
-                className="d-flex align-items-center justify-content-center flex-shrink-0"
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  backgroundColor: "#4484BA",
-                }}
-              >
-                <FaMapMarkerAlt
-                  className="text-white"
-                  size={24}
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="ms-3">
-                <h5 style={{ color: "#4484BA" }}>{location.name}</h5>
-                <p className="mb-0">{location.address}</p>
-              </div>
-            </div>
-
-            <div className="d-flex align-items-center mb-3">
-              <div
-                className="d-flex align-items-center justify-content-center flex-shrink-0"
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  backgroundColor: "#4484BA",
-                }}
-              >
-                <FaPhoneAlt
-                  className="text-white"
-                  size={24}
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="ms-3">
-                <h5 style={{ color: "#4484BA" }}>Mobile</h5>
-                <p className="mb-0">
-                  <a
-                    href={`tel:${socialMedia.phone}`}
-                    className="text-decoration-none text-dark"
-                  >
-                    {socialMedia.phone}
-                  </a>
-                </p>
-              </div>
-            </div>
-
-            <div className="d-flex align-items-center">
-              <div
-                className="d-flex align-items-center justify-content-center flex-shrink-0"
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  backgroundColor: "#4484BA",
-                }}
-              >
-                <FaEnvelopeOpen
-                  className="text-white"
-                  size={24}
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="ms-3">
-                <h5 style={{ color: "#4484BA" }}>Email</h5>
-                <p className="mb-0">
-                  <a
-                    href={`mailto:${socialMedia.email}`}
-                    className="text-decoration-none text-dark"
-                  >
-                    {socialMedia.email}
-                  </a>
-                </p>
-              </div>
-            </div>
+            <ContactItem
+              icon={FaMapMarkerAlt}
+              title={location.name}
+              content={location.address}
+            />
+            <ContactItem
+              icon={FaPhoneAlt}
+              title="Mobile"
+              content={
+                <a href={`tel:${socialMedia.phone}`}>{socialMedia.phone}</a>
+              }
+            />
+            <ContactItem
+              icon={FaEnvelopeOpen}
+              title="Email"
+              content={
+                <a href={`mailto:${socialMedia.email}`}>{socialMedia.email}</a>
+              }
+            />
           </div>
 
-          {/* Map */}
+          {/* Google Map */}
           <div
-            className="col-lg-4 col-md-6"
+            className="col-lg-4 col-md-6 "
             data-aos="fade-up"
             data-aos-delay="0.3s"
+            style={{ minHeight: "300px" }}
           >
-            <iframe
-              className="position-relative rounded w-100 h-100 pb-3"
-              src={mapSrc}
-              frameBorder="0"
-              style={{ minHeight: "300px", border: "0" }}
-              allowFullScreen
-              aria-hidden="false"
-              tabIndex="0"
-              title="Location Map of Global Trust Overseas"
-            ></iframe>
+            {!isLoaded ? (
+              <p>Loading map...</p>
+            ) : (
+              <GoogleMap
+                mapContainerStyle={{ width: "100%", height: "97%" }}
+                center={{
+                  lat: parseFloat(location.latitude),
+                  lng: parseFloat(location.longitude),
+                }}
+                zoom={15}
+              >
+                <Marker
+                  position={{
+                    lat: parseFloat(location.latitude),
+                    lng: parseFloat(location.longitude),
+                  }}
+                />
+              </GoogleMap>
+            )}
           </div>
 
           {/* Form */}
@@ -254,74 +210,62 @@ const Contact = () => {
                       type="text"
                       className="form-control"
                       id="name"
-                      name="name"
                       placeholder="Your Name"
                       value={formData.name}
                       onChange={handleChange}
-                      aria-required="false"
                     />
                     <label htmlFor="name">Your Name</label>
                   </div>
                 </div>
-
                 <div className="col-md-6">
                   <div className="form-floating">
                     <input
                       type="email"
                       className="form-control"
                       id="email"
-                      name="email"
                       placeholder="Your Email"
                       value={formData.email}
                       onChange={handleChange}
-                      aria-required="false"
                     />
                     <label htmlFor="email">Your Email</label>
                   </div>
                 </div>
-
                 <div className="col-12">
                   <div className="form-floating">
                     <input
                       type="text"
                       className="form-control"
                       id="phone"
-                      name="phone"
                       placeholder="Phone"
-                      required
                       value={formData.phone}
                       onChange={handleChange}
-                      aria-required="true"
+                      required
                     />
                     <label htmlFor="phone">
                       Phone <span className="text-danger">*</span>
                     </label>
                   </div>
                 </div>
-
                 <div className="col-12">
                   <div className="form-floating">
                     <textarea
                       className="form-control"
                       placeholder="Leave a message here"
                       id="message"
-                      name="message"
-                      style={{ height: "180px" }}
+                      style={{ height: "200px" }}
                       value={formData.message}
                       onChange={handleChange}
                       required
-                      aria-required="true"
-                    ></textarea>
+                    />
                     <label htmlFor="message">
                       Message <span className="text-danger">*</span>
                     </label>
                   </div>
                 </div>
-
                 <div className="col-12 w-100">
                   <button
                     type="submit"
-                    className="btn  text-white w-100 d-flex fw-bold"
+                    className="btn text-white w-100 d-flex fw-bold"
                     style={{ backgroundColor: "#4484BA" }}
                   >
                     Submit
@@ -335,5 +279,20 @@ const Contact = () => {
     </section>
   );
 };
+// eslint-disable-next-line no-unused-vars
+const ContactItem = ({ icon: Icon, title, content }) => (
+  <div className="d-flex align-items-center mb-3 mt-4">
+    <div
+      className="d-flex align-items-center justify-content-center flex-shrink-0"
+      style={{ width: "50px", height: "50px", backgroundColor: "#4484BA" }}
+    >
+      <Icon className="text-white" size={24} />
+    </div>
+    <div className="ms-3">
+      <h5 style={{ color: "#4484BA" }}>{title}</h5>
+      <p className="mb-0">{content}</p>
+    </div>
+  </div>
+);
 
 export default Contact;
