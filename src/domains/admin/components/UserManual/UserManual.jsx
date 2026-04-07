@@ -64,7 +64,7 @@ const UserManual = () => {
       title: "Settings",
       desc: "Change password",
       icon: "bi-gear",
-      video: "https://www.youtube.com/embed/VIDEO_ID_10",
+      video: "https://www.youtube.com/embed/YlymmezLjHk",
     },
   ];
 
