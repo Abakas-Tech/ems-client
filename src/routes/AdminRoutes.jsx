@@ -45,6 +45,7 @@ import Contract from "../domains/admin/pages/workers/modules/Contract/Contract.j
 import Guarantor from "../domains/admin/pages/workers/modules/Guarantor/Guarantor.jsx";
 import Visa from "../domains/admin/pages/workers/modules/Visa/Visa.jsx";
 import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx";
+import UserManual from "../domains/admin/pages/UserManual/UserManual.jsx";
 import WeredaPage from "../domains/admin/pages/meta/WeredaPage/WeredaPage.jsx";
 import SubCityPage from "../domains/admin/pages/meta/SubCityPage/SubCityPage.jsx";
 
@@ -134,6 +135,8 @@ const AdminRoutes = () => {
           path="/content/gallery/edit/:id"
           element={<GalleryUplaodPage />}
         />
+
+        <Route path="user-manual" element={<UserManual />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>

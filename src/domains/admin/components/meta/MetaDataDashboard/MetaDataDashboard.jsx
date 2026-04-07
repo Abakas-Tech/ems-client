@@ -9,6 +9,7 @@ import { AiOutlineApartment } from "react-icons/ai";
 import { RiMapPinLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { FiCheckCircle, FiActivity } from "react-icons/fi";
+import styles from "../../UserManual/UserManual.module.css";
 
 function MetaDataDashboard() {
   return (
@@ -29,7 +30,7 @@ function MetaDataDashboard() {
               to="/admin/meta-data/country"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}>
                 <div className="mt-4 mb-3">
                   <IoMdGlobe className="text-info" size={50} />
                 </div>
@@ -44,7 +45,7 @@ function MetaDataDashboard() {
               to="/admin/meta-data/language"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}>
                 <div className="mt-4 mb-3">
                   <IoLanguage className="text-info" size={50} />
                 </div>
@@ -59,7 +60,7 @@ function MetaDataDashboard() {
               to="/admin/meta-data/region"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}>
                 <div className="mt-4 mb-3">
                   <FaMap className="text-info" size={50} />
                 </div>
@@ -88,7 +89,7 @@ function MetaDataDashboard() {
               to="/admin/meta-data/city"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}>
                 <div className="mt-4 mb-3">
                   <FaMapLocationDot className="text-info" size={50} />
                 </div>
@@ -117,7 +118,7 @@ function MetaDataDashboard() {
               to="/admin/meta-data/job-position"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}>
                 <div className="mt-4 mb-3">
                   <MdOutlineWorkOutline className="text-info" size={50} />
                 </div>
@@ -132,7 +133,7 @@ function MetaDataDashboard() {
               to="/admin/meta-data/skill"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}>
                 <div className="mt-4 mb-3">
                   <GiBrain className="text-info" size={50} />
                 </div>
@@ -147,7 +148,7 @@ function MetaDataDashboard() {
               to="/admin/meta-data/employee-status"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}>
                 <div className="mt-4 mb-3">
                   <FiActivity className="text-info" size={50} />
                 </div>

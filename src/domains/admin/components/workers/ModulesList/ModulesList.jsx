@@ -18,6 +18,7 @@ import { IoDocumentAttach } from "react-icons/io5";
 import { HiDocumentDuplicate } from "react-icons/hi";
 import { FiGrid } from "react-icons/fi";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import styles from "../../UserManual/UserManual.module.css";
 
 function ModulesList() {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ function ModulesList() {
               to={`/admin/employee/modules/${id}/${mod.path}`}
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}>
                 <div className="mt-4 mb-3">
                   {React.cloneElement(mod.icon, {
                     className: "text-info",

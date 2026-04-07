@@ -1,6 +1,7 @@
 import React from "react";
 import { FaUserPlus, FaUsers, FaUserSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import styles from "../../UserManual/UserManual.module.css";
 
 function WorkerDashboard() {
   return (
@@ -21,7 +22,9 @@ function WorkerDashboard() {
               to="/admin/employees/add"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100 shadow-sm-hover">
+              <div
+                className={`agents-grid card rounded-4 border p-4 text-center h-100 shadow-sm-hover ${styles["manual-card"]}`}
+              >
                 <div className="mt-4 mb-3">
                   <FaUserPlus className="text-info" size={50} />
                 </div>
@@ -36,7 +39,9 @@ function WorkerDashboard() {
               to="/admin/employees/active"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100 shadow-sm-hover">
+              <div
+                className={`agents-grid card rounded-4 border p-4 text-center h-100 shadow-sm-hover ${styles["manual-card"]}`}
+              >
                 <div className="mt-4 mb-3">
                   <FaUsers className="text-info" size={50} />
                 </div>
@@ -50,7 +55,9 @@ function WorkerDashboard() {
               to="/admin/employees/archived"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100 shadow-sm-hover">
+              <div
+                className={`agents-grid card rounded-4 border p-4 text-center h-100 shadow-sm-hover ${styles["manual-card"]}`}
+              >
                 <div className="mt-4 mb-3">
                   <FaUserSlash className="text-info" size={50} />
                 </div>
