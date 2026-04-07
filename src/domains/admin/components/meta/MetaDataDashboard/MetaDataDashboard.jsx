@@ -74,7 +74,7 @@ function MetaDataDashboard() {
               to="/admin/meta-data/wereda"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}>
                 <div className="mt-4 mb-3">
                   <AiOutlineApartment className="text-info" size={50} />
                 </div>
@@ -103,7 +103,7 @@ function MetaDataDashboard() {
               to="/admin/meta-data/sub-city"
               className="text-decoration-none text-dark"
             >
-              <div className="agents-grid card rounded-3 border p-4 text-center h-100">
+              <div className={`agents-grid card rounded-4 border p-4 text-center h-100 ${styles["manual-card"]}`}>
                 <div className="mt-4 mb-3">
                   <RiMapPinLine className="text-info" size={50} />
                 </div>
