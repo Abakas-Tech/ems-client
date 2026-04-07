@@ -57,7 +57,7 @@ const Wereda = () => {
         total: response.pagination?.total || response?.data?.length || 0,
       });
     } catch {
-      console.error("Failed to fetch Weredas:");
+      console.error("Failed to fetch Woredas:");
     } finally {
       hideLoader();
     }
@@ -172,26 +172,28 @@ const Wereda = () => {
   };
 
   const emptyState = {
-    title: "No Weredas found",
-    subtitle: "Add Weredas to see them listed here",
+    title: "No Woredas found",
+    subtitle: "Add Woredas to see them listed here",
   };
 
   return (
     <div className="row">
       <div className="col-12 col-lg-8">
         <div className="dashboard-wraper">
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
             <div className="flex-grow-1">
-              <h2 className="fw-bold text-dark mb-2">Weredas</h2>
+              <h2 className="fw-bold text-dark mb-2">Woredas</h2>
               <p className="text-muted mb-0">
-                Manage Weredas — create, rename, or delete entries as needed.
+                Manage Woredas — create, rename, or delete entries as needed.
               </p>
             </div>
             <div className="position-absolute top-0 end-0 mt-4 pt-2">
               <BackButton onClick={goBack} />
             </div>
+          </div>
+          <div>
             <button
-              className="btn btn-main mt-3 mt-md-5 text-white w-45 d-flex align-items-center justify-content-center"
+              className="btn btn-main mt-2 mb-4 text-white w-45 d-flex align-items-center justify-content-center"
               onClick={() => setShowCreateModal(true)}
             >
               + Woreda

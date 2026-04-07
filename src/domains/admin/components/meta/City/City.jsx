@@ -21,7 +21,7 @@ const validateCity = (name, weredaId) => {
   if (name.length < 2) return "City name must be at least 2 characters";
   if (name.length > 100) return "City name cannot exceed 100 characters";
   if (!/^[A-Za-z\s]+$/.test(name)) return "City name can only contain letters";
-  if (!weredaId) return "Wereda must be selected"; // ✅ label changed
+  if (!weredaId) return "Woreda must be selected"; //  label changed
   return null;
 };
 
@@ -157,7 +157,7 @@ const City = () => {
   //columns updated
   const columns = [
     { header: "City Name", accessor: "name", renameable: true },
-    { header: "Wereda", accessor: "wereda_name" }, // changed
+    { header: "Woreda", accessor: "wereda_name" }, // changed
   ];
 
   const actions = [
@@ -169,7 +169,7 @@ const City = () => {
   const fields = [
     {
       name: "wereda_id",
-      label: "Wereda",
+      label: "Woreda",
       type: "select",
       options: weredas.map((w) => ({
         value: w.id,
@@ -181,7 +181,7 @@ const City = () => {
 
   const extraField = {
     name: "wereda_id",
-    label: "Wereda",
+    label: "Woreda",
     type: "select",
     options: weredas.map((w) => ({
       value: w.id,
@@ -198,7 +198,7 @@ const City = () => {
     <div className="row">
       <div className="col-12 col-lg-8">
         <div className="dashboard-wraper">
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
             <div className="flex-grow-1">
               <h2 className="fw-bold text-dark mb-2">Cities</h2>
               <p className="text-muted mb-0">
@@ -209,9 +209,10 @@ const City = () => {
             <div className="position-absolute top-0 end-0 mt-4 pt-2">
               <BackButton onClick={goBack} />
             </div>
-
+          </div>
+          <div>
             <button
-              className="btn btn-main mt-3 mt-md-5 text-white w-45 d-flex align-items-center justify-content-center"
+              className="btn btn-main mt-2 mb-4 text-white w-45 d-flex align-items-center justify-content-center"
               onClick={() => setShowCreateModal(true)}
             >
               + City
