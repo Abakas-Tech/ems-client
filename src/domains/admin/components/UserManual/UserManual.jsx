@@ -34,7 +34,7 @@ const UserManual = () => {
       title: "Finance",
       desc: "Transactions and reports",
       icon: "bi bi-wallet",
-      video: "https://www.youtube.com/embed/VIDEO_ID_5",
+      video: "https://www.youtube.com/embed/iNfGmzy1yEA",
     },
     {
       title: "File Manager",
