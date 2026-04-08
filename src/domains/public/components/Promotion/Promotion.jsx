@@ -53,7 +53,7 @@ function Promotion() {
           <div className="col-lg-6 pb-0">
             <div className="ratio ratio-16x9 rounded-4 overflow-hidden shadow">
               <iframe
-                src="https://www.youtube.com/embed/XtDmY9OhTgw?autoplay=1&mute=1&si=rUEPSbkFvP9rpYzL"
+                src="https://www.youtube.com/embed/ePLajxLpUNk?autoplay=1&mute=1&si=AP2KHZ1LSSED55bX"
                 title="YouTube video player"
                 allow="autoplay; encrypted-media"
                 allowFullScreen
