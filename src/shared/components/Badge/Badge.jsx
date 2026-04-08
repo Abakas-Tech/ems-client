@@ -48,7 +48,7 @@ const Badge = ({ content, color = "gray", solid = false, onDelete }) => {
       {onDelete && (
         <button
           type="button"
-          className={`btn p-0 d-flex align-items-center justify-content-center ${styles["delete-button"]} ${closeBtnColor}`}
+          className={`btn p-0 pb-1 d-flex align-items-center justify-content-center ${styles["delete-button"]} ${closeBtnColor}`}
           onClick={(e) => {
             e.stopPropagation();
             onDelete();

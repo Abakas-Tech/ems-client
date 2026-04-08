@@ -723,7 +723,7 @@ const WorkerProfile = () => {
                         : ""}
                     </p>
                     <p>
-                      <small className="text-muted">City / Subcity</small>
+                      <small className="text-muted">City / Sub-city</small>
                       <br />
                       {personalInfo.city}
                       {personalInfo.subCity !== "—"
