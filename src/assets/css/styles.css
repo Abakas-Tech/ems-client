@@ -2862,7 +2862,7 @@ nav a:hover {
 .header-transparent.header-fixed .nav-menu > .active > a,
 .header-transparent.header-fixed .nav-menu > .focus > a,
 .header-transparent.header-fixed .nav-menu > li:hover > a {
-  color: #4484BA !important;
+  color: #4484ba !important;
 }
 .nav-menu > li > a > [class*="ion-"],
 .nav-menu > li > a > i {
@@ -10743,7 +10743,7 @@ th.next.available,
 .header.header-fixed {
   position: fixed;
   background: #ffffff;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   height: 3.2rem;
 }
 /*--------------------------------------------------
@@ -12166,4 +12166,36 @@ div::-webkit-scrollbar-thumb:hover {
   background: inherit;
   border-bottom-right-radius: 15px;
   clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+/* Container Logic */
+.finance-card {
+  transition: all 0.3s ease;
+}
+
+.finance-card:hover {
+  background-color: #fafafa;
+}
+
+/* The Animation */
+.finance-card .shortened-val,
+.finance-card .full-val {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* On Hover: Slide the short value up and out, slide the full value up and in */
+.finance-card:hover .shortened-val {
+  transform: translateY(-120%);
+  opacity: 0;
+}
+
+.finance-card:hover .full-val {
+  top: 0 !important; /* Move from bottom to top position */
+  opacity: 1;
+}
+
+.full-val {
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  height: 100%;
 }

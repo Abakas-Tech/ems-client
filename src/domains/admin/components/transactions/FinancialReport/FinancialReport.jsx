@@ -120,15 +120,41 @@ const FinanceReportSummary = ({ filters, onBack }) => {
 // SummaryCard now uses formatNumber internaly
 const SummaryCard = ({ title, amount, color }) => (
   <div className="col-md-6 col-lg-3">
-    {" "}
-    {/* Added col-lg-3 to fit 4 in a row on large screens */}
     <div
-      className={`p-4 rounded-4 border-start border-4 border-${color} bg-white shadow-sm border h-100`}
+      className={`p-4 rounded-4 border-start border-4 border-${color} bg-white shadow-sm border h-100 finance-card`}
     >
       <h6 className="text-uppercase text-muted small fw-bold mb-2">{title}</h6>
-      <h3 className={`fw-bold text-${color} mb-0`}>
-        {formatNumber(amount)} <span className="h6 text-muted">Birr</span>
-      </h3>
+
+      <div
+        className="amount-container position-relative overflow-hidden"
+        style={{ height: "2.5rem" }}
+      >
+        {/* The "Shortened" Value (Visible by default) */}
+        <h3
+          className={`fw-bold text-${color} mb-0 shortened-val transition-all`}
+        >
+          {formatNumber(amount)} <span className="h6 text-muted">Birr</span>
+        </h3>
+
+        {/* The "Full" Value (Hidden below, slides up on hover) */}
+        <div
+          className={`full-val position-absolute top-100 start-0 w-100 fw-bold text-${color} transition-all`}
+          style={{ fontSize: "1.1rem" }}
+        >
+          {amount?.toLocaleString()}{" "}
+        </div>
+      </div>
+
+      {/* Subtle indicator dot */}
+      <div
+        className="mt-2"
+        style={{
+          width: "4px",
+          height: "4px",
+          borderRadius: "50%",
+          backgroundColor: "#dee2e6",
+        }}
+      ></div>
     </div>
   </div>
 );
