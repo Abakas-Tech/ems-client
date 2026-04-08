@@ -3,7 +3,7 @@ import { axiosInstance } from "../../../utils/axios";
 //  countries api
 const getCountries = async (params = {}) => {
   try {
-   const response = await axiosInstance.get("/meta/countries",{ params});
+    const response = await axiosInstance.get("/meta/countries", { params });
     return response.data;
   } catch (error) {
     throw new Error(
@@ -141,7 +141,6 @@ const deleteRegion = async (id) => {
   }
 };
 
-
 //cities api
 // Get city by ID
 const getCityById = async (id) => {
@@ -150,18 +149,15 @@ const getCityById = async (id) => {
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to fetch city",
+      error.response?.data?.message || error.message || "Failed to fetch city",
     );
   }
 };
 
-
 // Get cities
 const getCities = async (params = {}) => {
   try {
-    const response = await axiosInstance.get("/meta/cities", {params});
+    const response = await axiosInstance.get("/meta/cities", { params });
     return response.data;
   } catch (error) {
     throw new Error(
@@ -179,9 +175,7 @@ const createCity = async (data) => {
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to create city",
+      error.response?.data?.message || error.message || "Failed to create city",
     );
   }
 };
@@ -193,9 +187,7 @@ const updateCity = async (id, data) => {
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to update city",
+      error.response?.data?.message || error.message || "Failed to update city",
     );
   }
 };
@@ -207,9 +199,7 @@ const deleteCity = async (id) => {
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to delete city",
+      error.response?.data?.message || error.message || "Failed to delete city",
     );
   }
 };
@@ -225,7 +215,7 @@ const getWeredas = async (params = {}) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to fetch Weredas"
+        "Failed to fetch Weredas",
     );
   }
 };
@@ -239,7 +229,7 @@ const getWoredaById = async (id) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to fetch woreda"
+        "Failed to fetch woreda",
     );
   }
 };
@@ -253,7 +243,7 @@ const createWoreda = async (data) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to create woreda"
+        "Failed to create woreda",
     );
   }
 };
@@ -267,7 +257,7 @@ const updateWoreda = async (id, data) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to update woreda"
+        "Failed to update woreda",
     );
   }
 };
@@ -281,11 +271,10 @@ const deleteWoreda = async (id) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to delete woreda"
+        "Failed to delete woreda",
     );
   }
 };
-
 
 // Sub-Cities API
 
@@ -298,7 +287,7 @@ const getSubCities = async (params = {}) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to fetch sub-cities"
+        "Failed to fetch sub-cities",
     );
   }
 };
@@ -312,7 +301,7 @@ const getSubCityById = async (id) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to fetch sub-city"
+        "Failed to fetch sub-city",
     );
   }
 };
@@ -326,7 +315,7 @@ const createSubCity = async (data) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to create sub-city"
+        "Failed to create sub-city",
     );
   }
 };
@@ -340,7 +329,7 @@ const updateSubCity = async (id, data) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to update sub-city"
+        "Failed to update sub-city",
     );
   }
 };
@@ -354,7 +343,7 @@ const deleteSubCity = async (id) => {
     throw new Error(
       error.response?.data?.message ||
         error.message ||
-        "Failed to delete sub-city"
+        "Failed to delete sub-city",
     );
   }
 };
@@ -381,9 +370,7 @@ const getSkillById = async (id) => {
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message ||
-        error.message ||
-        "Failed to fetch skill",
+      error.response?.data?.message || error.message || "Failed to fetch skill",
     );
   }
 };
@@ -476,10 +463,7 @@ const createJobPosition = async (data) => {
 // Update job position
 const updateJobPosition = async (id, data) => {
   try {
-    const response = await axiosInstance.put(
-      `/meta/job-positions/${id}`,
-      data,
-    );
+    const response = await axiosInstance.put(`/meta/job-positions/${id}`, data);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -493,9 +477,7 @@ const updateJobPosition = async (id, data) => {
 // Delete job position
 const deleteJobPosition = async (id) => {
   try {
-    const response = await axiosInstance.delete(
-      `/meta/job-positions/${id}`,
-    );
+    const response = await axiosInstance.delete(`/meta/job-positions/${id}`);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -521,7 +503,6 @@ const getLanguages = async (params = {}) => {
     );
   }
 };
-
 
 // Get language by ID
 const getLanguageById = async (id) => {
@@ -583,9 +564,7 @@ const deleteLanguage = async (id) => {
 // Get worker status by ID
 const getWorkerStatusById = async (id) => {
   try {
-    const response = await axiosInstance.get(
-      `/meta/worker-statuses/${id}`,
-    );
+    const response = await axiosInstance.get(`/meta/worker-statuses/${id}`);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -597,9 +576,11 @@ const getWorkerStatusById = async (id) => {
 };
 
 // Get worker status
-const getWorkerStatuses = async (params={}) => {
+const getWorkerStatuses = async (params = {}) => {
   try {
-    const response = await axiosInstance.get("/meta/worker-statuses", { params });
+    const response = await axiosInstance.get("/meta/worker-statuses", {
+      params,
+    });
     return response.data;
   } catch (error) {
     throw new Error(
@@ -613,10 +594,7 @@ const getWorkerStatuses = async (params={}) => {
 // Create worker status
 const createWorkerStatus = async (data) => {
   try {
-    const response = await axiosInstance.post(
-      "/meta/worker-statuses",
-      data,
-    );
+    const response = await axiosInstance.post("/meta/worker-statuses", data);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -627,13 +605,10 @@ const createWorkerStatus = async (data) => {
   }
 };
 
-
 // Delete worker status
 const deleteWorkerStatus = async (id) => {
   try {
-    const response = await axiosInstance.delete(
-      `/meta/worker-statuses/${id}`,
-    );
+    const response = await axiosInstance.delete(`/meta/worker-statuses/${id}`);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -660,9 +635,6 @@ const updateWorkerStatus = async (id, data) => {
     );
   }
 };
-
-
-
 
 export {
   // countries
@@ -695,7 +667,7 @@ export {
   createCity,
   updateCity,
   deleteCity,
-    // Skills
+  // Skills
   getSkills,
   getSkillById,
   createSkill,

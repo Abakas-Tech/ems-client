@@ -59,7 +59,7 @@ const FinanceReportSummary = ({ filters, onBack }) => {
           {/* Main Net Balance Section */}
           <div className="text-center mb-5">
             <h6 className="text-uppercase text-muted small fw-bold mb-2">
-              Net Balance
+              Net Profit
             </h6>
             <h1
               className={`display-4 fw-bold ${isPositive ? "text-success" : "text-danger"}`}
