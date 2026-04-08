@@ -11,8 +11,8 @@
   "display": "standalone",
   "orientation": "portrait",
 
-  "background_color": "#C5CBD1",
-  "theme_color": "#C5CBD1",
+  "background_color": "#415C70",
+  "theme_color": "#C8CACD",
 
   "categories": ["business", "jobs", "employment"],
 
