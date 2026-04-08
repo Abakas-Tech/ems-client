@@ -186,7 +186,7 @@ const JobPosition = () => {
               <BackButton onClick={goBack} />
             </div>
             <button
-              className="btn btn-main mt-3 mt-md-5 text-white w-50 d-flex align-items-center justify-content-center"
+              className="btn btn-main mt-3 mt-md-5 text-white w-50 px-0 d-flex align-items-center justify-content-center"
               onClick={() => setShowCreateModal(true)}
             >
               + Job Position
