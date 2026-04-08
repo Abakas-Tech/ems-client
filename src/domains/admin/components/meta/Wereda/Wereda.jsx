@@ -180,8 +180,8 @@ const Wereda = () => {
     <div className="row">
       <div className="col-12 col-lg-8">
         <div className="dashboard-wraper">
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-            <div className="flex-grow-1">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-start mb-4 gap-3">
+            <div className="mt-0">
               <h2 className="fw-bold text-dark mb-2">Woredas</h2>
               <p className="text-muted mb-0">
                 Manage Woredas — create, rename, or delete entries as needed.

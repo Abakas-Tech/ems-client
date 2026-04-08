@@ -10,7 +10,7 @@ const UserManual = () => {
       title: "Dashboard",
       desc: "See overall system information",
       icon: "bi-speedometer2",
-      video: "https://www.youtube.com/embed/XtDmY9OhTgw",
+      video: "https://www.youtube.com/embed/VIDEO_ID_9",
     },
     {
       title: "Profile",
