@@ -90,39 +90,39 @@ const useWorkerActions = (workerId) => {
   const navigate = useNavigate();
 
   const editEmergency = (guarantor) =>
-    navigate(`/admin/employees/modules/${workerId}/emergency-contact`, {
+    navigate(`/admin/employee/modules/${workerId}/emergency-contact`, {
       state: { guarantor },
     });
   const editVisa = (visa) =>
-    navigate(`/admin/employees/modules/${workerId}/visa`, { state: { visa } });
+    navigate(`/admin/employee/modules/${workerId}/visa`, { state: { visa } });
   const editLmis = (lmis) =>
-    navigate(`/admin/employees/modules/${workerId}/lmis`, {
+    navigate(`/admin/employee/modules/${workerId}/lmis`, {
       state: { lmis },
     });
   const editTravel = (travel) =>
-    navigate(`/admin/employees/modules/${workerId}/travel-records`, {
+    navigate(`/admin/employee/modules/${workerId}/travel-records`, {
       state: { travel },
     });
   const editContract = (contract) =>
-    navigate(`/admin/employees/modules/${workerId}/contract`, {
+    navigate(`/admin/employee/modules/${workerId}/contract`, {
       state: { contract },
     });
   const editPersonal = (personal) =>
-    navigate(`/admin/employees/modules/${workerId}/personal`, {
+    navigate(`/admin/employee/modules/${workerId}/personal`, {
       state: { personal },
     });
 
   const editPassport = (passport) =>
-    navigate(`/admin/employees/modules/${workerId}/passport`, {
+    navigate(`/admin/employee/modules/${workerId}/passport`, {
       state: { passport },
     });
 
   const editCoc = (coc) =>
-    navigate(`/admin/employees/modules/${workerId}/coc`, {
+    navigate(`/admin/employee/modules/${workerId}/coc`, {
       state: { coc },
     });
   const editMedical = (medical) =>
-    navigate(`/admin/employees/modules/${workerId}/medical`, {
+    navigate(`/admin/employee/modules/${workerId}/medical`, {
       state: { medical },
     });
 
@@ -238,7 +238,7 @@ const WorkerProfile = () => {
       showLoader();
       const { data } = await getWorkerProfile(id);
       setWorker(data);
-    } catch  {
+    } catch {
       console.error("Failed to fetch employee profile:");
     } finally {
       hideLoader();
@@ -264,8 +264,8 @@ const WorkerProfile = () => {
     try {
       const res = await getWorkerCurrentStatus(id);
       setWorkerStatuses(res.data || []);
-    } catch  {
-     console.error
+    } catch {
+      console.error;
     } finally {
       hideLoader();
     }
@@ -418,7 +418,9 @@ const WorkerProfile = () => {
     education: fallback(personal.education),
     children: fallback(personal.number_of_children),
     region: fallback(personal.region?.name),
+    woreda: fallback(personal.wereda?.name),
     city: fallback(personal.city?.name),
+    subCity: fallback(personal.subcity?.name),
     height: personal.height_cm ? `${personal.height_cm} cm` : "—",
     weight: personal.weight_kg ? `${personal.weight_kg} kg` : "—",
     religion: fallback(personal.religion),
@@ -682,6 +684,11 @@ const WorkerProfile = () => {
                       <br />
                       {personalInfo.nationality}
                     </p>
+                    <p>
+                      <small className="text-muted">Education</small>
+                      <br />
+                      {personalInfo.education}
+                    </p>
                     {personalInfo.standingPhoto ? (
                       <p>
                         <small className="text-muted">Standing Photo</small>
@@ -703,21 +710,24 @@ const WorkerProfile = () => {
 
                   <div className="col-md-6">
                     <p>
-                      <small className="text-muted">Education</small>
-                      <br />
-                      {personalInfo.education}
-                    </p>
-                    <p>
                       <small className="text-muted">Number of Children</small>
                       <br />
                       {personalInfo.children}
                     </p>
                     <p>
-                      <small className="text-muted">Region / City</small>
+                      <small className="text-muted">Region / Wereda</small>
                       <br />
                       {personalInfo.region}
-                      {personalInfo.city !== "—"
-                        ? ` / ${personalInfo.city}`
+                      {personalInfo.woreda !== "—"
+                        ? ` / ${personalInfo.woreda}`
+                        : ""}
+                    </p>
+                    <p>
+                      <small className="text-muted">City / Subcity</small>
+                      <br />
+                      {personalInfo.city}
+                      {personalInfo.subCity !== "—"
+                        ? ` / ${personalInfo.subCity}`
                         : ""}
                     </p>
                     <p>

@@ -9,6 +9,7 @@ import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterUser from "./../../../components/user/FilterUser/FilterUser";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
+import useProfile from "../../../../../context/Profile/useProfile";
 
 const ROLE_MAP = { 2: "Staff", 3: "Partner", 5: "Employer" };
 const ROLE_COLOR = {
@@ -23,6 +24,7 @@ const ListUser = () => {
   const { openModal } = useDelete();
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const { profile } = useProfile();
   const navigate = useNavigate();
 
   const [users, setUsers] = useState([]);
@@ -99,7 +101,7 @@ const ListUser = () => {
   const handlePageChange = (newPage) => {
     fetchUsers(newPage);
   };
-
+  const loggedInUserId = profile?.id;
   // 1. Updated handler to accept an optional single user row
   const handleNotify = (row = null) => {
     let idsToNotify = [];
@@ -262,10 +264,27 @@ const ListUser = () => {
 
   const actions = [
     { type: "edit", onClick: handleEdit },
+
     { type: "notify", onClick: (row) => handleNotify(row) },
-    { type: "archive", onClick: handleStatusToggle, showOn: true },
-    { type: "restore", onClick: handleStatusToggle, showOn: false },
-    { type: "delete", onClick: handleDelete },
+
+    {
+      type: "archive",
+      onClick: handleStatusToggle,
+      showOn: (row) => row.is_active === 1 && row.id !== loggedInUserId,
+    },
+
+    {
+      type: "restore",
+      onClick: handleStatusToggle,
+      showOn: (row) => row.is_active === 0 && row.id !== loggedInUserId,
+    },
+
+    {
+      type: "delete",
+      onClick: handleDelete,
+      showOn: (row) => row.id !== loggedInUserId,
+    },
+
     {
       type: "transaction",
       onClick: (row) => handleRecordTransaction(row),
@@ -285,8 +304,7 @@ const ListUser = () => {
         <div className="flex-grow-1">
           <h2 className="fw-bold text-dark mb-2">User Management</h2>
           <p className="text-muted mb-0">
-            Manage staffs, employers, and partners — filter and control
-            users.
+            Manage staffs, employers, and partners — filter and control users.
           </p>
         </div>
         <RoleButton

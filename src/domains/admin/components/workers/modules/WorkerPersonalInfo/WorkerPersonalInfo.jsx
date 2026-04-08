@@ -7,7 +7,9 @@ import {
 } from "../../../../api/worker.api";
 import {
   getRegions,
+  getWeredas,
   getCities,
+  getSubCities,
   getWorkerStatuses,
 } from "../../../../api/meta.api";
 import useloader from "../../../../../../context/Loader/useLoader";
@@ -37,14 +39,22 @@ function WorkerPersonalInfo() {
   const isCreate = !isEditMode;
 
   const [regions, setRegions] = useState([]);
+  const [woredas, setWoredas] = useState([]);
   const [cities, setCities] = useState([]);
+  const [subcities, setSubcities] = useState([]);
   const [statuses, setStatuses] = useState([]);
 
   const [formData, setFormData] = useState({
     region_id: existingPersonal?.region?.id
       ? Number(existingPersonal.region.id)
       : "",
+    woreda_id: existingPersonal?.wereda?.id
+      ? Number(existingPersonal.wereda.id)
+      : "",
     city_id: existingPersonal?.city?.id ? Number(existingPersonal.city.id) : "",
+    subcity_id: existingPersonal?.subcity?.id
+      ? Number(existingPersonal.subcity.id)
+      : "",
     status_id: existingPersonal?.status?.id
       ? Number(existingPersonal.status.id)
       : "",
@@ -102,25 +112,47 @@ function WorkerPersonalInfo() {
     loadStatuses();
   }, []);
 
-  // Load cities when region changes
+  // 1. Fetch Woredas based on Region
   useEffect(() => {
-    const regionId = Number(formData.region_id);
-    if (!regionId) return setCities([]);
-
-    const loadCities = async () => {
-      showLoader();
+    if (!formData.region_id) return setWoredas([]);
+    const loadWoredas = async () => {
       try {
-        const res = await getCities({ region_id: regionId });
+        const res = await getWeredas({ region_id: formData.region_id });
+        setWoredas(Array.isArray(res) ? res : res?.data || []);
+      } catch (err) {
+        setWoredas([]);
+      }
+    };
+    loadWoredas();
+  }, [formData.region_id]);
+
+  // 2. Fetch Cities based on Woreda
+  useEffect(() => {
+    if (!formData.woreda_id) return setCities([]);
+    const loadCities = async () => {
+      try {
+        const res = await getCities({ wereda_id: formData.woreda_id });
         setCities(Array.isArray(res) ? res : res?.data || []);
       } catch (err) {
-        addMessage(false, err.message || "Failed to load cities");
         setCities([]);
-      } finally {
-        hideLoader();
       }
     };
     loadCities();
-  }, [formData.region_id]);
+  }, [formData.woreda_id]);
+
+  // 3. Fetch Subcities based on City
+  useEffect(() => {
+    if (!formData.city_id) return setSubcities([]);
+    const loadSubCities = async () => {
+      try {
+        const res = await getSubCities({ city_id: formData.city_id });
+        setSubcities(Array.isArray(res) ? res : res?.data || []);
+      } catch (err) {
+        setSubcities([]);
+      }
+    };
+    loadSubCities();
+  }, [formData.city_id]);
 
   // Preload cities in edit mode
   useEffect(() => {
@@ -129,7 +161,7 @@ function WorkerPersonalInfo() {
         showLoader();
         try {
           const res = await getCities({
-            region_id: Number(existingPersonal.region.id),
+            woreda_id: Number(existingPersonal.wereda.id),
           });
           setCities(Array.isArray(res) ? res : res?.data || []);
         } catch (err) {
@@ -154,21 +186,36 @@ function WorkerPersonalInfo() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: [
-        "region_id",
-        "city_id",
-        "status_id",
-        "number_of_children",
-        "height_cm",
-        "weight_kg",
-      ].includes(name)
-        ? value
-          ? Number(value)
-          : ""
-        : value,
-    }));
+    const numericFields = [
+      "region_id",
+      "woreda_id",
+      "city_id",
+      "subcity_id",
+      "status_id",
+      "number_of_children",
+      "height_cm",
+      "weight_kg",
+    ];
+    const val = numericFields.includes(name)
+      ? value
+        ? Number(value)
+        : ""
+      : value;
+
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: val };
+      if (name === "region_id") {
+        updated.woreda_id = "";
+        updated.city_id = "";
+        updated.subcity_id = "";
+      } else if (name === "woreda_id") {
+        updated.city_id = "";
+        updated.subcity_id = "";
+      } else if (name === "city_id") {
+        updated.subcity_id = "";
+      }
+      return updated;
+    });
   };
 
   const handleFileChange = (e) => {
@@ -396,6 +443,27 @@ function WorkerPersonalInfo() {
               </select>
             )}
           </div>
+          {/* Woreda */}
+          <div className="form-group col-md-6">
+            <label>Woreda</label>
+            <select
+              name="woreda_id"
+              className="form-control"
+              value={formData.woreda_id}
+              onChange={handleChange}
+              disabled={!formData.region_id}
+            >
+              <option value="">
+                {formData.region_id ? "Select woreda" : "Select region first"}
+              </option>
+              {woredas.length > 0 &&
+                woredas.map((w) => (
+                  <option key={w.id} value={w.id}>
+                    {w.name}
+                  </option>
+                ))}
+            </select>
+          </div>
 
           {/* City */}
           <div className="form-group col-md-6">
@@ -405,10 +473,10 @@ function WorkerPersonalInfo() {
               className="form-control"
               value={formData.city_id}
               onChange={handleChange}
-              disabled={!formData.region_id}
+              disabled={!formData.woreda_id}
             >
               <option value="">
-                {formData.region_id ? "Select city" : "Select region first"}
+                {formData.woreda_id ? "Select city" : "Select woreda first"}
               </option>
               {cities.length > 0 &&
                 cities.map((c) => (
@@ -418,7 +486,27 @@ function WorkerPersonalInfo() {
                 ))}
             </select>
           </div>
-
+          {/* Sub-City */}
+          <div className="form-group col-md-6">
+            <label>Sub-City</label>
+            <select
+              name="subcity_id"
+              className="form-control"
+              value={formData.subcity_id}
+              onChange={handleChange}
+              disabled={!formData.city_id}
+            >
+              <option value="">
+                {formData.city_id ? "Select sub-city" : "Select city first"}
+              </option>
+              {subcities.length > 0 &&
+                subcities.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+            </select>
+          </div>
           {/* Date of Birth */}
           <div className="form-group col-md-6">
             <label>Date of Birth</label>

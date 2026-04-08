@@ -227,7 +227,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         return;
       }
 
-      const userId = isEditMode ? userData.id : response.data?.id;
+      const userId = profile?.id;
 
       // Employee permission handling
       if (role === "2") {
@@ -357,7 +357,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                 </div>
               )}
               {/* Status (Edit Mode Only) */}
-              {isEditMode && (
+              {isEditMode && userId !== userData?.id && (
                 <div className="form-group col-md-6 mb-3">
                   <label>Status</label>
                   <select
