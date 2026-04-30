@@ -18,9 +18,9 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
 
   const rolePathMap = {
     1: "admin",
-    2: "employee",
+    2: "staff",
     3: "partner",
-    4: "worker",
+    4: "employee",
     5: "employer",
   };
 

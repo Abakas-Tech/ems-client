@@ -74,7 +74,7 @@ const Analytics = () => {
   return (
     <div className="dashboard-wraper">
       <div className="mb-4">
-        <h2 className="fw-bold text-dark mb-1">Analytics Dashboard</h2>
+        <h2 className="fw-bold text-dark mb-1">Analytics</h2>
         <p className="text-muted mb-0">
           Data for{" "}
           {filters.period === "monthly" ? `${months[filters.month - 1]} ` : ""}

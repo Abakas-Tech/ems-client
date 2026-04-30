@@ -2,84 +2,93 @@ import React from "react";
 
 const services = [
   {
-    title: "Overseas Job Placement",
+    title: "International Recruitment",
     description:
-      "We connect qualified Ethiopian employees with trusted employers in Middle Eastern countries and beyond.",
+      "Bridging the gap between elite Ethiopian talent and premier global organizations through strategic placement.",
+    iconClass: "first-service",
     icon: "bi bi-briefcase",
   },
   {
-    title: "Visa Processing",
+    title: "Travel & Visa Logistics",
     description:
-      "Complete handling of visa applications, documentation, and embassy procedures for smooth approval.",
+      "Expert management of legal entry permits and embassy certifications to ensure a seamless approval process.",
+    iconClass: "second-service",
     icon: "bi bi-passport",
   },
   {
-    title: "LMIS / Work Permit Support",
+    title: "Regulatory Compliance",
     description:
-      "We manage labor clearance, work permits, and LMIS/LMIA documentation required by destination countries.",
+      "Facilitating essential labor clearances and work authorization permits in strict accordance with host laws.",
+    iconClass: "third-service",
     icon: "bi bi-file-earmark-check",
   },
   {
-    title: "Contract Arrangement",
+    title: "Legal Contract Services",
     description:
-      "We ensure transparent employment contracts between employees and verified overseas employers.",
+      "Drafting transparent, binding employment agreements that protect the rights and duties of all stakeholders.",
+    iconClass: "fourth-service",
     icon: "bi bi-file-text",
   },
   {
-    title: "Flight & Deployment Coordination",
+    title: "Deployment Logistics",
     description:
-      "We organize flight bookings and full deployment logistics until employees safely reach their employers.",
+      "Comprehensive travel coordination and arrival support services to guarantee a safe transition for personnel.",
+    iconClass: "first-service",
     icon: "bi bi-airplane",
   },
   {
-    title: "Pre-Departure Orientation",
+    title: "Cultural Readiness",
     description:
-      "We prepare employees with essential training, cultural guidance, and job readiness before departure.",
+      "Equipping candidates with vital cross-cultural training and professional ethics for success in foreign markets.",
+    iconClass: "second-service",
     icon: "bi bi-people",
   },
 ];
 
 const Services = () => {
   return (
-    <section id="services" className="pb-3" aria-labelledby="services-title">
+    <section id="services" className="services section">
       <div className="container">
-        {/* Heading */}
-        <div className="row justify-content-center">
-          <div className="col-lg-7 col-md-10 text-center">
-            <div className="sec-heading center">
-              <h2 id="services-title" className="fw-bold">
-                Our Services
-              </h2>
-              <p>
-                Global Trust Overseas Employment Agent Plc provides end-to-end
-                overseas employment solutions, ensuring safe, legal, and
-                reliable deployment of Ethiopian employees abroad.
+        <div className="row">
+          <div className="col-lg-8 offset-lg-2">
+            <div
+              className="section-heading wow fadeInDown"
+              data-wow-duration="1s"
+              data-wow-delay="0.5s"
+            >
+              <h4 className="fw-bold">Our Services</h4>
+              <img src="assets/images/heading-line-dec.png" alt="" />
+              <p className="mt-3">
+                Aysha Overseas Employment Agency delivers premium, end-to-end
+                labor solutions designed to empower Ethiopian professionals on
+                the global stage through integrity and excellence.
               </p>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Services Cards */}
+      <div className="container">
         <div className="row gy-4">
           {services.map((service, index) => (
-            <div key={index} className="col-lg-4 col-md-6">
+            <div key={index} className="col-lg-4">
               <div
-                className="service-item position-relative h-100 shadow p-4 rounded-4 hover-up text-center bg-white "
-                style={{ border: "2px solid #f0f0f0" }}
+                className={`service-item ${service.iconClass} h-100 shadow-sm border-0`}
               >
-                <div
-                  className="icon mb-3"
-                  style={{ color: "#4484BA" }}
-                  aria-hidden="true"
-                >
-                  <i className={`${service.icon} fs-1`}></i>
+                <div className="icon d-flex align-items-center justify-content-center">
+                  <i
+                    className={`${service.icon}`}
+                    style={{
+                      fontSize: "45px",
+                      zIndex: "2",
+                      position: "relative",
+                      color: "inherit",
+                    }}
+                  ></i>
                 </div>
-
-                <div className="stretched-link">
-                  <h3 className="fw-semibold">{service.title}</h3>
-                </div>
-
-                <p className="text-muted">{service.description}</p>
+                <h4 className="fw-bold">{service.title}</h4>
+                {/* Fixed height/character count ensures consistent card rows */}
+                <p className="text-muted small">{service.description}</p>
               </div>
             </div>
           ))}

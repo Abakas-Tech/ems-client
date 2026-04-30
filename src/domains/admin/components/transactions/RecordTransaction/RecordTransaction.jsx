@@ -5,6 +5,7 @@ import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import Badge from "../../../../../shared/components/Badge/Badge";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const RecordTransaction = ({
   isEditMode = false,
@@ -12,9 +13,12 @@ const RecordTransaction = ({
   onSuccess,
   onCancel,
 }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { profile } = useProfile();
+  const goBackPath = location.state?.from || "/dashboard";
 
   const [formData, setFormData] = useState({
     // 1. Priority: Edit data > Incoming Worker data > null (Company transaction)
@@ -95,6 +99,7 @@ const RecordTransaction = ({
         response?.message || "Transaction saved successfully",
       );
       onSuccess();
+      navigate(goBackPath);
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -112,7 +117,7 @@ const RecordTransaction = ({
               {isEditMode ? "Edit Transaction" : "Record New Transaction"}
             </h2>
 
-            <BackButton onClick={onCancel}  />
+            <BackButton onClick={onCancel} />
           </div>
         </div>
         <div className="submit-section">

@@ -25,6 +25,8 @@ const NotificationPage = () => {
   const incomingBulkIds = location.state?.bulkIds || null;
   const incomingType = location.state?.bulkType || null;
   const incomingName = location.state?.bulkName || null;
+  const goBackPath = location.state?.from || "/dashboard";
+
   const [notifications, setNotifications] = useState({ data: [], total: 0 });
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showCompose, setShowCompose] = useState(false);
@@ -132,7 +134,7 @@ const NotificationPage = () => {
 
       setShowCompose(false);
       setSearchTerm("");
-      navigate(location.pathname, { replace: true, state: {} });
+      navigate(goBackPath);
       loadNotifications();
     } catch (err) {
       // This is where your "recipient type must be one of..." error was being caught

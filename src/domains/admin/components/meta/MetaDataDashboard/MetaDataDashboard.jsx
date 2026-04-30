@@ -162,7 +162,7 @@ function MetaDataDashboard() {
           {/* Worker Status */}
           <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <Link
-              to="/admin/meta-data/employee-status"
+              to="/admin/meta-data/status"
               className="text-decoration-none text-dark"
             >
               <div
