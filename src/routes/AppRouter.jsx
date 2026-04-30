@@ -11,11 +11,13 @@ import WorkerRoutes from "./WorkerRoutes.jsx";
 import PublicRoutes from "./PublicRoutes.jsx";
 import PartnerRoutes from "./PartnerRoutes.jsx";
 import EmployerRoutes from "./EmployerRoutes.jsx";
+import InstallPrompt from "../utils/InstallPrompt.jsx";
 
 function AppRouter() {
   return (
     <>
       <ScrollToTop />
+      <InstallPrompt />
 
       {/* Global Toaster */}
       <Toaster position="top-right" reverseOrder={false} />

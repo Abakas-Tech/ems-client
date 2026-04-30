@@ -1,5 +1,17 @@
-# Dev Environment robots.txt file
+# Robots.txt for Ayisha Foreign Employment Agency
+
 User-agent: *
-#  Allow all public-facing frontend pages to be indexed
 Allow: /
-Sitemap: https://magerproperty.com/sitemap.xml
+
+# Block sensitive or non-public paths (future-proof)
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /private/
+Disallow: /auth/
+
+# Prevent crawling of parameters (optional but good)
+Disallow: /*?*
+
+# Sitemap location
+Sitemap: https://ayishaagency.com/sitemap.xml
