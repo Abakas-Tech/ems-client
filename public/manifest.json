@@ -87,13 +87,13 @@
 
   "screenshots": [
     {
-      "src": "/screenshots/home.png",
+      "src": "/screenshots/home.jpg",
       "sizes": "1280x720",
       "type": "image/png",
       "label": "Homepage - Explore overseas job opportunities"
     },
     {
-      "src": "/screenshots/service.png",
+      "src": "/screenshots/service.jpg",
       "sizes": "1280x720",
       "type": "image/png",
       "label": "Services - Full employment support process"
