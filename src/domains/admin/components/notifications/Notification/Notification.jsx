@@ -25,7 +25,7 @@ const NotificationPage = () => {
   const incomingBulkIds = location.state?.bulkIds || null;
   const incomingType = location.state?.bulkType || null;
   const incomingName = location.state?.bulkName || null;
-  const goBackPath = location.state?.from || "/dashboard";
+  const goBackPath = location.state?.from || "/admin/notifications";
 
   const [notifications, setNotifications] = useState({ data: [], total: 0 });
   const [selectedNotification, setSelectedNotification] = useState(null);
