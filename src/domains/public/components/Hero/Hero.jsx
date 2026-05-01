@@ -14,16 +14,17 @@ function Hero() {
             <div className={styles["hero-content"]}>
               <h1 className={styles["brand-name"]}>
                 {" "}
-                <span>Global—</span>Trust
+                <span>Ayisha</span>
               </h1>
               <h2 className={styles["agency-type"]}>
-                Overseas Employment Agency PLC
+                Foreign Employment Agency
               </h2>
 
-              <div className={styles["slogan-wrapper"]}>
-                <h2 className={styles["slogan-main"]}>Build Your Future</h2>
-                <h3 className={styles["slogan-sub"]}>Beyond Borders</h3>
-              </div>
+             
+                <h2 className={styles["slogan-main"]}>
+                  A Trusted Bridge to a Better Future
+                </h2>
+           
 
               <button
                 className={styles.ctaButton}
@@ -35,7 +36,7 @@ function Hero() {
                 }}
                 aria-label="Scroll to contact section to get started with Global Trust Overseas"
               >
-                Get Started
+                Start Your Journey
               </button>
             </div>
           </div>
