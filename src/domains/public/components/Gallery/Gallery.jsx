@@ -67,7 +67,7 @@ const Gallery = () => {
   return (
     <section
       id="gallery"
-      style={{ padding: "90px 0" }}
+      style={{ padding: "90px 0"}}
       className="pb-0"
       aria-labelledby="gallery-title"
     >

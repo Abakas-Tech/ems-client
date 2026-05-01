@@ -47,7 +47,11 @@ const services = [
 
 const Services = () => {
   return (
-    <section id="services" className="services section">
+    <section
+      id="services"
+      className="services section mb-0"
+      style={{ paddingBottom: "0px" }}
+    >
       <div className="container">
         <div className="row">
           <div className="col-lg-8 offset-lg-2">
@@ -56,7 +60,7 @@ const Services = () => {
               data-wow-duration="1s"
               data-wow-delay="0.5s"
             >
-              <h4 className="fw-bold">Our Services</h4>
+              <h2 className="fw-bold">Our Services</h2>
               <img src="assets/images/heading-line-dec.png" alt="" />
               <p className="mt-3">
                 Aysha Overseas Employment Agency delivers premium, end-to-end
