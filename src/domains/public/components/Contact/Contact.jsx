@@ -266,7 +266,7 @@ const Contact = () => {
                   <button
                     type="submit"
                     className="btn text-white w-100 d-flex fw-bold"
-                    style={{ backgroundColor: "#4484BA" }}
+                    style={{ backgroundColor: "#105491" }}
                   >
                     Submit
                   </button>
@@ -284,12 +284,12 @@ const ContactItem = ({ icon: Icon, title, content }) => (
   <div className="d-flex align-items-center mb-3 mt-4">
     <div
       className="d-flex align-items-center justify-content-center flex-shrink-0"
-      style={{ width: "50px", height: "50px", backgroundColor: "#4484BA" }}
+      style={{ width: "50px", height: "50px", backgroundColor: "#105491" }}
     >
       <Icon className="text-white" size={24} />
     </div>
     <div className="ms-3">
-      <h5 style={{ color: "#4484BA" }}>{title}</h5>
+      <h5 style={{ color: "#105491" }}>{title}</h5>
       <p className="mb-0">{content}</p>
     </div>
   </div>
