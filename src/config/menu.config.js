@@ -16,7 +16,7 @@ const MENU_CONFIG = [
   },
 
   {
-    label: "Dashboard",
+    label: "Analytics",
     path: "/admin/dashboard",
     icon: "bi-speedometer2",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],

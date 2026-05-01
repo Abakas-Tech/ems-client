@@ -12124,7 +12124,18 @@ th.next.available,
     padding: 0 !important;
     box-shadow: none !important;
   }
+  table {
+    page-break-inside: auto;
+  }
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  thead {
+    display: table-header-group; /* This repeats the header on each page */
+  }
 }
+
 /* Container for the notification list */
 .notification-row:hover {
   background-color: #f8f9fa !important;

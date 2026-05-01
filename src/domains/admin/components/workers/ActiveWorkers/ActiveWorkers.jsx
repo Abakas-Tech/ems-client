@@ -68,6 +68,7 @@ const ActiveWorkers = () => {
         userId: row.id,
         userName: row.full_name,
         userRole: "employee",
+        from: window.location.pathname,
       },
     });
   };
@@ -122,6 +123,7 @@ const ActiveWorkers = () => {
         bulkIds: idsToNotify,
         bulkType: roleType,
         bulkName: full_name,
+        from: window.location.pathname,
       },
     });
   };
@@ -344,7 +346,8 @@ const ActiveWorkers = () => {
           { type: "delete", onClick: (row) => handleDelete(row.id) },
           {
             type: "addModule",
-            onClick: (row) => navigate(`/admin/employees/modules/${row.id}/add`),
+            onClick: (row) =>
+              navigate(`/admin/employees/modules/${row.id}/add`),
           },
           {
             type: "viewCV",

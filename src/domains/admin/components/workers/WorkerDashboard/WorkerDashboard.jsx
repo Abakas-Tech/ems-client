@@ -1,5 +1,10 @@
 import React from "react";
-import { FaUserPlus, FaUsers, FaUserSlash } from "react-icons/fa";
+import {
+  FaUserPlus,
+  FaUsers,
+  FaUserSlash,
+  FaPlaneDeparture,
+} from "react-icons/fa";
 import { Link } from "react-router-dom";
 import styles from "../../UserManual/UserManual.module.css";
 
@@ -62,6 +67,22 @@ function WorkerDashboard() {
                   <FaUserSlash className="text-info" size={50} />
                 </div>
                 <h5 className="fr-can-name lh-base mb-2">Archived Employees</h5>
+              </div>
+            </Link>
+          </div>
+          {/* Deployed Workers */}
+          <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+            <Link
+              to="/admin/employees/deployed"
+              className="text-decoration-none text-dark"
+            >
+              <div
+                className={`agents-grid card rounded-4 border p-4 text-center h-100 shadow-sm-hover ${styles["manual-card"]}`}
+              >
+                <div className="mt-4 mb-3">
+                  <FaPlaneDeparture className="text-info" size={50} />
+                </div>
+                <h5 className="fr-can-name lh-base mb-2">Deployed Employees</h5>
               </div>
             </Link>
           </div>

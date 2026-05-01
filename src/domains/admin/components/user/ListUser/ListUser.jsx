@@ -139,6 +139,7 @@ const ListUser = () => {
         bulkIds: idsToNotify,
         bulkType: roleType,
         bulkName: full_name,
+        from: window.location.pathname,
       },
     });
   };
@@ -235,6 +236,7 @@ const ListUser = () => {
         userId: row.id,
         userName: row.full_name,
         userRole: row.role_name,
+        from: window.location.pathname,
       },
     });
   };

@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelopeOpen } from "react-icons/fa";
 import sendContactEmail from "../../api/contact.api";
 import getLocation from "../../api/location.api";
 import getSocialMedias from "../../api/socialMedia.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
-import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
 const Contact = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -15,25 +13,18 @@ const Contact = () => {
     name: "",
     email: "",
     phone: "",
-    subject: "",
     message: "",
   });
 
   const [location, setLocation] = useState({
     latitude: 7.0559381,
     longitude: 38.4902358,
-    address: "Hawassa",
-    name: "Hawassa Office",
+    address: "Hawassa, Ethiopia",
   });
 
   const [socialMedia, setSocialMedia] = useState({
-    email: "sultan@ems.com",
+    email: "info@ayshaagency.com",
     phone: "0911111111",
-  });
-
-  // ✅ Google Maps loader for Vite
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
 
   useEffect(() => {
@@ -45,16 +36,15 @@ const Contact = () => {
             latitude: res.data.latitude ?? prev.latitude,
             longitude: res.data.longitude ?? prev.longitude,
             address: res.data.address ?? prev.address,
-            name: res.data.name ?? prev.name,
           }));
         }
 
         const media = await getSocialMedias();
         if (media?.data) {
-          setSocialMedia((prev) => ({
-            email: media.data.email ?? prev.email,
-            phone: media.data.contact_number ?? prev.phone,
-          }));
+          setSocialMedia({
+            email: media.data.email ?? "info@ayshaagency.com",
+            phone: media.data.contact_number ?? "0911111111",
+          });
         }
       } catch (err) {
         console.error(err);
@@ -64,235 +54,184 @@ const Contact = () => {
   }, []);
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
-  };
-
-  const validate = () => {
-    if (!formData.message || formData.message.trim() === "") {
-      addMessage(false, "Message is required");
-      return false;
-    }
-    if (formData.message.length > 500) {
-      addMessage(false, "Message must be less than 500 characters");
-      return false;
-    }
-    if (formData.name && formData.name.length > 50) {
-      addMessage(false, "Name must be less than 50 characters");
-      return false;
-    }
-    if (formData.email) {
-      const emailRegex = /^\S+@\S+\.\S+$/;
-      if (!emailRegex.test(formData.email)) {
-        addMessage(false, "Invalid email format");
-        return false;
-      }
-      if (formData.email.length > 150) {
-        addMessage(false, "Email must be less than 150 characters");
-        return false;
-      }
-    }
-    if (!formData.phone || !formData.phone.trim() === "") {
-      addMessage(false, "Phone required");
-      return false;
-    }
-    if (formData.phone && formData.phone.length > 20) {
-      addMessage(false, "Phone must be less than 20 characters");
-      return false;
-    }
-    return true;
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
-
     showLoader();
     try {
-      const payload = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        message: formData.message,
-      };
-      const response = await sendContactEmail(payload);
+      const response = await sendContactEmail(formData);
       addMessage(
         response?.success ?? true,
-        response?.message || "Email sent successfully!",
+        response?.message || "Message sent!",
       );
-      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (err) {
-      addMessage(false, err.message || "Failed to send email");
+      addMessage(false, "Failed to send email");
     } finally {
       hideLoader();
     }
   };
 
   return (
-    <section
-      className="container px-3 px-lg-0"
-      id="contact"
-      style={{ padding: "100px 0" }}
-    >
-      <div>
-        <div className="text-center">
-          <h2 className="pb-4 fw-bold">Contact Us For Any Query</h2>
+    <section id="contact" className="contact section">
+      {/* Section Title */}
+      <div className="container section-title " data-aos="fade-up">
+        {/* Section Title */}
+        <div className="container section-title" data-aos="fade-up">
+          <h2>Contact</h2>
+          <p>
+            <span>Need Help?</span>{" "}
+            <span className="description-title">Contact Us</span>
+          </p>
         </div>
-        <div className="row g-4 gy-5">
-          {/* Contact Info */}
-          <div className="col-lg-4 col-md-6m">
-            <h3 className="mt-0 fw-bold">Get In Touch</h3>
-            <p className="mb-4">
-              Have a question or need assistance? We are here to help! Reach out
-              to us for any inquiries, and we will get back to you promptly.
-            </p>
-
-            <ContactItem
-              icon={FaMapMarkerAlt}
-              title={location.name}
-              content={location.address}
-            />
-            <ContactItem
-              icon={FaPhoneAlt}
-              title="Mobile"
-              content={
-                <a href={`tel:${socialMedia.phone}`}>{socialMedia.phone}</a>
-              }
-            />
-            <ContactItem
-              icon={FaEnvelopeOpen}
-              title="Email"
-              content={
-                <a href={`mailto:${socialMedia.email}`}>{socialMedia.email}</a>
-              }
-            />
-          </div>
-
-          {/* Google Map */}
-          <div
-            className="col-lg-4 col-md-6 "
-            data-aos="fade-up"
-            data-aos-delay="0.3s"
-            style={{ minHeight: "300px" }}
-          >
-            {!isLoaded ? (
-              <p>Loading map...</p>
-            ) : (
-              <GoogleMap
-                mapContainerStyle={{ width: "100%", height: "97%" }}
-                center={{
-                  lat: parseFloat(location.latitude),
-                  lng: parseFloat(location.longitude),
-                }}
-                zoom={15}
-              >
-                <Marker
-                  position={{
-                    lat: parseFloat(location.latitude),
-                    lng: parseFloat(location.longitude),
-                  }}
-                />
-              </GoogleMap>
-            )}
-          </div>
-
-          {/* Form */}
-          <div
-            className="col-lg-4 col-md-12"
-            data-aos="fade-up"
-            data-aos-delay="0.5s"
-          >
-            <form onSubmit={handleSubmit}>
-              <div className="row g-3">
-                <div className="col-md-6">
-                  <div className="form-floating">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="name"
-                      placeholder="Your Name"
-                      value={formData.name}
-                      onChange={handleChange}
-                    />
-                    <label htmlFor="name">Your Name</label>
+        <div className="container" data-aos="fade-up" data-aos-delay="100">
+          <div className="row gy-4">
+            <div className="col-lg-5">
+              <div className="info-wrap p-4 h-100 shadow-sm rounded-4 bg-white border">
+                {/* Info Item: Address */}
+                <div className="info-item d-flex align-items-center mb-4 p-3 rounded-3 contact-info-card">
+                  <div className="icon-box d-flex align-items-center justify-content-center me-3">
+                    <i className="bi bi-geo-alt fs-4"></i>
+                  </div>
+                  <div>
+                    <h3 className="fs-6 fw-bold mb-1 text-dark">Address</h3>
+                    <p className="small text-muted mb-0">{location.address}</p>
                   </div>
                 </div>
-                <div className="col-md-6">
-                  <div className="form-floating">
+
+                {/* Info Item: Call Us */}
+                <div className="info-item d-flex align-items-center mb-4 p-3 rounded-3 contact-info-card">
+                  <div className="icon-box d-flex align-items-center justify-content-center me-3">
+                    <i className="bi bi-telephone fs-4"></i>
+                  </div>
+                  <div>
+                    <h3 className="fs-6 fw-bold mb-1 text-dark">Call Us</h3>
+                    <p className="small text-muted mb-0">{socialMedia.phone}</p>
+                  </div>
+                </div>
+
+                {/* Info Item: Email Us */}
+                <div className="info-item d-flex align-items-center mb-4 p-3 rounded-3 contact-info-card">
+                  <div className="icon-box d-flex align-items-center justify-content-center me-3">
+                    <i className="bi bi-envelope fs-4"></i>
+                  </div>
+                  <div>
+                    <h3 className="fs-6 fw-bold mb-1 text-dark">Email Us</h3>
+                    <p className="small text-muted mb-0">{socialMedia.email}</p>
+                  </div>
+                </div>
+
+                {/* Map Container */}
+                <div className="rounded-4 overflow-hidden border mt-2 shadow-sm">
+                  <iframe
+                    src={`https://maps.google.com/maps?q=${location.latitude},${location.longitude}&z=15&output=embed`}
+                    frameBorder="0"
+                    style={{
+                      border: 0,
+                      width: "100%",
+                      height: "260px",
+                      display: "block",
+                    }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-lg-7">
+              <form
+                onSubmit={handleSubmit}
+                className="php-email-form"
+                data-aos="fade-up"
+                data-aos-delay="200"
+              >
+                <div className="row gy-4">
+                  <div className="col-md-6">
+                    <label htmlFor="name-field" className="pb-2">
+                      Your Name
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      id="name-field"
+                      className="form-control"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="col-md-6">
+                    <label htmlFor="email-field" className="pb-2">
+                      Your Email
+                    </label>
                     <input
                       type="email"
                       className="form-control"
-                      id="email"
-                      placeholder="Your Email"
+                      name="email"
+                      id="email-field"
                       value={formData.email}
                       onChange={handleChange}
+                      required
                     />
-                    <label htmlFor="email">Your Email</label>
                   </div>
-                </div>
-                <div className="col-12">
-                  <div className="form-floating">
+
+                  <div className="col-md-12">
+                    <label htmlFor="phone-field" className="pb-2">
+                      Phone Number
+                    </label>
                     <input
                       type="text"
                       className="form-control"
-                      id="phone"
-                      placeholder="Phone"
+                      name="phone"
+                      id="phone-field"
+                      placeholder="Enter phone number"
                       value={formData.phone}
                       onChange={handleChange}
                       required
                     />
-                    <label htmlFor="phone">
-                      Phone <span className="text-danger">*</span>
-                    </label>
                   </div>
-                </div>
-                <div className="col-12">
-                  <div className="form-floating">
+
+                  <div className="col-md-12">
+                    <label htmlFor="message-field" className="pb-2">
+                      Message
+                    </label>
                     <textarea
                       className="form-control"
-                      placeholder="Leave a message here"
-                      id="message"
-                      style={{ height: "200px" }}
+                      name="message"
+                      rows="10"
+                      id="message-field"
                       value={formData.message}
                       onChange={handleChange}
                       required
-                    />
-                    <label htmlFor="message">
-                      Message <span className="text-danger">*</span>
-                    </label>
+                    ></textarea>
+                  </div>
+
+                  <div className="col-md-12 text-center">
+                    {/* These divs are kept for template logic/CSS compatibility */}
+                    <div className="loading" style={{ display: "none" }}>
+                      Loading
+                    </div>
+                    <div className="error-message"></div>
+                    <div className="sent-message">
+                      Your message has been sent. Thank you!
+                    </div>
+
+                    <button type="submit">Send Message</button>
                   </div>
                 </div>
-                <div className="col-12 w-100">
-                  <button
-                    type="submit"
-                    className="btn text-white w-100 d-flex fw-bold"
-                    style={{ backgroundColor: "#4484BA" }}
-                  >
-                    Submit
-                  </button>
-                </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </section>
   );
 };
-// eslint-disable-next-line no-unused-vars
-const ContactItem = ({ icon: Icon, title, content }) => (
-  <div className="d-flex align-items-center mb-3 mt-4">
-    <div
-      className="d-flex align-items-center justify-content-center flex-shrink-0"
-      style={{ width: "50px", height: "50px", backgroundColor: "#4484BA" }}
-    >
-      <Icon className="text-white" size={24} />
-    </div>
-    <div className="ms-3">
-      <h5 style={{ color: "#4484BA" }}>{title}</h5>
-      <p className="mb-0">{content}</p>
-    </div>
-  </div>
-);
 
 export default Contact;

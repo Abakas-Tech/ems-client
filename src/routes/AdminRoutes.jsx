@@ -7,6 +7,8 @@ import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/Work
 import WorkerRegistration from "../domains/admin/pages/workers/WorkerRegistration/WorkerRegistration.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import ArchivedWorkers from "../domains/admin/pages/workers/ArchivedWorkers/ArchivedWorkers.jsx";
+import DeployedWorkers from "../domains/admin/pages/workers/DeployedWorkers/DeployedWorkers.jsx";
+
 import ModulesList from "../domains/admin/pages/workers/ModulesList/ModulesList.jsx";
 import WorkerPesonalInfo from "../domains/admin/pages/workers/modules/WorkerPersonalInfo/WorkerPesonalInfo.jsx";
 
@@ -87,6 +89,7 @@ const AdminRoutes = () => {
         <Route path="/employees/active" element={<ActiveWorkers />} />
         <Route path="/employees/active/:id" element={<WorkerProfile />} />
         <Route path="/employees/archived" element={<ArchivedWorkers />} />
+        <Route path="/employees/deployed" element={<DeployedWorkers />} />
         <Route path="/employees/modules" element={<WorkerModuleManagement />} />
         <Route path="/employees/modules/:id/add" element={<ModulesList />} />
         <Route path="/meta-data/country" element={<CountryPage />} />
@@ -95,10 +98,7 @@ const AdminRoutes = () => {
         <Route path="/meta-data/skill" element={<SkillPage />} />
         <Route path="/meta-data/job-position" element={<JobPostionPage />} />
         <Route path="/meta-data/language" element={<LanguagePage />} />
-        <Route
-          path="/meta-data/employee-status"
-          element={<WorkerStatusPage />}
-        />
+        <Route path="/meta-data/status" element={<WorkerStatusPage />} />
         <Route path="/meta-data/city" element={<CityPage />} />
         <Route path="/meta-data/sub-city" element={<SubCityPage />} />
         <Route

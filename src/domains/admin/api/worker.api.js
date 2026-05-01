@@ -116,6 +116,19 @@ const listArchivedWorkers = async (params = {}) => {
   }
 };
 
+// List Deployed worker
+const listDeployedWorkers = async (params = {}) => {
+  try {
+    const response = await axiosInstance.get("/workers/deployed", { params });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to list deployed workers",
+    );
+  }
+};
 // Delete archived worker (hard delete)
 const deleteArchivedWorker = async (id) => {
   try {
@@ -717,6 +730,7 @@ export {
   listWorkers,
   getWorkerProfile,
   getArchivedWorkerProfile,
+  listDeployedWorkers,
   restoreWorker,
   createPassport,
   updatePassport,
