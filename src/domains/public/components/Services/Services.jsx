@@ -92,7 +92,7 @@ const Services = () => {
                 </div>
                 <h4 className="fw-bold">{service.title}</h4>
                 {/* Fixed height/character count ensures consistent card rows */}
-                <p className="text-muted small">{service.description}</p>
+                <p>{service.description}</p>
               </div>
             </div>
           ))}

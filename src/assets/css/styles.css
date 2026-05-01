@@ -12525,14 +12525,14 @@ Services Style
 
 .service-item h4 {
   transition: all 0.3s;
-  font-size: 20px;
+  /* font-size: 20px; */
   font-weight: 700;
   margin-bottom: 15px;
 }
 
 .service-item p {
   transition: all 0.3s;
-  font-size: 15px;
+  /* font-size: 15px; */
   margin-bottom: 20px;
 }
 
