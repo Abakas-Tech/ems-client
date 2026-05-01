@@ -5,7 +5,7 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import { FaBars } from "react-icons/fa";
 
-import logo from "../../../../assets/img/logo/header-logo.png";
+import logo from "../../../../assets/img/logo/header-logo.svg";
 import useProfile from "../../../../context/Profile/useProfile";
 import { hasAccessToken } from "../../../../utils/axios";
 
@@ -113,7 +113,7 @@ const MainHeader = () => {
           {/* Nav Header */}
           <div className="nav-header">
             <Link className="nav-brand text-logo exchange" to="/">
-              <img src={logo} alt="Logo" style={{ width: "80px" }} />
+              <img src={logo} alt="Logo" style={{ width: "70px" }} />
               {/* <h5 className="m-0">Resido</h5> */}
             </Link>
 
@@ -124,7 +124,7 @@ const MainHeader = () => {
                 style={{
                   fontSize: "24px",
                   cursor: "pointer",
-                  color: "#4484BA",
+                  color: "#105491",
                   marginRight: "10px",
                 }}
               >
@@ -136,7 +136,7 @@ const MainHeader = () => {
           {/* Desktop Nav */}
           {!isPortrait && (
             <div className="nav-menus-wrapper">
-              <ul className="nav-menu align-to-right">
+              <ul className="nav-menu align-to-right ">
                 <li>
                   <a
                     onClick={() => handleNavClick("home")}
@@ -162,14 +162,14 @@ const MainHeader = () => {
                     Services
                   </a>
                 </li>
-                <li>
+                {/* <li>
                   <a
                     onClick={() => handleNavClick("about")}
                     style={{ cursor: "pointer" }}
                   >
                     About
                   </a>
-                </li>
+                </li> */}
                 <li>
                   <a
                     onClick={() => handleNavClick("gallery")}
@@ -178,14 +178,14 @@ const MainHeader = () => {
                     Gallery
                   </a>
                 </li>
-                <li>
+                {/* <li>
                   <a
                     onClick={() => handleNavClick("testimonials")}
                     style={{ cursor: "pointer" }}
                   >
                     Testimonials
                   </a>
-                </li>
+                </li> */}
                 <li>
                   <a
                     onClick={() => handleNavClick("contact")}
@@ -255,14 +255,14 @@ const MainHeader = () => {
                       Services
                     </a>
                   </li>
-                  <li>
+                  {/* <li>
                     <a
                       onClick={() => handleNavClick("about")}
                       style={{ cursor: "pointer" }}
                     >
                       About
                     </a>
-                  </li>
+                  </li> */}
                   <li>
                     <a
                       onClick={() => handleNavClick("gallery")}
@@ -271,14 +271,14 @@ const MainHeader = () => {
                       Gallery
                     </a>
                   </li>
-                  <li>
+                  {/* <li>
                     <a
                       onClick={() => handleNavClick("testimonials")}
                       style={{ cursor: "pointer" }}
                     >
                       Testimonials
                     </a>
-                  </li>
+                  </li> */}
                   <li>
                     <a
                       onClick={() => handleNavClick("contact")}
