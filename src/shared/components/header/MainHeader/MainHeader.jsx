@@ -99,7 +99,7 @@ const MainHeader = () => {
 
   return (
     <header
-      className={`header header-transparent navigation ${
+      className={`header  header-transparent navigation ${
         isPortrait ? "navigation-portrait" : "navigation-landscape"
       } ${isFixed ? "header-fixed" : ""}`}
     >

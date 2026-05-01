@@ -47,7 +47,7 @@ const services = [
 
 const Services = () => {
   return (
-    <section id="services" className="services section">
+    <section id="services" className="services section mb-0 pb-0">
       <div className="container">
         <div className="row">
           <div className="col-lg-8 offset-lg-2">
@@ -82,7 +82,7 @@ const Services = () => {
                       fontSize: "45px",
                       zIndex: "2",
                       position: "relative",
-                      color: "inherit",
+                      color: "#105491",
                     }}
                   ></i>
                 </div>

@@ -86,7 +86,7 @@ export default function InstallPrompt() {
           {/* ACTIONS */}
           <div className="d-flex justify-content-between align-items-center">
             <button
-              className="btn btn-sm text-white"
+              className="btn btn-sm text-white px-2"
               style={{ backgroundColor: "#105491" }}
               onClick={installApp}
             >

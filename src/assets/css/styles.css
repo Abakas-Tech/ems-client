@@ -2622,7 +2622,8 @@ ul {
 }
 
 .navigation-portrait {
-  height: 48px;
+  height: 60px !important;
+  padding-top: 5px;
 }
 
 .navigation-fixed {
@@ -3439,7 +3440,6 @@ nav a {
   background-color: var(--maincolor) !important;
   color: #ffffff !important;
 }
-
 
 .nav-brand img {
   max-width: 135px;
@@ -12373,7 +12373,8 @@ div::-webkit-scrollbar-thumb:hover {
 
 .features-item {
   text-align: center;
-  padding: 30px;
+  padding: 10px;
+  margin: 20px;
   border-radius: 50px;
   background: rgb(255, 255, 255);
   background: linear-gradient(
