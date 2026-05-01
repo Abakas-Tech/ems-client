@@ -124,7 +124,6 @@ const Footer = () => {
                 <a
                   href="https://abakastech.com/"
                   className="brand-link fw-bold"
-                  
                 >
                   Abakas Technologies
                 </a>{" "}

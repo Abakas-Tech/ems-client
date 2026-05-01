@@ -136,7 +136,7 @@ const Contact = () => {
     >
       <div>
         <div className="text-center">
-          <h2 className="pb-4 fw-bold">Contact Us For Any Query</h2>
+          <h2 className="pb-4 fw-bold">Contact Us Anytime</h2>
         </div>
         <div className="row g-4 gy-5">
           {/* Contact Info */}
@@ -169,12 +169,7 @@ const Contact = () => {
           </div>
 
           {/* Google Map */}
-          <div
-            className="col-lg-4 col-md-6 "
-            data-aos="fade-up"
-            data-aos-delay="0.3s"
-            style={{ minHeight: "300px" }}
-          >
+          <div className="col-lg-4 col-md-6 " style={{ minHeight: "300px" }}>
             {!isLoaded ? (
               <p>Loading map...</p>
             ) : (
@@ -197,11 +192,7 @@ const Contact = () => {
           </div>
 
           {/* Form */}
-          <div
-            className="col-lg-4 col-md-12"
-            data-aos="fade-up"
-            data-aos-delay="0.5s"
-          >
+          <div className="col-lg-4 col-md-12">
             <form onSubmit={handleSubmit}>
               <div className="row g-3">
                 <div className="col-md-6">

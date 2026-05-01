@@ -77,7 +77,7 @@ const Services = () => {
           {services.map((service, index) => (
             <div key={index} className="col-lg-4">
               <div
-                className={`service-item ${service.iconClass} h-100 shadow-sm border-0`}
+                className={`service-item ${service.iconClass} h-100 shadow-md`}
               >
                 <div className="icon d-flex align-items-center justify-content-center">
                   <i

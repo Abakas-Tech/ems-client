@@ -12390,11 +12390,7 @@ div::-webkit-scrollbar-thumb:hover {
 
 .features-item:hover {
   background: rgb(51, 204, 197);
-  background: linear-gradient(
-    105deg,
-    rgba(51, 204, 197, 1) 0%,
-    rgba(8, 141, 195, 1) 100%
-  );
+  background: linear-gradient(105deg, #5479ec 0%, #39b9f8 50%, #5ad9fa 100%);
 }
 
 .features-item:hover h4 {
@@ -12475,7 +12471,7 @@ Services Style
 }
 
 .services:after {
-  content: '';
+  content: "";
   background-image: url(../images/services-left-dec.png);
   background-repeat: no-repeat;
   position: absolute;
@@ -12487,7 +12483,7 @@ Services Style
 }
 
 .services:before {
-  content: '';
+  content: "";
   background-image: url(../images/services-right-dec.png);
   background-repeat: no-repeat;
   position: absolute;
@@ -12511,11 +12507,11 @@ Services Style
   position: relative;
   z-index: 1;
   padding: 30px;
-  box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   background-color: #fff;
   border-radius: 10px;
   border-top-right-radius: 50px;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 
 .service-item .icon {
@@ -12524,18 +12520,18 @@ Services Style
   background-repeat: no-repeat;
   width: 50px;
   height: 50px;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 
 .service-item h4 {
-  transition: all .3s;
+  transition: all 0.3s;
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 15px;
 }
 
 .service-item p {
-  transition: all .3s;
+  transition: all 0.3s;
   font-size: 15px;
   margin-bottom: 20px;
 }
@@ -12562,7 +12558,6 @@ Services Style
   background-image: url(../images/service-icon-hover-02.png);
 }
 
-
 .third-service .icon {
   background-image: url(../images/service-icon-03.png);
 }
@@ -12585,5 +12580,3 @@ Services Style
   background-repeat: no-repeat;
   background-size: cover;
 }
-
-
