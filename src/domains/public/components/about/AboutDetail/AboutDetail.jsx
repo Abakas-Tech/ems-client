@@ -469,7 +469,7 @@ const navigateToContact = () => {
                 </p>
               </div>
               <button className={styles.ctaBtn} onClick={navigateToContact}>
-                Get Started <FaArrowRight size={12} />
+                Get Started 
               </button>
             </div>
           </div>
