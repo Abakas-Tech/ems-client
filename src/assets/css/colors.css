@@ -1,28 +1,54 @@
-
-	/* All Colors Option  */
+/* All Colors Option */
 
 .theme-bg.call-to-act-wrap {
-    background: #2196F3;
+  background: #2196F3;
 }
 
 :root {
+  /* Modal */
   --modal-bg: #fff;
   --modal-overlay-bg: rgba(0,0,0,0.5);
   --modal-text-color: #333;
   --modal-title-color: #111;
+
+  /* Buttons */
   --btn-success-bg: #4caf50;
   --btn-success-color: #fff;
   --btn-danger-bg: #f44336;
   --btn-danger-color: #fff;
+
+  /* Surface */
   --color-surface-sidebar: #ffffff;
+  --color-surface-hover: #f1f5f9;
+  --color-surface-active: #efffeb;
+
+  /* Border */
   --color-border-subtle: #e2e8f0;
+
+  /* Text */
   --color-text-primary: #0f172a;
   --color-text-secondary: #64748b;
   --color-text-inverse: #ffffff;
-  --color-surface-hover: #f1f5f9;
-  --color-surface-active: #efffeb;
+
+  /* Shadow & Radius */
   --color-shadow-elevated: 0 10px 30px -12px rgba(0, 0, 0, 0.08);
   --transition-default: 0.3s ease;
   --radius-default: 10px;
 
+  /* Brand Colors*/
+  --brand: #4484BA;
+  --brand-dark: #2a5a8a;
+  --brand-light: #eaf2fa;
+
+  --brand-mid: rgba(68,132,186,0.10);
+  --brand-glow: rgba(68,132,186,0.18);
+
+  --brand-border: rgba(68,132,186,0.13);
+  --brand-border-hover: rgba(68,132,186,0.38);
+
+  /* Brand Text */
+  --text-dark: #0f1e2e;
+  --text-body: #4a6278;
+  --text-sub: #5a788f;
+  --text-muted: #7a94a8;
 }

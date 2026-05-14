@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   FaUsers,
   FaGlobe,
@@ -9,257 +9,462 @@ import {
   FaPeopleArrows,
   FaBrain,
   FaCheckCircle,
+  FaArrowRight,
+  FaQuoteLeft,
 } from "react-icons/fa";
 import styles from "./AboutDetail.module.css";
+import { useNavigate } from "react-router-dom";
 
-const brandColor = "#4484BA";
 
-const publicFeatures = [
+const approaches = [
   {
-    icon: <FaUsers size={45} />,
+    icon: <FaUsers size={22} />,
     title: "Accessible Opportunities",
-    desc: "We provide verified international job openings, making it easy for individuals to find suitable positions across multiple countries.",
+    desc: "Verified international job openings across multiple countries, easy to explore and apply.",
   },
   {
-    icon: <FaGlobe size={45} />,
+    icon: <FaGlobe size={22} />,
     title: "Global Reach",
-    desc: "Our network connects people with employers worldwide, creating opportunities beyond borders for career growth and experience.",
+    desc: "Our network connects candidates with employers worldwide, creating opportunities beyond borders.",
   },
   {
-    icon: <FaShieldAlt size={45} />,
+    icon: <FaShieldAlt size={22} />,
     title: "Transparent Process",
-    desc: "Every step is clear and honest. We make sure you know the requirements, timelines, and expectations before you proceed.",
+    desc: "Every requirement, timeline, and expectation is disclosed clearly before you proceed.",
   },
   {
-    icon: <FaHandsHelping size={45} />,
+    icon: <FaHandsHelping size={22} />,
     title: "Guidance & Support",
-    desc: "From applications to preparation, we guide you through the process, helping you feel confident and ready at every stage.",
+    desc: "From application to departure, we walk with you through every stage of the process.",
   },
   {
-    icon: <FaBalanceScale size={45} />,
+    icon: <FaBalanceScale size={22} />,
     title: "Fair Opportunities",
-    desc: "We ensure ethical and responsible recruitment practices, promoting equal chances for all candidates.",
+    desc: "Ethical recruitment promoting equal chances and responsible practices for all candidates.",
   },
   {
-    icon: <FaAward size={45} />,
+    icon: <FaAward size={22} />,
     title: "Trusted Service",
-    desc: "Reliability and transparency are at our core, giving you peace of mind as you take steps toward your international career.",
+    desc: "Reliability and honesty are our foundation, giving you confidence at every step.",
   },
 ];
 
-const Counter = ({ target, label }) => {
+const values = [
+  {
+    icon: <FaPeopleArrows size={20} />,
+    title: "Accessibility",
+    desc: "Making opportunities easy to understand for everyone.",
+  },
+  {
+    icon: <FaBalanceScale size={20} />,
+    title: "Fairness",
+    desc: "Equal and ethical treatment in every recruitment process.",
+  },
+  {
+    icon: <FaBrain size={20} />,
+    title: "Clarity",
+    desc: "Clear, accurate information that guides informed decisions.",
+  },
+  {
+    icon: <FaAward size={20} />,
+    title: "Trust",
+    desc: "Confidence built through honesty and consistent support.",
+  },
+];
+
+const stats = [
+  { target: 15, label: "Years of Service", suffix: "+" },
+  { target: 2000, label: "People Supported", suffix: "+" },
+  { target: 3, label: "Countries Covered", suffix: "" },
+  { target: 100, label: "Transparency", suffix: "%" },
+];
+
+const offerings = [
+  "Access to verified international job opportunities",
+  "Clear explanation of requirements and application steps",
+  "Guidance to help you prepare for working abroad",
+  "Reliable updates and communication throughout",
+  "Support at every stage of your journey",
+  "Simple and transparent process visibility",
+];
+
+const delayClass = [
+  styles.delay0,
+  styles.delay1,
+  styles.delay2,
+  styles.delay3,
+  styles.delay4,
+  styles.delay5,
+];
+
+
+function Counter({ target, suffix }) {
   const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const started = useRef(false);
+
   useEffect(() => {
-    let start = 0;
-    const duration = 2000;
-    const increment = target / (duration / 20);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 20);
-    return () => clearInterval(timer);
+    const observer = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !started.current) {
+          started.current = true;
+          const step = target / (1600 / 16);
+          let cur = 0;
+          const t = setInterval(() => {
+            cur += step;
+            if (cur >= target) {
+              setCount(target);
+              clearInterval(t);
+            } else setCount(Math.floor(cur));
+          }, 16);
+        }
+      },
+      { threshold: 0.4 },
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
   }, [target]);
 
   return (
-    <div className="text-center">
-      <h2 className=" fw-bold" style={{ color: brandColor }}>
-        {count}+
-      </h2>
-      <p className="mb-0">{label}</p>
+    <div ref={ref} className={styles.counterWrap}>
+      <span className={styles.counterNum}>
+        {count}
+        {suffix}
+      </span>
     </div>
   );
-};
+}
+
+
+function useFadeIn(threshold = 0.08) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) setVisible(true);
+      },
+      { threshold },
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [threshold]);
+  return [ref, visible];
+}
+
+
+function fadeClass(visible, delayIdx = 0) {
+  return [
+    visible ? styles.fadeVisible : styles.fadeHidden,
+    delayClass[Math.min(delayIdx, delayClass.length - 1)],
+  ].join(" ");
+}
+
+
+function SectionLabel({ children }) {
+  return (
+    <div className={styles.sectionLabelWrap}>
+      <div className={styles.sectionLabelLine} />
+      <span className={styles.sectionLabelText}>{children}</span>
+    </div>
+  );
+}
+
+
+const Divider = () => <div className={styles.divider} />;
+
+
+function Card({ children, className = "", noHover = false }) {
+  return (
+    <div
+      className={`${noHover ? styles.cardNoHover : styles.card} ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
 
 export default function AboutDetail() {
-  useEffect(() => {
-    window.dispatchEvent(new Event("resize"));
-  }, []);
+  const [heroRef, heroVisible] = useFadeIn(0.05);
+  const [reachRef, reachVisible] = useFadeIn(0.1);
+  const [offerRef, offerVisible] = useFadeIn(0.1);
+  const [approachRef, approachVisible] = useFadeIn(0.1);
+  const [valuesRef, valuesVisible] = useFadeIn(0.1);
+  const [impactRef, impactVisible] = useFadeIn(0.1);
+  const navigate = useNavigate();
+  const navigateToContact = () => {
+    navigate("/#contact");
+  }
 
   return (
-    <div className="container mt-5 py-4">
-      {/* HERO */}
-      <div className="mb-5">
-        <h2 className="fw-bold  mb-3" style={{ color: brandColor }}>
-          About Us
-        </h2>
-
-        <p className="mb-4">
-          We open doors to international employment opportunities by connecting
-          Ethiopian employees with trusted and verified employers across the
-          Middle East and other global destinations. As a licensed overseas
-          employment agency, our mission is to make every step of the
-          journey—from application to deployment—simple, transparent, and
-          accessible, so each candidate can confidently plan and pursue a career
-          abroad.
-        </p>
-        <p className="mb-4">
-          Whether you are entering the workforce for the first time or seeking
-          better opportunities overseas, we provide end-to-end support tailored
-          to your needs. From document preparation and job matching to visa
-          processing, contract verification, and pre-departure guidance, our
-          experienced team ensures that you are well-prepared and informed at
-          every stage of the process.
-        </p>
-        <p className="mb-4">
-          We are committed to transparency, accuracy, and employees protection.
-          By providing clear information, regular updates, and practical
-          guidance, we help reduce uncertainty and build trust throughout the
-          journey. Our goal is to ensure that every candidate travels safely,
-          understands their rights, and reaches their employer with confidence
-          and peace of mind.
-        </p>
-      </div>
-
-      {/* Our Reach */}
-      <div className="mb-5 pt-4 border-top">
-        <h3 className=" mb-4" style={{ color: brandColor }}>
-          Our Reach
-        </h3>
-
-        <div className="row g-4">
-          <div className="col-md-3 col-6">
-            <Counter target={15} label="Years of Service" />
-          </div>
-          <div className="col-md-3 col-6">
-            <Counter target={2000} label="People Supported" />
-          </div>
-          <div className="col-md-3 col-6">
-            <Counter target={3} label="Countries Covered" />
-          </div>
-          <div className="col-md-3 col-6">
-            <Counter target={100} label="Transparency %" />
-          </div>
-        </div>
-      </div>
-
-      {/* What We Offer */}
-      <div className="mb-5 pt-4">
-        <h3 className=" mb-4" style={{ color: brandColor }}>
-          What We Offer
-        </h3>
-
-        <div className="row g-3">
-          {[
-            "Access to verified international job opportunities",
-            "Clear explanation of requirements and application steps",
-            "Guidance to help you prepare for working abroad",
-            "Reliable updates and communication",
-            "Support throughout your journey",
-            "Simple and transparent process visibility",
-          ].map((text, idx) => (
-            <div className="col-12 col-md-6 d-flex align-items-start" key={idx}>
-              <FaCheckCircle
-                className=" me-2 mt-1"
-                size={20}
-                style={{ color: brandColor }}
-              />
-              <p className="mb-0">{text}</p>
+    <div className={styles.page}>
+      {/* ══ HERO ══ */}
+      <section ref={heroRef} className={styles.heroSection}>
+        <div className="container">
+          <div className="row align-items-start g-3">
+            {/* Left col */}
+            <div className={`col-lg-7 ${fadeClass(heroVisible, 0)}`}>
+              <SectionLabel>Our Story</SectionLabel>
+              <h1 className={styles.heroHeading}>
+                Connecting <span className={styles.heroBrand}>Ethiopia</span> to
+                the World
+              </h1>
+              <p className={styles.heroBody}>
+                We open doors to international employment by connecting
+                Ethiopian employees with trusted, verified employers across the
+                Middle East and beyond. As a licensed overseas agency, every
+                step — from application to deployment — is simple, transparent,
+                and accessible.
+              </p>
+              <p className={styles.heroBody}>
+                Whether entering the workforce for the first time or seeking
+                better opportunities overseas, we provide end-to-end support:
+                document prep, job matching, visa processing, contract
+                verification, and pre-departure guidance.
+              </p>
+              <p className={styles.heroBodyLast}>
+                Our commitment is transparency, accuracy, and employee
+                protection — so every candidate travels safely, knows their
+                rights, and arrives with confidence.
+              </p>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Our Approach - Slider */}
-      <div className="mb-5 pt-4 border-top">
-        <h3 className="mb-4" style={{ color: brandColor }}>
-          Our Approach
-        </h3>
-        <div className={styles.scrollWrapper}>
-          <div className={styles.scrollTrack}>
-            {[...publicFeatures, ...publicFeatures].map((feature, index) => (
-              <div className={styles.featureCard} key={index}>
-                <div className="text-center p-4">
-                  <div
-                    className={styles.iconWrapper}
-                    style={{ color: brandColor }}
-                  >
-                    {feature.icon}
+            {/* Right col — quote box */}
+            <div className={`col-lg-5 ${fadeClass(heroVisible, 3)}`}>
+              <div className={styles.quoteBox}>
+                <FaQuoteLeft size={18} className={styles.quoteIcon} />
+                <p className={styles.quoteText}>
+                  "Our goal is to ensure every candidate travels safely,
+                  understands their rights, and reaches their employer with
+                  confidence and peace of mind."
+                </p>
+                <div className={styles.quoteLine}>
+                  <div className={styles.quoteLineBar} />
+                  <span className={styles.quoteLineLabel}>
+                    Founder &amp; CEO
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ══ OUR REACH ══ */}
+      <section ref={reachRef} className={styles.reachSection}>
+        <div className="container">
+          <div
+            className={`${styles.sectionHeadWrap} ${fadeClass(reachVisible, 0)}`}
+          >
+            <SectionLabel>Impact</SectionLabel>
+            <h2 className={styles.sectionHeading}>Our Reach</h2>
+          </div>
+
+          <div className={styles.statsGrid}>
+            {stats.map((s, i) => (
+              <div
+                key={i}
+                className={`${styles.statCard} ${fadeClass(reachVisible, i)}`}
+              >
+                <div className={styles.statNumber}>
+                  <Counter target={s.target} suffix={s.suffix} />
+                </div>
+                <p className={styles.statLabel}>{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ══ WHAT WE OFFER ══ */}
+      <section ref={offerRef} className={styles.offerSection}>
+        <div className="container">
+          <div
+            className={`${styles.sectionHeadWrap} ${fadeClass(offerVisible, 0)}`}
+          >
+            <SectionLabel>Services</SectionLabel>
+            <h2 className={styles.sectionHeading}>What We Offer</h2>
+          </div>
+
+          <div className="row g-2">
+            {offerings.map((text, idx) => (
+              <div
+                key={idx}
+                className={`col-md-6 ${fadeClass(offerVisible, Math.min(idx, 5))}`}
+              >
+                <div className={styles.offerItem}>
+                  <div className={styles.offerIcon}>
+                    <FaCheckCircle size={12} color="var(--brand)" />
                   </div>
-                  <h6 className="fw-bold mb-3">{feature.title}</h6>
-                  <p className="small mb-0">{feature.desc}</p>
+                  <span className={styles.offerText}>{text}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Our Values */}
-      <div className="mb-5 pt-4 border-top">
-        <h3 className=" mb-4" style={{ color: brandColor }}>
-          Our Values
-        </h3>
+      <Divider />
 
-        <div className="row g-4">
-          {[
-            {
-              icon: <FaPeopleArrows size={40} />,
-              title: "Accessibility",
-              desc: "We make opportunities easy to understand, ensuring everyone can access the information they need.",
-            },
-            {
-              icon: <FaBalanceScale size={40} />,
-              title: "Fairness",
-              desc: "Equal and ethical opportunities for all, promoting trust and responsibility in every process.",
-            },
-            {
-              icon: <FaBrain size={40} />,
-              title: "Clarity",
-              desc: "Providing clear, simple, and accurate information to guide decisions effectively.",
-            },
-            {
-              icon: <FaAward size={40} />,
-              title: "Trust",
-              desc: "Building confidence through honesty, transparency, and consistent support.",
-            },
-          ].map((item, idx) => (
-            <div className="col-md-6" key={idx}>
-              <div className="d-flex">
-                <div className=" me-3" style={{ color: brandColor }}>
-                  {item.icon}
-                </div>
-                <div>
-                  <h6 className="fw-bold">{item.title}</h6>
-                  <p className="small">{item.desc}</p>
+      {/* ══ OUR APPROACH ══ */}
+      <section ref={approachRef} className={styles.approachSection}>
+        <div className="container">
+          <div
+            className={`${styles.sectionHeadWrap} ${fadeClass(approachVisible, 0)}`}
+          >
+            <SectionLabel>Methodology</SectionLabel>
+            <h2 className={styles.sectionHeading}>Our Approach</h2>
+          </div>
+
+          <div className="row g-2">
+            {approaches.map((item, idx) => (
+              <div
+                key={idx}
+                className={`col-sm-6 col-lg-4 ${fadeClass(approachVisible, Math.min(idx, 5))}`}
+              >
+                <Card className={`${styles.cardPad} ${styles.cardFull}`}>
+                  <div className={styles.approachIconBox}>{item.icon}</div>
+                  <h6 className={styles.approachTitle}>{item.title}</h6>
+                  <p className={styles.approachDesc}>{item.desc}</p>
+                </Card>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ══ OUR VALUES ══ */}
+      <section ref={valuesRef} className={styles.valuesSection}>
+        <div className="container">
+          <div
+            className={`${styles.sectionHeadWrap} ${fadeClass(valuesVisible, 0)}`}
+          >
+            <SectionLabel>Principles</SectionLabel>
+            <h2 className={styles.sectionHeading}>Our Values</h2>
+          </div>
+
+          <div className="row g-2">
+            {values.map((v, idx) => (
+              <div
+                key={idx}
+                className={`col-sm-6 col-lg-3 ${fadeClass(valuesVisible, idx)}`}
+              >
+                <Card
+                  className={`${styles.cardPad} ${styles.cardFull} text-center`}
+                >
+                  <div className={styles.valueNum}>
+                    {String(idx + 1).padStart(2, "0")}
+                  </div>
+                  <div className={`${styles.valueIconBox} mx-auto`}>
+                    {v.icon}
+                  </div>
+                  <h6 className={styles.valueTitle}>{v.title}</h6>
+                  <p className={styles.valueDesc}>{v.desc}</p>
+                </Card>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Divider />
+
+      {/* ══ OUR IMPACT ══ */}
+      <section ref={impactRef} className={styles.impactSection}>
+        <div className="container">
+          <div
+            className={`${styles.sectionHeadWrap} ${fadeClass(impactVisible, 0)}`}
+          >
+            <SectionLabel>Results</SectionLabel>
+            <h2 className={styles.sectionHeading}>Our Impact</h2>
+          </div>
+
+          {/* Main impact card */}
+          <Card
+            noHover
+            className={`${styles.impactPad} ${fadeClass(impactVisible, 1)}`}
+          >
+            <div className="row align-items-start g-3">
+              {/* Text */}
+              <div className="col-lg-6">
+                <p className={styles.impactBody}>
+                  We play a vital role in creating life-changing opportunities
+                  by connecting Ethiopian employees with secure, verified
+                  employment abroad. Through structured, transparent processes
+                  we help individuals move from local job limitations to stable
+                  international careers.
+                </p>
+                <p className={styles.impactBody}>
+                  Beyond job placement, we ensure every candidate clearly
+                  understands each step — documentation, visa processing,
+                  contract signing, and deployment. Our support reduces
+                  confusion and prevents exploitation.
+                </p>
+                <p className={styles.impactBodyLast}>
+                  Impact is measured not only by successful deployments, but by
+                  the confidence, safety, and long-term success of every
+                  employee we serve.
+                </p>
+              </div>
+
+              {/* Metrics */}
+              <div className="col-lg-6">
+                <div className="row g-2">
+                  {[
+                    { label: "Safe Deployments", pct: 98 },
+                    { label: "Document Success", pct: 96 },
+                    { label: "Client Satisfaction", pct: 94 },
+                    { label: "Transparent Process", pct: 100 },
+                  ].map((bar, i) => (
+                    <div key={i} className="col-6">
+                      <div className={styles.metricBox}>
+                        <div className={styles.metricNum}>{bar.pct}%</div>
+                        <div className={styles.metricLabel}>
+                          {bar.label.toUpperCase()}
+                        </div>
+                        <div className={styles.metricTrack}>
+                          <div
+                            className={styles.metricBar}
+                            style={{
+                              width: impactVisible ? `${bar.pct}%` : "0%",
+                              transition: `width 1.1s ease ${i * 0.13 + 0.2}s`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-          ))}
+          </Card>
+
+          {/* CTA */}
+          <div className={fadeClass(impactVisible, 5)}>
+            <div className={styles.ctaBox}>
+              <div>
+                <h5 className={styles.ctaTitle}>
+                  Ready to start your journey?
+                </h5>
+                <p className={styles.ctaBody}>
+                  Join thousands of Ethiopians who've built international
+                  careers with us.
+                </p>
+              </div>
+              <button className={styles.ctaBtn} onClick={navigateToContact}>
+                Get Started <FaArrowRight size={12} />
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-
-      {/* Our Impact */}
-      <div className="pt-4 border-top">
-        <h3 className=" mb-3" style={{ color: brandColor }}>
-          Our Impact
-        </h3>
-
-        <p className="mb-4">
-          We play a vital role in creating life-changing opportunities by
-          connecting Ethiopian employees with secure and verified employment
-          abroad. Through our structured and transparent processes, we help
-          individuals move from local job limitations to stable international
-          careers, improving their income, experience, and quality of life.
-        </p>
-        <p className="mb-4">
-          Beyond job placement, we ensure every candidate clearly understands
-          each step of the journey—from documentation and visa processing to
-          contract signing and final deployment. Our continuous support reduces
-          confusion, prevents exploitation, and builds trust, making overseas
-          employment safer and more reliable.
-        </p>
-        <p className="mb-4">
-          By providing accurate information, timely updates, and hands-on
-          guidance, we minimize delays and uncertainties in the process. Our
-          impact is measured not only by successful deployments, but by the
-          confidence, safety, and long-term success of the employees we serve.
-        </p>
-      </div>
+      </section>
     </div>
   );
 }
