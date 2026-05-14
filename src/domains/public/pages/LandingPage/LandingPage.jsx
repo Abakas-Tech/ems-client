@@ -6,6 +6,7 @@ import Contact from "./../../components/Contact/Contact";
 import Gallery from "./../../components/Gallery/Gallery";
 
 import Services from "../../components/Services/Services";
+import Testimonials from "../../components/Testimonials/Testimonials";
 
 function LandingPage() {
   return (
@@ -15,7 +16,7 @@ function LandingPage() {
       <Services />
 
       <Gallery />
-
+      <Testimonials />
       <Contact />
     </>
   );
