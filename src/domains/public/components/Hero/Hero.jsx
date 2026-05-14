@@ -1,25 +1,35 @@
 import { useState, useEffect } from "react";
 import styles from "./Hero.module.css";
+import bg1 from "../../../../assets/img/banner/hero-1.jpg";
+import bg2 from "../../../../assets/img/banner/hero-2.jpg";
+// import bg3 from "../../../../assets/img/banner/hero-3.jpg"; 
+
 
 const slides = [
   {
+    
     id: 1,
-    eyebrow: "Welcome to the future",
-    heading: "Build something\nremarkable.",
-    sub: "We craft digital experiences that push boundaries and define the next generation of the web.",
+    bg: bg1,
+    eyebrow: "Your trusted partner in overseas employment",
+    heading: "Your Future\nStarts Here.",
+    sub: "Ethiopia's leading licensed recruitment agency connecting skilled workers with top employers across Saudi Arabia, UAE, Kuwait, Qatar, and beyond.",
   },
   {
     id: 2,
-    eyebrow: "Our mission",
-    heading: "Design with\npurpose.",
-    sub: "Every pixel is intentional. Every interaction considered. We obsess over the details so you don't have to.",
+    bg: bg2,
+    eyebrow: "Legal. Safe. Transparent.",
+    heading: "Work Abroad\nWith Confidence.",
+    sub: "We handle every step — documentation, visa processing, pre-departure training, and on-ground support — so you and your family have peace of mind.",
   },
   {
     id: 3,
-    eyebrow: "Join the movement",
-    heading: "Grow beyond\nlimits.",
-    sub: "Scale your product with a team that's built for velocity, clarity, and lasting impact.",
+    bg: "/assets/hero-3.jpg",
+    eyebrow: "Thousands placed. Countless lives changed.",
+    heading: "Build a Better\nLife Abroad.",
+    sub: "Join the thousands of Ethiopian workers who have built successful careers in the Middle East through our trusted placement programs.",
   },
+  // Add more slides here — just follow the same shape:
+  // { id: 4, bg: "/assets/hero-4.jpg", eyebrow: "...", heading: "...\n...", sub: "..." },
 ];
 
 function Hero() {
@@ -44,7 +54,11 @@ function Hero() {
 
   return (
     <section className={styles["hero"]}>
-      <div className={styles["hero-bg"]} />
+      {/* bg image is driven by the current slide */}
+      <div
+        className={styles["hero-bg"]}
+        style={{ backgroundImage: `url(${slide.bg})` }}
+      />
       <div className={styles["hero-overlay"]} />
 
       <div className={styles["hero-content"]}>
@@ -69,7 +83,7 @@ function Hero() {
         </p>
 
         <div className={styles["hero-actions"]}>
-          <button className={styles["btn-primary"]}>Get Started</button>
+          <button className={styles["btn-primary"]}>Apply Now</button>
           <button className={styles["btn-secondary"]}>About Us</button>
         </div>
       </div>
