@@ -4,8 +4,9 @@
   position: relative;
   overflow: hidden;
   color: var(--color-text-primary);
-  margin: 3rem 0;
-  padding: 0;
+  padding-top: 100px;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 /* Image Section */
@@ -68,41 +69,20 @@
 .tag {
   display: inline-flex;
   align-items: center;
-  padding: 8px 0;
-
+  padding: 1rem 0;
   font-size: 24px;
   font-weight: 1000;
-  letter-spacing: 1px;
-
   color: var(--color-text-primary);
 }
 
-/* Title */
-.title {
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  line-height: 1.15;
-  font-weight: 800;
-  margin-bottom: 20px;
 
-  color: var(--color-text-primary);
-}
 
-.title span {
-  background: linear-gradient(
-    90deg,
-    var(--brand),
-    var(--brand-dark)
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
 
 /* Description */
 .description {
   color: var(--color-text-secondary);
   font-size: 0.95rem;
   line-height: 1.8;
-  margin-bottom: 1rem;
   max-width: 95%;
 }
 

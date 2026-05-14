@@ -31,7 +31,7 @@ const Contact = () => {
     phone: "0911111111",
   });
 
-  // ✅ Google Maps loader for Vite
+  //  Google Maps loader for Vite
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });

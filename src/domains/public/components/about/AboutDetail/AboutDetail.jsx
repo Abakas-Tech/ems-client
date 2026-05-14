@@ -193,9 +193,19 @@ export default function AboutDetail() {
   const [valuesRef, valuesVisible] = useFadeIn(0.1);
   const [impactRef, impactVisible] = useFadeIn(0.1);
   const navigate = useNavigate();
-  const navigateToContact = () => {
-    navigate("/#contact");
-  }
+const navigateToContact = () => {
+  navigate("/", { replace: false });
+
+  setTimeout(() => {
+    const section = document.getElementById("contact");
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, 100);
+};
 
   return (
     <div className={styles.page}>

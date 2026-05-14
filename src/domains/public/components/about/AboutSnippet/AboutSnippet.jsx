@@ -39,12 +39,8 @@ function AboutSnippet() {
 
   return (
     <section id="about" className={styles.aboutSection}>
-      {/* Blur Background */}
-      <div className={styles.blurOne}></div>
-      <div className={styles.blurTwo}></div>
-
       <div className="container position-relative">
-        <div className="row align-items-center gy-5">
+        <div className="row align-items-center">
           {/* IMAGE SIDE */}
           <div
             className="col-lg-6"
@@ -72,7 +68,7 @@ function AboutSnippet() {
             className="col-lg-6"
          
           >
-            <div className={styles.tag} id="about">
+            <div className={styles.tag}>
               ABOUT GLOBAL TRUST
             </div>
 
