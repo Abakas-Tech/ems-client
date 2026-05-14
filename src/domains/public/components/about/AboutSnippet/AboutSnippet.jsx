@@ -112,7 +112,7 @@ function AboutSnippet() {
                 onClick={goToAboutDetail}
               >
                 Learn More
-                <FaArrowRight className="ms-2" />
+
               </button>
             </div>
           </div>
