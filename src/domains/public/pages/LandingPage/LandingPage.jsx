@@ -6,6 +6,7 @@ import Contact from "./../../components/Contact/Contact";
 import Gallery from "./../../components/Gallery/Gallery";
 
 import Services from "../../components/Services/Services";
+import AboutSnippet from "../../components/about/AboutSnippet/AboutSnippet";
 
 function LandingPage() {
   return (
@@ -13,6 +14,7 @@ function LandingPage() {
       <Hero />
       <HowItWorks />
       <Services />
+      <AboutSnippet />
 
       <Gallery />
 
