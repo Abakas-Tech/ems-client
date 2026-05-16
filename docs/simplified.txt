@@ -1,0 +1,391 @@
+SIMPLIFIED EMS FULL-STACK SYSTEM DEVELOPMENT SPECIFICATION
+
+PROJECT OVERVIEW
+
+This project involves developing a simplified version of the existing Employment Management System (EMS) using the current EMS codebase as the foundation. The objective is to retain the core employee processing workflow while removing unnecessary features, roles, and public-facing components. The resulting system will be a streamlined internal platform designed specifically for administrative and operational use.
+
+The new system will be developed in a separate GitHub branch to ensure the existing production system remains unaffected during development. All modifications will be built on top of the current EMS architecture, reusing relevant components while removing obsolete modules and simplifying both the frontend and backend.
+
+SYSTEM SCOPE
+
+1. PUBLIC WEBSITE REMOVAL
+
+* The system will have no public-facing website or publicly accessible content.
+* All landing pages, public information pages, and external user access features will be removed.
+* The application will function exclusively as an internal management platform.
+
+2. USER ROLES
+
+* Only three user roles will exist in the system:
+
+  * Admin
+  * Staff
+  * Partner
+* All other user roles and permissions will be removed.
+
+3. AUTHENTICATION
+
+* Existing login and logout functionality will be retained with some updates.
+* The authentication system will be simplified to support only Admin and Staff access.
+* Role-based access control will be updated to reflect the new permission structure.
+* Unnecessary authentication-related code for removed roles will be deleted from both frontend and backend.
+
+4. USER PROFILE MANAGEMENT
+
+* Each authenticated user will have a personal profile.
+* Users will be able to view and update their profile information.
+* Profile features may include:
+
+  * Full name
+  * Username
+  * Email address
+  * Phone number
+  * Password update
+  * Profile photo
+
+DASHBOARD MODULE
+
+The dashboard will serve as the central administrative hub.
+
+ADMIN CAPABILITIES
+
+* Create and manage Staff accounts.
+* Create and manage Partner accounts.
+* Has full access to the system
+
+STAFF MANAGEMENT FEATURES
+
+* Add new staff members.
+* Edit staff information.
+* Archive staff accounts.
+* Delete staff accounts.
+
+PARTNER MANAGEMENT FEATURES
+
+* Add new partners.
+* Edit partner information.
+* Archive partner records.
+* Delete partner records.
+
+NOTE:
+
+* Partner records will not include an email field.
+* Partner information will be limited to relevant business details only.
+
+SIDEBAR NAVIGATION
+
+The application sidebar will contain only the following menu items:
+
+* Proifle
+* Employees
+* Embassy
+* LMIS
+* Ticket
+* Deployed
+* Returned
+* Employee Status
+* Settings
+* Logout
+
+All other navigation items from the existing EMS system will be removed.
+
+MODULE SPECIFICATIONS
+
+1. EMPLOYEES MODULE
+
+Purpose:
+To manage employee registration and core employee records.
+
+Features:
+
+* Display employee list in tabular format.
+* Table structure should match the provided Excel file.
+* Columns should display data up to and including Office Name.
+
+Required Fields in Employee List:
+
+* Candidate Name
+* Passport Number
+* Labor ID
+* Visa Number
+* Visa Date
+* Office Name
+
+Actions:
+
+* Add New Employee
+* Edit Employee
+* Delete Employee
+* Search Employees
+* Filter Employees
+
+Add Employee Form:
+When the "Add New Employee" button is clicked, a modal or popup form will appear.
+
+Form Fields:
+
+* Candidate Name
+* Passport Number
+* Labor ID
+* Visa Number
+* Visa Date
+* Office Name (Dropdown Selection)
+
+2. EMBASSY MODULE
+
+Purpose:
+To manage embassy processing status for employees.
+
+Features:
+
+* Display employee list in tabular format based on the Excel structure.
+* Allow users to assign and update embassy status for each employee.
+* Columns should display data up to and including Office Name and then status.
+
+
+Actions:
+
+* Update Embassy Status
+* Filter by Embassy Status
+* Search Records
+
+3. LMIS MODULE
+
+Purpose:
+To manage Labor Market Information System (LMIS) processing.
+
+Features:
+
+* Display employee records up to the Embassy stage.
+* Allow users to assign and update LMIS status.
+
+Visible Columns:
+
+* All relevant employee information up to Embassy Status.
+
+
+Actions:
+
+* Update LMIS Status
+* Filter by LMIS Status
+* Search Records
+
+4. TICKET MODULE
+
+Purpose:
+To manage employee ticketing information.
+
+Features:
+
+* Display employee list up to LMIS Status.
+* Allow users to assign ticket dates.
+
+
+Actions:
+
+* Assign Ticket Date
+* Update Ticket Date
+* Filter by Ticket Status
+* Search Records
+
+5. DEPLOYED MODULE
+
+Purpose:
+To manage employees who have been deployed.
+
+Features:
+
+* Display list of deployed employees.
+* Table structure should match the Excel file.
+* Provide advanced filtering options.
+* Generate deployment reports.
+
+Actions:
+
+* Filter by date range
+* Filter by office
+* Filter by destination
+* Export reports
+* Print reports
+
+6. RETURNED MODULE
+
+Purpose:
+To manage employees who return before contract completion.
+
+Business Rule:
+This module applies only to employees who return prior to their contracted completion date.
+
+Features:
+
+* Display returned employee records with complete details.
+* Allow users to record return date.
+* Maintain return history.
+
+Actions:
+
+* Assign Return Date
+* Update Return Information
+* Search Returned Employees
+* Filter Return Records
+
+7. EMPLOYEE STATUS MODULE
+
+Purpose:
+To provide a consolidated view of each employee's current processing stage.
+
+Features:
+
+* Display complete employee lifecycle status.
+* Track progress through all stages:
+
+  * Registered
+  * Embassy
+  * LMIS
+  * Ticketed
+  * Deployed
+  * Returned (if applicable)
+
+Actions:
+
+* Search by employee name
+* Filter by current status
+* Export status reports
+
+8. SETTINGS MODULE
+
+Purpose:
+To manage system configurations and user preferences.
+
+Features:
+
+* Profile settings
+* Password management
+* System preferences
+* Role management (Admin only)
+
+BACKEND DEVELOPMENT REQUIREMENTS
+
+1. CODEBASE CLEANUP
+
+* Remove unused APIs.
+* Remove obsolete controllers, services, and models.
+* Remove code related to deleted roles and public features.
+* Simplify routing structure.
+
+2. DATABASE OPTIMIZATION
+
+* Retain only necessary tables.
+* Remove unused tables and relationships.
+* Update schema to reflect simplified business requirements.
+* Ensure proper indexing for performance.
+
+3. API DEVELOPMENT
+
+* Refactor existing APIs for simplified workflows.
+* Implement CRUD operations for:
+
+  * Employees
+  * Staff
+  * Partners
+  * Embassy Status
+  * LMIS Status
+  * Ticket Information
+  * Deployment Records
+  * Return Records
+
+4. SECURITY
+
+* Maintain secure authentication.
+* Implement role-based authorization for Admin and Staff.
+* Protect all internal endpoints.
+* Ensure secure password handling.
+
+FRONTEND DEVELOPMENT REQUIREMENTS
+
+1. UI SIMPLIFICATION
+
+* Remove all public-facing pages and components.
+* Remove unused dashboards and modules.
+* Simplify navigation.
+* Retain only essential business workflows.
+
+2. COMPONENT REFACTORING
+
+* Reuse existing components where appropriate.
+* Refactor forms, tables, and layouts for the simplified system.
+* Remove redundant state management and unused logic.
+
+3. USER EXPERIENCE
+
+* Clean and intuitive interface.
+* Fast navigation between modules.
+* Consistent design language.
+* Easy data entry and status updates.
+
+TECHNICAL IMPLEMENTATION PLAN
+
+PHASE 1: PROJECT SETUP
+
+* Create a new GitHub branch for development.
+* Clone the existing EMS codebase into the new branch.
+* Review existing architecture.
+* Identify reusable modules.
+
+PHASE 2: SYSTEM CLEANUP
+
+* Remove unnecessary frontend pages.
+* Remove obsolete backend modules.
+* Remove unused database entities.
+* Simplify routing and navigation.
+
+PHASE 3: ROLE RESTRUCTURING
+
+* Restrict system access to Admin and Staff only.
+* Update authentication logic.
+* Update authorization middleware.
+
+PHASE 4: CORE MODULE DEVELOPMENT
+
+* Employees Module
+* Embassy Module
+* LMIS Module
+* Ticket Module
+* Deployed Module
+* Returned Module
+* Employee Status Module
+
+PHASE 5: DASHBOARD DEVELOPMENT
+
+* Staff Management
+* Partner Management
+* Summary Statistics
+* Quick Actions
+
+PHASE 6: TESTING AND OPTIMIZATION
+
+* Functional testing
+* Role-based access testing
+* Performance optimization
+* UI/UX refinement
+* Bug fixing
+
+EXPECTED DELIVERABLES
+
+* Simplified EMS web application
+* Clean and optimized frontend codebase
+* Refactored and streamlined backend codebase
+* Updated database schema
+* Role-based access for Admin and Staff only
+* Full employee lifecycle management workflow
+* Reporting and filtering capabilities
+* Deployment-ready application
+
+FINAL NOTES
+
+* The simplified EMS will be developed on a dedicated GitHub branch.
+* The existing EMS system will remain unchanged during development.
+* The new system will reuse the current architecture where practical.
+* All unnecessary code, modules, and dependencies should be removed.
+* The focus should be on simplicity, maintainability, performance, and operational efficiency.
+

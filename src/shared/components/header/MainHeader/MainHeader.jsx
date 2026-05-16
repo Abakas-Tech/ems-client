@@ -162,14 +162,14 @@ const MainHeader = () => {
                     Services
                   </a>
                 </li>
-                {/* <li>
+                <li>
                   <a
                     onClick={() => handleNavClick("about")}
                     style={{ cursor: "pointer" }}
                   >
                     About
                   </a>
-                </li> */}
+                </li>
                 <li>
                   <a
                     onClick={() => handleNavClick("gallery")}
