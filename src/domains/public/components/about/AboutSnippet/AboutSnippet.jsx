@@ -42,10 +42,7 @@ function AboutSnippet() {
       <div className="container position-relative">
         <div className="row align-items-center">
           {/* IMAGE SIDE */}
-          <div
-            className="col-lg-6"
-        
-          >
+          <div className="col-lg-6">
             <div className={styles.imageWrapper}>
               {/* Floating Badge */}
               <div className={styles.floatingBadge}>
@@ -59,31 +56,19 @@ function AboutSnippet() {
                 className={`img-fluid ${styles.aboutImage}`}
                 loading="lazy"
               />
-
             </div>
           </div>
 
           {/* CONTENT SIDE */}
-          <div
-            className="col-lg-6"
-         
-          >
-            <div className={styles.tag}>
-              ABOUT GLOBAL TRUST
-            </div>
-
-           
+          <div className="col-lg-6">
+            <div className={styles.tag}>ABOUT GLOBAL TRUST</div>
 
             <p className={styles.description}>
               <strong>Global Trust Overseas Employment Agency Plc</strong> is a
               licensed recruitment agency dedicated to connecting Ethiopian
-              employees with verified international job opportunities.
-            </p>
-            <p className={styles.description}>
-              Global Trust Overseas Employment Agency Plc is a
               licensed recruitment agency dedicated to connecting Ethiopian
-              employees with verified international job opportunities.
             </p>
+          
 
             <p className={styles.description}>
               We manage the full overseas employment process including job
@@ -92,7 +77,7 @@ function AboutSnippet() {
             </p>
 
             {/* STATS */}
-            <div className="row g-3 mb-5">
+            <div className="row g-3 mb-3">
               {stats.map((item, idx) => (
                 <div className="col-sm-4" key={idx}>
                   <div className={styles.statCard}>
@@ -112,7 +97,6 @@ function AboutSnippet() {
                 onClick={goToAboutDetail}
               >
                 Learn More
-
               </button>
             </div>
           </div>
