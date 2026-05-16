@@ -45,7 +45,7 @@ const testimonialData = [
 
 const Testimonials = () => {
   return (
-    <section id="testimonials" className="testimonials section">
+    <section id="testimonials" className="testimonials section pb-0">
       {/* Section Title */}
       <div className="container text-center mb-5" data-aos="fade-up">
         <h2>Testimonials</h2>

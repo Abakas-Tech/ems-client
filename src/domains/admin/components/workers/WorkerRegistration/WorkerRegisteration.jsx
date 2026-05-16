@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerWorkerCore } from "../../../api/worker.api"; 
+import { registerWorkerCore } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
@@ -14,11 +14,11 @@ function WorkerRegistration() {
     full_name: "",
     phone_number: "",
     email: "",
+    agency: "", // ← new
   });
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // Go back to previous page
   const goBack = () => {
     navigate(-1);
   };
@@ -31,7 +31,6 @@ function WorkerRegistration() {
   const nameRegex = /^[A-Za-z\s]+$/;
 
   const validateWorkerRegistration = ({ full_name, phone_number, email }) => {
-    // Full name
     if (!full_name.trim()) {
       return "Full name is required";
     }
@@ -46,7 +45,6 @@ function WorkerRegistration() {
       return "Full name must contain letters only";
     }
 
-    // phone_number
     if (!phone_number.trim() || phone_number.length < 10) {
       return "Phone number is required (10 digit minimum)";
     }
@@ -56,7 +54,6 @@ function WorkerRegistration() {
       return "Phone number must be in Ethiopian format (+2519..., 09..., or 07...)";
     }
 
-    // email
     if (email && email.trim()) {
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailPattern.test(email.trim().toLowerCase())) {
@@ -76,7 +73,7 @@ function WorkerRegistration() {
       return;
     }
 
-    const { full_name, phone_number, email } = formData;
+    const { full_name, phone_number, email, agency } = formData;
 
     setSubmitLoading(true);
     showLoader();
@@ -87,9 +84,9 @@ function WorkerRegistration() {
         phone_number: phone_number.trim(),
         email: email.trim() || null,
         is_active: true,
+        agency: agency || null, // ← new
       };
 
-      // Send the request using the new core registration endpoint
       const response = await registerWorkerCore(dataToSend);
 
       addMessage(
@@ -97,11 +94,11 @@ function WorkerRegistration() {
         response?.message || "Employee registered successfully",
       );
 
-      // Reset form
       setFormData({
         full_name: "",
         phone_number: "",
         email: "",
+        agency: "", // ← reset
       });
 
       goBack();
@@ -165,6 +162,21 @@ function WorkerRegistration() {
                 value={formData.email}
                 onChange={handleTextChange}
               />
+            </div>
+
+            {/* ── AGENCY DROPDOWN ── */}
+            <div className="form-group col-md-6">
+              <label>Agency</label>
+              <select
+                name="agency"
+                className="form-control"
+                value={formData.agency}
+                onChange={handleTextChange}
+              >
+                <option value="">Select Agency</option>
+                <option value="ethio_saudi">Ethio Saudi</option>
+                <option value="jomery">Jomery</option>
+              </select>
             </div>
           </div>
         </div>
