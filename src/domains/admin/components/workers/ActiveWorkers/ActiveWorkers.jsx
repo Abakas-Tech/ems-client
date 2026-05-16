@@ -72,6 +72,10 @@ const ActiveWorkers = () => {
       },
     });
   };
+  // Edit Handler
+  const handleEdit = (row) => {
+    navigate(`/admin/employees/edit/${row.id}`, { state: row });
+  };
   // --- Selection Handlers ---
   const handleRowDoubleClick = (row) => {
     if (profile.role_id !== 1 && profile.role_id !== 2) return;
@@ -342,6 +346,7 @@ const ActiveWorkers = () => {
             type: "transaction",
             onClick: (row) => handleRecordTransaction(row),
           },
+          { type: "edit", onClick: (row) => handleEdit(row) },
           { type: "archive", onClick: (row) => handleArchive(row.id) },
           { type: "delete", onClick: (row) => handleDelete(row.id) },
           {
