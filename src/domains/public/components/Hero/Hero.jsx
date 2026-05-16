@@ -95,8 +95,12 @@ function Hero() {
         </p>
 
         <div className={styles["hero-actions"]}>
-          <button className={styles["btn-primary"]}>Apply Now</button>
-          <button className={styles["btn-secondary"]}>About Us</button>
+          <button href="#contact" className={styles["btn-primary"]}>
+            Apply Now
+          </button>
+          <button href="#about" className={styles["btn-secondary"]}>
+            About Us
+          </button>
         </div>
       </div>
 
