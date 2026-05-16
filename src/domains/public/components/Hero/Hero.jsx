@@ -65,7 +65,7 @@ function Hero() {
   const slide = slides[current];
 
   return (
-    <section className={styles["hero"]}>
+    <section className={styles["hero"]} id="home">
       {/* bg image is driven by the current slide */}
       <div
         className={styles["hero-bg"]}
@@ -95,12 +95,14 @@ function Hero() {
         </p>
 
         <div className={styles["hero-actions"]}>
-          <button href="#contact" className={styles["btn-primary"]}>
-            Apply Now
-          </button>
-          <button href="#about" className={styles["btn-secondary"]}>
-            About Us
-          </button>
+          <div className={styles["hero-actions"]}>
+            <a href="#contact" className={styles["btn-primary"]}>
+              Apply Now
+            </a>
+            <a href="#about" className={styles["btn-secondary"]}>
+              About Us
+            </a>
+          </div>
         </div>
       </div>
 
