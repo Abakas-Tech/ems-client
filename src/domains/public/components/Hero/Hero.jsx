@@ -2,34 +2,46 @@ import { useState, useEffect } from "react";
 import styles from "./Hero.module.css";
 import bg1 from "../../../../assets/img/banner/hero-1.jpg";
 import bg2 from "../../../../assets/img/banner/hero-2.jpg";
-// import bg3 from "../../../../assets/img/banner/hero-3.jpg"; 
-
+import bg3 from "../../../../assets/img/banner/hero-3.jpg";
+import bg4 from "../../../../assets/img/banner/hero-4.jpg";
+import bg5 from "../../../../assets/img/banner/hero-5.jpg";
 
 const slides = [
   {
-    
     id: 1,
     bg: bg1,
     eyebrow: "Your trusted partner in overseas employment",
     heading: "Your Future\nStarts Here.",
-    sub: "Ethiopia's leading licensed recruitment agency connecting skilled workers with top employers across Saudi Arabia, UAE, Kuwait, Qatar, and beyond.",
+    sub: "Ethiopia's leading agency connecting skilled workers with top employers in Saudi Arabia, UAE, Kuwait, and Qatar.",
   },
   {
     id: 2,
     bg: bg2,
     eyebrow: "Legal. Safe. Transparent.",
-    heading: "Work Abroad\nWith Confidence.",
-    sub: "We handle every step — documentation, visa processing, pre-departure training, and on-ground support — so you and your family have peace of mind.",
+    heading: "Your Safe\nPath Abroad.",
+    sub: "From documents to departure — we handle everything so you and your family have peace of mind.",
   },
   {
     id: 3,
-    bg: "/assets/hero-3.jpg",
+    bg: bg3,
     eyebrow: "Thousands placed. Countless lives changed.",
     heading: "Build a Better\nLife Abroad.",
-    sub: "Join the thousands of Ethiopian workers who have built successful careers in the Middle East through our trusted placement programs.",
+    sub: "Thousands of Ethiopians have built successful careers in the Middle East — your story starts here.",
   },
-  // Add more slides here — just follow the same shape:
-  // { id: 4, bg: "/assets/hero-4.jpg", eyebrow: "...", heading: "...\n...", sub: "..." },
+  {
+    id: 4,
+    bg: bg4,
+    eyebrow: "Your gateway to the Gulf",
+    heading: "Opportunity\nAwaits You.",
+    sub: "From Addis Ababa to Dubai, Riyadh, and Kuwait City — we open doors to life-changing careers for hardworking Ethiopians.",
+  },
+  {
+    id: 5,
+    bg: bg5,
+    eyebrow: "Start your journey today",
+    heading: "Apply Once.\nChange Everything.",
+    sub: "Our simple application process gets you in front of verified employers fast. No hidden fees. No middlemen. Just results.",
+  },
 ];
 
 function Hero() {
