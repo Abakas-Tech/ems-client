@@ -178,14 +178,14 @@ const MainHeader = () => {
                     Gallery
                   </a>
                 </li>
-                {/* <li>
+                <li>
                   <a
                     onClick={() => handleNavClick("testimonials")}
                     style={{ cursor: "pointer" }}
                   >
                     Testimonials
                   </a>
-                </li> */}
+                </li>
                 <li>
                   <a
                     onClick={() => handleNavClick("contact")}
@@ -271,14 +271,14 @@ const MainHeader = () => {
                       Gallery
                     </a>
                   </li>
-                  {/* <li>
+                  <li>
                     <a
                       onClick={() => handleNavClick("testimonials")}
                       style={{ cursor: "pointer" }}
                     >
                       Testimonials
                     </a>
-                  </li> */}
+                  </li>
                   <li>
                     <a
                       onClick={() => handleNavClick("contact")}
