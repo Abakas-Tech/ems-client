@@ -24,7 +24,7 @@ function PartnerRoutes() {
         <Route path="active-employees/:id" element={<WorkerProfile />} />
         <Route path="files" element={<File />} />
         <Route path="my-profile" element={<MyProfile />} />
-        <Route path="notifications" element={<MyNotifications />} />
+        <Route path="notifications" element={<MyNotifications />} />  
         <Route path="settings" element={<ChangePasswordPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
