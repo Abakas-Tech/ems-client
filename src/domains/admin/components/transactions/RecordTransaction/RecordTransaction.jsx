@@ -18,7 +18,7 @@ const RecordTransaction = ({
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { profile } = useProfile();
-  const goBackPath = location.state?.from || "/dashboard";
+  const goBackPath = location.state?.from || "/admin/finances";
 
   const [formData, setFormData] = useState({
     // 1. Priority: Edit data > Incoming Worker data > null (Company transaction)
