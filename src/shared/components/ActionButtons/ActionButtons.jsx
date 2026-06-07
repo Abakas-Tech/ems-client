@@ -93,6 +93,11 @@ const ActionButtons = ({ actions = [], row }) => {
       icon: <i className="fa-solid fa-file-pdf"></i>,
       title: "View CV",
     },
+    files: {
+      className: "btn-outline-info",
+      icon: <i className="bi-folder2-open"></i>,
+      title: "View Files",
+    },
   };
 
   // Filter actions by role only (ignore showOn)

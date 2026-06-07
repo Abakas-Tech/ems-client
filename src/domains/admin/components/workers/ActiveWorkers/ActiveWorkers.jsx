@@ -340,11 +340,19 @@ const ActiveWorkers = () => {
             type: "transaction",
             onClick: (row) => handleRecordTransaction(row),
           },
+          {
+            type: "files",
+            onClick: (row) =>
+              navigate("/admin/files", {
+                state: { workerId: row.id, tab: "workers" },
+              }),
+          },
           { type: "archive", onClick: (row) => handleArchive(row.id) },
           { type: "delete", onClick: (row) => handleDelete(row.id) },
           {
             type: "addModule",
-            onClick: (row) => navigate(`/admin/employees/modules/${row.id}/add`),
+            onClick: (row) =>
+              navigate(`/admin/employees/modules/${row.id}/add`),
           },
           {
             type: "viewCV",
