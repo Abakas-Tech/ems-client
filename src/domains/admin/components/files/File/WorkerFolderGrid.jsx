@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { fetchWorkerFolders } from "../../../api/file.api";
+import WorkerFolderFilters from "../WorkerFolderFilters/WorkerFolderFilters";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import Badge from "../../../../../shared/components/Badge/Badge";
@@ -57,53 +58,11 @@ const WorkerFolderGrid = ({ onSelectWorker }) => {
   return (
     <div>
       {/* Filters - matching your FileFilters style */}
-      <div className={`card shadow-sm mb-4`}>
-        <div className="card-body">
-          <div className="row g-3 align-items-center">
-            <div className="col-md-4">
-              <input
-                type="text"
-                name="name"
-                className="form-control"
-                placeholder="Search by Name"
-                value={filters.name}
-                onChange={handleFilterChange}
-              />
-            </div>
-            <div className="col-md-3">
-              <input
-                type="text"
-                name="passport"
-                className="form-control"
-                placeholder="Search by Passport"
-                value={filters.passport}
-                onChange={handleFilterChange}
-              />
-            </div>
-            <div className="col-md-3">
-              <input
-                type="text"
-                name="labourId"
-                className="form-control"
-                placeholder="Search by Labour ID"
-                value={filters.labourId}
-                onChange={handleFilterChange}
-              />
-            </div>
-            <div className="col-md-2 d-grid">
-              <button
-                className="btn btn-outline-secondary"
-                onClick={handleClear}
-                disabled={
-                  !filters.name && !filters.passport && !filters.labourId
-                }
-              >
-                Clear Filters
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <WorkerFolderFilters
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onClear={handleClear}
+      />
 
       {/* Cards Grid */}
       {folders.length === 0 ? (
@@ -169,47 +128,50 @@ const WorkerFolderGrid = ({ onSelectWorker }) => {
                       </div>
 
                       {/* Info */}
-                      <div className="flex-grow-1 min-width-0">
-                        <h6
-                          className="mb-1 fw-bold text-truncate"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          {folder.full_name}
-                        </h6>
-                        <p
-                          className="mb-0 text-muted text-truncate"
-                          style={{ fontSize: "0.75rem" }}
-                        >
-                          {folder.passport_number || "No passport"}
-                        </p>
-                        {folder.labour_id && (
-                          <p
-                            className="mb-0 text-muted text-truncate"
-                            style={{ fontSize: "0.75rem" }}
+                      {/* Info */}
+                      <div className="flex-grow-1 min-width-0 d-flex align-items-center justify-content-between">
+                        <div className="min-width-0 flex-grow-1">
+                          <h6
+                            className="mb-1 fw-bold text-truncate"
+                            style={{ fontSize: "0.9rem" }}
                           >
-                            {folder.labour_id}
-                          </p>
-                        )}
+                            {folder.full_name}
+                          </h6>
+                          <div className="d-flex flex-column">
+                            <p
+                              className="mb-0 text-muted text-truncate"
+                              style={{ fontSize: "0.75rem" }}
+                            >
+                              {folder.passport_number || "No passport"}
+                            </p>
+                            <p
+                              className="mb-0 text-muted text-truncate"
+                              style={{ fontSize: "0.75rem" }}
+                            >
+                              {folder.labour_id || "No Labour ID"}
+                            </p>
+                            <p
+                              className="mb-0 text-muted text-truncate"
+                              style={{ fontSize: "0.75rem" }}
+                            >
+                              {folder.doc_count}{" "}
+                              {folder.doc_count === 1 ? "File" : "Files"}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Doc count - Now centered vertically next to the IDs */}
                       </div>
 
                       {/* Doc count */}
-                      <div className="flex-shrink-0 text-end ms-2">
-                        <Badge
-                          content={`${folder.doc_count}`}
-                          color="primary"
-                          className="rounded-pill"
-                        />
-                      </div>
                     </div>
-
                     {/* Open button - full width border on hover */}
                     <div className="mt-3">
                       <button
-                        className="btn btn-outline-primary btn-sm w-100"
+                        className="btn btn-outline-main btn-sm w-100"
                         style={{ borderRadius: "6px" }}
                       >
-                        Open Folder{" "}
-                        <i className="bi bi-arrow-right-short ms-1"></i>
+                        Open Folder
                       </button>
                     </div>
                   </div>
