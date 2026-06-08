@@ -174,13 +174,14 @@ const File = () => {
 
   const isInternalUser = profile?.role_id <= 2;
 
+  // Check if we're in worker dossier view (to hide parent header)
+  const isWorkerDossierView =
+    tab === "workers" && view === "dossier" && activeWorker;
+
   // Upload/Edit views (for company files only)
   if (tab === "company" && (view === "create" || view === "edit")) {
     return (
       <div className="dashboard-wraper">
-        <div className="mb-4">
-          <BackButton onClick={() => setView("list")} />
-        </div>
         <FileUpload
           isEditMode={view === "edit"}
           initialData={editingFile}
@@ -196,79 +197,85 @@ const File = () => {
 
   return (
     <div className="dashboard-wraper">
-      {/* Header */}
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-        <div className="mb-3 mb-md-0">
-          <h2 className="fw-bold text-dark mb-2">File Manager</h2>
-          <p className="text-muted mb-0">
-            {tab === "workers"
-              ? "Browse worker document folders — view, track, and manage individual employee files."
-              : "Manage organization-wide documents — licenses, agreements, reports, and policies."}
-          </p>
-        </div>
-
-        <div className="d-flex align-items-center gap-2">
-          {/* Tab Switcher */}
-          <div
-            className="btn-group shadow-sm"
-            role="group"
-            style={{ borderRadius: "8px", overflow: "hidden" }}
-          >
-            <button
-              className={`btn btn-sm px-3 py-2 fw-semibold ${
-                tab === "workers"
-                  ? "btn-main text-white"
-                  : "btn-outline-secondary"
-              }`}
-              onClick={() => {
-                setTab("workers");
-                setView("list");
-                setActiveWorker(null);
-              }}
-              style={{ borderRadius: "8px 0 0 8px" }}
-            >
-              <i className="bi bi-people-fill me-1"></i>
-              Workers
-            </button>
-            <button
-              className={`btn btn-sm px-3 py-2 fw-semibold ${
-                tab === "company"
-                  ? "btn-main text-white"
-                  : "btn-outline-secondary"
-              }`}
-              onClick={() => {
-                setTab("company");
-                setView("list");
-                setActiveWorker(null);
-              }}
-              style={{ borderRadius: "0 8px 8px 0" }}
-            >
-              <i className="bi bi-building me-1"></i>
-              Company
-            </button>
+      {/* 
+        Only show header if NOT in worker dossier view.
+        When viewing a worker dossier, the WorkerDossier component 
+        has its own back button and no parent header is needed.
+      */}
+      {!isWorkerDossierView && (
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+          <div className="mb-3 mb-md-0">
+            <h2 className="fw-bold text-dark mb-2">File Manager</h2>
+            <p className="text-muted mb-0">
+              {tab === "workers"
+                ? "Browse worker document folders — view, track, and manage individual employee files."
+                : "Manage organization-wide documents — licenses, agreements, reports, and policies."}
+            </p>
           </div>
 
-          {/* Upload button (company tab only) */}
-          {tab === "company" && (
-            <button
-              className="btn btn-main px-4 py-2 rounded-3 shadow-sm fw-semibold text-white"
-              onClick={() => {
-                setEditingFile(null);
-                setView("create");
-              }}
+          <div className="d-flex align-items-center gap-2">
+            {/* Tab Switcher */}
+            <div
+              className="btn-group shadow-sm"
+              role="group"
+              style={{ borderRadius: "8px", overflow: "hidden" }}
             >
-              + Upload File
-            </button>
-          )}
+              <button
+                className={`btn btn-sm px-3 py-2 fw-semibold ${
+                  tab === "workers"
+                    ? "btn-main text-white"
+                    : "btn-outline-secondary"
+                }`}
+                onClick={() => {
+                  setTab("workers");
+                  setView("list");
+                  setActiveWorker(null);
+                }}
+                style={{ borderRadius: "8px 0 0 8px" }}
+              >
+                <i className="bi bi-people-fill me-1"></i>
+                Workers
+              </button>
+              <button
+                className={`btn btn-sm px-3 py-2 fw-semibold ${
+                  tab === "company"
+                    ? "btn-main text-white"
+                    : "btn-outline-secondary"
+                }`}
+                onClick={() => {
+                  setTab("company");
+                  setView("list");
+                  setActiveWorker(null);
+                }}
+                style={{ borderRadius: "0 8px 8px 0" }}
+              >
+                <i className="bi bi-building me-1"></i>
+                Company
+              </button>
+            </div>
+
+            {/* Upload button (company tab only) */}
+            {tab === "company" && (
+              <button
+                className="btn btn-main px-4 py-2 rounded-3 shadow-sm fw-semibold text-white"
+                onClick={() => {
+                  setEditingFile(null);
+                  setView("create");
+                }}
+              >
+                + Upload File
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Worker Folders Tab */}
       {tab === "workers" && view === "list" && (
         <WorkerFolderGrid onSelectWorker={handleSelectWorker} />
       )}
 
-      {/* Worker Dossier Tab */}
+      {/* Worker Dossier Tab - renders without parent header */}
       {tab === "workers" && view === "dossier" && activeWorker && (
         <WorkerDossier
           workerId={activeWorker.id}
