@@ -56,6 +56,12 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
+    label: "Tickets",
+    path: "/admin/tickets",
+    icon: "bi bi-ticket-detailed",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  },
+  {
     label: "Meta Data",
     path: "/admin/meta-data",
     icon: "bi bi-database-add",

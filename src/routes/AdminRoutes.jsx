@@ -48,6 +48,7 @@ import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx";
 import UserManual from "../domains/admin/pages/UserManual/UserManual.jsx";
 import WeredaPage from "../domains/admin/pages/meta/WeredaPage/WeredaPage.jsx";
 import SubCityPage from "../domains/admin/pages/meta/SubCityPage/SubCityPage.jsx";
+import Flight from "../domains/admin/pages/Flight/Flight.jsx";
 
 const AdminRoutes = () => {
   const { profile } = useProfile();
@@ -137,6 +138,7 @@ const AdminRoutes = () => {
         />
 
         <Route path="user-manual" element={<UserManual />} />
+        <Route path="tickets" element={<Flight/>} />
 
         <Route path="*" element={<NotFound />} />
       </Route>
