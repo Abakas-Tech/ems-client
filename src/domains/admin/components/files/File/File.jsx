@@ -54,8 +54,11 @@ const File = () => {
       setActiveWorker({ id: location.state.workerId });
       setView(location.state.view || "dossier");
     }
-    // Clear location state after consuming
-    navigate("/admin/files", { replace: true });
+    // Clear location state after consuming based on role
+    if (profile?.role_id > 2) {
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    navigate(location.pathname, { replace: true, state: {} });
   }, [location.state, navigate]);
 
   // Fetch company files when tab = company and view = list

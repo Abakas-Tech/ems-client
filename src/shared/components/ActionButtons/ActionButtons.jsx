@@ -34,8 +34,8 @@ const ActionButtons = ({ actions = [], row }) => {
       title: "Delete",
     },
     archive: {
-      className: "btn-outline-warning",
-      icon: <i className="fa-solid fa-folder-open"></i>,
+      className: "btn-outline-secondary",
+      icon: <i className="fa-solid fa-box-archive"></i>,
       title: "Archive",
     },
     restore: {
@@ -94,8 +94,8 @@ const ActionButtons = ({ actions = [], row }) => {
       title: "View CV",
     },
     files: {
-      className: "btn-outline-info",
-      icon: <i className="bi-folder2-open"></i>,
+      className: "btn-outline-warning",
+      icon: <i className="fa-solid fa-folder-open"></i>,
       title: "View Files",
     },
   };

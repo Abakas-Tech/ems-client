@@ -605,8 +605,7 @@ const WorkerDossier = ({ workerId, onBack }) => {
               )}
             </div>
             <p className="text-muted mb-0 " style={{ fontSize: "15px" }}>
-              Manage contracts, CVs, reports and other documents for this
-              worker.
+              Manage contracts, reports and other documents for this worker.
             </p>
           </div>
           <button
