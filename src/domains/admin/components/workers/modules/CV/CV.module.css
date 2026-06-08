@@ -1,352 +1,299 @@
-/* ===== HEADER ===== */
-.header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: linear-gradient(135deg, #0dcaf0, #3dd5f3);
-  color: white;
-  padding: 30px 35px;
+/* ============================================
+   CV.module.css — Abo Bejad Bilingual Layout
+   ============================================ */
+
+/* ── Base ── */
+.cv {
+  width: 750px;
+  border: 2px solid #000;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 12px;
+  background: #fff;
+  color: #000;
 }
 
-.circularPhoto {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid white;
+/* ── Border utilities ── */
+.bb {
+  border-bottom: 1px solid #000;
 }
-/* ===== ALIGN TOP SECTIONS (PHOTO vs LEFT) ===== */
-.topLeftGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+.bt {
+  border-top: 2px solid #000;
 }
-
-/* Make right photo match height of left group */
-.topRightGroup {
-  display: flex;
+.br {
+  border-right: 1px solid #000;
+}
+.bl {
+  border-left: 1px solid #000;
 }
 
-.photoWrapper {
-  width: 100%;
-  display: flex;
-}
-
-/* 🔥 KEY: SAME HEIGHT AS LEFT */
-.standingPhoto {
-  width: 100%;
-  height: 100%;
-  max-height: 100%;
-  object-fit: cover;
-  border-radius: 12px;
-}
-
-/* Make both columns stretch equally */
-.mainContent {
+/* ── Layout primitives ── */
+.row2col {
   display: grid;
-  grid-template-columns: 1.1fr 1.3fr;
-  gap: 24px;
-  padding: 30px;
-  background: #f1f5f9;
-  align-items: stretch; /* 🔥 IMPORTANT */
+  grid-template-columns: 1fr 1fr;
 }
-
-/* Ensure columns grow equally */
-.leftColumn,
-.rightColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  height: 100%;
+.col {
+  /* flex column slot */
 }
-
-/* 🔥 BALANCE SECTIONS */
-.leftColumn::after {
-  content: "";
-  flex-grow: 1;
-}
-
-/* Prevent right from stretching too long visually */
-.rightColumn {
-  justify-content: space-between;
-}
-.name {
-  font-size: 40px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  margin: 0;
-  color: white;
-}
-
-.title {
-  font-size: 13px;
-  opacity: 0.85;
-  margin-top: 6px;
-  letter-spacing: 2px;
-  color: white;
-}
-
-/* ===== MAIN LAYOUT ===== */
-.mainContent {
+.innerRow {
   display: grid;
-  grid-template-columns: 1fr 1fr 280px;
-  gap: 22px;
-  padding: 25px;
-  background: #f1f5f9;
+  grid-template-columns: 1fr 1fr;
+}
+.rtl {
+  direction: rtl;
 }
 
-/* Left + middle flexible content */
-.leftColumn,
-.rightColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+/* ── Cell ── */
+.cell {
+  padding: 3px 8px;
+  font-size: 11.5px;
+}
+.label {
+  font-style: italic;
+  font-weight: bold;
+}
+.value {
+  font-style: italic;
+}
+.labelAr {
+  font-weight: bold;
+}
+.valueAr {
 }
 
-/* RIGHT SIDE IMAGE COLUMN */
-.photoColumn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-}
-
-/* ===== STANDING IMAGE (FIXED ISSUE) ===== */
-.standingPhoto {
-  width: 100%;
-  max-width: 260px;
-  height: 420px;
-  object-fit: cover;
-  border-radius: 16px;
-  /* box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); */
-  background: white;
-  padding: 6px;
-}
-
-/* ===== SECTION CARD ===== */
-.section {
-  background: white;
-  padding: 16px 18px;
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
-}
-
-.section:hover {
-  transform: translateY(-2px);
-}
-
-/* Section title */
+/* ── Section gold bars ── */
 .sectionTitle {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  color: black;
-  margin-bottom: 10px;
-  position: relative;
-}
-
-/* underline accent */
-.sectionTitle::after {
-  content: "";
-  display: block;
-  width: 35px;
-  height: 3px;
-  background: #0dcaf0;
-  margin-top: 4px;
-  border-radius: 3px;
-}
-.highlightContactTitle::after {
-  content: "";
-  display: block;
-  width: 35px;
-  height: 3px;
-  background: #3b82f6;
-  margin-top: 4px;
-  border-radius: 3px;
-}
-/* ===== TEXT ===== */
-.section p {
-  font-size: 13px;
-  color: #334155;
-  margin: 6px 0;
-  line-height: 1.45;
-}
-
-.section strong {
-  color: #0f172a;
-  font-weight: 600;
-}
-
-/* ===== LIST STYLE ===== */
-.list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  background: #8b6914;
+  color: white;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 11.5px;
+  padding: 3px 10px;
+  border-bottom: 1px solid #000;
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  justify-content: space-between;
+  align-items: center;
+}
+.sectionTitle span:last-child {
+  direction: rtl;
 }
 
-.list li {
-  background: #e2e8f0;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-}
-
-/* language level */
-.level {
-  color: #2563eb;
-  font-weight: 600;
-}
-
-/* ===== SPECIAL GROUP (CONTACT CARD STYLE) ===== */
-.highlightSection {
-  background: linear-gradient(135deg, #3e8fb5, #0dcaf0);
+.sectionTitleAr {
+  background: #8b6914;
   color: white;
+  font-weight: bold;
+  font-size: 11.5px;
+  padding: 3px 8px;
+  border-bottom: 1px solid #000;
+  text-align: center;
+  direction: rtl;
 }
 
-.highlightSection p,
-.highlightSection strong {
-  color: white;
+/* ── Header ── */
+.cvHeader {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 2px solid #000;
+  gap: 12px;
 }
-/* 2-column layout (wider + balanced) */
-.mainContent {
-  display: grid;
-  grid-template-columns: 1.1fr 1.3fr;
-  gap: 24px;
-  padding: 30px;
-  background: #f1f5f9;
-}
-
-/* Right column spacing */
-.rightColumn {
+.headerLogoLeft {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  align-items: center;
+  width: 100px;
+}
+.logoCircle {
+  width: 70px;
+  height: 70px;
+  border: 2px solid #8b6914;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4px;
+}
+.logoCircle span {
+  font-size: 7px;
+  font-weight: bold;
+  color: #8b6914;
+  line-height: 1.3;
+}
+.logoCircle small {
+  font-size: 6px;
+  color: #555;
+}
+.logoName {
+  font-size: 8px;
+  font-weight: bold;
+  color: #8b6914;
+  text-align: center;
+  margin-top: 2px;
+}
+.headerCenter {
+  flex: 1;
+  text-align: center;
+}
+.arabicTitle {
+  font-size: 30px;
+  font-weight: bold;
+  color: #8b6914;
+}
+.englishTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: #8b6914;
+  letter-spacing: 1px;
+}
+.headerPhoto img {
+  width: 90px;
+  height: 110px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  display: block;
 }
 
-/* Photo wrapper */
-.photoWrapper {
-  background: white;
-  padding: 3px;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+/* ── Meta label row (title bar right side) ── */
+.metaLabel {
+  font-style: italic;
+  font-weight: bold;
+  font-size: 11.5px;
+}
+
+/* ── Phone / Name row ── */
+.phoneNameRow {
+  display: grid;
+  grid-template-columns: 130px 1fr 130px;
+}
+.phoneCell {
+  padding: 4px 8px;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 12px;
   display: flex;
+  align-items: center;
+}
+.phoneValue {
+  font-weight: normal;
+  margin-left: 4px;
+}
+.nameCell {
+  padding: 4px 8px;
+  text-align: center;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
 }
+.nameAr {
+  font-size: 11px;
+  direction: rtl;
+  font-weight: normal;
+}
+.phoneCellAr {
+  padding: 4px 8px;
+  text-align: right;
+  font-style: italic;
+  font-size: 12px;
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
 
-/* Standing image (better proportion) */
-.standingPhoto {
-  width: 100%;
-  max-width: 260px;
-  height: 420px;
+/* ── Main 3-column block ── */
+.main3col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 190px;
+}
+
+/* ── Language row (taller label) ── */
+.langRow {
+  grid-template-columns: 80px 1fr;
+}
+
+/* ── Skills ── */
+.skillRow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
+.skillEn {
+  padding: 3px 8px;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 11.5px;
+}
+.skillVal {
+  padding: 3px 8px;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 11.5px;
+  text-align: center;
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+  min-width: 50px;
+}
+.skillArEmpty {
+  padding: 3px 8px;
+}
+
+/* ── Passport AR block ── */
+.passportArBlock {
+  direction: rtl;
+}
+
+/* ── Body photo ── */
+.bodyPhotoWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+.bodyPhoto {
+  width: 130px;
+  height: 180px;
   object-fit: cover;
-  border-radius: 12px;
 }
 
-/* ===== PASSPORT IMAGE ===== */
-.passportImageWrapper {
-  margin-top: 12px;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid #e5e7eb;
-  background: #f8fafc;
+/* ── Arabic labels column ── */
+.arLabelsCol {
+  direction: rtl;
+  font-size: 11.5px;
+}
+.arLabelCell {
+  padding: 3px 8px;
+  text-align: right;
+}
+.arLangCell {
+  min-height: 34px;
 }
 
-/* Clean, not too big */
-.passportImage {
-  width: 100%;
-  height: 140px; /* 🔥 Controlled height */
-  object-fit: contain;
-  display: block;
+/* ── Remarks ── */
+.remarksRow {
+  display: flex;
+  align-items: center;
+  padding: 3px 10px;
+  gap: 16px;
 }
-/* ============================================= */
-/* MOBILE RESPONSIVE (DO NOT TOUCH DESKTOP) */
-/* ============================================= */
-@media (max-width: 768px) {
-  /* MAIN LAYOUT → STACK */
-  .mainContent {
-    grid-template-columns: 1fr !important;
-    padding: 15px;
-    gap: 16px;
-  }
+.remarksLabel {
+  font-style: italic;
+  font-weight: bold;
+  font-size: 11.5px;
+}
+.remarksValue,
+.remarksDate {
+  color: #8b6914;
+  font-weight: bold;
+  font-size: 12px;
+}
 
-  /* HEADER */
-  .header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
-  }
-
-  .circularPhoto {
-    width: 90px;
-    height: 90px;
-  }
-
-  .name {
-    font-size: 22px;
-  }
-
-  .title {
-    font-size: 11px;
-    letter-spacing: 1px;
-  }
-
-  /* COLUMNS FULL WIDTH */
-  .leftColumn,
-  .rightColumn {
-    width: 100%;
-  }
-
-  /* REMOVE HEIGHT BALANCE LOGIC (important for mobile) */
-  .leftColumn::after {
-    display: none;
-  }
-
-  .rightColumn {
-    justify-content: flex-start;
-  }
-
-  /* IMAGE FIX */
-  .photoWrapper {
-    justify-content: center;
-  }
-
-  .standingPhoto {
-    max-width: 200px;
-    height: auto;
-  }
-
-  /* PASSPORT IMAGE */
-  .passportImage {
-    height: 120px;
-  }
-
-  /* SECTION */
-  .section {
-    padding: 14px;
-  }
-
-  /* TEXT */
-  .section p {
-    font-size: 12px;
-  }
-
-  /* SKILLS / LANGUAGES */
-  .list {
-    gap: 4px;
-  }
-
-  .list li {
-    font-size: 11px;
-    padding: 4px 8px;
-  }
-
-  /* BUTTON FIX */
-  .btn {
-    width: 100% !important;
+/* ── Print ── */
+@media print {
+  .cv {
+    border: 2px solid #000;
+    width: 750px;
   }
 }

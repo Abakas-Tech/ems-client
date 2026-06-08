@@ -1,26 +1,49 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import styles from "./CV.module.css";
 import { getWorkerCVData } from "../../../../api/worker.api";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { useParams, useNavigate } from "react-router-dom";
 import useLoader from "../../../../../../context/Loader/useLoader";
 import { uploadFile } from "../../../../api/file.api";
-import { useRef } from "react";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
-const safeDate = (d) => (d ? d.slice(0, 10) : "—");
+import styles from "./CV.module.css";
 
+/* ─── helpers ─── */
+const safeDate = (d) => (d ? d.slice(0, 10) : "");
+const yesNo = (val) => (val ? "YES" : "NO");
+
+/* ─── Sub-components (keep outside CV to avoid re-mount) ─── */
+const KVRow = ({ label, value, noBorder }) => (
+  <div className={`${styles.innerRow} ${noBorder ? "" : styles.bb}`}>
+    <div className={`${styles.cell} ${styles.br} ${styles.label}`}>{label}</div>
+    <div className={`${styles.cell} ${styles.value}`}>{value ?? ""}</div>
+  </div>
+);
+
+const KVRowAr = ({ label, value, noBorder }) => (
+  <div
+    className={`${styles.innerRow} ${styles.rtl} ${noBorder ? "" : styles.bb}`}
+  >
+    <div className={`${styles.cell} ${styles.bl} ${styles.labelAr}`}>
+      {label}
+    </div>
+    <div className={`${styles.cell} ${styles.valueAr}`}>{value ?? ""}</div>
+  </div>
+);
+
+/* ─── Main Component ─── */
 const CV = () => {
   const { id } = useParams();
-  const cvRef = useRef(null); // Create a reference
+  const cvRef = useRef(null);
   const navigate = useNavigate();
   const [worker, setWorker] = useState(null);
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { profile } = useProfile();
 
+  /* ── fetch ── */
   const fetchWorkerData = useCallback(async () => {
     showLoader();
     try {
@@ -34,36 +57,32 @@ const CV = () => {
     }
   }, [id || profile]);
 
+  useEffect(() => {
+    fetchWorkerData();
+  }, [profile]);
+
+  /* ── generate → PDF → upload ── */
   const handleGenerateAndUpload = async () => {
     if (!cvRef.current) return;
-
     showLoader();
     try {
       const element = cvRef.current;
-
-      /* 1. FORCE DESKTOP WIDTH */
       const originalWidth = element.style.width;
-      element.style.width = "1200px"; // force desktop layout
+      element.style.width = "1200px";
+      await new Promise((r) => setTimeout(r, 300));
 
-      /* 2. WAIT FOR RENDER */
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      /* 3. CAPTURE */
       const canvas = await html2canvas(element, {
         useCORS: true,
         scale: 1.5,
         windowWidth: 1200,
       });
 
-      /* 4. RESTORE WIDTH */
       element.style.width = originalWidth;
 
       const imgData = canvas.toDataURL("image/jpeg", 0.7);
-
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
       pdf.addImage(
         imgData,
         "JPEG",
@@ -76,28 +95,27 @@ const CV = () => {
       );
 
       const pdfBlob = pdf.output("blob");
-
       const fileName = `${worker.full_name.replace(/\s+/g, "_")}_CV.pdf`;
-
-      const file = new File([pdfBlob], fileName, {
-        type: "application/pdf",
-      });
-
-      const originalName = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
+      const file = new File([pdfBlob], fileName, { type: "application/pdf" });
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("file_name", originalName);
+      formData.append(
+        "file_name",
+        `${worker.full_name.replace(/\s+/g, "_")}_CV`,
+      );
       formData.append("category", "CV");
       formData.append("is_private", 0);
       formData.append("description", `CV for ${worker.full_name}`);
       formData.append("worker_id", worker.id);
 
       await uploadFile(formData);
-
-      const response = worker.cv_url ? "updated" : "generated";
-
-      addMessage(true, "CV " + response + " and uploaded successfully!");
+      addMessage(
+        true,
+        "CV " +
+          (worker.cv_url ? "updated" : "generated") +
+          " and uploaded successfully!",
+      );
     } catch (err) {
       addMessage(false, "Failed to generate PDF");
     } finally {
@@ -105,25 +123,96 @@ const CV = () => {
     }
   };
 
-  useEffect(() => {
-    fetchWorkerData();
-  }, [profile]);
-
   if (!worker) return null;
+
+  /* ── map worker fields → CV fields ── */
+  const refNo = worker.reference_number ?? "—";
+  const post = worker.primary_positions?.[0] ?? "House Maid";
+  const postAr = worker.primary_positions_ar?.[0] ?? "عاملة منزلية";
+  const salary = worker.monthly_salary ? `${worker.monthly_salary} SR` : "—";
+  const salaryAr = worker.monthly_salary
+    ? `${worker.monthly_salary} ريال`
+    : "—";
+  const contract = worker.contract_period ?? "2 Years";
+  const phone = worker.phone_number ?? "";
+  const fullName = worker.full_name ?? "";
+  const nationality = worker.nationality ?? "—";
+  const religion = worker.religion ?? "—";
+  const dob = safeDate(worker.date_of_birth);
+  const pob = worker.place_of_birth ?? "—";
+  const age = worker.age ?? "—";
+  const address = worker.address ?? "—";
+  const marital = worker.marital_status ?? "—";
+  const children = worker.number_of_children ?? "";
+  const height = worker.height_cm ? `${worker.height_cm} cm` : "";
+  const weight = worker.weight_kg ? `${worker.weight_kg} kg` : "";
+  const language = worker.languages?.map((l) => l.language).join(", ") ?? "—";
+  const education = worker.education_level ?? "—";
+  const expPeriod = worker.experience?.[0]?.years
+    ? `${worker.experience[0].years} yrs`
+    : "";
+  const expCountry = worker.experience?.[0]?.country ?? "";
+  const passportNo = worker.passport_number ?? "—";
+  const issueDate = safeDate(worker.passport_issue_date);
+  const placeIssue = worker.passport_place_of_issue ?? "—";
+  const expiryDate = safeDate(worker.passport_expiry_date);
+  const photoUrl = worker.photo_3x4_url ?? "";
+  const photoBodyUrl = worker.photo_standing_url ?? "";
+  const remarks = worker.remarks ?? "";
+  const remarksDate = safeDate(worker.remarks_date);
+
+  /* Fixed skills list — values come from worker fields */
+  const skills = [
+    { en: "Cooking", ar: "الطبخ", value: worker.can_cook ? "YES" : "NO" },
+    { en: "Cleaning", ar: "التنظيف", value: worker.can_clean ? "YES" : "NO" },
+    { en: "Washing", ar: "الغسيل", value: worker.can_wash ? "YES" : "NO" },
+    { en: "Ironing", ar: "الكوي", value: worker.can_iron ? "YES" : "NO" },
+    {
+      en: "Babysitting",
+      ar: "مجا لسه الكفال",
+      value: worker.can_babysit ? "YES" : "NO",
+    },
+    {
+      en: "Children Care",
+      ar: "رعايه الطفال",
+      value: worker.can_childcare ? "YES" : "NO",
+    },
+    {
+      en: "Arabic Cooking",
+      ar: "الطبخ العربي",
+      value: worker.can_arabic_cook ? "YES" : "NO",
+    },
+    { en: "Sewing", ar: "الخياطه", value: worker.can_sew ? "YES" : "NO" },
+  ];
+
+  /* Arabic labels that mirror the left column row-for-row */
+  const arLabels = [
+    "الجنسيه",
+    "الديانه",
+    "التاريخ",
+    "مكان الولاده",
+    "العمر",
+    "العنوان",
+    "الحاله",
+    "عدد الاطفال",
+    "ارتفاع",
+    "وزن",
+  ];
 
   return (
     <div className="dashboard-wraper">
+      {/* ── Top bar ── */}
       <div className="d-flex justify-content-between align-items-center d-print-none pb-2">
         <h2 className="text-dark mb-2">
-          {" "}
           {profile?.role_id != 4 ? "Employee" : "My"} CV
         </h2>
         {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
       </div>
+
       {profile?.role_id != 4 && (
         <div className="mb-3">
           <button
-            className="btn btn-main mt-3 px-4  text-white w-auto d-flex align-items-center justify-content-center "
+            className="btn btn-main mt-3 px-4 text-white w-auto d-flex align-items-center justify-content-center"
             onClick={handleGenerateAndUpload}
           >
             {worker.cv_url ? "Update CV" : "Generate & Upload CV"}
@@ -131,233 +220,204 @@ const CV = () => {
         </div>
       )}
 
-      <div ref={cvRef} className="card border-0 shadow-sm overflow-hidden">
-        <div className="card-body p-0 ">
-          {/* HEADER */}
-          <div className={styles.header}>
-            <img src={worker.photo_3x4_url} className={styles.circularPhoto} />
-            <div>
-              <h1 className={styles.name}>{worker.full_name}</h1>
-              <p className={`{styles.title} fw-bold`}>
-                {worker.primary_positions?.join(" • ") || "DOMESTIC EMPLOYEE"}
-              </p>
+      {/* ── CV Document ── */}
+      <div ref={cvRef} className={styles.cv}>
+        {/* HEADER */}
+        <div className={styles.cvHeader}>
+          <div className={styles.headerLogoLeft}>
+            <div className={styles.logoCircle}>
+              <span>
+                شركة أبو بجاد للإستقدام
+                <br />
+                <small>Abo Bejad Recuitments Company</small>
+              </span>
+            </div>
+            <div className={styles.logoName}>Abo Bejad Recuitments Company</div>
+          </div>
+          <div className={styles.headerCenter}>
+            <div className={styles.arabicTitle}>شركة أبو بجاد للإستقدام</div>
+            <div className={styles.englishTitle}>
+              Abo Bejad Receuitments Company
+            </div>
+          </div>
+          <div className={styles.headerPhoto}>
+            <img src={photoUrl} alt="Candidate" />
+          </div>
+        </div>
+
+        {/* APPLICATION TITLE BAR */}
+        <div className={`${styles.row2col} ${styles.bb} ${styles.bt}`}>
+          <div className={`${styles.col} ${styles.br}`}>
+            <div className={styles.sectionTitle}>
+              <span>Application for Employment</span>
+              <span>طلب التوظيف</span>
+            </div>
+          </div>
+          <div className={styles.col}>
+            <div className={`${styles.innerRow} ${styles.metaLabel}`}>
+              <div className={`${styles.cell} ${styles.br}`}>رقم المرجع</div>
+              <div className={styles.cell}>Reference No.</div>
+            </div>
+          </div>
+        </div>
+
+        {/* REF / POST / SALARY / CONTRACT */}
+        <div className={`${styles.row2col} ${styles.bb}`}>
+          <div className={`${styles.col} ${styles.br}`}>
+            <KVRow label="Reference No." value={refNo} />
+            <KVRow label="Post Applied For" value={post} />
+            <KVRow label="Monthly Salary" value={salary} />
+            <KVRow label="Contract Period" value={contract} noBorder />
+          </div>
+          <div className={styles.col}>
+            <KVRowAr label="رقم المرجع" value={refNo} />
+            <KVRowAr label="وظيفة" value={postAr} />
+            <KVRowAr label="راتب شهري" value={salaryAr} />
+            <KVRowAr label="مدة العقد" value={contract} noBorder />
+          </div>
+        </div>
+
+        {/* PHONE / NAME */}
+        <div className={`${styles.phoneNameRow} ${styles.bb}`}>
+          <div className={`${styles.phoneCell} ${styles.br}`}>
+            PHONE NO: <span className={styles.phoneValue}>{phone}</span>
+          </div>
+          <div className={`${styles.nameCell} ${styles.br}`}>
+            <div>{fullName}</div>
+            <div className={styles.nameAr}>: العامله اسم</div>
+          </div>
+          <div className={styles.phoneCellAr}>رقم الهاتف</div>
+        </div>
+
+        {/* MAIN 3-COLUMN BLOCK */}
+        <div className={`${styles.main3col} ${styles.bb}`}>
+          {/* ── LEFT: Details of Applicant ── */}
+          <div className={`${styles.col} ${styles.br}`}>
+            <div className={styles.sectionTitle}>
+              <span>Details of Applicant</span>
+              <span>بيانات الطلب</span>
+            </div>
+            <KVRow label="Nationality" value={nationality} />
+            <KVRow label="Religion" value={religion} />
+            <KVRow label="Date of Birth" value={dob} />
+            <KVRow label="Place of Birth" value={pob} />
+            <KVRow label="Age" value={age} />
+            <KVRow label="Address" value={address} />
+            <KVRow label="Marital Status" value={marital} />
+            <KVRow label="No. of Children" value={children} />
+            <KVRow label="Height" value={height} />
+            <KVRow label="Weight" value={weight} />
+
+            <div className={styles.sectionTitle}>
+              <span>Languages & Education</span>
+              <span>اللغه & التعليم</span>
+            </div>
+            <div
+              className={`${styles.innerRow} ${styles.bb} ${styles.langRow}`}
+            >
+              <div
+                className={`${styles.cell} ${styles.br} ${styles.label}`}
+                style={{ lineHeight: 1.4 }}
+              >
+                Language of
+                <br />
+                worker
+              </div>
+              <div className={`${styles.cell} ${styles.value}`}>{language}</div>
+            </div>
+            <KVRow label="Education" value={education} />
+
+            <div className={styles.sectionTitle}>
+              <span>Work Experience</span>
+              <span>خبره العمل</span>
+            </div>
+            <KVRow label="Period" value={expPeriod} />
+            <KVRow label="Country" value={expCountry} />
+
+            <div className={styles.sectionTitle}>
+              <span>Skills & Experience</span>
+              <span>الخبره & المهارات</span>
+            </div>
+            {skills.map((s, i) => (
+              <div
+                key={i}
+                className={`${styles.skillRow} ${i < skills.length - 1 ? styles.bb : ""}`}
+              >
+                <div className={styles.skillEn}>{s.en}</div>
+                <div className={styles.skillVal}>{s.value}</div>
+                <div className={styles.skillArEmpty} />
+              </div>
+            ))}
+          </div>
+
+          {/* ── MIDDLE: Passport + Body Photo ── */}
+          <div className={`${styles.col} ${styles.br}`}>
+            <div className={styles.sectionTitle}>
+              <span>Passport Detail</span>
+              <span>تفاصيل جواز</span>
+            </div>
+            <KVRow label="Passport No." value={passportNo} />
+            <KVRow label="Issue Date" value={issueDate} />
+            <KVRow label="Place of Issue" value={placeIssue} />
+            <KVRow label="Expiry Date" value={expiryDate} noBorder />
+
+            <div className={`${styles.passportArBlock} ${styles.bb}`}>
+              <KVRowAr label="رقيم الجواز" value={passportNo} />
+              <KVRowAr label="تاريخ الإصدار" value={issueDate} />
+              <KVRowAr label="مكان الاصدار" value={placeIssue} />
+              <KVRowAr label="تاريخ الانتهاء" value={expiryDate} noBorder />
+            </div>
+
+            <div className={styles.bodyPhotoWrap}>
+              <img
+                src={photoBodyUrl}
+                alt="Full body"
+                className={styles.bodyPhoto}
+              />
             </div>
           </div>
 
-          <div className={styles.mainContent}>
-            {/* LEFT */}
-            <div className={styles.leftColumn}>
-              <div className={styles.topLeftGroup}>
-                {/* CONTACT */}
-                <section
-                  className={`${styles.section} ${styles.highlightSection}`}
-                >
-                  <h3
-                    className={`${styles.sectionTitle} ${styles.highlightContactTitle}`}
-                  >
-                    CONTACT
-                  </h3>
-                  <p>
-                    <i className="bi bi-telephone me-2"></i>
-                    {worker.phone_number}
-                  </p>
-                  <p>
-                    <i className="bi bi-envelope me-2"></i>
-                    {worker.email}
-                  </p>
-                  <p>
-                    <i className="bi bi-geo-alt me-2"></i>
-                    {worker.address}
-                  </p>
-                </section>
-
-                {/* PERSONAL */}
-                <section className={styles.section}>
-                  <h3 className={styles.sectionTitle}>PERSONAL INFO</h3>
-                  <p>
-                    <strong>DOB:</strong> {safeDate(worker.date_of_birth)}
-                  </p>
-                  <p>
-                    <strong>Place:</strong> {worker.place_of_birth || "—"}
-                  </p>
-                  <p>
-                    <strong>Nationality:</strong> {worker.nationality || "—"}
-                  </p>
-                  <p>
-                    <strong>Sex:</strong> {worker.sex || "—"}
-                  </p>
-                  <p>
-                    <strong>Religion:</strong> {worker.religion || "—"}
-                  </p>
-                  <p>
-                    <strong>Status:</strong> {worker.marital_status || "—"}
-                  </p>
-                  <p>
-                    <strong>Height/Weight:</strong> {worker.height_cm || "—"}cm
-                    / {worker.weight_kg || "—"}kg
-                  </p>
-                </section>
+          {/* ── RIGHT: Arabic labels column ── */}
+          <div className={`${styles.col} ${styles.arLabelsCol}`}>
+            <div className={styles.sectionTitleAr}>بيانات الطلب</div>
+            {arLabels.map((ar, i) => (
+              <div key={i} className={`${styles.arLabelCell} ${styles.bb}`}>
+                {ar}
               </div>
-              {/* PASSPORT */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>PASSPORT</h3>
-
-                <p>
-                  <strong>No:</strong> {worker.passport_number || "—"}
-                </p>
-                <p>
-                  <strong>Issued:</strong>{" "}
-                  {safeDate(worker.passport_issue_date)}
-                </p>
-                <p>
-                  <strong>Expires:</strong>{" "}
-                  {safeDate(worker.passport_expiry_date)}
-                </p>
-
-                {/* Passport Scan Image */}
-                {worker.passport_scan_url && (
-                  <div className={styles.passportImageWrapper}>
-                    <img
-                      src={worker.passport_scan_url}
-                      alt="Passport Scan"
-                      className={styles.passportImage}
-                    />
-                  </div>
-                )}
-              </section>
-
-              {/* MEDICAL */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>MEDICAL</h3>
-                <p>
-                  <strong>Status:</strong> {worker.medical_status || "—"}
-                </p>
-                <p>
-                  <strong>Center:</strong> {worker.medical_center || "—"}
-                </p>
-                <p>
-                  <strong>Date:</strong> {safeDate(worker.medical_issue_date)}
-                </p>
-              </section>
-              {/* COC */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>COC</h3>
-                <p>
-                  <strong>No:</strong> {worker.coc_number || "—"}
-                </p>
-                <p>
-                  <strong>Issued:</strong> {safeDate(worker.coc_issue_date)}
-                </p>
-                <p>
-                  <strong>Expires:</strong> {safeDate(worker.coc_expiry_date)}
-                </p>
-              </section>
-              {/* LANGUAGES */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>LANGUAGES</h3>
-                <ul className={styles.list}>
-                  {worker.languages?.map((l, i) => (
-                    <li key={i}>
-                      {l.language} —{" "}
-                      <span className={styles.level}>{l.level}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              {/* SKILLS */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>SKILLS</h3>
-                <ul className={styles.list}>
-                  {worker.skills?.map((s, i) => (
-                    <li key={i}>{s}</li>
-                  ))}
-                </ul>
-              </section>
+            ))}
+            <div className={styles.sectionTitleAr}>اللغه & التعليم</div>
+            <div
+              className={`${styles.arLabelCell} ${styles.bb} ${styles.arLangCell}`}
+            >
+              العاملة لغة
             </div>
-
-            {/* RIGHT */}
-            <div className={styles.rightColumn}>
-              <div className={styles.topLeftGroup}>
-                <div className={styles.photoWrapper}>
-                  <img
-                    src={worker.photo_standing_url}
-                    className={styles.standingPhoto}
-                  />
-                </div>
+            <div className={`${styles.arLabelCell} ${styles.bb}`}>
+              المستوي التعليمي
+            </div>
+            <div className={styles.sectionTitleAr}>خبره العمل</div>
+            <div className={`${styles.arLabelCell} ${styles.bb}`}>المده</div>
+            <div className={`${styles.arLabelCell} ${styles.bb}`}>البلد</div>
+            <div className={styles.sectionTitleAr}>الخبره & المهارات</div>
+            {skills.map((s, i) => (
+              <div
+                key={i}
+                className={`${styles.arLabelCell} ${i < skills.length - 1 ? styles.bb : ""}`}
+              >
+                {s.ar}
               </div>
-              {/* VISA */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>VISA</h3>
-                <p>
-                  <strong>No:</strong> {worker.visa_number || "—"}
-                </p>
-                <p>
-                  <strong>Issued:</strong> {safeDate(worker.visa_issue_date)}
-                </p>
-                <p>
-                  <strong>Expires:</strong> {safeDate(worker.visa_expiry_date)}
-                </p>
-              </section>
-
-              {/* CONTRACT */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>CONTRACT</h3>
-                <p>
-                  <strong>Employer:</strong> {worker.employer_name_en || "—"}
-                </p>
-                <p>
-                  <strong>Arabic:</strong> {worker.employer_name_ar || "—"}
-                </p>
-                <p>
-                  <strong>Salary:</strong> {worker.monthly_salary || "—"}
-                </p>
-                <p>
-                  <strong>Period:</strong>{" "}
-                  {safeDate(worker.contract_start_date)} -{" "}
-                  {safeDate(worker.contract_end_date)}
-                </p>
-              </section>
-
-              {/* TRAVEL */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>TRAVEL</h3>
-                <p>
-                  <strong>Ticket:</strong> {worker.ticket_number || "—"}
-                </p>
-                <p>
-                  <strong>Date:</strong> {safeDate(worker.departure_date)}
-                </p>
-              </section>
-
-              {/* EXPERIENCE */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>EXPERIENCE</h3>
-                {worker.experience?.map((exp, i) => (
-                  <p key={i}>
-                    {exp.job_title} - {exp.country} ({exp.years} yrs)
-                  </p>
-                ))}
-              </section>
-
-              {/* GUARANTOR */}
-              <section className={`mb-2 ${styles.section}`}>
-                <h3 className={styles.sectionTitle}>EMERGENCY CONTACT</h3>
-                <p>
-                  <strong>Name:</strong> {worker.guarantor_name || "—"}
-                </p>
-                <p>
-                  <strong>Relation:</strong> {worker.guarantor_relation || "—"}
-                </p>
-                <p>
-                  <strong>Phone:</strong> {worker.guarantor_phone_number || "—"}
-                </p>
-              </section>
-            </div>
+            ))}
           </div>
+        </div>
+
+        {/* REMARKS */}
+        <div className={styles.remarksRow}>
+          <span className={styles.remarksLabel}>Remarks</span>
+          <span className={styles.remarksValue}>{remarks}</span>
+          <span className={styles.remarksDate}>{remarksDate}</span>
         </div>
       </div>
     </div>
   );
 };
+
 export default CV;
