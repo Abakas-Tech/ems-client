@@ -142,11 +142,25 @@ const File = () => {
 
   const handleDownload = async (file) => {
     if (!file.file_url) return;
-    const link = document.createElement("a");
-    link.href = file.file_url;
-    link.download = file.file_name || "download";
-    link.target = "_blank";
-    link.click();
+
+    try {
+      const response = await fetch(file.file_url);
+      const blob = await response.blob();
+      const localUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = localUrl;
+      link.download = file.file_name || "download";
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(localUrl);
+    } catch (error) {
+      console.error("Download failed, falling back to open:", error);
+      window.open(file.file_url, "_blank");
+    }
   };
 
   const handleViewDetail = (file) => {

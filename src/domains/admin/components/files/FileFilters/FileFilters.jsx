@@ -49,10 +49,12 @@ const FileFilters = ({ filters, onFilterChange, onClear }) => {
               onChange={onFilterChange}
             >
               <option value="">All Categories</option>
-              <option value="Licenses">Licenses</option>
-              <option value="agreement">Agreements</option>
-              <option value="report">Reports</option>
-              <option value="policy">Policies</option>
+              <option value="License">Licenses</option>
+              <option value="Agreement">Agreements</option>
+              <option value="Report">Reports</option>
+              <option value="Policy">Policies</option>
+              <option value="CV">CVs</option>
+              <option value="Contract">Contracts</option>
               <option value="Other">Other</option>
             </select>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
   fetchWorkerDossier,
+  fetchFiles,
   uploadFile,
   updateFile,
   deleteFile,
@@ -225,49 +226,99 @@ const MiscFilesSection = ({
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
-  // Filters
+  const [filesData, setFilesData] = useState({
+    files: miscFiles || [],
+    total: miscFiles?.length || 0,
+    pagination: {},
+  });
+
   const [filters, setFilters] = useState({
+    page: 1,
+    limit: 5,
     fileName: "",
     category: "",
+    file_type: "",
   });
+
+  useEffect(() => {
+    fetchWorkerMiscFiles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workerId, filters]);
+
+  const fetchWorkerMiscFiles = async () => {
+    if (!workerId) return;
+
+    showLoader();
+    try {
+      const params = {
+        page: filters.page,
+        limit: filters.limit,
+        search: filters.fileName,
+        category: filters.category,
+        file_type: filters.file_type,
+
+        // important
+        worker_id: workerId,
+        exclude_category: "CV",
+      };
+
+      const response = await fetchFiles(params);
+
+      setFilesData({
+        files: response?.data?.files || [],
+        total: response?.data?.pagination?.total || 0,
+        pagination: response?.data?.pagination || {},
+      });
+    } catch (err) {
+      console.error("Failed to fetch worker files:", err);
+      addMessage(false, "Failed to load worker files");
+    } finally {
+      hideLoader();
+    }
+  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
+
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+      page: 1,
+    }));
   };
 
   const handleClearFilters = () => {
-    setFilters({ fileName: "", category: "" });
+    setFilters({
+      page: 1,
+      limit: 5,
+      fileName: "",
+      category: "",
+      file_type: "",
+    });
   };
 
-  const filteredFiles = useMemo(() => {
-    return miscFiles.filter((file) => {
-      const matchesName = file.file_name
-        .toLowerCase()
-        .includes(filters.fileName.toLowerCase());
-      const matchesCategory =
-        filters.category === "" || file.category === filters.category;
-      return matchesName && matchesCategory;
-    });
-  }, [miscFiles, filters]);
-
-  // Upload: receive form data payload, call uploadFile API
   const handleUploadSuccess = async (payload) => {
     showLoader();
     try {
       const fd = new FormData();
+
       if (payload.file) fd.append("file", payload.file);
       fd.append("file_name", payload.file_name);
       fd.append("category", payload.category);
-      if (payload.description) fd.append("description", payload.description);
+      fd.append("description", payload.description || "");
       fd.append("is_private", payload.is_private ?? 0);
-      fd.append("worker_id", workerId); // always use the dossier's worker
+
+      // force worker context
+      fd.append("worker_id", workerId);
 
       const res = await uploadFile(fd);
+
       if (res?.success) {
         addMessage(true, res.message || "File uploaded successfully");
         setShowUploadForm(false);
-        onRefresh();
+
+        await fetchWorkerMiscFiles();
+        if (onRefresh) await onRefresh();
       } else {
         addMessage(false, res?.message || "Upload failed");
       }
@@ -278,17 +329,27 @@ const MiscFilesSection = ({
     }
   };
 
-  // Edit: receive form data payload, call updateFile API
   const handleEditSuccess = async (payload) => {
     showLoader();
     try {
-      // Add worker_id to payload to satisfy backend validation, even though it won't be updated
-      payload.worker_id = workerId;
-      const res = await updateFile(editingFile.id, payload);
+      const cleanPayload = {
+        file_name: payload.file_name,
+        category: payload.category,
+        description: payload.description || "",
+        is_private: payload.is_private ?? 0,
+
+        // keep file attached to this worker
+        worker_id: workerId,
+      };
+
+      const res = await updateFile(editingFile.id, cleanPayload);
+
       if (res?.success) {
         addMessage(true, res.message || "File updated successfully");
         setEditingFile(null);
-        onRefresh();
+
+        await fetchWorkerMiscFiles();
+        if (onRefresh) await onRefresh();
       } else {
         addMessage(false, res?.message || "Update failed");
       }
@@ -299,13 +360,27 @@ const MiscFilesSection = ({
     }
   };
 
-  const handleDownload = (file) => {
-    if (!file?.file_url) return;
-    const link = document.createElement("a");
-    link.href = file.file_url;
-    link.download = file.file_name || "download";
-    link.target = "_blank";
-    link.click();
+  const handleDownload = async (file) => {
+    if (!file.file_url) return;
+
+    try {
+      const response = await fetch(file.file_url);
+      const blob = await response.blob();
+      const localUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = localUrl;
+      link.download = file.file_name || "download";
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(localUrl);
+    } catch (error) {
+      console.error("Download failed, falling back to open:", error);
+      window.open(file.file_url, "_blank");
+    }
   };
 
   const handleDelete = (file) => {
@@ -313,9 +388,11 @@ const MiscFilesSection = ({
       async () => {
         showLoader();
         try {
-          await deleteFile(file.id);
-          addMessage(true, "File deleted");
-          onRefresh();
+          const res = await deleteFile(file.id);
+          addMessage(res?.success ?? true, res?.message || "File deleted");
+
+          await fetchWorkerMiscFiles();
+          if (onRefresh) await onRefresh();
         } catch (err) {
           addMessage(false, err.message);
         } finally {
@@ -323,7 +400,7 @@ const MiscFilesSection = ({
         }
       },
       {
-        title: `Are you sure you want to delete this file?`,
+        title: "Are you sure you want to delete this file?",
         confirmText: "Delete",
       },
     );
@@ -338,7 +415,6 @@ const MiscFilesSection = ({
     return "bi-file-earmark";
   };
 
-  // Render conditional views
   if (showUploadForm) {
     return (
       <div
@@ -347,7 +423,9 @@ const MiscFilesSection = ({
       >
         <FileUpload
           isEditMode={false}
-          workerId={workerId}
+          initialData={{
+            worker_id: workerId,
+          }}
           onSuccess={handleUploadSuccess}
           onCancel={() => setShowUploadForm(false)}
         />
@@ -379,98 +457,95 @@ const MiscFilesSection = ({
         onClear={handleClearFilters}
       />
 
-      {filteredFiles.length === 0 ? (
-        <div
-          className="text-center py-4"
-          style={{ color: "#94a3b8", fontSize: "13px" }}
-        >
-          <i
-            className="bi bi-folder2 d-block mb-1"
-            style={{ fontSize: "28px" }}
-          />
-          No matching files found
-        </div>
-      ) : (
-        <ListingComponent
-          data={filteredFiles}
-          columns={[
-            {
-              header: "File Name",
-              accessor: "file_name",
-              render: (row) => (
-                <div className="d-flex align-items-center gap-2">
-                  <i
-                    className={`bi ${FILE_ICON(row.file_type)}`}
-                    style={{
-                      fontSize: "20px",
-                      color:
-                        row.file_type === "pdf"
-                          ? "#ef4444"
-                          : ["doc", "docx"].includes(row.file_type)
-                            ? "#3b82f6"
-                            : "#10b981",
-                    }}
-                  />
-                  <span className="fw-semibold" style={{ fontSize: "13px" }}>
-                    {row.file_name}
-                  </span>
-                </div>
-              ),
-            },
-            {
-              header: "Category",
-              accessor: "category",
-              render: (row) => (
-                <Badge
-                  content={row.category}
-                  color="secondary"
-                  className="rounded-pill"
+      <ListingComponent
+        data={filesData.files}
+        columns={[
+          {
+            header: "File Name",
+            accessor: "file_name",
+            render: (row) => (
+              <div className="d-flex align-items-center gap-2">
+                <i
+                  className={`bi ${FILE_ICON(row.file_type)}`}
+                  style={{
+                    fontSize: "20px",
+                    color:
+                      row.file_type === "pdf"
+                        ? "#ef4444"
+                        : ["doc", "docx"].includes(row.file_type)
+                          ? "#3b82f6"
+                          : "#10b981",
+                  }}
                 />
-              ),
-            },
-            { header: "Type", accessor: "file_type" },
-            {
-              header: "Uploaded",
-              render: (row) =>
-                new Date(row.created_at).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                }),
-            },
-          ]}
-          actions={[
-            {
-              type: "view",
-              onClick: (row) => window.open(row.file_url, "_blank"),
-            },
-            {
-              type: "edit",
-              onClick: (row) => setEditingFile(row),
-              bypassRole: true,
-            },
-            {
-              type: "download",
-              onClick: (row) => handleDownload(row),
-            },
-            {
-              type: "delete",
-              onClick: (row) => handleDelete(row),
-              bypassRole: true,
-            },
-          ]}
-          emptyState={{
-            title: "No files found",
-            subtitle: "Try adjusting your filters or upload a new file.",
-          }}
-          pagination={{
-            page: 1,
-            limit: 5,
-            total: filteredFiles.length,
-            onPageChange: () => {},
-          }}
-        />
-      )}
+                <span className="fw-semibold" style={{ fontSize: "13px" }}>
+                  {row.file_name}
+                </span>
+              </div>
+            ),
+          },
+          {
+            header: "Category",
+            accessor: "category",
+            render: (row) => (
+              <Badge
+                content={row.category}
+                color="secondary"
+                className="rounded-pill"
+              />
+            ),
+          },
+          { header: "Type", accessor: "file_type" },
+          {
+            header: "Uploaded",
+            render: (row) =>
+              new Date(row.created_at).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              }),
+          },
+        ]}
+        actions={[
+          {
+            type: "view",
+            onClick: (row) => window.open(row.file_url, "_blank"),
+          },
+          {
+            type: "edit",
+            onClick: (row) => setEditingFile(row),
+            bypassRole: true,
+          },
+          {
+            type: "download",
+            onClick: (row) => handleDownload(row),
+          },
+          {
+            type: "delete",
+            onClick: (row) => handleDelete(row),
+            bypassRole: true,
+          },
+        ]}
+        emptyState={{
+          title: "No files found",
+          subtitle: "Try adjusting your filters or upload a new file.",
+        }}
+        pagination={{
+          page: filters.page,
+          limit: filters.limit,
+          total: filesData.total,
+          onPageChange: (page) =>
+            setFilters((prev) => ({
+              ...prev,
+              page,
+            })),
+        }}
+        onPageChange={(page) =>
+          setFilters((prev) => ({
+            ...prev,
+            page,
+          }))
+        }
+      />
     </div>
   );
 };
