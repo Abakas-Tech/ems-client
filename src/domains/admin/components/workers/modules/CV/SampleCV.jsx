@@ -66,11 +66,11 @@ function SampleCV() {
             <td>مدة العقد</td>
           </tr>
           <tr>
-            <td colSpan="4">
-              <div className="row">
-                <div className="col-6">Left Side Content</div>
+            <td colSpan="4" className="p-0">
+              <div className="row g-0">
+                <div className="col-6 border-end p-2">Left Side Content</div>
 
-                <div className="col-6">Right Side Content</div>
+                <div className="col-6 p-2">Right Side Content</div>
               </div>
             </td>
           </tr>
