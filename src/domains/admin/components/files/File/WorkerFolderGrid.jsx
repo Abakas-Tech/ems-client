@@ -4,6 +4,7 @@ import WorkerFolderFilters from "../WorkerFolderFilters/WorkerFolderFilters";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import Badge from "../../../../../shared/components/Badge/Badge";
+import BottomPagination from "../../../../../shared/components/BottomPagination/BottomPagination";
 
 const WorkerFolderGrid = ({ onSelectWorker }) => {
   const { showLoader, hideLoader } = useloader();
@@ -12,6 +13,7 @@ const WorkerFolderGrid = ({ onSelectWorker }) => {
   const [folders, setFolders] = useState([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(12);
+  const [pagination, setPagination] = useState(null);
   const [totalItems, setTotalItems] = useState(0);
   const [filters, setFilters] = useState({
     name: "",
@@ -34,6 +36,7 @@ const WorkerFolderGrid = ({ onSelectWorker }) => {
       const res = await fetchWorkerFolders(params);
       setFolders(res?.data?.data || []);
       setTotalItems(res?.data?.meta?.total || 0);
+      setPagination(res?.data?.meta || null);
     } catch (err) {
       console.error(err);
       addMessage(false, "Could not load worker folders");
@@ -53,7 +56,9 @@ const WorkerFolderGrid = ({ onSelectWorker }) => {
     setPage(1);
   };
 
-  const totalPages = Math.ceil(totalItems / limit);
+  const onPageChange = (newPage) => {
+    setPage(newPage);
+  };
 
   return (
     <div>
@@ -179,55 +184,16 @@ const WorkerFolderGrid = ({ onSelectWorker }) => {
               </div>
             ))}
           </div>
-
           {/* Pagination */}
-          {totalPages > 1 && (
-            <nav className="mt-4 d-flex justify-content-center">
-              <ul className="pagination pagination-sm mb-0">
-                <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
-                  <button
-                    className="page-link"
-                    onClick={() => setPage((p) => p - 1)}
-                  >
-                    <i className="bi bi-chevron-left"></i>
-                  </button>
-                </li>
-                {Array.from({ length: totalPages }, (_, i) => i + 1)
-                  .filter(
-                    (p) =>
-                      p === 1 ||
-                      p === totalPages ||
-                      (p >= page - 1 && p <= page + 1),
-                  )
-                  .map((p, idx, arr) => (
-                    <React.Fragment key={p}>
-                      {idx > 0 && arr[idx - 1] !== p - 1 && (
-                        <li className="page-item disabled">
-                          <span className="page-link">...</span>
-                        </li>
-                      )}
-                      <li className={`page-item ${page === p ? "active" : ""}`}>
-                        <button
-                          className="page-link"
-                          onClick={() => setPage(p)}
-                        >
-                          {p}
-                        </button>
-                      </li>
-                    </React.Fragment>
-                  ))}
-                <li
-                  className={`page-item ${page === totalPages ? "disabled" : ""}`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() => setPage((p) => p + 1)}
-                  >
-                    <i className="bi bi-chevron-right"></i>
-                  </button>
-                </li>
-              </ul>
-            </nav>
+          {pagination && pagination.total > pagination.limit && (
+            <BottomPagination
+              pagination={{
+                page: pagination.page,
+                limit: pagination.limit,
+                total: pagination.total,
+              }}
+              onPageChange={onPageChange}
+            />
           )}
         </>
       )}

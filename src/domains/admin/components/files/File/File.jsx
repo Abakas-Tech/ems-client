@@ -59,7 +59,7 @@ const File = () => {
       navigate(location.pathname, { replace: true, state: {} });
     }
     navigate(location.pathname, { replace: true, state: {} });
-  }, [location.state, navigate]);
+  }, []);
 
   // Fetch company files when tab = company and view = list
   useEffect(() => {
@@ -326,14 +326,12 @@ const File = () => {
                   setEditingFile(row);
                   setView("edit");
                 },
-                showOn: true,
                 bypassRole: true,
               },
               { type: "download", onClick: (row) => handleDownload(row) },
               {
                 type: "delete",
                 onClick: (row) => handleDelete(row.id),
-                showOn: true,
                 bypassRole: true,
               },
             ]}

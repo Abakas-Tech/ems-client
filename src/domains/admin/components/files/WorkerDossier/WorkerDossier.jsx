@@ -282,7 +282,8 @@ const MiscFilesSection = ({
   const handleEditSuccess = async (payload) => {
     showLoader();
     try {
-      // The edit mode does not include a file input, so payload is a plain metadata object
+      // Add worker_id to payload to satisfy backend validation, even though it won't be updated
+      payload.worker_id = workerId;
       const res = await updateFile(editingFile.id, payload);
       if (res?.success) {
         addMessage(true, res.message || "File updated successfully");
@@ -464,7 +465,7 @@ const MiscFilesSection = ({
           }}
           pagination={{
             page: 1,
-            limit: 10,
+            limit: 5,
             total: filteredFiles.length,
             onPageChange: () => {},
           }}
