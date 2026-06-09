@@ -64,59 +64,92 @@ const TransactionDetail = ({ transactionId, onBack }) => {
 
         <div className="card-body p-4 p-md-5">
           {/* Section 1: Parties Involved */}
-          <div className="row mb-5 align-items-center">
-            <div className="col-sm-6">
-              <h6 className="text-uppercase text-muted small fw-bold mb-3">
-                {isCompany ? "Entity" : "Transaction For"}
-              </h6>
+          {/* Beautiful Bordered Header Card */}
+          <div
+            className="card border-2 mb-5"
+            style={{
+              borderRadius: "16px",
+              borderColor: "#e9ecef",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+            }}
+          >
+            <div className="card-body p-4 p-md-5">
+              <div className="row align-items-center">
+                {/* Left: Entity/Person Info */}
+                <div className="col-sm-6">
+                  <h6 className="text-uppercase text-muted small fw-bold mb-3">
+                    {isCompany ? "Entity" : "Transaction For"}
+                  </h6>
 
-              <div className="d-flex align-items-center gap-3">
-                {isCompany ? (
-                  <>
-                    <div
-                      className="rounded-circle bg-primary-soft d-flex align-items-center justify-content-center"
-                      style={{ width: "50px", height: "50px" }}
+                  <div className="d-flex align-items-center gap-3">
+                    {isCompany ? (
+                      <>
+                        <div
+                          className="rounded-circle d-flex align-items-center justify-content-center border border-2 border-primary"
+                          style={{
+                            width: "55px",
+                            height: "55px",
+                            backgroundColor: "#e7f1ff",
+                          }}
+                        >
+                          <i className="bi bi-building text-primary fs-3"></i>
+                        </div>
+                        <div>
+                          <h5 className="mb-0 fw-bold text-dark">
+                            Company Related
+                          </h5>
+                          <span className="badge bg-primary bg-opacity-10 text-primary small fw-semibold px-2 py-1">
+                            Agency Account
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className="rounded-circle border border-2 border-primary d-flex align-items-center justify-content-center"
+                          style={{ width: "55px", height: "55px" }}
+                        >
+                          <ProfileCell
+                            profile={{
+                              firstName: transaction.target_user_name,
+                              image: transaction.target_profile_photo,
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <h5 className="mb-0 fw-bold text-dark">
+                            {transaction.target_user_name}
+                          </h5>
+                          <span className="badge bg-secondary bg-opacity-10 text-secondary text-capitalize small fw-semibold px-2 py-1">
+                            {ROLE_MAP[transaction.target_user_role] || "User"}
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right: Amount */}
+                <div className="col-sm-6 text-sm-end mt-4 mt-sm-0">
+                  <h6 className="text-uppercase text-muted small fw-bold mb-2">
+                    Total Amount
+                  </h6>
+                  <div
+                    className="d-inline-block px-4 py-2 rounded-3"
+                    style={{
+                      backgroundColor: isIncome ? "#d1fae5" : "#fee2e2",
+                      border: `2px solid ${isIncome ? "#10b981" : "#ef4444"}`,
+                    }}
+                  >
+                    <h2
+                      className={`fw-bold mb-0 ${isIncome ? "text-success" : "text-danger"}`}
                     >
-                      <i className="fa-solid fa-building text-primary fs-5"></i>
-                    </div>
-                    <div>
-                      <h5 className="mb-0 fw-bold">Company Related</h5>
-                      <span className="text-primary small fw-semibold">
-                        Agency Account
-                      </span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <ProfileCell
-                      profile={{
-                        firstName: transaction.target_user_name,
-                        image: transaction.target_profile_photo,
-                      }}
-                    />
-                    <div>
-                      <h5 className="mb-0 fw-bold">
-                        {transaction.target_user_name}
-                      </h5>
-                      <span className="badge bg-secondary-soft text-secondary text-capitalize">
-                        {ROLE_MAP[transaction.target_user_role] || "User"}
-                      </span>
-                    </div>
-                  </>
-                )}
+                      {isIncome ? "+" : "-"}{" "}
+                      {transaction.amount?.toLocaleString()} Birr
+                    </h2>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div className="col-sm-6 text-sm-end mt-4 mt-sm-0">
-              <h6 className="text-uppercase text-muted small fw-bold mb-2">
-                Total Amount
-              </h6>
-              <h2
-                className={`fw-bold ${isIncome ? "text-success" : "text-danger"}`}
-              >
-                {isIncome ? "+" : "-"} {transaction.amount?.toLocaleString()}{" "}
-                Birr
-              </h2>
             </div>
           </div>
 
