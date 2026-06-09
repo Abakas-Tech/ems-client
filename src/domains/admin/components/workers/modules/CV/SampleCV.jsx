@@ -65,102 +65,17 @@ function SampleCV() {
             <td>P1234567</td>
             <td>مدة العقد</td>
           </tr>
+          <tr>
+            <td colSpan="4">
+              <div className="row">
+                <div className="col-6">Left Side Content</div>
+
+                <div className="col-6">Right Side Content</div>
+              </div>
+            </td>
+          </tr>
         </tbody>
       </table>
-
-      {/* ════════ MAIN 2-COLUMN SECTION ════════ */}
-      <div className="d-flex" style={{ borderBottom: "1px solid #000" }}>
-        {/* ── LEFT SIDE ── */}
-        <div style={{ flex: 1, borderRight: "2px solid #000" }}>
-          {/* Details of Applicant */}
-          <table className="table table-bordered mb-0" style={{ fontSize: 11 }}>
-            <thead>
-              <tr>
-                <th style={{ backgroundColor: "#83632B" }}>
-                  Details of Applicant
-                </th>
-                <th style={{ backgroundColor: "#83632B" }}></th>
-                <th
-                  style={{
-                    backgroundColor: "#83632B",
-                    direction: "rtl",
-                    textAlign: "end",
-                  }}
-                >
-                  بيانات الطلب
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr>
-                <td>Nationality</td>
-                <td>{nat}</td>
-                <td style={{ direction: "rtl" }}>الجنسيه</td>
-              </tr>
-
-              <tr>
-                <td>Religion</td>
-                <td>{rel}</td>
-                <td style={{ direction: "rtl" }}>الديانه</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* ── RIGHT SIDE ── */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          {/* Passport */}
-          <table className="table table-bordered mb-0" style={{ fontSize: 11 }}>
-            <thead>
-              <tr>
-                <th style={{ backgroundColor: "#83632B" }}>Passport Detail</th>
-                <th style={{ backgroundColor: "#83632B" }}></th>
-                <th
-                  style={{
-                    backgroundColor: "#83632B",
-                    direction: "rtl",
-                    textAlign: "end",
-                  }}
-                >
-                  تفاصيل جواز
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr>
-                <td>Passport No</td>
-                <td>{ppNo}</td>
-                <td style={{ direction: "rtl" }}>رقم الجواز</td>
-              </tr>
-            </tbody>
-          </table>
-
-          {/* Standing Photo */}
-          <div className="d-flex align-items-center justify-content-center flex-grow-1 p-2">
-            {bodyUrl ? (
-              <img
-                src={bodyUrl}
-                alt="full body"
-                style={{ width: 160, height: 230, objectFit: "cover" }}
-              />
-            ) : (
-              <div style={{ width: 160, height: 230, background: "#ddd" }} />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ════════ REMARKS ════════ */}
-      <div
-        className="d-flex align-items-center gap-3 px-2 py-1"
-        style={{ fontSize: 11 }}
-      >
-        <span className="fw-bold">Remarks</span>
-        <span style={{ color: "#83632B" }}>{remarks}</span>
-        <span style={{ color: "#83632B" }}>{remDate}</span>
-      </div>
     </>
   );
 }
