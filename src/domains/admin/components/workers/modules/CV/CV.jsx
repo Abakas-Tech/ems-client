@@ -147,30 +147,41 @@ const CV = () => {
     }
   };
 
+  // calculate contract period in year or month
+  const subtractDate = (d1, d2) => {
+    const date1 = new Date(d1);
+    const date2 = new Date(d2);
+    const diff = date1.getTime() - date2.getTime();
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    const years = Math.floor(days / 365);
+    const months = Math.floor((days % 365) / 30);
+    return years > 0 ? `${years} years` : `${months} months`;
+  };
   if (!worker) return null;
 
+  console.log(worker);
   const clientData = {
     referenceNo: safeText(worker.reference_no, ""),
-    postAppliedFor: safeText(worker.primary_positions?.[0], "House Maid"),
+    postAppliedFor: safeText(worker.skills[0], ""),
     monthlySalary: safeText(
       worker.monthly_salary ? `${worker.monthly_salary} SR` : "",
-      "1,000 SR",
+      "",
     ),
     contractPeriod: safeText(
       worker.contract_start_date && worker.contract_end_date
-        ? "2 Years"
+        ? subtractDate(worker.contract_end_date, worker.contract_start_date)
         : worker.contract_period,
-      "2 Years",
+      "",
     ),
     phoneNo: safeText(worker.phone_number, ""),
     applicantName: safeText(worker.full_name, "—"),
-    nationality: safeText(worker.nationality, "Ethiopia"),
-    religion: safeText(worker.religion, "Muslim"),
-    dateOfBirth: safeDate(worker.date_of_birth, "23/11/2001"),
-    placeOfBirth: safeText(worker.place_of_birth, "WOLAITA"),
+    nationality: safeText(worker.nationality, ""),
+    religion: safeText(worker.religion, ""),
+    dateOfBirth: safeDate(worker.date_of_birth, ""),
+    placeOfBirth: safeText(worker.place_of_birth, ""),
     age: safeText(worker.age, "24"),
     address: safeText(worker.address, ""),
-    maritalStatus: safeText(worker.marital_status, "Single"),
+    maritalStatus: safeText(worker.marital_status, ""),
     childrenCount: safeText(worker.number_of_children, ""),
     height: safeText(worker.height_cm, ""),
     weight: safeText(worker.weight_kg, ""),
@@ -197,19 +208,19 @@ const CV = () => {
       worker.experience?.map((e) => safeText(e.country, "")).join(" / "),
       "",
     ),
-    cooking: yesNo(worker.cooking, ""),
-    cleaning: yesNo(worker.cleaning, "YES"),
-    washing: yesNo(worker.washing, "YES"),
-    ironing: yesNo(worker.ironing, "YES"),
-    babysitting: yesNo(worker.babysitting, "YES"),
-    childrenCare: yesNo(worker.children_care, "YES"),
-    arabicCooking: yesNo(worker.arabic_cooking, "NO"),
-    sewing: yesNo(worker.sewing, "NO"),
-    passportNo: safeText(worker.passport_number, "EQ1192287"),
-    issueDate: safeDate(worker.passport_issue_date, "03/12/2025"),
-    issuePlace: safeText(worker.passport_issuing_country, "Ethiopia"),
-    expiryDate: safeDate(worker.passport_expiry_date, "02/12/2030"),
-    remarks: safeText(worker.remarks, worker.guarantor_name || "SEID"),
+    cooking: yesNo(worker.skills?.includes("Cooking"), ""),
+    cleaning: yesNo(worker.skills?.includes("Cleaning"), ""),
+    washing: yesNo(worker.skills?.includes("Washing"), ""),
+    ironing: yesNo(worker.skills?.includes("Ironing"), ""),
+    babysitting: yesNo(worker.skills?.includes("Babysitting"), ""),
+    childrenCare: yesNo(worker.skills?.includes("Children Care"), ""),
+    arabicCooking: yesNo(worker.skills?.includes("Arabic Cooking"), ""),
+    sewing: yesNo(worker.skills?.includes("Sewing"), ""),
+    passportNo: safeText(worker.passport_number, ""),
+    issueDate: safeDate(worker.passport_issue_date, ""),
+    issuePlace: safeText(worker.passport_issuing_country, ""),
+    expiryDate: safeDate(worker.passport_expiry_date, ""),
+    remarks: safeText(worker.remarks, worker.guarantor_name, ""),
     personalPhoto:
       worker.photo_3x4_url || "https://via.placeholder.com/130x155?text=Photo",
     standingPhoto:
