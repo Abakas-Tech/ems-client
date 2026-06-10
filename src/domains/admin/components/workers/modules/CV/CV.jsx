@@ -448,12 +448,14 @@ const CV = () => {
           </table>
 
           {/* ════════ PHONE / NAME BAR ════════ */}
-          <div
+          <div 
             style={{
               display: "grid",
-              gridTemplateColumns: "130px 1fr 100px",
-              borderBottom: "1px solid #000",
-              borderTop: "1px solid #000",
+              gridTemplateColumns: "180px 1fr",
+              marginBottom : "3px",
+
+              // borderBottom: "0px solid #000",
+              // borderTop: "0px solid #000",
             }}
           >
             <div
@@ -474,13 +476,15 @@ const CV = () => {
             <div
               style={{
                 padding: "4px 8px",
-                borderRight: "1px solid #000",
+                background: GOLD,
+                color: "#fff",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 16,
               }}
             >
+              <div style={{ fontWeight: "bold", fontSize: 13 }}>{name}</div>
               <div
                 style={{
                   fontWeight: "bold",
@@ -491,9 +495,7 @@ const CV = () => {
               >
                 اسم العامله :
               </div>
-              <div style={{ fontWeight: "bold", fontSize: 13 }}>{name}</div>
             </div>
-            <div style={{ padding: "4px 8px" }} />
           </div>
 
           {/* ════════ MAIN 2-COL: Details LEFT  |  Passport RIGHT ════════ */}
