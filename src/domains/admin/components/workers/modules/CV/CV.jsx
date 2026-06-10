@@ -63,7 +63,7 @@ const css = {
     fontWeight: "bold",
     fontStyle: "italic",
     fontSize: 11.5,
-    borderRight: "1px solid rgba(255,255,255,0.3)",
+    // borderRight: "1px solid rgba(255,255,255,0.3)",
   },
   goldRight: {
     padding: "2.5px 8px",
@@ -343,7 +343,7 @@ const CV = () => {
                   colSpan={3}
                   style={{
                     ...css.tdGoldHeader,
-                    borderRight: "1px solid rgba(255,255,255,0.3)",
+                    // borderRight: "1px solid rgba(255,255,255,0.3)",
                   }}
                 >
                   Application for Employment &nbsp;|&nbsp; طلب التوظيف
