@@ -1,20 +1,36 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import styles from "./CV.module.css";
 import { getWorkerCVData } from "../../../../api/worker.api";
-import BackButton from "../../../../../../shared/components/BackButton/BackButton";
-import { useParams, useNavigate } from "react-router-dom";
-import useLoader from "../../../../../../context/Loader/useLoader";
 import { uploadFile } from "../../../../api/file.api";
-import { useRef } from "react";
+import BackButton from "../../../../../../shared/components/BackButton/BackButton";
+import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
-const safeDate = (d) => (d ? d.slice(0, 10) : "—");
+import { useParams, useNavigate } from "react-router-dom";
+import brandLogo from "../../../../../../assets/img/logo/brand-header.png";
+const safeText = (v, fallback = "—") =>
+  v !== undefined && v !== null && String(v).trim() !== ""
+    ? String(v)
+    : fallback;
+
+const safeDate = (d, fallback = "—") => {
+  if (!d) return fallback;
+  const s = String(d);
+  return s.includes("T") ? s.slice(0, 10) : s;
+};
+
+const yesNo = (v, fallback = "") => {
+  if (v === true || v === "YES" || v === "Yes" || v === "yes" || v === 1)
+    return "YES";
+  if (v === false || v === "NO" || v === "No" || v === "no" || v === 0)
+    return "NO";
+  return fallback;
+};
 
 const CV = () => {
   const { id } = useParams();
-  const cvRef = useRef(null); // Create a reference
+  const cvRef = useRef(null);
   const navigate = useNavigate();
   const [worker, setWorker] = useState(null);
   const { showLoader, hideLoader } = useLoader();
@@ -29,101 +45,236 @@ const CV = () => {
       setWorker(data);
     } catch (err) {
       console.error(err);
+      addMessage(false, "Failed to load CV data");
     } finally {
       hideLoader();
     }
-  }, [id || profile]);
+  }, [id, profile, showLoader, hideLoader, addMessage]);
+
+  useEffect(() => {
+    if (profile?.id || id) {
+      fetchWorkerData();
+    }
+  }, []);
 
   const handleGenerateAndUpload = async () => {
-    if (!cvRef.current) return;
+    if (!cvRef.current || !worker) return;
 
     showLoader();
     try {
       const element = cvRef.current;
-
-      /* 1. FORCE DESKTOP WIDTH */
       const originalWidth = element.style.width;
-      element.style.width = "1200px"; // force desktop layout
+      element.style.width = "794px";
 
-      /* 2. WAIT FOR RENDER */
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 400));
 
-      /* 3. CAPTURE */
       const canvas = await html2canvas(element, {
         useCORS: true,
-        scale: 1.5,
-        windowWidth: 1200,
+        scale: 2,
+        backgroundColor: "#ffffff",
+        windowWidth: 794,
+        scrollX: 0,
+        scrollY: 0,
       });
 
-      /* 4. RESTORE WIDTH */
       element.style.width = originalWidth;
 
-      const imgData = canvas.toDataURL("image/jpeg", 0.7);
-
+      const imgData = canvas.toDataURL("image/jpeg", 0.92);
       const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfWidth = 210;
+      const pageHeight = 297;
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
 
       pdf.addImage(
         imgData,
         "JPEG",
         0,
-        0,
-        pdfWidth,
-        pdfHeight,
+        position,
+        imgWidth,
+        imgHeight,
         undefined,
         "FAST",
       );
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(
+          imgData,
+          "JPEG",
+          0,
+          position,
+          imgWidth,
+          imgHeight,
+          undefined,
+          "FAST",
+        );
+        heightLeft -= pageHeight;
+      }
 
       const pdfBlob = pdf.output("blob");
-
-      const fileName = `${worker.full_name.replace(/\s+/g, "_")}_CV.pdf`;
-
-      const file = new File([pdfBlob], fileName, {
-        type: "application/pdf",
-      });
-
-      const originalName = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
+      const fileName = `${safeText(worker.full_name, "Worker").replace(/\s+/g, "_")}_CV.pdf`;
+      const file = new File([pdfBlob], fileName, { type: "application/pdf" });
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("file_name", originalName);
+      formData.append(
+        "file_name",
+        `${safeText(worker.full_name, "Worker").replace(/\s+/g, "_")}_CV`,
+      );
       formData.append("category", "CV");
       formData.append("is_private", 0);
-      formData.append("description", `CV for ${worker.full_name}`);
+      formData.append(
+        "description",
+        `CV for ${safeText(worker.full_name, "Worker")}`,
+      );
       formData.append("worker_id", worker.id);
 
       await uploadFile(formData);
 
-      const response = worker.cv_url ? "updated" : "generated";
-
-      addMessage(true, "CV " + response + " and uploaded successfully!");
+      const responseType = worker.cv_url ? "updated" : "generated";
+      addMessage(true, `CV ${responseType} and uploaded successfully!`);
     } catch (err) {
+      console.error(err);
       addMessage(false, "Failed to generate PDF");
     } finally {
       hideLoader();
     }
   };
 
-  useEffect(() => {
-    fetchWorkerData();
-  }, [profile]);
-
   if (!worker) return null;
+
+  const clientData = {
+    referenceNo: safeText(worker.reference_no, ""),
+    postAppliedFor: safeText(worker.primary_positions?.[0], "House Maid"),
+    monthlySalary: safeText(
+      worker.monthly_salary ? `${worker.monthly_salary} SR` : "",
+      "1,000 SR",
+    ),
+    contractPeriod: safeText(
+      worker.contract_start_date && worker.contract_end_date
+        ? "2 Years"
+        : worker.contract_period,
+      "2 Years",
+    ),
+    phoneNo: safeText(worker.phone_number, ""),
+    applicantName: safeText(worker.full_name, "—"),
+    nationality: safeText(worker.nationality, "Ethiopia"),
+    religion: safeText(worker.religion, "Christian"),
+    dateOfBirth: safeDate(worker.date_of_birth, "23/11/2001"),
+    placeOfBirth: safeText(worker.place_of_birth, "WOLAITA"),
+    age: safeText(worker.age, "24"),
+    address: safeText(worker.address, ""),
+    maritalStatus: safeText(worker.marital_status, "Single"),
+    childrenCount: safeText(worker.number_of_children, ""),
+    height: safeText(worker.height_cm, ""),
+    weight: safeText(worker.weight_kg, ""),
+    english: safeText(
+      worker.languages?.find((l) =>
+        String(l.language).toLowerCase().includes("english"),
+      )?.level,
+      "",
+    ),
+    arabic: safeText(
+      worker.languages?.find((l) =>
+        String(l.language).toLowerCase().includes("arabic"),
+      )?.level,
+      "",
+    ),
+    education: safeText(worker.education, ""),
+    experiencePeriod: safeText(
+      worker.experience
+        ?.map((e) => `${safeText(e.years, "")} ${e.years ? "Years" : ""}`)
+        .join(" / "),
+      "",
+    ),
+    experienceCountry: safeText(
+      worker.experience?.map((e) => safeText(e.country, "")).join(" / "),
+      "",
+    ),
+    cooking: yesNo(worker.cooking, ""),
+    cleaning: yesNo(worker.cleaning, "YES"),
+    washing: yesNo(worker.washing, "YES"),
+    ironing: yesNo(worker.ironing, "YES"),
+    babysitting: yesNo(worker.babysitting, "YES"),
+    childrenCare: yesNo(worker.children_care, "YES"),
+    arabicCooking: yesNo(worker.arabic_cooking, "NO"),
+    sewing: yesNo(worker.sewing, "NO"),
+    passportNo: safeText(worker.passport_number, "EQ1192287"),
+    issueDate: safeDate(worker.passport_issue_date, "03/12/2025"),
+    issuePlace: safeText(worker.passport_issuing_country, "Ethiopia"),
+    expiryDate: safeDate(worker.passport_expiry_date, "02/12/2030"),
+    remarks: safeText(worker.remarks, worker.guarantor_name || "SEID"),
+    personalPhoto:
+      worker.photo_3x4_url || "https://via.placeholder.com/130x155?text=Photo",
+    standingPhoto:
+      worker.photo_standing_url ||
+      worker.photo_3x4_url ||
+      "https://via.placeholder.com/280x500?text=Full+Body",
+    passportScan:
+      worker.passport_scan_url ||
+      "https://via.placeholder.com/700x450?text=Passport+Scan",
+
+    ar: {
+      applicationTitle: "إستمارة توظيف",
+      referenceNo: "رقم المرجع",
+      postAppliedFor: "وظيفة",
+      monthlySalary: "راتب شهري",
+      contractPeriod: "مدة العقد",
+      phoneNo: "رقم الهاتف",
+      applicantDetails: "بيانات مقدم الطلب",
+      nationality: "الجنسية",
+      religion: "الديانة",
+      dateOfBirth: "تاريخ الميلاد",
+      placeOfBirth: "مكان الولادة",
+      age: "عمر",
+      address: "العنوان",
+      maritalStatus: "الحالة",
+      childrenCount: "عدد الأطفال",
+      height: "الوزن",
+      weight: "الطول",
+      educationLanguages: "التعليم واللغات",
+      english: "الإنجليزية",
+      arabic: "العربية",
+      education: "المستوى التعليمي",
+      workExperience: "خبرة في العمل",
+      period: "المدة",
+      country: "البلد",
+      experienceSkills: "خبرة العمل والمهارات",
+      cooking: "الطبخ",
+      cleaning: "التنظيف",
+      washing: "الغسيل",
+      ironing: "الكي",
+      babysitting: "عناية",
+      childrenCare: "عناية",
+      arabicCooking: "الطبخ العربي",
+      sewing: "خياطة",
+      passportNo: "رقم الجواز",
+      issueDate: "تاريخ الإصدار",
+      issuePlace: "مكان الإصدار",
+      expiryDate: "تاريخ الانتهاء",
+      remarks: "ملاحظات",
+    },
+  };
 
   return (
     <div className="dashboard-wraper">
       <div className="d-flex justify-content-between align-items-center d-print-none pb-2">
         <h2 className="text-dark mb-2">
-          {" "}
-          {profile?.role_id != 4 ? "Employee" : "My"} CV
+          {profile?.role_id !== 4 ? "Employee" : "My"} CV
         </h2>
-        {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
+        {profile?.role_id !== 4 && <BackButton onClick={() => navigate(-1)} />}
       </div>
-      {profile?.role_id != 4 && (
-        <div className="mb-3">
+
+      {profile?.role_id !== 4 && (
+        <div className="mb-3 d-print-none">
           <button
-            className="btn btn-main mt-3 px-4  text-white w-auto d-flex align-items-center justify-content-center "
+            className="btn btn-main mt-3 px-4 text-white w-auto d-flex align-items-center justify-content-center"
             onClick={handleGenerateAndUpload}
           >
             {worker.cv_url ? "Update CV" : "Generate & Upload CV"}
@@ -131,228 +282,769 @@ const CV = () => {
         </div>
       )}
 
-      <div ref={cvRef} className="card border-0 shadow-sm overflow-hidden">
-        <div className="card-body p-0 ">
-          {/* HEADER */}
-          <div className={styles.header}>
-            <img src={worker.photo_3x4_url} className={styles.circularPhoto} />
-            <div>
-              <h1 className={styles.name}>{worker.full_name}</h1>
-              <p className={`{styles.title} fw-bold`}>
-                {worker.primary_positions?.join(" • ") || "DOMESTIC EMPLOYEE"}
-              </p>
-            </div>
-          </div>
+      <div ref={cvRef} className="cv-wrap bg-white">
+        <style>{`
+          .cv-wrap {
+            width: 794px;
+            margin: 0 auto;
+            background: #fff;
+            color: #111;
+            font-family: Arial, Helvetica, sans-serif;
+          }
 
-          <div className={styles.mainContent}>
-            {/* LEFT */}
-            <div className={styles.leftColumn}>
-              <div className={styles.topLeftGroup}>
-                {/* CONTACT */}
-                <section
-                  className={`${styles.section} ${styles.highlightSection}`}
-                >
-                  <h3
-                    className={`${styles.sectionTitle} ${styles.highlightContactTitle}`}
-                  >
-                    CONTACT
-                  </h3>
-                  <p>
-                    <i className="bi bi-telephone me-2"></i>
-                    {worker.phone_number}
-                  </p>
-                  <p>
-                    <i className="bi bi-envelope me-2"></i>
-                    {worker.email}
-                  </p>
-                  <p>
-                    <i className="bi bi-geo-alt me-2"></i>
-                    {worker.address}
-                  </p>
-                </section>
+          .cv-page {
+            width: 794px;
+            min-height: 1123px;
+            background: #fff;
+            position: relative;
+            box-sizing: border-box;
+            page-break-after: always;
+            page-break-inside: avoid;
+            overflow: hidden;
+          }
 
-                {/* PERSONAL */}
-                <section className={styles.section}>
-                  <h3 className={styles.sectionTitle}>PERSONAL INFO</h3>
-                  <p>
-                    <strong>DOB:</strong> {safeDate(worker.date_of_birth)}
-                  </p>
-                  <p>
-                    <strong>Place:</strong> {worker.place_of_birth || "—"}
-                  </p>
-                  <p>
-                    <strong>Nationality:</strong> {worker.nationality || "—"}
-                  </p>
-                  <p>
-                    <strong>Sex:</strong> {worker.sex || "—"}
-                  </p>
-                  <p>
-                    <strong>Religion:</strong> {worker.religion || "—"}
-                  </p>
-                  <p>
-                    <strong>Status:</strong> {worker.marital_status || "—"}
-                  </p>
-                  <p>
-                    <strong>Height/Weight:</strong> {worker.height_cm || "—"}cm
-                    / {worker.weight_kg || "—"}kg
-                  </p>
-                </section>
-              </div>
-              {/* PASSPORT */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>PASSPORT</h3>
+          .cv-page:last-child {
+            page-break-after: auto;
+          }
 
-                <p>
-                  <strong>No:</strong> {worker.passport_number || "—"}
-                </p>
-                <p>
-                  <strong>Issued:</strong>{" "}
-                  {safeDate(worker.passport_issue_date)}
-                </p>
-                <p>
-                  <strong>Expires:</strong>{" "}
-                  {safeDate(worker.passport_expiry_date)}
-                </p>
+          .cv-inner {
+            width: 100%;
+            padding: 18px 20px 16px 20px;
+            box-sizing: border-box;
+          }
 
-                {/* Passport Scan Image */}
-                {worker.passport_scan_url && (
-                  <div className={styles.passportImageWrapper}>
-                    <img
-                      src={worker.passport_scan_url}
-                      alt="Passport Scan"
-                      className={styles.passportImage}
-                    />
-                  </div>
-                )}
-              </section>
+          .brand-wrap {
+            margin-bottom: 5px;
+          }
+          .brand-logo {
+            width: 100%;
+            object-fit: contain;
+            flex-shrink: 0;
+          }
 
-              {/* MEDICAL */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>MEDICAL</h3>
-                <p>
-                  <strong>Status:</strong> {worker.medical_status || "—"}
-                </p>
-                <p>
-                  <strong>Center:</strong> {worker.medical_center || "—"}
-                </p>
-                <p>
-                  <strong>Date:</strong> {safeDate(worker.medical_issue_date)}
-                </p>
-              </section>
-              {/* COC */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>COC</h3>
-                <p>
-                  <strong>No:</strong> {worker.coc_number || "—"}
-                </p>
-                <p>
-                  <strong>Issued:</strong> {safeDate(worker.coc_issue_date)}
-                </p>
-                <p>
-                  <strong>Expires:</strong> {safeDate(worker.coc_expiry_date)}
-                </p>
-              </section>
-              {/* LANGUAGES */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>LANGUAGES</h3>
-                <ul className={styles.list}>
-                  {worker.languages?.map((l, i) => (
-                    <li key={i}>
-                      {l.language} —{" "}
-                      <span className={styles.level}>{l.level}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
+          .brand-text {
+            text-align: center;
+            line-height: 1.05;
+            margin-top: 2px;
+          }
 
-              {/* SKILLS */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>SKILLS</h3>
-                <ul className={styles.list}>
-                  {worker.skills?.map((s, i) => (
-                    <li key={i}>{s}</li>
-                  ))}
-                </ul>
-              </section>
-            </div>
+          .brand-ar {
+            font-size: 15px;
+            font-weight: 900;
+            color: #111;
+            direction: rtl;
+            white-space: nowrap;
+          }
 
-            {/* RIGHT */}
-            <div className={styles.rightColumn}>
-              <div className={styles.topLeftGroup}>
-                <div className={styles.photoWrapper}>
+          .brand-en {
+            font-size: 15px;
+            font-weight: 900;
+            color: #8b0e12;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+          }
+
+          .brand-bars {
+            width: 635px;
+            margin: 0 auto;
+          }
+
+          .brand-bar-top {
+            display: flex;
+            height: 16px;
+            border: 0.8px solid #111;
+            border-bottom: none;
+          }
+
+          .brand-bar-red {
+            width: 54px;
+            background: #d0191e;
+          }
+
+          .brand-bar-blue {
+            flex: 1;
+            background: #141a48;
+          }
+
+          .brand-bar-bottom {
+            height: 15px;
+            background: #141a48;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.1;
+            border: 0.8px solid #111;
+            border-top: none;
+            padding-top: 1px;
+            box-sizing: border-box;
+          }
+
+          .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: 12px;
+            line-height: 1.15;
+            border: 1px solid #111;
+          }
+
+          .doc-table td,
+          .doc-table th {
+            border: 1px solid #111;
+            padding: 5px 6px 8px 6px;
+            vertical-align: middle;
+            box-sizing: border-box;
+          }
+
+          .tight {
+            padding: 1px 5px !important;
+          }
+
+          .label-en {
+            font-weight: 500;
+            text-align: left;
+            color: #111111;
+          }
+
+          .label-ar {
+            font-weight: 500;
+            text-align: center;
+            direction: rtl;
+            unicode-bidi: embed;
+            color: #111111;
+          }
+
+          .val {
+            text-align: center;
+            font-weight: 500;
+            color: #111;
+          }
+
+          .bold {
+            font-weight: 900 !important;
+          }
+
+          .deep-red {
+            color: #8b0e12 !important;
+            font-weight: 900 !important;
+          }
+
+          .section-title-row td {
+            font-weight: 900;
+            text-align: left;
+            background: #fff;
+          }
+
+          .section-title-ar {
+            direction: rtl;
+            text-align: right !important;
+            font-weight: 900 !important;
+          }
+
+          .name-strip {
+            display: flex;
+            align-items: center;
+            border-left: 1px solid #111;
+            border-right: 1px solid #111;
+            border-bottom: 1px solid #111;
+            margin-top: -1px;
+          }
+
+          .name-phone {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            min-height: 23px;
+            border-right: 1px solid #111;
+          }
+
+          .name-phone > div {
+            border-right: 1px solid #111;
+            padding: 3px 6px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+          }
+
+          .name-phone > div:last-child {
+            border-right: none;
+          }
+
+          .name-applicant {
+            width: 285px;
+            padding: 3px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: right;
+          }
+
+          .main-grid {
+            display: grid;
+            grid-template-columns: 50% 50%;
+            gap: 0;
+            border-left: 1px solid #111;
+            border-right: 1px solid #111;
+            border-bottom: 1px solid #111;
+            margin-top: -1px;
+          }
+
+          .left-side {
+            border-right: 1px solid #111;
+         
+          }
+
+          .right-side {
+            display: flex;
+            flex-direction: column;
+          }
+
+          .sub-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: 12px;
+            line-height: 1.15;
+          }
+
+          .sub-table td {
+            border-bottom: 1px solid #111;
+            border-right: 1px solid #111;
+            padding: 7px 5px;
+            vertical-align: middle;
+          }
+
+          .sub-table tr td:last-child {
+            border-right: none;
+          }
+
+          .sub-table tr:last-child td {
+            border-bottom: none;
+          }
+
+          .personal-grid td,
+          .lang-grid td,
+          .exp-grid td,
+          .skill-grid td,
+          .passport-grid td {
+            height: 24px;
+          }
+
+          .personal-grid .h-double,
+          .lang-grid .h-double,
+          .exp-grid .h-double {
+            height: 40px;
+          }
+
+          .small-ar {
+            direction: rtl;
+            unicode-bidi: embed;
+            font-size: 16px;
+            text-align: center;
+            color: #111;
+            font-weight: 500;
+          }
+
+          .standing-photo-wrap {
+            width: 100%;
+            border-bottom: 1px solid #111;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+            background: #fff;
+          }
+
+          .standing-photo {
+            width: 100%;
+            height: auto;
+          }
+
+          .passport-card table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+
+          .passport-card td {
+            border: 1px solid #111;
+            padding: 6px 6px 7px 6px;
+            font-size: 10px;
+          }
+
+      
+
+          .top-right-id {
+            width: 100%;
+            margin: 0 auto;
+            border-bottom: 1px solid #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #fff;
+          }
+
+          .top-right-id img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+          }
+
+          .remarks-row {
+            display: grid;
+            grid-template-columns: 70px 1fr 95px;
+            min-height: 22px;
+            border-top: 1px solid #111;
+          }
+
+          .remarks-row > div {
+            border-right: 1px solid #111;
+            padding: 2px 6px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+          }
+
+          .remarks-row > div:last-child {
+            border-right: none;
+          }
+
+          .remarks-right {
+            direction: rtl;
+            justify-content: flex-end;
+          }
+
+          .passport-page-inner {
+            padding: 40px 50px 30px 50px;
+            box-sizing: border-box;
+          }
+
+          .passport-box {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+          }
+
+          .passport-box img {
+            width: 86%;
+            max-width: 680px;
+            height: auto;
+            object-fit: contain;
+            border: none;
+          }
+
+          .verify-card {
+            width: 86%;
+            margin: 26px auto 0 auto;
+            border: 1px solid #111;
+            border-collapse: collapse;
+          }
+
+          .verify-card table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: 12px;
+            line-height: 1.15;
+          }
+
+          .verify-card td {
+            border: 1px solid #111;
+            padding: 4px 6px;
+            vertical-align: middle;
+          }
+
+
+          .rtl {
+            direction: rtl;
+            unicode-bidi: embed;
+            color: #111111;
+            font-weight: 500;
+          }
+
+          .center {
+            text-align: center;
+          }
+
+          .right {
+            text-align: right;
+          }
+
+          .left {
+            text-align: left;
+          }
+
+          .fw700 {
+            font-weight: 900;
+          }
+
+          .screen-card {
+            border: 0;
+            box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,.08);
+            overflow: hidden;
+            background: #fff;
+          }
+
+          @media print {
+            html, body {
+              margin: 0 !important;
+              padding: 0 !important;
+              background: #fff !important;
+              width: 210mm;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+
+            .dashboard-wraper {
+              margin: 0 !important;
+              padding: 0 !important;
+              background: #fff !important;
+            }
+
+            .d-print-none {
+              display: none !important;
+            }
+
+            .cv-wrap {
+              width: 210mm !important;
+              margin: 0 !important;
+            }
+
+            .cv-page {
+              width: 210mm !important;
+              min-height: 297mm !important;
+              page-break-after: always !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+              overflow: hidden !important;
+            }
+
+            .cv-page:last-child {
+              page-break-after: auto !important;
+            }
+
+            .screen-card {
+              box-shadow: none !important;
+            }
+          }
+        `}</style>
+
+        <div className="screen-card">
+          {/* PAGE 1 */}
+          <div className="cv-page">
+            <div className="cv-inner">
+              {/* BRAND */}
+              <div className="brand-wrap">
+                <div className="brand-top">
                   <img
-                    src={worker.photo_standing_url}
-                    className={styles.standingPhoto}
+                    className="brand-logo"
+                    src={brandLogo}
+                    alt=""
+                    onError={(e) => {
+                      e.currentTarget.style.visibility = "hidden";
+                    }}
                   />
                 </div>
               </div>
-              {/* VISA */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>VISA</h3>
-                <p>
-                  <strong>No:</strong> {worker.visa_number || "—"}
-                </p>
-                <p>
-                  <strong>Issued:</strong> {safeDate(worker.visa_issue_date)}
-                </p>
-                <p>
-                  <strong>Expires:</strong> {safeDate(worker.visa_expiry_date)}
-                </p>
-              </section>
+              {/* TOP SUMMARY TABLE */}
+              <table className="doc-table">
+                <colgroup>
+                  <col style={{ width: "18%" }} />
+                  <col style={{ width: "35%" }} />
+                  <col style={{ width: "19%" }} />
+                  <col style={{ width: "28%" }} />
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <td className="label-en fw700">Reference No.</td>
+                    <td className="val"></td>
+                    <td className="label-ar rtl fw700">
+                      {clientData.ar.referenceNo}
+                    </td>
+                    <td rowSpan="4" className="p-0">
+                      <div className="top-right-id">
+                        <img src={clientData.personalPhoto} alt="personal" />
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="label-en">Post Applied For</td>
+                    <td className="val">{clientData.postAppliedFor}</td>
+                    <td className="label-ar rtl">
+                      {clientData.ar.postAppliedFor}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="label-en">Monthly Salary</td>
+                    <td className="val">{clientData.monthlySalary}</td>
+                    <td className="label-ar rtl">
+                      {clientData.ar.monthlySalary}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="label-en">Contract Period</td>
+                    <td className="val">{clientData.contractPeriod}</td>
+                    <td className="label-ar rtl">
+                      {clientData.ar.contractPeriod}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
-              {/* CONTRACT */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>CONTRACT</h3>
-                <p>
-                  <strong>Employer:</strong> {worker.employer_name_en || "—"}
-                </p>
-                <p>
-                  <strong>Arabic:</strong> {worker.employer_name_ar || "—"}
-                </p>
-                <p>
-                  <strong>Salary:</strong> {worker.monthly_salary || "—"}
-                </p>
-                <p>
-                  <strong>Period:</strong>{" "}
-                  {safeDate(worker.contract_start_date)} -{" "}
-                  {safeDate(worker.contract_end_date)}
-                </p>
-              </section>
+              {/* PHONE + NAME */}
+              <div className="name-strip">
+                <div className="name-phone">
+                  <div className="label-en">Phone No.</div>
+                  <div className="val left">{clientData.phoneNo}</div>
+                </div>
+                <div className="name-applicant">{clientData.applicantName}</div>
+              </div>
 
-              {/* TRAVEL */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>TRAVEL</h3>
-                <p>
-                  <strong>Ticket:</strong> {worker.ticket_number || "—"}
-                </p>
-                <p>
-                  <strong>Date:</strong> {safeDate(worker.departure_date)}
-                </p>
-              </section>
+              {/* MAIN GRID */}
+              <div className="main-grid">
+                {/* LEFT SIDE */}
+                <div className="left-side">
+                  {/* PERSONAL DETAILS */}
+                  <table className="sub-table personal-grid">
+                    <colgroup>
+                      <col style={{ width: "25%" }} />
+                      <col style={{ width: "45%" }} />
+                      <col style={{ width: "30%" }} />
+                    </colgroup>
+                    <tbody>
+                      <tr>
+                        <td className="label-en">Nationality</td>
+                        <td className="val">{clientData.nationality}</td>
+                        <td className="small-ar">
+                          {clientData.ar.nationality}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Religion</td>
+                        <td className="val">{clientData.religion}</td>
+                        <td className="small-ar">{clientData.ar.religion}</td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Date of Birth</td>
+                        <td className="val">{clientData.dateOfBirth}</td>
+                        <td className="small-ar">
+                          {clientData.ar.dateOfBirth}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Place of Birth</td>
+                        <td className="val">{clientData.placeOfBirth}</td>
+                        <td className="small-ar">
+                          {clientData.ar.placeOfBirth}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Age</td>
+                        <td className="val">{clientData.age}</td>
+                        <td className="small-ar">{clientData.ar.age}</td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Address</td>
+                        <td className="val">{clientData.address}</td>
+                        <td className="small-ar">{clientData.ar.address}</td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Marital Status</td>
+                        <td className="val">{clientData.maritalStatus}</td>
+                        <td className="small-ar">
+                          {clientData.ar.maritalStatus}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">No. of Children</td>
+                        <td className="val">{clientData.childrenCount}</td>
+                        <td className="small-ar">
+                          {clientData.ar.childrenCount}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Height</td>
+                        <td className="val">{clientData.height}</td>
+                        <td className="small-ar">{clientData.ar.height}</td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Weight</td>
+                        <td className="val">{clientData.weight}</td>
+                        <td className="small-ar">{clientData.ar.weight}</td>
+                      </tr>
+                      <tr>
+                        <td className="label-en"></td>
+                        <td className="val"></td>
+                        <td className="small-ar"></td>
+                      </tr>
+                      {/* LANGUAGES */}
+                      <tr>
+                        <td className="label-en">English</td>
+                        <td className="val">{clientData.english}</td>
+                        <td className="small-ar">{clientData.ar.english}</td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Arabic</td>
+                        <td className="val">{clientData.arabic}</td>
+                        <td className="small-ar">{clientData.ar.arabic}</td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Education</td>
+                        <td className="val">{clientData.education}</td>
+                        <td className="small-ar h-double">
+                          {clientData.ar.education}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en"></td>
+                        <td className="val"></td>
+                        <td className="small-ar"></td>
+                      </tr>
 
-              {/* EXPERIENCE */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>EXPERIENCE</h3>
-                {worker.experience?.map((exp, i) => (
-                  <p key={i}>
-                    {exp.job_title} - {exp.country} ({exp.years} yrs)
-                  </p>
-                ))}
-              </section>
+                      {/* EXPERIENCE PERIOD/COUNTRY */}
+                      <tr>
+                        <td className="label-en h-double">Period</td>
+                        <td className="val h-double">
+                          {clientData.experiencePeriod}
+                        </td>
+                        <td className="small-ar h-double">
+                          {clientData.ar.period}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en h-double">Country</td>
+                        <td className="val h-double">
+                          {clientData.experienceCountry}
+                        </td>
+                        <td className="small-ar h-double">
+                          {clientData.ar.country}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en"></td>
+                        <td className="val"></td>
+                        <td className="small-ar"></td>
+                      </tr>
+                      {/* SKILLS */}
 
-              {/* GUARANTOR */}
-              <section className={`mb-2 ${styles.section}`}>
-                <h3 className={styles.sectionTitle}>EMERGENCY CONTACT</h3>
-                <p>
-                  <strong>Name:</strong> {worker.guarantor_name || "—"}
-                </p>
-                <p>
-                  <strong>Relation:</strong> {worker.guarantor_relation || "—"}
-                </p>
-                <p>
-                  <strong>Phone:</strong> {worker.guarantor_phone_number || "—"}
-                </p>
-              </section>
+                      <tr>
+                        <td className="label-en">Cooking</td>
+                        <td className="val">{clientData.cooking}</td>
+                        <td className="small-ar">{clientData.ar.cooking}</td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Cleaning</td>
+                        <td className="val">{clientData.cleaning}</td>
+                        <td className="small-ar">{clientData.ar.cleaning}</td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Washing</td>
+                        <td className="val">{clientData.washing}</td>
+                        <td className="small-ar">{clientData.ar.washing}</td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Ironing</td>
+                        <td className="val">{clientData.ironing}</td>
+                        <td className="small-ar">{clientData.ar.ironing}</td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Babysitting</td>
+                        <td className="val">{clientData.babysitting}</td>
+                        <td className="small-ar">
+                          {clientData.ar.babysitting}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Children Care</td>
+                        <td className="val">{clientData.childrenCare}</td>
+                        <td className="small-ar">
+                          {clientData.ar.childrenCare}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Arabic Cooking</td>
+                        <td className="val">{clientData.arabicCooking}</td>
+                        <td className="small-ar">
+                          {clientData.ar.arabicCooking}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Sewing</td>
+                        <td className="val">{clientData.sewing}</td>
+                        <td className="small-ar">{clientData.ar.sewing}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* RIGHT SIDE */}
+                <div className="right-side">
+                  <div className="passport-card">
+                    <table>
+                      <colgroup>
+                        <col style={{ width: "40%" }} />
+                        <col style={{ width: "40%" }} />
+                        <col style={{ width: "40%" }} />
+                      </colgroup>
+                      <tbody>
+                        <tr>
+                          <td className="label-en">Passport No.</td>
+                          <td className="val">{clientData.passportNo}</td>
+                          <td className="small-ar">
+                            {clientData.ar.passportNo}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="label-en">Issue Date</td>
+                          <td className="val">{clientData.issueDate}</td>
+                          <td className="small-ar">
+                            {clientData.ar.issueDate}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="label-en">Place of Issue</td>
+                          <td className="val">{clientData.issuePlace}</td>
+                          <td className="small-ar">
+                            {clientData.ar.issuePlace}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="label-en">Expiry Date</td>
+                          <td className="val">{clientData.expiryDate}</td>
+                          <td className="small-ar">
+                            {clientData.ar.expiryDate}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="standing-photo-wrap">
+                    <img
+                      src={clientData.standingPhoto}
+                      alt="standing"
+                      className="standing-photo"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* REMARKS */}
+              <div className="remarks-row">
+                <div className="label-en">Remarks</div>
+                <div className="deep-red">{clientData.remarks}</div>
+                <div className="remarks-right">{clientData.ar.remarks}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* PAGE 2 */}
+          <div className="cv-page">
+            <div className="passport-page-inner">
+              <div className="passport-box">
+                <img src={clientData.passportScan} alt="passport scan" />
+              </div>
             </div>
           </div>
         </div>
@@ -360,4 +1052,5 @@ const CV = () => {
     </div>
   );
 };
+
 export default CV;
