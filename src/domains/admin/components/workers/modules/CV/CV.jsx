@@ -341,7 +341,7 @@ const CV = () => {
               style={{
                 width: "100%",
                 borderCollapse: "collapse",
-                marginTop: 4,
+                // marginTop: 4,
                 borderTop: "none",
               }}
             >
