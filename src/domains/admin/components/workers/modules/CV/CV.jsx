@@ -8,10 +8,11 @@ import useLoader from "../../../../../../context/Loader/useLoader";
 import { uploadFile } from "../../../../api/file.api";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
+import cvHeader from "../../../../../../assets/img/cv/cv-header.png";
 
 const safeDate = (d) => (d ? d.slice(0, 10) : "");
 
-/* ── shared style objects (inline = html2canvas safe) ── */
+/* ── shared style tokens ── */
 const GOLD = "#7a5c1e";
 const FONT = "'Times New Roman', Times, serif";
 
@@ -71,6 +72,26 @@ const css = {
     textAlign: "right",
     direction: "rtl",
   },
+  /* table cell base for the top info table */
+  td: {
+    border: "1px solid #000",
+    padding: "3px 7px",
+    fontSize: 11,
+    fontFamily: FONT,
+    verticalAlign: "middle",
+  },
+  tdGoldHeader: {
+    border: "1px solid #000",
+    padding: "4px 7px",
+    fontSize: 12,
+    fontFamily: FONT,
+    fontWeight: "bold",
+    fontStyle: "italic",
+    background: GOLD,
+    color: "#fff",
+    textAlign: "center",
+    verticalAlign: "middle",
+  },
 };
 
 /* Gold bilingual section bar */
@@ -99,21 +120,6 @@ const Row3 = ({
   >
     <div style={css.enLabel}>{label}</div>
     <div style={boldValue ? css.enValueBold : css.enValue}>{value ?? ""}</div>
-    <div style={css.arLabel}>{arLabel}</div>
-  </div>
-);
-
-/* Row: EN-label | EN-value | AR-label  for job-info top block (centered value) */
-const JobRow = ({ label, value, arLabel, last }) => (
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr 1fr",
-      ...(last ? {} : { borderBottom: "1px solid #000" }),
-    }}
-  >
-    <div style={css.enLabel}>{label}</div>
-    <div style={{ ...css.enValueBold, textAlign: "center" }}>{value ?? ""}</div>
     <div style={css.arLabel}>{arLabel}</div>
   </div>
 );
@@ -153,7 +159,7 @@ const CV = () => {
     } finally {
       hideLoader();
     }
-  }, [id || profile]);
+  }, [id, profile]);
 
   useEffect(() => {
     fetchWorkerData();
@@ -165,27 +171,31 @@ const CV = () => {
     try {
       const el = cvRef.current;
       const ow = el.style.width;
-      el.style.width = "1200px";
+      el.style.width = "760px";
       await new Promise((r) => setTimeout(r, 300));
       const canvas = await html2canvas(el, {
         useCORS: true,
         scale: 2,
-        windowWidth: 1200,
+        windowWidth: 760,
       });
       el.style.width = ow;
 
       const pdf = new jsPDF("p", "mm", "a4");
       const pw = pdf.internal.pageSize.getWidth();
-      pdf.addImage(
-        canvas.toDataURL("image/jpeg", 0.9),
-        "JPEG",
-        0,
-        0,
-        pw,
-        (canvas.height * pw) / canvas.width,
-        undefined,
-        "FAST",
-      );
+      const ph = pdf.internal.pageSize.getHeight();
+      const imgData = canvas.toDataURL("image/jpeg", 0.9);
+      const imgH = (canvas.height * pw) / canvas.width;
+
+      if (imgH <= ph) {
+        pdf.addImage(imgData, "JPEG", 0, 0, pw, imgH);
+      } else {
+        let y = 0;
+        while (y < imgH) {
+          if (y > 0) pdf.addPage();
+          pdf.addImage(imgData, "JPEG", 0, -y, pw, imgH);
+          y += ph;
+        }
+      }
 
       const blob = pdf.output("blob");
       const name = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
@@ -204,7 +214,8 @@ const CV = () => {
           (worker.cv_url ? "updated" : "generated") +
           " and uploaded successfully!",
       );
-    } catch {
+    } catch (e) {
+      console.error(e);
       addMessage(false, "Failed to generate PDF");
     } finally {
       hideLoader();
@@ -247,7 +258,7 @@ const CV = () => {
   const remDate = safeDate(worker.remarks_date);
 
   const skills = [
-    { en: "Cooking", ar: "الطبخ", v: worker.can_cook ? "YES" : "" },
+    { en: "Cooking", ar: "الطبخ", v: worker.can_cook ? "YES" : "NO" },
     { en: "Cleaning", ar: "التنظيف", v: worker.can_clean ? "YES" : "NO" },
     { en: "Washing", ar: "الغسيل", v: worker.can_wash ? "YES" : "NO" },
     { en: "Ironing", ar: "الكوي", v: worker.can_iron ? "YES" : "NO" },
@@ -269,7 +280,7 @@ const CV = () => {
     { en: "Sewing", ar: "الخياطه", v: worker.can_sew ? "YES" : "NO" },
   ];
 
-  /* ── root cv style ── */
+  /* ── root CV style ── */
   const cvStyle = {
     width: 760,
     minWidth: 760,
@@ -303,176 +314,146 @@ const CV = () => {
       {/* horizontal scroll so mobile doesn't break */}
       <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         <div ref={cvRef} style={cvStyle}>
-          {/* ════════ HEADER ════════ */}
-          <div
+          {/* ════════ HEADER IMAGE ════════ */}
+          <img
+            src={cvHeader}
+            alt="CV Header"
+            style={{ width: "100%", height: "auto", display: "block" }}
+          />
+
+          {/* ════════ TOP INFO TABLE ════════
+              Layout:
+              | Application for Employment  طلب التوظيف  |  Worker Name  |
+              | Reference No  | value | رقم المرجع       | [photo ×4]    |
+              | Post Applied  | value | وظيفة            |               |
+              | Monthly Salary| value | راتب شهري        |               |
+              | Contract Period| value| مدة العقد        |               |
+          ════════ */}
+          <table
             style={{
-              display: "flex",
-              alignItems: "center",
-              borderBottom: "2px solid #000",
-              padding: "8px 12px",
-              gap: 10,
+              width: "100%",
+              borderCollapse: "collapse",
+              marginTop: 4,
             }}
           >
-            {/* Logo block */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 3,
-                width: 105,
-                flexShrink: 0,
-              }}
-            >
-              <div
-                style={{
-                  width: 85,
-                  height: 78,
-                  border: "2px solid " + GOLD,
-                  borderRadius: 4,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: 4,
-                }}
-              >
-                <div style={{ fontSize: 22, color: GOLD }}>🕌</div>
-                <div
+            <thead>
+              <tr>
+                {/* Bilingual title spanning 3 cols */}
+                <th
+                  colSpan={3}
                   style={{
-                    fontSize: 5.5,
-                    color: GOLD,
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    lineHeight: 1.35,
+                    ...css.tdGoldHeader,
+                    borderRight: "1px solid rgba(255,255,255,0.3)",
                   }}
                 >
-                  شركة أبو بجاد للإستقدام
-                </div>
-              </div>
-              <div
-                style={{
-                  fontSize: 6.5,
-                  color: GOLD,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  lineHeight: 1.3,
-                }}
-              >
-                شركة أبو بجاد للإستقدام
-                <br />
-                Abo Bejad Recuitments Company
-              </div>
-            </div>
-
-            {/* Titles */}
-            <div style={{ flex: 1, textAlign: "center" }}>
-              <div
-                style={{
-                  fontSize: 30,
-                  fontWeight: 900,
-                  color: GOLD,
-                  lineHeight: 1.1,
-                }}
-              >
-                شركة أبو بجاد للإستقدام
-              </div>
-              <div style={{ fontSize: 16, fontWeight: "bold", color: GOLD }}>
-                Abo Bejad Receuitments Company
-              </div>
-            </div>
-
-            {/* Face photo */}
-            <div style={{ flexShrink: 0 }}>
-              {faceUrl ? (
-                <img
-                  src={faceUrl}
-                  alt="face"
+                  Application for Employment &nbsp;|&nbsp; طلب التوظيف
+                </th>
+                {/* Worker name header */}
+                <th style={css.tdGoldHeader}>{name}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td
                   style={{
-                    width: 88,
-                    height: 108,
-                    objectFit: "cover",
-                    border: "1px solid #999",
-                    display: "block",
+                    ...css.td,
+                    fontWeight: "bold",
+                    fontStyle: "italic",
+                    width: "22%",
                   }}
-                />
-              ) : (
-                <div
+                >
+                  Reference No.
+                </td>
+                <td style={{ ...css.td, width: "28%" }}>{ref}</td>
+                <td
                   style={{
-                    width: 88,
-                    height: 108,
-                    background: "#ddd",
-                    border: "1px solid #999",
+                    ...css.td,
+                    textAlign: "right",
+                    direction: "rtl",
+                    width: "22%",
                   }}
-                />
-              )}
-            </div>
-          </div>
+                >
+                  رقم المرجع
+                </td>
+                {/* Face photo — rowSpan 4 */}
+                <td
+                  rowSpan={4}
+                  style={{
+                    ...css.td,
+                    textAlign: "center",
+                    verticalAlign: "middle",
+                    width: "28%",
+                  }}
+                >
+                  {faceUrl ? (
+                    <img
+                      src={faceUrl}
+                      alt="Candidate"
+                      style={{
+                        width: 120,
+                        height: 150,
+                        objectFit: "cover",
+                        display: "block",
+                        margin: "0 auto",
+                        border: "1px solid #999",
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: 120,
+                        height: 150,
+                        background: "#ddd",
+                        border: "1px solid #999",
+                        margin: "0 auto",
+                      }}
+                    />
+                  )}
+                </td>
+              </tr>
+              <tr>
+                <td
+                  style={{ ...css.td, fontWeight: "bold", fontStyle: "italic" }}
+                >
+                  Post Applied For
+                </td>
+                <td style={css.td}>{post}</td>
+                <td style={{ ...css.td, textAlign: "right", direction: "rtl" }}>
+                  وظيفة
+                </td>
+              </tr>
+              <tr>
+                <td
+                  style={{ ...css.td, fontWeight: "bold", fontStyle: "italic" }}
+                >
+                  Monthly Salary
+                </td>
+                <td style={css.td}>{salary}</td>
+                <td style={{ ...css.td, textAlign: "right", direction: "rtl" }}>
+                  راتب شهري
+                </td>
+              </tr>
+              <tr>
+                <td
+                  style={{ ...css.td, fontWeight: "bold", fontStyle: "italic" }}
+                >
+                  Contract Period
+                </td>
+                <td style={css.td}>{contract}</td>
+                <td style={{ ...css.td, textAlign: "right", direction: "rtl" }}>
+                  مدة العقد
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-          {/* ════════ JOB INFO BLOCK ════════
-            Layout: [label | centered-value | AR-label]  in left ~2/3
-                    face photo already shown above in header
-            The photo in the PDF is actually OUTSIDE the table to the right
-            and sits next to rows 1-4. We replicate by having the job block
-            take full width (photo is in header above).
-        ════════ */}
-          <div
-            style={{
-              borderBottom: "1px solid #000",
-              borderTop: "2px solid #000",
-            }}
-          >
-            {/* Gold title spans full width */}
-            <div
-              style={{
-                background: GOLD,
-                color: "#fff",
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                borderBottom: "1px solid #000",
-              }}
-            >
-              <div
-                style={{
-                  padding: "3px 10px",
-                  fontWeight: "bold",
-                  fontStyle: "italic",
-                  fontSize: 12,
-                  textAlign: "center",
-                  borderRight: "1px solid rgba(255,255,255,0.3)",
-                }}
-              >
-                Application for Employment
-              </div>
-              <div
-                style={{
-                  padding: "3px 10px",
-                  fontWeight: "bold",
-                  fontSize: 12,
-                  textAlign: "center",
-                  direction: "rtl",
-                }}
-              >
-                طلب التوظيف
-              </div>
-            </div>
-            <JobRow label="Reference No." value={ref} arLabel="رقم المرجع" />
-            <JobRow label="Post Applied For" value={post} arLabel="وظيفة" />
-            <JobRow label="Monthly Salary" value={salary} arLabel="راتب شهري" />
-            <JobRow
-              label="Contract Period"
-              value={contract}
-              arLabel="مدة العقد"
-              last
-            />
-          </div>
-
-          {/* ════════ PHONE / NAME ════════ */}
+          {/* ════════ PHONE / NAME BAR ════════ */}
           <div
             style={{
               display: "grid",
               gridTemplateColumns: "130px 1fr 100px",
               borderBottom: "1px solid #000",
+              borderTop: "1px solid #000",
             }}
           >
             <div
@@ -542,7 +523,6 @@ const CV = () => {
               <Row3 label="Weight" value={weight} arLabel="وزن" />
 
               <GoldBar en="Languages & Education" ar="اللغه & التعليم" />
-              {/* Language of worker — split 2-line label */}
               <div
                 style={{
                   display: "grid",
@@ -617,7 +597,6 @@ const CV = () => {
             {/* ── RIGHT: Passport Detail + standing photo ── */}
             <div style={{ display: "flex", flexDirection: "column" }}>
               <GoldBar en="Passport Detail" ar="تفاصيل جواز" />
-              {/* passport rows: EN-label | EN-value | AR-label */}
               <Row3
                 label="Passport No."
                 value={ppNo}
@@ -658,7 +637,12 @@ const CV = () => {
                   <img
                     src={bodyUrl}
                     alt="full body"
-                    style={{ width: 160, height: 230, objectFit: "cover" }}
+                    style={{
+                      width: 160,
+                      height: 230,
+                      objectFit: "cover",
+                      border: "1px solid #999",
+                    }}
                   />
                 ) : (
                   <div
