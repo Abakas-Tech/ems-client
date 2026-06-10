@@ -353,13 +353,20 @@ const CV = () => {
                     style={{
                       ...css.tdGoldHeader,
                       borderLeft: "none",
+                      borderRight: "none",
                       // borderRight: "1px solid rgba(255,255,255,0.3)",
                     }}
                   >
                     Application for Employment &nbsp;|&nbsp; طلب التوظيف
                   </th>
                   {/* Worker name header */}
-                  <th style={{ ...css.tdGoldHeader, borderLeft: "none" }}>
+                  <th
+                    style={{
+                      ...css.tdGoldHeader,
+                      borderRight: "none",
+                      borderLeft: "none",
+                    }}
+                  >
                     {name}
                   </th>
                 </tr>
@@ -372,6 +379,7 @@ const CV = () => {
                       fontWeight: "bold",
                       fontStyle: "italic",
                       width: "22%",
+                      borderLeft: "none",
                     }}
                   >
                     Reference No.
@@ -383,6 +391,7 @@ const CV = () => {
                       textAlign: "right",
                       direction: "rtl",
                       width: "22%",
+                      borderLeft: "none",
                     }}
                   >
                     رقم المرجع
@@ -395,6 +404,9 @@ const CV = () => {
                       textAlign: "center",
                       verticalAlign: "middle",
                       width: "28%",
+                      borderRight: "none",
+                      borderTop: "none",
+                      borderBottom: "none",
                     }}
                   >
                     {faceUrl ? (
@@ -429,6 +441,7 @@ const CV = () => {
                       ...css.td,
                       fontWeight: "bold",
                       fontStyle: "italic",
+                      borderLeft: "none",
                     }}
                   >
                     Post Applied For
@@ -446,13 +459,19 @@ const CV = () => {
                       ...css.td,
                       fontWeight: "bold",
                       fontStyle: "italic",
+                      borderLeft: "none",
                     }}
                   >
                     Monthly Salary
                   </td>
                   <td style={css.td}>{salary}</td>
                   <td
-                    style={{ ...css.td, textAlign: "right", direction: "rtl" }}
+                    style={{
+                      ...css.td,
+                      textAlign: "right",
+                      direction: "rtl",
+                      borderLeft: "none",
+                    }}
                   >
                     راتب شهري
                   </td>
@@ -463,6 +482,7 @@ const CV = () => {
                       ...css.td,
                       fontWeight: "bold",
                       fontStyle: "italic",
+                      borderLeft: "none",
                     }}
                   >
                     Contract Period
