@@ -82,7 +82,7 @@ const CV = () => {
       const imgData = canvas.toDataURL("image/jpeg", 0.92);
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = 210;
-      const pageHeight = 297;
+      const pageHeight = 287;
       const imgWidth = pdfWidth;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
@@ -118,15 +118,15 @@ const CV = () => {
       }
 
       const pdfBlob = pdf.output("blob");
-      const fileName = `${safeText(worker.full_name, "Worker").replace(/\s+/g, "_")}_CV.pdf`;
+      const fileName = `${worker.full_name.replace(/\s+/g, "_")}_CV.pdf`;
+
       const file = new File([pdfBlob], fileName, { type: "application/pdf" });
+
+      const originalName = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append(
-        "file_name",
-        `${safeText(worker.full_name, "Worker").replace(/\s+/g, "_")}_CV`,
-      );
+      formData.append("file_name", originalName);
       formData.append("category", "CV");
       formData.append("is_private", 0);
       formData.append(
@@ -165,7 +165,7 @@ const CV = () => {
     phoneNo: safeText(worker.phone_number, ""),
     applicantName: safeText(worker.full_name, "—"),
     nationality: safeText(worker.nationality, "Ethiopia"),
-    religion: safeText(worker.religion, "Christian"),
+    religion: safeText(worker.religion, "Muslim"),
     dateOfBirth: safeDate(worker.date_of_birth, "23/11/2001"),
     placeOfBirth: safeText(worker.place_of_birth, "WOLAITA"),
     age: safeText(worker.age, "24"),
@@ -294,13 +294,13 @@ const CV = () => {
 
           .cv-page {
             width: 794px;
-            min-height: 1123px;
             background: #fff;
             position: relative;
             box-sizing: border-box;
             page-break-after: always;
             page-break-inside: avoid;
             overflow: hidden;
+            margin-bottom: 20px;
           }
 
           .cv-page:last-child {
@@ -309,6 +309,7 @@ const CV = () => {
 
           .cv-inner {
             width: 100%;
+            max-height: 1080px;
             padding: 18px 20px 16px 20px;
             box-sizing: border-box;
           }
@@ -328,63 +329,11 @@ const CV = () => {
             margin-top: 2px;
           }
 
-          .brand-ar {
-            font-size: 15px;
-            font-weight: 900;
-            color: #111;
-            direction: rtl;
-            white-space: nowrap;
-          }
-
-          .brand-en {
-            font-size: 15px;
-            font-weight: 900;
-            color: #8b0e12;
-            letter-spacing: 0.2px;
-            white-space: nowrap;
-          }
-
-          .brand-bars {
-            width: 635px;
-            margin: 0 auto;
-          }
-
-          .brand-bar-top {
-            display: flex;
-            height: 16px;
-            border: 0.8px solid #111;
-            border-bottom: none;
-          }
-
-          .brand-bar-red {
-            width: 54px;
-            background: #d0191e;
-          }
-
-          .brand-bar-blue {
-            flex: 1;
-            background: #141a48;
-          }
-
-          .brand-bar-bottom {
-            height: 15px;
-            background: #141a48;
-            color: #fff;
-            font-size: 10px;
-            font-weight: 700;
-            text-align: center;
-            line-height: 1.1;
-            border: 0.8px solid #111;
-            border-top: none;
-            padding-top: 1px;
-            box-sizing: border-box;
-          }
-
           .doc-table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 12px;
+            font-size: 15px;
             line-height: 1.15;
             border: 1px solid #111;
           }
@@ -417,7 +366,7 @@ const CV = () => {
 
           .val {
             text-align: center;
-            font-weight: 500;
+            font-weight: 600;
             color: #111;
           }
 
@@ -448,21 +397,20 @@ const CV = () => {
             border-left: 1px solid #111;
             border-right: 1px solid #111;
             border-bottom: 1px solid #111;
-            margin-top: -1px;
           }
 
           .name-phone {
             flex: 1;
             display: grid;
-            grid-template-columns: 90px 1fr;
+            grid-template-columns: 135.5px 1fr;
             min-height: 23px;
             border-right: 1px solid #111;
           }
 
           .name-phone > div {
             border-right: 1px solid #111;
-            padding: 3px 6px;
-            font-size: 12px;
+            padding: 5px 6px;
+            font-size: 14px;
             display: flex;
             align-items: center;
           }
@@ -472,26 +420,25 @@ const CV = () => {
           }
 
           .name-applicant {
-            width: 285px;
-            padding: 3px 10px;
-            font-size: 13px;
-            font-weight: 700;
+            width: 354px;
+            padding: 5px 10px;
+            font-size: 14px;
+            font-weight: 800;
             text-align: right;
           }
 
           .main-grid {
             display: grid;
-            grid-template-columns: 50% 50%;
+            grid-template-columns: 52.96% 47.04%;
             gap: 0;
             border-left: 1px solid #111;
             border-right: 1px solid #111;
             border-bottom: 1px solid #111;
-            margin-top: -1px;
           }
 
           .left-side {
             border-right: 1px solid #111;
-         
+          }
           }
 
           .right-side {
@@ -503,14 +450,14 @@ const CV = () => {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            font-size: 12px;
+            font-size: 14px;
             line-height: 1.15;
           }
 
           .sub-table td {
             border-bottom: 1px solid #111;
             border-right: 1px solid #111;
-            padding: 7px 5px;
+            padding: 4px 4px;
             vertical-align: middle;
           }
 
@@ -542,7 +489,7 @@ const CV = () => {
             font-size: 16px;
             text-align: center;
             color: #111;
-            font-weight: 500;
+            font-weight:600;
           }
 
           .standing-photo-wrap {
@@ -567,8 +514,8 @@ const CV = () => {
 
           .passport-card td {
             border: 1px solid #111;
-            padding: 6px 6px 7px 6px;
-            font-size: 10px;
+            padding: 4px 6px 7px 6px;
+            font-size: 14px;
           }
 
       
@@ -633,34 +580,13 @@ const CV = () => {
             object-fit: contain;
             border: none;
           }
-
-          .verify-card {
-            width: 86%;
-            margin: 26px auto 0 auto;
-            border: 1px solid #111;
-            border-collapse: collapse;
-          }
-
-          .verify-card table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            font-size: 12px;
-            line-height: 1.15;
-          }
-
-          .verify-card td {
-            border: 1px solid #111;
-            padding: 4px 6px;
-            vertical-align: middle;
-          }
-
-
+            
           .rtl {
             direction: rtl;
             unicode-bidi: embed;
             color: #111111;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 16px;
           }
 
           .center {
@@ -673,6 +599,7 @@ const CV = () => {
 
           .left {
             text-align: left;
+            margin-left: 85px;
           }
 
           .fw700 {
@@ -808,9 +735,9 @@ const CV = () => {
                   {/* PERSONAL DETAILS */}
                   <table className="sub-table personal-grid">
                     <colgroup>
+                      <col style={{ width: "35.5%" }} />
+                      <col style={{ width: "44%" }} />
                       <col style={{ width: "25%" }} />
-                      <col style={{ width: "45%" }} />
-                      <col style={{ width: "30%" }} />
                     </colgroup>
                     <tbody>
                       <tr>
