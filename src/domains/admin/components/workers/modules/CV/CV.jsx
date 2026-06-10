@@ -81,7 +81,7 @@ const css = {
     verticalAlign: "middle",
   },
   tdGoldHeader: {
-    border: "1px solid #000",
+    // border: "1px solid #000",
     padding: "4px 7px",
     fontSize: 12,
     fontFamily: FONT,
@@ -341,6 +341,7 @@ const CV = () => {
                 width: "100%",
                 borderCollapse: "collapse",
                 marginTop: 4,
+                borderTop: "none",
               }}
             >
               <thead>
