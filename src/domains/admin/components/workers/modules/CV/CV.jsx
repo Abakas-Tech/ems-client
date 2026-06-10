@@ -55,6 +55,7 @@ const css = {
   goldBar: {
     background: GOLD,
     color: "#fff",
+    fontSize: 15,
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
     borderBottom: "1px solid #000",
@@ -63,7 +64,7 @@ const css = {
     padding: "2.5px 8px",
     fontWeight: "bold",
     fontStyle: "italic",
-    fontSize: 11.5,
+    fontSize: 15,
     // borderRight: "1px solid rgba(255,255,255,0.3)",
   },
   goldRight: {
@@ -84,7 +85,7 @@ const css = {
   tdGoldHeader: {
     // border: "1px solid #000",
     padding: "4px 7px",
-    fontSize: 12,
+    fontSize: 15,
     fontFamily: FONT,
     fontWeight: "bold",
     fontStyle: "italic",
@@ -288,7 +289,7 @@ const CV = () => {
     background: "#fff",
     // border: "2px solid #000",
     fontFamily: FONT,
-    fontSize: 11,
+    fontSize: 15,
     color: "#000",
     // overflow: "visible",
   };
@@ -535,7 +536,7 @@ const CV = () => {
                   gap: 16,
                 }}
               >
-                <div style={{ fontWeight: "bold", fontSize: 13 }}>{name}</div>
+                <div style={{ fontWeight: "bold", fontSize: 15 }}>{name}</div>
                 <div
                   style={{
                     fontWeight: "bold",
