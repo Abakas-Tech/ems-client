@@ -289,6 +289,7 @@ const CV = () => {
     fontFamily: FONT,
     fontSize: 11,
     color: "#000",
+    // overflow: "visible",
   };
 
   return (
@@ -323,7 +324,7 @@ const CV = () => {
               height: "auto",
               display: "block",
               marginBottom: 8,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
+              boxShadow: "0 0 12px 4px rgba(0,0,0,0.25)",
             }}
           />
 
@@ -351,13 +352,16 @@ const CV = () => {
                     colSpan={3}
                     style={{
                       ...css.tdGoldHeader,
+                      borderLeft: "none",
                       // borderRight: "1px solid rgba(255,255,255,0.3)",
                     }}
                   >
                     Application for Employment &nbsp;|&nbsp; طلب التوظيف
                   </th>
                   {/* Worker name header */}
-                  <th style={css.tdGoldHeader}>{name}</th>
+                  <th style={{ ...css.tdGoldHeader, borderLeft: "none" }}>
+                    {name}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -626,7 +630,7 @@ const CV = () => {
                 ))}
               </div>
 
-              {/* ── RIGHT: Passport Detail + standing photo ── */}
+              {/*  RIGHT: Passport Detail + standing photo */}
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <GoldBar en="Passport Detail" ar="تفاصيل جواز" />
                 <Row3
@@ -691,7 +695,7 @@ const CV = () => {
             </div>
             {/* end main 2-col */}
 
-            {/* ════════ REMARKS ════════ */}
+            {/*  REMARKS*/}
             <div
               style={{
                 padding: "3px 10px",
