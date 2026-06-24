@@ -7,13 +7,13 @@ import {
 } from "../../../api/worker.api";
 
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
-
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import useProfile from "../../../../../context/Profile/useProfile";
+import { generateVisaApplicationPdf } from "../../Application/visaApplicationPdfGenerator";
 
 const ActiveWorkers = () => {
   const navigate = useNavigate();
@@ -213,6 +213,19 @@ const ActiveWorkers = () => {
     );
   };
 
+  // Download the embassy visa-application PDF for a worker
+  const handleDownloadVisaApplication = async (id) => {
+    showLoader();
+    try {
+      await generateVisaApplicationPdf(id);
+    } catch (err) {
+      console.error("Failed to generate visa application PDF:", err);
+      addMessage(false, err.message || "Failed to generate visa application");
+    } finally {
+      hideLoader();
+    }
+  };
+
   // Go back to previous page
   const goBack = () => {
     navigate(-1);
@@ -239,14 +252,11 @@ const ActiveWorkers = () => {
       </div>
 
       {/* Floating Selection Bar */}
-
-      {/* Floating Selection Bar */}
       {isSelectionMode && (
         <div
           className="d-flex flex-column flex-md-row justify-content-between align-items-center shadow-lg border rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top px-3 px-md-4 py-3"
           style={{
             zIndex: 1050,
-            // Moves closer to top on mobile to save space
             top: window.innerWidth < 768 ? "10px" : "20px",
             backgroundColor: "rgba(255, 255, 255, 0.98)",
             backdropFilter: "blur(12px)",
@@ -344,13 +354,18 @@ const ActiveWorkers = () => {
           { type: "delete", onClick: (row) => handleDelete(row.id) },
           {
             type: "addModule",
-            onClick: (row) => navigate(`/admin/employees/modules/${row.id}/add`),
+            onClick: (row) =>
+              navigate(`/admin/employees/modules/${row.id}/add`),
           },
           {
             type: "viewCV",
             onClick: (row) =>
               window.open(row.cv_url, "_blank", "noopener,noreferrer"),
             showOn: (row) => row.cv_url,
+          },
+          {
+            type: "downloadVisa",
+            onClick: (row) => handleDownloadVisaApplication(row.id),
           },
         ]}
         emptyState={{
