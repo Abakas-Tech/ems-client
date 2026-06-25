@@ -70,7 +70,7 @@ const css = {
   goldRight: {
     padding: "2.5px 8px",
     fontWeight: "bold",
-    fontSize: 11.5,
+    fontSize: 15,
     textAlign: "right",
     direction: "rtl",
   },
@@ -78,8 +78,9 @@ const css = {
   td: {
     border: "1px solid #000",
     padding: "3px 7px",
-    fontSize: 11,
+    fontSize: 14,
     fontFamily: FONT,
+    fontWeight: "bold",
     verticalAlign: "middle",
   },
   tdGoldHeader: {
@@ -141,7 +142,6 @@ const SkillRow = ({ en, value, ar, last }) => (
   </div>
 );
 
-/* ════════════════════════════════════════════════ */
 const CV = () => {
   const { id } = useParams();
   const cvRef = useRef(null);
@@ -154,10 +154,12 @@ const CV = () => {
   const fetchWorkerData = useCallback(async () => {
     showLoader();
     try {
-      const { data } = await getWorkerCVData(id ?? profile.id);
-      setWorker(data);
+      const res = await getWorkerCVData(id ?? profile.id);
+      console.log("raw res:", res); // full axios response
+      console.log("res.data:", res.data); // should be { data: {...}, message, success }
+      setWorker(res.data);
     } catch (e) {
-      console.error(e);
+      console.error("fetch error:", e);
     } finally {
       hideLoader();
     }
@@ -185,18 +187,47 @@ const CV = () => {
       const pdf = new jsPDF("p", "mm", "a4");
       const pw = pdf.internal.pageSize.getWidth();
       const ph = pdf.internal.pageSize.getHeight();
-      const imgData = canvas.toDataURL("image/jpeg", 0.9);
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+
+      const imgW = pw;
       const imgH = (canvas.height * pw) / canvas.width;
 
       if (imgH <= ph) {
-        pdf.addImage(imgData, "JPEG", 0, 0, pw, imgH);
+        pdf.addImage(imgData, "JPEG", 0, 0, imgW, imgH);
       } else {
-        let y = 0;
-        while (y < imgH) {
-          if (y > 0) pdf.addPage();
-          pdf.addImage(imgData, "JPEG", 0, -y, pw, imgH);
-          y += ph;
-        }
+        const scale = ph / imgH;
+        const scaledW = imgW * scale;
+        const scaledH = ph;
+        const xOffset = (pw - scaledW) / 2;
+        pdf.addImage(imgData, "JPEG", xOffset, 0, scaledW, scaledH);
+      }
+
+      // ── PAGE 2: Passport scan ──
+      if (worker.passport_scan_url) {
+        await new Promise((resolve, reject) => {
+          const passportImg = new Image();
+          passportImg.crossOrigin = "anonymous";
+          passportImg.onload = () => {
+            pdf.addPage();
+            const passW = pw;
+            const passH = (passportImg.height * pw) / passportImg.width;
+            if (passH <= ph) {
+              // center vertically if shorter than page
+              const yOffset = (ph - passH) / 2;
+              pdf.addImage(passportImg, "JPEG", 0, yOffset, passW, passH);
+            } else {
+              // scale down to fit page height
+              const scale = ph / passH;
+              const scaledW = passW * scale;
+              const xOffset = (pw - scaledW) / 2;
+              pdf.addImage(passportImg, "JPEG", xOffset, 0, scaledW, ph);
+            }
+            resolve();
+          };
+          passportImg.onerror = () =>
+            reject(new Error("Failed to load passport image"));
+          passportImg.src = worker.passport_scan_url;
+        });
       }
 
       const blob = pdf.output("blob");
@@ -224,7 +255,9 @@ const CV = () => {
     }
   };
 
+  console.log("worker state:", worker);
   if (!worker) return null;
+  // if (!worker) return null;
 
   /* ── field mapping ── */
   const ref = worker.reference_number ?? "";
@@ -238,49 +271,52 @@ const CV = () => {
   const rel = worker.religion ?? "";
   const dob = safeDate(worker.date_of_birth);
   const pob = (worker.place_of_birth ?? "").toUpperCase();
-  const age = String(worker.age ?? "");
+  const age = worker.date_of_birth
+    ? String(
+        new Date().getFullYear() - new Date(worker.date_of_birth).getFullYear(),
+      )
+    : "";
   const addr = (worker.address ?? "").toUpperCase();
   const marital = worker.marital_status ?? "";
   const children = String(worker.number_of_children ?? "");
   const height = worker.height_cm ? `${worker.height_cm} cm` : "";
   const weight = worker.weight_kg ? `${worker.weight_kg} kg` : "";
-  const lang = worker.languages?.map((l) => l.language).join(", ") ?? "";
-  const edu = (worker.education_level ?? "").toUpperCase();
+  const lang =
+    worker.languages?.map((l) => l.language ?? l.name).join(", ") ?? "";
+  const edu = (worker.education ?? "").toUpperCase(); // was education_level
   const expP = worker.experience?.[0]?.years
     ? `${worker.experience[0].years} yrs`
     : "";
   const expC = worker.experience?.[0]?.country ?? "";
   const ppNo = worker.passport_number ?? "";
   const ppIssue = safeDate(worker.passport_issue_date);
-  const ppPlace = worker.passport_place_of_issue ?? "";
+  const ppPlace = worker.passport_issuing_country ?? ""; // was passport_place_of_issue
   const ppExp = safeDate(worker.passport_expiry_date);
   const faceUrl = worker.photo_3x4_url ?? "";
   const bodyUrl = worker.photo_standing_url ?? "";
   const remarks = worker.remarks ?? "";
   const remDate = safeDate(worker.remarks_date);
 
-  const skills = [
-    { en: "Cooking", ar: "الطبخ", v: worker.can_cook ? "YES" : "NO" },
-    { en: "Cleaning", ar: "التنظيف", v: worker.can_clean ? "YES" : "NO" },
-    { en: "Washing", ar: "الغسيل", v: worker.can_wash ? "YES" : "NO" },
-    { en: "Ironing", ar: "الكوي", v: worker.can_iron ? "YES" : "NO" },
-    {
-      en: "Babysitting",
-      ar: "مجا لسه الكفال",
-      v: worker.can_babysit ? "YES" : "NO",
-    },
-    {
-      en: "Children Care",
-      ar: "رعايه الطفال",
-      v: worker.can_childcare ? "YES" : "NO",
-    },
-    {
-      en: "Arabic Cooking",
-      ar: "الطبخ العربي",
-      v: worker.can_arabic_cook ? "YES" : "NO",
-    },
-    { en: "Sewing", ar: "الخياطه", v: worker.can_sew ? "YES" : "NO" },
+  const SKILL_DEFS = [
+    { en: "Cooking", ar: "الطبخ", key: "Cooking" },
+    { en: "Cleaning", ar: "التنظيف", key: "Cleaning" },
+    { en: "Washing", ar: "الغسيل", key: "Washing" },
+    { en: "Ironing", ar: "الكوي", key: "Ironing" },
+    { en: "Babysitting", ar: "مجا لسه الكفال", key: "Babysitting" },
+    { en: "Children Care", ar: "رعايه الطفال", key: "Children Care" },
+    { en: "Arabic Cooking", ar: "الطبخ العربي", key: "Arabic Cooking" },
+    { en: "Sewing", ar: "الخياطه", key: "Sewing" },
   ];
+
+  const workerSkillNames =
+    worker.skills?.map((s) => (s.skill_name ?? s.name ?? s).toLowerCase()) ??
+    [];
+
+  const skills = SKILL_DEFS.map((s) => ({
+    en: s.en,
+    ar: s.ar,
+    v: workerSkillNames.includes(s.key.toLowerCase()) ? "YES" : "NO",
+  }));
 
   /* ── root CV style ── */
   const cvStyle = {
@@ -317,7 +353,7 @@ const CV = () => {
       {/* horizontal scroll so mobile doesn't break */}
       <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         <div ref={cvRef} style={cvStyle}>
-          {/* ════════ HEADER IMAGE ════════ */}
+          {/* HEADER IMAGE*/}
           <img
             src={cvHeader}
             alt="CV Header"
@@ -330,14 +366,6 @@ const CV = () => {
             }}
           />
 
-          {/* ════════ TOP INFO TABLE ════════
-              Layout:
-              | Application for Employment  طلب التوظيف  |  Worker Name  |
-              | Reference No  | value | رقم المرجع       | [photo ×4]    |
-              | Post Applied  | value | وظيفة            |               |
-              | Monthly Salary| value | راتب شهري        |               |
-              | Contract Period| value| مدة العقد        |               |
-          ════════ */}
           <div style={{ border: "2px solid #000" }}>
             <table
               style={{
@@ -378,10 +406,11 @@ const CV = () => {
                   <td
                     style={{
                       ...css.td,
-                      fontWeight: "bold",
-                      fontStyle: "italic",
+
+                      // fontStyle: "italic",
                       width: "22%",
                       borderLeft: "none",
+                      fontWeight: "bold",
                     }}
                   >
                     Reference No.
@@ -416,11 +445,10 @@ const CV = () => {
                         src={faceUrl}
                         alt="Candidate"
                         style={{
-                          width: 120,
-                          height: 150,
+                          width: "100%",
+                          height: "100%",
                           objectFit: "cover",
                           display: "block",
-                          margin: "0 auto",
                           border: "1px solid #999",
                         }}
                       />
@@ -499,7 +527,7 @@ const CV = () => {
               </tbody>
             </table>
 
-            {/* ════════ PHONE / NAME BAR ════════ */}
+            {/*  PHONE / NAME BAR */}
             <div
               style={{
                 display: "grid",
@@ -550,7 +578,7 @@ const CV = () => {
               </div>
             </div>
 
-            {/* ════════ MAIN 2-COL: Details LEFT  |  Passport RIGHT ════════ */}
+            {/*  MAIN 2-COL: Details LEFT  |  Passport RIGHT */}
             <div
               style={{
                 display: "grid",
@@ -682,13 +710,14 @@ const CV = () => {
                 />
 
                 {/* Standing / full-body photo */}
+                {/* Standing / full-body photo */}
                 <div
                   style={{
                     flex: 1,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    padding: 10,
+                    padding: 8,
                   }}
                 >
                   {bodyUrl ? (
@@ -696,17 +725,18 @@ const CV = () => {
                       src={bodyUrl}
                       alt="full body"
                       style={{
-                        width: 160,
-                        height: 230,
+                        width: "100%",
+                        height: 350,
                         objectFit: "cover",
                         border: "1px solid #999",
+                        display: "block",
                       }}
                     />
                   ) : (
                     <div
                       style={{
-                        width: 160,
-                        height: 230,
+                        width: "100%",
+                        height: 350,
                         background: "#ddd",
                         border: "1px solid #999",
                       }}
