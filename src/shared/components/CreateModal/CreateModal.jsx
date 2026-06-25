@@ -44,6 +44,7 @@ const CreateModal = ({
       });
       return newValues;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fields.length]);
 
   // Shake on clicking outside
@@ -53,19 +54,23 @@ const CreateModal = ({
       setTimeout(() => setShake("idle"), 500);
     }
   };
+  // AFTER — only fires when modal transitions closed → open
+  const prevShowRef = useRef(false);
+
   useEffect(() => {
-    if (show) {
+    if (show && !prevShowRef.current) {
       const vals = {};
       fields.forEach((field) => {
-        // Logic: Use initialValue if provided, else field.value, else empty string
         vals[field.name] =
-          field.initialValue !== undefined
+          field.initialValue !== undefined && field.initialValue !== null
             ? field.initialValue
-            : field.value || "";
+            : "";
       });
       setInputValues(vals);
     }
-  }, [show, fields]);
+    prevShowRef.current = show;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [show]); // ← only depends on show, not fields
 
   useEffect(() => {
     if (show) {

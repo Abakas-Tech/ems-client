@@ -32,7 +32,7 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
     item.roles.includes(user?.role_id),
   );
 
-  //  Add extra permission filter ONLY for Employee 
+  //  Add extra permission filter ONLY for Employee
   if (user?.role_id === 2) {
     const userPermissions = user.permissions || {};
     filteredItems = filteredItems.filter((item) =>
@@ -104,6 +104,6 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
       )}
     </>
   );
-};;
+};
 
 export default Sidebar;
