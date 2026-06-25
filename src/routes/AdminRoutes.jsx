@@ -49,7 +49,6 @@ import UserManual from "../domains/admin/pages/UserManual/UserManual.jsx";
 import WeredaPage from "../domains/admin/pages/meta/WeredaPage/WeredaPage.jsx";
 import SubCityPage from "../domains/admin/pages/meta/SubCityPage/SubCityPage.jsx";
 
-
 const AdminRoutes = () => {
   const { profile } = useProfile();
   const role = profile?.role_id;

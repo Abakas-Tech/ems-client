@@ -1,6 +1,6 @@
 import React from "react";
-import CVComponent from "./../../../../components/workers/modules/CV/CV.jsx";
+import CVComponent from "../../../../components/workers/modules/CV/CVOne.jsx";
 
-export default function CV() {
+export default function CVOne() {
   return <CVComponent />;
 }

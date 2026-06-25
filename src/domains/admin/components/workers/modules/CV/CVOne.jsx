@@ -65,7 +65,6 @@ const css = {
     fontWeight: "bold",
     fontStyle: "italic",
     fontSize: 15,
-    // borderRight: "1px solid rgba(255,255,255,0.3)",
   },
   goldRight: {
     padding: "2.5px 8px",
@@ -74,7 +73,6 @@ const css = {
     textAlign: "right",
     direction: "rtl",
   },
-  /* table cell base for the top info table */
   td: {
     border: "1px solid #000",
     padding: "3px 7px",
@@ -84,7 +82,6 @@ const css = {
     verticalAlign: "middle",
   },
   tdGoldHeader: {
-    // border: "1px solid #000",
     padding: "4px 7px",
     fontSize: 15,
     fontFamily: FONT,
@@ -142,9 +139,10 @@ const SkillRow = ({ en, value, ar, last }) => (
   </div>
 );
 
-const CV = () => {
+const CVOne = () => {
   const { id } = useParams();
   const cvRef = useRef(null);
+  const passportRef = useRef(null);
   const navigate = useNavigate();
   const [worker, setWorker] = useState(null);
   const { showLoader, hideLoader } = useLoader();
@@ -155,8 +153,8 @@ const CV = () => {
     showLoader();
     try {
       const res = await getWorkerCVData(id ?? profile.id);
-      console.log("raw res:", res); // full axios response
-      console.log("res.data:", res.data); // should be { data: {...}, message, success }
+      console.log("raw res:", res);
+      console.log("res.data:", res.data);
       setWorker(res.data);
     } catch (e) {
       console.error("fetch error:", e);
@@ -173,61 +171,55 @@ const CV = () => {
     if (!cvRef.current) return;
     showLoader();
     try {
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pw = pdf.internal.pageSize.getWidth();
+      const ph = pdf.internal.pageSize.getHeight();
+
+      // ── PAGE 1: CV ──
       const el = cvRef.current;
       const ow = el.style.width;
       el.style.width = "760px";
       await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(el, {
+      const canvas1 = await html2canvas(el, {
         useCORS: true,
         scale: 2,
         windowWidth: 760,
       });
       el.style.width = ow;
 
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pw = pdf.internal.pageSize.getWidth();
-      const ph = pdf.internal.pageSize.getHeight();
-      const imgData = canvas.toDataURL("image/jpeg", 0.95);
-
-      const imgW = pw;
-      const imgH = (canvas.height * pw) / canvas.width;
-
-      if (imgH <= ph) {
-        pdf.addImage(imgData, "JPEG", 0, 0, imgW, imgH);
+      const img1 = canvas1.toDataURL("image/jpeg", 0.95);
+      const img1H = (canvas1.height * pw) / canvas1.width;
+      if (img1H <= ph) {
+        pdf.addImage(img1, "JPEG", 0, 0, pw, img1H);
       } else {
-        const scale = ph / imgH;
-        const scaledW = imgW * scale;
-        const scaledH = ph;
-        const xOffset = (pw - scaledW) / 2;
-        pdf.addImage(imgData, "JPEG", xOffset, 0, scaledW, scaledH);
+        const scale = ph / img1H;
+        const scaledW = pw * scale;
+        pdf.addImage(img1, "JPEG", (pw - scaledW) / 2, 0, scaledW, ph);
       }
 
-      // ── PAGE 2: Passport scan ──
-      if (worker.passport_scan_url) {
-        await new Promise((resolve, reject) => {
-          const passportImg = new Image();
-          passportImg.crossOrigin = "anonymous";
-          passportImg.onload = () => {
-            pdf.addPage();
-            const passW = pw;
-            const passH = (passportImg.height * pw) / passportImg.width;
-            if (passH <= ph) {
-              // center vertically if shorter than page
-              const yOffset = (ph - passH) / 2;
-              pdf.addImage(passportImg, "JPEG", 0, yOffset, passW, passH);
-            } else {
-              // scale down to fit page height
-              const scale = ph / passH;
-              const scaledW = passW * scale;
-              const xOffset = (pw - scaledW) / 2;
-              pdf.addImage(passportImg, "JPEG", xOffset, 0, scaledW, ph);
-            }
-            resolve();
-          };
-          passportImg.onerror = () =>
-            reject(new Error("Failed to load passport image"));
-          passportImg.src = worker.passport_scan_url;
+      // ── PAGE 2: Passport ──
+      if (passportRef.current) {
+        pdf.addPage();
+        const el2 = passportRef.current;
+        const ow2 = el2.style.width;
+        el2.style.width = "760px";
+        await new Promise((r) => setTimeout(r, 300));
+        const canvas2 = await html2canvas(el2, {
+          useCORS: true,
+          scale: 2,
+          windowWidth: 760,
         });
+        el2.style.width = ow2;
+
+        const img2 = canvas2.toDataURL("image/jpeg", 0.95);
+        const img2H = (canvas2.height * pw) / canvas2.width;
+        if (img2H <= ph) {
+          pdf.addImage(img2, "JPEG", 0, 0, pw, img2H);
+        } else {
+          const scale = ph / img2H;
+          const scaledW = pw * scale;
+          pdf.addImage(img2, "JPEG", (pw - scaledW) / 2, 0, scaledW, ph);
+        }
       }
 
       const blob = pdf.output("blob");
@@ -257,7 +249,6 @@ const CV = () => {
 
   console.log("worker state:", worker);
   if (!worker) return null;
-  // if (!worker) return null;
 
   /* ── field mapping ── */
   const ref = worker.reference_number ?? "";
@@ -283,14 +274,14 @@ const CV = () => {
   const weight = worker.weight_kg ? `${worker.weight_kg} kg` : "";
   const lang =
     worker.languages?.map((l) => l.language ?? l.name).join(", ") ?? "";
-  const edu = (worker.education ?? "").toUpperCase(); // was education_level
+  const edu = (worker.education ?? "").toUpperCase();
   const expP = worker.experience?.[0]?.years
     ? `${worker.experience[0].years} yrs`
     : "";
   const expC = worker.experience?.[0]?.country ?? "";
   const ppNo = worker.passport_number ?? "";
   const ppIssue = safeDate(worker.passport_issue_date);
-  const ppPlace = worker.passport_issuing_country ?? ""; // was passport_place_of_issue
+  const ppPlace = worker.passport_issuing_country ?? "";
   const ppExp = safeDate(worker.passport_expiry_date);
   const faceUrl = worker.photo_3x4_url ?? "";
   const bodyUrl = worker.photo_standing_url ?? "";
@@ -323,11 +314,9 @@ const CV = () => {
     width: 760,
     minWidth: 760,
     background: "#fff",
-    // border: "2px solid #000",
     fontFamily: FONT,
     fontSize: 15,
     color: "#000",
-    // overflow: "visible",
   };
 
   return (
@@ -352,8 +341,9 @@ const CV = () => {
 
       {/* horizontal scroll so mobile doesn't break */}
       <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+        {/* ── PAGE 1: CV ── */}
         <div ref={cvRef} style={cvStyle}>
-          {/* HEADER IMAGE*/}
+          {/* HEADER IMAGE */}
           <img
             src={cvHeader}
             alt="CV Header"
@@ -371,25 +361,21 @@ const CV = () => {
               style={{
                 width: "100%",
                 borderCollapse: "collapse",
-                // marginTop: 4,
                 borderTop: "none",
               }}
             >
               <thead>
                 <tr>
-                  {/* Bilingual title spanning 3 cols */}
                   <th
                     colSpan={3}
                     style={{
                       ...css.tdGoldHeader,
                       borderLeft: "none",
                       borderRight: "none",
-                      // borderRight: "1px solid rgba(255,255,255,0.3)",
                     }}
                   >
                     Application for Employment &nbsp;|&nbsp; طلب التوظيف
                   </th>
-                  {/* Worker name header */}
                   <th
                     style={{
                       ...css.tdGoldHeader,
@@ -406,8 +392,6 @@ const CV = () => {
                   <td
                     style={{
                       ...css.td,
-
-                      // fontStyle: "italic",
                       width: "22%",
                       borderLeft: "none",
                       fontWeight: "bold",
@@ -435,6 +419,8 @@ const CV = () => {
                       textAlign: "center",
                       verticalAlign: "middle",
                       width: "28%",
+                      height: 160,
+                      padding: 0,
                       borderRight: "none",
                       borderTop: "none",
                       borderBottom: "none",
@@ -446,7 +432,7 @@ const CV = () => {
                         alt="Candidate"
                         style={{
                           width: "100%",
-                          height: "100%",
+                          height: "160px",
                           objectFit: "cover",
                           display: "block",
                           border: "1px solid #999",
@@ -455,11 +441,10 @@ const CV = () => {
                     ) : (
                       <div
                         style={{
-                          width: 120,
-                          height: 150,
+                          width: "100%",
+                          height: 160,
                           background: "#ddd",
                           border: "1px solid #999",
-                          margin: "0 auto",
                         }}
                       />
                     )}
@@ -533,9 +518,6 @@ const CV = () => {
                 display: "grid",
                 gridTemplateColumns: "180px 1fr",
                 marginBottom: "3px",
-
-                // borderBottom: "0px solid #000",
-                // borderTop: "0px solid #000",
               }}
             >
               <div
@@ -681,7 +663,13 @@ const CV = () => {
               </div>
 
               {/*  RIGHT: Passport Detail + standing photo */}
-              <div style={{ display: "flex", flexDirection: "column" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "relative",
+                }}
+              >
                 <GoldBar en="Passport Detail" ar="تفاصيل جواز" />
                 <Row3
                   label="Passport No."
@@ -709,34 +697,26 @@ const CV = () => {
                   cols="100px 110px 1fr"
                 />
 
-                {/* Standing / full-body photo */}
-                {/* Standing / full-body photo */}
-                <div
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: 8,
-                  }}
-                >
+                {/* Standing / full-body photo — fills remaining space */}
+                <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
                   {bodyUrl ? (
                     <img
                       src={bodyUrl}
                       alt="full body"
                       style={{
                         width: "100%",
-                        height: 350,
+                        height: "100%",
                         objectFit: "cover",
-                        border: "1px solid #999",
                         display: "block",
+                        border: "1px solid #999",
                       }}
                     />
                   ) : (
                     <div
                       style={{
                         width: "100%",
-                        height: 350,
+                        height: "100%",
+                        minHeight: 200,
                         background: "#ddd",
                         border: "1px solid #999",
                       }}
@@ -747,7 +727,7 @@ const CV = () => {
             </div>
             {/* end main 2-col */}
 
-            {/*  REMARKS*/}
+            {/*  REMARKS */}
             <div
               style={{
                 padding: "3px 10px",
@@ -774,10 +754,78 @@ const CV = () => {
             </div>
           </div>
         </div>
-        {/* end scroll wrapper */}
+        {/* end PAGE 1 */}
+
+        {/* ── PAGE 2: Passport Scan ── */}
+        {/* ── PAGE 2: Passport Scan ── */}
+        <div
+          ref={passportRef}
+          style={{
+            width: 760,
+            minWidth: 760,
+            marginTop: 24,
+            background: "#fff",
+            fontFamily: FONT,
+          }}
+        >
+          <div
+            style={{
+              textAlign: "center",
+              fontSize: 11,
+              color: "#999",
+              marginBottom: 6,
+              fontStyle: "italic",
+            }}
+          >
+            — Page 2 —
+          </div>
+
+          <div
+            style={{
+              background: "#fff",
+              border: "2px solid #000",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: 12,
+            }}
+          >
+            {worker.passport_scan_url ? (
+              <img
+                src={worker.passport_scan_url}
+                alt="Passport Scan"
+                crossOrigin="anonymous"
+                style={{
+                  width: "100%",
+                  maxHeight: 500,
+                  objectFit: "contain",
+                  border: "1px solid #999",
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  height: 400,
+                  background: "#ddd",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 14,
+                  color: "#999",
+                  fontStyle: "italic",
+                }}
+              >
+                No passport scan available
+              </div>
+            )}
+          </div>
+        </div>
+        {/* end PAGE 2 */}
       </div>
+      {/* end scroll wrapper */}
     </div>
   );
 };
 
-export default CV;
+export default CVOne;
