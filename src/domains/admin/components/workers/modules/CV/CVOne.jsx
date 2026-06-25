@@ -139,7 +139,13 @@ const SkillRow = ({ en, value, ar, last }) => (
   </div>
 );
 
-const CVOne = () => {
+/**
+ * @param {React.ReactNode} [templateSwitcher] - optional toggle control rendered
+ *   in the toolbar next to the action button. Passed down by the parent CV page
+ *   so the same switcher works for every template without each one knowing
+ *   about the others.
+ */
+const CVOne = ({ templateSwitcher }) => {
   const { id } = useParams();
   const cvRef = useRef(null);
   const passportRef = useRef(null);
@@ -326,7 +332,10 @@ const CVOne = () => {
         <h2 className="text-dark mb-2">
           {profile?.role_id != 4 ? "Employee" : "My"} CV
         </h2>
-        {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
+        <div className="d-flex align-items-center gap-2">
+          {templateSwitcher}
+          {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
+        </div>
       </div>
       {profile?.role_id != 4 && (
         <div className="mb-3">
@@ -756,7 +765,6 @@ const CVOne = () => {
         </div>
         {/* end PAGE 1 */}
 
-        {/* ── PAGE 2: Passport Scan ── */}
         {/* ── PAGE 2: Passport Scan ── */}
         <div
           ref={passportRef}

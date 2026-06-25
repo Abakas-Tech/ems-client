@@ -28,7 +28,13 @@ const yesNo = (v, fallback = "") => {
   return fallback;
 };
 
-const CV = () => {
+/**
+ * @param {React.ReactNode} [templateSwitcher] - optional toggle control rendered
+ *   in the toolbar next to the action button. Passed down by the parent CV page
+ *   so the same switcher works for every template without each one knowing
+ *   about the others.
+ */
+const CVTwo = ({ templateSwitcher }) => {
   const { id } = useParams();
   const cvRef = useRef(null);
   const navigate = useNavigate();
@@ -279,7 +285,12 @@ const CV = () => {
         <h2 className="text-dark mb-2">
           {profile?.role_id !== 4 ? "Employee" : "My"} CV
         </h2>
-        {profile?.role_id !== 4 && <BackButton onClick={() => navigate(-1)} />}
+        <div className="d-flex align-items-center gap-2">
+          {templateSwitcher}
+          {profile?.role_id !== 4 && (
+            <BackButton onClick={() => navigate(-1)} />
+          )}
+        </div>
       </div>
 
       {profile?.role_id !== 4 && (
@@ -991,4 +1002,4 @@ const CV = () => {
   );
 };
 
-export default CV;
+export default CVTwo;
