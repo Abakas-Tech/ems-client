@@ -139,12 +139,38 @@ const SkillRow = ({ en, value, ar, last }) => (
   </div>
 );
 
-/**
- * @param {React.ReactNode} [templateSwitcher] - optional toggle control rendered
- *   in the toolbar next to the action button. Passed down by the parent CV page
- *   so the same switcher works for every template without each one knowing
- *   about the others.
- */
+/* Helper: capture a DOM element to a jsPDF page with proper aspect-ratio scaling */
+const captureElementToPage = async (pdf, el, waitMs = 500) => {
+  const pw = pdf.internal.pageSize.getWidth();
+  const ph = pdf.internal.pageSize.getHeight();
+
+  const ow = el.style.width;
+  el.style.width = "760px";
+  await new Promise((r) => setTimeout(r, waitMs));
+
+  const canvas = await html2canvas(el, {
+    useCORS: true,
+    allowTaint: false,
+    scale: 2,
+    windowWidth: 760,
+  });
+
+  el.style.width = ow;
+
+  const imgData = canvas.toDataURL("image/jpeg", 0.95);
+  const canvasW = canvas.width;
+  const canvasH = canvas.height;
+
+  // Uniform scale to fit page while preserving aspect ratio
+  const ratio = Math.min(pw / canvasW, ph / canvasH);
+  const imgW = canvasW * ratio;
+  const imgH = canvasH * ratio;
+  const offsetX = (pw - imgW) / 2;
+  const offsetY = 0;
+
+  pdf.addImage(imgData, "JPEG", offsetX, offsetY, imgW, imgH);
+};
+
 const CVOne = ({ templateSwitcher }) => {
   const { id } = useParams();
   const cvRef = useRef(null);
@@ -178,54 +204,15 @@ const CVOne = ({ templateSwitcher }) => {
     showLoader();
     try {
       const pdf = new jsPDF("p", "mm", "a4");
-      const pw = pdf.internal.pageSize.getWidth();
-      const ph = pdf.internal.pageSize.getHeight();
 
       // ── PAGE 1: CV ──
-      const el = cvRef.current;
-      const ow = el.style.width;
-      el.style.width = "760px";
-      await new Promise((r) => setTimeout(r, 300));
-      const canvas1 = await html2canvas(el, {
-        useCORS: true,
-        scale: 2,
-        windowWidth: 760,
-      });
-      el.style.width = ow;
-
-      const img1 = canvas1.toDataURL("image/jpeg", 0.95);
-      const img1H = (canvas1.height * pw) / canvas1.width;
-      if (img1H <= ph) {
-        pdf.addImage(img1, "JPEG", 0, 0, pw, img1H);
-      } else {
-        const scale = ph / img1H;
-        const scaledW = pw * scale;
-        pdf.addImage(img1, "JPEG", (pw - scaledW) / 2, 0, scaledW, ph);
-      }
+      await captureElementToPage(pdf, cvRef.current, 400);
 
       // ── PAGE 2: Passport ──
       if (passportRef.current) {
         pdf.addPage();
-        const el2 = passportRef.current;
-        const ow2 = el2.style.width;
-        el2.style.width = "760px";
-        await new Promise((r) => setTimeout(r, 300));
-        const canvas2 = await html2canvas(el2, {
-          useCORS: true,
-          scale: 2,
-          windowWidth: 760,
-        });
-        el2.style.width = ow2;
-
-        const img2 = canvas2.toDataURL("image/jpeg", 0.95);
-        const img2H = (canvas2.height * pw) / canvas2.width;
-        if (img2H <= ph) {
-          pdf.addImage(img2, "JPEG", 0, 0, pw, img2H);
-        } else {
-          const scale = ph / img2H;
-          const scaledW = pw * scale;
-          pdf.addImage(img2, "JPEG", (pw - scaledW) / 2, 0, scaledW, ph);
-        }
+        // Give remote passport scan image extra time to fully load
+        await captureElementToPage(pdf, passportRef.current, 800);
       }
 
       const blob = pdf.output("blob");
@@ -332,10 +319,8 @@ const CVOne = ({ templateSwitcher }) => {
         <h2 className="text-dark mb-2">
           {profile?.role_id != 4 ? "Employee" : "My"} CV
         </h2>
-        <div className="d-flex align-items-center gap-2">
-          {templateSwitcher}
-          {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
-        </div>
+        {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
+        {templateSwitcher}
       </div>
       {profile?.role_id != 4 && (
         <div className="mb-3">
@@ -356,6 +341,7 @@ const CVOne = ({ templateSwitcher }) => {
           <img
             src={cvHeader}
             alt="CV Header"
+            crossOrigin="anonymous"
             style={{
               width: "100%",
               height: "auto",
@@ -439,6 +425,7 @@ const CVOne = ({ templateSwitcher }) => {
                       <img
                         src={faceUrl}
                         alt="Candidate"
+                        crossOrigin="anonymous"
                         style={{
                           width: "100%",
                           height: "160px",
@@ -712,6 +699,7 @@ const CVOne = ({ templateSwitcher }) => {
                     <img
                       src={bodyUrl}
                       alt="full body"
+                      crossOrigin="anonymous"
                       style={{
                         width: "100%",
                         height: "100%",
@@ -799,22 +787,31 @@ const CVOne = ({ templateSwitcher }) => {
             }}
           >
             {worker.passport_scan_url ? (
-              <img
-                src={worker.passport_scan_url}
-                alt="Passport Scan"
-                crossOrigin="anonymous"
+              /* Fixed-size wrapper so html2canvas captures exact dimensions.
+                 The img is centered via absolute positioning so objectFit: contain
+                 works correctly without stretching. */
+              <div
                 style={{
                   width: "100%",
-                  maxHeight: 500,
-                  objectFit: "contain",
                   border: "1px solid #999",
                 }}
-              />
+              >
+                <img
+                  src={worker.passport_scan_url}
+                  alt="Passport Scan"
+                  crossOrigin="anonymous"
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    display: "block",
+                  }}
+                />
+              </div>
             ) : (
               <div
                 style={{
                   width: "100%",
-                  height: 400,
+                  height: 500,
                   background: "#ddd",
                   display: "flex",
                   alignItems: "center",
