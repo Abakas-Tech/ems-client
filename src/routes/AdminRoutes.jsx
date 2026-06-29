@@ -48,6 +48,7 @@ import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx";
 import UserManual from "../domains/admin/pages/UserManual/UserManual.jsx";
 import WeredaPage from "../domains/admin/pages/meta/WeredaPage/WeredaPage.jsx";
 import SubCityPage from "../domains/admin/pages/meta/SubCityPage/SubCityPage.jsx";
+import FileSearch from "../domains/admin/pages/FileSearch/FileSearch.jsx";
 
 const AdminRoutes = () => {
   const { profile } = useProfile();
@@ -135,6 +136,8 @@ const AdminRoutes = () => {
           path="/content/gallery/edit/:id"
           element={<GalleryUplaodPage />}
         />
+
+        <Route path="documents" element={<FileSearch />} />
 
         <Route path="user-manual" element={<UserManual />} />
 

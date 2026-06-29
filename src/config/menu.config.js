@@ -75,16 +75,9 @@ const MENU_CONFIG = [
   },
 
   {
-    label: "Settings",
-    path: "/admin/settings",
-    icon: "bi-gear",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
-  },
-
-  {
-    label: "File Search",
-    path: "/admin/file-search",
-    icon: "bi bi-search-heart",
+    label: "Documents",
+    path: "/admin/documents",
+    icon: "bi bi-file-earmark-medical",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
 
@@ -92,6 +85,13 @@ const MENU_CONFIG = [
     label: "User Manual",
     path: "/admin/user-manual",
     icon: "bi bi-journal-code",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  },
+
+  {
+    label: "Settings",
+    path: "/admin/settings",
+    icon: "bi-gear",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
 
