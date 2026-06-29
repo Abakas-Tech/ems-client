@@ -82,12 +82,18 @@ const MENU_CONFIG = [
   },
 
   {
+    label: "File Search",
+    path: "/admin/file-search",
+    icon: "bi bi-search-heart",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  },
+
+  {
     label: "User Manual",
     path: "/admin/user-manual",
     icon: "bi bi-journal-code",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
-
 
   // Worker Menus
 
