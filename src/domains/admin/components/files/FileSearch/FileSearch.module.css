@@ -1,0 +1,121 @@
+.fileCard {
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  border: none !important;
+}
+
+.fileCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+.removeBtn {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.fileCard:hover .removeBtn {
+  opacity: 1;
+}
+
+
+.uploadBtn {
+  border-radius: 0.75rem;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  white-space: nowrap;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: #f1f3f5;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.95rem;
+  color: #212529;
+  min-width: 0;
+}
+
+.searchInput::placeholder {
+  color: #adb5bd;
+}
+
+.clearBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #adb5bd;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+  font-size: 0.8rem;
+}
+
+.clearBtn:hover {
+  color: #495057;
+}
+
+.contentArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.contentArea::-webkit-scrollbar {
+  width: 4px;
+}
+.contentArea::-webkit-scrollbar-thumb {
+  background: #dee2e6;
+  border-radius: 4px;
+}
+
+
+.chunk {
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #343a40;
+  transition: background 0.15s;
+}
+
+.chunkMatch {
+  background: #f8f9fa;
+}
+
+.chunkMatch:hover {
+  background: #e9f5fb;
+}
+
+.mark {
+  background: #fff3cd;
+  color: #212529;
+  padding: 0 2px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  text-align: center;
+}
