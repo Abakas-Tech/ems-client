@@ -17,7 +17,7 @@ import { generateVisaApplicationPdf } from "../../Application/visaApplicationPdf
 
 const ActiveWorkers = () => {
   const navigate = useNavigate();
-  const { openModal } = useDelete();
+  const { openModal, openDynamicModal } = useDelete();
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
@@ -213,16 +213,68 @@ const ActiveWorkers = () => {
     );
   };
 
-  // Download the embassy visa-application PDF for a worker
+  // Generate the embassy visa-application PDF for a worker, then show a
+  // success modal letting the user Download it or Share it via WhatsApp.
   const handleDownloadVisaApplication = async (id) => {
     showLoader();
     try {
-      await generateVisaApplicationPdf(id);
+      const result = await generateVisaApplicationPdf(id, {
+        autoDownload: false,
+      });
+      hideLoader();
+
+      if (!result?.url) {
+        addMessage(false, "Failed to generate visa application");
+        return;
+      }
+
+      const { url, fileName, fullName } = result;
+
+      const triggerDownload = () => {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+
+      const shareOnWhatsapp = () => {
+        const message = `Visa application for ${fullName} is ready: ${fileName}`;
+        const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(waUrl, "_blank", "noopener,noreferrer");
+      };
+
+      openDynamicModal({
+        title: "Visa Application Generated",
+        body: (
+          <p style={{ margin: 0, color: "#555" }}>
+            . Download it now or share it directly via WhatsApp.
+          </p>
+        ),
+        actions: [
+          {
+            label: "Download",
+            closeOnClick: false,
+            onClick: triggerDownload,
+          },
+          {
+            label: "Share",
+            closeOnClick: false,
+            onClick: shareOnWhatsapp,
+          },
+          {
+            label: "Close",
+            variant: "primary",
+            closeOnClick: true,
+            onClick: () => URL.revokeObjectURL(url),
+          },
+        ],
+      });
     } catch (err) {
+      hideLoader();
       console.error("Failed to generate visa application PDF:", err);
       addMessage(false, err.message || "Failed to generate visa application");
-    } finally {
-      hideLoader();
     }
   };
 

@@ -1,0 +1,363 @@
+/* VisaApplicationTemplate.module.css
+   Header now holds only the two barcode columns (left: visa barcode/no/
+   sponsor, right: agent barcode/ref/embassy/MMH). The logo was removed from
+   the header and now sits in the topInfo row, centered, horizontally
+   aligned with the applicant photo on the left. Every other rule, size,
+   and spacing you customized is unchanged. */
+
+/* Main container */
+.container {
+  width: 780px;
+  margin: 0 3rem;
+  padding: 1rem;
+  background-color: #fff;
+  color: #000;
+  font-family: "Tahoma", "Arial", "Noto Naskh Arabic", sans-serif;
+  font-size: 9px;
+  line-height: 1.25;
+  box-sizing: border-box;
+}
+
+/* Header layout — now just two columns: left barcode block, right barcode block */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: -40px;
+  gap: 8px;
+}
+
+/* Left column: visa barcode -> visa no. -> sponsor */
+.headerLeft {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+.visaLabel {
+  display: flex;
+  gap: 1.2rem;
+  font-size: 7px;
+  font-weight: 600;
+}
+
+/* Right column: agent barcode -> agent ref -> embassy/consular -> MMH name */
+.headerRight {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.embassyAr {
+  font-size: 9px;
+  direction: rtl;
+  text-align: right;
+  font-weight: 600;
+}
+
+.embassyEn {
+  font-size: 10px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.consularAr {
+  font-size: 9px;
+  direction: rtl;
+  text-align: right;
+  font-weight: 600;
+}
+
+.consularEn {
+  font-size: 10px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.visaNumber {
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.agentRef {
+  font-size: 8px;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Agent name — sits under the embassy/consular block on the right */
+.agentName {
+  text-align: right;
+  font-weight: 700;
+  font-size: 10px;
+  margin: 2px 0 0;
+  padding: 0;
+}
+
+/* Logo — now lives in the topInfo row, centered, aligned with the photo */
+.logo {
+  width: 130px;
+  height: 100px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Sponsor info — sits under the visa barcode on the left */
+.sponsorInfo {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.sponsorLabel {
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.sponsorValue {
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* Top info row: applicant photo on the left, logo centered, both
+   horizontally aligned to each other */
+.topInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  gap: 6px;
+  margin-bottom: 0;
+  padding: 3px 0;
+}
+
+/* Photo pinned to the left edge of the row while the logo stays centered
+   via justify-content on .topInfo */
+.photoWrap {
+  position: absolute;
+  left: 0;
+  display: flex;
+}
+
+.photo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Field row */
+.fieldRow {
+  display: flex;
+  gap: 0;
+  margin-bottom: 0;
+  min-height: 32px;
+  border-top: 1px solid #000;
+}
+
+.fieldRowLast {
+  border-bottom:none
+}
+.fieldRowTop {
+  border-top:none;
+}
+
+.field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 4px;
+  line-height: 1.2;
+  border-right: 1px solid #000;
+}
+
+.fieldLast {
+  border-right: none;
+}
+
+.fieldFull {
+  flex: 1 1 100%;
+}
+
+.fieldLabel {
+  font-size: 8px;
+  font-weight: 600;
+  color: #000;
+  line-height: 1.1;
+}
+
+.fieldLabelAr {
+  font-size: 8px;
+  font-weight: 600;
+  direction: rtl;
+  text-align: right;
+  color: #000;
+  line-height: 1.1;
+}
+
+.fieldValue {
+  font-size: 9px;
+  color: #000;
+  min-height: 11px;
+  line-height: 1.2;
+  word-wrap: break-word;
+}
+
+.signatureSpace {
+  min-height: 16px;
+}
+
+/* Purpose list */
+.purposeList {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  font-size: 8px;
+  margin-top: 2px;
+}
+
+.purposeItem {
+  padding: 1px 4px;
+  border: 1px solid #999;
+  border-radius: 2px;
+  background-color: #fff;
+  color: #000;
+  font-size: 8px;
+  font-weight: 500;
+  text-align: center;
+  min-width: 38px;
+}
+
+.purposeItemSelected {
+  background-color: #000;
+  color: #fff;
+  border-color: #000;
+  font-weight: 700;
+}
+
+/* Dependents table */
+.dependentsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2px;
+  font-size: 8px;
+  background-color: #fff;
+}
+
+.tableTh {
+  border: 1px solid #000;
+  padding: 2px 3px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 8px;
+  height: 14px;
+  background-color: #f5f5f5;
+}
+
+.tableThLeft {
+  text-align: left;
+}
+
+.tableTd {
+  border: 1px solid #000;
+  padding: 1px 3px;
+  text-align: center;
+  height: 13px;
+  font-size: 8px;
+}
+
+.tableTdLeft {
+  text-align: left;
+}
+
+.tdName {
+  text-align: left;
+  width: 35%;
+}
+
+.tdSex {
+  width: 15%;
+}
+
+.tdDob {
+  width: 25%;
+}
+
+.tdRelationship {
+  width: 25%;
+}
+
+/* Certification */
+.certification {
+  margin: 4px 0;
+  padding: 3px 5px;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  font-size: 8px;
+  line-height: 1.35;
+}
+
+.certEn {
+  margin: 0 0 3px 0;
+  text-align: left;
+  direction: ltr;
+  font-size: 8px;
+}
+
+.certAr {
+  margin: 0;
+  text-align: right;
+  direction: rtl;
+  font-size: 8px;
+}
+
+/* Official header */
+.officialHeader {
+  font-weight: 700;
+  font-size: 9px;
+  margin: 5px 0 2px 0;
+  padding: 3px 0;
+  border-top: 2px solid #000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.officialHeaderAr {
+  direction: rtl;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 7px;
+  margin-top: 6px;
+  padding: 3px 0;
+  border-top: 1px solid #000;
+  color: #000;
+}
+
+.footerSpan {
+  flex: 1;
+  text-align: center;
+}
+
+.footerSpanFirst {
+  text-align: left;
+}
+
+.footerSpanLast {
+  text-align: right;
+}
+
+/* Signature row */
+.signatureRow {
+  min-height: 36px;
+}

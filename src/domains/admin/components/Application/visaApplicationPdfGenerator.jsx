@@ -70,7 +70,9 @@ const mapWorkerToVisaForm = (profile, photoDataUri) => {
 
   return {
     visaNo: visa.visa_number || "—",
-    agentRef: passport.passport_number ? `E${passport.passport_number}` : `W-${profile.id}`,
+    agentRef: passport.passport_number
+      ? `E${passport.passport_number}`
+      : `W-${profile.id}`,
     sponsorName: visa.sponsor_name || "—",
 
     fullName: (profile.full_name || "N/A").toUpperCase(),
@@ -95,8 +97,14 @@ const mapWorkerToVisaForm = (profile, photoDataUri) => {
     dateOfExpiry: formatDate(passport.expiry_date),
 
     durationOfStay: visa.duration_of_stay || "—",
-    dateOfArrival: formatDate(visa.date_of_arrival) === "—" ? "—" : formatDate(visa.date_of_arrival),
-    dateOfDeparture: formatDate(visa.date_of_departure) === "—" ? "—" : formatDate(visa.date_of_departure),
+    dateOfArrival:
+      formatDate(visa.date_of_arrival) === "—"
+        ? "—"
+        : formatDate(visa.date_of_arrival),
+    dateOfDeparture:
+      formatDate(visa.date_of_departure) === "—"
+        ? "—"
+        : formatDate(visa.date_of_departure),
     modeOfPayment: visa.mode_of_payment || "—",
     paymentNo: visa.payment_no || "—",
     paymentDate: formatDate(visa.payment_date),
@@ -111,6 +119,10 @@ const mapWorkerToVisaForm = (profile, photoDataUri) => {
     generatedDateLabel: today.toDateString(),
     agentEmail: AGENCY_DEFAULTS.agentEmail,
     agentWebsite: AGENCY_DEFAULTS.agentWebsite,
+
+    // phone number used for the WhatsApp share flow, kept off the visible
+    // form itself — not rendered by VisaApplicationTemplate.
+    _phoneNumber: pi.phone_number || profile.phone_number || null,
   };
 };
 
@@ -120,13 +132,23 @@ const mapWorkerToVisaForm = (profile, photoDataUri) => {
 
 /**
  * Fetches the worker's profile, renders the visa application template
- * off-screen, captures it, and triggers an instant PDF download.
+ * off-screen, captures it, and produces a PDF.
+ *
+ * By default this preserves the original behavior: it triggers an instant
+ * browser download via pdf.save(...) and returns nothing.
+ *
+ * Pass `{ autoDownload: false }` to instead get the generated file back
+ * (as a Blob + object URL + filename) without triggering a download, so the
+ * caller can show its own "Download or Share" UI afterwards.
  *
  * @param {number|string} employeeId
- * @param {{ logoSrc?: string }} [options] - pass your real agency logo asset.
+ * @param {{ logoSrc?: string, autoDownload?: boolean }} [options]
+ * @returns {Promise<void|{ blob: Blob, url: string, fileName: string, fullName: string, phoneNumber: string|null }>}
  */
 export async function generateVisaApplicationPdf(employeeId, options = {}) {
   if (!employeeId) throw new Error("employeeId is required");
+
+  const { autoDownload = true, logoSrc } = options;
 
   const res = await getWorkerProfile(employeeId);
   const profile = res?.data || res;
@@ -154,7 +176,7 @@ export async function generateVisaApplicationPdf(employeeId, options = {}) {
           templateNode = node;
         }}
         data={mapped}
-        logoSrc={options.logoSrc}
+        logoSrc={logoSrc}
       />,
     );
     // Give the browser a couple of frames to lay out, paint fonts/images,
@@ -172,13 +194,35 @@ export async function generateVisaApplicationPdf(employeeId, options = {}) {
     });
 
     const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = (canvas.height * pageWidth) / canvas.width;
     pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
 
     const fileSafeName = mapped.fullName.replace(/\s+/g, "_");
-    pdf.save(`Visa_Application_${fileSafeName}.pdf`);
+    const fileName = `Visa_Application_${fileSafeName}.pdf`;
+
+    if (autoDownload) {
+      // Original behavior — unchanged for any existing caller that doesn't
+      // pass autoDownload: false.
+      pdf.save(fileName);
+      return;
+    }
+
+    const blob = pdf.output("blob");
+    const url = URL.createObjectURL(blob);
+
+    return {
+      blob,
+      url,
+      fileName,
+      fullName: mapped.fullName,
+      phoneNumber: mapped._phoneNumber || null,
+    };
   } finally {
     root.unmount();
     document.body.removeChild(host);

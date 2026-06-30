@@ -28,6 +28,9 @@ const ConfirmDeleteModal = () => {
     }
   };
 
+  const customActions = config?.actions || null;
+  const hideDefaultActions = !!config?.hideDefaultActions;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -49,14 +52,54 @@ const ConfirmDeleteModal = () => {
         initial="idle"
         className={styles.modalInner}
       >
-        <h4 className={styles.modalTitle}>{config?.title}</h4>
+        {config?.title ? (
+          <h4 className={styles.modalTitle}>{config.title}</h4>
+        ) : null}
+
+        {/* Optional custom body — e.g. download/share options after a successful action */}
+        {config?.body ? (
+          <div className={styles.modalBody}>{config.body}</div>
+        ) : null}
+
         <div className={styles.modalActions}>
-          <button className={styles.cancelBtn} onClick={closeModal}>
-            Cancel
-          </button>
-          <button className={styles.deleteBtn} onClick={confirmAndClose}>
-            {config?.confirmText}
-          </button>
+          {/* Custom action buttons take priority when provided */}
+          {customActions
+            ? customActions.map((action, idx) => (
+                <button
+                  key={idx}
+                  className={
+                    action.variant === "primary"
+                      ? styles.deleteBtn
+                      : styles.cancelBtn
+                  }
+                  onClick={() => {
+                    action.onClick?.();
+                    if (action.closeOnClick !== false) closeModal();
+                  }}
+                >
+                  {action.label}
+                </button>
+              ))
+            : null}
+
+          {/* Default Cancel / Confirm pair — unchanged behavior for every existing caller */}
+          {!hideDefaultActions && (
+            <>
+              <button className={styles.cancelBtn} onClick={closeModal}>
+                {config?.cancelText || "Cancel"}
+              </button>
+              <button className={styles.deleteBtn} onClick={confirmAndClose}>
+                {config?.confirmText}
+              </button>
+            </>
+          )}
+
+          {/* When there are no custom actions and defaults are hidden, still offer a Close button */}
+          {!customActions && hideDefaultActions && (
+            <button className={styles.cancelBtn} onClick={closeModal}>
+              {config?.cancelText || "Close"}
+            </button>
+          )}
         </div>
       </motion.div>
     </Modal>
