@@ -5,6 +5,7 @@ import { getWorkerProfile } from "../../../api/worker.api";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
+import styles from "../../UserManual/UserManual.module.css";
 
 import musanedLogo from "../../../../../assets/img/autofill/musaned.png";
 import wafidLogo from "../../../../../assets/img/autofill/wafid.svg";
@@ -20,7 +21,6 @@ const TARGET_SITES = [
     title: "Musaned",
     description: "Domestic labor service portal",
     logo: musanedLogo,
-    color: "#1677a8",
     url: "https://tawtheeq.musaned.com.sa/",
   },
   {
@@ -28,7 +28,6 @@ const TARGET_SITES = [
     title: "Wafid",
     description: "Medical status verification system",
     logo: wafidLogo,
-    color: "#1f8f6a",
     url: "https://wafid.com/en/book-appointment/",
   },
   {
@@ -36,7 +35,6 @@ const TARGET_SITES = [
     title: "Tasheer",
     description: "Visa appointment scheduling",
     logo: tasheerLogo,
-    color: "#8b5cf6",
     url: "https://agents.tasheer.com/AgentTasheer/auth/agentGroupScheduling",
   },
   {
@@ -44,7 +42,6 @@ const TARGET_SITES = [
     title: "Nyala",
     description: "Nyala Insurance S.C. (NISCO)",
     logo: nyalaLogo,
-    color: "#9a3412",
     url: "https://agency.niscofetap.com/certificate/draft",
   },
 ];
@@ -73,7 +70,6 @@ function asArray(value) {
   if (typeof value === "string") {
     const trimmed = value.trim();
 
-    // Support JSON returned from MySQL JSON_ARRAYAGG if it arrives as string.
     if (
       (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
       (trimmed.startsWith("{") && trimmed.endsWith("}"))
@@ -82,7 +78,7 @@ function asArray(value) {
         const parsed = JSON.parse(trimmed);
         return Array.isArray(parsed) ? parsed.filter(Boolean) : [parsed];
       } catch {
-        // fall back to splitting below
+        // Fall back to splitting below.
       }
     }
 
@@ -120,17 +116,12 @@ function splitFullName(fullName) {
     .split(/\s+/)
     .filter(Boolean);
 
-  if (parts.length === 0) {
+  if (parts.length === 0)
     return { firstName: "", middleName: "", lastName: "" };
-  }
-
-  if (parts.length === 1) {
+  if (parts.length === 1)
     return { firstName: parts[0], middleName: "", lastName: "" };
-  }
-
-  if (parts.length === 2) {
+  if (parts.length === 2)
     return { firstName: parts[0], middleName: "", lastName: parts[1] };
-  }
 
   return {
     firstName: parts[0],
@@ -196,8 +187,8 @@ function normalizeExperience(value, worker = {}) {
   const hasYearsOnPosition = positions.some(
     (position) => Number(position?.years_of_experience || 0) > 0,
   );
-  if (hasYearsOnPosition) return "Have experience";
 
+  if (hasYearsOnPosition) return "Have experience";
   return "No experience";
 }
 
@@ -245,6 +236,39 @@ function getPrimaryPositionName(worker) {
     selected?.value ||
     ""
   );
+}
+
+function getLatestTravelRecord(worker) {
+  const records = asArray(worker.travel_records || worker.travelRecords);
+  if (!records.length) return null;
+
+  return [...records].sort((a, b) => {
+    const aDate = new Date(a.departure_date || a.departureDate || 0).getTime();
+    const bDate = new Date(b.departure_date || b.departureDate || 0).getTime();
+    return bDate - aDate;
+  })[0];
+}
+
+function normalizeDestinationCountry(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  const normalized = raw.toLowerCase();
+  const map = {
+    saudi: "Saudi Arabia",
+    ksa: "Saudi Arabia",
+    "saudi arabia": "Saudi Arabia",
+    uae: "UAE",
+    "united arab emirates": "UAE",
+    qatar: "Qatar",
+    kuwait: "Kuwait",
+    oman: "Oman",
+    bahrain: "Bahrain",
+    jordan: "Jordan",
+    lebanon: "Lebanon",
+  };
+
+  return map[normalized] || raw;
 }
 
 function mapWorkerToAutofillCandidate(worker) {
@@ -401,7 +425,6 @@ function mapWorkerToAutofillCandidate(worker) {
     "woreda.name",
     "wereda_name",
     "woreda",
-    "wereda",
   ]);
 
   const subCityName = pick(worker, [
@@ -414,6 +437,23 @@ function mapWorkerToAutofillCandidate(worker) {
     "sub_city",
   ]);
 
+  const latestTravelRecord = getLatestTravelRecord(worker);
+  const destinationCountry = normalizeDestinationCountry(
+    pick(worker, [
+      "destinationCountry",
+      "destination_country",
+      "countryOfDestination",
+      "visa.destination_country",
+      "contract.destination_country",
+      "contracts.0.destination_country",
+      "travel_records.0.arrival_location",
+      "travelRecords.0.arrivalLocation",
+    ]) ||
+      latestTravelRecord?.arrival_location ||
+      latestTravelRecord?.arrivalLocation ||
+      "",
+  );
+
   return {
     id: pick(worker, ["id", "worker_id"]),
     workerId: pick(worker, ["id", "worker_id"]),
@@ -425,7 +465,6 @@ function mapWorkerToAutofillCandidate(worker) {
     middleName: resolvedMiddleName,
     lastName: resolvedLastName,
 
-    // Musaned disabled/OCR fields
     surname: resolvedLastName,
     givenNames: joinNames(resolvedFirstName, resolvedMiddleName),
 
@@ -478,12 +517,7 @@ function mapWorkerToAutofillCandidate(worker) {
       ["personal_information.nationality", "nationality"],
       "Ethiopian",
     ),
-    destinationCountry: pick(worker, [
-      "destinationCountry",
-      "destination_country",
-      "countryOfDestination",
-      "visa.destination_country",
-    ]),
+    destinationCountry,
     visaType: pick(worker, ["visaType", "visa_type"]),
     state: regionName,
     city: cityName,
@@ -691,7 +725,6 @@ function WorkerAutoFillComponent() {
     loadWorkers();
   }, []);
 
-
   const sendQueueToExtension = async (site) => {
     if (!queue.length) {
       addMessage(
@@ -718,13 +751,6 @@ function WorkerAutoFillComponent() {
     const invalidCount = validation.filter(
       (item) => item.missing.length,
     ).length;
-
-    if (invalidCount > 0) {
-      const ok = window.confirm(
-        `${invalidCount} employee(s) are missing required ${site.title} fields. Do you want to send the queue anyway?`,
-      );
-      if (!ok) return false;
-    }
 
     return new Promise((resolve) => {
       window.chrome.runtime.sendMessage(
@@ -772,58 +798,8 @@ function WorkerAutoFillComponent() {
     }
   };
 
-  const getSiteValidationSummary = (siteKey) => {
-    const validation = validateQueue(queue, siteKey);
-    const invalidRows = validation.filter((item) => item.missing.length > 0);
-    const missingTotal = invalidRows.reduce(
-      (sum, item) => sum + item.missing.length,
-      0,
-    );
-
-    return {
-      invalidCount: invalidRows.length,
-      missingTotal,
-      firstInvalid: invalidRows[0],
-    };
-  };
-
   return (
     <div className="dashboard-wraper">
-      <style>{`
-        .autofill-site-card {
-          min-height: 170px;
-          background: #ffffff;
-          border: 1px solid #eef0f4;
-          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.055);
-          transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
-        }
-
-        .autofill-site-card:hover {
-          transform: translateY(-4px) scale(1.015);
-          box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
-          border-color: rgba(22, 119, 168, 0.25);
-          background: #fbfdff;
-        }
-
-        .autofill-site-card:active {
-          transform: translateY(-1px) scale(0.995);
-        }
-
-        .autofill-logo-box {
-          height: 62px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 10px;
-        }
-
-        .autofill-logo-img {
-          max-height: 58px;
-          max-width: 118px;
-          object-fit: contain;
-        }
-      `}</style>
-
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
         <div>
           <BackButton onClick={goBack} />
@@ -834,11 +810,11 @@ function WorkerAutoFillComponent() {
           </p>
         </div>
 
-        <div className="mt-3 mt-md-5 text-white w-45 d-flex align-items-center justify-content-center">
-          <div className="badge rounded-pill bg-light text-dark border px-3 py-2">
+        <div className="mt-3 mt-md-5">
+          <span className="badge rounded-pill bg-light text-dark border px-3 py-2">
             {queue.length} {queue.length === 1 ? "employee" : "employees"}{" "}
             selected
-          </div>
+          </span>
         </div>
       </div>
 
@@ -849,85 +825,69 @@ function WorkerAutoFillComponent() {
         </div>
       )}
 
-      <div className="row justify-content-center g-3 g-lg-4">
-        {TARGET_SITES.map((site) => {
-          const isLoading = selectedSite === site.key;
+      <div className="container">
+        <div className="row justify-content-start g-lg-3 g-4">
+          {TARGET_SITES.map((site) => {
+            const isLoading = selectedSite === site.key;
+            const disabled = !queue.length || isLoading;
 
-          return (
-            <div
-              key={site.key}
-              className="col-xl-3 col-lg-3 col-md-6 col-sm-12"
-            >
-              <button
-                type="button"
-                className="w-100 border-0 bg-transparent p-0 text-center"
-                onClick={() => handleSiteClick(site)}
-                disabled={!queue.length || isLoading}
-                style={{
-                  cursor:
-                    !queue.length || isLoading ? "not-allowed" : "pointer",
-                  opacity: !queue.length ? 0.68 : 1,
-                }}
+            return (
+              <div
+                key={site.key}
+                className="col-xl-3 col-lg-4 col-md-6 col-sm-12"
               >
-                <div className="autofill-site-card card rounded-4 text-center h-100 overflow-hidden">
-                  <div className="card-body px-3 py-4 d-flex flex-column align-items-center justify-content-center">
-                    <div className="autofill-logo-box">
-                      <img
-                        src={site.logo}
-                        alt={`${site.title} logo`}
-                        className="autofill-logo-img"
-                      />
-                    </div>
+                <button
+                  type="button"
+                  className="text-decoration-none text-dark border-0 bg-transparent p-0 w-100 h-100"
+                  onClick={() => handleSiteClick(site)}
+                  disabled={disabled}
+                >
+                  <div
+                    className={`agents-grid card rounded-4 border p-4 text-center h-100 shadow-sm-hover ${styles["manual-card"]} ${
+                      disabled ? "opacity-50" : ""
+                    }`}
+                  >
+                    <div className="d-flex flex-column align-items-center justify-content-between h-100">
+                      <div
+                        className="d-flex align-items-center justify-content-center mb-3"
+                        style={{
+                          width: "130px",
+                          height: "70px",
+                        }}
+                      >
+                        <img
+                          src={site.logo}
+                          alt={`${site.title} logo`}
+                          className="img-fluid object-fit-contain"
+                          style={{
+                            maxWidth: "120px",
+                            maxHeight: "58px",
+                          }}
+                        />
+                      </div>
 
-                    <h5 className="fw-bold text-dark mb-1">{site.title}</h5>
-                    <p className="text-muted small mb-0 px-2">
-                      {site.description}
-                    </p>
-                  </div>
-                </div>
-              </button>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Keep this for now until all employee profile data is properly mapped. */}
-      {queue.length > 0 && (
-        <div className="card border-0 rounded-4 shadow-sm mt-4">
-          <div className="card-body p-4">
-            <h5 className="fw-bold mb-3">Validation Summary</h5>
-            <div className="row g-3">
-              {TARGET_SITES.map((site) => {
-                const summary = getSiteValidationSummary(site.key);
-
-                return (
-                  <div key={site.key} className="col-lg-3 col-md-6">
-                    <div className="border rounded-4 p-3 h-100">
-                      <div className="fw-bold mb-1">{site.title}</div>
-                      {summary.invalidCount === 0 ? (
-                        <div className="small text-success">
-                          All selected employees have the required fields.
-                        </div>
-                      ) : (
-                        <div className="small text-muted">
-                          <span className="text-warning fw-bold">
-                            {summary.invalidCount}
-                          </span>{" "}
-                          employee(s) missing{" "}
-                          <span className="text-warning fw-bold">
-                            {summary.missingTotal}
-                          </span>{" "}
-                          field(s).
-                        </div>
-                      )}
+                      <div className="w-100">
+                        <h5 className="fr-can-name lh-base mb-2">
+                          {site.title}
+                        </h5>
+                        <p
+                          className="text-muted small mb-0 mx-auto"
+                          style={{
+                            minHeight: "38px",
+                            maxWidth: "190px",
+                          }}
+                        >
+                          {site.description}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </button>
+              </div>
+            );
+          })}
         </div>
-      )}
+      </div>
     </div>
   );
 }
