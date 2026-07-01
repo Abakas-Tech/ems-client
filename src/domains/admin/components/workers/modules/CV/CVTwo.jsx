@@ -348,13 +348,17 @@ const CVTwo = ({ templateSwitcher }) => {
             margin-top: 2px;
           }
 
-          /* Outer double-border frame around the main content, matching
-             CVOne's cvStyle (2px outer border + 6px padding around the
-             1px-bordered tables). Keeps a consistent gap between the
-             outer frame line and the inner grid lines. */
-          .doc-frame {
+          /* Outer border wrapping the header logo + all content together,
+             matching CVOne's cvStyle outer 2px border. */
+          .page-frame {
             border: 2px solid #000;
             padding: 6px;
+            box-sizing: border-box;
+          }
+
+          /* No border/padding of its own — page-frame provides the single
+             outer border. This is just a semantic grouping wrapper now. */
+          .doc-frame {
             box-sizing: border-box;
           }
 
@@ -710,333 +714,354 @@ const CVTwo = ({ templateSwitcher }) => {
             {/* PAGE 1 */}
             <div className="cv-page">
               <div className="cv-inner">
-                {/* BRAND */}
-                <div className="brand-wrap">
-                  <div className="brand-top">
-                    <img
-                      className="brand-logo"
-                      src={brandLogo}
-                      alt=""
-                      onError={(e) => {
-                        e.currentTarget.style.visibility = "hidden";
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Outer double-border frame wrapping the whole record,
-                  mirroring CVOne's outer border + padded inner border. */}
-                <div className="doc-frame">
-                  {/* TOP SUMMARY TABLE */}
-                  <table className="doc-table">
-                    <colgroup>
-                      <col style={{ width: "18%" }} />
-                      <col style={{ width: "35%" }} />
-                      <col style={{ width: "19%" }} />
-                      <col style={{ width: "28%" }} />
-                    </colgroup>
-                    <tbody>
-                      <tr>
-                        <td className="label-en fw700">Reference No.</td>
-                        <td className="val"></td>
-                        <td className="label-ar rtl fw700">
-                          {clientData.ar.referenceNo}
-                        </td>
-                        <td rowSpan="4" className="p-0">
-                          <div className="top-right-id">
-                            <img
-                              src={clientData.personalPhoto}
-                              alt="personal"
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Post Applied For</td>
-                        <td className="val">{clientData.postAppliedFor}</td>
-                        <td className="label-ar rtl">
-                          {clientData.ar.postAppliedFor}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Monthly Salary</td>
-                        <td className="val">{clientData.monthlySalary}</td>
-                        <td className="label-ar rtl">
-                          {clientData.ar.monthlySalary}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Contract Period</td>
-                        <td className="val">{clientData.contractPeriod}</td>
-                        <td className="label-ar rtl">
-                          {clientData.ar.contractPeriod}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  {/* PHONE + NAME */}
-                  <div className="name-strip">
-                    <div className="name-phone">
-                      <div className="label-en">Phone No.</div>
-                      <div className="val left">{clientData.phoneNo}</div>
-                    </div>
-                    <div className="name-applicant">
-                      {clientData.applicantName}
+                {/* Outer frame wrapping the header logo + all content,
+                  mirroring CVOne's outer border around the whole card. */}
+                <div className="page-frame">
+                  {/* BRAND */}
+                  <div className="brand-wrap">
+                    <div className="brand-top">
+                      <img
+                        className="brand-logo"
+                        src={brandLogo}
+                        alt=""
+                        onError={(e) => {
+                          e.currentTarget.style.visibility = "hidden";
+                        }}
+                      />
                     </div>
                   </div>
 
-                  {/* MAIN GRID */}
-                  <div className="main-grid">
-                    {/* LEFT SIDE */}
-                    <div className="left-side">
-                      {/* PERSONAL DETAILS */}
-                      <table className="sub-table personal-grid">
-                        <colgroup>
-                          <col style={{ width: "35.5%" }} />
-                          <col style={{ width: "44%" }} />
-                          <col style={{ width: "25%" }} />
-                        </colgroup>
-                        <tbody>
-                          <tr>
-                            <td className="label-en">Nationality</td>
-                            <td className="val">{clientData.nationality}</td>
-                            <td className="small-ar">
-                              {clientData.ar.nationality}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Religion</td>
-                            <td className="val">{clientData.religion}</td>
-                            <td className="small-ar">
-                              {clientData.ar.religion}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Date of Birth</td>
-                            <td className="val">{clientData.dateOfBirth}</td>
-                            <td className="small-ar">
-                              {clientData.ar.dateOfBirth}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Place of Birth</td>
-                            <td className="val">{clientData.placeOfBirth}</td>
-                            <td className="small-ar">
-                              {clientData.ar.placeOfBirth}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Age</td>
-                            <td className="val">{clientData.age}</td>
-                            <td className="small-ar">{clientData.ar.age}</td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Address</td>
-                            <td className="val">{clientData.address}</td>
-                            <td className="small-ar">
-                              {clientData.ar.address}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Marital Status</td>
-                            <td className="val">{clientData.maritalStatus}</td>
-                            <td className="small-ar">
-                              {clientData.ar.maritalStatus}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">No. of Children</td>
-                            <td className="val">{clientData.childrenCount}</td>
-                            <td className="small-ar">
-                              {clientData.ar.childrenCount}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Height</td>
-                            <td className="val">{clientData.height}</td>
-                            <td className="small-ar">{clientData.ar.height}</td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Weight</td>
-                            <td className="val">{clientData.weight}</td>
-                            <td className="small-ar">{clientData.ar.weight}</td>
-                          </tr>
-                          <tr>
-                            <td className="label-en"></td>
-                            <td className="val"></td>
-                            <td className="small-ar"></td>
-                          </tr>
-                          {/* LANGUAGES */}
-                          <tr>
-                            <td className="label-en">English</td>
-                            <td className="val">{clientData.english}</td>
-                            <td className="small-ar">
-                              {clientData.ar.english}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Arabic</td>
-                            <td className="val">{clientData.arabic}</td>
-                            <td className="small-ar">{clientData.ar.arabic}</td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Education</td>
-                            <td className="val">{clientData.education}</td>
-                            <td className="small-ar h-double">
-                              {clientData.ar.education}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en"></td>
-                            <td className="val"></td>
-                            <td className="small-ar"></td>
-                          </tr>
+                  {/* Inner double-border frame wrapping the record,
+                    mirroring CVOne's inner border. */}
+                  <div className="doc-frame">
+                    {/* TOP SUMMARY TABLE */}
+                    <table className="doc-table">
+                      <colgroup>
+                        <col style={{ width: "18%" }} />
+                        <col style={{ width: "35%" }} />
+                        <col style={{ width: "19%" }} />
+                        <col style={{ width: "28%" }} />
+                      </colgroup>
+                      <tbody>
+                        <tr>
+                          <td className="label-en fw700">Reference No.</td>
+                          <td className="val"></td>
+                          <td className="label-ar rtl fw700">
+                            {clientData.ar.referenceNo}
+                          </td>
+                          <td rowSpan="4" className="p-0">
+                            <div className="top-right-id">
+                              <img
+                                src={clientData.personalPhoto}
+                                alt="personal"
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="label-en">Post Applied For</td>
+                          <td className="val">{clientData.postAppliedFor}</td>
+                          <td className="label-ar rtl">
+                            {clientData.ar.postAppliedFor}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="label-en">Monthly Salary</td>
+                          <td className="val">{clientData.monthlySalary}</td>
+                          <td className="label-ar rtl">
+                            {clientData.ar.monthlySalary}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="label-en">Contract Period</td>
+                          <td className="val">{clientData.contractPeriod}</td>
+                          <td className="label-ar rtl">
+                            {clientData.ar.contractPeriod}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
 
-                          {/* EXPERIENCE PERIOD/COUNTRY */}
-                          <tr>
-                            <td className="label-en h-double">Period</td>
-                            <td className="val h-double">
-                              {clientData.experiencePeriod}
-                            </td>
-                            <td className="small-ar h-double">
-                              {clientData.ar.period}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en h-double">Country</td>
-                            <td className="val h-double">
-                              {clientData.experienceCountry}
-                            </td>
-                            <td className="small-ar h-double">
-                              {clientData.ar.country}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en"></td>
-                            <td className="val"></td>
-                            <td className="small-ar"></td>
-                          </tr>
-                          {/* SKILLS */}
-
-                          <tr>
-                            <td className="label-en">Cooking</td>
-                            <td className="val">{clientData.cooking}</td>
-                            <td className="small-ar">
-                              {clientData.ar.cooking}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Cleaning</td>
-                            <td className="val">{clientData.cleaning}</td>
-                            <td className="small-ar">
-                              {clientData.ar.cleaning}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Washing</td>
-                            <td className="val">{clientData.washing}</td>
-                            <td className="small-ar">
-                              {clientData.ar.washing}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Ironing</td>
-                            <td className="val">{clientData.ironing}</td>
-                            <td className="small-ar">
-                              {clientData.ar.ironing}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Babysitting</td>
-                            <td className="val">{clientData.babysitting}</td>
-                            <td className="small-ar">
-                              {clientData.ar.babysitting}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Children Care</td>
-                            <td className="val">{clientData.childrenCare}</td>
-                            <td className="small-ar">
-                              {clientData.ar.childrenCare}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Arabic Cooking</td>
-                            <td className="val">{clientData.arabicCooking}</td>
-                            <td className="small-ar">
-                              {clientData.ar.arabicCooking}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="label-en">Sewing</td>
-                            <td className="val">{clientData.sewing}</td>
-                            <td className="small-ar">{clientData.ar.sewing}</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                    {/* PHONE + NAME */}
+                    <div className="name-strip">
+                      <div className="name-phone">
+                        <div className="label-en">Phone No.</div>
+                        <div className="val left">{clientData.phoneNo}</div>
+                      </div>
+                      <div className="name-applicant">
+                        {clientData.applicantName}
+                      </div>
                     </div>
 
-                    {/* RIGHT SIDE */}
-                    <div className="right-side">
-                      <div className="passport-card">
-                        <table>
+                    {/* MAIN GRID */}
+                    <div className="main-grid">
+                      {/* LEFT SIDE */}
+                      <div className="left-side">
+                        {/* PERSONAL DETAILS */}
+                        <table className="sub-table personal-grid">
                           <colgroup>
-                            <col style={{ width: "40%" }} />
-                            <col style={{ width: "40%" }} />
-                            <col style={{ width: "40%" }} />
+                            <col style={{ width: "35.5%" }} />
+                            <col style={{ width: "44%" }} />
+                            <col style={{ width: "25%" }} />
                           </colgroup>
                           <tbody>
                             <tr>
-                              <td className="label-en">Passport No.</td>
-                              <td className="val">{clientData.passportNo}</td>
+                              <td className="label-en">Nationality</td>
+                              <td className="val">{clientData.nationality}</td>
                               <td className="small-ar">
-                                {clientData.ar.passportNo}
+                                {clientData.ar.nationality}
                               </td>
                             </tr>
                             <tr>
-                              <td className="label-en">Issue Date</td>
-                              <td className="val">{clientData.issueDate}</td>
+                              <td className="label-en">Religion</td>
+                              <td className="val">{clientData.religion}</td>
                               <td className="small-ar">
-                                {clientData.ar.issueDate}
+                                {clientData.ar.religion}
                               </td>
                             </tr>
                             <tr>
-                              <td className="label-en">Place of Issue</td>
-                              <td className="val">{clientData.issuePlace}</td>
+                              <td className="label-en">Date of Birth</td>
+                              <td className="val">{clientData.dateOfBirth}</td>
                               <td className="small-ar">
-                                {clientData.ar.issuePlace}
+                                {clientData.ar.dateOfBirth}
                               </td>
                             </tr>
                             <tr>
-                              <td className="label-en">Expiry Date</td>
-                              <td className="val">{clientData.expiryDate}</td>
+                              <td className="label-en">Place of Birth</td>
+                              <td className="val">{clientData.placeOfBirth}</td>
                               <td className="small-ar">
-                                {clientData.ar.expiryDate}
+                                {clientData.ar.placeOfBirth}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Age</td>
+                              <td className="val">{clientData.age}</td>
+                              <td className="small-ar">{clientData.ar.age}</td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Address</td>
+                              <td className="val">{clientData.address}</td>
+                              <td className="small-ar">
+                                {clientData.ar.address}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Marital Status</td>
+                              <td className="val">
+                                {clientData.maritalStatus}
+                              </td>
+                              <td className="small-ar">
+                                {clientData.ar.maritalStatus}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">No. of Children</td>
+                              <td className="val">
+                                {clientData.childrenCount}
+                              </td>
+                              <td className="small-ar">
+                                {clientData.ar.childrenCount}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Height</td>
+                              <td className="val">{clientData.height}</td>
+                              <td className="small-ar">
+                                {clientData.ar.height}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Weight</td>
+                              <td className="val">{clientData.weight}</td>
+                              <td className="small-ar">
+                                {clientData.ar.weight}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en"></td>
+                              <td className="val"></td>
+                              <td className="small-ar"></td>
+                            </tr>
+                            {/* LANGUAGES */}
+                            <tr>
+                              <td className="label-en">English</td>
+                              <td className="val">{clientData.english}</td>
+                              <td className="small-ar">
+                                {clientData.ar.english}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Arabic</td>
+                              <td className="val">{clientData.arabic}</td>
+                              <td className="small-ar">
+                                {clientData.ar.arabic}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Education</td>
+                              <td className="val">{clientData.education}</td>
+                              <td className="small-ar h-double">
+                                {clientData.ar.education}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en"></td>
+                              <td className="val"></td>
+                              <td className="small-ar"></td>
+                            </tr>
+
+                            {/* EXPERIENCE PERIOD/COUNTRY */}
+                            <tr>
+                              <td className="label-en h-double">Period</td>
+                              <td className="val h-double">
+                                {clientData.experiencePeriod}
+                              </td>
+                              <td className="small-ar h-double">
+                                {clientData.ar.period}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en h-double">Country</td>
+                              <td className="val h-double">
+                                {clientData.experienceCountry}
+                              </td>
+                              <td className="small-ar h-double">
+                                {clientData.ar.country}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en"></td>
+                              <td className="val"></td>
+                              <td className="small-ar"></td>
+                            </tr>
+                            {/* SKILLS */}
+
+                            <tr>
+                              <td className="label-en">Cooking</td>
+                              <td className="val">{clientData.cooking}</td>
+                              <td className="small-ar">
+                                {clientData.ar.cooking}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Cleaning</td>
+                              <td className="val">{clientData.cleaning}</td>
+                              <td className="small-ar">
+                                {clientData.ar.cleaning}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Washing</td>
+                              <td className="val">{clientData.washing}</td>
+                              <td className="small-ar">
+                                {clientData.ar.washing}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Ironing</td>
+                              <td className="val">{clientData.ironing}</td>
+                              <td className="small-ar">
+                                {clientData.ar.ironing}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Babysitting</td>
+                              <td className="val">{clientData.babysitting}</td>
+                              <td className="small-ar">
+                                {clientData.ar.babysitting}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Children Care</td>
+                              <td className="val">{clientData.childrenCare}</td>
+                              <td className="small-ar">
+                                {clientData.ar.childrenCare}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Arabic Cooking</td>
+                              <td className="val">
+                                {clientData.arabicCooking}
+                              </td>
+                              <td className="small-ar">
+                                {clientData.ar.arabicCooking}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Sewing</td>
+                              <td className="val">{clientData.sewing}</td>
+                              <td className="small-ar">
+                                {clientData.ar.sewing}
                               </td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
 
-                      <div className="standing-photo-wrap">
-                        <img
-                          src={clientData.standingPhoto}
-                          alt="standing"
-                          className="standing-photo"
-                        />
+                      {/* RIGHT SIDE */}
+                      <div className="right-side">
+                        <div className="passport-card">
+                          <table>
+                            <colgroup>
+                              <col style={{ width: "40%" }} />
+                              <col style={{ width: "35%" }} />
+                              <col style={{ width: "40%" }} />
+                            </colgroup>
+                            <tbody>
+                              <tr>
+                                <td className="label-en">Passport No.</td>
+                                <td className="val">{clientData.passportNo}</td>
+                                <td className="small-ar">
+                                  {clientData.ar.passportNo}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="label-en">Issue Date</td>
+                                <td className="val">{clientData.issueDate}</td>
+                                <td className="small-ar">
+                                  {clientData.ar.issueDate}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="label-en">Place of Issue</td>
+                                <td className="val">{clientData.issuePlace}</td>
+                                <td className="small-ar">
+                                  {clientData.ar.issuePlace}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="label-en">Expiry Date</td>
+                                <td className="val">{clientData.expiryDate}</td>
+                                <td className="small-ar">
+                                  {clientData.ar.expiryDate}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div className="standing-photo-wrap">
+                          <img
+                            src={clientData.standingPhoto}
+                            alt="standing"
+                            className="standing-photo"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* REMARKS */}
+                    <div className="remarks-row">
+                      <div className="label-en">Remarks</div>
+                      <div className="deep-red">{clientData.remarks}</div>
+                      <div className="remarks-right">
+                        {clientData.ar.remarks}
                       </div>
                     </div>
                   </div>
-
-                  {/* REMARKS */}
-                  <div className="remarks-row">
-                    <div className="label-en">Remarks</div>
-                    <div className="deep-red">{clientData.remarks}</div>
-                    <div className="remarks-right">{clientData.ar.remarks}</div>
-                  </div>
+                  {/* end doc-frame */}
                 </div>
-                {/* end doc-frame */}
+                {/* end page-frame */}
               </div>
             </div>
 
