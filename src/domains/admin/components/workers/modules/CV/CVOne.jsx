@@ -139,8 +139,17 @@ const SkillRow = ({ en, value, ar, last }) => (
   </div>
 );
 
-/* Helper: capture a DOM element to a jsPDF page with proper aspect-ratio scaling */
-const captureElementToPage = async (pdf, el, waitMs = 500) => {
+/* Helper: capture a DOM element to a jsPDF page with proper aspect-ratio scaling.
+   marginX/marginY (in mm) define a SHARED printable box used for every page,
+   so different-aspect-ratio pages (e.g. tall CV table vs. wide passport scan)
+   still end up with matching margins / aligned borders on the printed page. */
+const captureElementToPage = async (
+  pdf,
+  el,
+  waitMs = 500,
+  marginX = 8,
+  marginY = 8,
+) => {
   const pw = pdf.internal.pageSize.getWidth();
   const ph = pdf.internal.pageSize.getHeight();
 
@@ -161,12 +170,18 @@ const captureElementToPage = async (pdf, el, waitMs = 500) => {
   const canvasW = canvas.width;
   const canvasH = canvas.height;
 
-  // Uniform scale to fit page while preserving aspect ratio
-  const ratio = Math.min(pw / canvasW, ph / canvasH);
+  // Printable area shared by every page (page size minus the fixed margins)
+  const printableW = pw - marginX * 2;
+  const printableH = ph - marginY * 2;
+
+  // Uniform scale to fit inside the printable area while preserving aspect ratio
+  const ratio = Math.min(printableW / canvasW, printableH / canvasH);
   const imgW = canvasW * ratio;
   const imgH = canvasH * ratio;
-  const offsetX = (pw - imgW) / 2;
-  const offsetY = 0;
+
+  // Center within the printable area (not the raw page), so both axes get margin
+  const offsetX = marginX + (printableW - imgW) / 2;
+  const offsetY = marginY + (printableH - imgH) / 2;
 
   pdf.addImage(imgData, "JPEG", offsetX, offsetY, imgW, imgH);
 };
@@ -310,6 +325,9 @@ const CVOne = ({ templateSwitcher }) => {
     fontFamily: FONT,
     fontSize: 15,
     color: "#000",
+    boxSizing: "border-box",
+    border: "2px solid #000", // outer line of the double border (page 1 only)
+    padding: 6, // small gap between the outer and existing inner border
   };
 
   return (

@@ -102,7 +102,7 @@ const FileSearch = () => {
       const response = await uploadFile(formData);
       addMessage(
         response.success,
-        response.Message || "File uploaded successfully!",
+        response.Message || "File uploaded successfully",
       );
       setShowUploadModal(false);
       setPendingFile(null);
@@ -138,14 +138,14 @@ const FileSearch = () => {
   };
 
   // ── Upload modal fields ──
- const uploadFields = [
-   {
-     name: "title",
-     label: "File Title",
-     type: "custom",
-     initialValue: pendingFile?.name.replace(/\.[^.]+$/, "") ?? "",
-   },
- ];
+  const uploadFields = [
+    {
+      name: "title",
+      label: "File Title",
+      type: "custom",
+      initialValue: pendingFile?.name.replace(/\.[^.]+$/, "") ?? "",
+    },
+  ];
 
   const renderCustomField = (field, inputValues, handleChange) => (
     <>
@@ -180,7 +180,7 @@ const FileSearch = () => {
         onCreate={handleConfirmUpload}
         fields={uploadFields}
         title="Upload File"
-        btnLabel={uploading ? "Uploading…" : "Upload"}
+        btnLabel="Upload"
         renderCustomField={renderCustomField}
       />
 
@@ -233,7 +233,7 @@ const FileSearch = () => {
           {files.map((file) => (
             <div key={file.id} className="col-12 col-md-6 col-lg-4">
               <div
-                className={`w-100 p-4 border rounded-4 bg-white ${styles.fileCard}`}
+                className={`w-100 p-3 border rounded-4 bg-white ${styles.fileCard}`}
               >
                 <div className="d-flex align-items-center">
                   {/* Clickable area → opens in new tab */}
