@@ -30,6 +30,13 @@ const MENU_CONFIG = [
     permission: PERMISSIONS.MANAGE_WORKERS,
   },
   {
+    label: "Employee Modules",
+    path: "/admin/employee/modules",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_WORKERS,
+    isHidden: true,
+  },
+  {
     label: "Finance",
     path: "/admin/finances",
     icon: "bi bi-wallet",

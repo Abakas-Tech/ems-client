@@ -105,7 +105,7 @@ const AdminRoutes = () => {
         <Route path="/meta-data/city" element={<CityPage />} />
         <Route path="/meta-data/sub-city" element={<SubCityPage />} />
         <Route
-          path="/employee/modules/:worker_id/attributes"
+          path="employee/modules/:worker_id/attributes"
           element={<WorkerMetaPage />}
         />
 
