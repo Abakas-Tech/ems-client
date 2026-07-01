@@ -37,6 +37,7 @@ const yesNo = (v, fallback = "") => {
 const CVTwo = ({ templateSwitcher }) => {
   const { id } = useParams();
   const cvRef = useRef(null);
+  const passportPageRef = useRef(null);
   const navigate = useNavigate();
   const [worker, setWorker] = useState(null);
   const { showLoader, hideLoader } = useLoader();
@@ -63,64 +64,60 @@ const CVTwo = ({ templateSwitcher }) => {
     }
   }, []);
 
+  /* Capture one DOM element to its own, single, scaled-to-fit PDF page —
+     same technique as CVOne. Capturing each page separately (instead of
+     capturing everything as one tall canvas and slicing it by fixed
+     height) is what prevents the tail end of page 1 from bleeding onto
+     page 2: each page's image is independently scaled to end exactly at
+     that page's boundary. */
+  const captureElementToPage = async (pdf, el, waitMs = 400) => {
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = pdf.internal.pageSize.getHeight();
+
+    await new Promise((r) => setTimeout(r, waitMs));
+
+    const canvas = await html2canvas(el, {
+      useCORS: true,
+      scale: 2,
+      backgroundColor: "#ffffff",
+      windowWidth: 794,
+      scrollX: 0,
+      scrollY: 0,
+    });
+
+    const imgData = canvas.toDataURL("image/jpeg", 0.92);
+    const ratio = Math.min(pw / canvas.width, ph / canvas.height);
+    const imgW = canvas.width * ratio;
+    const imgH = canvas.height * ratio;
+    const offsetX = (pw - imgW) / 2;
+    const offsetY = 0;
+
+    pdf.addImage(
+      imgData,
+      "JPEG",
+      offsetX,
+      offsetY,
+      imgW,
+      imgH,
+      undefined,
+      "FAST",
+    );
+  };
+
   const handleGenerateAndUpload = async () => {
     if (!cvRef.current || !worker) return;
 
     showLoader();
     try {
-      const element = cvRef.current;
-      const originalWidth = element.style.width;
-      element.style.width = "794px";
-
-      await new Promise((resolve) => setTimeout(resolve, 400));
-
-      const canvas = await html2canvas(element, {
-        useCORS: true,
-        scale: 2,
-        backgroundColor: "#ffffff",
-        windowWidth: 794,
-        scrollX: 0,
-        scrollY: 0,
-      });
-
-      element.style.width = originalWidth;
-
-      const imgData = canvas.toDataURL("image/jpeg", 0.92);
       const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = 210;
-      const pageHeight = 287;
-      const imgWidth = pdfWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      let heightLeft = imgHeight;
-      let position = 0;
+      // PAGE 1: CV content
+      await captureElementToPage(pdf, cvRef.current, 400);
 
-      pdf.addImage(
-        imgData,
-        "JPEG",
-        0,
-        position,
-        imgWidth,
-        imgHeight,
-        undefined,
-        "FAST",
-      );
-      heightLeft -= pageHeight;
-
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
+      // PAGE 2: passport scan
+      if (passportPageRef.current) {
         pdf.addPage();
-        pdf.addImage(
-          imgData,
-          "JPEG",
-          0,
-          position,
-          imgWidth,
-          imgHeight,
-          undefined,
-          "FAST",
-        );
-        heightLeft -= pageHeight;
+        await captureElementToPage(pdf, passportPageRef.current, 500);
       }
 
       const pdfBlob = pdf.output("blob");
@@ -303,11 +300,11 @@ const CVTwo = ({ templateSwitcher }) => {
       <div className="mb-3 mt-1"> {templateSwitcher}</div>
 
       <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-        <div ref={cvRef} className="cv-wrap bg-white">
+        <div className="cv-wrap bg-white">
           <style>{`
           .cv-wrap {
             width: 794px;
-            margin: 0 0 0 -16px;
+            margin: 0;
             background: #fff;
             color: #111;
             font-family: Arial, Helvetica, sans-serif;
@@ -712,7 +709,7 @@ const CVTwo = ({ templateSwitcher }) => {
 
           <div className="screen-card">
             {/* PAGE 1 */}
-            <div className="cv-page">
+            <div className="cv-page" ref={cvRef}>
               <div className="cv-inner">
                 {/* Outer frame wrapping the header logo + all content,
                   mirroring CVOne's outer border around the whole card. */}
@@ -1004,7 +1001,7 @@ const CVTwo = ({ templateSwitcher }) => {
                           <table>
                             <colgroup>
                               <col style={{ width: "40%" }} />
-                              <col style={{ width: "35%" }} />
+                              <col style={{ width: "40%" }} />
                               <col style={{ width: "40%" }} />
                             </colgroup>
                             <tbody>
@@ -1066,7 +1063,7 @@ const CVTwo = ({ templateSwitcher }) => {
             </div>
 
             {/* PAGE 2 — passport scan, styled to match CVOne's page 2 */}
-            <div className="cv-page">
+            <div className="cv-page" ref={passportPageRef}>
               <div className="passport-page-inner">
                 <div className="passport-page-label">— Page 2 —</div>
                 <div className="passport-frame">
