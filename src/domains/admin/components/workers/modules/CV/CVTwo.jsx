@@ -307,7 +307,7 @@ const CVTwo = ({ templateSwitcher }) => {
           <style>{`
           .cv-wrap {
             width: 794px;
-            margin: 0;
+            margin: 0 0 0 -16px;
             background: #fff;
             color: #111;
             font-family: Arial, Helvetica, sans-serif;
@@ -320,7 +320,6 @@ const CVTwo = ({ templateSwitcher }) => {
             box-sizing: border-box;
             page-break-after: always;
             page-break-inside: avoid;
-            overflow: hidden;
             margin-bottom: 20px;
           }
 
@@ -330,7 +329,6 @@ const CVTwo = ({ templateSwitcher }) => {
 
           .cv-inner {
             width: 100%;
-            max-height: 1080px;
             padding: 18px 20px 16px 20px;
             box-sizing: border-box;
           }
@@ -573,27 +571,27 @@ const CVTwo = ({ templateSwitcher }) => {
           }
 
           .remarks-row {
-            display: grid;
-            grid-template-columns: 70px 1fr 95px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
             min-height: 22px;
+            padding: 3px 10px;
             border-top: 1px solid #111;
+            border-left: 1px solid #111;
+            border-right: 1px solid #111;
+            border-bottom: 1px solid #111;
           }
 
           .remarks-row > div {
-            border-right: 1px solid #111;
-            padding: 2px 6px;
+            padding: 0;
             font-size: 12px;
             display: flex;
             align-items: center;
           }
 
-          .remarks-row > div:last-child {
-            border-right: none;
-          }
-
           .remarks-right {
             direction: rtl;
-            justify-content: flex-end;
+            margin-left: auto;
           }
 
           .passport-page-inner {
