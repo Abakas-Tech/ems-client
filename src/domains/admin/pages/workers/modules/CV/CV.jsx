@@ -43,7 +43,7 @@ function TemplateSwitcher({ active, onChange }) {
               fontWeight: 600,
               cursor: "pointer",
               color: isActive ? "#fff" : "#5b5f66",
-              background: isActive ? "#1f6feb" : "transparent",
+              background: isActive ? "#47BCD2" : "transparent",
               transition: "background 0.15s ease, color 0.15s ease",
             }}
           >

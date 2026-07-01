@@ -327,24 +327,26 @@ const CVOne = ({ templateSwitcher }) => {
   return (
     <div className="dashboard-wraper">
       {/* toolbar */}
-      <div className="d-flex justify-content-between align-items-center d-print-none pb-2">
-        <h2 className="text-dark mb-2">
-          {profile?.role_id != 4 ? "Employee" : "My"} CV
-        </h2>
-        {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
-        {templateSwitcher}
-      </div>
-      {profile?.role_id != 4 && (
-        <div className="mb-3">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
+        <div className="mt-0">
+          <h2 className="fw-bold text-dark mb-2">Country</h2>
+          <p className="text-muted mb-0">Manage countries — create, rename,</p>
+        </div>
+
+        <div className="position-absolute top-0 end-0 mt-4 pt-2">
+          {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
+        </div>
+
+        {profile?.role_id != 4 && (
           <button
-            className="btn btn-main mt-3 px-4 text-white w-auto d-flex align-items-center justify-content-center"
+            className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
             onClick={handleGenerateAndUpload}
           >
             {worker.cv_url ? "Update CV" : "Generate & Upload CV"}
           </button>
-        </div>
-      )}
-
+        )}
+      </div>
+      <div className="mb-3 mt-1"> {templateSwitcher}</div>
       {/* horizontal scroll so mobile doesn't break */}
       <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         {/* ── PAGE 1: CV ── */}

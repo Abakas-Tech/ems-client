@@ -281,34 +281,33 @@ const CVTwo = ({ templateSwitcher }) => {
 
   return (
     <div className="dashboard-wraper">
-      <div className="d-flex justify-content-between align-items-center d-print-none pb-2">
-        <h2 className="text-dark mb-2">
-          {profile?.role_id !== 4 ? "Employee" : "My"} CV
-        </h2>
-        <div className="d-flex align-items-center gap-2">
-          {templateSwitcher}
-          {profile?.role_id !== 4 && (
-            <BackButton onClick={() => navigate(-1)} />
-          )}
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
+        <div className="mt-0">
+          <h2 className="fw-bold text-dark mb-2">Country</h2>
+          <p className="text-muted mb-0">Manage countries — create, rename,</p>
         </div>
-      </div>
 
-      {profile?.role_id !== 4 && (
-        <div className="mb-3 d-print-none">
+        <div className="position-absolute top-0 end-0 mt-4 pt-2">
+          {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
+        </div>
+
+        {profile?.role_id != 4 && (
           <button
-            className="btn btn-main mt-3 px-4 text-white w-auto d-flex align-items-center justify-content-center"
+            className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
             onClick={handleGenerateAndUpload}
           >
             {worker.cv_url ? "Update CV" : "Generate & Upload CV"}
           </button>
-        </div>
-      )}
+        )}
+      </div>
+      <div className="mb-3 mt-1"> {templateSwitcher}</div>
 
-      <div ref={cvRef} className="cv-wrap bg-white">
-        <style>{`
+      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+        <div ref={cvRef} className="cv-wrap bg-white">
+          <style>{`
           .cv-wrap {
             width: 794px;
-            margin: 0 auto;
+            margin: 0;
             background: #fff;
             color: #111;
             font-family: Arial, Helvetica, sans-serif;
@@ -351,6 +350,16 @@ const CVTwo = ({ templateSwitcher }) => {
             margin-top: 2px;
           }
 
+          /* Outer double-border frame around the main content, matching
+             CVOne's cvStyle (2px outer border + 6px padding around the
+             1px-bordered tables). Keeps a consistent gap between the
+             outer frame line and the inner grid lines. */
+          .doc-frame {
+            border: 2px solid #000;
+            padding: 6px;
+            box-sizing: border-box;
+          }
+
           .doc-table {
             width: 100%;
             border-collapse: collapse;
@@ -380,14 +389,14 @@ const CVTwo = ({ templateSwitcher }) => {
 
           .label-ar {
             font-weight: 500;
-            text-align: center;
+            text-align: right;
             direction: rtl;
             unicode-bidi: embed;
             color: #111111;
           }
 
           .val {
-            text-align: center;
+            text-align: left;
             font-weight: 600;
             color: #111;
           }
@@ -450,20 +459,20 @@ const CVTwo = ({ templateSwitcher }) => {
           }
 
           .main-grid {
-            display: grid;
-            grid-template-columns: 52.96% 47.04%;
-            gap: 0;
+            display: flex;
+            align-items: stretch;
             border-left: 1px solid #111;
             border-right: 1px solid #111;
             border-bottom: 1px solid #111;
           }
 
           .left-side {
+            flex: 0 0 52.96%;
             border-right: 1px solid #111;
-          }
           }
 
           .right-side {
+            flex: 1 1 47.04%;
             display: flex;
             flex-direction: column;
           }
@@ -509,16 +518,18 @@ const CVTwo = ({ templateSwitcher }) => {
             direction: rtl;
             unicode-bidi: embed;
             font-size: 16px;
-            text-align: center;
+            text-align: right;
             color: #111;
             font-weight:600;
           }
 
           .standing-photo-wrap {
             width: 100%;
+            flex: 1;
+            min-height: 0;
             border-bottom: 1px solid #111;
             display: flex;
-            align-items: flex-end;
+            align-items: stretch;
             justify-content: center;
             overflow: hidden;
             background: #fff;
@@ -526,7 +537,9 @@ const CVTwo = ({ templateSwitcher }) => {
 
           .standing-photo {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
+            display: block;
           }
 
           .passport-card table {
@@ -584,25 +597,42 @@ const CVTwo = ({ templateSwitcher }) => {
           }
 
           .passport-page-inner {
-            padding: 40px 50px 30px 50px;
+            padding: 24px 30px 20px 30px;
             box-sizing: border-box;
           }
 
-          .passport-box {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            margin-top: 8px;
+          /* Passport scan page, styled to match CVOne's page 2: a small
+             italic "— Page 2 —" marker above a 2px-bordered frame, with
+             the scan itself sitting in a thin 1px inner border. */
+          .passport-page-label {
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 6px;
+            font-style: italic;
           }
 
-          .passport-box img {
-            width: 86%;
-            max-width: 680px;
-            height: auto;
-            object-fit: contain;
-            border: none;
+          .passport-frame {
+            background: #fff;
+            border: 2px solid #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            box-sizing: border-box;
           }
-            
+
+          .passport-scan-wrap {
+            width: 100%;
+            border: 1px solid #999;
+          }
+
+          .passport-scan-img {
+            width: 100%;
+            height: auto;
+            display: block;
+          }
+
           .rtl {
             direction: rtl;
             unicode-bidi: embed;
@@ -621,7 +651,6 @@ const CVTwo = ({ templateSwitcher }) => {
 
           .left {
             text-align: left;
-            margin-left: 85px;
           }
 
           .fw700 {
@@ -679,320 +708,353 @@ const CVTwo = ({ templateSwitcher }) => {
           }
         `}</style>
 
-        <div className="screen-card">
-          {/* PAGE 1 */}
-          <div className="cv-page">
-            <div className="cv-inner">
-              {/* BRAND */}
-              <div className="brand-wrap">
-                <div className="brand-top">
-                  <img
-                    className="brand-logo"
-                    src={brandLogo}
-                    alt=""
-                    onError={(e) => {
-                      e.currentTarget.style.visibility = "hidden";
-                    }}
-                  />
-                </div>
-              </div>
-              {/* TOP SUMMARY TABLE */}
-              <table className="doc-table">
-                <colgroup>
-                  <col style={{ width: "18%" }} />
-                  <col style={{ width: "35%" }} />
-                  <col style={{ width: "19%" }} />
-                  <col style={{ width: "28%" }} />
-                </colgroup>
-                <tbody>
-                  <tr>
-                    <td className="label-en fw700">Reference No.</td>
-                    <td className="val"></td>
-                    <td className="label-ar rtl fw700">
-                      {clientData.ar.referenceNo}
-                    </td>
-                    <td rowSpan="4" className="p-0">
-                      <div className="top-right-id">
-                        <img src={clientData.personalPhoto} alt="personal" />
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="label-en">Post Applied For</td>
-                    <td className="val">{clientData.postAppliedFor}</td>
-                    <td className="label-ar rtl">
-                      {clientData.ar.postAppliedFor}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="label-en">Monthly Salary</td>
-                    <td className="val">{clientData.monthlySalary}</td>
-                    <td className="label-ar rtl">
-                      {clientData.ar.monthlySalary}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="label-en">Contract Period</td>
-                    <td className="val">{clientData.contractPeriod}</td>
-                    <td className="label-ar rtl">
-                      {clientData.ar.contractPeriod}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              {/* PHONE + NAME */}
-              <div className="name-strip">
-                <div className="name-phone">
-                  <div className="label-en">Phone No.</div>
-                  <div className="val left">{clientData.phoneNo}</div>
-                </div>
-                <div className="name-applicant">{clientData.applicantName}</div>
-              </div>
-
-              {/* MAIN GRID */}
-              <div className="main-grid">
-                {/* LEFT SIDE */}
-                <div className="left-side">
-                  {/* PERSONAL DETAILS */}
-                  <table className="sub-table personal-grid">
-                    <colgroup>
-                      <col style={{ width: "35.5%" }} />
-                      <col style={{ width: "44%" }} />
-                      <col style={{ width: "25%" }} />
-                    </colgroup>
-                    <tbody>
-                      <tr>
-                        <td className="label-en">Nationality</td>
-                        <td className="val">{clientData.nationality}</td>
-                        <td className="small-ar">
-                          {clientData.ar.nationality}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Religion</td>
-                        <td className="val">{clientData.religion}</td>
-                        <td className="small-ar">{clientData.ar.religion}</td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Date of Birth</td>
-                        <td className="val">{clientData.dateOfBirth}</td>
-                        <td className="small-ar">
-                          {clientData.ar.dateOfBirth}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Place of Birth</td>
-                        <td className="val">{clientData.placeOfBirth}</td>
-                        <td className="small-ar">
-                          {clientData.ar.placeOfBirth}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Age</td>
-                        <td className="val">{clientData.age}</td>
-                        <td className="small-ar">{clientData.ar.age}</td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Address</td>
-                        <td className="val">{clientData.address}</td>
-                        <td className="small-ar">{clientData.ar.address}</td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Marital Status</td>
-                        <td className="val">{clientData.maritalStatus}</td>
-                        <td className="small-ar">
-                          {clientData.ar.maritalStatus}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">No. of Children</td>
-                        <td className="val">{clientData.childrenCount}</td>
-                        <td className="small-ar">
-                          {clientData.ar.childrenCount}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Height</td>
-                        <td className="val">{clientData.height}</td>
-                        <td className="small-ar">{clientData.ar.height}</td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Weight</td>
-                        <td className="val">{clientData.weight}</td>
-                        <td className="small-ar">{clientData.ar.weight}</td>
-                      </tr>
-                      <tr>
-                        <td className="label-en"></td>
-                        <td className="val"></td>
-                        <td className="small-ar"></td>
-                      </tr>
-                      {/* LANGUAGES */}
-                      <tr>
-                        <td className="label-en">English</td>
-                        <td className="val">{clientData.english}</td>
-                        <td className="small-ar">{clientData.ar.english}</td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Arabic</td>
-                        <td className="val">{clientData.arabic}</td>
-                        <td className="small-ar">{clientData.ar.arabic}</td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Education</td>
-                        <td className="val">{clientData.education}</td>
-                        <td className="small-ar h-double">
-                          {clientData.ar.education}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en"></td>
-                        <td className="val"></td>
-                        <td className="small-ar"></td>
-                      </tr>
-
-                      {/* EXPERIENCE PERIOD/COUNTRY */}
-                      <tr>
-                        <td className="label-en h-double">Period</td>
-                        <td className="val h-double">
-                          {clientData.experiencePeriod}
-                        </td>
-                        <td className="small-ar h-double">
-                          {clientData.ar.period}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en h-double">Country</td>
-                        <td className="val h-double">
-                          {clientData.experienceCountry}
-                        </td>
-                        <td className="small-ar h-double">
-                          {clientData.ar.country}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en"></td>
-                        <td className="val"></td>
-                        <td className="small-ar"></td>
-                      </tr>
-                      {/* SKILLS */}
-
-                      <tr>
-                        <td className="label-en">Cooking</td>
-                        <td className="val">{clientData.cooking}</td>
-                        <td className="small-ar">{clientData.ar.cooking}</td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Cleaning</td>
-                        <td className="val">{clientData.cleaning}</td>
-                        <td className="small-ar">{clientData.ar.cleaning}</td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Washing</td>
-                        <td className="val">{clientData.washing}</td>
-                        <td className="small-ar">{clientData.ar.washing}</td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Ironing</td>
-                        <td className="val">{clientData.ironing}</td>
-                        <td className="small-ar">{clientData.ar.ironing}</td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Babysitting</td>
-                        <td className="val">{clientData.babysitting}</td>
-                        <td className="small-ar">
-                          {clientData.ar.babysitting}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Children Care</td>
-                        <td className="val">{clientData.childrenCare}</td>
-                        <td className="small-ar">
-                          {clientData.ar.childrenCare}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Arabic Cooking</td>
-                        <td className="val">{clientData.arabicCooking}</td>
-                        <td className="small-ar">
-                          {clientData.ar.arabicCooking}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="label-en">Sewing</td>
-                        <td className="val">{clientData.sewing}</td>
-                        <td className="small-ar">{clientData.ar.sewing}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* RIGHT SIDE */}
-                <div className="right-side">
-                  <div className="passport-card">
-                    <table>
-                      <colgroup>
-                        <col style={{ width: "40%" }} />
-                        <col style={{ width: "40%" }} />
-                        <col style={{ width: "40%" }} />
-                      </colgroup>
-                      <tbody>
-                        <tr>
-                          <td className="label-en">Passport No.</td>
-                          <td className="val">{clientData.passportNo}</td>
-                          <td className="small-ar">
-                            {clientData.ar.passportNo}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="label-en">Issue Date</td>
-                          <td className="val">{clientData.issueDate}</td>
-                          <td className="small-ar">
-                            {clientData.ar.issueDate}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="label-en">Place of Issue</td>
-                          <td className="val">{clientData.issuePlace}</td>
-                          <td className="small-ar">
-                            {clientData.ar.issuePlace}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="label-en">Expiry Date</td>
-                          <td className="val">{clientData.expiryDate}</td>
-                          <td className="small-ar">
-                            {clientData.ar.expiryDate}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="standing-photo-wrap">
+          <div className="screen-card">
+            {/* PAGE 1 */}
+            <div className="cv-page">
+              <div className="cv-inner">
+                {/* BRAND */}
+                <div className="brand-wrap">
+                  <div className="brand-top">
                     <img
-                      src={clientData.standingPhoto}
-                      alt="standing"
-                      className="standing-photo"
+                      className="brand-logo"
+                      src={brandLogo}
+                      alt=""
+                      onError={(e) => {
+                        e.currentTarget.style.visibility = "hidden";
+                      }}
                     />
                   </div>
                 </div>
-              </div>
 
-              {/* REMARKS */}
-              <div className="remarks-row">
-                <div className="label-en">Remarks</div>
-                <div className="deep-red">{clientData.remarks}</div>
-                <div className="remarks-right">{clientData.ar.remarks}</div>
+                {/* Outer double-border frame wrapping the whole record,
+                  mirroring CVOne's outer border + padded inner border. */}
+                <div className="doc-frame">
+                  {/* TOP SUMMARY TABLE */}
+                  <table className="doc-table">
+                    <colgroup>
+                      <col style={{ width: "18%" }} />
+                      <col style={{ width: "35%" }} />
+                      <col style={{ width: "19%" }} />
+                      <col style={{ width: "28%" }} />
+                    </colgroup>
+                    <tbody>
+                      <tr>
+                        <td className="label-en fw700">Reference No.</td>
+                        <td className="val"></td>
+                        <td className="label-ar rtl fw700">
+                          {clientData.ar.referenceNo}
+                        </td>
+                        <td rowSpan="4" className="p-0">
+                          <div className="top-right-id">
+                            <img
+                              src={clientData.personalPhoto}
+                              alt="personal"
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Post Applied For</td>
+                        <td className="val">{clientData.postAppliedFor}</td>
+                        <td className="label-ar rtl">
+                          {clientData.ar.postAppliedFor}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Monthly Salary</td>
+                        <td className="val">{clientData.monthlySalary}</td>
+                        <td className="label-ar rtl">
+                          {clientData.ar.monthlySalary}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="label-en">Contract Period</td>
+                        <td className="val">{clientData.contractPeriod}</td>
+                        <td className="label-ar rtl">
+                          {clientData.ar.contractPeriod}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  {/* PHONE + NAME */}
+                  <div className="name-strip">
+                    <div className="name-phone">
+                      <div className="label-en">Phone No.</div>
+                      <div className="val left">{clientData.phoneNo}</div>
+                    </div>
+                    <div className="name-applicant">
+                      {clientData.applicantName}
+                    </div>
+                  </div>
+
+                  {/* MAIN GRID */}
+                  <div className="main-grid">
+                    {/* LEFT SIDE */}
+                    <div className="left-side">
+                      {/* PERSONAL DETAILS */}
+                      <table className="sub-table personal-grid">
+                        <colgroup>
+                          <col style={{ width: "35.5%" }} />
+                          <col style={{ width: "44%" }} />
+                          <col style={{ width: "25%" }} />
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td className="label-en">Nationality</td>
+                            <td className="val">{clientData.nationality}</td>
+                            <td className="small-ar">
+                              {clientData.ar.nationality}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Religion</td>
+                            <td className="val">{clientData.religion}</td>
+                            <td className="small-ar">
+                              {clientData.ar.religion}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Date of Birth</td>
+                            <td className="val">{clientData.dateOfBirth}</td>
+                            <td className="small-ar">
+                              {clientData.ar.dateOfBirth}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Place of Birth</td>
+                            <td className="val">{clientData.placeOfBirth}</td>
+                            <td className="small-ar">
+                              {clientData.ar.placeOfBirth}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Age</td>
+                            <td className="val">{clientData.age}</td>
+                            <td className="small-ar">{clientData.ar.age}</td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Address</td>
+                            <td className="val">{clientData.address}</td>
+                            <td className="small-ar">
+                              {clientData.ar.address}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Marital Status</td>
+                            <td className="val">{clientData.maritalStatus}</td>
+                            <td className="small-ar">
+                              {clientData.ar.maritalStatus}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">No. of Children</td>
+                            <td className="val">{clientData.childrenCount}</td>
+                            <td className="small-ar">
+                              {clientData.ar.childrenCount}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Height</td>
+                            <td className="val">{clientData.height}</td>
+                            <td className="small-ar">{clientData.ar.height}</td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Weight</td>
+                            <td className="val">{clientData.weight}</td>
+                            <td className="small-ar">{clientData.ar.weight}</td>
+                          </tr>
+                          <tr>
+                            <td className="label-en"></td>
+                            <td className="val"></td>
+                            <td className="small-ar"></td>
+                          </tr>
+                          {/* LANGUAGES */}
+                          <tr>
+                            <td className="label-en">English</td>
+                            <td className="val">{clientData.english}</td>
+                            <td className="small-ar">
+                              {clientData.ar.english}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Arabic</td>
+                            <td className="val">{clientData.arabic}</td>
+                            <td className="small-ar">{clientData.ar.arabic}</td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Education</td>
+                            <td className="val">{clientData.education}</td>
+                            <td className="small-ar h-double">
+                              {clientData.ar.education}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en"></td>
+                            <td className="val"></td>
+                            <td className="small-ar"></td>
+                          </tr>
+
+                          {/* EXPERIENCE PERIOD/COUNTRY */}
+                          <tr>
+                            <td className="label-en h-double">Period</td>
+                            <td className="val h-double">
+                              {clientData.experiencePeriod}
+                            </td>
+                            <td className="small-ar h-double">
+                              {clientData.ar.period}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en h-double">Country</td>
+                            <td className="val h-double">
+                              {clientData.experienceCountry}
+                            </td>
+                            <td className="small-ar h-double">
+                              {clientData.ar.country}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en"></td>
+                            <td className="val"></td>
+                            <td className="small-ar"></td>
+                          </tr>
+                          {/* SKILLS */}
+
+                          <tr>
+                            <td className="label-en">Cooking</td>
+                            <td className="val">{clientData.cooking}</td>
+                            <td className="small-ar">
+                              {clientData.ar.cooking}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Cleaning</td>
+                            <td className="val">{clientData.cleaning}</td>
+                            <td className="small-ar">
+                              {clientData.ar.cleaning}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Washing</td>
+                            <td className="val">{clientData.washing}</td>
+                            <td className="small-ar">
+                              {clientData.ar.washing}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Ironing</td>
+                            <td className="val">{clientData.ironing}</td>
+                            <td className="small-ar">
+                              {clientData.ar.ironing}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Babysitting</td>
+                            <td className="val">{clientData.babysitting}</td>
+                            <td className="small-ar">
+                              {clientData.ar.babysitting}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Children Care</td>
+                            <td className="val">{clientData.childrenCare}</td>
+                            <td className="small-ar">
+                              {clientData.ar.childrenCare}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Arabic Cooking</td>
+                            <td className="val">{clientData.arabicCooking}</td>
+                            <td className="small-ar">
+                              {clientData.ar.arabicCooking}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="label-en">Sewing</td>
+                            <td className="val">{clientData.sewing}</td>
+                            <td className="small-ar">{clientData.ar.sewing}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* RIGHT SIDE */}
+                    <div className="right-side">
+                      <div className="passport-card">
+                        <table>
+                          <colgroup>
+                            <col style={{ width: "40%" }} />
+                            <col style={{ width: "40%" }} />
+                            <col style={{ width: "40%" }} />
+                          </colgroup>
+                          <tbody>
+                            <tr>
+                              <td className="label-en">Passport No.</td>
+                              <td className="val">{clientData.passportNo}</td>
+                              <td className="small-ar">
+                                {clientData.ar.passportNo}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Issue Date</td>
+                              <td className="val">{clientData.issueDate}</td>
+                              <td className="small-ar">
+                                {clientData.ar.issueDate}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Place of Issue</td>
+                              <td className="val">{clientData.issuePlace}</td>
+                              <td className="small-ar">
+                                {clientData.ar.issuePlace}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="label-en">Expiry Date</td>
+                              <td className="val">{clientData.expiryDate}</td>
+                              <td className="small-ar">
+                                {clientData.ar.expiryDate}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div className="standing-photo-wrap">
+                        <img
+                          src={clientData.standingPhoto}
+                          alt="standing"
+                          className="standing-photo"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* REMARKS */}
+                  <div className="remarks-row">
+                    <div className="label-en">Remarks</div>
+                    <div className="deep-red">{clientData.remarks}</div>
+                    <div className="remarks-right">{clientData.ar.remarks}</div>
+                  </div>
+                </div>
+                {/* end doc-frame */}
               </div>
             </div>
-          </div>
 
-          {/* PAGE 2 */}
-          <div className="cv-page">
-            <div className="passport-page-inner">
-              <div className="passport-box">
-                <img src={clientData.passportScan} alt="passport scan" />
+            {/* PAGE 2 — passport scan, styled to match CVOne's page 2 */}
+            <div className="cv-page">
+              <div className="passport-page-inner">
+                <div className="passport-page-label">— Page 2 —</div>
+                <div className="passport-frame">
+                  <div className="passport-scan-wrap">
+                    <img
+                      src={clientData.passportScan}
+                      alt="passport scan"
+                      className="passport-scan-img"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
