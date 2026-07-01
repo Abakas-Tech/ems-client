@@ -58,7 +58,7 @@ const MainHeader = () => {
   };
 
   // Determine dashboard link and text
-  let dashboardLink = "/auth/login";
+  let dashboardLink = "/";
   let dashboardText = "Sign In";
 
   if (!checkingAuth && isAuth && profile) {

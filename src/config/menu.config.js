@@ -3,19 +3,6 @@ import PERMISSIONS from "./permission.config";
 
 const MENU_CONFIG = [
   {
-    label: "Home",
-    icon: "bi bi-globe",
-    path: "/",
-    roles: [
-      ROLES.EMPLOYER,
-      ROLES.ADMIN,
-      ROLES.EMPLOYEE,
-      ROLES.WORKER,
-      ROLES.PARTNER,
-    ],
-  },
-
-  {
     label: "Dashboard",
     path: "/admin/dashboard",
     icon: "bi-speedometer2",
