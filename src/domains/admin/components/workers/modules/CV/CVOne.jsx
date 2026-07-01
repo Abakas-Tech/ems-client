@@ -73,14 +73,6 @@ const css = {
     textAlign: "right",
     direction: "rtl",
   },
-  td: {
-    border: "1px solid #000",
-    padding: "3px 7px",
-    fontSize: 14,
-    fontFamily: FONT,
-    fontWeight: "bold",
-    verticalAlign: "middle",
-  },
   tdGoldHeader: {
     padding: "4px 7px",
     fontSize: 15,
@@ -110,11 +102,13 @@ const Row3 = ({
   boldValue,
   last,
   cols = "110px 100px 1fr",
+  minHeight,
 }) => (
   <div
     style={{
       display: "grid",
       gridTemplateColumns: cols,
+      minHeight,
       ...(last ? {} : { borderBottom: "1px solid #000" }),
     }}
   >
@@ -370,161 +364,111 @@ const CVOne = ({ templateSwitcher }) => {
           />
 
           <div style={{ border: "2px solid #000" }}>
-            <table
+            {/* Gold title bar — same visual bar as before, just no longer a <table> row */}
+            <div
               style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                borderTop: "none",
+                display: "grid",
+                gridTemplateColumns: "1fr 220px",
+                borderBottom: "1px solid #000",
               }}
             >
-              <thead>
-                <tr>
-                  <th
-                    colSpan={3}
+              <div style={css.tdGoldHeader}>
+                Application for Employment &nbsp;|&nbsp; طلب التوظيف
+              </div>
+              <div style={css.tdGoldHeader}>{name}</div>
+            </div>
+
+            {/* Reference No. / Post Applied For / Monthly Salary / Contract
+                Period — same Row3 component & styling as Nationality below.
+                gridTemplateRows guarantees a real minimum height (160px) up
+                front, so the photo column has something definite to stretch
+                against — this avoids the earlier bug where an img with
+                height:100% inside an auto-height grid row collapsed/distorted
+                because the height was circular (unresolved until the image
+                itself rendered). */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "stretch",
+                minHeight: 160,
+                borderBottom: "1px solid #000",
+              }}
+            >
+              <div
+                style={{
+                  flex: "1 1 auto",
+                  display: "flex",
+                  flexDirection: "column",
+                  borderRight: "1px solid #000",
+                }}
+              >
+                <Row3
+                  label="Reference No."
+                  value={ref}
+                  minHeight={40}
+                  arLabel="رقم المرجع"
+                  cols="150px 130px 1fr"
+                />
+                <Row3
+                  label="Post Applied For"
+                  value={post}
+                  minHeight={40}
+                  arLabel="وظيفة"
+                  cols="150px 130px 1fr"
+                />
+                <Row3
+                  label="Monthly Salary"
+                  value={salary}
+                  minHeight={40}
+                  arLabel="راتب شهري"
+                  cols="150px 130px 1fr"
+                />
+                <Row3
+                  label="Contract Period"
+                  value={contract}
+                  minHeight={40}
+                  arLabel="مدة العقد"
+                  last
+                  cols="150px 130px 1fr"
+                />
+              </div>
+
+              {/* flex-basis 220px + stretch instead of a CSS Grid row — html2canvas
+      handles implicit grid "align-items: stretch" unreliably, which was
+      causing the left column's border to stop short of the row's bottom
+      border instead of connecting to it. */}
+              <div style={{ position: "relative", flex: "0 0 220px" }}>
+                {faceUrl ? (
+                  <img
+                    src={faceUrl}
+                    alt="Candidate"
+                    crossOrigin="anonymous"
                     style={{
-                      ...css.tdGoldHeader,
-                      borderLeft: "none",
-                      borderRight: "none",
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
                     }}
-                  >
-                    Application for Employment &nbsp;|&nbsp; طلب التوظيف
-                  </th>
-                  <th
+                  />
+                ) : (
+                  <div
                     style={{
-                      ...css.tdGoldHeader,
-                      borderRight: "none",
-                      borderLeft: "none",
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background: "#ddd",
                     }}
-                  >
-                    {name}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td
-                    style={{
-                      ...css.td,
-                      width: "22%",
-                      borderLeft: "none",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Reference No.
-                  </td>
-                  <td style={{ ...css.td, width: "28%" }}>{ref}</td>
-                  <td
-                    style={{
-                      ...css.td,
-                      textAlign: "right",
-                      direction: "rtl",
-                      width: "22%",
-                      borderLeft: "none",
-                    }}
-                  >
-                    رقم المرجع
-                  </td>
-                  {/* Face photo — rowSpan 4 */}
-                  <td
-                    rowSpan={4}
-                    style={{
-                      ...css.td,
-                      textAlign: "center",
-                      verticalAlign: "middle",
-                      width: "28%",
-                      height: 160,
-                      padding: 0,
-                      borderRight: "none",
-                      borderTop: "none",
-                      borderBottom: "none",
-                    }}
-                  >
-                    {faceUrl ? (
-                      <img
-                        src={faceUrl}
-                        alt="Candidate"
-                        crossOrigin="anonymous"
-                        style={{
-                          width: "100%",
-                          height: "160px",
-                          objectFit: "cover",
-                          display: "block",
-                          border: "1px solid #999",
-                        }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          width: "100%",
-                          height: 160,
-                          background: "#ddd",
-                          border: "1px solid #999",
-                        }}
-                      />
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    style={{
-                      ...css.td,
-                      fontWeight: "bold",
-                      fontStyle: "italic",
-                      borderLeft: "none",
-                    }}
-                  >
-                    Post Applied For
-                  </td>
-                  <td style={css.td}>{post}</td>
-                  <td
-                    style={{ ...css.td, textAlign: "right", direction: "rtl" }}
-                  >
-                    وظيفة
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    style={{
-                      ...css.td,
-                      fontWeight: "bold",
-                      fontStyle: "italic",
-                      borderLeft: "none",
-                    }}
-                  >
-                    Monthly Salary
-                  </td>
-                  <td style={css.td}>{salary}</td>
-                  <td
-                    style={{
-                      ...css.td,
-                      textAlign: "right",
-                      direction: "rtl",
-                      borderLeft: "none",
-                    }}
-                  >
-                    راتب شهري
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    style={{
-                      ...css.td,
-                      fontWeight: "bold",
-                      fontStyle: "italic",
-                      borderLeft: "none",
-                    }}
-                  >
-                    Contract Period
-                  </td>
-                  <td style={css.td}>{contract}</td>
-                  <td
-                    style={{ ...css.td, textAlign: "right", direction: "rtl" }}
-                  >
-                    مدة العقد
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  />
+                )}
+              </div>
+            </div>
 
             {/*  PHONE / NAME BAR */}
             <div
