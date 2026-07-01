@@ -304,7 +304,7 @@ const CVTwo = ({ templateSwitcher }) => {
           <style>{`
           .cv-wrap {
             width: 794px;
-            margin: 0;
+            margin: 0 0 0 -18px;
             background: #fff;
             color: #111;
             font-family: Arial, Helvetica, sans-serif;
@@ -482,6 +482,12 @@ const CVTwo = ({ templateSwitcher }) => {
             table-layout: fixed;
             font-size: 14px;
             line-height: 1.15;
+            border-top: 1px solid #111;
+            margin-bottom: 10px;
+          }
+
+          .sub-table:last-child {
+            margin-bottom: 0;
           }
 
           .sub-table td {
@@ -493,10 +499,6 @@ const CVTwo = ({ templateSwitcher }) => {
 
           .sub-table tr td:last-child {
             border-right: none;
-          }
-
-          .sub-table tr:last-child td {
-            border-bottom: none;
           }
 
           .personal-grid td,
@@ -874,12 +876,17 @@ const CVTwo = ({ templateSwitcher }) => {
                                 {clientData.ar.weight}
                               </td>
                             </tr>
-                            <tr>
-                              <td className="label-en"></td>
-                              <td className="val"></td>
-                              <td className="small-ar"></td>
-                            </tr>
-                            {/* LANGUAGES */}
+                          </tbody>
+                        </table>
+
+                        {/* LANGUAGES & EDUCATION */}
+                        <table className="sub-table personal-grid">
+                          <colgroup>
+                            <col style={{ width: "35.5%" }} />
+                            <col style={{ width: "44%" }} />
+                            <col style={{ width: "25%" }} />
+                          </colgroup>
+                          <tbody>
                             <tr>
                               <td className="label-en">English</td>
                               <td className="val">{clientData.english}</td>
@@ -901,13 +908,17 @@ const CVTwo = ({ templateSwitcher }) => {
                                 {clientData.ar.education}
                               </td>
                             </tr>
-                            <tr>
-                              <td className="label-en"></td>
-                              <td className="val"></td>
-                              <td className="small-ar"></td>
-                            </tr>
+                          </tbody>
+                        </table>
 
-                            {/* EXPERIENCE PERIOD/COUNTRY */}
+                        {/* WORK EXPERIENCE */}
+                        <table className="sub-table personal-grid">
+                          <colgroup>
+                            <col style={{ width: "35.5%" }} />
+                            <col style={{ width: "44%" }} />
+                            <col style={{ width: "25%" }} />
+                          </colgroup>
+                          <tbody>
                             <tr>
                               <td className="label-en h-double">Period</td>
                               <td className="val h-double">
@@ -926,13 +937,17 @@ const CVTwo = ({ templateSwitcher }) => {
                                 {clientData.ar.country}
                               </td>
                             </tr>
-                            <tr>
-                              <td className="label-en"></td>
-                              <td className="val"></td>
-                              <td className="small-ar"></td>
-                            </tr>
-                            {/* SKILLS */}
+                          </tbody>
+                        </table>
 
+                        {/* SKILLS */}
+                        <table className="sub-table personal-grid">
+                          <colgroup>
+                            <col style={{ width: "35.5%" }} />
+                            <col style={{ width: "44%" }} />
+                            <col style={{ width: "25%" }} />
+                          </colgroup>
+                          <tbody>
                             <tr>
                               <td className="label-en">Cooking</td>
                               <td className="val">{clientData.cooking}</td>
