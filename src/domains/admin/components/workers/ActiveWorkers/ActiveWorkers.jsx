@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
   listWorkers,
   getWorkerProfile,
@@ -11,26 +12,32 @@ import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
+
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import useProfile from "../../../../../context/Profile/useProfile";
 
 const ActiveWorkers = () => {
   const navigate = useNavigate();
+
   const { openModal } = useDelete();
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
-  const [workers, setWorkers] = useState([]);
-  const [filters, setFilters] = useState({});
   const { profile } = useProfile();
   const role = profile?.role_id;
 
+  const [workers, setWorkers] = useState([]);
+  const [filters, setFilters] = useState({});
+
   // --- Selection Mode States ---
+  // Used for BOTH:
+  // 1. Bulk notifications
+  // 2. Autofill queue preparation
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
 
-  // pagination
+  // Pagination
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
@@ -38,6 +45,7 @@ const ActiveWorkers = () => {
   // Fetch Workers
   const fetchWorkers = useCallback(async () => {
     showLoader();
+
     try {
       const params = {
         ...filters,
@@ -47,13 +55,14 @@ const ActiveWorkers = () => {
 
       const res = await listWorkers(params);
 
-      setWorkers(res?.data.items || []);
-      setTotalItems(res?.data.meta?.total_items || 0);
+      setWorkers(res?.data?.items || []);
+      setTotalItems(res?.data?.meta?.total_items || 0);
     } catch (err) {
       console.error("Failed to fetch employees:", err);
     } finally {
       hideLoader();
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit]);
 
@@ -71,9 +80,15 @@ const ActiveWorkers = () => {
       },
     });
   };
+
   // --- Selection Handlers ---
+
+  const canUseBulkSelection = role === 1 || role === 2;
+
   const handleRowDoubleClick = (row) => {
-    if (profile.role_id !== 1 && profile.role_id !== 2) return;
+    if (!canUseBulkSelection) return;
+    if (!row?.id) return;
+
     if (!isSelectionMode) {
       setIsSelectionMode(true);
       setSelectedWorkerIds([row.id]);
@@ -81,25 +96,46 @@ const ActiveWorkers = () => {
   };
 
   const handleSelectRow = (id) => {
-    setSelectedWorkerIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
-    );
+    if (!id) return;
+
+    setSelectedWorkerIds((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((selectedId) => selectedId !== id);
+      }
+
+      return [...prev, id];
+    });
   };
 
   const handleSelectAll = (checked) => {
-    if (checked) {
-      setSelectedWorkerIds(workers.map((w) => w.id));
-    } else {
-      setSelectedWorkerIds([]);
-    }
+    const currentPageIds = workers
+      .map((worker) => worker.id)
+      .filter((id) => id !== undefined && id !== null);
+
+    setSelectedWorkerIds((prev) => {
+      if (checked) {
+        // Add current page IDs without removing selections from previous pages
+        return Array.from(new Set([...prev, ...currentPageIds]));
+      }
+
+      // Remove only current page IDs, keep other page selections
+      return prev.filter((selectedId) => !currentPageIds.includes(selectedId));
+    });
   };
 
+  const handleExitSelection = () => {
+    setIsSelectionMode(false);
+    setSelectedWorkerIds([]);
+  };
+
+  // Notification flow — unchanged, but now supports selected IDs across pages
   const handleNotify = (row = null) => {
     let idsToNotify = [];
     let full_name = "";
-    const roleType = "worker"; // Hardcoded for this specific worker page
 
-    if (row && row.id) {
+    const roleType = "worker";
+
+    if (row?.id) {
       // Single worker click from action icon
       idsToNotify = [row.id];
       full_name = row.full_name || "";
@@ -126,9 +162,19 @@ const ActiveWorkers = () => {
     });
   };
 
-  const handleExitSelection = () => {
-    setIsSelectionMode(false);
-    setSelectedWorkerIds([]);
+  // Autofill flow — new
+  // This does NOT send to the extension yet.
+  // It only carries the selected worker IDs to the next page where we will build:
+  // 4 cards: Wafid / Tasheer / Insurance / Musaned
+  const handleAutofillSelected = () => {
+    if (selectedWorkerIds.length === 0) return;
+
+    navigate("/admin/employees/autofill", {
+      state: {
+        workerIds: selectedWorkerIds,
+        source: "active-workers",
+      },
+    });
   };
 
   // Filter handlers
@@ -142,19 +188,20 @@ const ActiveWorkers = () => {
     setPage(1);
   };
 
-  // View, Archive, Delete handlers (existing logic)
+  // View, Archive, Delete handlers
   const handleView = async (id) => {
     showLoader();
+
     try {
       const workerProfile = await getWorkerProfile(id);
 
-      // role based navigation
       if (role === 3) {
         // Partner
         navigate(`/partner/active-employees/${id}`, {
           state: workerProfile,
         });
       } else if (role === 5) {
+        // Employer
         navigate(`/employer/my-employees/${id}`, {
           state: workerProfile,
         });
@@ -164,8 +211,8 @@ const ActiveWorkers = () => {
           state: workerProfile,
         });
       }
-    } catch {
-      console.error("Failed to fetch worker profile:");
+    } catch (err) {
+      console.error("Failed to fetch worker profile:", err);
     } finally {
       hideLoader();
     }
@@ -176,10 +223,12 @@ const ActiveWorkers = () => {
       async () => {
         try {
           const response = await deleteWorker(id, false);
+
           addMessage(
             response?.success,
             response?.message || "Employee archived successfully",
           );
+
           fetchWorkers();
         } catch (err) {
           addMessage(false, err.message);
@@ -197,10 +246,12 @@ const ActiveWorkers = () => {
       async () => {
         try {
           const response = await deleteWorker(id, true);
+
           addMessage(
             response?.success,
             response?.message || "Employee deleted successfully",
           );
+
           fetchWorkers();
         } catch (err) {
           addMessage(false, err.message);
@@ -213,7 +264,6 @@ const ActiveWorkers = () => {
     );
   };
 
-  // Go back to previous page
   const goBack = () => {
     navigate(-1);
   };
@@ -225,9 +275,9 @@ const ActiveWorkers = () => {
           {role !== 3 && role !== 5 && <BackButton onClick={goBack} />}
 
           <h2 className="fw-bold text-dark mb-2">
-            {" "}
-            {role == 5 ? "My Employees" : "Active Employees"}
+            {role === 5 ? "My Employees" : "Active Employees"}
           </h2>
+
           <p className="text-muted mb-0">
             {role === 5
               ? "View the employees assigned to you and access their profiles."
@@ -239,14 +289,11 @@ const ActiveWorkers = () => {
       </div>
 
       {/* Floating Selection Bar */}
-
-      {/* Floating Selection Bar */}
       {isSelectionMode && (
         <div
           className="d-flex flex-column flex-md-row justify-content-between align-items-center shadow-lg border rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top px-3 px-md-4 py-3"
           style={{
             zIndex: 1050,
-            // Moves closer to top on mobile to save space
             top: window.innerWidth < 768 ? "10px" : "20px",
             backgroundColor: "rgba(255, 255, 255, 0.98)",
             backdropFilter: "blur(12px)",
@@ -270,6 +317,7 @@ const ActiveWorkers = () => {
             >
               <i className="bi bi-person-check-fill fs-5"></i>
             </div>
+
             <div>
               <h6
                 className="mb-0 fw-bold text-dark"
@@ -277,12 +325,13 @@ const ActiveWorkers = () => {
               >
                 Bulk Action Mode
               </h6>
+
               <p className="mb-0 text-muted small fw-medium">
                 <span className="fw-bold" style={{ color: "var(--maincolor)" }}>
                   {selectedWorkerIds.length}
                 </span>{" "}
                 {selectedWorkerIds.length === 1 ? "employee" : "employees"}{" "}
-                selected for notification
+                selected
               </p>
             </div>
           </div>
@@ -298,6 +347,14 @@ const ActiveWorkers = () => {
             </button>
 
             <button
+              className="btn btn-primary btn-sm text-white px-4 fw-bold flex-grow-1 flex-md-grow-0 py-2 py-md-1"
+              disabled={selectedWorkerIds.length === 0}
+              onClick={handleAutofillSelected}
+            >
+              Autofill Selected
+            </button>
+
+            <button
               className="btn btn-outline-secondary btn-sm border flex-grow-1 flex-md-grow-0 py-2 py-md-1"
               onClick={handleExitSelection}
             >
@@ -306,6 +363,7 @@ const ActiveWorkers = () => {
           </div>
         </div>
       )}
+
       <ListingComponent
         showAvater={true}
         // Selection Props
@@ -330,12 +388,24 @@ const ActiveWorkers = () => {
             accessor: "full_name",
             render: (row) => <span className="fw-bold">{row.full_name}</span>,
           },
-          { header: "Phone Number", accessor: "phone_number" },
-          { header: "Current Status", accessor: "status" },
+          {
+            header: "Phone Number",
+            accessor: "phone_number",
+          },
+          {
+            header: "Current Status",
+            accessor: "status",
+          },
         ]}
         actions={[
-          { type: "view", onClick: (row) => handleView(row.id) },
-          { type: "notify", onClick: (row) => handleNotify(row) },
+          {
+            type: "view",
+            onClick: (row) => handleView(row.id),
+          },
+          {
+            type: "notify",
+            onClick: (row) => handleNotify(row),
+          },
           {
             type: "transaction",
             onClick: (row) => handleRecordTransaction(row),
@@ -344,11 +414,20 @@ const ActiveWorkers = () => {
             type: "files",
             onClick: (row) =>
               navigate("/admin/files", {
-                state: { workerId: row.id, tab: "workers" },
+                state: {
+                  workerId: row.id,
+                  tab: "workers",
+                },
               }),
           },
-          { type: "archive", onClick: (row) => handleArchive(row.id) },
-          { type: "delete", onClick: (row) => handleDelete(row.id) },
+          {
+            type: "archive",
+            onClick: (row) => handleArchive(row.id),
+          },
+          {
+            type: "delete",
+            onClick: (row) => handleDelete(row.id),
+          },
           {
             type: "addModule",
             onClick: (row) =>
