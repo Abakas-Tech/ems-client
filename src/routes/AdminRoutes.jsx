@@ -130,16 +130,6 @@ const AdminRoutes = () => {
         <Route path="employee/modules/:id/cv" element={<CV />} />
         <Route path="employee/modules/:id/visa" element={<Visa />} />
         <Route path="/meta-data" element={<MetaDataDashboard />} />
-        <Route path="/content" element={<ContentDashboard />} />
-        <Route path="/content/social-media" element={<SocialMediaPage />} />
-        <Route path="/content/location" element={<LocationPage />} />
-        <Route path="/content/gallery" element={<GalleryListPage />} />
-        <Route path="/content/gallery/create" element={<GalleryUplaodPage />} />
-        <Route
-          path="/content/gallery/edit/:id"
-          element={<GalleryUplaodPage />}
-        />
-
         <Route path="documents" element={<FileSearch />} />
 
         <Route path="user-manual" element={<UserManual />} />
