@@ -180,7 +180,13 @@ const CVTwo = ({ templateSwitcher }) => {
     religion: safeText(worker.religion, ""),
     dateOfBirth: safeDate(worker.date_of_birth, ""),
     placeOfBirth: safeText(worker.place_of_birth, ""),
-    age: safeText(worker.age, "24"),
+    age: safeText(
+      worker.date_of_birth
+        ? new Date().getFullYear() -
+            new Date(worker.date_of_birth).getFullYear()
+        : "",
+      "",
+    ),
     address: safeText(worker.address, ""),
     maritalStatus: safeText(worker.marital_status, ""),
     childrenCount: safeText(worker.number_of_children, ""),
