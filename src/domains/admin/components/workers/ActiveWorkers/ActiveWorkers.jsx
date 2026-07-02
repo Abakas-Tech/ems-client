@@ -80,6 +80,10 @@ const ActiveWorkers = () => {
       },
     });
   };
+  // Edit Handler
+  const handleEdit = (row) => {
+    navigate(`/admin/employees/edit/${row.id}`, { state: row });
+  };
 
   // --- Selection Handlers ---
 
@@ -402,6 +406,8 @@ const ActiveWorkers = () => {
             type: "view",
             onClick: (row) => handleView(row.id),
           },
+
+          { type: "edit", onClick: (row) => handleEdit(row) },
           {
             type: "notify",
             onClick: (row) => handleNotify(row),

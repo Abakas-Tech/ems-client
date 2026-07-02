@@ -21,8 +21,6 @@ const messaging = firebase.messaging();
 
 // This handles the message when the tab is CLOSED or in the BACKGROUND
 messaging.onBackgroundMessage((payload) => {
-  console.log("Background Message Received:", payload);
-
   // const notificationTitle = payload.notification.title;
   // const notificationOptions = {
   //   body: payload.notification.body,

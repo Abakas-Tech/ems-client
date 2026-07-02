@@ -707,9 +707,6 @@ function WorkerAutoFillComponent() {
 
       setWorkers(profiles);
       setQueue(normalizedQueue);
-
-      console.log("[Autofill] raw profiles", profiles);
-      console.log("[Autofill] normalized queue", normalizedQueue);
     } catch (err) {
       console.error("Failed to load selected employees for autofill:", err);
       addMessage(

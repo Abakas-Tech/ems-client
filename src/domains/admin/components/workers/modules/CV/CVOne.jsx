@@ -194,8 +194,6 @@ const CVOne = ({ templateSwitcher }) => {
     showLoader();
     try {
       const res = await getWorkerCVData(id ?? profile.id);
-      console.log("raw res:", res);
-      console.log("res.data:", res.data);
       setWorker(res.data);
     } catch (e) {
       console.error("fetch error:", e);
@@ -249,7 +247,6 @@ const CVOne = ({ templateSwitcher }) => {
     }
   };
 
-  console.log("worker state:", worker);
   if (!worker) return null;
 
   /* ── field mapping ── */

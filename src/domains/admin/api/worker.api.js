@@ -696,7 +696,6 @@ const deleteVisa = async (workerId) => {
 const getWorkerCVData = async (workerId) => {
   try {
     const response = await axiosInstance.get(`/workers/cv/${workerId}`);
-    console.log(response);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to get CV data");

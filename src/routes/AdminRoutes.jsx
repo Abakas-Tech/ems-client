@@ -86,6 +86,7 @@ const AdminRoutes = () => {
           }
         />
         <Route path="/employees/add" element={<WorkerRegistration />} />
+        <Route path="/employees/edit/:id" element={<WorkerRegistration />} />
         <Route path="/employees/active" element={<ActiveWorkers />} />
         <Route path="/employees/autofill" element={<WorkerAutoFill />} />
         <Route path="/employees/active/:id" element={<WorkerProfile />} />

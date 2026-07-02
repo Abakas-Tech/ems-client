@@ -161,8 +161,6 @@ const CVTwo = ({ templateSwitcher }) => {
     return years > 0 ? `${years} years` : `${months} months`;
   };
   if (!worker) return null;
-
-  console.log(worker);
   const clientData = {
     referenceNo: safeText(worker.reference_no, ""),
     postAppliedFor: safeText(worker.skills[0], ""),
