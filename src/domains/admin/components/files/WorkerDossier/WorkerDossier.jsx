@@ -14,6 +14,7 @@ import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import FileUpload from "../FileUpload/FileUpload";
 import FileFilters from "../FileFilters/FileFilters";
+import CvSelection from "../CvSelection/CvSelection";
 
 // ─────────────────────────────────────────────────────────────────
 // SECTION A — Core Documents Grid
@@ -30,7 +31,7 @@ const CORE_SLOTS = [
   { key: "cv", label: "Curriculum Vitae", icon: "bi-file-earmark-text" },
 ];
 
-const CoreSlotsGrid = ({ coreSlots = {} }) => {
+const CoreSlotsGrid = ({ coreSlots = {}, onCvClick }) => {
   const checkIsImage = (url) => url && /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
 
   return (
@@ -178,16 +179,17 @@ const CoreSlotsGrid = ({ coreSlots = {} }) => {
                   )}
                 </div>
                 {hasFile ? (
-                  <a
-                    href={data.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
                     className="btn btn-sm btn-outline-secondary w-100"
                     style={{ fontSize: "11px", borderRadius: "6px" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCvClick && onCvClick();
+                    }}
                   >
                     <i className="bi bi-eye me-1" />
-                    View
-                  </a>
+                    Select CV
+                  </button>
                 ) : (
                   <button
                     className="btn btn-sm btn-light w-100"
@@ -557,6 +559,7 @@ const WorkerDossier = ({ workerId, onBack }) => {
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const [dossier, setDossier] = useState(null);
+  const [showCvSelection, setShowCvSelection] = useState(false);
 
   // Lifted state for upload and edit visibility
   const [showUploadForm, setShowUploadForm] = useState(false);
@@ -579,7 +582,16 @@ const WorkerDossier = ({ workerId, onBack }) => {
       hideLoader();
     }
   };
-
+  if (showCvSelection && dossier) {
+    return (
+      <CvSelection
+        workerId={workerId}
+        worker={dossier.worker}
+        cvFile={dossier.core_slots?.cv || null}
+        onBack={() => setShowCvSelection(false)}
+      />
+    );
+  }
   if (!dossier) return null;
 
   const { worker, core_slots, misc_files } = dossier;
@@ -645,7 +657,10 @@ const WorkerDossier = ({ workerId, onBack }) => {
             Core Legal Documents
           </h5>
         </div>
-        <CoreSlotsGrid coreSlots={core_slots} />
+        <CoreSlotsGrid
+          coreSlots={core_slots}
+          onCvClick={() => setShowCvSelection(true)}
+        />
       </div>
 
       <hr style={{ borderColor: "#f1f5f9", margin: "28px 0" }} />
