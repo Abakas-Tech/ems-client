@@ -913,7 +913,7 @@ function WorkerAutoFillComponent() {
             </span>
             <button
               type="button"
-              className="btn btn-outline-success btn-sm px-3"
+              className="btn btn-outline-success btn-sm rounded-pill px-3 py-2 fw-bold text-nowrap"
               onClick={() => exportTasheerExcel(queue)}
               disabled={!queue.length}
             >
