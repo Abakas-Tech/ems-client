@@ -69,13 +69,6 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    label: "Public Content",
-    path: "/admin/content",
-    icon: "bi bi-layout-text-sidebar-reverse",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
-  },
-
-  {
     label: "Documents",
     path: "/admin/documents",
     icon: "bi bi-file-earmark-medical",
