@@ -720,10 +720,12 @@ function WorkerAutoFillComponent() {
   const [workers, setWorkers] = useState([]);
   const [queue, setQueue] = useState([]);
   const [selectedSite, setSelectedSite] = useState(null);
+  const [isQueueLoading, setIsQueueLoading] = useState(true);
 
   const goBack = () => navigate(-1);
 
   const loadWorkers = useCallback(async () => {
+    setIsQueueLoading(true);
     showLoader();
 
     try {
@@ -750,6 +752,7 @@ function WorkerAutoFillComponent() {
       addMessage(false, err?.message || "Failed to load autofill queue");
     } finally {
       hideLoader();
+      setIsQueueLoading(false);
     }
   }, [workerIds, showLoader, hideLoader, addMessage]);
 
@@ -851,14 +854,13 @@ function WorkerAutoFillComponent() {
         </div>
       </div>
 
-      {!queue.length && (
+      {!isQueueLoading && !queue.length && (
         <div className="alert alert-warning rounded-4 border-0 shadow-sm">
           {openedFromSelection
             ? "No selected employees found. Please go back to Active Employees and select employees first."
             : "No saved autofill queue found. Select employees from Active Employees first, or stage a queue from EMS."}
         </div>
       )}
-
       <div className="container">
         <div className="row justify-content-start g-lg-3 g-4">
           {TARGET_SITES.map((site) => {
