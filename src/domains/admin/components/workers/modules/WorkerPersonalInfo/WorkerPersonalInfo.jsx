@@ -153,7 +153,6 @@ function WorkerPersonalInfo() {
     };
     loadSubCities();
   }, [formData.city_id]);
-
   // Preload cities in edit mode
   useEffect(() => {
     if (isEditMode && existingPersonal?.region?.id) {
@@ -161,7 +160,7 @@ function WorkerPersonalInfo() {
         showLoader();
         try {
           const res = await getCities({
-            woreda_id: Number(existingPersonal.wereda.id),
+            woreda_id: Number(existingPersonal?.wereda?.id),
           });
           setCities(Array.isArray(res) ? res : res?.data || []);
         } catch (err) {
