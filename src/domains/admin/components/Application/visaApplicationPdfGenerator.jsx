@@ -91,34 +91,34 @@ const mapWorkerToVisaForm = (profile, photoDataUri) => {
   const today = new Date();
 
   return {
-    visaNo: visa.visa_number || "—",
+    visaNo: visa.visa_number  ,
     agentRef: passport.passport_number
       ? `E${passport.passport_number}`
       : `W-${profile.id}`,
-    sponsorName: visa.sponsor_name || "—",
+    sponsorName: visa.sponsor_name  ,
 
     fullName: (profile.full_name || "N/A").toUpperCase(),
     dateOfBirth: formatDate(pi.date_of_birth),
-    placeOfBirth: pi.place_of_birth || "—",
-    pastNationality: pi.past_nationality || "—",
+    placeOfBirth: pi.place_of_birth  ,
+    pastNationality: pi.past_nationality  ,
     currentNationality: pi.nationality || "Ethiopia",
-    sex: titleCase(pi.sex) || "—",
-    maritalStatus: titleCase(pi.marital_status) || "—",
-    sect: pi.sect || "—",
-    religion: titleCase(pi.religion) || "—",
+    sex: titleCase(pi.sex)  ,
+    maritalStatus: titleCase(pi.marital_status)  ,
+    sect: pi.sect  ,
+    religion: titleCase(pi.religion)  ,
 
     qualification: pi.education || AGENCY_DEFAULTS.qualification,
     profession: AGENCY_DEFAULTS.profession,
     homeAddress: visa.destination_address || AGENCY_DEFAULTS.homeAddress,
-    businessAddress: visa.business_address || "—",
+    businessAddress: visa.business_address  ,
     purposeOfTravel: visa.purpose_of_travel || AGENCY_DEFAULTS.purposeOfTravel,
 
     placeOfIssue: passport.issuing_country || AGENCY_DEFAULTS.placeOfIssue,
     dateOfIssue: formatDate(passport.issue_date),
-    passportNo: passport.passport_number || "—",
+    passportNo: passport.passport_number  ,
     dateOfExpiry: formatDate(passport.expiry_date),
 
-    durationOfStay: visa.duration_of_stay || "—",
+    durationOfStay: visa.duration_of_stay  ,
     dateOfArrival:
       formatDate(visa.date_of_arrival) === "—"
         ? "—"
@@ -127,14 +127,14 @@ const mapWorkerToVisaForm = (profile, photoDataUri) => {
       formatDate(visa.date_of_departure) === "—"
         ? "—"
         : formatDate(visa.date_of_departure),
-    modeOfPayment: visa.mode_of_payment || "—",
-    paymentNo: visa.payment_no || "—",
+    modeOfPayment: visa.mode_of_payment  ,
+    paymentNo: visa.payment_no  ,
     paymentDate: formatDate(visa.payment_date),
-    relationship: visa.relationship || "—",
-    dealerName: visa.dealer_name || "—",
-    destination: visa.destination || "—",
+    relationship: visa.relationship  ,
+    dealerName: visa.dealer_name  ,
+    destination: visa.destination  ,
     dependents: profile.dependents || [],
-    companyInKingdom: visa.company_in_kingdom || "—",
+    companyInKingdom: visa.company_in_kingdom  ,
 
     photoUrl: photoDataUri,
     signDate: formatDate(today),

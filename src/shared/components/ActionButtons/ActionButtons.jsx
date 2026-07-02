@@ -96,7 +96,7 @@ const ActionButtons = ({ actions = [], row }) => {
     downloadVisa: {
       className: "btn-outline-dark",
       icon: <i className="fa-solid fa-passport"></i>,
-      title: "Download Visa",
+      title: "Download Visa Application",
     },
   };
 
