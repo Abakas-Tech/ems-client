@@ -274,10 +274,14 @@ const CVOne = ({ templateSwitcher }) => {
   const lang =
     worker.languages?.map((l) => l.language ?? l.name).join(", ") ?? "";
   const edu = (worker.education ?? "").toUpperCase();
-  const expP = worker.experience?.[0]?.years
-    ? `${worker.experience[0].years} yrs`
+  const expP = worker.experience?.length
+    ? worker.experience
+        .map((e) => (e.years ? `${e.years} yrs` : ""))
+        .join(" / ")
     : "";
-  const expC = worker.experience?.[0]?.country ?? "";
+  const expC = worker.experience?.length
+    ? worker.experience.map((e) => e.country ?? "").join(" / ")
+    : "";
   const ppNo = worker.passport_number ?? "";
   const ppIssue = safeDate(worker.passport_issue_date);
   const ppPlace = worker.passport_issuing_country ?? "";
