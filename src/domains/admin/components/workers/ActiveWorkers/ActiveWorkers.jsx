@@ -345,36 +345,36 @@ const ActiveWorkers = () => {
             style={{ fontSize: "13px" }}
           >
             <button
-              className="btn btn-main btn-sm text-white px-3 px-md-4 fw-bold py-2 order-1"
+              className="btn btn-main  text-white  px-md-4 fw-bold  order-1"
               disabled={selectedWorkerIds.length === 0}
               onClick={handleNotify}
               style={{
-                borderRadius: "8px",
+                borderRadius: "10px",
                 whiteSpace: "nowrap",
                 width: "100%", // Full width on mobile
               }}
             >
-              Send Bulk Alert
+              Alert
             </button>
 
             <button
-              className="btn btn-primary btn-sm text-white px-3 px-md-4 fw-bold py-2 order-2"
+              className="btn btn-primary  text-white  px-md-4 fw-bold  order-2"
               disabled={selectedWorkerIds.length === 0}
               onClick={handleAutofillSelected}
               style={{
-                borderRadius: "8px",
+                borderRadius: "10px",
                 whiteSpace: "nowrap",
                 width: "100%", // Full width on mobile
               }}
             >
-              Autofill Selected
+              Autofill
             </button>
 
             <button
-              className="btn btn-outline-secondary btn-sm border py-2 order-3"
+              className="btn btn-outline-secondary   px-md-4 fw-bold order-3"
               onClick={handleExitSelection}
               style={{
-                borderRadius: "8px",
+                borderRadius: "10px",
                 fontWeight: "600",
                 width: "100%", // Full width on mobile
               }}

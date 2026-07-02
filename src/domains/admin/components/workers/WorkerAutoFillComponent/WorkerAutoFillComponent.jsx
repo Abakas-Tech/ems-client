@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx-js-style";
 
 import { getWorkerProfile } from "../../../api/worker.api";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
@@ -12,7 +13,7 @@ import wafidLogo from "../../../../../assets/img/autofill/wafid.svg";
 import tasheerLogo from "../../../../../assets/img/autofill/tasheer.png";
 import nyalaLogo from "../../../../../assets/img/autofill/niyala.png";
 
-const EXTENSION_ID = "ldfajgipacioiafcjbnefjejbaanjbpp";
+const EXTENSION_ID = "ninbhfmcllndohpfcjlbldmdnfpgngdp";
 const STORAGE_ACTION = "STAGE_CANDIDATE_QUEUE";
 
 const TARGET_SITES = [
@@ -704,6 +705,64 @@ function getSavedExtensionQueue() {
   });
 }
 
+/* ── Tasheer-only Excel export ──
+   Exports the currently staged queue (already normalized via
+   mapWorkerToAutofillCandidate) to an .xlsx file that downloads
+   immediately, using the same xlsx-js-style header-styling approach
+   as the shared Report component. */
+const TASHEER_EXCEL_COLUMNS = [
+  { header: "First Name", key: "firstName" },
+  { header: "Middle Name", key: "middleName" },
+  { header: "Last Name", key: "lastName" },
+  { header: "Passport No.", key: "passportNumber" },
+  { header: "Date of Birth", key: "dateOfBirth" },
+  { header: "Nationality", key: "nationality" },
+  { header: "Passport Issue Date", key: "passportDateOfIssue" },
+  { header: "Passport Expiry Date", key: "passportExpiryDate" },
+  { header: "Gender", key: "gender" },
+  { header: "Place of Issue", key: "passportPlaceOfIssue" },
+  { header: "Phone", key: "phone" },
+  { header: "Email", key: "email" },
+];
+
+function exportTasheerExcel(queue) {
+  if (!queue?.length) return;
+
+  const headers = TASHEER_EXCEL_COLUMNS.map((c) => c.header);
+  const rows = queue.map((candidate) =>
+    TASHEER_EXCEL_COLUMNS.map((c) => candidate?.[c.key] || "—"),
+  );
+
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+
+  // Auto-fit column widths
+  ws["!cols"] = headers.map((_, colIndex) => {
+    const maxLength = [headers, ...rows].reduce((max, row) => {
+      const val = row[colIndex] ? String(row[colIndex]) : "";
+      return Math.max(max, val.length);
+    }, 0);
+    return { wch: Math.max(maxLength + 4, 12) };
+  });
+
+  // Style header row
+  const range = XLSX.utils.decode_range(ws["!ref"]);
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const cellAddress = XLSX.utils.encode_cell({ r: 0, c: C });
+    if (!ws[cellAddress]) continue;
+    ws[cellAddress].s = {
+      fill: { fgColor: { rgb: "FFD700" } },
+      font: { bold: true, color: { rgb: "000000" } },
+      alignment: { horizontal: "center", vertical: "center" },
+    };
+  }
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Tasheer");
+
+  const stamp = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, `Tasheer_Candidates_${stamp}.xlsx`);
+}
+
 function WorkerAutoFillComponent() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -847,10 +906,20 @@ function WorkerAutoFillComponent() {
         </div>
 
         <div className="mt-3 mt-md-5">
-          <span className="badge rounded-pill bg-light text-dark border px-3 py-2">
-            {queue.length} {queue.length === 1 ? "employee" : "employees"}{" "}
-            selected
-          </span>
+          <div className="d-flex align-items-center gap-2">
+            <span className="badge rounded-pill bg-light text-dark border px-3 py-2">
+              {queue.length} {queue.length === 1 ? "employee" : "employees"}{" "}
+              selected
+            </span>
+            <button
+              type="button"
+              className="btn btn-outline-success btn-sm px-3"
+              onClick={() => exportTasheerExcel(queue)}
+              disabled={!queue.length}
+            >
+              Export Tasheer
+            </button>
+          </div>
         </div>
       </div>
 
