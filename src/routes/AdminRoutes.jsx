@@ -6,6 +6,7 @@ import Analytics from "../domains/admin/pages/AnalyticsPage/AnalyticsPage.jsx";
 import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/WorkerDashboard.jsx";
 import WorkerRegistration from "../domains/admin/pages/workers/WorkerRegistration/WorkerRegistration.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
+import WorkerAutoFill from "../domains/admin/pages/workers/WorkerAutoFill/WorkerAutoFill.jsx";
 import ArchivedWorkers from "../domains/admin/pages/workers/ArchivedWorkers/ArchivedWorkers.jsx";
 import ModulesList from "../domains/admin/pages/workers/ModulesList/ModulesList.jsx";
 import WorkerPesonalInfo from "../domains/admin/pages/workers/modules/WorkerPersonalInfo/WorkerPesonalInfo.jsx";
@@ -86,6 +87,7 @@ const AdminRoutes = () => {
         />
         <Route path="/employees/add" element={<WorkerRegistration />} />
         <Route path="/employees/active" element={<ActiveWorkers />} />
+        <Route path="/employees/autofill" element={<WorkerAutoFill />} />
         <Route path="/employees/active/:id" element={<WorkerProfile />} />
         <Route path="/employees/archived" element={<ArchivedWorkers />} />
         <Route path="/employees/modules" element={<WorkerModuleManagement />} />
@@ -103,7 +105,7 @@ const AdminRoutes = () => {
         <Route path="/meta-data/city" element={<CityPage />} />
         <Route path="/meta-data/sub-city" element={<SubCityPage />} />
         <Route
-          path="/employee/modules/:worker_id/attributes"
+          path="employee/modules/:worker_id/attributes"
           element={<WorkerMetaPage />}
         />
 

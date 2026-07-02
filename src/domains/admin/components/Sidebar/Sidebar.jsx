@@ -40,6 +40,9 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
     );
   }
 
+  // Hide internal or helper menu entries
+  filteredItems = filteredItems.filter((item) => !item.isHidden);
+
   const renderMenu = (showLabels = true) => (
     <div className={styles.content}>
       <ul className={styles.nav}>

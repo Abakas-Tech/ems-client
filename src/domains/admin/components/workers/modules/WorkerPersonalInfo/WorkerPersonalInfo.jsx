@@ -33,9 +33,14 @@ function WorkerPersonalInfo() {
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
-  // Receive the raw personal object — same pattern as LMIS / Passport
+  // Check each field in the existing personal info object to determine if it's edit mode
   const existingPersonal = location.state?.personal || null;
-  const isEditMode = Boolean(existingPersonal);
+
+  // Returns true only if existingPersonal exists AND has at least one non-null value
+  const isEditMode = Boolean(
+    existingPersonal &&
+    Object.values(existingPersonal).some((value) => value !== null),
+  );
   const isCreate = !isEditMode;
 
   const [regions, setRegions] = useState([]);

@@ -91,7 +91,7 @@ const PasswordResetForm = ({ email }) => {
         confirm_password: confirmPassword,
       });
       addMessage(response.success, response.message);
-      navigate("/auth/login");
+      navigate("/");
     } catch (error) {
       addMessage(false, error.message);
     } finally {
