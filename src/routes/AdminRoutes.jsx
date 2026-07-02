@@ -68,6 +68,7 @@ const AdminRoutes = () => {
         <Route path="my-profile" element={<Profile />} />
         <Route path="users" element={<ListUser />} />
         <Route path="dashboard" element={<Analytics />} />
+        <Route path="autofill" element={<WorkerAutoFill />} />
         <Route path="files" element={<Files />} />
         <Route
           path="finances"
@@ -88,7 +89,6 @@ const AdminRoutes = () => {
         <Route path="/employees/add" element={<WorkerRegistration />} />
         <Route path="/employees/edit/:id" element={<WorkerRegistration />} />
         <Route path="/employees/active" element={<ActiveWorkers />} />
-        <Route path="/employees/autofill" element={<WorkerAutoFill />} />
         <Route path="/employees/active/:id" element={<WorkerProfile />} />
         <Route path="/employees/archived" element={<ArchivedWorkers />} />
         <Route path="/employees/modules" element={<WorkerModuleManagement />} />

@@ -173,7 +173,7 @@ const ActiveWorkers = () => {
   const handleAutofillSelected = () => {
     if (selectedWorkerIds.length === 0) return;
 
-    navigate("/admin/employees/autofill", {
+    navigate("/admin/autofill", {
       state: {
         workerIds: selectedWorkerIds,
         source: "active-workers",
@@ -298,7 +298,7 @@ const ActiveWorkers = () => {
           className="d-flex flex-column flex-md-row justify-content-between align-items-center shadow-lg border rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top px-3 px-md-4 py-3"
           style={{
             zIndex: 1050,
-            top: window.innerWidth < 768 ? "10px" : "20px",
+            top: "15px", // Removed window.innerWidth logic to prevent server/hydration mismatches
             backgroundColor: "rgba(255, 255, 255, 0.98)",
             backdropFilter: "blur(12px)",
             border: "1px solid rgba(var(--maincolor-rgb), 0.15)",
@@ -339,28 +339,45 @@ const ActiveWorkers = () => {
               </p>
             </div>
           </div>
-
-          {/* Right Side: Actions */}
-          <div className="gap-2 d-flex w-100 w-md-auto justify-content-between justify-content-md-end">
+          {/* Right Side: Actions (Stacked on mobile, side-by-side on desktop) */}
+          <div
+            className="d-flex flex-column flex-md-row gap-2 w-100 w-md-auto justify-content-md-end align-items-stretch align-items-md-center"
+            style={{ fontSize: "13px" }}
+          >
             <button
-              className="btn btn-main btn-sm text-white px-4 fw-bold flex-grow-1 flex-md-grow-0 py-2 py-md-1"
+              className="btn btn-main btn-sm text-white px-3 px-md-4 fw-bold py-2 order-1"
               disabled={selectedWorkerIds.length === 0}
               onClick={handleNotify}
+              style={{
+                borderRadius: "8px",
+                whiteSpace: "nowrap",
+                width: "100%", // Full width on mobile
+              }}
             >
               Send Bulk Alert
             </button>
 
             <button
-              className="btn btn-primary btn-sm text-white px-4 fw-bold flex-grow-1 flex-md-grow-0 py-2 py-md-1"
+              className="btn btn-primary btn-sm text-white px-3 px-md-4 fw-bold py-2 order-2"
               disabled={selectedWorkerIds.length === 0}
               onClick={handleAutofillSelected}
+              style={{
+                borderRadius: "8px",
+                whiteSpace: "nowrap",
+                width: "100%", // Full width on mobile
+              }}
             >
               Autofill Selected
             </button>
 
             <button
-              className="btn btn-outline-secondary btn-sm border flex-grow-1 flex-md-grow-0 py-2 py-md-1"
+              className="btn btn-outline-secondary btn-sm border py-2 order-3"
               onClick={handleExitSelection}
+              style={{
+                borderRadius: "8px",
+                fontWeight: "600",
+                width: "100%", // Full width on mobile
+              }}
             >
               Cancel
             </button>

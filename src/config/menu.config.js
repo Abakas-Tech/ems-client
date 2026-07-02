@@ -37,6 +37,13 @@ const MENU_CONFIG = [
     isHidden: true,
   },
   {
+    label: "Autofill",
+    path: "/admin/autofill",
+    icon: "bi bi-pencil-square",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_WORKERS,
+  },
+  {
     label: "Finance",
     path: "/admin/finances",
     icon: "bi bi-wallet",

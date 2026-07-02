@@ -674,6 +674,35 @@ function validateQueue(queue, siteKey) {
     missing: validateCandidate(candidate, siteKey),
   }));
 }
+function getSavedExtensionQueue() {
+  return new Promise((resolve) => {
+    if (!window.chrome?.runtime?.sendMessage) {
+      resolve([]);
+      return;
+    }
+
+    window.chrome.runtime.sendMessage(
+      EXTENSION_ID,
+      {
+        action: "GET_AUTOFILL_QUEUE",
+      },
+      (response) => {
+        const runtimeError = window.chrome.runtime.lastError;
+
+        if (runtimeError) {
+          console.warn(
+            "Could not read saved autofill queue:",
+            runtimeError.message,
+          );
+          resolve([]);
+          return;
+        }
+
+        resolve(response?.queue || []);
+      },
+    );
+  });
+}
 
 function WorkerAutoFillComponent() {
   const navigate = useNavigate();
@@ -686,6 +715,8 @@ function WorkerAutoFillComponent() {
     [location.state],
   );
 
+  const openedFromSelection = workerIds.length > 0;
+
   const [workers, setWorkers] = useState([]);
   const [queue, setQueue] = useState([]);
   const [selectedSite, setSelectedSite] = useState(null);
@@ -693,26 +724,30 @@ function WorkerAutoFillComponent() {
   const goBack = () => navigate(-1);
 
   const loadWorkers = useCallback(async () => {
-    if (!workerIds.length) return;
-
     showLoader();
 
     try {
-      const responses = await Promise.all(
-        workerIds.map((id) => getWorkerProfile(id)),
-      );
+      if (workerIds.length) {
+        const responses = await Promise.all(
+          workerIds.map((id) => getWorkerProfile(id)),
+        );
 
-      const profiles = responses.map(unwrapProfile).filter(Boolean);
-      const normalizedQueue = profiles.map(mapWorkerToAutofillCandidate);
+        const profiles = responses.map(unwrapProfile).filter(Boolean);
+        const normalizedQueue = profiles.map(mapWorkerToAutofillCandidate);
 
-      setWorkers(profiles);
-      setQueue(normalizedQueue);
+        setWorkers(profiles);
+        setQueue(normalizedQueue);
+        return;
+      }
+
+      // Sidebar flow: no selected worker IDs, so read previous saved queue.
+      const savedQueue = await getSavedExtensionQueue();
+
+      setWorkers([]);
+      setQueue(savedQueue || []);
     } catch (err) {
-      console.error("Failed to load selected employees for autofill:", err);
-      addMessage(
-        false,
-        err?.message || "Failed to load selected employees for autofill",
-      );
+      console.error("Failed to load autofill queue:", err);
+      addMessage(false, err?.message || "Failed to load autofill queue");
     } finally {
       hideLoader();
     }
@@ -759,6 +794,7 @@ function WorkerAutoFillComponent() {
           meta: {
             source: "EMS",
             selectedWorkerIds: workerIds,
+            openedFromSelection,
             createdAt: new Date().toISOString(),
           },
         },
@@ -799,7 +835,7 @@ function WorkerAutoFillComponent() {
     <div className="dashboard-wraper">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
         <div>
-          <BackButton onClick={goBack} />
+          {openedFromSelection && <BackButton onClick={goBack} />}
           <h2 className="fw-bold text-dark mb-2">Employee Autofill</h2>
           <p className="text-muted mb-0">
             Choose the target system for the selected employees. EMS will
@@ -815,10 +851,11 @@ function WorkerAutoFillComponent() {
         </div>
       </div>
 
-      {!workerIds.length && (
+      {!queue.length && (
         <div className="alert alert-warning rounded-4 border-0 shadow-sm">
-          No employees were selected. Please go back to Active Employees and
-          select employees first.
+          {openedFromSelection
+            ? "No selected employees found. Please go back to Active Employees and select employees first."
+            : "No saved autofill queue found. Select employees from Active Employees first, or stage a queue from EMS."}
         </div>
       )}
 
