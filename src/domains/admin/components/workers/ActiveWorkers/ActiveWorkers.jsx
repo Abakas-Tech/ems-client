@@ -456,12 +456,6 @@ const ActiveWorkers = () => {
             onClick: (row) =>
               navigate(`/admin/employees/modules/${row.id}/add`),
           },
-          {
-            type: "viewCV",
-            onClick: (row) =>
-              window.open(row.cv_url, "_blank", "noopener,noreferrer"),
-            showOn: (row) => row.cv_url,
-          },
         ]}
         emptyState={{
           title:
