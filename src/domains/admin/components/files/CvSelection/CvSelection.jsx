@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import partnerALogo from "../../../../../assets/img/cv/cv-header.png";
 import partnerBLogo from "../../../../../assets/img/logo/brand-header.png";
 
 // ─────────────────────────────────────────────────────────────────
-// CV Partner Slots — replace logoPlaceholder with real image paths
+// CV Partner Slots
 // ─────────────────────────────────────────────────────────────────
 const CV_PARTNER_SLOTS = [
   {
     key: "partner_a",
-    logoPlaceholder: partnerALogo, // Replace with actual logo path
+    logoPlaceholder: partnerALogo,
   },
   {
     key: "partner_b",
-    logoPlaceholder: partnerBLogo, // Replace with actual logo path
+    logoPlaceholder: partnerBLogo,
   },
 ];
 
@@ -44,6 +44,7 @@ const handleDownload = async (file) => {
 // Partner Card
 // ─────────────────────────────────────────────────────────────────
 const PartnerCard = ({ slot, cvFile }) => {
+  const [expanded, setExpanded] = useState(false);
   const hasCv = !!(cvFile?.url || cvFile?.file_url);
 
   return (
@@ -76,12 +77,12 @@ const PartnerCard = ({ slot, cvFile }) => {
       />
 
       <div className="card-body p-4 d-flex flex-column">
-        {/* ── Partner Logo Placeholder ── */}
+        {/* ── Partner Logo ── */}
         <div
-          className="d-flex align-items-center justify-content-center mb-4"
+          className="d-flex align-items-center justify-content-center mb-3"
           style={{
             width: "100%",
-            height: "130px",
+            height: "110px",
             borderRadius: "12px",
             background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
             border: "2px dashed #cbd5e1",
@@ -100,35 +101,8 @@ const PartnerCard = ({ slot, cvFile }) => {
           </div>
         </div>
 
-        {/* ── Actions ── */}
-        <div className="d-flex gap-2 mt-auto">
-          <button
-            className="btn btn-main flex-grow-1 py-2 rounded-3 fw-semibold text-white"
-            style={{ fontSize: "13px" }}
-            onClick={() => {
-              if (hasCv) {
-                const url = cvFile.url || cvFile.file_url;
-                window.open(url, "_blank");
-              }
-            }}
-            disabled={!hasCv}
-          >
-            <i className="bi bi-eye me-2" />
-            View CV
-          </button>
-          <button
-            className="btn btn-outline-secondary py-2 rounded-3"
-            style={{ fontSize: "13px", minWidth: "44px" }}
-            onClick={() => handleDownload(cvFile)}
-            disabled={!hasCv}
-            title="Download CV"
-          >
-            <i className="bi bi-download" />
-          </button>
-        </div>
-
         {/* ── Status badge ── */}
-        <div className="mt-3">
+        <div className="mb-3">
           {hasCv ? (
             <span
               style={{
@@ -159,6 +133,41 @@ const PartnerCard = ({ slot, cvFile }) => {
             </span>
           )}
         </div>
+
+        <div className="mt-2" style={{ animation: "cvFadeIn 0.2s ease" }}>
+          <div className="d-flex gap-2 mt-auto">
+            <button
+              className="btn btn-main flex-grow-1 py-2 rounded-3 fw-semibold text-white"
+              style={{ fontSize: "13px" }}
+              onClick={() => {
+                if (hasCv) {
+                  const url = cvFile.url || cvFile.file_url;
+                  window.open(url, "_blank");
+                }
+              }}
+              disabled={!hasCv}
+            >
+              <i className="bi bi-eye me-2" />
+              View CV
+            </button>
+            <button
+              className="btn btn-outline-secondary py-2 rounded-3"
+              style={{ fontSize: "13px", minWidth: "44px" }}
+              onClick={() => handleDownload(cvFile)}
+              disabled={!hasCv}
+              title="Download CV"
+            >
+              <i className="bi bi-download" />
+            </button>
+          </div>
+        </div>
+
+        <style>{`
+          @keyframes cvFadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
       </div>
     </div>
   );
@@ -189,7 +198,10 @@ const CvSelection = ({ workerId, worker, cvFile, onBack }) => {
       <div className="container px-0">
         <div className="row g-4">
           {CV_PARTNER_SLOTS.map((slot) => (
-            <div key={slot.key} className="col-xl-6 col-lg-6 col-md-12">
+            <div
+              key={slot.key}
+              className="col-xl-3 col-lg-4 col-md-6 col-sm-12"
+            >
               <PartnerCard slot={slot} cvFile={cvFile} />
             </div>
           ))}

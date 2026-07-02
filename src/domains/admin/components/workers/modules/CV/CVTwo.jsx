@@ -297,7 +297,7 @@ const CVTwo = ({ templateSwitcher }) => {
             className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
             onClick={handleGenerateAndUpload}
           >
-            {worker.cv_url ? "Update CV" : "Generate & Upload CV"}
+            {worker.cv_url ? "Update CV" : "Generate CV"}
           </button>
         )}
       </div>
@@ -1020,7 +1020,7 @@ const CVTwo = ({ templateSwitcher }) => {
                           <table>
                             <colgroup>
                               <col style={{ width: "40%" }} />
-                              <col style={{ width: "40%" }} />
+                              <col style={{ width: "30%" }} />
                               <col style={{ width: "40%" }} />
                             </colgroup>
                             <tbody>
