@@ -4,7 +4,6 @@ import { jsPDF } from "jspdf";
 import VisaApplicationTemplate from "./VisaApplicationTemplate";
 import { getWorkerProfile } from "../../api/worker.api";
 
-
 //helpers
 const formatDate = (value) => {
   if (!value) return "—";
@@ -49,6 +48,41 @@ const AGENCY_DEFAULTS = {
   agentEmail: "mmh.fea@gmail.com",
   agentWebsite: "www.easyenjaz.net | easyenjaz.sa@gmail.com",
 };
+
+// Fields that MUST come back from the API before a visa application is
+// generated. These are the details that appear on the actual embassy form
+// and can't safely be replaced by a "—" placeholder — if any are missing,
+// the resulting PDF would be incomplete/unsubmittable, so we refuse to
+// generate it.
+const REQUIRED_FIELDS = [
+  { label: "Full Name", get: (p) => p.full_name },
+  { label: "Date of Birth", get: (p) => p.personal_information?.date_of_birth },
+  {
+    label: "Place of Birth",
+    get: (p) => p.personal_information?.place_of_birth,
+  },
+  { label: "Nationality", get: (p) => p.personal_information?.nationality },
+  { label: "Sex", get: (p) => p.personal_information?.sex },
+  {
+    label: "Marital Status",
+    get: (p) => p.personal_information?.marital_status,
+  },
+  { label: "Passport Number", get: (p) => p.passport?.passport_number },
+  { label: "Passport Issue Date", get: (p) => p.passport?.issue_date },
+  { label: "Passport Expiry Date", get: (p) => p.passport?.expiry_date },
+  {
+    label: "Passport Issuing Country",
+    get: (p) => p.passport?.issuing_country,
+  },
+  { label: "Visa Number", get: (p) => p.visa?.visa_number },
+  { label: "Sponsor Name", get: (p) => p.visa?.sponsor_name },
+];
+
+const getMissingRequiredFields = (profile) =>
+  REQUIRED_FIELDS.filter(({ get }) => {
+    const value = get(profile);
+    return value === undefined || value === null || value === "";
+  }).map(({ label }) => label);
 
 const mapWorkerToVisaForm = (profile, photoDataUri) => {
   const pi = profile.personal_information || {};
@@ -114,10 +148,15 @@ const mapWorkerToVisaForm = (profile, photoDataUri) => {
   };
 };
 
-
 /**
  * Fetches the worker's profile, renders the visa application template
  * off-screen, captures it, and produces a PDF.
+ *
+ * If the API doesn't yet have all the information the embassy form
+ * requires (see REQUIRED_FIELDS), no PDF is generated — this throws a
+ * simple, general Error instead of producing an incomplete document. The
+ * specific missing fields are logged to the console for debugging, but
+ * kept out of the user-facing message.
  *
  * By default this preserves the original behavior: it triggers an instant
  * browser download via pdf.save(...) and returns nothing.
@@ -138,6 +177,21 @@ export async function generateVisaApplicationPdf(employeeId, options = {}) {
   const res = await getWorkerProfile(employeeId);
   const profile = res?.data || res;
   if (!profile) throw new Error("Worker profile not found");
+
+  // Refuse to generate an incomplete visa application — bail out early
+  // instead of producing a half-filled PDF. Keep the specific missing
+  // fields in the console for debugging, but throw a simple, general
+  // message for the user-facing side.
+  const missingFields = getMissingRequiredFields(profile);
+  if (missingFields.length > 0) {
+    console.warn(
+      "Visa application generation blocked — missing fields:",
+      missingFields,
+    );
+    throw new Error(
+      "Required worker information is missing.",
+    );
+  }
 
   const pi = profile.personal_information || {};
   const photoUrl = pi.photo_3x4?.url || pi.photo_standing?.url || null;
