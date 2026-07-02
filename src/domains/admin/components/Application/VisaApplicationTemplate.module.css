@@ -1,9 +1,3 @@
-/* VisaApplicationTemplate.module.css
-   Header now holds only the two barcode columns (left: visa barcode/no/
-   sponsor, right: agent barcode/ref/embassy/MMH). The logo was removed from
-   the header and now sits in the topInfo row, centered, horizontally
-   aligned with the applicant photo on the left. Every other rule, size,
-   and spacing you customized is unchanged. */
 
 /* Main container */
 .container {
@@ -13,8 +7,8 @@
   background-color: #fff;
   color: #000;
   font-family: "Tahoma", "Arial", "Noto Naskh Arabic", sans-serif;
-  font-size: 9px;
-  line-height: 1.25;
+  font-size: 14px;
+  line-height: 1.3;
   box-sizing: border-box;
 }
 
@@ -23,7 +17,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: -40px;
+  margin-bottom: -70px;
   gap: 8px;
 }
 
@@ -39,8 +33,8 @@
 .visaLabel {
   display: flex;
   gap: 1.2rem;
-  font-size: 7px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 400;
 }
 
 /* Right column: agent barcode -> agent ref -> embassy/consular -> MMH name */
@@ -54,39 +48,39 @@
 }
 
 .embassyAr {
-  font-size: 9px;
+  font-size: 12px;
   direction: rtl;
   text-align: right;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .embassyEn {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   text-align: right;
 }
 
 .consularAr {
-  font-size: 9px;
+  font-size: 12px;
   direction: rtl;
   text-align: right;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .consularEn {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   text-align: right;
 }
 
 .visaNumber {
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .agentRef {
-  font-size: 8px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 400;
   text-align: right;
 }
 
@@ -94,7 +88,7 @@
 .agentName {
   text-align: right;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 12px;
   margin: 2px 0 0;
   padding: 0;
 }
@@ -114,12 +108,12 @@
 }
 
 .sponsorLabel {
-  font-size: 9px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .sponsorValue {
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -166,14 +160,36 @@
   border-top:none;
 }
 
+/* Field — now an inline row: English label (left) — value (centered) —
+   Arabic label (right). flex-wrap lets long values drop to their own line
+   instead of crowding/overlapping the labels. */
 .field {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: 2px 4px;
-  line-height: 1.2;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px;
+  padding: 3px 5px;
+  line-height: 1.3;
   border-right: 1px solid #000;
+}
+
+/* Column variant for fields that hold a list/table below the label row
+   (Purpose of Travel, Dependents) instead of an inline value */
+.fieldColumn {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+
+/* Label row used inside .fieldColumn — English label left, Arabic label right */
+.fieldLabelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
 }
 
 .fieldLast {
@@ -185,27 +201,31 @@
 }
 
 .fieldLabel {
-  font-size: 8px;
-  font-weight: 600;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 400;
   color: #000;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .fieldLabelAr {
-  font-size: 8px;
-  font-weight: 600;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 400;
   direction: rtl;
   text-align: right;
   color: #000;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .fieldValue {
-  font-size: 9px;
+  flex: 1 1 100px;
+  font-size: 12px;
   color: #000;
-  min-height: 11px;
-  line-height: 1.2;
+  min-height: 12px;
+  line-height: 1.3;
   word-wrap: break-word;
+  text-align: center;
 }
 
 .signatureSpace {
@@ -217,7 +237,7 @@
   display: flex;
   gap: 3px;
   flex-wrap: wrap;
-  font-size: 8px;
+  font-size: 12px;
   margin-top: 2px;
 }
 
@@ -227,10 +247,10 @@
   border-radius: 2px;
   background-color: #fff;
   color: #000;
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 500;
   text-align: center;
-  min-width: 38px;
+  min-width: 40px;
 }
 
 .purposeItemSelected {
@@ -245,7 +265,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 2px;
-  font-size: 8px;
+  font-size: 12px;
   background-color: #fff;
 }
 
@@ -253,9 +273,9 @@
   border: 1px solid #000;
   padding: 2px 3px;
   text-align: center;
-  font-weight: 600;
-  font-size: 8px;
-  height: 14px;
+  font-weight: 400;
+  font-size: 12px;
+  height: 15px;
   background-color: #f5f5f5;
 }
 
@@ -267,8 +287,8 @@
   border: 1px solid #000;
   padding: 1px 3px;
   text-align: center;
-  height: 13px;
-  font-size: 8px;
+  height: 14px;
+  font-size: 12px;
 }
 
 .tableTdLeft {
@@ -297,8 +317,7 @@
   margin: 4px 0;
   padding: 3px 5px;
   border-top: 1px solid #000;
-  border-bottom: 1px solid #000;
-  font-size: 8px;
+  font-size: 12px;
   line-height: 1.35;
 }
 
@@ -306,20 +325,20 @@
   margin: 0 0 3px 0;
   text-align: left;
   direction: ltr;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .certAr {
   margin: 0;
   text-align: right;
   direction: rtl;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 /* Official header */
 .officialHeader {
   font-weight: 700;
-  font-size: 9px;
+  font-size: 12px;
   margin: 5px 0 2px 0;
   padding: 3px 0;
   border-top: 2px solid #000;
@@ -337,7 +356,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 7px;
+  font-size: 10px;
   margin-top: 6px;
   padding: 3px 0;
   border-top: 1px solid #000;

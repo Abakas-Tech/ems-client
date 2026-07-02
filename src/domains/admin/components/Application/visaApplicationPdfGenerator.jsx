@@ -1,19 +1,11 @@
-// npm install html2canvas jspdf jsbarcode
-// (jsbarcode is used inside VisaApplicationTemplate.jsx)
-
 import { createRoot } from "react-dom/client";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import VisaApplicationTemplate from "./VisaApplicationTemplate";
-
-// NOTE: adjust this path to wherever VisaApplication/ ends up relative to
-// your api folder — it matches the same depth used in ActiveWorkers.jsx.
 import { getWorkerProfile } from "../../api/worker.api";
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
+//helpers
 const formatDate = (value) => {
   if (!value) return "—";
   const dt = new Date(value);
@@ -26,7 +18,6 @@ const formatDate = (value) => {
 
 const titleCase = (value) =>
   value ? value.charAt(0).toUpperCase() + value.slice(1).toLowerCase() : null;
-
 // Pre-fetch an image and inline it as a base64 data URI so html2canvas never
 // has to deal with cross-origin / not-yet-loaded images. Falls back to null
 // (the template then shows its own placeholder) if the fetch fails.
@@ -46,12 +37,9 @@ const toDataUri = async (url) => {
     return null;
   }
 };
-
-// ---------------------------------------------------------------------------
 // Default values for fields the current API doesn't return yet.
 // These mirror the agency's standard template (MMH Foreign Employment
 // Agent / easyenjaz.net) rather than any specific worker's real data.
-// ---------------------------------------------------------------------------
 const AGENCY_DEFAULTS = {
   qualification: "House Maid",
   profession: "House Maid",
@@ -126,9 +114,6 @@ const mapWorkerToVisaForm = (profile, photoDataUri) => {
   };
 };
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
 
 /**
  * Fetches the worker's profile, renders the visa application template
