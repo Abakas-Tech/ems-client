@@ -39,21 +39,21 @@ const MENU_CONFIG = [
   {
     label: "Autofill",
     path: "/admin/autofill",
-    icon: "bi bi-pencil-square",
+    icon: "bi bi-ui-checks",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
     permission: PERMISSIONS.MANAGE_WORKERS,
   },
   {
     label: "Finance",
     path: "/admin/finances",
-    icon: "bi bi-wallet",
+    icon: "bi bi-wallet-fill",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
     permission: PERMISSIONS.MANAGE_FINANCE,
   },
   {
     label: "File Manager",
     path: "/admin/files",
-    icon: "bi bi-files",
+    icon: "bi bi-folder2-open",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
