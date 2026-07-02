@@ -34,7 +34,7 @@ const UserManual = () => {
       title: "Finance",
       desc: "Transactions and reports",
       icon: "bi bi-wallet",
-      video: "https://www.youtube.com/embed/iNfGmzy1yEA",
+      video: "https://www.youtube.com/embed/VIDEO_ID_5",
     },
     {
       title: "File Manager",
@@ -64,7 +64,7 @@ const UserManual = () => {
       title: "Settings",
       desc: "Change password",
       icon: "bi-gear",
-      video: "https://www.youtube.com/embed/YlymmezLjHk",
+      video: "https://www.youtube.com/embed/VIDEO_ID_10",
     },
   ];
 

@@ -177,7 +177,7 @@ const WorkerStatus = () => {
         <div className="dashboard-wraper">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-start mb-4 gap-3">
             <div className="mt-0">
-              <h2 className="fw-bold text-dark mb-2">Employee Status</h2>
+              <h2 className="fw-bold text-dark mb-2">Status</h2>
               <p className="text-muted mb-0">
                 Manage employee statuses — create, rename, or delete entries as
                 needed.
@@ -191,7 +191,7 @@ const WorkerStatus = () => {
               onClick={() => setShowCreateModal(true)}
               style={{ whiteSpace: "nowrap" }}
             >
-              + Employee Status
+              + Status
             </button>
           </div>
 

@@ -313,7 +313,7 @@ const ListUser = () => {
           style={{ whiteSpace: "nowrap" }}
           onClick={handleCreateUser}
         >
-          + Create User
+          Create User
         </RoleButton>
       </div>
       {isSelectionMode && (
