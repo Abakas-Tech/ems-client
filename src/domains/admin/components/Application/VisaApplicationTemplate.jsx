@@ -53,22 +53,22 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
       <div className={styles.header}>
         {/* Left: VISA barcode -> VISA No. -> Sponsor */}
         <div className={styles.headerLeft}>
-          <Barcode value={1234566} />
+          <Barcode value={d.visaNumber} />
           <div className={styles.visaLabel}>
             <div>VISA No:</div>
-            <div className={styles.visaNumber}>{1234566}</div>
+            <div className={styles.visaNumber}>{d.visaNumber}</div>
           </div>
 
           <div className={styles.sponsorInfo}>
             <span className={styles.sponsorLabel}>Sponsor :</span>
-            <span className={styles.sponsorValue}>{"Abdulwasie Bahredin"}</span>
+            <span className={styles.sponsorValue}>{d.sponsorName} </span>
           </div>
         </div>
 
         {/* Right: Agent barcode -> Agent Ref -> Embassy/Consular -> MMH name */}
         <div className={styles.headerRight}>
           <Barcode value={d.agentRef} />
-          <div className={styles.agentRef}>{d.agentRef || "—"}</div>
+          <div className={styles.agentRef}>{d.agentRef}</div>
           <div className={styles.embassyAr}>سفارة المملكة العربية السعودية</div>
           <div className={styles.embassyEn}>EMBASSY OF SAUDI ARABIA</div>
           <div className={styles.consularAr}>القسم القنصلي</div>
@@ -101,7 +101,7 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
           className={`${styles.field} ${styles.fieldFull} ${styles.fieldLast}`}
         >
           <div className={styles.fieldLabel}>Full Name :</div>
-          <div className={styles.fieldValue}>{d.fullName || "—"}</div>
+          <div className={styles.fieldValue}>{d.fullName}</div>
           <div className={styles.fieldLabelAr}>الاسم الكامل</div>
         </div>
       </div>
@@ -110,12 +110,12 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
       <div className={styles.fieldRow}>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Date of Birth :</div>
-          <div className={styles.fieldValue}>{d.dateOfBirth || "—"}</div>
+          <div className={styles.fieldValue}>{d.dateOfBirth}</div>
           <div className={styles.fieldLabelAr}>تاريخ الميلاد</div>
         </div>
         <div className={`${styles.field} ${styles.fieldLast}`}>
           <div className={styles.fieldLabel}>Place of Birth :</div>
-          <div className={styles.fieldValue}>{d.placeOfBirth || "—"}</div>
+          <div className={styles.fieldValue}>{d.placeOfBirth}</div>
           <div className={styles.fieldLabelAr}>مكان الميلاد</div>
         </div>
       </div>
@@ -124,12 +124,12 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
       <div className={styles.fieldRow}>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Past Nationality :</div>
-          <div className={styles.fieldValue}>{d.pastNationality || "—"}</div>
+          <div className={styles.fieldValue}>{d.pastNationality }</div>
           <div className={styles.fieldLabelAr}>الجنسية السابقة</div>
         </div>
         <div className={`${styles.field} ${styles.fieldLast}`}>
           <div className={styles.fieldLabel}>Current Nationality :</div>
-          <div className={styles.fieldValue}>{d.currentNationality || "—"}</div>
+          <div className={styles.fieldValue}>{d.currentNationality }</div>
           <div className={styles.fieldLabelAr}>الجنسية الحالية</div>
         </div>
       </div>
@@ -138,12 +138,12 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
       <div className={styles.fieldRow}>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Sex :</div>
-          <div className={styles.fieldValue}>{d.sex || "—"}</div>
+          <div className={styles.fieldValue}>{d.sex}</div>
           <div className={styles.fieldLabelAr}>الجنس</div>
         </div>
         <div className={`${styles.field} ${styles.fieldLast}`}>
           <div className={styles.fieldLabel}>Marital Status :</div>
-          <div className={styles.fieldValue}>{d.maritalStatus || "—"}</div>
+          <div className={styles.fieldValue}>{d.maritalStatus}</div>
           <div className={styles.fieldLabelAr}>الحالة الاجتماعية</div>
         </div>
       </div>
@@ -152,11 +152,11 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
       <div className={styles.fieldRow}>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Sect :</div>
-          <div className={styles.fieldValue}>{d.sect || "—"}</div>
+          <div className={styles.fieldValue}>{d.sect }</div>
         </div>
         <div className={`${styles.field} ${styles.fieldLast}`}>
           <div className={styles.fieldLabel}>Religion :</div>
-          <div className={styles.fieldValue}>{d.religion || "—"}</div>
+          <div className={styles.fieldValue}>{d.religion}</div>
           <div className={styles.fieldLabelAr}>الديانة</div>
         </div>
       </div>
@@ -165,12 +165,12 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
       <div className={styles.fieldRow}>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Qualification :</div>
-          <div className={styles.fieldValue}>{d.qualification || "—"}</div>
+          <div className={styles.fieldValue}>{d.qualification }</div>
           <div className={styles.fieldLabelAr}>المؤهل العلمى</div>
         </div>
         <div className={`${styles.field} ${styles.fieldLast}`}>
           <div className={styles.fieldLabel}>Profession :</div>
-          <div className={styles.fieldValue}>{d.profession || "—"}</div>
+          <div className={styles.fieldValue}>{d.profession}</div>
           <div className={styles.fieldLabelAr}>المهنة</div>
         </div>
       </div>
@@ -183,7 +183,7 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
           <div className={styles.fieldLabel}>
             Home address and telephone No. :
           </div>
-          <div className={styles.fieldValue}>{d.homeAddress || "—"}</div>
+          <div className={styles.fieldValue}>{d.homeAddress }</div>
           <div className={styles.fieldLabelAr}>عنوان السكن</div>
         </div>
       </div>
@@ -196,7 +196,7 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
           <div className={styles.fieldLabel}>
             Business address and telephone No. :
           </div>
-          <div className={styles.fieldValue}>{d.businessAddress || "—"}</div>
+          <div className={styles.fieldValue}>{d.businessAddress}</div>
           <div className={styles.fieldLabelAr}>عنوان العمل ورقم الهاتف</div>
         </div>
       </div>
@@ -231,17 +231,17 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
       <div className={styles.fieldRow}>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Place of Issue :</div>
-          <div className={styles.fieldValue}>{d.placeOfIssue || "—"}</div>
+          <div className={styles.fieldValue}>{d.placeOfIssue }</div>
           <div className={styles.fieldLabelAr}>مكان الاصدار</div>
         </div>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Date of Issue :</div>
-          <div className={styles.fieldValue}>{d.dateOfIssue || "—"}</div>
+          <div className={styles.fieldValue}>{d.dateOfIssue }</div>
           <div className={styles.fieldLabelAr}>تاريخ الاصدار</div>
         </div>
         <div className={`${styles.field} ${styles.fieldLast}`}>
           <div className={styles.fieldLabel}>Pasport No:</div>
-          <div className={styles.fieldValue}>{d.passportNo || "—"}</div>
+          <div className={styles.fieldValue}>{d.passportNo}</div>
           <div className={styles.fieldLabelAr}>رقم الجواز</div>
         </div>
       </div>
@@ -252,7 +252,7 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
           className={`${styles.field} ${styles.fieldFull} ${styles.fieldLast}`}
         >
           <div className={styles.fieldLabel}>Date of Expiry :</div>
-          <div className={styles.fieldValue}>{d.dateOfExpiry || "—"}</div>
+          <div className={styles.fieldValue}>{d.dateOfExpiry }</div>
           <div className={styles.fieldLabelAr}>تاريخ الانتهاء</div>
         </div>
       </div>
@@ -263,17 +263,17 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
           <div className={styles.fieldLabel}>
             Duration of stay in the Kingdom :
           </div>
-          <div className={styles.fieldValue}>{d.durationOfStay || "—"}</div>
+          <div className={styles.fieldValue}>{d.durationOfStay }</div>
           <div className={styles.fieldLabelAr}>مدة الاقامه بالمملكة</div>
         </div>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Date of arrival :</div>
-          <div className={styles.fieldValue}>{d.dateOfArrival || "—"}</div>
+          <div className={styles.fieldValue}>{d.dateOfArrival}</div>
           <div className={styles.fieldLabelAr}>تاريخ الوصول</div>
         </div>
         <div className={`${styles.field} ${styles.fieldLast}`}>
           <div className={styles.fieldLabel}>Date of departuer :</div>
-          <div className={styles.fieldValue}>{d.dateOfDeparture || "—"}</div>
+          <div className={styles.fieldValue}>{d.dateOfDeparture}</div>
           <div className={styles.fieldLabelAr}>تاريخ المغادرة</div>
         </div>
       </div>
@@ -282,17 +282,17 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
       <div className={styles.fieldRow}>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Mode of Payment :</div>
-          <div className={styles.fieldValue}>{d.modeOfPayment || "—"}</div>
+          <div className={styles.fieldValue}>{d.modeOfPayment}</div>
           <div className={styles.fieldLabelAr}>طريقة الدفع</div>
         </div>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Payment No :</div>
-          <div className={styles.fieldValue}>{d.paymentNo || "—"}</div>
+          <div className={styles.fieldValue}>{d.paymentNo}</div>
           <div className={styles.fieldLabelAr}>رقم الدفع</div>
         </div>
         <div className={`${styles.field} ${styles.fieldLast}`}>
           <div className={styles.fieldLabel}>Date :</div>
-          <div className={styles.fieldValue}>{d.paymentDate || "—"}</div>
+          <div className={styles.fieldValue}>{d.paymentDate }</div>
           <div className={styles.fieldLabelAr}>تاريخ</div>
         </div>
       </div>
@@ -303,7 +303,7 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
           className={`${styles.field} ${styles.fieldFull} ${styles.fieldLast}`}
         >
           <div className={styles.fieldLabel}>Relationship :</div>
-          <div className={styles.fieldValue}>{d.relationship || "—"}</div>
+          <div className={styles.fieldValue}>{d.relationship }</div>
         </div>
       </div>
 
@@ -311,12 +311,12 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
       <div className={styles.fieldRow}>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Name Dealer :</div>
-          <div className={styles.fieldValue}>{d.dealerName || "—"}</div>
+          <div className={styles.fieldValue}>{d.dealerName }</div>
           <div className={styles.fieldLabelAr}>اسم البائع</div>
         </div>
         <div className={`${styles.field} ${styles.fieldLast}`}>
           <div className={styles.fieldLabel}>Destination :</div>
-          <div className={styles.fieldValue}>{d.destination || "—"}</div>
+          <div className={styles.fieldValue}>{d.destination}</div>
           <div className={styles.fieldLabelAr}>المكان المقصود</div>
         </div>
       </div>
@@ -372,7 +372,7 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
           <div className={styles.fieldLabel}>
             Name and address of company or individual in the Kingdom:
           </div>
-          <div className={styles.fieldValue}>{d.companyInKingdom || "—"}</div>
+          <div className={styles.fieldValue}>{d.companyInKingdom }</div>
         </div>
       </div>
 
@@ -393,7 +393,7 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
       <div className={`${styles.fieldRow} ${styles.signatureRow}`}>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Date :</div>
-          <div className={styles.fieldValue}>{d.signDate || "—"}</div>
+          <div className={styles.fieldValue}>{d.signDate }</div>
         </div>
         <div className={styles.field}>
           <div className={styles.fieldLabel}>Signature :</div>
@@ -404,7 +404,7 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
         </div>
         <div className={`${styles.field} ${styles.fieldLast}`}>
           <div className={styles.fieldLabel}>Name :</div>
-          <div className={styles.fieldValue}>{d.fullName || "—"}</div>
+          <div className={styles.fieldValue}>{d.fullName }</div>
           <div className={styles.fieldLabelAr}>الاسم الكامل</div>
         </div>
       </div>
