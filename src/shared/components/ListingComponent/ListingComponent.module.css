@@ -1,0 +1,39 @@
+.tableScroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+.tableScroll:hover {
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.tableScroll::-webkit-scrollbar {
+  height: 3px;
+}
+
+.tableScroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tableScroll::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.tableScroll:hover::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+}
+
+.zebraEven td {
+  background-color: #ffffff !important;
+}
+
+.zebraOdd td {
+  background-color: #f5f3ff !important;
+}
