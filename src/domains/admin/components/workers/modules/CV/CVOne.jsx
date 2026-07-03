@@ -29,6 +29,16 @@ const generateReferenceNumber = (worker) => {
   return `${REFERENCE_PREFIX}-${String(workerId).padStart(6, "0")}`;
 };
 
+const subtractDate = (d1, d2) => {
+  const date1 = new Date(d1);
+  const date2 = new Date(d2);
+  const diff = date1.getTime() - date2.getTime();
+  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  const years = Math.floor(days / 365);
+  const months = Math.floor((days % 365) / 30);
+  return years > 0 ? `${years} years` : `${months} months`;
+};
+
 /* ── shared style tokens ── */
 const GOLD = "#7a5c1e";
 const FONT = "'Times New Roman', Times, serif";
@@ -303,7 +313,10 @@ const CVOne = ({ templateSwitcher }) => {
   const post = worker.primary_positions?.[0] ?? "House Maid";
   const postAr = worker.primary_positions_ar?.[0] ?? "عاملة منزلية";
   const salary = worker.monthly_salary ? `${worker.monthly_salary} SR` : "";
-  const contract = worker.contract_period ?? "2 Years";
+ const contract =
+   worker.contract_start_date && worker.contract_end_date
+     ? subtractDate(worker.contract_end_date, worker.contract_start_date)
+     : (worker.contract_period ?? "2 Years");
   const phone = worker.phone_number ?? "";
   const name = (worker.full_name ?? "").toUpperCase();
   const nat = worker.nationality ?? "";
