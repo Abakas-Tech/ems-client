@@ -7,6 +7,7 @@ import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/Work
 import WorkerRegistration from "../domains/admin/pages/workers/WorkerRegistration/WorkerRegistration.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import WorkerAutoFill from "../domains/admin/pages/workers/WorkerAutoFill/WorkerAutoFill.jsx";
+import Tickets from "../domains/admin/pages/TicketsPage/TicketsPage.jsx";
 import ArchivedWorkers from "../domains/admin/pages/workers/ArchivedWorkers/ArchivedWorkers.jsx";
 import ModulesList from "../domains/admin/pages/workers/ModulesList/ModulesList.jsx";
 import WorkerPesonalInfo from "../domains/admin/pages/workers/modules/WorkerPersonalInfo/WorkerPesonalInfo.jsx";
@@ -69,6 +70,7 @@ const AdminRoutes = () => {
         <Route path="users" element={<ListUser />} />
         <Route path="dashboard" element={<Analytics />} />
         <Route path="autofill" element={<WorkerAutoFill />} />
+        <Route path="tickets" element={<Tickets />} />
         <Route path="files" element={<Files />} />
         <Route
           path="finances"

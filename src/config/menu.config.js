@@ -44,6 +44,13 @@ const MENU_CONFIG = [
     permission: PERMISSIONS.MANAGE_WORKERS,
   },
   {
+    label: "Tickets",
+    path: "/admin/tickets",
+    icon: "bi bi-ticket-detailed",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_WORKERS,
+  },
+  {
     label: "Finance",
     path: "/admin/finances",
     icon: "bi bi-wallet",
