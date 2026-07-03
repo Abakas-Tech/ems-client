@@ -27,7 +27,7 @@ const LoginFormWithEmail = () => {
 
     // Password length validator: 8-30 characters
     if (password.length < 8 || password.length > 30) {
-      addMessage(false, "Password must be between 8 and 30 characters.");
+      addMessage(false, "Password is too short");
       return false;
     }
 
