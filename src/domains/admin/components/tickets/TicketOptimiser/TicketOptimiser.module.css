@@ -8,7 +8,9 @@
   height: 42px;
   font-size: 14px;
   border-radius: 8px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .input:focus {
@@ -34,17 +36,20 @@
   pointer-events: none;
 }
 
-.cancel-btn {
+.clear-btn {
   border-radius: 8px;
+  transition: all 0.2s ease;
   height: 42px;
-  font-size: 12px;
-  border: 1px solid #fecaca;
-  color: #991b1b;
-  background: transparent;
-  white-space: nowrap;
-  padding: 0 12px;
+  border: 1px solid #e0e0e0;
 }
 
-.cancel-btn:hover {
-  background: #fef2f2;
+.clear-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.clear-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
