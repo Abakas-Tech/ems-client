@@ -213,7 +213,7 @@ const CVTwo = ({ templateSwitcher }) => {
   if (!worker) return null;
   const clientData = {
     referenceNo: safeText(generateReferenceNumber(worker), ""),
-    postAppliedFor: safeText(worker.skills[0], ""),
+    postAppliedFor: safeText(worker.primary_positions?.[0], "House Maid"),
     monthlySalary: safeText(
       worker.monthly_salary ? `${worker.monthly_salary} SR` : "",
       "",

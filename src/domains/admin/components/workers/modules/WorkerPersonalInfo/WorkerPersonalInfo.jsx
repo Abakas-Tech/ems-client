@@ -77,10 +77,12 @@ function WorkerPersonalInfo() {
     number_of_children: existingPersonal?.number_of_children || 0,
     height_cm: existingPersonal?.height_cm || "",
     weight_kg: existingPersonal?.weight_kg || "",
+    national_id_number: existingPersonal?.national_id_number || "",
   });
 
   const [photo3x4, setPhoto3x4] = useState(null);
   const [photoStanding, setPhotoStanding] = useState(null);
+  const [nationalIdScan, setNationalIdScan] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -228,6 +230,7 @@ function WorkerPersonalInfo() {
     if (!files?.[0]) return;
     if (name === "photo_3x4_url") setPhoto3x4(files[0]);
     if (name === "photo_standing_url") setPhotoStanding(files[0]);
+    if (name === "national_id_scan_url") setNationalIdScan(files[0]);
   };
 
   const isOnlyAlphabetsAndSpaces = (value) => {
@@ -348,6 +351,8 @@ function WorkerPersonalInfo() {
         dataToSend.append("photo_3x4_url", photo3x4);
       if (photoStanding instanceof File)
         dataToSend.append("photo_standing_url", photoStanding);
+      if (nationalIdScan instanceof File)
+        dataToSend.append("national_id_scan_url", nationalIdScan);
 
       const response = isEditMode
         ? await updatePersonalInfo(id, dataToSend)
@@ -688,6 +693,47 @@ function WorkerPersonalInfo() {
                     Current photo:{" "}
                     <a
                       href={existingPersonal.photo_standing.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View
+                    </a>
+                  </small>
+                )}
+            </label>
+          </div>
+
+          {/* National ID Number */}
+          <div className="form-group col-md-6">
+            <label>National ID Number</label>
+            <input
+              type="text"
+              name="national_id_number"
+              className="form-control"
+              value={formData.national_id_number}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* National ID Scan */}
+          <div className="form-group col-md-6">
+            <label>National ID Scan</label>
+            <input
+              type="file"
+              name="national_id_scan_url"
+              accept="image/*"
+              className="form-control"
+              onChange={handleFileChange}
+            />
+
+            <label>
+              {isEditMode &&
+                existingPersonal?.national_id_scan?.url &&
+                !nationalIdScan && (
+                  <small className="d-block text-muted">
+                    Current scan:{" "}
+                    <a
+                      href={existingPersonal.national_id_scan.url}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
