@@ -1,0 +1,60 @@
+.filters-card {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background-color: #fff;
+}
+
+.input {
+  height: 42px;
+  font-size: 14px;
+  border-radius: 8px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+.search-btn {
+  border-radius: 8px;
+  height: 42px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 160px;
+}
+
+.search-btn:disabled {
+  opacity: 0.65 !important;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(30%) brightness(0.95);
+  box-shadow: none;
+}
+
+.search-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+.clear-btn {
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  height: 42px;
+  border: 1px solid #e0e0e0;
+}
+
+.clear-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.clear-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

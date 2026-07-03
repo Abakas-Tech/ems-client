@@ -1,5 +1,5 @@
 import React from "react";
-import TicketOptimiser from "../../components/TicketOptimiser/TicketOptimiser";
+import TicketOptimiser from "../../components/tickets/TicketOptimiser/TicketOptimiser";
 
 function TicketsPage() {
   return (
