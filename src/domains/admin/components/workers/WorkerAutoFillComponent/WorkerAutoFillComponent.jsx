@@ -891,6 +891,11 @@ function WorkerAutoFillComponent() {
     });
   };
 
+  const handleResetQueue = () => {
+  setWorkers([]);
+  setQueue([]);
+  };
+  
   const handleSiteClick = async (site) => {
     setSelectedSite(site.key);
     const ok = await sendQueueToExtension(site);
@@ -926,6 +931,14 @@ function WorkerAutoFillComponent() {
               disabled={!queue.length}
             >
               Export Tasheer
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-danger btn-sm rounded-pill px-3 py-2 fw-bold text-nowrap"
+              onClick={handleResetQueue}
+              disabled={!queue.length}
+            >
+              Reset
             </button>
           </div>
         </div>
