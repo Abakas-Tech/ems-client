@@ -14,7 +14,7 @@ import tasheerLogo from "../../../../../assets/img/autofill/tasheer.png";
 import nyalaLogo from "../../../../../assets/img/autofill/niyala.png";
 
 // const EXTENSION_ID = "ninbhfmcllndohpfcjlbldmdnfpgngdp";
-const EXTENSION_ID = "ldfajgipacioiafcjbnefjejbaanjbpp";
+const EXTENSION_ID = "ninbhfmcllndohpfcjlbldmdnfpgngdp";
 const STORAGE_ACTION = "STAGE_CANDIDATE_QUEUE";
 
 const TARGET_SITES = [
@@ -492,7 +492,13 @@ function mapWorkerToAutofillCandidate(worker) {
       ["lmis.labour_id", "lmis.lmis_labour_id", "laborId", "labor_id"],
       nationalId,
     ),
-    eNumber: pick(worker, ["eNumber", "e_number", "enumber"]),
+    eNumber: pick(worker, [
+      "visa.reference_number",
+      "visa.referenceNumber",
+      "eNumber",
+      "e_number",
+      "enumber",
+    ]),
 
     phone,
     mobileNumber: phone,
@@ -716,6 +722,7 @@ const TASHEER_EXCEL_COLUMNS = [
   { header: "Middle Name", key: "middleName" },
   { header: "Last Name", key: "lastName" },
   { header: "Passport No.", key: "passportNumber" },
+  { header: "E No.", key: "eNumber" },
   { header: "Date of Birth", key: "dateOfBirth" },
   { header: "Nationality", key: "nationality" },
   { header: "Passport Issue Date", key: "passportDateOfIssue" },
