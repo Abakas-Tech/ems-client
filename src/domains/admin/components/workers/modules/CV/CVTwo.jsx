@@ -801,7 +801,7 @@ const CVTwo = ({ templateSwitcher }) => {
                       <tbody>
                         <tr>
                           <td className="label-en fw700">Reference No.</td>
-                          <td className="val"></td>
+                          <td className="val">{clientData.referenceNo}</td>
                           <td className="label-ar rtl fw700">
                             {clientData.ar.referenceNo}
                           </td>
