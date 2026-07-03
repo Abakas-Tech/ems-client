@@ -154,7 +154,7 @@ const CVTwo = ({ templateSwitcher }) => {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("file_name", originalName);
-      formData.append("category", "CV");
+      formData.append("category", "CV_TWO");
       formData.append("is_private", 0);
       formData.append(
         "description",
@@ -164,7 +164,7 @@ const CVTwo = ({ templateSwitcher }) => {
 
       await uploadFile(formData);
 
-      const responseType = worker.cv_url ? "updated" : "generated";
+      const responseType = worker.cv_two_url ? "updated" : "generated";
       addMessage(true, `CV ${responseType} and uploaded successfully!`);
     } catch (err) {
       console.error(err);
@@ -350,7 +350,7 @@ const CVTwo = ({ templateSwitcher }) => {
             className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
             onClick={() => setShowRemarkModal(true)}
           >
-            {worker.cv_url ? "Update CV" : "Generate CV"}
+            {worker.cv_two_url ? "Update CV" : "Generate CV"}
           </button>
         )}
       </div>

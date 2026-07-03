@@ -892,10 +892,31 @@ function WorkerAutoFillComponent() {
   };
 
   const handleResetQueue = () => {
-  setWorkers([]);
-  setQueue([]);
+    if (!window.chrome?.runtime?.sendMessage) {
+      setWorkers([]);
+      setQueue([]);
+      return;
+    }
+
+    window.chrome.runtime.sendMessage(
+      EXTENSION_ID,
+      {
+        action: "CLEAR_QUEUE",
+      },
+      (response) => {
+        if (window.chrome.runtime.lastError) {
+          console.error(window.chrome.runtime.lastError.message);
+          return;
+        }
+
+        setWorkers([]);
+        setQueue([]);
+
+        addMessage(true, "Queue has been reset.");
+      },
+    );
   };
-  
+
   const handleSiteClick = async (site) => {
     setSelectedSite(site.key);
     const ok = await sendQueueToExtension(site);

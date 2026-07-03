@@ -7,14 +7,8 @@ import partnerBLogo from "../../../../../assets/img/logo/brand-header.png";
 // CV Partner Slots
 // ─────────────────────────────────────────────────────────────────
 const CV_PARTNER_SLOTS = [
-  {
-    key: "partner_a",
-    logoPlaceholder: partnerALogo,
-  },
-  {
-    key: "partner_b",
-    logoPlaceholder: partnerBLogo,
-  },
+  { key: "cv_one", label: "CV — Template 1", logoPlaceholder: partnerALogo },
+  { key: "cv_two", label: "CV — Template 2", logoPlaceholder: partnerBLogo },
 ];
 
 // ─────────────────────────────────────────────────────────────────
@@ -176,7 +170,11 @@ const PartnerCard = ({ slot, cvFile }) => {
 // ─────────────────────────────────────────────────────────────────
 // MAIN — CvSelection
 // ─────────────────────────────────────────────────────────────────
-const CvSelection = ({ workerId, worker, cvFile, onBack }) => {
+const CvSelection = ({ workerId, worker, cvFileOne, cvFileTwo, onBack }) => {
+   const cvFilesBySlot = {
+     cv_one: cvFileOne,
+     cv_two: cvFileTwo,
+   };
   return (
     <div>
       {/* ── Header ── */}
@@ -202,7 +200,7 @@ const CvSelection = ({ workerId, worker, cvFile, onBack }) => {
               key={slot.key}
               className="col-xl-3 col-lg-4 col-md-6 col-sm-12"
             >
-              <PartnerCard slot={slot} cvFile={cvFile} />
+              <PartnerCard slot={slot} cvFile={cvFilesBySlot[slot.key]} />
             </div>
           ))}
         </div>

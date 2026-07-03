@@ -261,7 +261,7 @@ const CVOne = ({ templateSwitcher }) => {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("file_name", name);
-      fd.append("category", "CV");
+      fd.append("category", "CV_ONE");
       fd.append("is_private", 0);
       fd.append("description", `CV for ${worker.full_name}`);
       fd.append("worker_id", worker.id);
@@ -269,7 +269,7 @@ const CVOne = ({ templateSwitcher }) => {
       addMessage(
         true,
         "CV " +
-          (worker.cv_url ? "updated" : "generated") +
+          (worker.cv_one_url ? "updated" : "generated") +
           " and uploaded successfully!",
       );
     } catch (e) {
@@ -313,10 +313,10 @@ const CVOne = ({ templateSwitcher }) => {
   const post = worker.primary_positions?.[0] ?? "House Maid";
   const postAr = worker.primary_positions_ar?.[0] ?? "عاملة منزلية";
   const salary = worker.monthly_salary ? `${worker.monthly_salary} SR` : "";
- const contract =
-   worker.contract_start_date && worker.contract_end_date
-     ? subtractDate(worker.contract_end_date, worker.contract_start_date)
-     : (worker.contract_period ?? "2 Years");
+  const contract =
+    worker.contract_start_date && worker.contract_end_date
+      ? subtractDate(worker.contract_end_date, worker.contract_start_date)
+      : (worker.contract_period ?? "2 Years");
   const phone = worker.phone_number ?? "";
   const name = (worker.full_name ?? "").toUpperCase();
   const nat = worker.nationality ?? "";
@@ -409,7 +409,7 @@ const CVOne = ({ templateSwitcher }) => {
             className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
             onClick={() => setShowRemarkModal(true)}
           >
-            {worker.cv_url ? "Update CV" : "Generate CV"}
+            {worker.cv_one_url ? "Update CV" : "Generate CV"}
           </button>
         )}
       </div>

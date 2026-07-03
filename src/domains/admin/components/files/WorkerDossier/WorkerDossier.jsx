@@ -37,9 +37,24 @@ const CoreSlotsGrid = ({ coreSlots = {}, onCvClick }) => {
   return (
     <div className="row g-3">
       {CORE_SLOTS.map((slot) => {
-        const data = coreSlots[slot.key];
-        const hasFile = !!data?.url;
-        const isImage = hasFile && checkIsImage(data.url);
+        // CV is special-cased: the dossier now returns two separate
+        // slots (cv_one / cv_two) instead of a single "cv" slot, since
+        // a worker can have two CV layouts. This tile is considered
+        // "filled" if either one exists, and previews whichever one is
+        // available (preferring cv_one).
+        const isCvSlot = slot.key === "cv";
+
+        const data = isCvSlot
+          ? coreSlots.cv_one?.url
+            ? coreSlots.cv_one
+            : coreSlots.cv_two
+          : coreSlots[slot.key];
+
+        const hasFile = isCvSlot
+          ? !!(coreSlots.cv_one?.url || coreSlots.cv_two?.url)
+          : !!data?.url;
+
+        const isImage = hasFile && !isCvSlot && checkIsImage(data.url);
 
         return (
           <div key={slot.key} className="col-6 col-lg-3">
@@ -178,7 +193,22 @@ const CoreSlotsGrid = ({ coreSlots = {}, onCvClick }) => {
                     </div>
                   )}
                 </div>
-                {hasFile ? (
+                {isCvSlot ? (
+                  // CV tile always opens the selection screen — even when
+                  // neither layout has been uploaded yet, so the user can
+                  // see both options and generate one from there.
+                  <button
+                    className="btn btn-sm btn-outline-secondary w-100"
+                    style={{ fontSize: "11px", borderRadius: "6px" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCvClick && onCvClick();
+                    }}
+                  >
+                    <i className="bi bi-eye me-1" />
+                    Select CV
+                  </button>
+                ) : hasFile ? (
                   <button
                     className="btn btn-sm btn-outline-secondary w-100"
                     style={{ fontSize: "11px", borderRadius: "6px" }}
@@ -261,7 +291,13 @@ const MiscFilesSection = ({
 
         // important
         worker_id: workerId,
-        exclude_category: "CV",
+        // NOTE: backend's exclude_category currently only supports a
+        // single string value (category != ?). CV_ONE/CV_TWO won't both
+        // be excluded until findAll() is updated to accept an array
+        // (category NOT IN (?)). Left as CV_ONE here as a stopgap so at
+        // least one CV category doesn't leak into this list — flag this
+        // for a backend fix.
+        exclude_category: "CV_ONE",
       };
 
       const response = await fetchFiles(params);
@@ -587,7 +623,8 @@ const WorkerDossier = ({ workerId, onBack }) => {
       <CvSelection
         workerId={workerId}
         worker={dossier.worker}
-        cvFile={dossier.core_slots?.cv || null}
+        cvFileOne={dossier.core_slots?.cv_one || null}
+        cvFileTwo={dossier.core_slots?.cv_two || null}
         onBack={() => setShowCvSelection(false)}
       />
     );
