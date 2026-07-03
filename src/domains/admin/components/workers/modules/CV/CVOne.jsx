@@ -9,8 +9,25 @@ import { uploadFile } from "../../../../api/file.api";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
 import cvHeader from "../../../../../../assets/img/cv/cv-header.png";
+import CreateModal from "../../../../../../shared/components/CreateModal/CreateModal";
 
 const safeDate = (d) => (d ? d.slice(0, 10) : "");
+
+/* System-generated reference number. Same worker → same ID across both CV
+   templates (since both derive it from the same worker.id); different
+   worker → different ID. Prefers a pre-existing saved value so older CVs
+   don't get a new ID on re-generation. */
+const REFERENCE_PREFIX = "CV";
+
+const generateReferenceNumber = (worker) => {
+  const existing = worker?.reference_number ?? worker?.reference_no;
+  if (existing) return existing;
+
+  const workerId = worker?.id ?? worker?.worker_id;
+  if (!workerId) return "";
+
+  return `${REFERENCE_PREFIX}-${String(workerId).padStart(6, "0")}`;
+};
 
 /* ── shared style tokens ── */
 const GOLD = "#7a5c1e";
@@ -190,6 +207,12 @@ const CVOne = ({ templateSwitcher }) => {
   const { addMessage } = useResponse();
   const { profile } = useProfile();
 
+  // ── Remark modal state ──
+  const [showRemarkModal, setShowRemarkModal] = useState(false);
+  const [remarkOverride, setRemarkOverride] = useState(null);
+  const [remarkDateOverride, setRemarkDateOverride] = useState(null);
+  const [pendingGenerate, setPendingGenerate] = useState(false);
+
   const fetchWorkerData = useCallback(async () => {
     showLoader();
     try {
@@ -247,10 +270,36 @@ const CVOne = ({ templateSwitcher }) => {
     }
   };
 
+  // ── Remark modal handlers ──
+  const handleRemarkSubmit = (inputValues) => {
+    const remarkText = inputValues.remark?.trim();
+
+    if (!remarkText) {
+      addMessage(false, "Remark is required");
+      return;
+    }
+
+    setRemarkOverride(remarkText);
+    setRemarkDateOverride(new Date().toISOString().slice(0, 10));
+    setShowRemarkModal(false);
+    setPendingGenerate(true);
+  };
+
+  // Waits for the remark state to actually render into the DOM before
+  // capturing — setState inside handleRemarkSubmit is async, so calling
+  // handleGenerateAndUpload() directly there would capture the OLD remark.
+  useEffect(() => {
+    if (pendingGenerate) {
+      setPendingGenerate(false);
+      handleGenerateAndUpload();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingGenerate]);
+
   if (!worker) return null;
 
   /* ── field mapping ── */
-  const ref = worker.reference_number ?? "";
+  const ref = generateReferenceNumber(worker);
   const post = worker.primary_positions?.[0] ?? "House Maid";
   const postAr = worker.primary_positions_ar?.[0] ?? "عاملة منزلية";
   const salary = worker.monthly_salary ? `${worker.monthly_salary} SR` : "";
@@ -288,8 +337,12 @@ const CVOne = ({ templateSwitcher }) => {
   const ppExp = safeDate(worker.passport_expiry_date);
   const faceUrl = worker.photo_3x4_url ?? "";
   const bodyUrl = worker.photo_standing_url ?? "";
-  const remarks = worker.remarks ?? "";
-  const remDate = safeDate(worker.remarks_date);
+
+  // Remark + its date now prefer the value entered in the modal for this
+  // generation run, falling back to whatever was previously saved on the
+  // worker record.
+  const remarks = remarkOverride ?? worker.remarks ?? "";
+  const remDate = remarkDateOverride ?? safeDate(worker.remarks_date);
 
   const SKILL_DEFS = [
     { en: "Cooking", ar: "الطبخ", key: "Cooking" },
@@ -341,7 +394,7 @@ const CVOne = ({ templateSwitcher }) => {
         {profile?.role_id != 4 && (
           <button
             className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
-            onClick={handleGenerateAndUpload}
+            onClick={() => setShowRemarkModal(true)}
           >
             {worker.cv_url ? "Update CV" : "Generate CV"}
           </button>
@@ -794,6 +847,15 @@ const CVOne = ({ templateSwitcher }) => {
         {/* end PAGE 2 */}
       </div>
       {/* end scroll wrapper */}
+
+      {/* Remark collection modal — shown before generation starts */}
+      <CreateModal
+        show={showRemarkModal}
+        onClose={() => setShowRemarkModal(false)}
+        onCreate={handleRemarkSubmit}
+        fields={[{ name: "remark", label: "Remark" }]}
+        title="Add Remark"
+      />
     </div>
   );
 };

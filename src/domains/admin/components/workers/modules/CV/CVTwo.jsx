@@ -9,6 +9,8 @@ import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
 import { useParams, useNavigate } from "react-router-dom";
 import brandLogo from "../../../../../../assets/img/logo/brand-header.png";
+import CreateModal from "../../../../../../shared/components/CreateModal/CreateModal";
+
 const safeText = (v, fallback = "—") =>
   v !== undefined && v !== null && String(v).trim() !== ""
     ? String(v)
@@ -28,6 +30,22 @@ const yesNo = (v, fallback = "") => {
   return fallback;
 };
 
+/* System-generated reference number. Same worker → same ID across both CV
+   templates (since both derive it from the same worker.id); different
+   worker → different ID. Prefers a pre-existing saved value so older CVs
+   don't get a new ID on re-generation. */
+const REFERENCE_PREFIX = "CV";
+
+const generateReferenceNumber = (worker) => {
+  const existing = worker?.reference_number ?? worker?.reference_no;
+  if (existing) return existing;
+
+  const workerId = worker?.id ?? worker?.worker_id;
+  if (!workerId) return "";
+
+  return `${REFERENCE_PREFIX}-${String(workerId).padStart(6, "0")}`;
+};
+
 /**
  * @param {React.ReactNode} [templateSwitcher] - optional toggle control rendered
  *   in the toolbar next to the action button. Passed down by the parent CV page
@@ -43,6 +61,12 @@ const CVTwo = ({ templateSwitcher }) => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { profile } = useProfile();
+
+  // ── Remark modal state ──
+  const [showRemarkModal, setShowRemarkModal] = useState(false);
+  const [remarkOverride, setRemarkOverride] = useState(null);
+  const [remarkDateOverride, setRemarkDateOverride] = useState(null);
+  const [pendingGenerate, setPendingGenerate] = useState(false);
 
   const fetchWorkerData = useCallback(async () => {
     showLoader();
@@ -150,6 +174,32 @@ const CVTwo = ({ templateSwitcher }) => {
     }
   };
 
+  // ── Remark modal handlers ──
+  const handleRemarkSubmit = (inputValues) => {
+    const remarkText = inputValues.remark?.trim();
+
+    if (!remarkText) {
+      addMessage(false, "Remark is required");
+      return;
+    }
+
+    setRemarkOverride(remarkText);
+    setRemarkDateOverride(new Date().toISOString().slice(0, 10));
+    setShowRemarkModal(false);
+    setPendingGenerate(true);
+  };
+
+  // Waits for the remark state to actually render into the DOM before
+  // capturing — setState inside handleRemarkSubmit is async, so calling
+  // handleGenerateAndUpload() directly there would capture the OLD remark.
+  useEffect(() => {
+    if (pendingGenerate) {
+      setPendingGenerate(false);
+      handleGenerateAndUpload();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingGenerate]);
+
   // calculate contract period in year or month
   const subtractDate = (d1, d2) => {
     const date1 = new Date(d1);
@@ -162,7 +212,7 @@ const CVTwo = ({ templateSwitcher }) => {
   };
   if (!worker) return null;
   const clientData = {
-    referenceNo: safeText(worker.reference_no, ""),
+    referenceNo: safeText(generateReferenceNumber(worker), ""),
     postAppliedFor: safeText(worker.skills[0], ""),
     monthlySalary: safeText(
       worker.monthly_salary ? `${worker.monthly_salary} SR` : "",
@@ -227,7 +277,10 @@ const CVTwo = ({ templateSwitcher }) => {
     issueDate: safeDate(worker.passport_issue_date, ""),
     issuePlace: safeText(worker.passport_issuing_country, ""),
     expiryDate: safeDate(worker.passport_expiry_date, ""),
-    remarks: safeText(worker.remarks, worker.guarantor_name, ""),
+    // Remark now prefers the value entered in the modal for this
+    // generation run, falling back to whatever was previously saved.
+    remarks:
+      remarkOverride ?? safeText(worker.remarks, worker.guarantor_name, ""),
     personalPhoto:
       worker.photo_3x4_url || "https://via.placeholder.com/130x155?text=Photo",
     standingPhoto:
@@ -295,7 +348,7 @@ const CVTwo = ({ templateSwitcher }) => {
         {profile?.role_id != 4 && (
           <button
             className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
-            onClick={handleGenerateAndUpload}
+            onClick={() => setShowRemarkModal(true)}
           >
             {worker.cv_url ? "Update CV" : "Generate CV"}
           </button>
@@ -1070,6 +1123,9 @@ const CVTwo = ({ templateSwitcher }) => {
                     <div className="remarks-row">
                       <div className="label-en">Remarks</div>
                       <div className="deep-red">{clientData.remarks}</div>
+                      {remarkDateOverride && (
+                        <div className="deep-red">{remarkDateOverride}</div>
+                      )}
                       <div className="remarks-right">
                         {clientData.ar.remarks}
                       </div>
@@ -1099,6 +1155,15 @@ const CVTwo = ({ templateSwitcher }) => {
           </div>
         </div>
       </div>
+
+      {/* Remark collection modal — shown before generation starts */}
+      <CreateModal
+        show={showRemarkModal}
+        onClose={() => setShowRemarkModal(false)}
+        onCreate={handleRemarkSubmit}
+        fields={[{ name: "remark", label: "Remark" }]}
+        title="Add Remark"
+      />
     </div>
   );
 };
