@@ -1,0 +1,50 @@
+.filters-card {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background-color: #fff;
+}
+
+.input {
+  height: 42px;
+  font-size: 14px;
+  border-radius: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus {
+  border-color: var(--maincolor, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+.search-btn {
+  border-radius: 8px;
+  height: 42px;
+  font-size: 13px;
+  font-weight: 600;
+  /* NEVER disappear when disabled */
+  opacity: 1 !important;
+  pointer-events: auto;
+}
+
+.search-btn:disabled {
+  /* Keep visible — just slightly dim */
+  opacity: 0.75 !important;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.cancel-btn {
+  border-radius: 8px;
+  height: 42px;
+  font-size: 12px;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  background: transparent;
+  white-space: nowrap;
+  padding: 0 12px;
+}
+
+.cancel-btn:hover {
+  background: #fef2f2;
+}
