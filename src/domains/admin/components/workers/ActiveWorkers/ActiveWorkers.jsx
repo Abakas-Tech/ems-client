@@ -228,7 +228,7 @@ const ActiveWorkers = () => {
         return;
       }
 
-      const { url, fileName, fullName } = result;
+      const { blob, url, fileName, fullName } = result;
 
       const triggerDownload = () => {
         const link = document.createElement("a");
@@ -239,7 +239,40 @@ const ActiveWorkers = () => {
         document.body.removeChild(link);
       };
 
-      const shareOnWhatsapp = () => {
+      // Tries to hand the actual PDF file to the OS share sheet (so
+      // WhatsApp receives the real attachment, not just a filename in a
+      // text message). Falls back to the old wa.me text-only link on
+      // browsers that don't support the Web Share API's file sharing
+      // (e.g. desktop Chrome/Firefox on most platforms).
+      const shareOnWhatsapp = async () => {
+        try {
+          const file = new File([blob], fileName, {
+            type: "application/pdf",
+          });
+
+          if (
+            navigator.canShare &&
+            navigator.canShare({ files: [file] }) &&
+            navigator.share
+          ) {
+            await navigator.share({
+              files: [file],
+              title: "Visa Application",
+              text: `Visa application for ${fullName}`,
+            });
+            return;
+          }
+        } catch (err) {
+          // AbortError just means the user cancelled the native share
+          // sheet — not a real failure, so don't fall back in that case.
+          if (err?.name === "AbortError") return;
+          console.warn(
+            "Native file share failed, falling back to WhatsApp text link:",
+            err,
+          );
+        }
+
+        // Fallback: text-only WhatsApp link (wa.me cannot attach files).
         const message = `Visa application for ${fullName} is ready: ${fileName}`;
         const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
         window.open(waUrl, "_blank", "noopener,noreferrer");
@@ -249,7 +282,7 @@ const ActiveWorkers = () => {
         title: "Visa Application Generated",
         body: (
           <p style={{ margin: 0, color: "#555" }}>
-            . Download it now or share it directly via WhatsApp.
+            Download it now or share it directly to a candidate.
           </p>
         ),
         actions: [
