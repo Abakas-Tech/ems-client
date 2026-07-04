@@ -160,9 +160,6 @@
   border-top:none;
 }
 
-/* Field — now an inline row: English label (left) — value (centered) —
-   Arabic label (right). flex-wrap lets long values drop to their own line
-   instead of crowding/overlapping the labels. */
 .field {
   flex: 1;
   display: flex;
@@ -175,8 +172,7 @@
   border-right: 1px solid #000;
 }
 
-/* Column variant for fields that hold a list/table below the label row
-   (Purpose of Travel, Dependents) instead of an inline value */
+
 .fieldColumn {
   flex-direction: column;
   align-items: stretch;

@@ -199,19 +199,12 @@ export async function generateVisaApplicationPdf(employeeId, options = {}) {
   });
 
   try {
-    // scale: 1.5 is plenty sharp for an A4 document form and cuts the raw
-    // pixel count (and therefore the encoded image size) versus scale: 2.
     const canvas = await html2canvas(templateNode, {
       scale: 1.5,
       useCORS: true,
       backgroundColor: "#ffffff",
     });
 
-    // The previous PNG capture was the main reason the PDF ballooned to
-    // ~10MB — PNG is lossless, so a big flat-colored form document still
-    // encodes to a huge file. Encoding as JPEG with a high-but-lossy
-    // quality keeps the form perfectly legible while shrinking the
-    // embedded image dramatically (usually 90%+ smaller).
     const imgData = canvas.toDataURL("image/jpeg", 0.72);
     const pdf = new jsPDF({
       orientation: "portrait",
@@ -236,8 +229,6 @@ export async function generateVisaApplicationPdf(employeeId, options = {}) {
     const fileName = `Visa_Application_${fileSafeName}.pdf`;
 
     if (autoDownload) {
-      // Original behavior — unchanged for any existing caller that doesn't
-      // pass autoDownload: false.
       pdf.save(fileName);
       return;
     }
@@ -251,10 +242,6 @@ export async function generateVisaApplicationPdf(employeeId, options = {}) {
       fileName,
       fullName: mapped.fullName,
       phoneNumber: mapped._phoneNumber || null,
-      // Included so a caller can render <VisaApplicationTemplate> directly
-      // on-screen for a live preview, instead of embedding the generated
-      // PDF in an iframe (which pulls in the browser's own PDF-viewer
-      // toolbar/scrollbar chrome).
       mapped,
       logoSrc,
     };
