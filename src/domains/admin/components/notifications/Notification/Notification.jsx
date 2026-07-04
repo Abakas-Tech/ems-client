@@ -380,7 +380,11 @@ const NotificationPage = () => {
           show={showCompose}
           onClose={() => {
             setShowCompose(false);
-            navigate(location.pathname, { replace: true, state: {} });
+            if (incomingBulkIds && incomingBulkIds.length > 0) {
+              navigate(-1); // Go back to the list page
+            } else {
+              navigate(location.pathname, { replace: true, state: {} });
+            }
           }}
           onCreate={handleSend}
           title={
