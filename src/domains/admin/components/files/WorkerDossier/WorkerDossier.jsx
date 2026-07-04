@@ -263,7 +263,7 @@ const MiscFilesSection = ({
     total: miscFiles?.length || 0,
     pagination: {},
   });
-
+console.log(filesData)
   const [filters, setFilters] = useState({
     page: 1,
     limit: 5,

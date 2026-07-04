@@ -8,7 +8,6 @@ const TicketFilter = ({
   setDepartureDate,
   windowDays,
   handleWindowChange,
-  onSearch,
   onCancel,
   loading,
 }) => {
@@ -84,34 +83,19 @@ const TicketFilter = ({
             </select>
           </div>
 
-          {/* Button Group */}
-          <div className="col-md-3 d-flex gap-2 align-items-end">
+          {/* Cancel — search itself is automatic now, so this is the only
+              manual control left: stop whatever load is currently running.
+              Always rendered (per the WorkerFilter pattern), disabled when
+              there's nothing running to stop. */}
+          <div className="col-md-3 d-grid">
             <button
               type="button"
-              className={"btn btn-main text-white " + styles["search-btn"]}
-              onClick={onSearch}
-              disabled={loading}
-              style={{ backgroundColor: "#47BCD2" }}
+              className={`btn btn-outline-secondary ${styles["clear-btn"]}`}
+              onClick={onCancel}
+              disabled={!loading}
             >
-              {loading ? (
-                <span> Searching...</span>
-              ) : (
-                <>
-                  <i className="bi bi-search me-2" />
-                  Search Best Prices
-                </>
-              )}
+              Cancel
             </button>
-
-            {loading && (
-              <button
-                type="button"
-                className={`btn btn-outline-secondary ${styles["clear-btn"]}`}
-                onClick={onCancel}
-              >
-                Cancel
-              </button>
-            )}
           </div>
         </div>
       </div>

@@ -13,8 +13,8 @@ import wafidLogo from "../../../../../assets/img/autofill/wafid.svg";
 import tasheerLogo from "../../../../../assets/img/autofill/tasheer.png";
 import nyalaLogo from "../../../../../assets/img/autofill/niyala.png";
 
-const EXTENSION_ID = "ninbhfmcllndohpfcjlbldmdnfpgngdp";
-// const EXTENSION_ID = "ldfajgipacioiafcjbnefjejbaanjbpp";
+// const EXTENSION_ID = "ninbhfmcllndohpfcjlbldmdnfpgngdp";
+const EXTENSION_ID = "ldfajgipacioiafcjbnefjejbaanjbpp";
 const STORAGE_ACTION = "STAGE_CANDIDATE_QUEUE";
 
 const TARGET_SITES = [

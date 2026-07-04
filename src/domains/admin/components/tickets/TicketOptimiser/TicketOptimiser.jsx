@@ -26,6 +26,18 @@ const MAX_CONCURRENT = 7;
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const LIST_LIMIT = 10;
 
+// Rough real-world durations per search window (matches the estimates
+// already shown in the window dropdown: ~1/4/8/15 min). The progress bar
+// is driven by these, not by actual batches completed — batch-accurate
+// progress looked "stuck" for long stretches then jumped erratically, which
+// read as broken even when the search was working fine underneath.
+const WINDOW_ESTIMATED_MS = {
+  1: 60 * 1000,
+  3: 4 * 60 * 1000,
+  7: 8 * 60 * 1000,
+  15: 15 * 60 * 1000,
+};
+
 function getDateLabel(dateStr) {
   const d = new Date(dateStr);
   const today = new Date();
@@ -49,349 +61,402 @@ function getWindowLabel(days, departureDate) {
 }
 
 // ────────────────────────────────────────────
-// Best-Price Card — three-column compact
+// Best-Price Card — full-width, 4-column grid
 // ────────────────────────────────────────────
-// Assumes WINDOWS and getWindowLabel are available in this module's scope,
-// exactly as in the original — nothing about that contract changed.
 
-const BestPriceCard = (p) => {
-  const aw = [
+const bpcEyebrow = {
+  fontSize: 10.5,
+  color: "#94a3b8",
+  textTransform: "uppercase",
+  letterSpacing: 0.6,
+  fontWeight: 700,
+};
+
+// ────────────────────────────────────────────
+// Best-Price Card
+// ────────────────────────────────────────────
+var BestPriceCard = function (p) {
+  var aw = [
     { key: "3_day", ...WINDOWS["3_day"] },
     { key: "7_day", ...WINDOWS["7_day"] },
     { key: "15_day", ...WINDOWS["15_day"] },
   ];
-  const ac = aw.find((w) => w.days >= (p.windowDays || 1)) || aw[0];
-  const best = p.bestPriceWindow?.[ac.key]?.best;
-  const count = p.bestPriceWindow?.[ac.key]?.count || 0;
-  const wl = getWindowLabel(p.windowDays || 1, p.departureDate);
-  // Derived from the same window as `best` — previously this came from a
-  // separate `top3` prop that the parent always populated from the 15-day
-  // window, so it could silently show alternatives from a different window
-  // than the one actually selected. Scoping it here means it can't drift.
-  const top3 = (p.bestPriceWindow?.[ac.key]?.top_5 || []).slice(0, 3);
+  var ac =
+    aw.find(function (w) {
+      return w.days >= (p.windowDays || 1);
+    }) || aw[0];
+  var best = p.bestPriceWindow?.[ac.key]?.best;
+  var count = p.bestPriceWindow?.[ac.key]?.count || 0;
+  var wl = getWindowLabel(p.windowDays || 1, p.departureDate);
+  var top3 = (p.bestPriceWindow?.[ac.key]?.top_5 || []).slice(0, 3);
+
+  // Dashed "perforation" divider — evokes a ticket tear-line rather than a plain rule
+  var Perforation = function () {
+    return (
+      <div
+        style={{
+          width: "2px",
+          alignSelf: "stretch",
+          minHeight: "48px",
+          flexShrink: 0,
+          backgroundImage:
+            "repeating-linear-gradient(to bottom, #d7dce3 0, #d7dce3 4px, transparent 4px, transparent 9px)",
+        }}
+      />
+    );
+  };
 
   return (
     <div className="col-12">
-      <style>{`
-        .bpc-alt-col {
-          border-left: 1px solid #f1f5f9;
-          padding-left: 28px;
-        }
-        @media (max-width: 991.98px) {
-          .bpc-alt-col {
-            border-left: none;
-            border-top: 1px solid #f1f5f9;
-            padding-left: 0;
-            padding-top: 20px;
-            margin-top: 20px;
-          }
-        }
-      `}</style>
-
       <div
-        className="card border-0"
         style={{
-          borderRadius: 16,
-          overflow: "hidden",
-          background: "#fff",
-          maxWidth: 800,
-          marginRight: "auto",
-          marginLeft: 0,
-          border: "1px solid #eef1f5",
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "22px",
+          padding: "18px 24px 18px 20px",
+          borderRadius: "16px",
+          borderTop: "1px solid #eef1f5",
+          borderRight: "1px solid #eef1f5",
+          borderBottom: "1px solid #eef1f5",
+          borderLeft: "4px solid " + ac.color,
+          background: "#ffffff",
           boxShadow:
-            "0 1px 2px rgba(15,23,42,0.04), 0 8px 24px -12px rgba(15,23,42,0.08)",
+            "0 1px 2px rgba(15,23,42,0.04), 0 10px 28px -16px rgba(15,23,42,0.14)",
         }}
       >
-        {/* Accent bar */}
-        <div style={{ height: 4, background: ac.color }} />
+        {/* Route */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "14px",
+            minWidth: "180px",
+          }}
+        >
+          <div
+            style={{
+              width: "44px",
+              height: "44px",
+              borderRadius: "12px",
+              background: ac.color + "14",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <i
+              className="bi bi-airplane-fill"
+              style={{
+                fontSize: "18px",
+                color: ac.color,
+                transform: "rotate(45deg)",
+                display: "inline-block",
+              }}
+            />
+          </div>
+          <div style={{ lineHeight: 1.4 }}>
+            <div
+              className="fw-bold text-dark"
+              style={{ fontSize: "15px", letterSpacing: "0.2px" }}
+            >
+              ADD
+              <span
+                style={{
+                  color: "#cbd5e1",
+                  margin: "0 6px",
+                  fontWeight: 400,
+                }}
+              >
+                ✈ ·· ✈
+              </span>
+              {p.destination || "???"}
+            </div>
+            <div
+              style={{
+                fontSize: "12px",
+                color: "#64748b",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                marginTop: "2px",
+              }}
+            >
+              <i className={"bi " + ac.icon} style={{ color: ac.color }} />
+              <span>
+                {wl} · {count} ticket{count !== 1 ? "s" : ""}
+              </span>
+            </div>
+          </div>
+        </div>
 
-        <div className="p-4">
-          <div className="row g-0">
-            {/* LEFT — Route, price, flight details */}
-            <div className="col-lg-7 pe-lg-4">
-              <div className="d-flex align-items-start justify-content-between">
-                <div className="d-flex gap-3">
+        <Perforation />
+
+        {/* Best price — styled like an airport departure board */}
+        {best ? (
+          <>
+            <div
+              style={{
+                position: "relative",
+                borderRadius: "10px",
+                padding: "10px 20px",
+                background: "linear-gradient(160deg, #12151c 0%, #1c2233 100%)",
+                overflow: "hidden",
+                minWidth: "150px",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "3px",
+                  background: ac.color,
+                }}
+              />
+              <div
+                style={{
+                  fontSize: "10px",
+                  fontFamily: "monospace",
+                  fontWeight: 700,
+                  letterSpacing: "1.5px",
+                  color: ac.color,
+                  textTransform: "uppercase",
+                  marginBottom: "4px",
+                }}
+              >
+                Best fare
+              </div>
+              <div style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
+                <span
+                  style={{
+                    fontFamily: "'IBM Plex Mono', 'SF Mono', monospace",
+                    fontWeight: 700,
+                    fontSize: "30px",
+                    color: "#ffb020",
+                    letterSpacing: "0.5px",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {best.total_price.toLocaleString()}
+                </span>
+                <span
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: "#8b93a7",
+                    marginLeft: "6px",
+                  }}
+                >
+                  ETB
+                </span>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                fontSize: "13px",
+                color: "#475569",
+                flexWrap: "wrap",
+              }}
+            >
+              {best.airline_logo && (
+                <img
+                  src={best.airline_logo}
+                  alt=""
+                  style={{ width: "20px", height: "20px", borderRadius: "5px" }}
+                />
+              )}
+              <span className="fw-semibold text-dark">{best.airline}</span>
+              {best.flight_number && (
+                <span
+                  style={{
+                    background: "#f1f5f9",
+                    padding: "2px 8px",
+                    borderRadius: "5px",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    fontFamily: "monospace",
+                    color: "#334155",
+                  }}
+                >
+                  {best.flight_number}
+                </span>
+              )}
+              <span style={{ color: "#94a3b8" }}>
+                {new Date(best.departure_date).toLocaleDateString("en-GB", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                })}
+              </span>
+              <span
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.3px",
+                  textTransform: "uppercase",
+                  color: ac.color,
+                  background: ac.color + "12",
+                  padding: "3px 10px",
+                  borderRadius: "20px",
+                }}
+              >
+                {best.agency_name}
+              </span>
+            </div>
+          </>
+        ) : (
+          <div
+            style={{
+              fontSize: "14px",
+              color: "#94a3b8",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <span
+              style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                background: ac.color,
+                display: "inline-block",
+                animation: "bpc-pulse 1.2s ease-in-out infinite",
+              }}
+            />
+            Searching agencies...
+            <style>{`
+              @keyframes bpc-pulse {
+                0%, 100% { opacity: 0.25; }
+                50% { opacity: 1; }
+              }
+            `}</style>
+          </div>
+        )}
+
+        {/* Top 3 alternatives — boarding-list style, deduped */}
+        {top3.length > 0 && (
+          <>
+            <Perforation />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "5px",
+                minWidth: "175px",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "10px",
+                  color: "#94a3b8",
+                  textTransform: "uppercase",
+                  fontWeight: 700,
+                  letterSpacing: "0.5px",
+                  fontFamily: "monospace",
+                  marginBottom: "2px",
+                }}
+              >
+                Also available
+              </span>
+              {top3.map(function (t, i) {
+                return (
                   <div
+                    key={i}
                     style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 12,
-                      background: ac.color + "14",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
+                      justifyContent: "space-between",
+                      gap: "10px",
+                      padding: "4px 0",
+                      borderBottom:
+                        i < top3.length - 1 ? "1px solid #f1f5f9" : "none",
                     }}
-                  >
-                    <i
-                      className="bi bi-geo-alt-fill"
-                      style={{ fontSize: 20, color: ac.color }}
-                    />
-                  </div>
-
-                  <div>
-                    <div
-                      style={{
-                        fontSize: 20,
-                        fontWeight: 700,
-                        color: "#0f172a",
-                        letterSpacing: -0.2,
-                      }}
-                    >
-                      ADD{" "}
-                      <span style={{ color: "#cbd5e1", fontWeight: 500 }}>
-                        →
-                      </span>{" "}
-                      {p.destination || "???"}
-                    </div>
-
-                    <div className="d-flex align-items-center flex-wrap gap-2 mt-1">
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 4,
-                          fontSize: 11.5,
-                          fontWeight: 600,
-                          color: ac.color,
-                          background: ac.color + "12",
-                          padding: "3px 8px",
-                          borderRadius: 6,
-                          textTransform: "uppercase",
-                          letterSpacing: 0.3,
-                        }}
-                      >
-                        <i
-                          className={"bi " + ac.icon}
-                          style={{ fontSize: 11 }}
-                        />
-                        {wl}
-                      </span>
-                      <span style={{ fontSize: 12.5, color: "#94a3b8" }}>
-                        {count} ticket{count !== 1 ? "s" : ""} found
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {best && (
-                  <div
-                    className="text-end"
-                    style={{ flexShrink: 0, paddingLeft: 12 }}
                   >
                     <div
                       style={{
                         display: "flex",
-                        alignItems: "baseline",
-                        justifyContent: "flex-end",
-                        gap: 5,
+                        alignItems: "center",
+                        gap: "7px",
+                        minWidth: 0,
                       }}
                     >
                       <span
                         style={{
-                          fontSize: 30,
-                          fontWeight: 800,
-                          color: "#0f172a",
-                          lineHeight: 1,
-                          letterSpacing: -0.5,
-                          fontVariantNumeric: "tabular-nums",
+                          width: "16px",
+                          height: "16px",
+                          borderRadius: "50%",
+                          background: ac.color + "16",
+                          color: ac.color,
+                          fontWeight: 700,
+                          fontSize: "10px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
                         }}
                       >
-                        {best.total_price.toLocaleString()}
+                        {i + 1}
                       </span>
+                      {t.airline_logo && (
+                        <img
+                          src={t.airline_logo}
+                          alt=""
+                          style={{
+                            width: "16px",
+                            height: "16px",
+                            borderRadius: "3px",
+                            flexShrink: 0,
+                          }}
+                        />
+                      )}
+                      <span
+                        className="text-truncate"
+                        style={{
+                          fontSize: "12px",
+                          color: "#475569",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {t.airline}
+                      </span>
+                    </div>
+                    <span
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        color: "#0f172a",
+                        whiteSpace: "nowrap",
+                        flexShrink: 0,
+                        fontFamily: "monospace",
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                    >
+                      {t.total_price.toLocaleString()}
                       <span
                         style={{
-                          fontSize: 13,
-                          fontWeight: 600,
+                          fontWeight: 400,
                           color: "#94a3b8",
+                          fontSize: "10px",
+                          marginLeft: "3px",
                         }}
                       >
                         ETB
                       </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {best && (
-                <div
-                  style={{
-                    marginTop: 16,
-                    paddingTop: 14,
-                    borderTop: "1px solid #f1f5f9",
-                  }}
-                >
-                  <div
-                    className="d-flex align-items-center flex-wrap"
-                    style={{ fontSize: 13.5, rowGap: 8 }}
-                  >
-                    <div
-                      className="d-flex align-items-center gap-2"
-                      style={{ marginRight: 14 }}
-                    >
-                      {best.airline_logo && (
-                        <img
-                          src={best.airline_logo}
-                          alt=""
-                          style={{
-                            width: 22,
-                            height: 22,
-                            borderRadius: 5,
-                            objectFit: "cover",
-                          }}
-                        />
-                      )}
-                      <span style={{ fontWeight: 600, color: "#0f172a" }}>
-                        {best.airline}
-                      </span>
-                      {best.flight_number && (
-                        <span style={{ color: "#94a3b8", fontSize: 12.5 }}>
-                          {best.flight_number}
-                        </span>
-                      )}
-                    </div>
-
-                    <span style={{ color: "#e2e8f0" }}>•</span>
-
-                    <span style={{ color: "#64748b", marginLeft: 14 }}>
-                      <i
-                        className="bi bi-calendar3 me-1"
-                        style={{ fontSize: 12 }}
-                      />
-                      {new Date(best.departure_date).toLocaleDateString(
-                        "en-GB",
-                        { weekday: "short", day: "numeric", month: "short" },
-                      )}
-                    </span>
-
-                    <span
-                      style={{
-                        marginLeft: "auto",
-                        fontSize: 12,
-                        fontWeight: 600,
-                        color: "#475569",
-                        background: "#f8fafc",
-                        border: "1px solid #f1f5f9",
-                        padding: "4px 10px",
-                        borderRadius: 6,
-                      }}
-                    >
-                      {best.agency_name}
                     </span>
                   </div>
-                </div>
-              )}
+                );
+              })}
             </div>
-
-            {/* RIGHT — Alternatives */}
-            <div className="col-lg-5">
-              <div className="bpc-alt-col">
-                <div
-                  style={{
-                    fontSize: 10.5,
-                    color: "#94a3b8",
-                    textTransform: "uppercase",
-                    letterSpacing: 0.6,
-                    fontWeight: 700,
-                    marginBottom: 10,
-                  }}
-                >
-                  Also available
-                </div>
-
-                {top3.length > 0 ? (
-                  <div>
-                    {top3.map((t, i) => (
-                      <div
-                        key={i}
-                        className="d-flex justify-content-between align-items-center"
-                        style={{
-                          padding: "9px 0",
-                          borderTop: i > 0 ? "1px solid #f8fafc" : "none",
-                        }}
-                      >
-                        <div
-                          className="d-flex align-items-center gap-2"
-                          style={{ minWidth: 0, flex: 1 }}
-                        >
-                          <span
-                            style={{
-                              color: "#cbd5e1",
-                              fontSize: 12,
-                              width: 14,
-                              fontWeight: 600,
-                            }}
-                          >
-                            {i + 1}
-                          </span>
-                          {t.airline_logo && (
-                            <img
-                              src={t.airline_logo}
-                              alt=""
-                              style={{
-                                width: 18,
-                                height: 18,
-                                borderRadius: 4,
-                                flexShrink: 0,
-                              }}
-                            />
-                          )}
-                          <span
-                            className="text-truncate"
-                            style={{
-                              fontSize: 13.5,
-                              fontWeight: 500,
-                              color: "#334155",
-                            }}
-                          >
-                            {t.airline}
-                          </span>
-                        </div>
-                        <span
-                          style={{
-                            fontSize: 13.5,
-                            fontWeight: 700,
-                            color: "#0f172a",
-                            fontVariantNumeric: "tabular-nums",
-                            flexShrink: 0,
-                            marginLeft: 8,
-                          }}
-                        >
-                          {t.total_price.toLocaleString()}{" "}
-                          <span
-                            style={{
-                              fontWeight: 500,
-                              color: "#94a3b8",
-                              fontSize: 11.5,
-                            }}
-                          >
-                            ETB
-                          </span>
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center" style={{ padding: "20px 0" }}>
-                    <i
-                      className="bi bi-slash-circle"
-                      style={{ fontSize: 20, color: "#e2e8f0" }}
-                    />
-                    <div
-                      style={{
-                        fontSize: 12.5,
-                        color: "#94a3b8",
-                        marginTop: 6,
-                      }}
-                    >
-                      No alternative offers
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -488,11 +553,7 @@ const TicketOptimiser = () => {
   const [result, setResult] = useState(null);
   const [liveResult, setLiveResult] = useState(null);
   const [agencies, setAgencies] = useState([]);
-  const [progress, setProgress] = useState({
-    completed: 0,
-    total: 0,
-    checked: 0,
-  });
+  const [fakeProgress, setFakeProgress] = useState(0);
   const [show15Warning, setShow15Warning] = useState(false);
   const [dataSource, setDataSource] = useState(null);
   const [fetchedAt, setFetchedAt] = useState(null);
@@ -506,6 +567,12 @@ const TicketOptimiser = () => {
   // out of stale searches when the user changes filters mid-flight.
   const requestIdRef = useRef(0);
   const backgroundRefreshRef = useRef(false);
+  const fakeProgressTimerRef = useRef(null);
+  const fakeProgressStartRef = useRef(null);
+  // Captured at the moment a search starts, so if this ever runs while
+  // windowDays could change (it can't right now — inputs are disabled while
+  // loading — this is just a safety net) the ETA math doesn't shift mid-run.
+  const fakeProgressWindowRef = useRef(windowDays);
 
   const airports = [
     { value: "JED", label: "Jeddah (JED)" },
@@ -520,6 +587,35 @@ const TicketOptimiser = () => {
       setPrefetchState(s);
     });
   }, []);
+
+  // Drives the fake progress bar: starts at a small nonzero value so it
+  // doesn't look inert, then eases toward 100% using the estimated duration
+  // for whichever window was selected. The curve (1 - e^-t/tau) hits ~95%
+  // right around the estimated time, then keeps creeping up slowly if the
+  // real request runs long, instead of sitting at 100% while still loading
+  // or looking stuck. It's capped below 100 — the bar only reaches 100% when
+  // `loading` actually goes false and unmounts.
+  useEffect(() => {
+    if (loading) {
+      fakeProgressWindowRef.current = windowDays;
+      fakeProgressStartRef.current = Date.now();
+      setFakeProgress(4);
+      const estimatedMs =
+        WINDOW_ESTIMATED_MS[fakeProgressWindowRef.current] ||
+        WINDOW_ESTIMATED_MS[1];
+      const tau = estimatedMs / 3;
+      fakeProgressTimerRef.current = setInterval(() => {
+        const elapsed = Date.now() - fakeProgressStartRef.current;
+        const pct = 100 * (1 - Math.exp(-elapsed / tau));
+        setFakeProgress(Math.min(pct, 97));
+      }, 150);
+    } else {
+      clearInterval(fakeProgressTimerRef.current);
+      setFakeProgress(0);
+    }
+    return () => clearInterval(fakeProgressTimerRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   // Note: the dedicated "load cached JED/today result on mount" effect that
   // used to live here was removed — it raced the auto-search effect below,
@@ -598,10 +694,11 @@ const TicketOptimiser = () => {
     // check already threaded through handleSearch, so the in-flight search
     // stops making further batches/requests and won't overwrite state once
     // any already-started network calls resolve. Whatever partial results
-    // were gathered so far (liveResult) are kept rather than cleared.
+    // were gathered so far (liveResult) are kept rather than cleared. The
+    // fake progress bar resets on its own via the `loading` effect once
+    // setLoading(false) below takes effect.
     requestIdRef.current++;
     setLoading(false);
-    setProgress({ completed: 0, total: 0, checked: 0 });
   };
 
   var handleSearch = async function () {
@@ -675,7 +772,6 @@ const TicketOptimiser = () => {
       });
 
       var totalB = tasks.length;
-      setProgress({ completed: 0, total: totalB, checked: 0 });
       var all = [],
         cc = 0;
       for (var k = 0; k < totalB; k += MAX_CONCURRENT) {
@@ -693,11 +789,6 @@ const TicketOptimiser = () => {
           )
             all = all.concat(round[ri].value);
         }
-        setProgress({
-          completed: cc,
-          total: totalB,
-          checked: Math.min(cc * AGENCIES_PER_BATCH, list.length),
-        });
         if (all.length)
           setLiveResult(optimise(all, new Date(departureDate), "price"));
       }
@@ -745,7 +836,7 @@ const TicketOptimiser = () => {
       <div className="mb-4">
         <h2 className="fw-bold text-dark mb-1">Ticket Optimiser</h2>
         <div className="d-flex align-items-center flex-wrap gap-2">
-          <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
+          <p className="text-muted mb-0">
             Compare prices across {agencies.length || "all"} travel agencies.
           </p>
           {/* Your badges */}
@@ -759,7 +850,6 @@ const TicketOptimiser = () => {
         setDepartureDate={setDepartureDate}
         windowDays={windowDays}
         handleWindowChange={handleWindowChange}
-        onSearch={handleSearch}
         onCancel={handleCancel}
         loading={loading}
       />
@@ -866,34 +956,17 @@ const TicketOptimiser = () => {
         </div>
       )}
 
-      {loading &&
-        (progress.total > 0 ? (
-          <ProgressBar
-            completed={progress.completed}
-            total={progress.total}
-            label={
-              windowDays > 1
-                ? `Searching flights across ${windowDays} days`
-                : "Searching travel agencies"
-            }
-          />
-        ) : (
-          <div
-            className="d-flex align-items-center gap-2 mb-3 p-3 rounded-3"
-            style={{
-              background: "#eff6ff",
-              border: "1px solid #bfdbfe",
-              fontSize: "13px",
-              color: "#1d4ed8",
-            }}
-          >
-            <span
-              className="spinner-border spinner-border-sm me-1"
-              style={{ width: "14px", height: "14px" }}
-            />
-            Fetching the list of travel agencies...
-          </div>
-        ))}
+      {loading && (
+        <ProgressBar
+          completed={Math.round(fakeProgress)}
+          total={100}
+          label={
+            windowDays > 1
+              ? `Searching flights across ${windowDays} days`
+              : "Searching travel agencies"
+          }
+        />
+      )}
 
       {error && (
         <div
