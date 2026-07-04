@@ -384,7 +384,7 @@ const ActiveWorkers = () => {
             >
               <button
                 type="button"
-                className="btn btn-outline-primary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-1 "
+                className="btn btn-outline-main btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-1 "
                 disabled={selectedWorkerIds.length === 0}
                 onClick={handleNotify}
                 style={{ fontSize: "16px" }}

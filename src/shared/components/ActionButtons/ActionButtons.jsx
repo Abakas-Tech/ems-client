@@ -4,6 +4,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaBell,
+  FaUserSlash,
 } from "react-icons/fa";
 import { AiOutlineFolderView } from "react-icons/ai";
 import ACTION_ROLE_CONFIG from "../../../config/btn.config";
@@ -35,7 +36,7 @@ const ActionButtons = ({ actions = [], row }) => {
     },
     archive: {
       className: "btn-outline-secondary",
-      icon: <i className="bi bi-person-dash"></i>,
+      icon: <FaUserSlash />,
       title: "Archive",
     },
     restore: {
