@@ -13,8 +13,8 @@ import wafidLogo from "../../../../../assets/img/autofill/wafid.svg";
 import tasheerLogo from "../../../../../assets/img/autofill/tasheer.png";
 import nyalaLogo from "../../../../../assets/img/autofill/niyala.png";
 
-// const EXTENSION_ID = "ninbhfmcllndohpfcjlbldmdnfpgngdp";
 const EXTENSION_ID = "ninbhfmcllndohpfcjlbldmdnfpgngdp";
+// const EXTENSION_ID = "ldfajgipacioiafcjbnefjejbaanjbpp";
 const STORAGE_ACTION = "STAGE_CANDIDATE_QUEUE";
 
 const TARGET_SITES = [
@@ -526,7 +526,7 @@ function mapWorkerToAutofillCandidate(worker) {
       "Ethiopian",
     ),
     destinationCountry,
-    visaType: pick(worker, ["visaType", "visa_type"]),
+    visaType: "wv",
     state: regionName,
     city: cityName,
     address: pick(worker, [
@@ -591,7 +591,7 @@ function mapWorkerToAutofillCandidate(worker) {
       "emergencyContactAddress",
     ]),
 
-    branch: pick(worker, ["branch", "branchName", "branch_name"]),
+    branch: "4b234e19-cd02-4873-a892-a362b01cc24a",
     effectiveDate: pick(worker, ["effectiveDate", "effective_date"]),
     confirmCheck: pick(worker, ["confirmCheck", "confirm_check"], true),
   };
