@@ -267,6 +267,22 @@ const ActiveWorkers = () => {
       },
     );
   };
+  const handleViewFiles = (row) => {
+    if (role == 5) {
+      navigate(`/employer/my-employees/cv/${row.id}`, {
+        state: {
+          workerId: row.id,
+        },
+      });
+      return;
+    }
+
+    navigate("/admin/files", {
+      state: {
+        workerId: row.id,
+      },
+    });
+  };
 
   const goBack = () => {
     navigate(-1);
@@ -465,13 +481,7 @@ const ActiveWorkers = () => {
           },
           {
             type: "files",
-            onClick: (row) =>
-              navigate("/admin/files", {
-                state: {
-                  workerId: row.id,
-                  tab: "workers",
-                },
-              }),
+            onClick: (row) => handleViewFiles(row),
           },
           {
             type: "archive",
