@@ -294,95 +294,125 @@ const ActiveWorkers = () => {
 
       {/* Floating Selection Bar */}
       {isSelectionMode && (
-        <div
-          className="d-flex flex-column flex-md-row justify-content-between align-items-center shadow-lg border rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top px-3 px-md-4 py-3"
-          style={{
-            zIndex: 1050,
-            top: "15px", // Removed window.innerWidth logic to prevent server/hydration mismatches
-            backgroundColor: "rgba(255, 255, 255, 0.98)",
-            backdropFilter: "blur(12px)",
-            border: "1px solid rgba(var(--maincolor-rgb), 0.15)",
-            maxWidth: "1100px",
-            margin: "0 auto",
-            width: "95%",
-            transition: "all 0.3s ease",
-          }}
-        >
-          {/* Left Side: Status Info */}
-          <div className="d-flex align-items-center mb-3 mb-md-0 w-100 w-md-auto justify-content-start">
-            <div
-              className="rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm"
-              style={{
-                minWidth: "45px",
-                height: "45px",
-                backgroundColor: "rgba(var(--maincolor-rgb), 0.1)",
-                color: "var(--maincolor)",
-              }}
-            >
-              <i className="bi bi-person-check-fill fs-5"></i>
-            </div>
+        <>
+          <style>{`
+      .bulk-bar {
+  background: linear-gradient(135deg, #eaf3fc, #dcedfb);
+  border: 1px solid rgba(26, 86, 176, 0.15);
+  box-shadow: 0 4px 20px rgba(26, 86, 176, 0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+      .bulk-icon-wrap {
+        background: linear-gradient(135deg, rgba(30, 122, 52, 0.12), rgba(30, 122, 52, 0.05));
+        border: 1px solid rgba(30, 122, 52, 0.15);
+      }
+      .action-btn {
+        position: relative;
+        transition: transform 0.2s cubic-bezier(.2,.9,.3,1.3), box-shadow 0.2s ease;
+        letter-spacing: 0.02em;
+      }
+      .action-btn:hover:not(:disabled) {
+        transform: translateY(-2px) scale(1.03);
+      }
+      .action-btn:active:not(:disabled) {
+        transform: translateY(0) scale(0.98);
+      }
+      .action-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .action-btn-alert:hover:not(:disabled) {
+        box-shadow: 0 6px 18px rgba(52, 211, 153, 0.35);
+      }
+      .action-btn-autofill:hover:not(:disabled) {
+        box-shadow: 0 6px 18px rgba(96, 165, 250, 0.35);
+      }
+      .action-btn-cancel:hover:not(:disabled) {
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      }
+    `}</style>
 
-            <div>
-              <h6
-                className="mb-0 fw-bold text-dark"
-                style={{ fontSize: "1rem" }}
-              >
-                Bulk Action Mode
-              </h6>
-
-              <p className="mb-0 text-muted small fw-medium">
-                <span className="fw-bold" style={{ color: "var(--maincolor)" }}>
-                  {selectedWorkerIds.length}
-                </span>{" "}
-                {selectedWorkerIds.length === 1 ? "employee" : "employees"}{" "}
-                selected
-              </p>
-            </div>
-          </div>
-          {/* Right Side: Actions (Stacked on mobile, side-by-side on desktop) */}
           <div
-            className="d-flex flex-column flex-md-row gap-2 w-100 w-md-auto justify-content-md-end align-items-stretch align-items-md-center"
-            style={{ fontSize: "13px" }}
+            className="bulk-bar d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown sticky-top px-3 px-md-4 py-2"
+            style={{
+              zIndex: 1050,
+              top: "60px",
+              maxWidth: "1300px",
+              margin: "0 auto",
+              width: "100%",
+              borderRadius: "16px",
+              transition: "all 0.3s ease",
+            }}
           >
-            <button
-              className="btn btn-main  text-white  px-md-4 fw-bold  order-1"
-              disabled={selectedWorkerIds.length === 0}
-              onClick={handleNotify}
-              style={{
-                borderRadius: "10px",
-                whiteSpace: "nowrap",
-                width: "100%", // Full width on mobile
-              }}
-            >
-              Alert
-            </button>
+            {/* Left Side: Status Info */}
+            <div className="d-flex align-items-center mb-3 mb-md-0 w-100 w-md-auto justify-content-start">
+              <div
+                className="bulk-icon-wrap rounded-circle d-flex align-items-center justify-content-center me-3"
+                style={{
+                  minWidth: "38px",
+                  height: "38px",
+                  color: "#1e7a34",
+                }}
+              >
+                <i className="bi bi-person-check-fill fs-6"></i>
+              </div>
 
-            <button
-              className="btn btn-primary  text-white  px-md-4 fw-bold  order-2"
-              disabled={selectedWorkerIds.length === 0}
-              onClick={handleAutofillSelected}
-              style={{
-                borderRadius: "10px",
-                whiteSpace: "nowrap",
-                width: "100%", // Full width on mobile
-              }}
-            >
-              Autofill
-            </button>
+              <div>
+                <h6
+                  className="mb-0 fw-bold"
+                  style={{ fontSize: "0.9rem", color: "#1a4d2b" }}
+                >
+                  Bulk Action Mode
+                </h6>
 
-            <button
-              className="btn btn-outline-secondary   px-md-4 fw-bold order-3"
-              onClick={handleExitSelection}
-              style={{
-                borderRadius: "10px",
-                fontWeight: "600",
-                width: "100%", // Full width on mobile
-              }}
+                <p
+                  className="mb-0 small fw-medium"
+                  style={{ color: "rgba(26, 77, 43, 0.65)" }}
+                >
+                  <span className="fw-bold" style={{ color: "#1e7a34" }}>
+                    {selectedWorkerIds.length}
+                  </span>{" "}
+                  {selectedWorkerIds.length === 1 ? "employee" : "employees"}{" "}
+                  selected
+                </p>
+              </div>
+            </div>
+
+            {/* Right Side: Actions */}
+            <div
+              className="d-flex flex-row gap-2 w-100 w-md-auto justify-content-md-end align-items-center"
+              style={{ fontSize: "13px" }}
             >
-              Cancel
-            </button>
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-1 "
+                disabled={selectedWorkerIds.length === 0}
+                onClick={handleNotify}
+                style={{ fontSize: "16px" }}
+              >
+                Alert
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-outline-success btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-2 "
+                disabled={selectedWorkerIds.length === 0}
+                onClick={handleAutofillSelected}
+                style={{ fontSize: "16px" }}
+              >
+                Autofill
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-outline-secondary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-3 "
+                onClick={handleExitSelection}
+                style={{ fontSize: "16px" }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       <ListingComponent
