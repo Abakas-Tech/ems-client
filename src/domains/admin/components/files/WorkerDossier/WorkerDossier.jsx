@@ -37,11 +37,6 @@ const CoreSlotsGrid = ({ coreSlots = {}, onCvClick }) => {
   return (
     <div className="row g-3">
       {CORE_SLOTS.map((slot) => {
-        // CV is special-cased: the dossier now returns two separate
-        // slots (cv_one / cv_two) instead of a single "cv" slot, since
-        // a worker can have two CV layouts. This tile is considered
-        // "filled" if either one exists, and previews whichever one is
-        // available (preferring cv_one).
         const isCvSlot = slot.key === "cv";
 
         const data = isCvSlot
@@ -209,16 +204,21 @@ const CoreSlotsGrid = ({ coreSlots = {}, onCvClick }) => {
                     Select CV
                   </button>
                 ) : hasFile ? (
+                  // FIX: this used to say "Select CV" and call onCvClick
+                  // for every filled non-CV slot too (standing photo,
+                  // passport scan, etc.), which opened the CV selection
+                  // screen no matter which tile was clicked. It now
+                  // opens that slot's own file instead.
                   <button
                     className="btn btn-sm btn-outline-secondary w-100"
                     style={{ fontSize: "11px", borderRadius: "6px" }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onCvClick && onCvClick();
+                      window.open(data.url, "_blank");
                     }}
                   >
                     <i className="bi bi-eye me-1" />
-                    Select CV
+                    View File
                   </button>
                 ) : (
                   <button
@@ -291,12 +291,11 @@ const MiscFilesSection = ({
 
         // important
         worker_id: workerId,
-        // NOTE: backend's exclude_category currently only supports a
-        // single string value (category != ?). CV_ONE/CV_TWO won't both
-        // be excluded until findAll() is updated to accept an array
-        // (category NOT IN (?)). Left as CV_ONE here as a stopgap so at
-        // least one CV category doesn't leak into this list — flag this
-        // for a backend fix.
+        // Both CV categories are excluded from this list since they're
+        // shown separately in the Core Documents grid above. Requires
+        // findAll() on the backend to support an array for
+        // exclude_category (category NOT IN (?)) and axios to serialize
+        // it as repeated keys (see paramsSerializer on this call chain).
         exclude_category: ["CV_ONE", "CV_TWO"],
       };
 
