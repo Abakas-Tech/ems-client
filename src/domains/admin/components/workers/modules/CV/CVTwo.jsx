@@ -345,7 +345,7 @@ const CVTwo = ({ templateSwitcher }) => {
           {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
         </div>
 
-        {profile?.role_id != 4 && (
+        {profile?.role_id === 1 && profile?.role_id === 2 && (
           <button
             className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
             onClick={() => setShowRemarkModal(true)}
