@@ -35,7 +35,7 @@ const ActionButtons = ({ actions = [], row }) => {
     },
     archive: {
       className: "btn-outline-secondary",
-      icon: <i className="fa-solid fa-box-archive"></i>,
+      icon: <i className="bi bi-person-dash"></i>,
       title: "Archive",
     },
     restore: {
@@ -78,9 +78,10 @@ const ActionButtons = ({ actions = [], row }) => {
       icon: <FaBell />,
       title: "Notify",
     },
+
     transaction: {
       className: "btn-outline-success",
-      icon: <i className="fa-solid fa-wallet"></i>, // Or fa-money-bill-transfer
+      icon: <i className="fa-solid fa-wallet"></i>,
       title: "Record Transaction",
     },
     deleteBadge: {

@@ -317,71 +317,117 @@ const ListUser = () => {
         </RoleButton>
       </div>
       {isSelectionMode && (
-        <div
-          className="d-flex flex-column flex-md-row justify-content-between align-items-center shadow-lg border rounded-4 mb-4 animate__animated animate__fadeInDown sticky-top px-3 px-md-4 py-3"
-          style={{
-            zIndex: 1050,
-            // Adaptive top spacing: closer to top on mobile, more breathing room on desktop
-            top: window.innerWidth < 768 ? "10px" : "20px",
-            backgroundColor: "rgba(255, 255, 255, 0.98)",
-            backdropFilter: "blur(12px)",
-            border: "1px solid rgba(var(--maincolor-rgb), 0.15)", // Thematic border color
-            maxWidth: "1100px", // Increased for better desktop spread
-            margin: "0 auto",
-            width: "95%",
-            transition: "all 0.3s ease", // Smooth transition if window resizes
-          }}
-        >
-          {/* Left Side: Status Info */}
-          <div className="d-flex align-items-center mb-3 mb-md-0 w-100 w-md-auto justify-content-start">
-            <div
-              className="rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm"
-              style={{
-                minWidth: "45px",
-                height: "45px",
-                backgroundColor: "rgba(var(--maincolor-rgb), 0.1)",
-                color: "var(--maincolor)",
-              }}
-            >
-              <i className="bi bi-person-check-fill fs-5"></i>
-            </div>
-            <div>
-              <h6
-                className="mb-0 fw-bold text-dark"
-                style={{ fontSize: "1rem" }}
+        <>
+          <style>{`
+      .bulk-bar {
+  background: linear-gradient(135deg, #eaf3fc, #dcedfb);
+  border: 1px solid rgba(26, 86, 176, 0.15);
+  box-shadow: 0 4px 20px rgba(26, 86, 176, 0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+      .bulk-icon-wrap {
+        background: linear-gradient(135deg, rgba(30, 122, 52, 0.12), rgba(30, 122, 52, 0.05));
+        border: 1px solid rgba(30, 122, 52, 0.15);
+      }
+      .action-btn {
+        position: relative;
+        transition: transform 0.2s cubic-bezier(.2,.9,.3,1.3), box-shadow 0.2s ease;
+        letter-spacing: 0.02em;
+      }
+      .action-btn:hover:not(:disabled) {
+        transform: translateY(-2px) scale(1.03);
+      }
+      .action-btn:active:not(:disabled) {
+        transform: translateY(0) scale(0.98);
+      }
+      .action-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .action-btn-alert:hover:not(:disabled) {
+        box-shadow: 0 6px 18px rgba(52, 211, 153, 0.35);
+      }
+      .action-btn-autofill:hover:not(:disabled) {
+        box-shadow: 0 6px 18px rgba(96, 165, 250, 0.35);
+      }
+      .action-btn-cancel:hover:not(:disabled) {
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      }
+    `}</style>
+
+          <div
+            className="bulk-bar d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown sticky-top px-3 px-md-4 py-2"
+            style={{
+              zIndex: 1050,
+              top: "60px",
+              maxWidth: "1300px",
+              margin: "0 auto",
+              width: "100%",
+              borderRadius: "16px",
+              transition: "all 0.3s ease",
+            }}
+          >
+            {/* Left Side: Status Info */}
+            <div className="d-flex align-items-center mb-3 mb-md-0 w-100 w-md-auto justify-content-start">
+              <div
+                className="bulk-icon-wrap rounded-circle d-flex align-items-center justify-content-center me-3"
+                style={{
+                  minWidth: "38px",
+                  height: "38px",
+                  color: "#1e7a34",
+                }}
               >
-                Bulk Action Mode
-              </h6>
-              <p className="mb-0 text-muted small fw-medium">
-                <span className="fw-bold" style={{ color: "var(--maincolor)" }}>
-                  {selectedUserIds.length}
-                </span>{" "}
-                {selectedUserIds.length === 1 ? "User" : "Users"} selected for
-                notifications
-              </p>
+                <i className="bi bi-person-check-fill fs-6"></i>
+              </div>
+
+              <div>
+                <h6
+                  className="mb-0 fw-bold"
+                  style={{ fontSize: "0.9rem", color: "#1a4d2b" }}
+                >
+                  Bulk Action Mode
+                </h6>
+
+                <p
+                  className="mb-0 small fw-medium"
+                  style={{ color: "rgba(26, 77, 43, 0.65)" }}
+                >
+                  <span className="fw-bold" style={{ color: "#1e7a34" }}>
+                    {selectedUserIds.length}
+                  </span>{" "}
+                  {selectedUserIds.length === 1 ? "user" : "users"}{" "}
+                  selected
+                </p>
+              </div>
+            </div>
+
+            {/* Right Side: Actions */}
+            <div
+              className="d-flex flex-row gap-2 w-100 w-md-auto justify-content-md-end align-items-center"
+              style={{ fontSize: "13px" }}
+            >
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-1 "
+                disabled={selectedUserIds.length === 0}
+                onClick={handleNotify}
+                style={{ fontSize: "16px" }}
+              >
+                Alert
+              </button>
+
+             
+
+              <button
+                type="button"
+                className="btn btn-outline-secondary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-3 "
+                onClick={handleExitSelection}
+                style={{ fontSize: "16px" }}
+              >
+                Cancel
+              </button>
             </div>
           </div>
-
-          {/* Right Side: Actions */}
-          <div className="gap-2 d-flex w-100 w-md-auto justify-content-between justify-content-md-end">
-            <RoleButton
-              visibleTo={[1, 2]}
-              className="btn btn-main btn-sm text-white px-4 fw-bold flex-grow-1 flex-md-grow-0 py-2 py-md-1"
-              disabled={selectedUserIds.length === 0}
-              onClick={handleNotify}
-            >
-              Send Bulk Alert
-            </RoleButton>
-
-            <RoleButton
-              visibleTo={[1, 2]}
-              className="btn btn-outline-secondary btn-sm border flex-grow-1 flex-md-grow-0 py-2 py-md-1"
-              onClick={handleExitSelection}
-            >
-              Cancel
-            </RoleButton>
-          </div>
-        </div>
+        </>
       )}
       <ListingComponent
         data={users}
