@@ -3,7 +3,10 @@ import { axiosInstance } from "../../../utils/axios";
 
 const fetchFiles = async (params = {}) => {
   try {
-    const response = await axiosInstance.get(`/files`, { params });
+    const response = await axiosInstance.get(`/files`, {
+      params,
+      paramsSerializer: { indexes: null },
+    });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch files");

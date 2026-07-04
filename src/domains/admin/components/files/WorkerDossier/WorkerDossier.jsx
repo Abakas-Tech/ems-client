@@ -297,7 +297,7 @@ const MiscFilesSection = ({
         // (category NOT IN (?)). Left as CV_ONE here as a stopgap so at
         // least one CV category doesn't leak into this list — flag this
         // for a backend fix.
-        exclude_category: "CV_ONE",
+        exclude_category: ["CV_ONE", "CV_TWO"],
       };
 
       const response = await fetchFiles(params);
