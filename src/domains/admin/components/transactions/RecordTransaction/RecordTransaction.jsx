@@ -94,6 +94,10 @@ const RecordTransaction = ({
         response?.success || false,
         response?.message || "Transaction saved successfully",
       );
+      // If the transaction was recorded for a specific user and we're not in edit mode, we should navigate back to their page after success.
+      if (formData.user_id && initialData?.userId && !isEditMode) {
+       
+      }
       onSuccess();
     } catch (err) {
       addMessage(false, err.message);
@@ -112,7 +116,7 @@ const RecordTransaction = ({
               {isEditMode ? "Edit Transaction" : "Record New Transaction"}
             </h2>
 
-            <BackButton onClick={onCancel}  />
+            <BackButton onClick={onCancel} />
           </div>
         </div>
         <div className="submit-section">
