@@ -53,10 +53,10 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
       <div className={styles.header}>
         {/* Left: VISA barcode -> VISA No. -> Sponsor */}
         <div className={styles.headerLeft}>
-          <Barcode value={d.visaNumber} />
+          <Barcode value={d.visaNo} />
           <div className={styles.visaLabel}>
             <div>VISA No:</div>
-            <div className={styles.visaNumber}>{d.visaNumber}</div>
+            <div className={styles.visaNumber}>{d.visaNo}</div>
           </div>
 
           <div className={styles.sponsorInfo}>

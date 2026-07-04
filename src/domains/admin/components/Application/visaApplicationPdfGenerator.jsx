@@ -17,9 +17,6 @@ const formatDate = (value) => {
 
 const titleCase = (value) =>
   value ? value.charAt(0).toUpperCase() + value.slice(1).toLowerCase() : null;
-// Pre-fetch an image and inline it as a base64 data URI so html2canvas never
-// has to deal with cross-origin / not-yet-loaded images. Falls back to null
-// (the template then shows its own placeholder) if the fetch fails.
 const toDataUri = async (url) => {
   if (!url) return null;
   try {
@@ -36,9 +33,7 @@ const toDataUri = async (url) => {
     return null;
   }
 };
-// Default values for fields the current API doesn't return yet.
-// These mirror the agency's standard template (MMH Foreign Employment
-// Agent / easyenjaz.net) rather than any specific worker's real data.
+// These are the default values for fields that the embassy form requires.
 const AGENCY_DEFAULTS = {
   qualification: "House Maid",
   profession: "House Maid",
@@ -46,14 +41,9 @@ const AGENCY_DEFAULTS = {
   purposeOfTravel: "Work",
   placeOfIssue: "Ethiopia",
   agentEmail: "mmh.fea@gmail.com",
-  agentWebsite: "www.easyenjaz.net | easyenjaz.sa@gmail.com",
+  agentWebsite: "mmh@gmail.com",
 };
-
-// Fields that MUST come back from the API before a visa application is
-// generated. These are the details that appear on the actual embassy form
-// and can't safely be replaced by a "—" placeholder — if any are missing,
-// the resulting PDF would be incomplete/unsubmittable, so we refuse to
-// generate it.
+// These are the fields the embassy form requires.
 const REQUIRED_FIELDS = [
   { label: "Full Name", get: (p) => p.full_name },
   { label: "Date of Birth", get: (p) => p.personal_information?.date_of_birth },
@@ -75,7 +65,7 @@ const REQUIRED_FIELDS = [
     get: (p) => p.passport?.issuing_country,
   },
   { label: "Visa Number", get: (p) => p.visa?.visa_number },
-  { label: "Sponsor Name", get: (p) => p.visa?.sponsor_name },
+  { label: "Sponsor Name", get: (p) => p.contracts[0]?.employer_name },
 ];
 
 const getMissingRequiredFields = (profile) =>
@@ -84,6 +74,15 @@ const getMissingRequiredFields = (profile) =>
     return value === undefined || value === null || value === "";
   }).map(({ label }) => label);
 
+// Returns a snapshot of all the required fields and their values (or "MISSING" if not present).
+const getRequiredFieldsSnapshot = (profile) =>
+  REQUIRED_FIELDS.reduce((acc, { label, get }) => {
+    const value = get(profile);
+    const isMissing = value === undefined || value === null || value === "";
+    acc[label] = isMissing ? "MISSING" : value;
+    return acc;
+  }, {});
+
 const mapWorkerToVisaForm = (profile, photoDataUri) => {
   const pi = profile.personal_information || {};
   const passport = profile.passport || {};
@@ -91,34 +90,31 @@ const mapWorkerToVisaForm = (profile, photoDataUri) => {
   const today = new Date();
 
   return {
-    visaNo: visa.visa_number  ,
-    agentRef: passport.passport_number
-      ? `E${passport.passport_number}`
-      : `W-${profile.id}`,
-    sponsorName: visa.sponsor_name  ,
-
+    visaNo: visa.visa_number,
+    agentRef: visa.reference_number,
+    sponsorName: profile.contracts[0]?.employer_name,
     fullName: (profile.full_name || "N/A").toUpperCase(),
     dateOfBirth: formatDate(pi.date_of_birth),
-    placeOfBirth: pi.place_of_birth  ,
-    pastNationality: pi.past_nationality  ,
+    placeOfBirth: pi.place_of_birth,
+    pastNationality: pi.past_nationality,
     currentNationality: pi.nationality || "Ethiopia",
-    sex: titleCase(pi.sex)  ,
-    maritalStatus: titleCase(pi.marital_status)  ,
-    sect: pi.sect  ,
-    religion: titleCase(pi.religion)  ,
+    sex: titleCase(pi.sex),
+    maritalStatus: titleCase(pi.marital_status),
+    sect: pi.sect,
+    religion: titleCase(pi.religion),
 
     qualification: pi.education || AGENCY_DEFAULTS.qualification,
     profession: AGENCY_DEFAULTS.profession,
     homeAddress: visa.destination_address || AGENCY_DEFAULTS.homeAddress,
-    businessAddress: visa.business_address  ,
+    businessAddress: visa.business_address,
     purposeOfTravel: visa.purpose_of_travel || AGENCY_DEFAULTS.purposeOfTravel,
 
     placeOfIssue: passport.issuing_country || AGENCY_DEFAULTS.placeOfIssue,
     dateOfIssue: formatDate(passport.issue_date),
-    passportNo: passport.passport_number  ,
+    passportNo: passport.passport_number,
     dateOfExpiry: formatDate(passport.expiry_date),
 
-    durationOfStay: visa.duration_of_stay  ,
+    durationOfStay: visa.duration_of_stay,
     dateOfArrival:
       formatDate(visa.date_of_arrival) === "—"
         ? "—"
@@ -127,44 +123,26 @@ const mapWorkerToVisaForm = (profile, photoDataUri) => {
       formatDate(visa.date_of_departure) === "—"
         ? "—"
         : formatDate(visa.date_of_departure),
-    modeOfPayment: visa.mode_of_payment  ,
-    paymentNo: visa.payment_no  ,
+    modeOfPayment: visa.mode_of_payment,
+    paymentNo: visa.payment_no,
     paymentDate: formatDate(visa.payment_date),
-    relationship: visa.relationship  ,
-    dealerName: visa.dealer_name  ,
-    destination: visa.destination  ,
+    relationship: visa.relationship,
+    dealerName: visa.dealer_name,
+    destination: visa.destination,
     dependents: profile.dependents || [],
-    companyInKingdom: visa.company_in_kingdom  ,
+    companyInKingdom: visa.company_in_kingdom,
 
     photoUrl: photoDataUri,
     signDate: formatDate(today),
     generatedDateLabel: today.toDateString(),
     agentEmail: AGENCY_DEFAULTS.agentEmail,
     agentWebsite: AGENCY_DEFAULTS.agentWebsite,
-
-    // phone number used for the WhatsApp share flow, kept off the visible
-    // form itself — not rendered by VisaApplicationTemplate.
+    // The API doesn't yet return a phone number, so we try to get it from the personal information first, then the profile, and if neither has it, we set it to null.
     _phoneNumber: pi.phone_number || profile.phone_number || null,
   };
 };
 
 /**
- * Fetches the worker's profile, renders the visa application template
- * off-screen, captures it, and produces a PDF.
- *
- * If the API doesn't yet have all the information the embassy form
- * requires (see REQUIRED_FIELDS), no PDF is generated — this throws a
- * simple, general Error instead of producing an incomplete document. The
- * specific missing fields are logged to the console for debugging, but
- * kept out of the user-facing message.
- *
- * By default this preserves the original behavior: it triggers an instant
- * browser download via pdf.save(...) and returns nothing.
- *
- * Pass `{ autoDownload: false }` to instead get the generated file back
- * (as a Blob + object URL + filename) without triggering a download, so the
- * caller can show its own "Download or Share" UI afterwards.
- *
  * @param {number|string} employeeId
  * @param {{ logoSrc?: string, autoDownload?: boolean }} [options]
  * @returns {Promise<void|{ blob: Blob, url: string, fileName: string, fullName: string, phoneNumber: string|null }>}
@@ -175,22 +153,18 @@ export async function generateVisaApplicationPdf(employeeId, options = {}) {
   const { autoDownload = true, logoSrc } = options;
 
   const res = await getWorkerProfile(employeeId);
+  console.log(res);
   const profile = res?.data || res;
   if (!profile) throw new Error("Worker profile not found");
-
-  // Refuse to generate an incomplete visa application — bail out early
-  // instead of producing a half-filled PDF. Keep the specific missing
-  // fields in the console for debugging, but throw a simple, general
-  // message for the user-facing side.
+  // Check for missing required fields before proceeding.
   const missingFields = getMissingRequiredFields(profile);
   if (missingFields.length > 0) {
     console.warn(
-      "Visa application generation blocked — missing fields:",
-      missingFields,
+      "Visa application generation blocked — required fields:",
+      getRequiredFieldsSnapshot(profile),
     );
-    throw new Error(
-      "Required worker information is missing.",
-    );
+    console.warn("Missing fields:", missingFields);
+    throw new Error("Required worker information is missing.");
   }
 
   const pi = profile.personal_information || {};
@@ -218,29 +192,45 @@ export async function generateVisaApplicationPdf(employeeId, options = {}) {
         logoSrc={logoSrc}
       />,
     );
-    // Give the browser a couple of frames to lay out, paint fonts/images,
-    // and let the barcode <svg> elements render before we capture.
+    // Wait a couple of frames to ensure the template is fully rendered and styled.
     requestAnimationFrame(() =>
       requestAnimationFrame(() => setTimeout(resolve, 150)),
     );
   });
 
   try {
+    // scale: 1.5 is plenty sharp for an A4 document form and cuts the raw
+    // pixel count (and therefore the encoded image size) versus scale: 2.
     const canvas = await html2canvas(templateNode, {
-      scale: 2,
+      scale: 1.5,
       useCORS: true,
       backgroundColor: "#ffffff",
     });
 
-    const imgData = canvas.toDataURL("image/png");
+    // The previous PNG capture was the main reason the PDF ballooned to
+    // ~10MB — PNG is lossless, so a big flat-colored form document still
+    // encodes to a huge file. Encoding as JPEG with a high-but-lossy
+    // quality keeps the form perfectly legible while shrinking the
+    // embedded image dramatically (usually 90%+ smaller).
+    const imgData = canvas.toDataURL("image/jpeg", 0.72);
     const pdf = new jsPDF({
       orientation: "portrait",
       unit: "mm",
       format: "a4",
+      compress: true,
     });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = (canvas.height * pageWidth) / canvas.width;
-    pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+    pdf.addImage(
+      imgData,
+      "JPEG",
+      0,
+      0,
+      pageWidth,
+      pageHeight,
+      undefined,
+      "FAST",
+    );
 
     const fileSafeName = mapped.fullName.replace(/\s+/g, "_");
     const fileName = `Visa_Application_${fileSafeName}.pdf`;
@@ -261,6 +251,12 @@ export async function generateVisaApplicationPdf(employeeId, options = {}) {
       fileName,
       fullName: mapped.fullName,
       phoneNumber: mapped._phoneNumber || null,
+      // Included so a caller can render <VisaApplicationTemplate> directly
+      // on-screen for a live preview, instead of embedding the generated
+      // PDF in an iframe (which pulls in the browser's own PDF-viewer
+      // toolbar/scrollbar chrome).
+      mapped,
+      logoSrc,
     };
   } finally {
     root.unmount();
