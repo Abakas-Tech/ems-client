@@ -142,7 +142,7 @@ const MENU_CONFIG = [
   {
     label: "File Manager",
     path: "/partner/files",
-    icon: "bi bi-files",
+    icon: "bi bi-folder2-open",
     roles: [ROLES.PARTNER],
   },
 

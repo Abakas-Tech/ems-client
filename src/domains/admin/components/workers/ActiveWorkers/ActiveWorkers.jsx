@@ -222,6 +222,24 @@ const ActiveWorkers = () => {
     }
   };
 
+ const handleFiles = (row) => {
+   if (role === 3) {
+     navigate("/partner/files", {
+       state: {
+         workerId: row.id,
+         tab: "workers",
+       },
+     });
+   } else {
+     navigate("/admin/files", {
+       state: {
+         workerId: row.id,
+         tab: "workers",
+       },
+     });
+   }
+ };
+
   const handleArchive = (id) => {
     openModal(
       async () => {
@@ -465,13 +483,7 @@ const ActiveWorkers = () => {
           },
           {
             type: "files",
-            onClick: (row) =>
-              navigate("/admin/files", {
-                state: {
-                  workerId: row.id,
-                  tab: "workers",
-                },
-              }),
+            onClick: (row) => handleFiles(row),
           },
           {
             type: "archive",
