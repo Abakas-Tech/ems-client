@@ -9,7 +9,7 @@ import { useDelete } from "../../../../../context/Delete/useDelete.jsx";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import Badge from "../../../../../shared/components/Badge/Badge.jsx";
 import FinanceReportSummary from "../FinancialReport/FinancialReport.jsx";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useProfile from "../../../../../context/Profile/useProfile.jsx";
 
 const FinancePage = () => {
@@ -18,6 +18,7 @@ const FinancePage = () => {
   const { openModal } = useDelete();
   const location = useLocation();
   const { profile } = useProfile();
+  const navigate = useNavigate();
   const ADMIN_ROLE_ID = 1;
 
   const [view, setView] = useState("list");
@@ -59,8 +60,8 @@ const FinancePage = () => {
         ...response,
         data: processedTransactions,
       });
-    } catch{
-    console.error("Failed to fetch transactions:");
+    } catch {
+      console.error("Failed to fetch transactions:");
     } finally {
       hideLoader();
     }
@@ -104,10 +105,16 @@ const FinancePage = () => {
         isEditMode={view === "edit"}
         initialData={view === "edit" ? editingTransaction : location.state} // Pass state here
         onSuccess={() => {
-          setView("list");
+          const cameFromWorker = !!location.state?.userId;
           setEditingTransaction(null);
           // Clear location state so refresh doesn't trigger create mode again
           window.history.replaceState({}, document.title);
+          if (cameFromWorker) {
+            // Transaction was for a specific worker — go back to their listing
+            navigate(-1);
+            return;
+          }
+          setView("list");
         }}
         onCancel={() => setView("list")}
       />
@@ -229,7 +236,6 @@ const FinancePage = () => {
             onClick: (row) => handleDelete(row.id),
             showOn: true,
           },
-           
         ]}
         pagination={{
           page: filters.page,
