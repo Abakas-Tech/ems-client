@@ -1,7 +1,7 @@
 const ORG = {
   insurerName: "Nyala Insurance S.C",
-  insurerAmharic: "ደህና ኢንሹራንስ አ.ማ",
-  insurerAddress: "Protection House, Mile Leland Street",
+  insurerAmharic: "ኒያላ ኢንሹራንስ አ.ማ",
+  insurerAddress: "Protection House, Miky Leland Street",
   insurerPOBox: "P.O. Box 12753",
   insurerPhone: "Tel: 251-116-626667, Fax: 251-116-626706",
   insurerWebsite: "www.nyalainsurance.com",
@@ -130,9 +130,10 @@ const buildDocumentHtml = (doc, index, total, logos) => {
     <div class="beneficiaryRow totalRow">
       <span class="beneficiaryIndex"></span>
       <span class="beneficiaryCell colName"></span>
+        <span class="beneficiaryCell colAddr"></span>
       <span class="beneficiaryCell colRel totalLabel">Total</span>
-      <span class="beneficiaryCell colPct center"><span class="line totalValue">100%</span></span>
-      <span class="beneficiaryCell colAddr"></span>
+      <span class="beneficiaryCell colPct center"><span class="totalValue">100%</span></span>
+    
     </div>
 
     <div class="attachNote">Please attach a copy of Passport and Kebele ID to this form.</div>
