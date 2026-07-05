@@ -79,10 +79,9 @@ const ActionButtons = ({ actions = [], row }) => {
       icon: <FaBell />,
       title: "Notify",
     },
-
     transaction: {
       className: "btn-outline-success",
-      icon: <i className="fa-solid fa-wallet"></i>,
+      icon: <i className="fa-solid fa-wallet"></i>, // Or fa-money-bill-transfer
       title: "Record Transaction",
     },
     deleteBadge: {
@@ -95,6 +94,11 @@ const ActionButtons = ({ actions = [], row }) => {
       icon: <i className="fa-solid fa-file-pdf"></i>,
       title: "View CV",
     },
+    downloadVisa: {
+      className: "btn-outline-dark",
+      icon: <i className="fa-solid fa-passport"></i>,
+      title: "Download Visa Application",
+    },
     files: {
       className: "btn-outline-warning",
       icon: <i className="fa-solid fa-folder-open"></i>,
@@ -103,17 +107,33 @@ const ActionButtons = ({ actions = [], row }) => {
   };
 
   // Filter actions by role only (ignore showOn)
-  const allowedActions = actions.filter(
-    (actionObj) =>
+  const allowedActions = actions.filter((actionObj) => {
+    // Custom render type doesn't need role check
+    if (actionObj.type === "custom" && actionObj.render) {
+      return true;
+    }
+
+    return (
       actionObj.type &&
       ACTION_CONFIG[actionObj.type] &&
       (ACTION_ROLE_CONFIG[actionObj.type]?.includes(role) ||
-        actionObj.bypassRole === true),
-  );
+        actionObj.bypassRole === true)
+    );
+  });
 
   return (
     <div className="d-flex gap-2 justify-content-start">
-      {allowedActions.map((actionObj) => {
+      {allowedActions.map((actionObj, index) => {
+        // Handle custom render type (for ApplicantReportGenerator)
+        if (actionObj.type === "custom" && actionObj.render) {
+          return (
+            <div key={`custom-${index}`} className="d-inline-block">
+              {actionObj.render(row)}
+            </div>
+          );
+        }
+
+        // Existing: Handle standard button actions
         const { type, onClick, disabled } = actionObj;
         const config = ACTION_CONFIG[type];
 

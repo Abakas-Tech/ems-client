@@ -16,6 +16,9 @@ import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import useProfile from "../../../../../context/Profile/useProfile";
+import { generateVisaApplicationPdf } from "../../Application/visaApplicationPdfGenerator";
+import VisaApplicationTemplate from "../../Application/VisaApplicationTemplate";
+import { printInsuranceParticulars } from "../../Insurance/InsuranceReport";
 
 const ActiveWorkers = () => {
   const navigate = useNavigate();
@@ -31,11 +34,15 @@ const ActiveWorkers = () => {
   const [filters, setFilters] = useState({});
 
   // --- Selection Mode States ---
-  // Used for BOTH:
+  // Used for:
   // 1. Bulk notifications
   // 2. Autofill queue preparation
+  // 3. Bulk insurance printing
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
+
+  // --- Visa Application Preview State ---
+  const [visaPreview, setVisaPreview] = useState(null);
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -83,6 +90,28 @@ const ActiveWorkers = () => {
   // Edit Handler
   const handleEdit = (row) => {
     navigate(`/admin/employees/edit/${row.id}`, { state: row });
+  };
+
+  // Bulk Insurance Print Handler
+  const handlePrintInsurance = async () => {
+    if (selectedWorkerIds.length === 0) return;
+
+    showLoader();
+
+    try {
+      const missingIds = await printInsuranceParticulars(selectedWorkerIds);
+
+      if (missingIds.length > 0) {
+        addMessage(
+          false,
+          `No insurance data found for worker ID(s): ${missingIds.join(", ")}`,
+        );
+      }
+    } catch (err) {
+      addMessage(false, err.message || "Failed to generate insurance report");
+    } finally {
+      hideLoader();
+    }
   };
 
   // --- Selection Handlers ---
@@ -308,13 +337,83 @@ const ActiveWorkers = () => {
     });
   };
 
+  // --- Visa Application Handlers ---
+  const handleDownloadVisaApplication = async (id) => {
+    showLoader();
+
+    try {
+      const result = await generateVisaApplicationPdf(id, {
+        autoDownload: false,
+      });
+
+      hideLoader();
+
+      if (!result?.url) {
+        addMessage(false, "Failed to generate visa application");
+        return;
+      }
+
+      setVisaPreview(result);
+    } catch (err) {
+      hideLoader();
+      console.error("Failed to generate visa application PDF:", err);
+      addMessage(false, err.message || "Failed to generate visa application");
+    }
+  };
+
+  const triggerVisaDownload = () => {
+    if (!visaPreview) return;
+
+    const link = document.createElement("a");
+    link.href = visaPreview.url;
+    link.download = visaPreview.fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Share the generated visa application PDF via WhatsApp.
+  const shareVisaOnWhatsapp = async () => {
+    if (!visaPreview) return;
+
+    const { blob, fileName, fullName } = visaPreview;
+
+    try {
+      const file = new File([blob], fileName, { type: "application/pdf" });
+
+      if (
+        navigator.canShare &&
+        navigator.canShare({ files: [file] }) &&
+        navigator.share
+      ) {
+        await navigator.share({
+          files: [file],
+          title: "Visa Application",
+          text: `Visa application for ${fullName}`,
+        });
+        return;
+      }
+    } catch (err) {
+      if (err?.name === "AbortError") return;
+      console.warn(
+        "Native file share failed, falling back to WhatsApp text link:",
+        err,
+      );
+    }
+
+    // Fallback: text-only WhatsApp link (wa.me cannot attach files).
+    const message = `Visa application for ${fullName} is ready: ${fileName}`;
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, "_blank", "noopener,noreferrer");
+  };
+
   const goBack = () => {
     navigate(-1);
   };
 
   return (
     <div className="dashboard-wraper">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
         <div className={`mb-${role === 5 ? "0" : "4"}`}>
           {role !== 3 && role !== 5 && <BackButton onClick={goBack} />}
 
@@ -330,6 +429,23 @@ const ActiveWorkers = () => {
                 : "View and manage active employees, access detailed profiles, archive records, or remove employees when needed."}
           </p>
         </div>
+
+        {visaPreview && (
+          <div className="d-flex flex-wrap justify-content-end gap-2 me-5 mb-3 mt-lg-4">
+            <button
+              className="btn btn-main text-white fw-bold px-4"
+              onClick={triggerVisaDownload}
+            >
+              Download
+            </button>
+            <button
+              className="btn btn-outline-main fw-bold px-4"
+              onClick={shareVisaOnWhatsapp}
+            >
+              Share
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Floating Selection Bar */}
@@ -419,7 +535,7 @@ const ActiveWorkers = () => {
 
             {/* Right Side: Actions */}
             <div
-              className="d-flex flex-row gap-2 w-100 w-md-auto justify-content-md-end align-items-center"
+              className="d-flex flex-row flex-wrap gap-2 w-100 w-md-auto justify-content-md-end align-items-center"
               style={{ fontSize: "13px" }}
             >
               <button
@@ -444,7 +560,17 @@ const ActiveWorkers = () => {
 
               <button
                 type="button"
-                className="btn btn-outline-secondary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-3 "
+                className="btn btn-outline-info btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-3 "
+                disabled={selectedWorkerIds.length === 0}
+                onClick={handlePrintInsurance}
+                style={{ fontSize: "16px" }}
+              >
+                Print Insurance
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-outline-secondary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-4 "
                 onClick={handleExitSelection}
                 style={{ fontSize: "16px" }}
               >
@@ -455,85 +581,109 @@ const ActiveWorkers = () => {
         </>
       )}
 
-      <ListingComponent
-        showAvater={true}
-        // Selection Props
-        isSelectionMode={isSelectionMode}
-        selectedIds={selectedWorkerIds}
-        onSelectRow={handleSelectRow}
-        onSelectAll={handleSelectAll}
-        onRowDoubleClick={handleRowDoubleClick}
-        filtersComponent={
-          role !== 5 ? (
-            <ActiveWorkersFilters
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onClear={handleClear}
+      {visaPreview ? (
+        <div className="d-flex">
+          <div
+            className="border rounded-3"
+            style={{ maxWidth: "100%", overflowX: "auto" }}
+          >
+            <VisaApplicationTemplate
+              data={visaPreview.mapped}
+              logoSrc={visaPreview.logoSrc}
             />
-          ) : null
-        }
-        data={workers}
-        columns={[
-          {
-            header: "Name",
-            accessor: "full_name",
-            render: (row) => <span className="fw-bold">{row.full_name}</span>,
-          },
-          {
-            header: "Phone Number",
-            accessor: "phone_number",
-          },
-          {
-            header: "Current Status",
-            accessor: "status",
-          },
-        ]}
-        actions={[
-          {
-            type: "view",
-            onClick: (row) => handleView(row.id),
-          },
+          </div>
+        </div>
+      ) : (
+        <ListingComponent
+          showAvater={true}
+          // Selection Props
+          isSelectionMode={isSelectionMode}
+          selectedIds={selectedWorkerIds}
+          onSelectRow={handleSelectRow}
+          onSelectAll={handleSelectAll}
+          onRowDoubleClick={handleRowDoubleClick}
+          filtersComponent={
+            role !== 5 ? (
+              <ActiveWorkersFilters
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onClear={handleClear}
+              />
+            ) : null
+          }
+          data={workers}
+          columns={[
+            {
+              header: "Name",
+              accessor: "full_name",
+              render: (row) => <span className="fw-bold">{row.full_name}</span>,
+            },
+            {
+              header: "Phone Number",
+              accessor: "phone_number",
+            },
+            {
+              header: "Current Status",
+              accessor: "status",
+            },
+          ]}
+          actions={[
+            {
+              type: "view",
+              onClick: (row) => handleView(row.id),
+            },
 
-          { type: "edit", onClick: (row) => handleEdit(row) },
-          {
-            type: "notify",
-            onClick: (row) => handleNotify(row),
-          },
-          {
-            type: "transaction",
-            onClick: (row) => handleRecordTransaction(row),
-          },
-          {
-            type: "files",
-            onClick: (row) => handleFiles(row),
-          },
-          {
-            type: "archive",
-            onClick: (row) => handleArchive(row.id),
-          },
-          {
-            type: "delete",
-            onClick: (row) => handleDelete(row.id),
-          },
-          {
-            type: "addModule",
-            onClick: (row) =>
-              navigate(`/admin/employees/modules/${row.id}/add`),
-          },
-        ]}
-        emptyState={{
-          title:
-            role === 5
-              ? "No employees is assigned to you yet"
-              : "No Active employees found",
-        }}
-        pagination={{
-          page,
-          limit,
-          total: totalItems,
-        }}
-        onPageChange={setPage}
-      />
+            { type: "edit", onClick: (row) => handleEdit(row) },
+            {
+              type: "notify",
+              onClick: (row) => handleNotify(row),
+            },
+            {
+              type: "transaction",
+              onClick: (row) => handleRecordTransaction(row),
+            },
+            {
+              type: "files",
+              onClick: (row) => handleFiles(row),
+            },
+            {
+              type: "viewCV",
+              onClick: (row) =>
+                window.open(row.cv_url, "_blank", "noopener,noreferrer"),
+              showOn: (row) => row.cv_url,
+            },
+            {
+              type: "downloadVisa",
+              onClick: (row) => handleDownloadVisaApplication(row.id),
+            },
+            {
+              type: "archive",
+              onClick: (row) => handleArchive(row.id),
+            },
+            {
+              type: "delete",
+              onClick: (row) => handleDelete(row.id),
+            },
+            {
+              type: "addModule",
+              onClick: (row) =>
+                navigate(`/admin/employees/modules/${row.id}/add`),
+            },
+          ]}
+          emptyState={{
+            title:
+              role === 5
+                ? "No employees is assigned to you yet"
+                : "No Active employees found",
+          }}
+          pagination={{
+            page,
+            limit,
+            total: totalItems,
+          }}
+          onPageChange={setPage}
+        />
+      )}
     </div>
   );
 };
