@@ -15,6 +15,7 @@ import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import useProfile from "../../../../../context/Profile/useProfile";
 import { generateVisaApplicationPdf } from "../../Application/visaApplicationPdfGenerator";
 import VisaApplicationTemplate from "../../Application/VisaApplicationTemplate";
+import { printInsuranceParticulars } from "../../Insurance/InsuranceReport";
 
 const ActiveWorkers = () => {
   const navigate = useNavigate();
@@ -74,6 +75,24 @@ const ActiveWorkers = () => {
         userRole: "employee",
       },
     });
+  };
+
+  const handlePrintInsurance = async () => {
+    if (selectedWorkerIds.length === 0) return;
+    showLoader();
+    try {
+      const missingIds = await printInsuranceParticulars(selectedWorkerIds);
+      if (missingIds.length > 0) {
+        addMessage(
+          false,
+          `No insurance data found for worker ID(s): ${missingIds.join(", ")}`,
+        );
+      }
+    } catch (err) {
+      addMessage(false, err.message || "Failed to generate insurance report");
+    } finally {
+      hideLoader();
+    }
   };
   // --- Selection Handlers ---
   const handleRowDoubleClick = (row) => {
@@ -381,6 +400,14 @@ const ActiveWorkers = () => {
               onClick={handleNotify}
             >
               Send Bulk Alert
+            </button>
+
+            <button
+              className="btn btn-outline-main btn-sm px-4 fw-bold flex-grow-1 flex-md-grow-0 py-2 py-md-1"
+              disabled={selectedWorkerIds.length === 0}
+              onClick={handlePrintInsurance}
+            >
+              Print Insurance
             </button>
 
             <button
