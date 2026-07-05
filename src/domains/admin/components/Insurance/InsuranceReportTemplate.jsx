@@ -1,7 +1,7 @@
 const ORG = {
   insurerName: "Nyala Insurance S.C",
-  insurerAmharic: "ደህና ኢንሹራንስ አ.ማ",
-  insurerAddress: "Protection House, Mile Leland Street",
+  insurerAmharic: "ኒያላ ኢንሹራንስ አ.ማ",
+  insurerAddress: "Protection House, Miky Leland Street",
   insurerPOBox: "P.O. Box 12753",
   insurerPhone: "Tel: 251-116-626667, Fax: 251-116-626706",
   insurerWebsite: "www.nyalainsurance.com",
