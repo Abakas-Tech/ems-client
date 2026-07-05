@@ -1,5 +1,3 @@
-// components/InsuranceReport/insuranceReport.template.js
-
 const ORG = {
   insurerName: "Nyala Insurance S.C",
   insurerAmharic: "ደህና ኢንሹራንስ አ.ማ",
@@ -71,9 +69,9 @@ const buildDocumentHtml = (doc, index, total, logos) => {
     </div>
 
     <div class="fieldRow">
-      <span class="label">Name:</span><span class="line grow3">${val(life.name)}</span>
-      <span class="label">Father's Name:</span><span class="line grow3">${val(life.fathersName)}</span>
-      <span class="label">G. Father's Name:</span><span class="line grow3">${val(life.grandfathersName)}</span>
+      <span class="label">Name:</span><span class="line grow2">${val(life.name)}</span>
+      <span class="label">Father's Name:</span><span class="line grow2">${val(life.fathersName)}</span>
+      <span class="label">G. Father's Name:</span><span class="line grow2">${val(life.grandfathersName)}</span>
     </div>
 
     <div class="fieldRow">
@@ -140,7 +138,7 @@ const buildDocumentHtml = (doc, index, total, logos) => {
     <div class="attachNote">Please attach a copy of Passport and Kebele ID to this form.</div>
 
     <div class="signRow">
-      <span class="label">Name of Life Assured:</span><span class="line grow3">${val(life.name)} ${val(life.fathersName)}</span>
+      <span class="label">Name of Life Assured:</span><span class="line grow2"></span>
       <span class="label">Signature:</span><span class="line grow2"></span>
       <span class="label">Date:</span><span class="line grow1"></span>
     </div>
@@ -159,8 +157,6 @@ const buildDocumentHtml = (doc, index, total, logos) => {
   </div>`;
 };
 
-// logos = { agencyLogoUrl, centerImageUrl } — must be resolved, absolute URLs
-// (imported images or base64 data URIs), never bare relative paths.
 export const buildInsuranceReportHtml = (documents = [], logos = {}) => {
   const total = documents.length;
   const pages = documents
@@ -173,38 +169,38 @@ export const buildInsuranceReportHtml = (documents = [], logos = {}) => {
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   @page{size:A4;margin:0;}
   body{font-family:"Times New Roman",Times,serif;color:#111;background:#fff;print-color-adjust:exact;-webkit-print-color-adjust:exact;}
-  .page{position:relative;width:210mm;min-height:297mm;padding:14mm 16mm 24mm;font-size:11.5pt;}
+  .page{position:relative;width:210mm;min-height:297mm;padding:14mm 10mm;font-size:11.5pt;}
   .pageBreak{page-break-after:always;}
 
-  .letterhead{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #8b1e3f;padding-bottom:8px;margin-bottom:10px;gap:10px;}
+  .letterhead{display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;margin-bottom:14px;gap:14px;}
   .agencyBlock{flex:0 0 auto;display:flex;align-items:center;}
-  .agencyLogo{height:64px;width:64px;object-fit:contain;border-radius:50%;}
+  .agencyLogo{height:100px;width:100px;object-fit:contain;border-radius:50%;}
   .centerBlock{flex:1;display:flex;justify-content:center;align-items:center;}
-  .centerImage{height:56px;object-fit:contain;}
-  .insurerBlock{flex:0 0 auto;text-align:right;line-height:1.35;}
-  .amharic{font-size:12pt;font-weight:700;}
-  .insurerName{font-size:14pt;font-weight:700;color:#8b1e3f;}
-  .insurerMeta{font-size:9pt;color:#333;}
+  .centerImage{height:100px;object-fit:contain;}
+  .insurerBlock{flex:0 0 auto;text-align:left;line-height:1.5;}
+  .amharic{font-size:12pt;font-weight:700;color:#8b1e3f}
+  .insurerName{font-size:14pt;font-weight:700;;}
+  .insurerMeta{font-size:9pt;color:#D97D53;}
 
-  .formTitle{text-align:center;font-weight:700;font-size:14pt;text-decoration:underline;margin:10px 0 15px;}
-  .sectionHeading{font-weight:700;text-decoration:underline;font-size:12pt;margin:12px 0 7px;}
+  .formTitle{text-align:center;font-weight:700;font-size:14pt;margin:12px 0 18px;}
+  .sectionHeading{font-weight:700;;font-size:12pt;margin:18px 0 9px;}
 
-  .titleRow{margin-bottom:8px;font-size:11.5pt;}
+  .titleRow{margin-bottom:14px;font-size:12pt;}
   .titleSel{font-weight:700;text-decoration:underline;}
 
-  .fieldRow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:7px;margin-bottom:8px;font-size:11.5pt;}
+  .fieldRow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:7px;margin-bottom:16px;font-size:12pt;}
   .label{font-weight:600;white-space:nowrap;}
   .line{border-bottom:1px solid #000;min-width:40px;padding:0 4px;flex-grow:1;display:inline-block;}
-  .grow1{flex-grow:1;} .grow2{flex-grow:2;} .grow3{flex-grow:3;}
+  .grow1{flex-grow:0;} .grow2{flex-grow:1;} .grow3{flex-grow:2;}
   .hint{font-size:9pt;color:#555;margin-left:6px;}
 
-  .beneficiaryNote{font-size:9.5pt;font-style:italic;margin-bottom:8px;}
+  .beneficiaryNote{font-size:11.5pt;margin-bottom:14px;}
 
   /* Beneficiary block: header + rows share identical column widths so
      underlines in each row sit exactly beneath their header label. */
   .beneficiaryHeaderRow,.beneficiaryRow{display:flex;align-items:flex-end;gap:8px;}
-  .beneficiaryHeaderRow{font-weight:700;font-size:10.5pt;margin-bottom:6px;}
-  .beneficiaryRow{font-size:11.5pt;margin-bottom:9px;}
+  .beneficiaryHeaderRow{font-weight:700;font-size:10.5pt;margin-bottom:14px;}
+  .beneficiaryRow{font-size:11.5pt;margin-bottom:12px;}
 
   .beneficiaryIndex{width:20px;flex:0 0 20px;font-weight:600;}
   .beneficiaryCell{display:flex;}
@@ -215,14 +211,14 @@ export const buildInsuranceReportHtml = (documents = [], logos = {}) => {
   .beneficiaryCell .line{width:100%;}
   .center{text-align:center;justify-content:center;}
 
-  .totalRow{margin-top:2px;}
+  .totalRow{margin-top:4px;}
   .totalLabel{font-weight:700;text-align:right;padding-right:6px;}
   .totalValue{font-weight:700;text-align:center;}
 
-  .attachNote{font-size:9.5pt;margin:8px 0 16px;}
+  .attachNote{font-size:9.5pt;margin:18px 0 18px;}
   .signRow{display:flex;gap:10px;align-items:flex-end;font-size:11.5pt;}
 
-  .brandStrip{position:absolute;left:0;right:0;bottom:0;height:22px;line-height:0;}
+  .brandStrip{position:absolute;left:0;right:0;bottom:0;height:62px;line-height:0;}
   .brandStrip svg{width:100%;height:100%;display:block;}
 </style>
 </head><body>${pages}</body></html>`;
