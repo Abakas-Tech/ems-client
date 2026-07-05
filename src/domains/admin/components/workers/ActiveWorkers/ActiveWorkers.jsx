@@ -195,9 +195,7 @@ const ActiveWorkers = () => {
     });
   };
 
-  // Autofill flow — new
-  // This does NOT send to the extension yet.
-  // It only carries the selected worker IDs to the next page where we will build:
+
   // 4 cards: Wafid / Tasheer / Insurance / Musaned
   const handleAutofillSelected = () => {
     if (selectedWorkerIds.length === 0) return;
