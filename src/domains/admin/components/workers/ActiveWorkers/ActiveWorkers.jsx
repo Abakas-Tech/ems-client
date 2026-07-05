@@ -412,15 +412,12 @@ const ActiveWorkers = () => {
   };
 
   return (
-    <div className="dashboard-wraper">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+    <div className="dashboard-wraper position-relative">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-start gap-3">
         <div className={`mb-${role === 5 ? "0" : "4"}`}>
-          {role !== 3 && role !== 5 && <BackButton onClick={goBack} />}
-
           <h2 className="fw-bold text-dark mb-2">
             {role === 5 ? "My Employees" : "Active Employees"}
           </h2>
-
           <p className="text-muted mb-0">
             {role === 5
               ? "View the employees assigned to you and access their profiles."
@@ -430,16 +427,25 @@ const ActiveWorkers = () => {
           </p>
         </div>
 
+        {role !== 3 && role !== 5 && (
+          <div className="position-absolute top-0 end-0 mt-4 pt-2">
+            <BackButton onClick={goBack} />
+          </div>
+        )}
+
         {visaPreview && (
-          <div className="d-flex flex-wrap justify-content-end gap-2 me-5 mb-3 mt-lg-4">
+          <div
+            className="d-flex flex-nowrap justify-content-end gap-2 mt-sm-0 mt-lg-5 mb-2 mb-sm-0"
+            style={{ marginTop: "-1.5rem" }}
+          >
             <button
-              className="btn btn-main text-white fw-bold px-4"
+              className="btn btn-main text-white fw-bold px-3 px-md-4"
               onClick={triggerVisaDownload}
             >
               Download
             </button>
             <button
-              className="btn btn-outline-main fw-bold px-4"
+              className="btn btn-outline-main fw-bold px-3 px-md-4"
               onClick={shareVisaOnWhatsapp}
             >
               Share
@@ -560,7 +566,7 @@ const ActiveWorkers = () => {
 
               <button
                 type="button"
-                className="btn btn-outline-info btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-3 "
+                className="btn btn-outline-secondary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-3 "
                 disabled={selectedWorkerIds.length === 0}
                 onClick={handlePrintInsurance}
                 style={{ fontSize: "16px" }}
@@ -570,7 +576,7 @@ const ActiveWorkers = () => {
 
               <button
                 type="button"
-                className="btn btn-outline-secondary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-4 "
+                className="btn btn-outline-danger btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-4 "
                 onClick={handleExitSelection}
                 style={{ fontSize: "16px" }}
               >

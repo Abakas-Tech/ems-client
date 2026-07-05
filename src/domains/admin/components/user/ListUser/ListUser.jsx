@@ -419,7 +419,7 @@ const ListUser = () => {
 
               <button
                 type="button"
-                className="btn btn-outline-secondary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-3 "
+                className="btn btn-outline-danger btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-3 "
                 onClick={handleExitSelection}
                 style={{ fontSize: "16px" }}
               >

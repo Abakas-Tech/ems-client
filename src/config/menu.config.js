@@ -90,6 +90,13 @@ const MENU_CONFIG = [
   },
 
   {
+    label: "External Links",
+    path: "/admin/external-links",
+    icon: "bi bi-link-45deg",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  },
+
+  {
     label: "Settings",
     path: "/admin/settings",
     icon: "bi-gear",
