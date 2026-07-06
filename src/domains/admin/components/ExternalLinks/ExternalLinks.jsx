@@ -6,7 +6,7 @@ import wafidLogo from "../../../../assets/img/autofill/wafid.svg";
 import tasheerLogo from "../../../../assets/img/autofill/tasheer.png";
 import visaMofa from "../../../../assets/img/visa/visa.png";
 import Lmis from "../../../../assets/img/externalLinks/lmis.png";
-// import easyEnjaz from "../../../../assets/img/externalLinks/easyenjaz.png";
+import eow from "../../../../assets/img/externalLinks/eow.png";
 import teleBirr from "../../../../assets/img/externalLinks/teleBirr.jpg";
 
 const EXTERNAL_LINKS = [
@@ -14,7 +14,7 @@ const EXTERNAL_LINKS = [
     key: "eow",
     title: "EOW",
     description: "Ethiopian Overseas Workers portal",
-    logo: null,
+    logo: eow,
     url: "https://eows.lmis.gov.et/",
   },
   {
