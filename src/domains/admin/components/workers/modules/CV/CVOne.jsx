@@ -403,15 +403,15 @@ const CVOne = ({ templateSwitcher }) => {
         <div className="position-absolute top-0 end-0 mt-4 pt-2">
           {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
         </div>
-
-        {profile?.role_id === 1 && profile?.role_id === 2 && (
+        {/* Show for role one and two only */}
+        {profile?.role_id == 1 || profile?.role_id == 2 ? (
           <button
             className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
             onClick={() => setShowRemarkModal(true)}
           >
             {worker.cv_one_url ? "Update CV" : "Generate CV"}
           </button>
-        )}
+        ) : null}
       </div>
       <div className="mb-3 mt-1"> {templateSwitcher}</div>
       {/* horizontal scroll so mobile doesn't break */}

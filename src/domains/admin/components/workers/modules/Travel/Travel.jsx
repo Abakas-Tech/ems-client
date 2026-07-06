@@ -119,9 +119,6 @@ function Travel() {
         return "Arrival date must be a valid date";
 
       arrivalDate.setHours(0, 0, 0, 0);
-
-      if (arrivalDate <= departureDate)
-        return "Arrival date must be after departure date";
     }
 
     return null;

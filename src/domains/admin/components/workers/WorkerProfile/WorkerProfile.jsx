@@ -468,13 +468,14 @@ const WorkerProfile = () => {
   medicalInfo.statusText = medicalInfo.status
     ? medicalInfo.status.toUpperCase()
     : "—";
-
   /* Visa */
   const visaInfo = {
     number: fallback(visaObj.visa_number),
     issueDate: niceDate(visaObj.issue_date),
     expiryDate: niceDate(visaObj.expiry_date),
     referenceNumber: fallback(visaObj.reference_number),
+    sponsorId: fallback(visaObj.sponsor_id),
+    issuanceId: fallback(visaObj.issuance_id),
     referenceDate: niceDate(visaObj.reference_date),
     documentUrl: visaObj.document?.url || null,
   };
@@ -1101,6 +1102,18 @@ const WorkerProfile = () => {
                   <br />
                   {visaInfo.referenceDate}
                 </p>
+                {/* NEW FIELDS */}
+                <p>
+                  <small className="text-muted">Issuance ID</small>
+                  <br />
+                  {visaInfo.issuanceId}
+                </p>
+                <p>
+                  <small className="text-muted">Sponsor Number</small>
+                  <br />
+                  {visaInfo.sponsorId}
+                </p>
+
                 {visaInfo.documentUrl ? (
                   <p>
                     <small className="text-muted">Visa Document</small>

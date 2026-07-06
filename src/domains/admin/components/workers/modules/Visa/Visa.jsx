@@ -22,6 +22,8 @@ function Visa() {
     visa_expiry_date: existingVisa?.expiry_date || "",
     visa_reference_number: existingVisa?.reference_number || "",
     visa_reference_date: existingVisa?.reference_date || "",
+    issuance_id: existingVisa?.issuance_id || "", // NEW
+    sponsor_id: existingVisa?.sponsor_id || "", // NEW
   });
 
   const [visaFile, setVisaFile] = useState(null);
@@ -32,7 +34,6 @@ function Visa() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -41,7 +42,6 @@ function Visa() {
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-
     if (file) {
       setVisaFile(file);
     }
@@ -58,14 +58,19 @@ function Visa() {
     )
       return "Reference number cannot exceed 100 characters";
 
+    // Optional: Add length validation for new fields if needed
+    if (formData.issuance_id && formData.issuance_id.length > 100)
+      return "Issuance number cannot exceed 100 characters";
+
+    if (formData.sponsor_id && formData.sponsor_id.length > 100)
+      return "Sponsor ID cannot exceed 100 characters";
+
     const { visa_issue_date, visa_expiry_date } = formData;
 
-    // Expiry date cannot exist without issue date
     if (visa_expiry_date && !visa_issue_date) {
       return "Visa issue date must be provided if expiry date exists";
     }
 
-    // Validate expiry after issue if both exist
     if (visa_issue_date && visa_expiry_date) {
       if (new Date(visa_expiry_date) <= new Date(visa_issue_date)) {
         return "Visa expiry date must be greater than issue date";
@@ -88,11 +93,11 @@ function Visa() {
 
     return null;
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const error = validateVisa();
-
     if (error) {
       addMessage(false, error);
       return;
@@ -109,7 +114,7 @@ function Visa() {
       });
 
       if (visaFile) {
-        dataToSend.append("visa_url", visaFile);
+        dataToSend.append("visa_url", visaFile); // Note: backend expects this key
       }
 
       const response = isEditMode
@@ -147,7 +152,6 @@ function Visa() {
           {/* VISA NUMBER */}
           <div className="form-group col-md-6">
             <label>Visa Number</label>
-
             <input
               type="text"
               name="visa_number"
@@ -160,7 +164,6 @@ function Visa() {
           {/* ISSUE DATE */}
           <div className="form-group col-md-6">
             <label>Issue Date</label>
-
             <input
               type="date"
               name="visa_issue_date"
@@ -173,7 +176,6 @@ function Visa() {
           {/* EXPIRY DATE */}
           <div className="form-group col-md-6">
             <label>Expiry Date</label>
-
             <input
               type="date"
               name="visa_expiry_date"
@@ -186,7 +188,6 @@ function Visa() {
           {/* REFERENCE NUMBER */}
           <div className="form-group col-md-6">
             <label>Reference Number</label>
-
             <input
               type="text"
               name="visa_reference_number"
@@ -199,7 +200,6 @@ function Visa() {
           {/* REFERENCE DATE */}
           <div className="form-group col-md-6">
             <label>Reference Date</label>
-
             <input
               type="date"
               name="visa_reference_date"
@@ -209,12 +209,35 @@ function Visa() {
             />
           </div>
 
-          {/* FILE */}
+          {/* NEW FIELD: ISSUANCE ID */}
+          <div className="form-group col-md-6">
+            <label>Issuance Number</label>
+            <input
+              type="text"
+              name="issuance_id"
+              className="form-control"
+              value={formData.issuance_id}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* NEW FIELD: SPONSOR ID */}
+          <div className="form-group col-md-6">
+            <label>Sponsor ID</label>
+            <input
+              type="text"
+              name="sponsor_id"
+              className="form-control"
+              value={formData.sponsor_id}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* FILE UPLOAD - Kept at the end as requested */}
           <div className="form-group col-md-6">
             <label>
               Visa Scan {!isEditMode && <span className="text-danger">*</span>}
             </label>
-
             <input
               type="file"
               className="form-control"
@@ -223,20 +246,18 @@ function Visa() {
               required={!isEditMode}
             />
 
-            <label>
-              {isEditMode && existingVisaUrl && (
-                <small className="d-block text-muted">
-                  Current Visa:{" "}
-                  <a
-                    href={existingVisaUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View
-                  </a>
-                </small>
-              )}
-            </label>
+            {isEditMode && existingVisaUrl && (
+              <small className="d-block text-muted mt-1">
+                Current Visa:{" "}
+                <a
+                  href={existingVisaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View
+                </a>
+              </small>
+            )}
           </div>
         </div>
 
