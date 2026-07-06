@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   MdDownloadForOffline,
-  MdInstallMobile,
-  MdOpenInNew,
   MdClose,
-  MdCheckCircle,
   MdBolt,
   MdWifiOff,
   MdSpeed,
@@ -20,7 +17,6 @@ const isRunningAsApp = () =>
 export default function Install() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [cardOpen, setCardOpen] = useState(false);
-  const [installed, setInstalled] = useState(false);
   const [visible, setVisible] = useState(false);
 
   /* ── Bootstrap on mount ── */
@@ -31,12 +27,8 @@ export default function Install() {
     const ignored = localStorage.getItem("installIgnored") === "true";
     const alreadyInstalled = localStorage.getItem("pwaInstalled") === "true";
 
-    if (alreadyInstalled) {
-      // Installed but user opened the browser instead of the app
-      setInstalled(true);
-      setVisible(true);
-      return;
-    }
+    // Already installed → nothing left to prompt, render nothing
+    if (alreadyInstalled) return;
 
     if (ignored) return;
 
@@ -51,14 +43,10 @@ export default function Install() {
   }, []);
 
   /* ── appinstalled fires in the BROWSER tab, not inside the PWA ──
-     We only mark installed + hide the prompt here.
-     The PWA will launch itself in a new standalone window automatically.
-     We do NOT call setVisible(true) here — the prompt should disappear,
-     not switch to "Open in app" mode while the browser still has focus. ── */
+     Mark installed + hide the prompt. The OS/browser opens the PWA on its own. ── */
   useEffect(() => {
     const handler = () => {
       localStorage.setItem("pwaInstalled", "true");
-      // Hide prompt entirely; the OS/browser opens the PWA on its own
       setVisible(false);
       setCardOpen(false);
     };
@@ -85,29 +73,11 @@ export default function Install() {
 
     if (outcome === "accepted") {
       localStorage.setItem("pwaInstalled", "true");
-      // Hide immediately; browser/OS will open the PWA itself
       setVisible(false);
       setCardOpen(false);
     }
 
     setDeferredPrompt(null);
-  };
-
-  /* ── Open the installed PWA from the browser ──
-     Strategy: navigate to the app's start_url with a query flag.
-     The browser recognises the PWA is installed and opens it in
-     standalone mode instead of a new browser tab.
-     Adjust START_URL to match your manifest's "start_url". ── */
-  const handleOpenApp = () => {
-    const START_URL = "/"; // ← change this to your manifest start_url if different
-
-    // Add a timestamp to bust any browser cache that might keep it in-tab
-    const url = new URL(START_URL, window.location.origin);
-    url.searchParams.set("source", "install-prompt");
-
-    // window.open with _blank triggers the installed PWA on Chrome/Edge/Samsung
-    // instead of opening a browser tab when the PWA is installed
-    window.open(url.toString(), "_blank", "noopener");
   };
 
   /* ── Ignore / dismiss ── */
@@ -123,13 +93,13 @@ export default function Install() {
     <>
       {/* ── FAB ── */}
       <button
-        className={`${styles.fab} ${installed ? styles.fabInstalled : styles.fabDefault}`}
+        className={`${styles.fab} ${styles.fabDefault}`}
         onClick={() => setCardOpen((prev) => !prev)}
-        aria-label={installed ? "Open App" : "Install App"}
-        title={installed ? "Open App" : "Install App"}
+        aria-label="Install App"
+        title="Install App"
       >
         <span className={styles.fabIcon}>
-          {installed ? <MdInstallMobile /> : <MdDownloadForOffline />}
+          <MdDownloadForOffline />
         </span>
       </button>
 
@@ -149,13 +119,9 @@ export default function Install() {
           </div>
 
           <div className={styles.headerText}>
-            <p className={styles.appTitle}>
-              {installed ? "App Installed" : "Install MMH Jobs"}
-            </p>
+            <p className={styles.appTitle}>Install MMH Jobs</p>
             <p className={styles.appSubtitle}>
-              {installed
-                ? "You already have the app"
-                : "Get quick access from your home screen"}
+              Get quick access from your home screen
             </p>
           </div>
 
@@ -168,58 +134,36 @@ export default function Install() {
           </button>
         </div>
 
-        {/* Installed badge */}
-        {installed && (
-          <div className={styles.installedBadge}>
-            <MdCheckCircle />
-            Installed
-          </div>
-        )}
-
         {/* Body */}
         <div className={styles.cardBody}>
           <p className={styles.description}>
-            {installed
-              ? "Open the app for the best experience."
-              : "Install this app on your device for a faster, app-like experience."}
+            Install this app on your device for a faster, app-like experience.
           </p>
 
-          {/* Feature pills — only shown before install */}
-          {!installed && (
-            <div className={styles.features}>
-              <span className={styles.pill}>
-                <MdWifiOff />
-                Works Offline
-              </span>
-              <span className={styles.pill}>
-                <MdSpeed />
-                Fast & Lightweight
-              </span>
-            </div>
-          )}
+          <div className={styles.features}>
+            <span className={styles.pill}>
+              <MdWifiOff />
+              Works Offline
+            </span>
+            <span className={styles.pill}>
+              <MdSpeed />
+              Fast & Lightweight
+            </span>
+          </div>
         </div>
 
         <div className={styles.divider} />
 
         {/* Actions */}
         <div className={styles.btnRow}>
-          {installed ? (
-            <button className={styles.btnOpen} onClick={handleOpenApp}>
-              <MdOpenInNew />
-              Open App
-            </button>
-          ) : (
-            <>
-              <button className={styles.btnInstall} onClick={handleInstall}>
-                <MdDownloadForOffline />
-                Install
-              </button>
+          <button className={styles.btnInstall} onClick={handleInstall}>
+            <MdDownloadForOffline />
+            Install
+          </button>
 
-              <button className={styles.btnIgnore} onClick={handleIgnore}>
-                Not Now
-              </button>
-            </>
-          )}
+          <button className={styles.btnIgnore} onClick={handleIgnore}>
+            Not Now
+          </button>
         </div>
       </div>
     </>
