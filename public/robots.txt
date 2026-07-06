@@ -2,4 +2,4 @@
 User-agent: *
 #  Allow all public-facing frontend pages to be indexed
 Allow: /
-Sitemap: https://magerproperty.com/sitemap.xml
+Sitemap: https://mmhjobs.com/sitemap.xml

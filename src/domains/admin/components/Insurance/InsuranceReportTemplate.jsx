@@ -2,9 +2,9 @@ const ORG = {
   insurerName: "Nyala Insurance S.C",
   insurerAmharic: "ኒያላ ኢንሹራንስ አ.ማ",
   insurerAddress: "Protection House, Miky Leland Street",
-  insurerPOBox: "P.O. Box 12753",
+  insurerPOBox: "P.O. Box 12753, Addis Ababa, Ethiopia",
   insurerPhone: "Tel: 251-116-626667, Fax: 251-116-626706",
-  insurerWebsite: "www.nyalainsurance.com",
+  insurerWebsite: "email: nisco@nyalainsurance.com",
 };
 
 const val = (v) => (v === null || v === undefined ? "" : String(v));
@@ -54,7 +54,8 @@ const buildDocumentHtml = (doc, index, total, logos) => {
         <div class="amharic">${ORG.insurerAmharic}</div>
         <div class="insurerName">${ORG.insurerName}</div>
         <div class="insurerMeta">${ORG.insurerPhone}</div>
-        <div class="insurerMeta">${ORG.insurerPOBox} &nbsp; ${ORG.insurerAddress}</div>
+        <div class="insurerMeta">${ORG.insurerAddress}</div>
+        <div class="insurerMeta">${ORG.insurerPOBox}</div>
         <div class="insurerMeta">${ORG.insurerWebsite}</div>
       </div>
     </div>
@@ -130,7 +131,7 @@ const buildDocumentHtml = (doc, index, total, logos) => {
     <div class="beneficiaryRow totalRow">
       <span class="beneficiaryIndex"></span>
       <span class="beneficiaryCell colName"></span>
-        <span class="beneficiaryCell colAddr"></span>
+      <span class="beneficiaryCell colAddr"></span>
       <span class="beneficiaryCell colRel totalLabel">Total</span>
       <span class="beneficiaryCell colPct center"><span class="totalValue">100%</span></span>
     
@@ -199,7 +200,7 @@ export const buildInsuranceReportHtml = (documents = [], logos = {}) => {
 
   /* Beneficiary block: header + rows share identical column widths so
      underlines in each row sit exactly beneath their header label. */
-  .beneficiaryHeaderRow,.beneficiaryRow{display:flex;align-items:flex-end;gap:8px;}
+  .beneficiaryHeaderRow,.beneficiaryRow{display:flex;align-items:flex-end;gap:26px;}
   .beneficiaryHeaderRow{font-weight:700;font-size:10.5pt;margin-bottom:14px;}
   .beneficiaryRow{font-size:11.5pt;margin-bottom:12px;}
 
@@ -207,8 +208,8 @@ export const buildInsuranceReportHtml = (documents = [], logos = {}) => {
   .beneficiaryCell{display:flex;}
   .colName{flex:0 0 28%;}
   .colRel{flex:0 0 18%;}
-  .colPct{flex:0 0 16%;}
-  .colAddr{flex:0 0 28%;}
+  .colPct{flex:0 0 18%;}
+  .colAddr{flex:0 0 18%;}
   .beneficiaryCell .line{width:100%;}
   .center{text-align:center;justify-content:center;}
 

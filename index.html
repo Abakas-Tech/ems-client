@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -68,9 +68,15 @@
     <!-- PERFORMANCE -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-    <!-- PWA -->
+    <!-- PWA (Android / Chrome) -->
     <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#65BA95" />
+
+    <!-- PWA (iOS Safari — Chrome ignores these, but iOS needs them) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="MMH Jobs" />
+    <link rel="apple-touch-icon" href="/icons/192.jpg" />
 
     <!-- SECURITY -->
     <meta
@@ -88,10 +94,6 @@
         "logo": "https://mmhjobs.com/logo.jpg",
         "description": "Licensed recruitment agency connecting Ethiopian workers with verified international job opportunities, especially in the Middle East.",
         "foundingDate": "2010-01-01",
-        "founder": {
-          "@type": "Person",
-          "name": "Overseas Jobs for Ethiopians"
-        },
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Bole Rd",

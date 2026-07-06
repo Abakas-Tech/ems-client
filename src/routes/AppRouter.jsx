@@ -10,6 +10,7 @@ import WorkerRoutes from "./WorkerRoutes.jsx";
 import PartnerRoutes from "./PartnerRoutes.jsx";
 import EmployerRoutes from "./EmployerRoutes.jsx";
 
+
 function AppRouter() {
   return (
     <>
@@ -17,6 +18,7 @@ function AppRouter() {
 
       {/* Global Toaster */}
       <Toaster position="top-right" reverseOrder={false} />
+    
 
       <Routes>
         {/* Auth Routes */}

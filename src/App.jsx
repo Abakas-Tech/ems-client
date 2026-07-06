@@ -1,6 +1,7 @@
 import "./App.css";
 import useProfile from "./context/Profile/useProfile";
 import AppRouter from "./routes/AppRouter";
+import Install from "./shared/global/Install/Install";
 import { useTicketPrefetch } from "./utils/ticket/useTicketPrefetch";
 function App() {
   const profile = useProfile();
@@ -16,6 +17,7 @@ function App() {
   return (
     <>
       {profile && <PrefetchStarter />}
+        <Install />
       <AppRouter />
     </>
   );
