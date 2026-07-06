@@ -2,26 +2,26 @@ import React from "react";
 import { Helmet } from "react-helmet";
 
 const SEOHelmet = ({
-  title = "Global Trust Overseas | Overseas Jobs for Ethiopians | Verified Recruitment Agency",
-  description = "Global Trust Overseas Employment Agency Plc connects Ethiopian workers with verified international job opportunities. We provide full visa processing, contract verification, LMIS/work permits, and safe deployment to Middle Eastern countries.",
-  keywords = "overseas jobs Ethiopia, jobs in Middle East for Ethiopians, recruitment agency Ethiopia, work abroad Ethiopia, Middle East jobs Ethiopia, visa processing Ethiopia, LMIS Ethiopia, overseas employment Ethiopia, legal recruitment Ethiopia, Global Trust Overseas",
-  canonical = "https://globaltrustoverseas.com/",
-  ogTitle = "Verified Overseas Jobs for Ethiopians | Global Trust Overseas",
+  title = "MMH Overseas Employment | Overseas Jobs for Ethiopians | Verified Recruitment Agency",
+  description = "MMH Overseas Employment Agency Plc connects Ethiopian workers with verified international job opportunities. We provide full visa processing, contract verification, LMIS/work permits, and safe deployment to Middle Eastern countries.",
+  keywords = "overseas jobs Ethiopia, jobs in Middle East for Ethiopians, recruitment agency Ethiopia, work abroad Ethiopia, Middle East jobs Ethiopia, visa processing Ethiopia, LMIS Ethiopia, overseas employment Ethiopia, legal recruitment Ethiopia, MMH Overseas Employment",
+  canonical = "https://mmhjobs.com/",
+  ogTitle = "Verified Overseas Jobs for Ethiopians | MMH Overseas Employment",
   ogDescription = "Apply for safe and verified overseas jobs with full support: job matching, visa processing, contract verification, and travel coordination.",
-  ogUrl = "https://globaltrustoverseas.com/",
-  ogImage = "https://globaltrustoverseas.com/image.png", // replace with your hosted image (1200x630 recommended)
+  ogUrl = "https://mmhjobs.com/",
+  ogImage = "https://mmhjobs.com/image.jpg", // replace with your hosted image (1200x630 recommended)
   structuredData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    name: "Global Trust Overseas Employment Agency Plc",
-    url: "https://globaltrustoverseas.com",
-    logo: "https://globaltrustoverseas.com/logo.png",
+    name: "MMH Overseas Employment Agency Plc",
+    url: "https://mmhjobs.com",
+    logo: "https://mmhjobs.com/logo.jpg",
     description:
       "Licensed recruitment agency connecting Ethiopian workers with verified international job opportunities, especially in the Middle East.",
     sameAs: [
-      "https://www.facebook.com/globaltrustoverseas",
-      "https://twitter.com/globaltrustoverseas",
-      "https://www.linkedin.com/company/global-trust-overseas",
+      "https://www.facebook.com/mmhjobs",
+      "https://twitter.com/mmhjobs",
+      "https://www.linkedin.com/company/mmh-overseas-employment",
     ],
     telephone: "+251-11-1234567",
     address: {
@@ -59,7 +59,7 @@ const SEOHelmet = ({
     <meta property="og:type" content="website" />
     <meta property="og:url" content={ogUrl} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:site_name" content="Global Trust Overseas" />
+    <meta property="og:site_name" content="MMH Overseas Employment" />
 
     {/* Twitter Meta */}
     <meta name="twitter:card" content="summary_large_image" />
