@@ -26,6 +26,12 @@ const MAX_CONCURRENT = 7;
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const LIST_LIMIT = 10;
 
+// How many alternative offers the "Also available" list shows. Raising this
+// number only helps if bestPriceWindow[key].top_5 (see optimiser.js) actually
+// contains that many entries — by name it looks capped at 5 upstream, so this
+// constant is a ceiling on the display side, not a guarantee of 10 results.
+const ALT_LIST_LIMIT = 10;
+
 // Rough real-world durations per search window (matches the estimates
 // already shown in the window dropdown: ~1/4/8/15 min). The progress bar
 // is driven by these, not by actual batches completed — batch-accurate
@@ -61,18 +67,6 @@ function getWindowLabel(days, departureDate) {
 }
 
 // ────────────────────────────────────────────
-// Best-Price Card — full-width, 4-column grid
-// ────────────────────────────────────────────
-
-const bpcEyebrow = {
-  fontSize: 10.5,
-  color: "#94a3b8",
-  textTransform: "uppercase",
-  letterSpacing: 0.6,
-  fontWeight: 700,
-};
-
-// ────────────────────────────────────────────
 // Best-Price Card
 // ────────────────────────────────────────────
 var BestPriceCard = function (p) {
@@ -88,7 +82,13 @@ var BestPriceCard = function (p) {
   var best = p.bestPriceWindow?.[ac.key]?.best;
   var count = p.bestPriceWindow?.[ac.key]?.count || 0;
   var wl = getWindowLabel(p.windowDays || 1, p.departureDate);
-  var top3 = (p.bestPriceWindow?.[ac.key]?.top_5 || []).slice(0, 3);
+  // Renamed from `top3` since it's no longer a fixed 3 — capped at
+  // ALT_LIST_LIMIT (10), but the real ceiling is however many entries
+  // bestPriceWindow[key].top_5 actually contains upstream.
+  var topAlternatives = (p.bestPriceWindow?.[ac.key]?.top_5 || []).slice(
+    0,
+    ALT_LIST_LIMIT,
+  );
 
   // Dashed "perforation" divider — evokes a ticket tear-line rather than a plain rule
   var Perforation = function () {
@@ -341,8 +341,11 @@ var BestPriceCard = function (p) {
           </div>
         )}
 
-        {/* Top 3 alternatives — boarding-list style, deduped */}
-        {top3.length > 0 && (
+        {/* Alternatives — boarding-list style, now up to ALT_LIST_LIMIT
+            entries instead of a fixed 3. Long lists get a capped-height,
+            scrollable container so the card doesn't stretch the whole row
+            taller than the route/price panels next to it. */}
+        {topAlternatives.length > 0 && (
           <>
             <Perforation />
             <div
@@ -364,96 +367,106 @@ var BestPriceCard = function (p) {
                   marginBottom: "2px",
                 }}
               >
-                Also available
+                Also available ({topAlternatives.length})
               </span>
-              {top3.map(function (t, i) {
-                return (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: "10px",
-                      padding: "4px 0",
-                      borderBottom:
-                        i < top3.length - 1 ? "1px solid #f1f5f9" : "none",
-                    }}
-                  >
+              <div
+                style={{
+                  maxHeight: topAlternatives.length > 5 ? "190px" : "none",
+                  overflowY: topAlternatives.length > 5 ? "auto" : "visible",
+                  paddingRight: topAlternatives.length > 5 ? "4px" : 0,
+                }}
+              >
+                {topAlternatives.map(function (t, i) {
+                  return (
                     <div
+                      key={i}
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "7px",
-                        minWidth: 0,
+                        justifyContent: "space-between",
+                        gap: "10px",
+                        padding: "4px 0",
+                        borderBottom:
+                          i < topAlternatives.length - 1
+                            ? "1px solid #f1f5f9"
+                            : "none",
                       }}
                     >
-                      <span
+                      <div
                         style={{
-                          width: "16px",
-                          height: "16px",
-                          borderRadius: "50%",
-                          background: ac.color + "16",
-                          color: ac.color,
-                          fontWeight: 700,
-                          fontSize: "10px",
                           display: "flex",
                           alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
+                          gap: "7px",
+                          minWidth: 0,
                         }}
                       >
-                        {i + 1}
-                      </span>
-                      {t.airline_logo && (
-                        <img
-                          src={t.airline_logo}
-                          alt=""
+                        <span
                           style={{
                             width: "16px",
                             height: "16px",
-                            borderRadius: "3px",
+                            borderRadius: "50%",
+                            background: ac.color + "16",
+                            color: ac.color,
+                            fontWeight: 700,
+                            fontSize: "10px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
                             flexShrink: 0,
                           }}
-                        />
-                      )}
+                        >
+                          {i + 1}
+                        </span>
+                        {t.airline_logo && (
+                          <img
+                            src={t.airline_logo}
+                            alt=""
+                            style={{
+                              width: "16px",
+                              height: "16px",
+                              borderRadius: "3px",
+                              flexShrink: 0,
+                            }}
+                          />
+                        )}
+                        <span
+                          className="text-truncate"
+                          style={{
+                            fontSize: "12px",
+                            color: "#475569",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {t.airline}
+                        </span>
+                      </div>
                       <span
-                        className="text-truncate"
                         style={{
                           fontSize: "12px",
-                          color: "#475569",
-                          fontWeight: 500,
+                          fontWeight: 700,
+                          color: "#0f172a",
+                          whiteSpace: "nowrap",
+                          flexShrink: 0,
+                          fontFamily: "monospace",
+                          fontVariantNumeric: "tabular-nums",
                         }}
                       >
-                        {t.airline}
+                        {t.total_price.toLocaleString()}
+                        <span
+                          style={{
+                            fontWeight: 400,
+                            color: "#94a3b8",
+                            fontSize: "10px",
+                            marginLeft: "3px",
+                          }}
+                        >
+                          ETB
+                        </span>
                       </span>
                     </div>
-                    <span
-                      style={{
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        color: "#0f172a",
-                        whiteSpace: "nowrap",
-                        flexShrink: 0,
-                        fontFamily: "monospace",
-                        fontVariantNumeric: "tabular-nums",
-                      }}
-                    >
-                      {t.total_price.toLocaleString()}
-                      <span
-                        style={{
-                          fontWeight: 400,
-                          color: "#94a3b8",
-                          fontSize: "10px",
-                          marginLeft: "3px",
-                        }}
-                      >
-                        ETB
-                      </span>
-                    </span>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </>
         )}
@@ -824,7 +837,19 @@ const TicketOptimiser = () => {
   }, [destination, departureDate, windowDays]);
 
   const displayResult = result || liveResult;
-  const allTickets = displayResult?.all_tickets || [];
+  const rawTickets = displayResult?.all_tickets || [];
+  // "All Results" should read cheapest → most expensive. optimise() doesn't
+  // guarantee an order (it's built for finding the best-per-window, not for
+  // display), so the sort happens here rather than assuming upstream order.
+  // Sorted on a copy — never mutate the array coming from state/props.
+  // Missing/invalid prices sort to the end instead of crashing the compare.
+  const allTickets = useMemo(() => {
+    return [...rawTickets].sort((a, b) => {
+      const pa = Number.isFinite(a?.total_price) ? a.total_price : Infinity;
+      const pb = Number.isFinite(b?.total_price) ? b.total_price : Infinity;
+      return pa - pb;
+    });
+  }, [rawTickets]);
   const paginatedData = useMemo(() => {
     const start = (listPage - 1) * LIST_LIMIT;
     return allTickets.slice(start, start + LIST_LIMIT);
