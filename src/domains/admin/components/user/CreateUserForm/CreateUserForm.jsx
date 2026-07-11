@@ -227,7 +227,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         return;
       }
 
-      const userId = profile?.id;
+      const userId = response.data.id;
 
       // Employee permission handling
       if (role === "2") {
