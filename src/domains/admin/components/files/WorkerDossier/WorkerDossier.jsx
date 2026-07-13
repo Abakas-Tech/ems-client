@@ -298,7 +298,7 @@ const MiscFilesSection = ({
         // findAll() on the backend to support an array for
         // exclude_category (category NOT IN (?)) and axios to serialize
         // it as repeated keys (see paramsSerializer on this call chain).
-        exclude_category: ["CV_ONE", "CV_TWO"],
+        exclude_category: ["CV_ONE", "CV_TWO", "CV_THREE"],
       };
 
       const response = await fetchFiles(params);

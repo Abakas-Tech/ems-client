@@ -713,6 +713,24 @@ const getWorkerCVData = async (workerId) => {
     throw new Error(error.response?.data?.message || "Failed to get CV data");
   }
 };
+
+const uploadWorkerCvHeader = async (workerId, file) => {
+  try {
+    const fd = new FormData();
+    fd.append("photo", file);
+    const response = await axiosInstance.patch(
+      `/workers/cv/${workerId}/cv-header`,
+      fd,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Failed to update CV header image",
+    );
+  }
+};
+
 export {
   registerWorkerCore,
   getWorkerBasic,
@@ -770,4 +788,5 @@ export {
   deleteMedical,
   // cv
   getWorkerCVData,
+  uploadWorkerCvHeader,
 };
