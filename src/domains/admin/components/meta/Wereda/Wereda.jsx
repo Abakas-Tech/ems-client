@@ -15,13 +15,11 @@ import CreateModal from "../../../../../shared/components/CreateModal/CreateModa
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import { useNavigate } from "react-router-dom";
 
-// Validation for Woreda name and region
+// Validation for Woreda name and region 
 const validateWoreda = (name, regionId) => {
   if (!name || !name.trim()) return "Woreda name is required";
   if (name.length < 2) return "Woreda name must be at least 2 characters";
   if (name.length > 100) return "Woreda name cannot exceed 100 characters";
-  if (!/^[A-Za-z\s]+$/.test(name))
-    return "Woreda name can only contain letters";
   if (!regionId) return "Region must be selected";
   return null;
 };

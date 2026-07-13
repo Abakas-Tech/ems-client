@@ -190,6 +190,7 @@ const File = () => {
   };
 
   const isInternalUser = profile?.role_id <= 2;
+  const loggedInUserId = profile?.id;
 
   // Check if we're in worker dossier view (to hide parent header)
   const isWorkerDossierView =
@@ -253,22 +254,24 @@ const File = () => {
                 <i className="bi bi-people-fill me-1"></i>
                 Workers
               </button>
-              <button
-                className={`btn btn-sm px-3 py-2 fw-semibold ${
-                  tab === "company"
-                    ? "btn-main text-white"
-                    : "btn-outline-secondary"
-                }`}
-                onClick={() => {
-                  setTab("company");
-                  setView("list");
-                  setActiveWorker(null);
-                }}
-                style={{ borderRadius: "0 8px 8px 0" }}
-              >
-                <i className="bi bi-building me-1"></i>
-                Company
-              </button>
+              {profile.role_id <= 2 && (
+                <button
+                  className={`btn btn-sm px-3 py-2 fw-semibold ${
+                    tab === "company"
+                      ? "btn-main text-white"
+                      : "btn-outline-secondary"
+                  }`}
+                  onClick={() => {
+                    setTab("company");
+                    setView("list");
+                    setActiveWorker(null);
+                  }}
+                  style={{ borderRadius: "0 8px 8px 0" }}
+                >
+                  <i className="bi bi-building me-1"></i>
+                  Company
+                </button>
+              )}
             </div>
 
             {/* Upload button (company tab only) */}
@@ -280,7 +283,7 @@ const File = () => {
                   setView("create");
                 }}
               >
-                + Upload File
+                Upload File
               </button>
             )}
           </div>
@@ -340,7 +343,6 @@ const File = () => {
                   setEditingFile(row);
                   setView("edit");
                 },
-                bypassRole: true,
               },
               { type: "download", onClick: (row) => handleDownload(row) },
               {

@@ -114,7 +114,7 @@ const FileUpload = ({
       <div className="submit-section">
         <div className="row">
           {/* Visibility Toggle */}
-          {profile?.role_id <= 2 && !formData.worker_id && (
+          {profile?.role_id <= 2 && (
             <div className="form-group col-md-12 mb-3">
               <div className="form-check form-switch rounded-3 d-inline-flex align-items-center ">
                 <input

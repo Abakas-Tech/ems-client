@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import {
   listWorkers,
+  listWorkersForPartners,
   getWorkerProfile,
   deleteWorker,
 } from "../../../api/worker.api";
@@ -60,8 +61,17 @@ const ActiveWorkers = () => {
         limit,
       };
 
-      const res = await listWorkers(params);
+      // 1. Declare the variable outside the blocks so it's scoped to the whole try block
+      let res;
 
+      // 2. Coerce or safely compare the role (using == handles string vs number differences)
+      if (Number(role) === 3) {
+        res = await listWorkersForPartners(params);
+      } else {
+        res = await listWorkers(params);
+      }
+
+      // 3. Now res is accessible here!
       setWorkers(res?.data?.items || []);
       setTotalItems(res?.data?.meta?.total_items || 0);
     } catch (err) {
@@ -69,9 +79,7 @@ const ActiveWorkers = () => {
     } finally {
       hideLoader();
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, page, limit]);
+  }, [filters, page, limit, role]);
 
   useEffect(() => {
     fetchWorkers();
@@ -194,7 +202,6 @@ const ActiveWorkers = () => {
       },
     });
   };
-
 
   // 4 cards: Wafid / Tasheer / Insurance / Musaned
   const handleAutofillSelected = () => {

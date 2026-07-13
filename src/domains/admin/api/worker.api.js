@@ -186,6 +186,18 @@ const listWorkers = async (params = {}) => {
   }
 };
 
+const listWorkersForPartners = async (params = {}) => {
+  try {
+    const response = await axiosInstance.get("/workers/partners", { params });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to list workers",
+    );
+  }
+};
 // Delete / archive worker
 const deleteWorker = async (id, hard = false) => {
   try {
@@ -715,6 +727,7 @@ export {
   deleteArchivedWorker,
   // updateWorker,
   listWorkers,
+  listWorkersForPartners,
   getWorkerProfile,
   getArchivedWorkerProfile,
   restoreWorker,
