@@ -255,11 +255,8 @@ const CVThree = ({ templateSwitcher }) => {
     e.target.value = ""; // allow re-selecting the same file next time
     if (!file || !worker) return;
 
-    setUploadingHeader(true);
+    showLoader();
     try {
-      // uploadWorkerCvHeader already unwraps to response.data (i.e. the
-      // controller's { success, message, data } body), matching the
-      // convention used by every other function in worker.api.js.
       const res = await uploadWorkerCvHeader(worker.id, file);
       const headerUrl = res?.data?.cv_three_header_url;
 
@@ -273,7 +270,7 @@ const CVThree = ({ templateSwitcher }) => {
       console.error(e);
       addMessage(false, "Failed to update header image");
     } finally {
-      setUploadingHeader(false);
+      hideLoader();
     }
   };
 
@@ -470,13 +467,10 @@ const CVThree = ({ templateSwitcher }) => {
           type="button"
           className="btn btn-outline-secondary btn-sm"
           onClick={handleHeaderPickClick}
-          disabled={uploadingHeader}
         >
-          {uploadingHeader
-            ? "Uploading..."
-            : worker.cv_three_header_url
-              ? "Change Header Image"
-              : "Upload Header Image"}
+          {worker.cv_three_header_url
+            ? "Change Header Image"
+            : "Upload Header Image"}
         </button>
       </div>
 
