@@ -1,0 +1,154 @@
+.container {
+  width: 780px;
+  padding: 24px 28px;
+  background-color: #fff;
+  color: #1a1a1a;
+  font-family: "Segoe UI", "Arial", sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #1a4d2b;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a4d2b;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.statusBadge {
+  text-transform: capitalize;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background-color: #f1f3f5;
+  color: #495057;
+}
+
+.statusBadge[data-status="Open"] {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.statusBadge[data-status="Investigating"] {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+.statusBadge[data-status="Resolved"] {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.section {
+  margin-bottom: 18px;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a4d2b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 4px;
+  margin-bottom: 8px;
+}
+
+.grid {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+  min-width: 200px;
+  flex: 1;
+}
+
+.label {
+  font-size: 11px;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.value {
+  font-size: 13px;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.linkedTag {
+  font-size: 10px;
+  font-weight: 700;
+  background-color: #d4edda;
+  color: #155724;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.paragraph {
+  font-size: 13px;
+  color: #1a1a1a;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+}
+
+.table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #6c757d;
+  border-bottom: 1px solid #dee2e6;
+  padding: 6px 8px;
+}
+
+.table td {
+  font-size: 13px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.emptyCell {
+  text-align: center;
+  color: #adb5bd;
+  font-style: italic;
+  padding: 10px;
+}
+
+.footer {
+  text-align: center;
+  font-size: 10px;
+  color: #adb5bd;
+  border-top: 1px solid #dee2e6;
+  padding-top: 8px;
+  margin-top: 8px;
+}
