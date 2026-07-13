@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import CVOneComponent from "./../../../../components/workers/modules/CV/CVOne";
 import CVTwoComponent from "./../../../../components/workers/modules/CV/CVTwo";
+import CVThreeComponent from "./../../../../components/workers/modules/CV/CVThree";
 
 const STORAGE_KEY = "cv_template_preference";
 
 /**
- * Two-way switch between the two CV layouts.
+ * Three-way switch between the CV layouts.
  * Persists the choice per-browser so re-opening the page keeps the last pick.
  */
 function TemplateSwitcher({ active, onChange }) {
@@ -26,6 +27,7 @@ function TemplateSwitcher({ active, onChange }) {
       {[
         { id: "one", label: "Template 1" },
         { id: "two", label: "Template 2" },
+        { id: "three", label: "Template 3" },
       ].map((opt) => {
         const isActive = active === opt.id;
         return (
@@ -64,7 +66,12 @@ export default function CV() {
     localStorage.setItem(STORAGE_KEY, template);
   }, [template]);
 
-  const Active = template === "two" ? CVTwoComponent : CVOneComponent;
+  const Active =
+    template === "two"
+      ? CVTwoComponent
+      : template === "three"
+        ? CVThreeComponent
+        : CVOneComponent;
 
   return (
     <Active

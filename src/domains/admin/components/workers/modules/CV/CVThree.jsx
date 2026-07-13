@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import { getWorkerCVData } from "../../../../api/worker.api";
+import {
+  getWorkerCVData,
+  uploadWorkerCvHeader,
+} from "../../../../api/worker.api";
+import { getUsersLookup } from "../../../../api/user.api";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { useParams, useNavigate } from "react-router-dom";
 import useLoader from "../../../../../../context/Loader/useLoader";
 import { uploadFile } from "../../../../api/file.api";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
-import cvHeader from "../../../../../../assets/img/cv/cv-header.png";
 import CreateModal from "../../../../../../shared/components/CreateModal/CreateModal";
 
 const safeDate = (d) => (d ? d.slice(0, 10) : "");
@@ -35,7 +38,6 @@ const subtractDate = (d1, d2) => {
   return years > 0 ? `${years} years` : `${months} months`;
 };
 
-/* ── shared style tokens ── */
 const GOLD = "#7a5c1e";
 const FONT = "'Times New Roman', Times, serif";
 
@@ -109,7 +111,6 @@ const css = {
   },
 };
 
-/* Gold bilingual section bar */
 const GoldBar = ({ en, ar }) => (
   <div style={css.goldBar}>
     <div style={css.goldLeft}>{en}</div>
@@ -117,7 +118,6 @@ const GoldBar = ({ en, ar }) => (
   </div>
 );
 
-/* Row: EN-label | EN-value | AR-label  (3 equal columns) */
 const Row3 = ({
   label,
   value,
@@ -141,7 +141,6 @@ const Row3 = ({
   </div>
 );
 
-/* Skill row: EN | YES/NO | AR  — all bold italic */
 const SkillRow = ({ en, value, ar, last }) => (
   <div
     style={{
@@ -156,10 +155,6 @@ const SkillRow = ({ en, value, ar, last }) => (
   </div>
 );
 
-/* Helper: capture a DOM element to a jsPDF page with proper aspect-ratio scaling.
-   marginX/marginY (in mm) define a SHARED printable box used for every page,
-   so different-aspect-ratio pages (e.g. tall CV table vs. wide passport scan)
-   still end up with matching margins / aligned borders on the printed page. */
 const captureElementToPage = async (
   pdf,
   el,
@@ -187,37 +182,41 @@ const captureElementToPage = async (
   const canvasW = canvas.width;
   const canvasH = canvas.height;
 
-  // Printable area shared by every page (page size minus the fixed margins)
   const printableW = pw - marginX * 2;
   const printableH = ph - marginY * 2;
 
-  // Uniform scale to fit inside the printable area while preserving aspect ratio
   const ratio = Math.min(printableW / canvasW, printableH / canvasH);
   const imgW = canvasW * ratio;
   const imgH = canvasH * ratio;
 
-  // Center within the printable area (not the raw page), so both axes get margin
   const offsetX = marginX + (printableW - imgW) / 2;
   const offsetY = marginY + (printableH - imgH) / 2;
 
   pdf.addImage(imgData, "JPEG", offsetX, offsetY, imgW, imgH);
 };
 
-const CVOne = ({ templateSwitcher }) => {
+const CVThree = ({ templateSwitcher }) => {
   const { id } = useParams();
   const cvRef = useRef(null);
   const passportRef = useRef(null);
+  const headerFileInputRef = useRef(null);
   const navigate = useNavigate();
   const [worker, setWorker] = useState(null);
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { profile } = useProfile();
 
-  // ── Remark modal state ──
   const [showRemarkModal, setShowRemarkModal] = useState(false);
   const [remarkOverride, setRemarkOverride] = useState(null);
   const [remarkDateOverride, setRemarkDateOverride] = useState(null);
   const [pendingGenerate, setPendingGenerate] = useState(false);
+
+  // ── Partner (CV_THREE is the only category the user picks a partner for) ──
+  const [partners, setPartners] = useState([]);
+  const [partnerIdOverride, setPartnerIdOverride] = useState(null);
+
+  // ── Header upload state ──
+  const [uploadingHeader, setUploadingHeader] = useState(false);
 
   const fetchWorkerData = useCallback(async () => {
     showLoader();
@@ -233,7 +232,50 @@ const CVOne = ({ templateSwitcher }) => {
 
   useEffect(() => {
     fetchWorkerData();
-  }, [profile]);
+  }, [fetchWorkerData]);
+
+  // ── Fetch partners (role_id 3) for the CV_THREE dropdown ──
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        const res = await getUsersLookup({ role_id: 3 });
+        setPartners(res?.data || []);
+      } catch (e) {
+        console.error("fetch partners error:", e);
+      }
+    };
+    fetchPartners();
+  }, []);
+
+  // ── Header upload/change handlers ──
+  const handleHeaderPickClick = () => headerFileInputRef.current?.click();
+
+  const handleHeaderFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file next time
+    if (!file || !worker) return;
+
+    setUploadingHeader(true);
+    try {
+      // uploadWorkerCvHeader already unwraps to response.data (i.e. the
+      // controller's { success, message, data } body), matching the
+      // convention used by every other function in worker.api.js.
+      const res = await uploadWorkerCvHeader(worker.id, file);
+      const headerUrl = res?.data?.cv_three_header_url;
+
+      if (!headerUrl) {
+        throw new Error("Upload did not return a header URL");
+      }
+
+      setWorker((prev) => ({ ...prev, cv_three_header_url: headerUrl }));
+      addMessage(true, "Header image updated successfully!");
+    } catch (e) {
+      console.error(e);
+      addMessage(false, "Failed to update header image");
+    } finally {
+      setUploadingHeader(false);
+    }
+  };
 
   const handleGenerateAndUpload = async () => {
     if (!cvRef.current) return;
@@ -247,7 +289,6 @@ const CVOne = ({ templateSwitcher }) => {
       // ── PAGE 2: Passport ──
       if (passportRef.current) {
         pdf.addPage();
-        // Give remote passport scan image extra time to fully load
         await captureElementToPage(pdf, passportRef.current, 800);
       }
 
@@ -257,15 +298,18 @@ const CVOne = ({ templateSwitcher }) => {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("file_name", name);
-      fd.append("category", "CV_ONE");
+      fd.append("category", "CV_THREE");
       fd.append("is_private", 0);
       fd.append("description", `CV for ${worker.full_name}`);
       fd.append("worker_id", worker.id);
+      // CV_THREE is the only category where the partner is user-chosen;
+      // CV_ONE / CV_TWO are auto-linked server-side and never send this.
+      fd.append("partner_id", partnerIdOverride);
       await uploadFile(fd);
       addMessage(
         true,
         "CV " +
-          (worker.cv_one_url ? "updated" : "generated") +
+          (worker.cv_three_url ? "updated" : "generated") +
           " and uploaded successfully!",
       );
     } catch (e) {
@@ -276,24 +320,27 @@ const CVOne = ({ templateSwitcher }) => {
     }
   };
 
-  // ── Remark modal handlers ──
   const handleRemarkSubmit = (inputValues) => {
     const remarkText = inputValues.remark?.trim();
+    const partnerId = inputValues.partner_id;
 
     if (!remarkText) {
       addMessage(false, "Remark is required");
       return;
     }
 
+    if (!partnerId) {
+      addMessage(false, "Partner is required");
+      return;
+    }
+
     setRemarkOverride(remarkText);
     setRemarkDateOverride(new Date().toISOString().slice(0, 10));
+    setPartnerIdOverride(partnerId);
     setShowRemarkModal(false);
     setPendingGenerate(true);
   };
 
-  // Waits for the remark state to actually render into the DOM before
-  // capturing — setState inside handleRemarkSubmit is async, so calling
-  // handleGenerateAndUpload() directly there would capture the OLD remark.
   useEffect(() => {
     if (pendingGenerate) {
       setPendingGenerate(false);
@@ -304,10 +351,8 @@ const CVOne = ({ templateSwitcher }) => {
 
   if (!worker) return null;
 
-  /* ── field mapping ── */
   const ref = generateReferenceNumber(worker);
   const post = worker.primary_positions?.[0] ?? "House Maid";
-  const postAr = worker.primary_positions_ar?.[0] ?? "عاملة منزلية";
   const salary = worker.monthly_salary ? `${worker.monthly_salary} SR` : "";
   const contract =
     worker.contract_start_date && worker.contract_end_date
@@ -347,9 +392,6 @@ const CVOne = ({ templateSwitcher }) => {
   const faceUrl = worker.photo_3x4_url ?? "";
   const bodyUrl = worker.photo_standing_url ?? "";
 
-  // Remark + its date now prefer the value entered in the modal for this
-  // generation run, falling back to whatever was previously saved on the
-  // worker record.
   const remarks = remarkOverride ?? worker.remarks ?? "";
   const remDate = remarkDateOverride ?? safeDate(worker.remarks_date);
 
@@ -374,7 +416,6 @@ const CVOne = ({ templateSwitcher }) => {
     v: workerSkillNames.includes(s.key.toLowerCase()) ? "YES" : "NO",
   }));
 
-  /* ── root CV style ── */
   const cvStyle = {
     width: 760,
     minWidth: 760,
@@ -383,9 +424,14 @@ const CVOne = ({ templateSwitcher }) => {
     fontSize: 15,
     color: "#000",
     boxSizing: "border-box",
-    border: "2px solid #000", // outer line of the double border (page 1 only)
-    padding: 6, // small gap between the outer and existing inner border
+    border: "2px solid #000",
+    padding: 6,
   };
+
+  const partnerOptions = partners.map((p) => ({
+    value: p.partner_id,
+    label: p.full_name || p.email,
+  }));
 
   return (
     <div className="dashboard-wraper">
@@ -399,37 +445,80 @@ const CVOne = ({ templateSwitcher }) => {
         <div className="position-absolute top-0 end-0 mt-4 pt-2">
           {profile?.role_id != 4 && <BackButton onClick={() => navigate(-1)} />}
         </div>
-        {/* Show for role one and two only */}
-        {profile?.role_id == 1 || profile?.role_id == 2 ? (
+
+        {(profile?.role_id === 1 || profile?.role_id === 2) && (
           <button
             className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
             onClick={() => setShowRemarkModal(true)}
           >
-            {worker.cv_one_url ? "Update CV" : "Generate CV"}
+            {worker.cv_three_url ? "Update CV" : "Generate CV"}
           </button>
-        ) : null}
+        )}
       </div>
       <div className="mb-3 mt-1"> {templateSwitcher}</div>
-      {/* horizontal scroll so mobile doesn't break */}
+
+      {/* Header controls — outside cvRef so they never end up in the PDF capture */}
+      <div className="d-flex align-items-center gap-2 mb-2">
+        <input
+          ref={headerFileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/gif"
+          style={{ display: "none" }}
+          onChange={handleHeaderFileChange}
+        />
+        <button
+          type="button"
+          className="btn btn-outline-secondary btn-sm"
+          onClick={handleHeaderPickClick}
+          disabled={uploadingHeader}
+        >
+          {uploadingHeader
+            ? "Uploading..."
+            : worker.cv_three_header_url
+              ? "Change Header Image"
+              : "Upload Header Image"}
+        </button>
+      </div>
+
       <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         {/* ── PAGE 1: CV ── */}
         <div ref={cvRef} style={cvStyle}>
-          {/* HEADER IMAGE */}
-          <img
-            src={cvHeader}
-            alt="CV Header"
-            crossOrigin="anonymous"
-            style={{
-              width: "100%",
-              height: "auto",
-              display: "block",
-              marginBottom: 8,
-              boxShadow: "0 0 12px 4px rgba(0,0,0,0.25)",
-            }}
-          />
+          {/* DYNAMIC HEADER IMAGE */}
+          {worker.cv_three_header_url ? (
+            <img
+              src={worker.cv_three_header_url}
+              alt="CV Header"
+              crossOrigin="anonymous"
+              style={{
+                width: "100%",
+                height: "auto",
+                display: "block",
+                marginBottom: 8,
+                boxShadow: "0 0 12px 4px rgba(0,0,0,0.25)",
+              }}
+            />
+          ) : (
+            <div
+              onClick={handleHeaderPickClick}
+              style={{
+                width: "100%",
+                height: 120,
+                marginBottom: 8,
+                border: "2px dashed #999",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#999",
+                fontSize: 13,
+                fontStyle: "italic",
+                cursor: "pointer",
+              }}
+            >
+              Click "Upload Header Image" above to set this CV's header
+            </div>
+          )}
 
           <div style={{ border: "2px solid #000" }}>
-            {/* Gold title bar — same visual bar as before, just no longer a <table> row */}
             <div
               style={{
                 display: "grid",
@@ -443,14 +532,6 @@ const CVOne = ({ templateSwitcher }) => {
               <div style={css.tdGoldHeader}>{name}</div>
             </div>
 
-            {/* Reference No. / Post Applied For / Monthly Salary / Contract
-                Period — same Row3 component & styling as Nationality below.
-                gridTemplateRows guarantees a real minimum height (160px) up
-                front, so the photo column has something definite to stretch
-                against — this avoids the earlier bug where an img with
-                height:100% inside an auto-height grid row collapsed/distorted
-                because the height was circular (unresolved until the image
-                itself rendered). */}
             <div
               style={{
                 display: "flex",
@@ -498,10 +579,6 @@ const CVOne = ({ templateSwitcher }) => {
                 />
               </div>
 
-              {/* flex-basis 220px + stretch instead of a CSS Grid row — html2canvas
-      handles implicit grid "align-items: stretch" unreliably, which was
-      causing the left column's border to stop short of the row's bottom
-      border instead of connecting to it. */}
               <div style={{ position: "relative", flex: "0 0 220px" }}>
                 {faceUrl ? (
                   <img
@@ -535,7 +612,6 @@ const CVOne = ({ templateSwitcher }) => {
               </div>
             </div>
 
-            {/*  PHONE / NAME BAR */}
             <div
               style={{
                 display: "grid",
@@ -583,7 +659,6 @@ const CVOne = ({ templateSwitcher }) => {
               </div>
             </div>
 
-            {/*  MAIN 2-COL: Details LEFT  |  Passport RIGHT */}
             <div
               style={{
                 display: "grid",
@@ -591,7 +666,6 @@ const CVOne = ({ templateSwitcher }) => {
                 borderBottom: "1px solid #000",
               }}
             >
-              {/* ── LEFT: Details of Applicant ── */}
               <div style={{ borderRight: "2px solid #000" }}>
                 <GoldBar en="Details of Applicant" ar="بيانات الطلب" />
                 <Row3 label="Nationality" value={nat} arLabel="الجنسيه" />
@@ -685,7 +759,6 @@ const CVOne = ({ templateSwitcher }) => {
                 ))}
               </div>
 
-              {/*  RIGHT: Passport Detail + standing photo */}
               <div
                 style={{
                   display: "flex",
@@ -720,7 +793,6 @@ const CVOne = ({ templateSwitcher }) => {
                   cols="100px 110px 1fr"
                 />
 
-                {/* Standing / full-body photo — fills remaining space */}
                 <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
                   {bodyUrl ? (
                     <img
@@ -749,9 +821,7 @@ const CVOne = ({ templateSwitcher }) => {
                 </div>
               </div>
             </div>
-            {/* end main 2-col */}
 
-            {/*  REMARKS */}
             <div
               style={{
                 padding: "3px 10px",
@@ -814,9 +884,6 @@ const CVOne = ({ templateSwitcher }) => {
             }}
           >
             {worker.passport_scan_url ? (
-              /* Fixed-size wrapper so html2canvas captures exact dimensions.
-                 The img is centered via absolute positioning so objectFit: contain
-                 works correctly without stretching. */
               <div
                 style={{
                   width: "100%",
@@ -855,18 +922,24 @@ const CVOne = ({ templateSwitcher }) => {
         </div>
         {/* end PAGE 2 */}
       </div>
-      {/* end scroll wrapper */}
 
-      {/* Remark collection modal — shown before generation starts */}
       <CreateModal
         show={showRemarkModal}
         onClose={() => setShowRemarkModal(false)}
         onCreate={handleRemarkSubmit}
-        fields={[{ name: "remark", label: "Remark" }]}
+        fields={[
+          { name: "remark", label: "Remark" },
+          {
+            name: "partner_id",
+            label: "Partner",
+            type: "select",
+            options: partnerOptions,
+          },
+        ]}
         title="Add Remark"
       />
     </div>
   );
 };
 
-export default CVOne;
+export default CVThree;

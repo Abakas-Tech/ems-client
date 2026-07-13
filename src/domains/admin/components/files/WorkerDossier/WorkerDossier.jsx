@@ -263,7 +263,7 @@ const MiscFilesSection = ({
     total: miscFiles?.length || 0,
     pagination: {},
   });
-console.log(filesData)
+  console.log(filesData);
   const [filters, setFilters] = useState({
     page: 1,
     limit: 5,
@@ -296,7 +296,7 @@ console.log(filesData)
         // findAll() on the backend to support an array for
         // exclude_category (category NOT IN (?)) and axios to serialize
         // it as repeated keys (see paramsSerializer on this call chain).
-        exclude_category: ["CV_ONE", "CV_TWO"],
+        exclude_category: ["CV_ONE", "CV_TWO", "CV_THREE"],
       };
 
       const response = await fetchFiles(params);
