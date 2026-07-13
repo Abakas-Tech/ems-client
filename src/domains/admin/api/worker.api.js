@@ -186,6 +186,18 @@ const listWorkers = async (params = {}) => {
   }
 };
 
+const listWorkersForPartners = async (params = {}) => {
+  try {
+    const response = await axiosInstance.get("/workers/partners", { params });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to list workers",
+    );
+  }
+};
 // Delete / archive worker
 const deleteWorker = async (id, hard = false) => {
   try {
@@ -701,6 +713,24 @@ const getWorkerCVData = async (workerId) => {
     throw new Error(error.response?.data?.message || "Failed to get CV data");
   }
 };
+
+const uploadWorkerCvHeader = async (workerId, file) => {
+  try {
+    const fd = new FormData();
+    fd.append("photo", file);
+    const response = await axiosInstance.patch(
+      `/workers/cv/${workerId}/cv-header`,
+      fd,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Failed to update CV header image",
+    );
+  }
+};
+
 export {
   registerWorkerCore,
   getWorkerBasic,
@@ -715,6 +745,7 @@ export {
   deleteArchivedWorker,
   // updateWorker,
   listWorkers,
+  listWorkersForPartners,
   getWorkerProfile,
   getArchivedWorkerProfile,
   restoreWorker,
@@ -757,4 +788,5 @@ export {
   deleteMedical,
   // cv
   getWorkerCVData,
+  uploadWorkerCvHeader,
 };

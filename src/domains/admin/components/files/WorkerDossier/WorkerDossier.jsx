@@ -15,6 +15,7 @@ import ListingComponent from "../../../../../shared/components/ListingComponent/
 import FileUpload from "../FileUpload/FileUpload";
 import FileFilters from "../FileFilters/FileFilters";
 import CvSelection from "../CvSelection/CvSelection";
+import useProfile from "../../../../../context/Profile/useProfile";
 
 // ─────────────────────────────────────────────────────────────────
 // SECTION A — Core Documents Grid
@@ -257,13 +258,14 @@ const MiscFilesSection = ({
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
-
+  const { profile } = useProfile();
+  const loggedInUserId = profile?.id;
+  const admin = profile?.role_id === 1;
   const [filesData, setFilesData] = useState({
     files: miscFiles || [],
     total: miscFiles?.length || 0,
     pagination: {},
   });
-console.log(filesData)
   const [filters, setFilters] = useState({
     page: 1,
     limit: 5,
@@ -296,7 +298,7 @@ console.log(filesData)
         // findAll() on the backend to support an array for
         // exclude_category (category NOT IN (?)) and axios to serialize
         // it as repeated keys (see paramsSerializer on this call chain).
-        exclude_category: ["CV_ONE", "CV_TWO"],
+        exclude_category: ["CV_ONE", "CV_TWO", "CV_THREE"],
       };
 
       const response = await fetchFiles(params);
@@ -551,6 +553,7 @@ console.log(filesData)
             type: "edit",
             onClick: (row) => setEditingFile(row),
             bypassRole: true,
+            showOn: (row) => row.uploaded_by === loggedInUserId || admin,
           },
           {
             type: "download",
@@ -560,6 +563,7 @@ console.log(filesData)
             type: "delete",
             onClick: (row) => handleDelete(row),
             bypassRole: true,
+            showOn: (row) => row.uploaded_by === loggedInUserId || admin,
           },
         ]}
         emptyState={{
@@ -739,7 +743,7 @@ const WorkerDossier = ({ workerId, onBack }) => {
             className="btn btn-main px-4 py-2 rounded-3 shadow-sm fw-semibold text-white"
             onClick={() => setShowUploadForm(true)}
           >
-            + Upload File
+            Upload File
           </button>
         </div>
         <MiscFilesSection

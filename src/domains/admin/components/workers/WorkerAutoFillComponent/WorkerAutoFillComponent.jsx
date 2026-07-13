@@ -13,7 +13,7 @@ import wafidLogo from "../../../../../assets/img/autofill/wafid.svg";
 import tasheerLogo from "../../../../../assets/img/autofill/tasheer.png";
 import nyalaLogo from "../../../../../assets/img/autofill/niyala.png";
 
-const EXTENSION_ID = "lddpgbebdnmlibiickgjkmlppokhnbdp";
+const EXTENSION_ID = "lcgejbnojippaelldmmhojchkhkmaffk";
 const STORAGE_ACTION = "STAGE_CANDIDATE_QUEUE";
 
 const TARGET_SITES = [
@@ -46,7 +46,6 @@ const TARGET_SITES = [
     url: "https://agency.niscofetap.com/certificate/draft",
   },
 ];
-
 
 function unwrapProfile(response) {
   return response?.data?.data || response?.data || response?.worker || response;

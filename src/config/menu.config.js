@@ -158,6 +158,7 @@ const MENU_CONFIG = [
     path: "/partner/files",
     icon: "bi bi-folder2-open",
     roles: [ROLES.PARTNER],
+    isHidden: true,
   },
 
   {

@@ -97,7 +97,7 @@ const FileSearch = () => {
       formData.append("file_name", title);
       formData.append("category", "Manual");
       formData.append("description", "");
-      formData.append("is_private", "0");
+      formData.append("is_private", "1");
 
       const response = await uploadFile(formData);
       addMessage(

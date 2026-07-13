@@ -13,6 +13,21 @@ const getUsers = async (params = {}) => {
   }
 };
 
+// GET USERS LOOKUP (id + name only, no manage_users permission required)
+const getUsersLookup = async (params = {}) => {
+  try {
+    const response = await axiosInstance.get("/users/lookup", {
+      params,
+    });
+
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Users lookup fetch error",
+    );
+  }
+};
+
 // GET USER BY ID
 const getUserById = async (id) => {
   try {
@@ -53,4 +68,11 @@ const deleteUser = async (id) => {
   }
 };
 
-export { getUsers, getUserById, createUser, updateUser, deleteUser };
+export {
+  getUsers,
+  getUsersLookup,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+};

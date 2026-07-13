@@ -153,7 +153,6 @@ export async function generateVisaApplicationPdf(employeeId, options = {}) {
   const { autoDownload = true, logoSrc } = options;
 
   const res = await getWorkerProfile(employeeId);
-  console.log(res);
   const profile = res?.data || res;
   if (!profile) throw new Error("Worker profile not found");
   // Check for missing required fields before proceeding.
