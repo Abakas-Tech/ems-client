@@ -21,7 +21,7 @@ const FilterComplaint = ({ filters, onFilterChange, onClear }) => {
           </div>
 
           {/* Status */}
-          <div className="col-md-3">
+          <div className="col-md-5">
             <select
               name="status"
               className={`form-select ${styles.input}`}

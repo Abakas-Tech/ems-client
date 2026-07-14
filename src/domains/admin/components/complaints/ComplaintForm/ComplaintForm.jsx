@@ -106,8 +106,8 @@ const ComplaintForm = () => {
   const [employerPhoneNumber, setEmployerPhoneNumber] = useState("");
   const [employerFullAddress, setEmployerFullAddress] = useState("");
 
-  // Resolution info (one-to-many)
-  const [attempts, setAttempts] = useState([]);
+  // Resolution info (one-to-many) — defaults to one empty row, same as complainants
+  const [attempts, setAttempts] = useState([emptyAttempt()]);
   const [complaintOutcome, setComplaintOutcome] = useState("");
 
   // Status (edit mode only — a new complaint always starts as "open" on the backend)
@@ -153,11 +153,13 @@ const ComplaintForm = () => {
     setEmployerFullAddress(complaintData.employer_full_address || "");
 
     setAttempts(
-      (complaintData.resolution_attempts || []).map((a) => ({
-        method: a.method || "",
-        social_platform: a.social_platform || "",
-        notes: a.notes || "",
-      })),
+      complaintData.resolution_attempts?.length
+        ? complaintData.resolution_attempts.map((a) => ({
+            method: a.method || "",
+            social_platform: a.social_platform || "",
+            notes: a.notes || "",
+          }))
+        : [emptyAttempt()],
     );
     setComplaintOutcome(complaintData.complaint_outcome || "");
 
@@ -759,7 +761,7 @@ const ComplaintForm = () => {
               </div>
             </div>
 
-            {/* Resolution Information */}
+            {/* Resolution Information — defaults to one row, same pattern as Complainants */}
             <div className="d-flex justify-content-between align-items-center mt-2">
               <h5 className="fw-bold mb-3">Resolution Information</h5>
               <button
@@ -820,13 +822,15 @@ const ComplaintForm = () => {
                   />
                 </div>
                 <div className="form-group col-md-1 mb-3">
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-danger"
-                    onClick={() => removeAttemptRow(index)}
-                  >
-                    &times;
-                  </button>
+                  {attempts.length > 1 && (
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => removeAttemptRow(index)}
+                    >
+                      &times;
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -843,32 +847,27 @@ const ComplaintForm = () => {
               </div>
             </div>
 
-            {/* Status — edit mode only; a new complaint always starts as "open" */}
-            {isEditMode && (
-              <>
-                <h5 className="fw-bold mb-3 mt-2">Complaint Status</h5>
-                <div className="row">
-                  <div className="form-group col-md-4 mb-3">
-                    <label>Status</label>
-                    <select
-                      className="form-control"
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                    >
-                      {STATUS_OPTIONS.map((s) => (
-                        <option key={s.value} value={s.value}>
-                          {s.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+            {/* Status (edit mode only) + Complaint Intake — same row, flex horizontal */}
+            <h5 className="fw-bold mb-3 mt-2">
+              {isEditMode ? "Complaint Status & Intake" : "Complaint Intake"}
+            </h5>
+            <div className="row d-flex flex-row">
+              {isEditMode && (
+                <div className="form-group col-md-4 mb-3">
+                  <label>Status</label>
+                  <select
+                    className="form-control"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    {STATUS_OPTIONS.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              </>
-            )}
-
-            {/* Complaint Intake */}
-            <h5 className="fw-bold mb-3 mt-2">Complaint Intake</h5>
-            <div className="row">
+              )}
               <div className="form-group col-md-4 mb-3">
                 <label>
                   Date Received <span className="text-danger">*</span>
