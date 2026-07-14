@@ -89,7 +89,6 @@ const MENU_CONFIG = [
   //   roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   // },
 
-  
   {
     label: "External Links",
     path: "/admin/external-links",
@@ -99,7 +98,7 @@ const MENU_CONFIG = [
   {
     label: "Complaints",
     path: "/admin/complaints",
-    icon: "bi bi-life-preserver",
+    icon: "bi bi-exclamation-triangle",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
     permission: PERMISSIONS.MANAGE_COMPLAINT,
   },
