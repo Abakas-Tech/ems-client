@@ -95,7 +95,13 @@ const MENU_CONFIG = [
     icon: "bi bi-link-45deg",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
-
+  {
+    label: "Complaints",
+    path: "/admin/complaints",
+    icon: "bi bi-exclamation-triangle",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_COMPLAINT,
+  },
   {
     label: "Settings",
     path: "/admin/settings",

@@ -1,0 +1,250 @@
+.container {
+  width: 780px;
+  padding: 32px 40px;
+  background-color: #fff;
+  color: #1a1a1a;
+  font-family: "Times New Roman", Georgia, serif;
+  font-size: 12.5px;
+  line-height: 1.6;
+  box-sizing: border-box;
+  counter-reset: section;
+}
+
+/* Letterhead: logo left, company block right-aligned */
+.letterhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.logo {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+}
+
+.companyBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 1px;
+}
+
+.companyName {
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.companyLine {
+  font-size: 11.5px;
+  color: #08679f;
+}
+
+/* Title block: centered, under the letterhead */
+.titleBlock {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* Bold rule marking the top of the report, 75% of the page width */
+.titleRule {
+  width: 75%;
+  height: 3px;
+  background-color: #192854;
+  margin: 0 auto 14px;
+}
+
+.title {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #444;
+  margin-top: 4px;
+}
+
+.statusBadge {
+  text-transform: capitalize;
+  font-weight: 700;
+}
+
+.statusBadge[data-status="Open"] {
+  color: #856404;
+}
+
+.statusBadge[data-status="Investigating"] {
+  color: #0c5460;
+}
+
+.statusBadge[data-status="Resolved"] {
+  color: #155724;
+}
+
+/* Every top-level section is auto-numbered: 1. Worker Information, 2. ... */
+.section {
+  margin-bottom: 12px;
+  counter-increment: section;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.sectionTitle::before {
+  content: counter(section) ". ";
+}
+
+/* Sub-headings inside a section (e.g. inside Office Use Only) are not numbered */
+.subsection {
+  margin-bottom: 12px;
+  counter-increment: subsection;
+}
+
+.subsection:last-child {
+  margin-bottom: 0;
+}
+
+.subsectionTitle {
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* Groups Employer Information / Resolution Attempts / Complaint Intake;
+   subsections are numbered off the parent section, e.g. 4.1, 4.2, 4.3 */
+.officeUseBox {
+  counter-reset: subsection;
+}
+
+.subsectionTitle::before {
+  content: counter(section) "." counter(subsection) " ";
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* Inline "Label: ____underlined value____" style, matching the source form */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+  width: 300px;
+  flex: 1;
+}
+
+.rowFull {
+  width: 100%;
+  align-items: flex-start;
+}
+
+.label {
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  margin-top: 10px;
+}
+
+.value {
+  flex: 1;
+  font-size: 12.5px;
+  font-weight: 400;
+  border-bottom: 1px solid #1a1a1a;
+  padding: 0 2px 2px;
+  min-height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.rowFull .value {
+  display: block;
+  text-align: left;
+  border-bottom: none;
+  box-sizing: border-box;
+  min-height: 2.2em;
+  line-height: 1.6em;
+  padding: 0 4px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #1a1a1a 0,
+    #1a1a1a 1px,
+    transparent 1px,
+    transparent 1.6em
+  );
+  background-position: left bottom;
+  background-repeat: repeat-y;
+}
+
+.linkedTag {
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid #1a1a1a;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.entryList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.entry {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+}
+
+.entry + .entry {
+  border-top: 1px solid #ccc;
+}
+
+.emptyText {
+  color: #777;
+  font-style: italic;
+}
+.signatureRow {
+  display: flex;
+  margin-top: 10px;
+}
+
+.signatureBlock {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+}
+
+.signatureLine {
+  height: 34px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.signatureLabel {
+  font-size: 11.5px;
+  color: #333;
+  margin-top: 4px;
+}
+
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: #101935;
+  border-top: 1px solid #21305c;
+  padding-top: 10px;
+  margin-top: 80px;
+}

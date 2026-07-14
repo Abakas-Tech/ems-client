@@ -52,6 +52,9 @@ import WeredaPage from "../domains/admin/pages/meta/WeredaPage/WeredaPage.jsx";
 import SubCityPage from "../domains/admin/pages/meta/SubCityPage/SubCityPage.jsx";
 import FileSearch from "../domains/admin/pages/FileSearch/FileSearch.jsx";
 import ExternalLinks from "../domains/admin/pages/ExternalLinks/ExternalLinks.jsx";
+import ListComplaint from "../domains/admin/pages/complaints/ListComplaint/ListComplaint.jsx";
+import CreateComplaint from "../domains/admin/pages/complaints/CreateComplaint/CreateComplaint.jsx";
+import ViewComplaint from "../domains/admin/pages/complaints/ViewComplaint/ViewComplaint.jsx";
 
 const AdminRoutes = () => {
   const { profile } = useProfile();
@@ -138,6 +141,14 @@ const AdminRoutes = () => {
         <Route path="user-manual" element={<UserManual />} />
 
         <Route path="external-links" element={<ExternalLinks />} />
+
+        <Route path="complaints" element={<ListComplaint />} />
+        <Route
+          path="complaints/create-complaint"
+          element={<CreateComplaint />}
+        />
+        <Route path="complaints/edit/:id" element={<CreateComplaint />} />
+        <Route path="complaints/view/:id" element={<ViewComplaint />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>
