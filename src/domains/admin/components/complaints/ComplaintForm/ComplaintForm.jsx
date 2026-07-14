@@ -5,6 +5,7 @@ import {
   updateComplaint,
   addResolutionAttempts,
   updateComplaintOutcome,
+  updateComplaintStatus, // <-- new
 } from "../../../api/complaint.api";
 import { listWorkers, getWorkerProfile } from "../../../api/worker.api";
 // NOTE: getCountries here uses the same { name, page, limit } signature already used in Country.jsx
@@ -30,6 +31,13 @@ const SOCIAL_PLATFORMS = [
 ];
 
 const RELIABILITY_LEVELS = ["low", "medium", "high", "confirmed"];
+
+// New: status options, matches complaints.status ENUM
+const STATUS_OPTIONS = [
+  { value: "open", label: "Open" },
+  { value: "investigating", label: "Investigating" },
+  { value: "resolved", label: "Resolved" },
+];
 
 const emptyComplainant = () => ({
   full_name: "",
@@ -102,6 +110,10 @@ const ComplaintForm = () => {
   const [attempts, setAttempts] = useState([]);
   const [complaintOutcome, setComplaintOutcome] = useState("");
 
+  // Status (edit mode only — a new complaint always starts as "open" on the backend)
+  const [status, setStatus] = useState("open");
+  const originalStatusRef = useRef("open");
+
   // Intake
   const [receivedDate, setReceivedDate] = useState(
     new Date().toISOString().slice(0, 10),
@@ -148,6 +160,11 @@ const ComplaintForm = () => {
       })),
     );
     setComplaintOutcome(complaintData.complaint_outcome || "");
+
+    // New: prefill status and remember the original so we only PATCH it if it actually changed
+    const initialStatus = complaintData.status || "open";
+    setStatus(initialStatus);
+    originalStatusRef.current = initialStatus;
 
     setReceivedDate(
       complaintData.received_date
@@ -343,7 +360,7 @@ const ComplaintForm = () => {
 
   const validateFields = () => {
     if (!employeeFullName.trim()) {
-      addMessage(false, "Employee full name is required.");
+      addMessage(false, "Worker full name is required.");
       return false;
     }
     if (!incidentDescription || incidentDescription.trim().length < 10) {
@@ -401,6 +418,17 @@ const ComplaintForm = () => {
       });
       payload.complainants = complainants.map((c) => removeEmptyFields(c));
 
+      const validAttempts = attempts
+        .filter((a) => a.method)
+        .map((a) => removeEmptyFields(a));
+
+      // In edit mode, the PUT endpoint now does a full replace of resolution
+      // attempts as part of the same request — send them inline instead of
+      // as a separate call.
+      if (isEditMode) {
+        payload.resolution_attempts = validAttempts;
+      }
+
       const response =
         isEditMode && complaintData?.id
           ? await updateComplaint(complaintData.id, payload)
@@ -414,15 +442,25 @@ const ComplaintForm = () => {
 
       const complaintId = complaintData?.id || response?.data?.id;
 
-      // Attach any newly-added resolution attempts
-      const validAttempts = attempts.filter((a) => a.method);
-      if (complaintId && validAttempts.length > 0) {
+      // Create mode only: attach newly-added resolution attempts via the
+      // dedicated append endpoint, since createComplaint doesn't accept them.
+      if (!isEditMode && complaintId && validAttempts.length > 0) {
         await addResolutionAttempts(complaintId, validAttempts);
       }
 
       // Attach/update outcome
       if (complaintId && complaintOutcome.trim()) {
         await updateComplaintOutcome(complaintId, complaintOutcome.trim());
+      }
+
+      // Edit mode only: push a status change if the user actually changed it
+      if (
+        isEditMode &&
+        complaintId &&
+        status &&
+        status !== originalStatusRef.current
+      ) {
+        await updateComplaintStatus(complaintId, status);
       }
 
       addMessage(true, response.message);
@@ -455,11 +493,11 @@ const ComplaintForm = () => {
         <form onSubmit={handleSubmit}>
           <div className="submit-section">
             {/* Employee Information */}
-            <h5 className="fw-bold mb-3">Employee Information</h5>
+            <h5 className="fw-bold mb-3">Worker Information</h5>
             <div className="row">
               <div className="form-group col-md-6 mb-3 position-relative">
                 <label>
-                  Employee Full Name <span className="text-danger">*</span>
+                  Worker Full Name <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
@@ -476,14 +514,13 @@ const ComplaintForm = () => {
                   placeholder="Start typing to search existing workers…"
                 />
                 {selectedWorkerId && (
-                  <small className="text-success d-block mt-1">
-                    Linked to worker #{selectedWorkerId}
+                  <small className="text-success d-block mt-1 ">
                     {workerAutofillLoading ? " — loading details…" : ""}
                   </small>
                 )}
                 {showWorkerSuggestions && (
                   <ul
-                    className="list-group position-absolute w-100 shadow-sm"
+                    className="list-group position-absolute w-100 pe-4"
                     style={{
                       zIndex: 20,
                       maxHeight: "220px",
@@ -546,7 +583,7 @@ const ComplaintForm = () => {
                 />
                 {showCountryDropdown && (
                   <ul
-                    className="list-group position-absolute w-100 shadow-sm"
+                    className="list-group position-absolute w-100 pe-4"
                     style={{
                       zIndex: 20,
                       maxHeight: "220px",
@@ -651,7 +688,7 @@ const ComplaintForm = () => {
                   />
                 </div>
                 <div className="form-group col-md-4 mb-3">
-                  <label>Relationship to Employee</label>
+                  <label>Relationship to Worker</label>
                   <input
                     type="text"
                     className="form-control"
@@ -805,6 +842,29 @@ const ComplaintForm = () => {
                 />
               </div>
             </div>
+
+            {/* Status — edit mode only; a new complaint always starts as "open" */}
+            {isEditMode && (
+              <>
+                <h5 className="fw-bold mb-3 mt-2">Complaint Status</h5>
+                <div className="row">
+                  <div className="form-group col-md-4 mb-3">
+                    <label>Status</label>
+                    <select
+                      className="form-control"
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                    >
+                      {STATUS_OPTIONS.map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Complaint Intake */}
             <h5 className="fw-bold mb-3 mt-2">Complaint Intake</h5>

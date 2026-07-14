@@ -209,14 +209,6 @@ const ListComplaint = () => {
     {
       header: "Employee",
       accessor: "employee_full_name",
-      render: (row) => (
-        <span className="fw-bold">
-          {row.employee_full_name}
-          {row.worker_id ? (
-            <Badge content="Linked" color="green" className="ms-2" />
-          ) : null}
-        </span>
-      ),
     },
     {
       header: "Employer",

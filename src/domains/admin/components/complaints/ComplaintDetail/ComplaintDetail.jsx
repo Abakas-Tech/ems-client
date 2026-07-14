@@ -55,18 +55,7 @@ const formatDateTime = (value) => {
   });
 };
 
-const statusBadgeClass = (status) => {
-  switch (status) {
-    case "resolved":
-      return "badge bg-success";
-    case "investigating":
-      return "badge bg-info text-dark";
-    case "open":
-      return "badge bg-warning text-dark";
-    default:
-      return "badge bg-secondary";
-  }
-};
+
 
 const reliabilityBadgeClass = (level) => {
   switch (level) {
@@ -174,10 +163,7 @@ const ComplaintDetail = () => {
         <div className="d-flex justify-content-between align-items-start mb-4">
           <div>
             <h2 className="fw-bold text-dark mb-2">
-              Complaint #{complaint.id}{" "}
-              <span className={statusBadgeClass(complaint.status)}>
-                {complaint.status || "unknown"}
-              </span>
+              Complaint 
             </h2>
             <p className="text-muted mb-0">
               Full details of this complaint, complainants, and resolution
@@ -197,8 +183,8 @@ const ComplaintDetail = () => {
         </div>
 
         {/* Complaint Intake */}
-        <div className="card border mb-3">
-          <div className="card-header bg-white border-bottom">
+        <div className="card  mb-3">
+          <div className="card-header bg-white">
             <h6 className="fw-bold mb-0">Complaint Intake</h6>
           </div>
           <div className="card-body">
@@ -217,24 +203,16 @@ const ComplaintDetail = () => {
         </div>
 
         {/* Employee Information */}
-        <div className="card border mb-3">
-          <div className="card-header bg-white border-bottom">
-            <h6 className="fw-bold mb-0">Employee Information</h6>
+        <div className="card  mb-3">
+          <div className="card-header bg-white">
+            <h6 className="fw-bold mb-0">Worker Information</h6>
           </div>
           <div className="card-body">
             <div className="row">
               <Field label="Employee Full Name" className="col-md-3">
                 {complaint.employee_full_name || "—"}
               </Field>
-              <Field label="Linked Worker" className="col-md-3">
-                {complaint.worker_id ? (
-                  <span className="text-success">
-                    Worker #{complaint.worker_id}
-                  </span>
-                ) : (
-                  <span className="text-muted fw-normal">Not linked</span>
-                )}
-              </Field>
+         
               <Field label="Departure Date" className="col-md-3">
                 {formatDate(complaint.departure_date)}
               </Field>
@@ -250,8 +228,8 @@ const ComplaintDetail = () => {
         </div>
 
         {/* Complaint Information */}
-        <div className="card border mb-3">
-          <div className="card-header bg-white border-bottom">
+        <div className="card  mb-3">
+          <div className="card-header bg-white ">
             <h6 className="fw-bold mb-0">Complaint Information</h6>
           </div>
           <div className="card-body">
@@ -286,8 +264,8 @@ const ComplaintDetail = () => {
         </div>
 
         {/* Complainant Information */}
-        <div className="card border mb-3">
-          <div className="card-header bg-white border-bottom">
+        <div className="card mb-3">
+          <div className="card-header bg-white">
             <h6 className="fw-bold mb-0">Complainant Information</h6>
           </div>
           <div className="card-body">
@@ -323,8 +301,8 @@ const ComplaintDetail = () => {
         </div>
 
         {/* Employer Information */}
-        <div className="card border mb-3">
-          <div className="card-header bg-white border-bottom">
+        <div className="card mb-3">
+          <div className="card-header bg-white ">
             <h6 className="fw-bold mb-0">Employer Information</h6>
           </div>
           <div className="card-body">
@@ -343,8 +321,8 @@ const ComplaintDetail = () => {
         </div>
 
         {/* Resolution Information */}
-        <div className="card border mb-3">
-          <div className="card-header bg-white border-bottom">
+        <div className="card  mb-3">
+          <div className="card-header bg-white ">
             <h6 className="fw-bold mb-0">Resolution Information</h6>
           </div>
           <div className="card-body">
