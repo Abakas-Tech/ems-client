@@ -1,7 +1,36 @@
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import styles from "./ComplaintReportTemplate.module.css";
 import { companyInfo } from "./companyInfo";
 import logo from "../../../../../assets/img/logo/logo-nbg.png";
+
+const LinedValue = ({ text }) => {
+  const textRef = useRef(null);
+  const [lineCount, setLineCount] = useState(1);
+
+  useEffect(() => {
+    if (!textRef.current) return;
+    const el = textRef.current;
+    const computedLineHeight = parseFloat(getComputedStyle(el).lineHeight);
+    const measuredLines = Math.max(
+      1,
+      Math.round(el.scrollHeight / computedLineHeight),
+    );
+    setLineCount(measuredLines);
+  }, [text]);
+
+  return (
+    <div className={styles.linedValue}>
+      <div className={styles.linedValueRuling}>
+        {Array.from({ length: lineCount }).map((_, i) => (
+          <div key={i} className={styles.linedValueLine} />
+        ))}
+      </div>
+      <div ref={textRef} className={styles.linedValueText}>
+        {text}
+      </div>
+    </div>
+  );
+};
 
 const ComplaintReportTemplate = forwardRef(({ data }, ref) => {
   const d = data || {};
@@ -53,7 +82,9 @@ const ComplaintReportTemplate = forwardRef(({ data }, ref) => {
         <div className={styles.sectionTitle}>Complaint Information</div>
         <div className={`${styles.row} ${styles.rowFull}`}>
           <span className={styles.label}>Incident Description</span>
-          <span className={styles.value}>{d.incidentDescription}</span>
+          <div className={styles.value}>
+            <LinedValue text={d.incidentDescription} />
+          </div>
         </div>
         <div className={styles.grid}>
           <div className={styles.row}>
@@ -153,7 +184,9 @@ const ComplaintReportTemplate = forwardRef(({ data }, ref) => {
               style={{ marginTop: "8px" }}
             >
               <span className={styles.label}>Outcome</span>
-              <span className={styles.value}>{d.complaintOutcome}</span>
+              <div className={styles.value}>
+                <LinedValue text={d.complaintOutcome} />
+              </div>
             </div>
           </div>
 

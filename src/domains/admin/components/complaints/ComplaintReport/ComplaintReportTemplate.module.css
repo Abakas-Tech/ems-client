@@ -175,18 +175,36 @@
   text-align: left;
   border-bottom: none;
   box-sizing: border-box;
-  min-height: 2.2em;
+  padding: 0;
+}
+.rowFull .label{
+  margin-top: 5px;
+}
+
+.linedValue {
+  position: relative;
+  width: 100%;
+}
+
+.linedValueRuling {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.linedValueLine {
+  height: 1.6em;
+  border-bottom: 1px solid #1a1a1a;
+  box-sizing: border-box;
+}
+
+.linedValueText {
+  position: relative;
+  z-index: 1;
   line-height: 1.6em;
   padding: 0 4px;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    #1a1a1a 0,
-    #1a1a1a 1px,
-    transparent 1px,
-    transparent 1.6em
-  );
-  background-position: left bottom;
-  background-repeat: repeat-y;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .linkedTag {
