@@ -24,6 +24,7 @@ const mapComplaintToReport = (complaint) => ({
   employeeFullName: complaint.employee_full_name,
   workerLinked: Boolean(complaint.worker_id),
   departureDate: formatDate(complaint.departure_date),
+  destinationCountry: complaint.destination_country_name || "—",
   status: titleCase(complaint.status),
 
   incidentDescription: complaint.incident_description,
@@ -45,6 +46,7 @@ const mapComplaintToReport = (complaint) => ({
   complaintOutcome: complaint.complaint_outcome || "Not yet resolved",
 
   receivedDate: formatDate(complaint.received_date),
+  receivedBy: complaint.received_by_full_name || "—",
   generatedDateLabel: new Date().toDateString(),
 });
 
