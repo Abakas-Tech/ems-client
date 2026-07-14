@@ -245,10 +245,7 @@ const CVOne = ({ templateSwitcher }) => {
       );
 
       if (!assignedPartner) {
-        addMessage(
-          false,
-          'Abo Bejad partner is not configured. Create or edit an active partner and select "Abo Bejad" as the CV Type.',
-        );
+        addMessage(false, "Abo Bejad partner is not created.");
         return;
       }
 
