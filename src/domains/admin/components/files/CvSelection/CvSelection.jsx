@@ -1,45 +1,97 @@
-import React, { useState } from "react";
+import React, { useMemo } from "react";
+
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+
 import partnerALogo from "../../../../../assets/img/cv/cv-header.png";
 import partnerBLogo from "../../../../../assets/img/logo/brand-header.png";
 
+import useProfile from "../../../../../context/Profile/useProfile";
+
 // ─────────────────────────────────────────────────────────────────
-// CV Partner Slots
+// Fixed partner slots
 // ─────────────────────────────────────────────────────────────────
-const CV_PARTNER_SLOTS = [
-  { key: "cv_one", label: "CV — Template 1", logoPlaceholder: partnerALogo },
-  { key: "cv_two", label: "CV — Template 2", logoPlaceholder: partnerBLogo },
+
+const FIXED_PARTNER_SLOTS = [
+  {
+    key: "cv_one",
+    category: "CV_ONE",
+    label: "Abo Bejad",
+    logoPlaceholder: partnerALogo,
+  },
+  {
+    key: "cv_two",
+    category: "CV_TWO",
+    label: "Semu Al-Shifa",
+    logoPlaceholder: partnerBLogo,
+  },
 ];
+
+// ─────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────
+
+const idsMatch = (firstId, secondId) => {
+  if (firstId == null || secondId == null) return false;
+
+  return String(firstId) === String(secondId);
+};
+
+const canProfileSeeCv = (cv, profile) => {
+  if (!cv || !profile) return false;
+
+  const isPartner = Number(profile.role_id) === 3;
+
+  if (!isPartner) return true;
+
+  const profilePartnerId =
+    profile.partner_id ?? profile.partner?.id ?? profile.partnerId ?? null;
+
+  if (profilePartnerId != null) {
+    return idsMatch(cv.partner_id, profilePartnerId);
+  }
+
+  const profileUserId = profile.id ?? profile.user_id ?? null;
+
+  return idsMatch(cv.partner_user_id, profileUserId);
+};
+
+const getFileUrl = (file) => file?.url || file?.file_url || null;
 
 // ─────────────────────────────────────────────────────────────────
 // Helper: download a file by URL
 // ─────────────────────────────────────────────────────────────────
-const handleDownload = async (file) => {
-  if (!file?.url && !file?.file_url) return;
 
-  const url = file.url || file.file_url;
+const handleDownload = async (file) => {
+  const url = getFileUrl(file);
+
+  if (!url) return;
+
   try {
     const response = await fetch(url);
     const blob = await response.blob();
     const localUrl = URL.createObjectURL(blob);
     const link = document.createElement("a");
+
     link.href = localUrl;
-    link.download = file.file_name || "cv";
+    link.download = file?.file_name || "cv";
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
     URL.revokeObjectURL(localUrl);
   } catch {
-    window.open(url, "_blank");
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 };
 
 // ─────────────────────────────────────────────────────────────────
-// Partner Card
+// Partner Card — original layout and styling preserved
 // ─────────────────────────────────────────────────────────────────
+
 const PartnerCard = ({ slot, cvFile }) => {
-  const [expanded, setExpanded] = useState(false);
-  const hasCv = !!(cvFile?.url || cvFile?.file_url);
+  const fileUrl = getFileUrl(cvFile);
+  const hasCv = Boolean(fileUrl);
 
   return (
     <div
@@ -50,13 +102,13 @@ const PartnerCard = ({ slot, cvFile }) => {
         transition: "transform 0.2s ease, box-shadow 0.2s ease",
         cursor: "default",
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.10)";
+      onMouseEnter={(event) => {
+        event.currentTarget.style.transform = "translateY(-4px)";
+        event.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.10)";
       }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 2px 16px rgba(0,0,0,0.06)";
+      onMouseLeave={(event) => {
+        event.currentTarget.style.transform = "translateY(0)";
+        event.currentTarget.style.boxShadow = "0 2px 16px rgba(0,0,0,0.06)";
       }}
     >
       {/* Top accent bar */}
@@ -71,7 +123,7 @@ const PartnerCard = ({ slot, cvFile }) => {
       />
 
       <div className="card-body p-4 d-flex flex-column">
-        {/* ── Partner Logo ── */}
+        {/* Partner Logo/Header */}
         <div
           className="d-flex align-items-center justify-content-center mb-3"
           style={{
@@ -83,20 +135,34 @@ const PartnerCard = ({ slot, cvFile }) => {
           }}
         >
           <div className="text-center">
-            <img
-              src={slot.logoPlaceholder}
-              alt={slot.label}
-              style={{
-                maxWidth: "100%",
-                maxHeight: "100%",
-                objectFit: "contain",
-              }}
-            />
+            {slot.logoPlaceholder ? (
+              <img
+                src={slot.logoPlaceholder}
+                alt={slot.label}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  objectFit: "contain",
+                }}
+              />
+            ) : (
+              <i
+                className="bi bi-building"
+                style={{ fontSize: "36px", color: "#94a3b8" }}
+              />
+            )}
           </div>
         </div>
 
-        {/* ── Status badge ── */}
+        {/* Partner name and status */}
         <div className="mb-3">
+          <h6
+            className="fw-semibold text-dark mb-2 text-truncate"
+            title={slot.label}
+          >
+            {slot.label}
+          </h6>
+
           {hasCv ? (
             <span
               style={{
@@ -131,12 +197,12 @@ const PartnerCard = ({ slot, cvFile }) => {
         <div className="mt-2" style={{ animation: "cvFadeIn 0.2s ease" }}>
           <div className="d-flex gap-2 mt-auto">
             <button
+              type="button"
               className="btn btn-main flex-grow-1 py-2 rounded-3 fw-semibold text-white"
               style={{ fontSize: "13px" }}
               onClick={() => {
-                if (hasCv) {
-                  const url = cvFile.url || cvFile.file_url;
-                  window.open(url, "_blank");
+                if (fileUrl) {
+                  window.open(fileUrl, "_blank", "noopener,noreferrer");
                 }
               }}
               disabled={!hasCv}
@@ -144,7 +210,9 @@ const PartnerCard = ({ slot, cvFile }) => {
               <i className="bi bi-eye me-2" />
               View CV
             </button>
+
             <button
+              type="button"
               className="btn btn-outline-secondary py-2 rounded-3"
               style={{ fontSize: "13px", minWidth: "44px" }}
               onClick={() => handleDownload(cvFile)}
@@ -170,21 +238,115 @@ const PartnerCard = ({ slot, cvFile }) => {
 // ─────────────────────────────────────────────────────────────────
 // MAIN — CvSelection
 // ─────────────────────────────────────────────────────────────────
-const CvSelection = ({ workerId, worker, cvFileOne, cvFileTwo, onBack }) => {
-   const cvFilesBySlot = {
-     cv_one: cvFileOne,
-     cv_two: cvFileTwo,
-   };
+
+const CvSelection = ({
+  worker,
+  generatedCvs = [],
+  cvFileOne,
+  cvFileTwo,
+  cvFileThree,
+  onBack,
+}) => {
+  const { profile } = useProfile();
+
+  const visibleGeneratedCvs = useMemo(() => {
+    if (!profile) return [];
+
+    const files = Array.isArray(generatedCvs) ? generatedCvs : [];
+
+    return files.filter((cv) => canProfileSeeCv(cv, profile));
+  }, [generatedCvs, profile]);
+
+  const cards = useMemo(() => {
+    if (!profile) return [];
+
+    const isPartner = Number(profile.role_id) === 3;
+
+    const generatedCvOne =
+      visibleGeneratedCvs.find((cv) => cv.category === "CV_ONE") || null;
+    const generatedCvTwo =
+      visibleGeneratedCvs.find((cv) => cv.category === "CV_TWO") || null;
+
+    const fixedFiles = {
+      cv_one:
+        generatedCvOne ||
+        (canProfileSeeCv(cvFileOne, profile) ? cvFileOne : null),
+      cv_two:
+        generatedCvTwo ||
+        (canProfileSeeCv(cvFileTwo, profile) ? cvFileTwo : null),
+    };
+
+    /*
+     * Internal users continue to see both fixed cards, including their
+     * original "CV Not Uploaded" state. Partners only see fixed cards that
+     * belong to them and therefore have been returned by the secure API.
+     */
+    const fixedCards = FIXED_PARTNER_SLOTS.filter(
+      (slot) => !isPartner || Boolean(fixedFiles[slot.key]),
+    ).map((slot) => ({
+      cardKey: slot.key,
+      slot,
+      cvFile: fixedFiles[slot.key],
+    }));
+
+    let dynamicFiles = visibleGeneratedCvs.filter(
+      (cv) => cv.category === "CV_THREE",
+    );
+
+    if (
+      dynamicFiles.length === 0 &&
+      cvFileThree &&
+      canProfileSeeCv(cvFileThree, profile)
+    ) {
+      dynamicFiles = [cvFileThree];
+    }
+
+    /*
+     * Keep only the newest CV_THREE record for each partner. The backend
+     * returns generated CVs newest first.
+     */
+    const seenPartnerIds = new Set();
+    const latestDynamicFiles = dynamicFiles.filter((cv) => {
+      const partnerKey =
+        cv.partner_id != null
+          ? String(cv.partner_id)
+          : `file-${cv.id || cv.file_url || cv.url}`;
+
+      if (seenPartnerIds.has(partnerKey)) return false;
+
+      seenPartnerIds.add(partnerKey);
+      return true;
+    });
+
+    const dynamicCards = latestDynamicFiles.map((cv, index) => ({
+      cardKey:
+        cv.id != null
+          ? `cv-three-${cv.id}`
+          : `cv-three-${cv.partner_id || index}`,
+      slot: {
+        key: `cv_three_${cv.partner_id || cv.id || index}`,
+        category: "CV_THREE",
+        label: cv.partner_name || "Additional Partner",
+        logoPlaceholder: cv.partner_header_url || cv.cv_header_url || null,
+      },
+      cvFile: cv,
+    }));
+
+    return [...fixedCards, ...dynamicCards];
+  }, [profile, visibleGeneratedCvs, cvFileOne, cvFileTwo, cvFileThree]);
+
   return (
     <div>
-      {/* ── Header ── */}
+      {/* Header */}
       <div className="d-flex align-items-start justify-content-between mb-4 flex-wrap gap-3">
         <div className="d-flex align-items-center gap-3">
           <BackButton onClick={onBack} />
+
           <div>
             <h4 className="fw-bold text-dark mb-2">
               {worker?.full_name || "Employee"} — CV
             </h4>
+
             <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
               Choose which CV format to view or download for this worker.
             </p>
@@ -192,15 +354,12 @@ const CvSelection = ({ workerId, worker, cvFileOne, cvFileTwo, onBack }) => {
         </div>
       </div>
 
-      {/* ── CV Partner Cards ── */}
+      {/* CV Partner Cards */}
       <div className="container px-0">
         <div className="row g-4">
-          {CV_PARTNER_SLOTS.map((slot) => (
-            <div
-              key={slot.key}
-              className="col-xl-3 col-lg-4 col-md-6 col-sm-12"
-            >
-              <PartnerCard slot={slot} cvFile={cvFilesBySlot[slot.key]} />
+          {cards.map(({ cardKey, slot, cvFile }) => (
+            <div key={cardKey} className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+              <PartnerCard slot={slot} cvFile={cvFile} />
             </div>
           ))}
         </div>

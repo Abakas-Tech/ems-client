@@ -658,12 +658,6 @@ const ActiveWorkers = () => {
               onClick: (row) => handleFiles(row),
             },
             {
-              type: "viewCV",
-              onClick: (row) =>
-                window.open(row.cv_url, "_blank", "noopener,noreferrer"),
-              showOn: (row) => row.cv_url,
-            },
-            {
               type: "downloadVisa",
               onClick: (row) => handleDownloadVisaApplication(row.id),
             },

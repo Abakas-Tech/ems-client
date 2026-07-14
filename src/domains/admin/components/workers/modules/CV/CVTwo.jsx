@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { getWorkerCVData } from "../../../../api/worker.api";
+import { getUsersLookup } from "../../../../api/user.api";
 import { uploadFile } from "../../../../api/file.api";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import useLoader from "../../../../../../context/Loader/useLoader";
@@ -81,7 +82,32 @@ const CVTwo = ({ templateSwitcher }) => {
       hideLoader();
     }
   }, [id, profile, showLoader, hideLoader, addMessage]);
+  const handleGenerateClick = async () => {
+    try {
+      const response = await getUsersLookup({
+        role_id: 3,
+      });
 
+      const partners = Array.isArray(response?.data) ? response.data : [];
+
+      const assignedPartner = partners.find(
+        (partner) => partner.cv_template_code === "CV_TWO",
+      );
+
+      if (!assignedPartner) {
+        addMessage(false, "Semu Al-Shifa partner is not created.");
+        return;
+      }
+
+      setShowRemarkModal(true);
+    } catch (error) {
+      addMessage(
+        false,
+        error?.message ||
+          "Could not verify the Semu Al-Shifa partner configuration.",
+      );
+    }
+  };
   useEffect(() => {
     if (profile?.id || id) {
       fetchWorkerData();
@@ -348,7 +374,7 @@ const CVTwo = ({ templateSwitcher }) => {
         {profile?.role_id == 1 || profile?.role_id == 2 ? (
           <button
             className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
-            onClick={() => setShowRemarkModal(true)}
+            onClick={handleGenerateClick}
           >
             {worker.cv_two_url ? "Update CV" : "Generate CV"}
           </button>

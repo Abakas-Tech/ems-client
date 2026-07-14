@@ -58,6 +58,31 @@ const updateUser = async (id, payload) => {
   }
 };
 
+// UPLOAD PARTNER CV HEADER
+const uploadPartnerCvHeader = async (userId, file) => {
+  try {
+    const formData = new FormData();
+
+    // Use the same field name expected by imageValidator.
+    formData.append("photo", file);
+
+    const response = await axiosInstance.post(
+      `/users/${userId}/partner-cv-header`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Partner CV header upload failed",
+    );
+  }
+};
 // DELETE USER (ADMIN)
 const deleteUser = async (id) => {
   try {
@@ -74,5 +99,6 @@ export {
   getUserById,
   createUser,
   updateUser,
+  uploadPartnerCvHeader,
   deleteUser,
 };
