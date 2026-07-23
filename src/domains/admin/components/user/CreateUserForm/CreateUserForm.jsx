@@ -19,12 +19,14 @@ const PERMISSIONS = [
   "manage_workers",
   "manage_finance",
   "manage_analytics",
+  "manage_complaint",
 ];
 const PERMISSION_LABELS = {
   manage_users: "Manage Users",
   manage_workers: "Manage Employees",
   manage_finance: "Manage Finance",
   manage_analytics: "Manage Analytics",
+  manage_complaint: "Manage Complaints",
 };
 
 const CreateUserForm = ({ isEditMode = false, userData = null }) => {
@@ -215,7 +217,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       ),
     );
   };
-  
+
   const handlePartnerHeaderChange = (event) => {
     const file = event.target.files?.[0];
 
