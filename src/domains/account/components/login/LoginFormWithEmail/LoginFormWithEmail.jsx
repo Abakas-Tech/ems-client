@@ -96,7 +96,7 @@ const LoginFormWithEmail = () => {
 
             {/* Forgot password */}
             <div className="text-end mb-3 fw-medium">
-              <Link to="/auth/request-otp" className="link-primary">
+              <Link to="request-otp" className="link-primary">
                 Forgot Password?
               </Link>
             </div>
