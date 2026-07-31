@@ -941,8 +941,8 @@ function WorkerAutoFillComponent() {
         <div className="mt-3 mt-md-5">
           <div className="d-flex align-items-center gap-2">
             <span className="badge rounded-pill bg-light text-dark border px-3 py-2">
-              {queue.length} {queue.length === 1 ? "employee" : "employees"}{" "}
-              selected
+              {queue.length}{" "}
+              {queue.length === 1 ? "employee" : "employees"}{" "}
             </span>
             <button
               type="button"

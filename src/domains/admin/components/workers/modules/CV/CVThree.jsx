@@ -240,6 +240,37 @@ const CVThree = ({ templateSwitcher }) => {
   useEffect(() => {
     const fetchPartners = async () => {
       /*
+       * An employer may only view the CV tied to the partner on their latest
+       * active contract. The backend supplies this already-authorized context.
+       */
+      if (Number(profile?.role_id) === 5) {
+        const access = worker?.cv_access;
+
+        if (!access?.available || !access?.partner_id) {
+          setPartners([]);
+          setSelectedPartnerId("");
+          return;
+        }
+
+        const contractPartner = {
+          full_name: access.partner_name,
+          partner_id: access.partner_id,
+          cv_header_url: access.partner_header_url,
+          cv_template_code: access.cv_template_code,
+        };
+
+        setPartners([contractPartner]);
+        setSelectedPartnerId(String(contractPartner.partner_id));
+
+        if (contractPartner.cv_header_url) {
+          headerLoadingUrlRef.current = contractPartner.cv_header_url;
+          showLoader();
+        }
+
+        return;
+      }
+
+      /*
        * A logged-in partner should only use their own account. Admin and
        * employee users continue to receive the existing partner lookup.
        */
@@ -289,7 +320,13 @@ const CVThree = ({ templateSwitcher }) => {
     if (profile) {
       fetchPartners();
     }
-  }, [profile]);
+  }, [
+    profile,
+    worker?.cv_access?.available,
+    worker?.cv_access?.partner_id,
+    worker?.cv_access?.partner_header_url,
+    worker?.cv_access?.cv_template_code,
+  ]);
 
   const selectedPartner = partners.find(
     (partner) => String(partner.partner_id) === String(selectedPartnerId),
@@ -582,7 +619,9 @@ const CVThree = ({ templateSwitcher }) => {
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
         <div className="mt-0">
           <h2 className="fw-bold text-dark mb-2">CV</h2>
-          <p className="text-muted mb-0">Generate and upload CV</p>
+          {(Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) && (
+            <p className="text-muted mb-0">Generate and upload CV</p>
+          )}
         </div>
 
         <div className="position-absolute top-0 end-0 mt-4 pt-2">
@@ -601,42 +640,46 @@ const CVThree = ({ templateSwitcher }) => {
         )}
       </div>
 
-      <div className="mb-3 mt-1">{templateSwitcher}</div>
+      {(Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) && (
+        <div className="mb-3 mt-1">{templateSwitcher}</div>
+      )}
 
-      {/* Partner control remains outside cvRef, so it is not captured in the PDF. */}
-      <div
-        className="d-flex align-items-center gap-2 mb-2 flex-wrap"
-        style={{ width: "100%", maxWidth: "420px" }}
-      >
-        <label className="mb-0 fw-semibold" htmlFor="cv-three-partner">
-          Partner
-        </label>
-
-        <select
-          id="cv-three-partner"
-          className="form-control"
-          value={selectedPartnerId}
-          onChange={handlePartnerChange}
-          disabled={Number(profile?.role_id) === 3}
-          style={{
-            flex: "1 1 260px",
-            width: "100%",
-            minWidth: 0,
-            maxWidth: "100%",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
+      {/* Employers use the contract partner automatically, so no selector is shown. */}
+      {Number(profile?.role_id) !== 5 && (
+        <div
+          className="d-flex align-items-center gap-2 mb-2 flex-wrap"
+          style={{ width: "100%", maxWidth: "420px" }}
         >
-          <option value="">Select Partner</option>
+          <label className="mb-0 fw-semibold" htmlFor="cv-three-partner">
+            Partner
+          </label>
 
-          {partners.map((partner) => (
-            <option key={partner.partner_id} value={partner.partner_id}>
-              {getPartnerOptionLabel(partner)}
-            </option>
-          ))}
-        </select>
-      </div>
+          <select
+            id="cv-three-partner"
+            className="form-control"
+            value={selectedPartnerId}
+            onChange={handlePartnerChange}
+            disabled={Number(profile?.role_id) === 3}
+            style={{
+              flex: "1 1 260px",
+              width: "100%",
+              minWidth: 0,
+              maxWidth: "100%",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <option value="">Select Partner</option>
+
+            {partners.map((partner) => (
+              <option key={partner.partner_id} value={partner.partner_id}>
+                {getPartnerOptionLabel(partner)}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         {/* Page 1: CV */}

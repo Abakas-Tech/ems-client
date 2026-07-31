@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+
 import {
   updateUser,
   createUser,
@@ -21,6 +22,7 @@ const PERMISSIONS = [
   "manage_analytics",
   "manage_complaint",
 ];
+
 const PERMISSION_LABELS = {
   manage_users: "Manage Users",
   manage_workers: "Manage Employees",
@@ -34,7 +36,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [role, setRole] = useState("");
-  const [status, setStatus] = useState("1"); // Active = 1, Inactive = 0
+  const [status, setStatus] = useState("1");
   const [country, setCountry] = useState("");
   const [nationalId, setNationalId] = useState("");
   const [city, setCity] = useState("");
@@ -46,11 +48,21 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [partnerCvHeader, setPartnerCvHeader] = useState(null);
   const [existingPartnerCvHeader, setExistingPartnerCvHeader] = useState(null);
   const [cvTemplateCode, setCvTemplateCode] = useState("");
+
   const { profile } = useProfile();
   const userId = profile?.id;
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
+
+  /*
+   * CV_ONE and CV_TWO have fixed header assets.
+   * Only New Partner (empty cvTemplateCode) needs an uploaded header.
+   */
+  const isFixedPartnerTemplate =
+    role === "3" && ["CV_ONE", "CV_TWO"].includes(cvTemplateCode);
+
+  const shouldShowPartnerHeader = role === "3" && !isFixedPartnerTemplate;
 
   const handleBack = () => {
     navigate(-1);
@@ -73,11 +85,13 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       setExistingPartnerCvHeader(userData.cv_header_url || null);
       setPartnerCvHeader(null);
       setCvTemplateCode(userData.cv_template_code || "");
+
       if (userData.permissions && userData.permissions.length > 0) {
         const permissionObject = userData.permissions[0];
         const activePermissions = PERMISSIONS.filter(
-          (perm) => permissionObject[perm] === 1,
+          (permission) => permissionObject[permission] === 1,
         );
+
         setSelectedPermissions(activePermissions);
         setOriginalPermissions(activePermissions);
       }
@@ -105,10 +119,11 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     const cleanedValue = value.replace(/[^\d+\-\s()]/g, "");
     setPhoneNumber(cleanedValue);
   };
+
   const togglePermission = (permission) => {
     if (selectedPermissions.includes(permission)) {
       setSelectedPermissions(
-        selectedPermissions.filter((p) => p !== permission),
+        selectedPermissions.filter((item) => item !== permission),
       );
     } else {
       setSelectedPermissions([...selectedPermissions, permission]);
@@ -129,7 +144,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     setSelectAll(selectedPermissions.length === PERMISSIONS.length);
   }, [selectedPermissions]);
 
-  // Determine which fields are required based on backend schema
   const requiredFields = {
     full_name: !isEditMode,
     email: !isEditMode,
@@ -142,11 +156,11 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   };
 
   const validateFields = () => {
-    // Full Name: letters only, min 2, max 50
     if (fullName && !/^[A-Za-z\s]+$/.test(fullName)) {
       addMessage(false, "Full name can contain letters only.");
       return false;
     }
+
     if (fullName && (fullName.length < 2 || fullName.length > 50)) {
       addMessage(false, "Full name must be between 2 and 50 characters.");
       return false;
@@ -159,63 +173,80 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       );
       return false;
     }
+
     const phoneRegex =
       /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
 
-    // Phone number: digits only, length 7–15
     if (phoneNumber && !phoneRegex.test(phoneNumber)) {
       addMessage(false, "Phone number is invalid.");
       return false;
     }
+
     if (phoneNumber && (phoneNumber.length < 7 || phoneNumber.length > 15)) {
       addMessage(false, "Phone number must be between 7 and 15 digits.");
       return false;
     }
 
-    // National ID: letters and digits only, length 5–15
     if (nationalId && !/^[A-Za-z0-9]+$/.test(nationalId)) {
       addMessage(false, "National ID can contain letters and digits only.");
       return false;
     }
+
     if (nationalId && (nationalId.length < 5 || nationalId.length > 15)) {
       addMessage(false, "National ID must be between 5 and 15 characters.");
       return false;
     }
 
-    // City: letters only, max length 50
     if (city && !/^[A-Za-z\s]+$/.test(city)) {
       addMessage(false, "City can contain letters only.");
       return false;
     }
+
     if (city && city.length > 50) {
       addMessage(false, "City cannot exceed 50 characters.");
       return false;
     }
 
-    // Address: max length 100
     if (address && address.length > 100) {
       addMessage(false, "Address cannot exceed 100 characters.");
       return false;
     }
+
     if (role === "2" && selectedPermissions.length === 0) {
       addMessage(false, "At least one permission must be selected.");
       return false;
     }
-    if (role === "3" && !isEditMode && !partnerCvHeader) {
-      addMessage(false, "CV header image is required when creating a partner.");
 
+    if (
+      shouldShowPartnerHeader &&
+      !partnerCvHeader &&
+      !existingPartnerCvHeader
+    ) {
+      addMessage(false, "CV header image is required for a New Partner.");
       return false;
     }
+
     return true;
   };
 
-  const removeEmptyFields = (obj) => {
+  const removeEmptyFields = (object) => {
     return Object.fromEntries(
-      Object.entries(obj).filter(
+      Object.entries(object).filter(
         // eslint-disable-next-line no-unused-vars
         ([_, value]) => value !== undefined && value !== null && value !== "",
       ),
     );
+  };
+
+  const handleCvTemplateChange = (event) => {
+    const selectedTemplate = event.target.value;
+
+    setCvTemplateCode(selectedTemplate);
+
+    // Fixed layouts already include their own header assets.
+    if (selectedTemplate === "CV_ONE" || selectedTemplate === "CV_TWO") {
+      setPartnerCvHeader(null);
+    }
   };
 
   const handlePartnerHeaderChange = (event) => {
@@ -230,7 +261,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
     if (!allowedTypes.includes(file.type)) {
       addMessage(false, "CV header must be a JPG, PNG, or WEBP image.");
-
       event.target.value = "";
       setPartnerCvHeader(null);
       return;
@@ -240,7 +270,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
     if (file.size > maximumSize) {
       addMessage(false, "CV header image cannot exceed 5 MB.");
-
       event.target.value = "";
       setPartnerCvHeader(null);
       return;
@@ -248,14 +277,16 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
     setPartnerCvHeader(file);
   };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     if (!validateFields()) return;
 
     setSubmitLoading(true);
     showLoader();
+
     try {
-      let payload = removeEmptyFields({
+      const payload = removeEmptyFields({
         full_name: fullName,
         email,
         phone_number: phoneNumber,
@@ -266,22 +297,24 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         city: role === "5" ? city : undefined,
         address: role === "5" ? address : undefined,
       });
+
       if (role === "3") {
+        // Null changes an existing fixed partner back to New Partner.
         payload.cv_template_code = cvTemplateCode || null;
       }
 
-      let response = isEditMode
+      const response = isEditMode
         ? await updateUser(userData.id, payload)
         : await createUser(payload);
 
       if (!response.success) {
         addMessage(false, response.message);
-        hideLoader();
         return;
       }
 
-      const savedUserId = response?.data?.id;
-      if (role === "3" && partnerCvHeader && savedUserId) {
+      const savedUserId = response?.data?.id || userData?.id;
+
+      if (shouldShowPartnerHeader && partnerCvHeader && savedUserId) {
         try {
           await uploadPartnerCvHeader(savedUserId, partnerCvHeader);
         } catch (headerError) {
@@ -292,22 +325,17 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
             }, but the CV header upload failed: ${headerError.message}`,
           );
 
-          /*
-           * The partner account has already been saved.
-           * Navigate back to prevent accidental duplicate creation.
-           * The header can be retried through Edit Partner.
-           */
           navigate(-1);
           return;
         }
       }
-      // Employee permission handling
+
       if (role === "2") {
         const permissionsToGrant = selectedPermissions.filter(
-          (perm) => !originalPermissions.includes(perm),
+          (permission) => !originalPermissions.includes(permission),
         );
         const permissionsToRevoke = originalPermissions.filter(
-          (perm) => !selectedPermissions.includes(perm),
+          (permission) => !selectedPermissions.includes(permission),
         );
 
         if (permissionsToGrant.length > 0) {
@@ -316,17 +344,20 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
             permissions: permissionsToGrant,
           });
         }
+
         if (permissionsToRevoke.length > 0) {
           await revokePermissions({
             user_id: savedUserId,
             permissions: permissionsToRevoke,
           });
         }
+
         setOriginalPermissions(selectedPermissions);
       }
 
       addMessage(true, response.message);
       navigate(-1);
+
       if (!isEditMode) resetForm();
     } catch (error) {
       addMessage(false, error.message);
@@ -369,9 +400,10 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   className="form-control"
                   value={fullName}
                   required={requiredFields.full_name}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={(event) => setFullName(event.target.value)}
                 />
               </div>
+
               {/* Role */}
               <div className="form-group col-md-6 mb-3">
                 <label>
@@ -384,7 +416,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   className="form-control"
                   value={role}
                   required={requiredFields.role}
-                  onChange={(e) => setRole(e.target.value)}
+                  onChange={(event) => setRole(event.target.value)}
                   disabled={isEditMode}
                 >
                   <option value="">Select Role</option>
@@ -407,11 +439,11 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   className="form-control"
                   value={phoneNumber}
                   required={requiredFields.phone_number}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
+                  onChange={(event) => handlePhoneChange(event.target.value)}
                 />
               </div>
-              {/* Email */}
 
+              {/* Email */}
               {role !== "5" && (
                 <div className="form-group col-md-6 mb-3">
                   <label>
@@ -424,10 +456,12 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                     type="email"
                     className="form-control"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    required={requiredFields.email}
+                    onChange={(event) => setEmail(event.target.value)}
                   />
                 </div>
               )}
+
               {/* Status (Edit Mode Only) */}
               {isEditMode && userId !== userData?.id && (
                 <div className="form-group col-md-6 mb-3">
@@ -435,7 +469,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   <select
                     className="form-control"
                     value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+                    onChange={(event) => setStatus(event.target.value)}
                   >
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
@@ -457,18 +491,19 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                     className="form-control"
                     value={country}
                     required={requiredFields.country}
-                    onChange={(e) => setCountry(e.target.value)}
+                    onChange={(event) => setCountry(event.target.value)}
                   />
                 </div>
               )}
+
+              {/* Partner CV Type */}
               {role === "3" && (
                 <div className="form-group col-md-6 mb-3">
                   <label>CV Type</label>
-
                   <select
                     className="form-control"
                     value={cvTemplateCode}
-                    onChange={(event) => setCvTemplateCode(event.target.value)}
+                    onChange={handleCvTemplateChange}
                   >
                     <option value="">New Partner</option>
                     <option value="CV_ONE">Abo Bejad</option>
@@ -476,19 +511,22 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   </select>
                 </div>
               )}
-              {/* Partner CV Header */}
-              {role === "3" && (
+
+              {/* Partner CV Header — only for New Partner */}
+              {shouldShowPartnerHeader && (
                 <div className="form-group col-md-6 mb-3">
                   <label>
                     CV Header{" "}
-                    {!isEditMode && <span className="text-danger">*</span>}
+                    {!existingPartnerCvHeader && (
+                      <span className="text-danger">*</span>
+                    )}
                   </label>
 
                   <input
                     type="file"
                     className="form-control"
                     accept="image/jpeg,image/png,image/webp"
-                    required={!isEditMode}
+                    required={!existingPartnerCvHeader}
                     onChange={handlePartnerHeaderChange}
                   />
 
@@ -520,6 +558,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   )}
                 </div>
               )}
+
               {/* Employer Fields */}
               {role === "5" && (
                 <>
@@ -535,9 +574,10 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                       className="form-control"
                       value={nationalId}
                       required={requiredFields.national_id}
-                      onChange={(e) => setNationalId(e.target.value)}
+                      onChange={(event) => setNationalId(event.target.value)}
                     />
                   </div>
+
                   <div className="form-group col-md-6 mb-3">
                     <label>
                       City{" "}
@@ -550,9 +590,10 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                       className="form-control"
                       value={city}
                       required={requiredFields.city}
-                      onChange={(e) => setCity(e.target.value)}
+                      onChange={(event) => setCity(event.target.value)}
                     />
                   </div>
+
                   <div className="form-group col-md-6 mb-3">
                     <label>
                       Address{" "}
@@ -565,7 +606,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                       className="form-control"
                       value={address}
                       required={requiredFields.address}
-                      onChange={(e) => setAddress(e.target.value)}
+                      onChange={(event) => setAddress(event.target.value)}
                     />
                   </div>
                 </>
@@ -607,6 +648,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   </div>
                 </div>
               )}
+
               {/* Submit */}
               <div className="form-group col-lg-12 text-start mt-4">
                 <button

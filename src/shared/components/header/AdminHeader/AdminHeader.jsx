@@ -20,7 +20,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
     1: "admin",
     2: "employee",
     3: "partner",
-    4: "worker",
+    4: "employee",
     5: "employer",
   };
 

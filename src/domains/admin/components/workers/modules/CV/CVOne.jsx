@@ -420,7 +420,9 @@ const CVOne = ({ templateSwitcher }) => {
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
         <div className="mt-0">
           <h2 className="fw-bold text-dark mb-2">CV</h2>
-          <p className="text-muted mb-0">Generate and upload CV</p>
+          {profile?.role_id <= 1 && (
+            <p className="text-muted mb-0">Generate and upload CV</p>
+          )}
         </div>
 
         <div className="position-absolute top-0 end-0 mt-4 pt-2">
