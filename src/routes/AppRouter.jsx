@@ -22,7 +22,7 @@ function AppRouter() {
 
       <Routes>
         {/* Auth Routes */}
-        <Route path="/" element={<AuthRoutes />} />
+        <Route path="/*" element={<AuthRoutes />} />
         {/* Protected Routes */}
         <Route path="/admin/*" element={<AdminRoutes />} />
         <Route path="/employee/*" element={<WorkerRoutes />} />

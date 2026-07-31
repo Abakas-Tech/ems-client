@@ -15,6 +15,7 @@ const MyProfile = () => {
     full_name: "",
     email: "",
     phone_number: "",
+    national_id: "",
   });
   const fileInputRef = useRef(null);
 
@@ -45,6 +46,7 @@ const MyProfile = () => {
         full_name: profile?.full_name || "",
         email: profile?.email || "",
         phone_number: profile?.phone_number || "",
+        national_id: profile?.national_id || "",
       });
     }
   }, [profile]);
@@ -75,12 +77,16 @@ const MyProfile = () => {
     );
   };
 
+  // Role helper (loose equality so it works whether role_id is a number or a string)
+  const isEmployer = profile?.role_id == 5;
+
   const validateFields = () => {
-    const { full_name, email, phone_number } = profileData;
+    const { full_name, email, phone_number, national_id } = profileData;
 
     const name = full_name?.trim();
     const mail = email?.trim();
     const phone = phone_number?.trim();
+    const nationalId = national_id?.trim();
 
     if (!name) return addMessage(false, "Full name is required.");
     if (!/^[A-Za-z\s]+$/.test(name))
@@ -91,11 +97,16 @@ const MyProfile = () => {
         "Full name must be between 2 and 50 characters.",
       );
 
-    if (profile?.role_id !== 4 && profile?.role_id !== 5) {
+    if (profile?.role_id != 4 && profile?.role_id != 5) {
       if (!mail) return addMessage(false, "Email is required.");
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailPattern.test(mail))
         return addMessage(false, "Please enter a valid email address.");
+    }
+
+    // National ID is required only for Employer (role_id 5)
+    if (isEmployer) {
+      if (!nationalId) return addMessage(false, "National ID is required.");
     }
 
     if (!phone) return addMessage(false, "Phone number is required.");
@@ -117,6 +128,7 @@ const MyProfile = () => {
 
     const payload = { ...profileData };
     if (profile?.role_id == 4 || profile?.role_id == 5) delete payload.email;
+    if (!isEmployer) delete payload.national_id; // only employer sends national_id
 
     setSubmitLoading(true);
     showLoader();
@@ -191,7 +203,7 @@ const MyProfile = () => {
               />
             </div>
 
-            {profile?.role_id !== 5 && profile?.role_id !== 4 && (
+            {profile?.role_id != 5 && profile?.role_id != 4 && (
               <div className="col-md-6">
                 <label>
                   Email <span className="text-danger">*</span>
@@ -202,6 +214,22 @@ const MyProfile = () => {
                   name="email"
                   required
                   value={profileData.email}
+                  onChange={handleChange}
+                />
+              </div>
+            )}
+
+            {isEmployer && (
+              <div className="col-md-6">
+                <label>
+                  National ID <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="national_id"
+                  required
+                  value={profileData.national_id}
                   onChange={handleChange}
                 />
               </div>
