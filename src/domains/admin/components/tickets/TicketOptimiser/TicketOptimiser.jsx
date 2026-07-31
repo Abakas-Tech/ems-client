@@ -26,17 +26,9 @@ const MAX_CONCURRENT = 7;
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const LIST_LIMIT = 10;
 
-// How many alternative offers the "Also available" list shows. Raising this
-// number only helps if bestPriceWindow[key].top_5 (see optimiser.js) actually
-// contains that many entries — by name it looks capped at 5 upstream, so this
-// constant is a ceiling on the display side, not a guarantee of 10 results.
+// The number of alternative offers displayed by the best-price card.
 const ALT_LIST_LIMIT = 10;
 
-// Rough real-world durations per search window (matches the estimates
-// already shown in the window dropdown: ~1/4/8/15 min). The progress bar
-// is driven by these, not by actual batches completed — batch-accurate
-// progress looked "stuck" for long stretches then jumped erratically, which
-// read as broken even when the search was working fine underneath.
 const WINDOW_ESTIMATED_MS = {
   1: 60 * 1000,
   3: 4 * 60 * 1000,
@@ -45,81 +37,120 @@ const WINDOW_ESTIMATED_MS = {
 };
 
 function getDateLabel(dateStr) {
-  const d = new Date(dateStr);
+  const date = new Date(dateStr);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const target = new Date(d);
+
+  const target = new Date(date);
   target.setHours(0, 0, 0, 0);
-  const diff = (target - today) / 86400000;
-  if (diff === 0) return "Today";
-  if (diff === 1) return "Tomorrow";
-  if (diff === -1) return "Yesterday";
-  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+
+  const difference = (target - today) / 86400000;
+
+  if (difference === 0) return "Today";
+  if (difference === 1) return "Tomorrow";
+  if (difference === -1) return "Yesterday";
+
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+  });
 }
 
 function getWindowLabel(days, departureDate) {
   if (days === 1) return getDateLabel(departureDate);
+
   const start = getDateLabel(departureDate);
   const endDate = new Date(departureDate);
   endDate.setDate(endDate.getDate() + days - 1);
+
   const end = getDateLabel(endDate.toISOString().slice(0, 10));
-  return start + " \u2013 " + end;
+  return `${start} – ${end}`;
 }
 
 // ────────────────────────────────────────────
 // Best-Price Card
 // ────────────────────────────────────────────
-var BestPriceCard = function (p) {
-  var aw = [
+
+const BestPriceCard = function (props) {
+  const availableWindows = [
     { key: "3_day", ...WINDOWS["3_day"] },
     { key: "7_day", ...WINDOWS["7_day"] },
     { key: "15_day", ...WINDOWS["15_day"] },
   ];
-  var ac =
-    aw.find(function (w) {
-      return w.days >= (p.windowDays || 1);
-    }) || aw[0];
-  var best = p.bestPriceWindow?.[ac.key]?.best;
-  var count = p.bestPriceWindow?.[ac.key]?.count || 0;
-  var wl = getWindowLabel(p.windowDays || 1, p.departureDate);
-  // Renamed from `top3` since it's no longer a fixed 3 — capped at
-  // ALT_LIST_LIMIT (10), but the real ceiling is however many entries
-  // bestPriceWindow[key].top_5 actually contains upstream.
-  var topAlternatives = (p.bestPriceWindow?.[ac.key]?.top_5 || []).slice(
-    0,
-    ALT_LIST_LIMIT,
+
+  const activeConfig =
+    availableWindows.find(
+      (windowConfig) => windowConfig.days >= (props.windowDays || 1),
+    ) || availableWindows[0];
+
+  const best = props.bestPriceWindow?.[activeConfig.key]?.best;
+  const count = props.bestPriceWindow?.[activeConfig.key]?.count || 0;
+  const windowLabel = getWindowLabel(
+    props.windowDays || 1,
+    props.departureDate,
   );
 
-  // Dashed "perforation" divider — evokes a ticket tear-line rather than a plain rule
-  var Perforation = function () {
-    return (
-      <div
-        style={{
-          width: "2px",
-          alignSelf: "stretch",
-          minHeight: "48px",
-          flexShrink: 0,
-          backgroundImage:
-            "repeating-linear-gradient(to bottom, #d7dce3 0, #d7dce3 4px, transparent 4px, transparent 9px)",
-        }}
-      />
-    );
-  };
+  const topAlternatives = (
+    props.bestPriceWindow?.[activeConfig.key]?.top_5 || []
+  ).slice(0, ALT_LIST_LIMIT);
+
+  const Perforation = ({ className = "" }) => (
+    <div
+      className={className}
+      style={{
+        width: "2px",
+        alignSelf: "stretch",
+        minHeight: "48px",
+        flexShrink: 0,
+        backgroundImage:
+          "repeating-linear-gradient(to bottom, #d7dce3 0, #d7dce3 4px, transparent 4px, transparent 9px)",
+      }}
+    />
+  );
 
   return (
     <div className="col-12">
+      <style>{`
+        .best-price-card-layout {
+          flex-wrap: nowrap !important;
+          overflow-x: auto;
+        }
+
+        .best-price-card-alternatives {
+          margin-left: auto;
+          flex-shrink: 0;
+        }
+
+        @media (max-width: 767.98px) {
+          .best-price-card-layout {
+            flex-wrap: wrap !important;
+            overflow-x: visible;
+          }
+
+          .best-price-card-alternatives {
+            flex-basis: 100%;
+            width: 100%;
+            margin-left: 0;
+          }
+
+          .best-price-card-alt-divider {
+            display: none;
+          }
+        }
+      `}</style>
+
       <div
+        className="best-price-card-layout"
         style={{
           display: "flex",
           alignItems: "center",
-          flexWrap: "wrap",
           gap: "22px",
           padding: "18px 24px 18px 20px",
           borderRadius: "16px",
           borderTop: "1px solid #eef1f5",
           borderRight: "1px solid #eef1f5",
           borderBottom: "1px solid #eef1f5",
-          borderLeft: "4px solid " + ac.color,
+          borderLeft: `4px solid ${activeConfig.color}`,
           background: "#ffffff",
           boxShadow:
             "0 1px 2px rgba(15,23,42,0.04), 0 10px 28px -16px rgba(15,23,42,0.14)",
@@ -139,7 +170,7 @@ var BestPriceCard = function (p) {
               width: "44px",
               height: "44px",
               borderRadius: "12px",
-              background: ac.color + "14",
+              background: `${activeConfig.color}14`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -150,12 +181,13 @@ var BestPriceCard = function (p) {
               className="bi bi-airplane-fill"
               style={{
                 fontSize: "18px",
-                color: ac.color,
+                color: activeConfig.color,
                 transform: "rotate(45deg)",
                 display: "inline-block",
               }}
             />
           </div>
+
           <div style={{ lineHeight: 1.4 }}>
             <div
               className="fw-bold text-dark"
@@ -171,8 +203,9 @@ var BestPriceCard = function (p) {
               >
                 ✈ ·· ✈
               </span>
-              {p.destination || "???"}
+              {props.destination || "???"}
             </div>
+
             <div
               style={{
                 fontSize: "12px",
@@ -183,9 +216,12 @@ var BestPriceCard = function (p) {
                 marginTop: "2px",
               }}
             >
-              <i className={"bi " + ac.icon} style={{ color: ac.color }} />
+              <i
+                className={`bi ${activeConfig.icon}`}
+                style={{ color: activeConfig.color }}
+              />
               <span>
-                {wl} · {count} ticket{count !== 1 ? "s" : ""}
+                {windowLabel} · {count} ticket{count !== 1 ? "s" : ""}
               </span>
             </div>
           </div>
@@ -193,7 +229,7 @@ var BestPriceCard = function (p) {
 
         <Perforation />
 
-        {/* Best price — styled like an airport departure board */}
+        {/* Best price */}
         {best ? (
           <>
             <div
@@ -204,6 +240,7 @@ var BestPriceCard = function (p) {
                 background: "linear-gradient(160deg, #12151c 0%, #1c2233 100%)",
                 overflow: "hidden",
                 minWidth: "150px",
+                flexShrink: 0,
               }}
             >
               <div
@@ -213,22 +250,24 @@ var BestPriceCard = function (p) {
                   left: 0,
                   right: 0,
                   height: "3px",
-                  background: ac.color,
+                  background: activeConfig.color,
                 }}
               />
+
               <div
                 style={{
                   fontSize: "10px",
                   fontFamily: "monospace",
                   fontWeight: 700,
                   letterSpacing: "1.5px",
-                  color: ac.color,
+                  color: activeConfig.color,
                   textTransform: "uppercase",
                   marginBottom: "4px",
                 }}
               >
                 Best fare
               </div>
+
               <div style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
                 <span
                   style={{
@@ -256,6 +295,7 @@ var BestPriceCard = function (p) {
             </div>
 
             <div
+              className="best-price-card-details"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -269,10 +309,16 @@ var BestPriceCard = function (p) {
                 <img
                   src={best.airline_logo}
                   alt=""
-                  style={{ width: "20px", height: "20px", borderRadius: "5px" }}
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "5px",
+                  }}
                 />
               )}
+
               <span className="fw-semibold text-dark">{best.airline}</span>
+
               {best.flight_number && (
                 <span
                   style={{
@@ -288,6 +334,7 @@ var BestPriceCard = function (p) {
                   {best.flight_number}
                 </span>
               )}
+
               <span style={{ color: "#94a3b8" }}>
                 {new Date(best.departure_date).toLocaleDateString("en-GB", {
                   weekday: "short",
@@ -295,14 +342,15 @@ var BestPriceCard = function (p) {
                   month: "short",
                 })}
               </span>
+
               <span
                 style={{
                   fontSize: "11px",
                   fontWeight: 700,
                   letterSpacing: "0.3px",
                   textTransform: "uppercase",
-                  color: ac.color,
-                  background: ac.color + "12",
+                  color: activeConfig.color,
+                  background: `${activeConfig.color}12`,
                   padding: "3px 10px",
                   borderRadius: "20px",
                 }}
@@ -313,6 +361,7 @@ var BestPriceCard = function (p) {
           </>
         ) : (
           <div
+            className="best-price-card-details"
             style={{
               fontSize: "14px",
               color: "#94a3b8",
@@ -326,7 +375,7 @@ var BestPriceCard = function (p) {
                 width: "8px",
                 height: "8px",
                 borderRadius: "50%",
-                background: ac.color,
+                background: activeConfig.color,
                 display: "inline-block",
                 animation: "bpc-pulse 1.2s ease-in-out infinite",
               }}
@@ -341,19 +390,17 @@ var BestPriceCard = function (p) {
           </div>
         )}
 
-        {/* Alternatives — boarding-list style, now up to ALT_LIST_LIMIT
-            entries instead of a fixed 3. Long lists get a capped-height,
-            scrollable container so the card doesn't stretch the whole row
-            taller than the route/price panels next to it. */}
+        {/* Alternatives stay at the far right on desktop. */}
         {topAlternatives.length > 0 && (
           <>
-            <Perforation />
+            <Perforation className="best-price-card-alt-divider" />
+
             <div
+              className="best-price-card-alternatives"
               style={{
                 display: "flex",
                 flexDirection: "column",
                 gap: "5px",
-                minWidth: "175px",
               }}
             >
               <span
@@ -369,6 +416,7 @@ var BestPriceCard = function (p) {
               >
                 Also available ({topAlternatives.length})
               </span>
+
               <div
                 style={{
                   maxHeight: topAlternatives.length > 5 ? "190px" : "none",
@@ -376,96 +424,99 @@ var BestPriceCard = function (p) {
                   paddingRight: topAlternatives.length > 5 ? "4px" : 0,
                 }}
               >
-                {topAlternatives.map(function (t, i) {
-                  return (
+                {topAlternatives.map((ticket, index) => (
+                  <div
+                    key={`${ticket.airline || "airline"}-${
+                      ticket.flight_number || index
+                    }-${index}`}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: "10px",
+                      padding: "4px 0",
+                      borderBottom:
+                        index < topAlternatives.length - 1
+                          ? "1px solid #f1f5f9"
+                          : "none",
+                    }}
+                  >
                     <div
-                      key={i}
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: "10px",
-                        padding: "4px 0",
-                        borderBottom:
-                          i < topAlternatives.length - 1
-                            ? "1px solid #f1f5f9"
-                            : "none",
+                        gap: "7px",
+                        minWidth: 0,
                       }}
                     >
-                      <div
+                      <span
                         style={{
+                          width: "16px",
+                          height: "16px",
+                          borderRadius: "50%",
+                          background: `${activeConfig.color}16`,
+                          color: activeConfig.color,
+                          fontWeight: 700,
+                          fontSize: "10px",
                           display: "flex",
                           alignItems: "center",
-                          gap: "7px",
-                          minWidth: 0,
+                          justifyContent: "center",
+                          flexShrink: 0,
                         }}
                       >
-                        <span
+                        {index + 1}
+                      </span>
+
+                      {ticket.airline_logo && (
+                        <img
+                          src={ticket.airline_logo}
+                          alt=""
                           style={{
                             width: "16px",
                             height: "16px",
-                            borderRadius: "50%",
-                            background: ac.color + "16",
-                            color: ac.color,
-                            fontWeight: 700,
-                            fontSize: "10px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
+                            borderRadius: "3px",
                             flexShrink: 0,
                           }}
-                        >
-                          {i + 1}
-                        </span>
-                        {t.airline_logo && (
-                          <img
-                            src={t.airline_logo}
-                            alt=""
-                            style={{
-                              width: "16px",
-                              height: "16px",
-                              borderRadius: "3px",
-                              flexShrink: 0,
-                            }}
-                          />
-                        )}
-                        <span
-                          className="text-truncate"
-                          style={{
-                            fontSize: "12px",
-                            color: "#475569",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {t.airline}
-                        </span>
-                      </div>
+                        />
+                      )}
+
                       <span
+                        className="text-truncate"
                         style={{
                           fontSize: "12px",
-                          fontWeight: 700,
-                          color: "#0f172a",
-                          whiteSpace: "nowrap",
-                          flexShrink: 0,
-                          fontFamily: "monospace",
-                          fontVariantNumeric: "tabular-nums",
+                          color: "#475569",
+                          fontWeight: 500,
                         }}
                       >
-                        {t.total_price.toLocaleString()}
-                        <span
-                          style={{
-                            fontWeight: 400,
-                            color: "#94a3b8",
-                            fontSize: "10px",
-                            marginLeft: "3px",
-                          }}
-                        >
-                          ETB
-                        </span>
+                        {ticket.airline}
                       </span>
                     </div>
-                  );
-                })}
+
+                    <span
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        color: "#0f172a",
+                        whiteSpace: "nowrap",
+                        flexShrink: 0,
+                        fontFamily: "monospace",
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                    >
+                      {ticket.total_price.toLocaleString()}
+                      <span
+                        style={{
+                          fontWeight: 400,
+                          color: "#94a3b8",
+                          fontSize: "10px",
+                          marginLeft: "3px",
+                        }}
+                      >
+                        ETB
+                      </span>
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </>
@@ -478,16 +529,21 @@ var BestPriceCard = function (p) {
 // ────────────────────────────────────────────
 // Progress Bar
 // ────────────────────────────────────────────
+
 const ProgressBar = ({ completed, total, label }) => {
-  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+  const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
   return (
     <div className="mb-3">
       <div className="d-flex justify-content-between mb-1">
         <span style={{ fontSize: "12px", fontWeight: 600, color: "#475569" }}>
           {label}
         </span>
-        <span style={{ fontSize: "12px", color: "#64748b" }}>{pct}%</span>
+        <span style={{ fontSize: "12px", color: "#64748b" }}>
+          {percentage}%
+        </span>
       </div>
+
       <div
         style={{
           height: "6px",
@@ -499,7 +555,7 @@ const ProgressBar = ({ completed, total, label }) => {
         <div
           style={{
             height: "100%",
-            width: pct + "%",
+            width: `${percentage}%`,
             background:
               "linear-gradient(90deg, var(--maincolor, #2563eb), #60a5fa)",
             borderRadius: "3px",
@@ -512,8 +568,9 @@ const ProgressBar = ({ completed, total, label }) => {
 };
 
 // ────────────────────────────────────────────
-// Route status pill — used in the background-loading banner
+// Route status pill
 // ────────────────────────────────────────────
+
 const routePillTone = {
   done: { bg: "#f0fdf4", color: "#15803d", border: "#bbf7d0" },
   loading: { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" },
@@ -521,7 +578,8 @@ const routePillTone = {
 };
 
 const RoutePill = ({ route, tone }) => {
-  const c = routePillTone[tone];
+  const colors = routePillTone[tone];
+
   return (
     <span
       style={{
@@ -532,9 +590,9 @@ const RoutePill = ({ route, tone }) => {
         fontWeight: 600,
         padding: "3px 9px",
         borderRadius: 20,
-        background: c.bg,
-        color: c.color,
-        border: "1px solid " + c.border,
+        background: colors.bg,
+        color: colors.color,
+        border: `1px solid ${colors.border}`,
       }}
     >
       {tone === "done" && (
@@ -554,6 +612,7 @@ const RoutePill = ({ route, tone }) => {
 // ────────────────────────────────────────────
 // MAIN
 // ────────────────────────────────────────────
+
 const TicketOptimiser = () => {
   const [destination, setDestination] = useState("JED");
   const [departureDate, setDepartureDate] = useState(() =>
@@ -573,18 +632,11 @@ const TicketOptimiser = () => {
   const [isStale, setIsStale] = useState(false);
   const [listPage, setListPage] = useState(1);
   const [prefetchState, setPrefetchState] = useState(() => getPrefetchStatus());
-  // Was a boolean `cancelledRef` that was only ever reset to false and never
-  // set to true, so every `if (cancelledRef.current) return;` check was dead
-  // code. A monotonically increasing request id lets us tell whether the
-  // in-flight search is still the latest one requested, and actually bail
-  // out of stale searches when the user changes filters mid-flight.
+
   const requestIdRef = useRef(0);
   const backgroundRefreshRef = useRef(false);
   const fakeProgressTimerRef = useRef(null);
   const fakeProgressStartRef = useRef(null);
-  // Captured at the moment a search starts, so if this ever runs while
-  // windowDays could change (it can't right now — inputs are disabled while
-  // loading — this is just a safety net) the ETA math doesn't shift mid-run.
   const fakeProgressWindowRef = useRef(windowDays);
 
   const airports = [
@@ -594,129 +646,125 @@ const TicketOptimiser = () => {
     { value: "MED", label: "Medina (MED)" },
   ];
 
-  // Prefetch state listener
-  useEffect(function () {
-    return onPrefetchUpdate(function (s) {
-      setPrefetchState(s);
+  useEffect(() => {
+    return onPrefetchUpdate((state) => {
+      setPrefetchState(state);
     });
   }, []);
 
-  // Drives the fake progress bar: starts at a small nonzero value so it
-  // doesn't look inert, then eases toward 100% using the estimated duration
-  // for whichever window was selected. The curve (1 - e^-t/tau) hits ~95%
-  // right around the estimated time, then keeps creeping up slowly if the
-  // real request runs long, instead of sitting at 100% while still loading
-  // or looking stuck. It's capped below 100 — the bar only reaches 100% when
-  // `loading` actually goes false and unmounts.
   useEffect(() => {
     if (loading) {
       fakeProgressWindowRef.current = windowDays;
       fakeProgressStartRef.current = Date.now();
       setFakeProgress(4);
+
       const estimatedMs =
         WINDOW_ESTIMATED_MS[fakeProgressWindowRef.current] ||
         WINDOW_ESTIMATED_MS[1];
       const tau = estimatedMs / 3;
+
       fakeProgressTimerRef.current = setInterval(() => {
         const elapsed = Date.now() - fakeProgressStartRef.current;
-        const pct = 100 * (1 - Math.exp(-elapsed / tau));
-        setFakeProgress(Math.min(pct, 97));
+        const percentage = 100 * (1 - Math.exp(-elapsed / tau));
+        setFakeProgress(Math.min(percentage, 97));
       }, 150);
     } else {
       clearInterval(fakeProgressTimerRef.current);
       setFakeProgress(0);
     }
+
     return () => clearInterval(fakeProgressTimerRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
-  // Note: the dedicated "load cached JED/today result on mount" effect that
-  // used to live here was removed — it raced the auto-search effect below,
-  // which fires on the same initial render (destination/departureDate are
-  // already set) and performs the identical getResult/cacheGet/stale-refresh
-  // lookup itself. Keeping both meant the cached result would flash in, then
-  // get wiped by handleSearch's `setResult(null)` and reloaded a moment
-  // later. The auto-search effect now covers the mount case on its own.
-
-  var triggerBackgroundRefresh = async function (dest, date, days) {
+  const triggerBackgroundRefresh = async (dest, date, days) => {
     if (backgroundRefreshRef.current) return;
+
     backgroundRefreshRef.current = true;
     setRefreshing(true);
+
     try {
-      var list = await fetchAgencies();
-      var batches = [];
-      for (var i = 0; i < list.length; i += AGENCIES_PER_BATCH)
-        batches.push(list.slice(i, i + AGENCIES_PER_BATCH));
-      var all = [];
-      for (var r = 0; r < batches.length; r += MAX_CONCURRENT) {
-        var tasks = batches.slice(r, r + MAX_CONCURRENT).map(function (b) {
-          return async function () {
+      const agencyList = await fetchAgencies();
+      const batches = [];
+
+      for (
+        let index = 0;
+        index < agencyList.length;
+        index += AGENCIES_PER_BATCH
+      ) {
+        batches.push(agencyList.slice(index, index + AGENCIES_PER_BATCH));
+      }
+
+      let all = [];
+
+      for (
+        let roundIndex = 0;
+        roundIndex < batches.length;
+        roundIndex += MAX_CONCURRENT
+      ) {
+        const tasks = batches
+          .slice(roundIndex, roundIndex + MAX_CONCURRENT)
+          .map((batch) => async () => {
             try {
               return normaliseResults(
                 await fetchFlightData(
-                  buildMegaQuery(b, dest, date, 1, CONTRACT_ID),
+                  buildMegaQuery(batch, dest, date, 1, CONTRACT_ID),
                 ),
-                b,
+                batch,
                 [date],
               );
-            } catch (_) {
+            } catch {
               return [];
             }
-          };
+          });
+
+        const settled = await Promise.allSettled(tasks.map((task) => task()));
+
+        settled.forEach((item) => {
+          if (item.status === "fulfilled" && Array.isArray(item.value)) {
+            all = all.concat(item.value);
+          }
         });
-        var settled = await Promise.allSettled(
-          tasks.map(function (t) {
-            return t();
-          }),
-        );
-        for (var s = 0; s < settled.length; s++) {
-          if (
-            settled[s].status === "fulfilled" &&
-            Array.isArray(settled[s].value)
-          )
-            all = all.concat(settled[s].value);
-        }
       }
+
       if (all.length) {
-        var fr = optimise(all, new Date(date), "price");
-        cacheSet(dest + "-" + date + "-" + days, fr, CACHE_TTL_MS);
-        await saveResult(dest + "-" + date + "-" + days, fr, CACHE_TTL_MS);
+        const finalResult = optimise(all, new Date(date), "price");
+        const key = `${dest}-${date}-${days}`;
+
+        cacheSet(key, finalResult, CACHE_TTL_MS);
+        await saveResult(key, finalResult, CACHE_TTL_MS);
+
         if (dest === destination && date === departureDate) {
-          setResult(fr);
+          setResult(finalResult);
           setDataSource("fresh-idb");
           setFetchedAt(Date.now());
           setIsStale(false);
         }
       }
-    } catch (err) {
-      console.warn("Bg refresh:", err.message);
+    } catch (refreshError) {
+      console.warn("Bg refresh:", refreshError.message);
     } finally {
       backgroundRefreshRef.current = false;
       setRefreshing(false);
     }
   };
 
-  var handleWindowChange = function (v) {
-    var d = Number(v);
-    setWindowDays(d);
-    setShow15Warning(d === 15);
+  const handleWindowChange = (value) => {
+    const days = Number(value);
+    setWindowDays(days);
+    setShow15Warning(days === 15);
   };
 
-  var handleCancel = function () {
-    // Bumping the id invalidates every `if (requestId !== requestIdRef.current)`
-    // check already threaded through handleSearch, so the in-flight search
-    // stops making further batches/requests and won't overwrite state once
-    // any already-started network calls resolve. Whatever partial results
-    // were gathered so far (liveResult) are kept rather than cleared. The
-    // fake progress bar resets on its own via the `loading` effect once
-    // setLoading(false) below takes effect.
-    requestIdRef.current++;
+  const handleCancel = () => {
+    requestIdRef.current += 1;
     setLoading(false);
   };
 
-  var handleSearch = async function () {
+  const handleSearch = async () => {
     if (!destination || !departureDate) return;
+
     const requestId = ++requestIdRef.current;
+
     setLoading(true);
     setError(null);
     setResult(null);
@@ -726,24 +774,30 @@ const TicketOptimiser = () => {
     setDataSource(null);
     setShow15Warning(false);
     setListPage(1);
+
     try {
-      var key = destination + "-" + departureDate + "-" + windowDays;
-      var e = await getResult(key);
+      const key = `${destination}-${departureDate}-${windowDays}`;
+      const storedResult = await getResult(key);
+
       if (requestId !== requestIdRef.current) return;
-      if (e) {
-        setResult(e.data);
-        setFetchedAt(e.fetchedAt);
-        setDataSource(e.fresh ? "fresh-idb" : "stale-idb");
+
+      if (storedResult) {
+        setResult(storedResult.data);
+        setFetchedAt(storedResult.fetchedAt);
+        setDataSource(storedResult.fresh ? "fresh-idb" : "stale-idb");
         setLoading(false);
-        if (!e.fresh) {
+
+        if (!storedResult.fresh) {
           setIsStale(true);
           triggerBackgroundRefresh(destination, departureDate, windowDays);
         }
         return;
       }
-      var m = cacheGet(key);
-      if (m) {
-        setResult(m);
+
+      const memoryResult = cacheGet(key);
+
+      if (memoryResult) {
+        setResult(memoryResult);
         setDataSource("memory");
         setFetchedAt(Date.now());
         setLoading(false);
@@ -751,105 +805,125 @@ const TicketOptimiser = () => {
       }
 
       setDataSource("live");
-      var list = await fetchAgencies();
-      if (requestId !== requestIdRef.current) return;
-      setAgencies(list);
+      const agencyList = await fetchAgencies();
 
-      var dates = [];
-      for (var i = 0; i < windowDays; i++) {
-        var d = new Date(departureDate);
-        d.setDate(d.getDate() + i);
-        dates.push(d.toISOString().slice(0, 10));
+      if (requestId !== requestIdRef.current) return;
+      setAgencies(agencyList);
+
+      const dates = [];
+      for (let index = 0; index < windowDays; index += 1) {
+        const date = new Date(departureDate);
+        date.setDate(date.getDate() + index);
+        dates.push(date.toISOString().slice(0, 10));
       }
-      var batches = [];
-      for (var j = 0; j < list.length; j += AGENCIES_PER_BATCH)
-        batches.push(list.slice(j, j + AGENCIES_PER_BATCH));
-      var tasks = [];
-      dates.forEach(function (date) {
-        batches.forEach(function (bA) {
-          tasks.push(async function () {
+
+      const batches = [];
+      for (
+        let index = 0;
+        index < agencyList.length;
+        index += AGENCIES_PER_BATCH
+      ) {
+        batches.push(agencyList.slice(index, index + AGENCIES_PER_BATCH));
+      }
+
+      const tasks = [];
+      dates.forEach((date) => {
+        batches.forEach((batch) => {
+          tasks.push(async () => {
             if (requestId !== requestIdRef.current) return [];
+
             try {
               return normaliseResults(
                 await fetchFlightData(
-                  buildMegaQuery(bA, destination, date, 1, CONTRACT_ID),
+                  buildMegaQuery(batch, destination, date, 1, CONTRACT_ID),
                 ),
-                bA,
+                batch,
                 [date],
               );
-            } catch (_) {
+            } catch {
               return [];
             }
           });
         });
       });
 
-      var totalB = tasks.length;
-      var all = [],
-        cc = 0;
-      for (var k = 0; k < totalB; k += MAX_CONCURRENT) {
+      let all = [];
+
+      for (let index = 0; index < tasks.length; index += MAX_CONCURRENT) {
         if (requestId !== requestIdRef.current) break;
-        var round = await Promise.allSettled(
-          tasks.slice(k, k + MAX_CONCURRENT).map(function (t) {
-            return t();
-          }),
+
+        const round = await Promise.allSettled(
+          tasks.slice(index, index + MAX_CONCURRENT).map((task) => task()),
         );
-        for (var ri = 0; ri < round.length; ri++) {
-          cc++;
-          if (
-            round[ri].status === "fulfilled" &&
-            Array.isArray(round[ri].value)
-          )
-            all = all.concat(round[ri].value);
-        }
-        if (all.length)
+
+        round.forEach((item) => {
+          if (item.status === "fulfilled" && Array.isArray(item.value)) {
+            all = all.concat(item.value);
+          }
+        });
+
+        if (all.length) {
           setLiveResult(optimise(all, new Date(departureDate), "price"));
+        }
       }
+
       if (requestId !== requestIdRef.current) return;
+
       if (!all.length) {
-        setError(
-          "No flights found for " + destination + " on " + departureDate,
-        );
+        setError(`No flights found for ${destination} on ${departureDate}`);
         setLoading(false);
         return;
       }
-      var fr = optimise(all, new Date(departureDate), "price");
-      var now = Date.now();
-      cacheSet(key, fr, CACHE_TTL_MS);
+
+      const finalResult = optimise(all, new Date(departureDate), "price");
+      const now = Date.now();
+
+      cacheSet(key, finalResult, CACHE_TTL_MS);
+
       try {
-        await saveResult(key, fr, CACHE_TTL_MS);
-      } catch (_) {}
-      setResult(fr);
-      setLiveResult(fr);
+        await saveResult(key, finalResult, CACHE_TTL_MS);
+      } catch {
+        // IndexedDB failure should not prevent displaying live results.
+      }
+
+      setResult(finalResult);
+      setLiveResult(finalResult);
       setFetchedAt(now);
       setDataSource("live");
-    } catch (err) {
-      if (requestId === requestIdRef.current) setError(err.message || "Error");
+    } catch (searchError) {
+      if (requestId === requestIdRef.current) {
+        setError(searchError.message || "Error");
+      }
     } finally {
-      if (requestId === requestIdRef.current) setLoading(false);
+      if (requestId === requestIdRef.current) {
+        setLoading(false);
+      }
     }
   };
-  // Auto-search when filters change
+
   useEffect(() => {
     if (destination && departureDate) {
       handleSearch();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destination, departureDate, windowDays]);
 
   const displayResult = result || liveResult;
   const rawTickets = displayResult?.all_tickets || [];
-  // "All Results" should read cheapest → most expensive. optimise() doesn't
-  // guarantee an order (it's built for finding the best-per-window, not for
-  // display), so the sort happens here rather than assuming upstream order.
-  // Sorted on a copy — never mutate the array coming from state/props.
-  // Missing/invalid prices sort to the end instead of crashing the compare.
+
   const allTickets = useMemo(() => {
-    return [...rawTickets].sort((a, b) => {
-      const pa = Number.isFinite(a?.total_price) ? a.total_price : Infinity;
-      const pb = Number.isFinite(b?.total_price) ? b.total_price : Infinity;
-      return pa - pb;
+    return [...rawTickets].sort((first, second) => {
+      const firstPrice = Number.isFinite(first?.total_price)
+        ? first.total_price
+        : Infinity;
+      const secondPrice = Number.isFinite(second?.total_price)
+        ? second.total_price
+        : Infinity;
+
+      return firstPrice - secondPrice;
     });
   }, [rawTickets]);
+
   const paginatedData = useMemo(() => {
     const start = (listPage - 1) * LIST_LIMIT;
     return allTickets.slice(start, start + LIST_LIMIT);
@@ -864,7 +938,6 @@ const TicketOptimiser = () => {
           <p className="text-muted mb-0">
             Compare prices across {agencies.length || "all"} travel agencies.
           </p>
-          {/* Your badges */}
         </div>
       </div>
 
@@ -879,17 +952,13 @@ const TicketOptimiser = () => {
         loading={loading}
       />
 
-      {/* All Alerts in Middle Section */}
       {prefetchState.status === "running" &&
         (() => {
           const doneRoutes = prefetchState.progress.routesDone || [];
           const currentRoute = prefetchState.progress.currentRoute;
-          // The prefetch state can list the in-progress route inside
-          // routesRemaining too — filter it out so a route never shows as
-          // both "loading" and "remaining" at once.
           const remainingRoutes = (
             prefetchState.progress.routesRemaining || []
-          ).filter((r) => r !== currentRoute);
+          ).filter((route) => route !== currentRoute);
 
           return (
             <div
@@ -906,6 +975,7 @@ const TicketOptimiser = () => {
                   animation: "spin 1.5s linear infinite",
                 }}
               />
+
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div
                   style={{
@@ -917,15 +987,16 @@ const TicketOptimiser = () => {
                 >
                   Loading prices for other destinations in the background
                 </div>
+
                 <div className="d-flex flex-wrap gap-2">
-                  {doneRoutes.map((r) => (
-                    <RoutePill key={r} route={r} tone="done" />
+                  {doneRoutes.map((route) => (
+                    <RoutePill key={route} route={route} tone="done" />
                   ))}
                   {currentRoute && (
                     <RoutePill route={currentRoute} tone="loading" />
                   )}
-                  {remainingRoutes.map((r) => (
-                    <RoutePill key={r} route={r} tone="pending" />
+                  {remainingRoutes.map((route) => (
+                    <RoutePill key={route} route={route} tone="pending" />
                   ))}
                 </div>
               </div>
@@ -975,8 +1046,8 @@ const TicketOptimiser = () => {
             <strong>
               A 15-day search checks every agency across all 15 dates
             </strong>
-            , so it can take 10–15 minutes. Try a single day first if you're not
-            sure yet.
+            , so it can take 10–15 minutes. Try a single day first if you are
+            not sure yet.
           </div>
         </div>
       )}
@@ -1008,7 +1079,6 @@ const TicketOptimiser = () => {
         </div>
       )}
 
-      {/* Results */}
       {displayResult && (
         <>
           <div className="d-flex align-items-center gap-2 mb-3">
@@ -1035,9 +1105,10 @@ const TicketOptimiser = () => {
               }}
             >
               {loading
-                ? allTickets.length + " tickets found so far"
-                : allTickets.length + " tickets found"}
+                ? `${allTickets.length} tickets found so far`
+                : `${allTickets.length} tickets found`}
             </span>
+
             {fetchedAt && (
               <span
                 style={{
@@ -1096,6 +1167,7 @@ const TicketOptimiser = () => {
                   {allTickets.length} tickets
                 </span>
               </div>
+
               <ListingComponent
                 data={paginatedData}
                 columns={[
@@ -1148,7 +1220,7 @@ const TicketOptimiser = () => {
                   limit: LIST_LIMIT,
                   total: allTickets.length,
                 }}
-                onPageChange={(p) => setListPage(p)}
+                onPageChange={(page) => setListPage(page)}
               />
             </div>
           )}
