@@ -36,9 +36,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("1"); // Active = 1, Inactive = 0
   const [country, setCountry] = useState("");
-  const [nationalId, setNationalId] = useState("");
-  const [city, setCity] = useState("");
-  const [address, setAddress] = useState("");
+
   const [originalPermissions, setOriginalPermissions] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
@@ -67,9 +65,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         userData.is_active !== undefined ? String(userData.is_active) : "1",
       );
       setCountry(userData.country || "");
-      setNationalId(userData.national_id || "");
-      setCity(userData.city || "");
-      setAddress(userData.address || "");
+
       setExistingPartnerCvHeader(userData.cv_header_url || null);
       setPartnerCvHeader(null);
       setCvTemplateCode(userData.cv_template_code || "");
@@ -91,9 +87,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     setRole("");
     setStatus("1");
     setCountry("");
-    setNationalId("");
-    setCity("");
-    setAddress("");
+
     setPartnerCvHeader(null);
     setExistingPartnerCvHeader(null);
     setCvTemplateCode("");
@@ -135,10 +129,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     email: !isEditMode,
     phone_number: !isEditMode,
     role: !isEditMode,
-    country: !isEditMode && (role === "3" || role === "5"),
-    national_id: !isEditMode && role === "5",
-    city: !isEditMode && role === "5",
-    address: !isEditMode && role === "5",
+    country: !isEditMode && role === "3",
   };
 
   const validateFields = () => {
@@ -152,7 +143,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       return false;
     }
 
-    if (role !== "5" && (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       addMessage(
         false,
         !email ? "Email is required." : "Please enter a valid email address.",
@@ -172,31 +163,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       return false;
     }
 
-    // National ID: letters and digits only, length 5–15
-    if (nationalId && !/^[A-Za-z0-9]+$/.test(nationalId)) {
-      addMessage(false, "National ID can contain letters and digits only.");
-      return false;
-    }
-    if (nationalId && (nationalId.length < 5 || nationalId.length > 15)) {
-      addMessage(false, "National ID must be between 5 and 15 characters.");
-      return false;
-    }
-
-    // City: letters only, max length 50
-    if (city && !/^[A-Za-z\s]+$/.test(city)) {
-      addMessage(false, "City can contain letters only.");
-      return false;
-    }
-    if (city && city.length > 50) {
-      addMessage(false, "City cannot exceed 50 characters.");
-      return false;
-    }
-
-    // Address: max length 100
-    if (address && address.length > 100) {
-      addMessage(false, "Address cannot exceed 100 characters.");
-      return false;
-    }
     if (role === "2" && selectedPermissions.length === 0) {
       addMessage(false, "At least one permission must be selected.");
       return false;
@@ -261,10 +227,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         phone_number: phoneNumber,
         role: Number(role),
         is_active: Number(status),
-        country: role === "3" || role === "5" ? country : undefined,
-        national_id: role === "5" ? nationalId : undefined,
-        city: role === "5" ? city : undefined,
-        address: role === "5" ? address : undefined,
+        country: role === "3" ? country : undefined,
       });
       if (role === "3") {
         payload.cv_template_code = cvTemplateCode || null;
@@ -347,7 +310,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
             <p className="text-muted">
               {isEditMode
                 ? "Update user details and permissions."
-                : "Add a new staff, partner, or employer and assign permissions."}
+                : "Add a new staff or partner and assign permissions."}
             </p>
           </div>
           <BackButton onClick={handleBack} />
@@ -390,7 +353,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   <option value="">Select Role</option>
                   <option value="2">Staff</option>
                   <option value="3">Partner</option>
-                  <option value="5">Employer</option>
                 </select>
               </div>
 
@@ -412,22 +374,21 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
               </div>
               {/* Email */}
 
-              {role !== "5" && (
-                <div className="form-group col-md-6 mb-3">
-                  <label>
-                    Email{" "}
-                    {requiredFields.email && (
-                      <span className="text-danger">*</span>
-                    )}
-                  </label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              )}
+              <div className="form-group col-md-6 mb-3">
+                <label>
+                  Email{" "}
+                  {requiredFields.email && (
+                    <span className="text-danger">*</span>
+                  )}
+                </label>
+                <input
+                  type="email"
+                  className="form-control"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
               {/* Status (Edit Mode Only) */}
               {isEditMode && userId !== userData?.id && (
                 <div className="form-group col-md-6 mb-3">
@@ -444,7 +405,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
               )}
 
               {/* Country */}
-              {(role === "3" || role === "5") && (
+              {role === "3" && (
                 <div className="form-group col-md-6 mb-3">
                   <label>
                     Country{" "}
@@ -520,56 +481,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   )}
                 </div>
               )}
-              {/* Employer Fields */}
-              {role === "5" && (
-                <>
-                  <div className="form-group col-md-6 mb-3">
-                    <label>
-                      National ID{" "}
-                      {requiredFields.national_id && (
-                        <span className="text-danger">*</span>
-                      )}
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={nationalId}
-                      required={requiredFields.national_id}
-                      onChange={(e) => setNationalId(e.target.value)}
-                    />
-                  </div>
-                  <div className="form-group col-md-6 mb-3">
-                    <label>
-                      City{" "}
-                      {requiredFields.city && (
-                        <span className="text-danger">*</span>
-                      )}
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={city}
-                      required={requiredFields.city}
-                      onChange={(e) => setCity(e.target.value)}
-                    />
-                  </div>
-                  <div className="form-group col-md-6 mb-3">
-                    <label>
-                      Address{" "}
-                      {requiredFields.address && (
-                        <span className="text-danger">*</span>
-                      )}
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={address}
-                      required={requiredFields.address}
-                      onChange={(e) => setAddress(e.target.value)}
-                    />
-                  </div>
-                </>
-              )}
+              
 
               {/* Employee Permissions */}
               {role === "2" && (!userData || userId !== userData?.id) && (
