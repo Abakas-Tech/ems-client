@@ -6,18 +6,37 @@ import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import ProfileCell from "../../../../../shared/components/ProfileCell/ProfileCell";
 import Badge from "../../../../../shared/components/Badge/Badge";
 
+const ROLE_MAP = {
+  1: "Admin",
+  2: "Staff",
+  3: "Partner",
+  4: "Employee",
+  5: "Employer",
+};
+
+const formatDate = (value, withTime = false) => {
+  if (!value) return "—";
+  const d = new Date(value);
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    ...(withTime && { hour: "2-digit", minute: "2-digit" }),
+  });
+};
+
+const formatAmount = (value) =>
+  Number(value ?? 0).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+// NOTE: Generate Report is no longer shown from this page — it now only
+// appears in the period transactions view header (see FinancePage).
 const TransactionDetail = ({ transactionId, onBack }) => {
   const [transaction, setTransaction] = useState(null);
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
-
-  const ROLE_MAP = {
-    1: "Admin",
-    2: "Staff",
-    3: "Partner",
-    4: "Employee",
-    5: "Employer",
-  };
 
   useEffect(() => {
     const getDetails = async () => {
@@ -39,193 +58,224 @@ const TransactionDetail = ({ transactionId, onBack }) => {
 
   const isIncome = transaction.category === "income";
   const isCompany = !transaction.user_id;
+  const isPeriodClosed = transaction.period_status === "closed";
 
   return (
     <div className="dashboard-wraper">
-      {/* Header */}
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-        <div className="mb-4">
-          <BackButton onClick={onBack} />
-          <h2 className="fw-bold text-dark mb-2">Receipt</h2>
-        </div>
+      {/* Page header action — Back only. Hidden from print output. */}
+      <div className="mb-3 d-print-none">
+        <BackButton onClick={onBack} />
       </div>
 
+      {/* Hero card */}
       <div
-        className="card border-0 shadow-sm overflow-hidden"
+        className="card border-0 rounded-4 shadow-sm mb-4 overflow-hidden"
         id="printable-receipt"
+        style={{
+          background: isIncome
+            ? "linear-gradient(135deg, #e9fbf0 0%, #ffffff 60%)"
+            : "linear-gradient(135deg, #fdeeee 0%, #ffffff 60%)",
+        }}
       >
-        {/* Top Status Bar (Green for Income, Red for Expense) */}
-        <div
-          style={{
-            height: "6px",
-            backgroundColor: isIncome ? "#198754" : "#dc3545",
-          }}
-        />
-
         <div className="card-body p-4 p-md-5">
-          {/* Section 1: Parties Involved */}
-          {/* Beautiful Bordered Header Card */}
-          <div
-            className="card border-2 mb-5"
-            style={{
-              borderRadius: "16px",
-              borderColor: "#e9ecef",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-            }}
-          >
-            <div className="card-body p-4 p-md-5">
-              <div className="row align-items-center">
-                {/* Left: Entity/Person Info */}
-                <div className="col-sm-6">
-                  <h6 className="text-uppercase text-muted small fw-bold mb-3">
-                    {isCompany ? "Entity" : "Transaction For"}
-                  </h6>
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+              <div className="d-flex gap-2 mb-3">
+                <Badge
+                  content={transaction.category?.toUpperCase()}
+                  color={isIncome ? "green" : "red"}
+                />
+                {transaction.period_title && (
+                  <Badge
+                    content={transaction.period_title}
+                    color={isPeriodClosed ? "gray" : "cyan"}
+                  />
+                )}
+              </div>
+              <h2 className="fw-bold text-dark mb-1">Receipt</h2>
+              <p className="text-muted mb-0">
+                {formatDate(
+                  transaction.transaction_date || transaction.created_at,
+                )}
+                {transaction.reference && <> · {transaction.reference}</>}
+              </p>
+            </div>
 
-                  <div className="d-flex align-items-center gap-3">
-                    {isCompany ? (
-                      <>
-                        <div
-                          className="rounded-circle d-flex align-items-center justify-content-center border border-2 border-primary"
-                          style={{
-                            width: "55px",
-                            height: "55px",
-                            backgroundColor: "#e7f1ff",
-                          }}
-                        >
-                          <i className="bi bi-building text-primary fs-3"></i>
-                        </div>
-                        <div>
-                          <h5 className="mb-0 fw-bold text-dark">
-                            Company Related
-                          </h5>
-                          <span className="badge bg-primary bg-opacity-10 text-primary small fw-semibold px-2 py-1">
-                            Agency Account
-                          </span>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div
-                          className="rounded-circle border border-2 border-primary d-flex align-items-center justify-content-center"
-                          style={{ width: "55px", height: "55px" }}
-                        >
-                          <ProfileCell
-                            profile={{
-                              firstName: transaction.target_user_name,
-                              image: transaction.target_profile_photo,
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <h5 className="mb-0 fw-bold text-dark">
-                            {transaction.target_user_name}
-                          </h5>
-                          <span className="badge bg-secondary bg-opacity-10 text-secondary text-capitalize small fw-semibold px-2 py-1">
-                            {ROLE_MAP[transaction.target_user_role] || "User"}
-                          </span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* Right: Amount */}
-                <div className="col-sm-6 text-sm-end mt-4 mt-sm-0">
-                  <h6 className="text-uppercase text-muted small fw-bold mb-2">
-                    Total Amount
-                  </h6>
-                  <div
-                    className="d-inline-block px-4 py-2 rounded-3"
-                    style={{
-                      backgroundColor: isIncome ? "#d1fae5" : "#fee2e2",
-                      border: `2px solid ${isIncome ? "#10b981" : "#ef4444"}`,
-                    }}
-                  >
-                    <h2
-                      className={`fw-bold mb-0 ${isIncome ? "text-success" : "text-danger"}`}
-                    >
-                      {isIncome ? "+" : "-"}{" "}
-                      {transaction.amount?.toLocaleString()} Birr
-                    </h2>
-                  </div>
-                </div>
+            <div className="text-md-end">
+              <div
+                className={`fw-bold ${isIncome ? "text-success" : "text-danger"}`}
+                style={{ fontSize: "2.25rem", lineHeight: 1 }}
+              >
+                {isIncome ? "+" : "-"} {formatAmount(transaction.amount)} Birr
+              </div>
+              <div className="text-muted small mt-1">
+                {isCompany ? (
+                  "Company Account"
+                ) : (
+                  <>
+                    For{" "}
+                    <span className="fw-semibold">
+                      {transaction.target_user_name}
+                    </span>{" "}
+                    <Badge
+                      content={ROLE_MAP[transaction.target_user_role] || "User"}
+                      color="red"
+                    />
+                  </>
+                )}
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Section 2: Key Metadata */}
-          <div className="bg-light rounded-4 p-4 mb-5">
-            <div className="row g-4">
-              <div className="col-md-3 col-6">
-                <label className="text-muted d-block small mb-1">
-                  Category
-                </label>
+      {/* Details grid */}
+      <div className="row g-4 mb-4">
+        <div className="col-md-6">
+          <div className="card border rounded-4 h-100">
+            <div className="card-body p-4">
+              <h6 className="text-uppercase text-muted small fw-bold mb-3">
+                Details
+              </h6>
+
+              <div className="d-flex justify-content-between py-2 border-bottom">
+                <span className="text-muted">Category</span>
                 <span className="fw-semibold text-capitalize">
                   {transaction.category}
                 </span>
               </div>
-              <div className="col-md-3 col-6">
-                <label className="text-muted d-block small mb-1">Date</label>
+              <div className="d-flex justify-content-between py-2 border-bottom">
+                <span className="text-muted">Date</span>
                 <span className="fw-semibold">
-                  {new Date(
+                  {formatDate(
                     transaction.transaction_date || transaction.created_at,
-                  ).toLocaleDateString()}
+                  )}
                 </span>
               </div>
-              <div className="col-md-3 col-6">
-                <label className="text-muted d-block small mb-1">
-                  Reference
-                </label>
+              <div className="d-flex justify-content-between py-2 border-bottom">
+                <span className="text-muted">Reference</span>
                 <span className="fw-semibold text-break">
-                  {transaction.reference || "N/A"}
+                  {transaction.reference || "—"}
                 </span>
               </div>
-              <div className="col-md-3 col-6">
-                <label className="text-muted d-block small mb-1">Status</label>
-                <Badge
-                  content={isIncome ? "Income" : "Expense"}
-                  color={isIncome ? "green" : "red"}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Section 3: Description */}
-          <div className="mb-5">
-            <h6 className="text-uppercase text-muted small fw-bold mb-3">
-              Description
-            </h6>
-            <div className="p-3 border rounded-3 bg-white min-vh-10">
-              {transaction.description ||
-                "No description provided for this transaction."}
-            </div>
-          </div>
-
-          {/* Section 4: Audit Trail (The "Creator" Info) */}
-          <div className="mt-5 pt-4 border-top">
-            <div className="row align-items-center">
-              <div className="col-md-6">
-                <p className=" mb-0">
-                  Recorded by:{" "}
-                  <strong>{transaction.creator_name || "System"}</strong>
-                  <span className="ms-1">
-                    ({ROLE_MAP[transaction.creator_role] || "Staff"})
+              <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
+                <span className="text-muted">
+                  {isCompany ? "Entity" : "Transaction For"}
+                </span>
+                {isCompany ? (
+                  <span className="fw-semibold">Company Account</span>
+                ) : (
+                  <span className="d-flex align-items-center gap-2 fw-semibold">
+                    {transaction.target_user_name}
+                    <Badge
+                      content={ROLE_MAP[transaction.target_user_role]}
+                      color="red"
+                    />
                   </span>
-                </p>
+                )}
+              </div>
+              <div className="d-flex justify-content-between py-2">
+                <span className="text-muted">Recorded By</span>
+                <span className="fw-semibold">
+                  {transaction.creator_name || "System"}{" "}
+                  <Badge
+                    content={ROLE_MAP[transaction.creator_role]}
+                    color="green"
+                  />
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="card-footer bg-white border-top-0 p-4 text-center d-print-none">
-          <button
-            className="btn btn-outline-primary btn-sm px-4"
-            onClick={() => window.print()}
-          >
-            <i className="bi bi-printer me-2"></i> Print Receipt
-          </button>
+        <div className="col-md-6">
+          <div className="card border rounded-4 h-100">
+            <div className="card-body p-4">
+              <h6 className="text-uppercase text-muted small fw-bold mb-3">
+                Description
+              </h6>
+              <p
+                className="mb-4"
+                style={{
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                  maxHeight: "100px",
+                  overflowY: "auto",
+                }}
+              >
+                {transaction.description || "No description provided."}
+              </p>
+
+              <h6 className="text-uppercase text-muted small fw-bold mb-3">
+                Period
+              </h6>
+              {transaction.period_title ? (
+                <>
+                  <div className="d-flex justify-content-between align-items-start py-2 border-bottom">
+                    <span className="text-muted">Title</span>
+                    <span className="fw-semibold text-end">
+                      {transaction.period_title}
+                    </span>
+                  </div>
+                  {transaction.period_description && (
+                    <div className="py-2 border-bottom">
+                      <span className="text-muted d-block small mb-1">
+                        Description
+                      </span>
+                      <span>{transaction.period_description}</span>
+                    </div>
+                  )}
+                  <div className="d-flex justify-content-between py-2 border-bottom">
+                    <span className="text-muted">Status</span>
+                    <Badge
+                      content={transaction.period_status?.toUpperCase()}
+                      color={isPeriodClosed ? "red" : "green"}
+                    />
+                  </div>
+                  {isPeriodClosed ? (
+                    <>
+                      <div className="d-flex justify-content-between py-2 border-bottom">
+                        <span className="text-muted">Closed By</span>
+                        <span className="fw-semibold text-end">
+                          {transaction.period_closed_by_name || "—"}
+                          <span className="text-muted d-block small">
+                            {formatDate(transaction.period_closed_at, true)}
+                          </span>
+                        </span>
+                      </div>
+                      {transaction.period_closing_note && (
+                        <div className="py-2">
+                          <span className="text-muted d-block small mb-1">
+                            Closing Note
+                          </span>
+                          <span>{transaction.period_closing_note}</span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="d-flex justify-content-between py-2">
+                      <span className="text-muted">Open Since</span>
+                      <span className="fw-semibold">
+                        {formatDate(transaction.period_started_at)}
+                      </span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-muted mb-0">No period information.</p>
+              )}
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div className="text-center d-print-none">
+        <button
+          className="btn btn-outline-primary btn-sm px-4"
+          onClick={() => window.print()}
+        >
+          <i className="bi bi-printer me-2"></i> Print Receipt
+        </button>
       </div>
     </div>
   );
