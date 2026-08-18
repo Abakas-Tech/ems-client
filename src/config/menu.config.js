@@ -58,27 +58,9 @@ const MENU_CONFIG = [
     permission: PERMISSIONS.MANAGE_FINANCE,
   },
   {
-    label: "File Manager",
-    path: "/admin/files",
-    icon: "bi bi-folder2-open",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
-  },
-  {
-    label: "Meta Data",
-    path: "/admin/meta-data",
+    label: "Status",
+    path: "/admin/meta-data/employee-status",
     icon: "bi bi-database-add",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
-  },
-  {
-    label: "Notifications",
-    path: "/admin/notifications",
-    icon: "bi bi-bell",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
-  },
-  {
-    label: "Documents",
-    path: "/admin/documents",
-    icon: "bi bi-file-earmark-medical",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
 

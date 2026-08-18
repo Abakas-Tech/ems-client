@@ -256,30 +256,6 @@ const ActiveWorkers = () => {
     }
   };
 
-  const handleFiles = (row) => {
-    if (role === 3) {
-      navigate("/partner/files", {
-        state: {
-          workerId: row.id,
-          tab: "workers",
-        },
-      });
-    } else if (role === 5) {
-      navigate(`/employer/my-employees/cv/${row.id}`, {
-        state: {
-          workerId: row.id,
-        },
-      });
-    } else {
-      navigate("/admin/files", {
-        state: {
-          workerId: row.id,
-          tab: "workers",
-        },
-      });
-    }
-  };
-
   const handleArchive = (id) => {
     openModal(
       async () => {
@@ -324,22 +300,6 @@ const ActiveWorkers = () => {
         confirmText: "Delete",
       },
     );
-  };
-  const handleViewFiles = (row) => {
-    if (role == 5) {
-      navigate(`/employer/my-employees/cv/${row.id}`, {
-        state: {
-          workerId: row.id,
-        },
-      });
-      return;
-    }
-
-    navigate("/admin/files", {
-      state: {
-        workerId: row.id,
-      },
-    });
   };
 
   // --- Visa Application Handlers ---
@@ -646,16 +606,8 @@ const ActiveWorkers = () => {
 
             { type: "edit", onClick: (row) => handleEdit(row) },
             {
-              type: "notify",
-              onClick: (row) => handleNotify(row),
-            },
-            {
               type: "transaction",
               onClick: (row) => handleRecordTransaction(row),
-            },
-            {
-              type: "files",
-              onClick: (row) => handleFiles(row),
             },
             {
               type: "downloadVisa",

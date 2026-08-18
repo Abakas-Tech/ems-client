@@ -27,11 +27,10 @@ function Contract() {
   const isEditMode = Boolean(existingContract);
   const isCreate = !isEditMode;
 
-  const [employers, setEmployers] = useState([]);
   const [partners, setPartners] = useState([]);
 
   const [formData, setFormData] = useState({
-    employer_id: existingContract?.employer_id || "",
+    employer: existingContract?.employer || "",
     partner_id: existingContract?.partner_id || "",
     contract_start_date: existingContract?.contract_start_date || "",
     contract_end_date: existingContract?.contract_end_date || "",
@@ -39,10 +38,6 @@ function Contract() {
     status: existingContract?.status || "pending",
   });
 
-  const [contractFile, setContractFile] = useState(null);
-  const [existingContractUrl] = useState(
-    existingContract?.contract_upload?.url || null,
-  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -55,11 +50,6 @@ function Contract() {
     }));
   };
 
-  const handleFileChange = (e) => {
-    if (e.target.files?.length) {
-      setContractFile(e.target.files[0]);
-    }
-  };
 
   /* FETCH EMPLOYERS AND PARTNERS */
   useEffect(() => {
@@ -67,10 +57,10 @@ function Contract() {
       try {
         showLoader();
 
-        const employerRes = await getUsers({ role_id: 5 });
+
         const partnerRes = await getUsers({ role_id: 3 });
 
-        setEmployers(employerRes?.data || []);
+
         setPartners(partnerRes?.data || []);
       } catch (err) {
         addMessage(false, err.message);
@@ -84,19 +74,16 @@ function Contract() {
   }, []);
 
   const validateContract = () => {
-    if (
-      !Number.isInteger(Number(formData.employer_id)) ||
-      Number(formData.employer_id) <= 0
-    )
-      return "Employer ID must be a positive integer";
+ if (!formData.employer || !formData.employer.trim())
+   return "Employer name is required";
 
-    if (formData.partner_id) {
-      if (
-        !Number.isInteger(Number(formData.partner_id)) ||
-        Number(formData.partner_id) <= 0
-      )
-        return "Partner ID must be a positive integer or empty";
-    }
+ if (formData.partner_id) {
+   if (
+     !Number.isInteger(Number(formData.partner_id)) ||
+     Number(formData.partner_id) <= 0
+   )
+     return "Partner ID must be a positive integer or empty";
+ }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -150,19 +137,7 @@ function Contract() {
     if (!formData.status || !validStatuses.includes(formData.status))
       return `Status must be one of: ${validStatuses.join(", ")}`;
 
-    if (!isEditMode && !contractFile) return "Contract file is required";
 
-    if (contractFile) {
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/jpg",
-        "application/pdf",
-      ];
-
-      if (!allowedTypes.includes(contractFile.type))
-        return "Contract file must be JPEG, PNG, or PDF";
-    }
 
     return null;
   };
@@ -184,10 +159,6 @@ function Contract() {
       Object.keys(formData).forEach((key) => {
         if (formData[key]) dataToSend.append(key, formData[key]);
       });
-
-      if (contractFile) {
-        dataToSend.append("contract_upload_url", contractFile);
-      }
 
       const response = isEditMode
         ? await updateContract(id, dataToSend)
@@ -226,20 +197,14 @@ function Contract() {
           {/* EMPLOYER SELECT */}
           <div className="form-group col-md-6">
             {renderLabel("Employer", isCreate)}
-            <select
-              name="employer_id"
+            <input
+              name="employer"
               className="form-control"
               required
-              value={formData.employer_id}
+              value={formData.employer_full_name}
               onChange={handleChange}
             >
-              <option value="">Select Employer</option>
-              {employers.map((emp) => (
-                <option key={emp.employer_id} value={Number(emp.employer_id)}>
-                  {emp.full_name || emp.email}
-                </option>
-              ))}
-            </select>
+            </input>
           </div>
 
           {/* PARTNER SELECT */}
@@ -311,31 +276,6 @@ function Contract() {
               <option value="rejected">Rejected</option>
               <option value="terminated">Terminated</option>
             </select>
-          </div>
-
-          <div className="form-group col-md-6">
-            {renderLabel("Contract File", isCreate)}
-            <input
-              type="file"
-              className="form-control"
-              accept="image/jpeg,image/png,image/jpg,application/pdf"
-              onChange={handleFileChange}
-              required={!isEditMode}
-            />
-            <label>
-              {isEditMode && existingContractUrl && (
-                <small className="d-block text-muted">
-                  Current Contract:{" "}
-                  <a
-                    href={existingContractUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View
-                  </a>
-                </small>
-              )}
-            </label>
           </div>
         </div>
 

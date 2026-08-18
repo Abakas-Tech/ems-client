@@ -5,13 +5,7 @@ import {
   createPersonalInfo,
   updatePersonalInfo,
 } from "../../../../api/worker.api";
-import {
-  getRegions,
-  getWeredas,
-  getCities,
-  getSubCities,
-  getWorkerStatuses,
-} from "../../../../api/meta.api";
+import { getWorkerStatuses } from "../../../../api/meta.api";
 import useloader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
@@ -43,23 +37,17 @@ function WorkerPersonalInfo() {
   );
   const isCreate = !isEditMode;
 
-  const [regions, setRegions] = useState([]);
-  const [woredas, setWoredas] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [subcities, setSubcities] = useState([]);
   const [statuses, setStatuses] = useState([]);
 
+  // CHANGED: region/wereda/city/subcity are now free-text columns on
+  // workers_personal_information (no more regions/weredas/cities/subcities
+  // lookup tables), so these come straight off existingPersonal as strings
+  // instead of existingPersonal.region.id / .name objects.
   const [formData, setFormData] = useState({
-    region_id: existingPersonal?.region?.id
-      ? Number(existingPersonal.region.id)
-      : "",
-    woreda_id: existingPersonal?.wereda?.id
-      ? Number(existingPersonal.wereda.id)
-      : "",
-    city_id: existingPersonal?.city?.id ? Number(existingPersonal.city.id) : "",
-    subcity_id: existingPersonal?.subcity?.id
-      ? Number(existingPersonal.subcity.id)
-      : "",
+    region: existingPersonal?.region || "",
+    wereda: existingPersonal?.wereda || "",
+    city: existingPersonal?.city || "",
+    subcity: existingPersonal?.subcity || "",
     status_id: existingPersonal?.status?.id
       ? Number(existingPersonal.status.id)
       : "",
@@ -82,26 +70,9 @@ function WorkerPersonalInfo() {
 
   const [photo3x4, setPhoto3x4] = useState(null);
   const [photoStanding, setPhotoStanding] = useState(null);
-  const [nationalIdScan, setNationalIdScan] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
-
-  // Load regions
-  useEffect(() => {
-    const loadRegions = async () => {
-      showLoader();
-      try {
-        const res = await getRegions();
-        setRegions(res.data || []);
-      } catch (err) {
-        addMessage(false, err.message || "Failed to load regions");
-      } finally {
-        hideLoader();
-      }
-    };
-    loadRegions();
-  }, []);
 
   // Load statuses
   useEffect(() => {
@@ -119,69 +90,6 @@ function WorkerPersonalInfo() {
     loadStatuses();
   }, []);
 
-  // 1. Fetch Woredas based on Region
-  useEffect(() => {
-    if (!formData.region_id) return setWoredas([]);
-    const loadWoredas = async () => {
-      try {
-        const res = await getWeredas({ region_id: formData.region_id });
-        setWoredas(Array.isArray(res) ? res : res?.data || []);
-      } catch (err) {
-        setWoredas([]);
-      }
-    };
-    loadWoredas();
-  }, [formData.region_id]);
-
-  // 2. Fetch Cities based on Woreda
-  useEffect(() => {
-    if (!formData.woreda_id) return setCities([]);
-    const loadCities = async () => {
-      try {
-        const res = await getCities({ wereda_id: formData.woreda_id });
-        setCities(Array.isArray(res) ? res : res?.data || []);
-      } catch (err) {
-        setCities([]);
-      }
-    };
-    loadCities();
-  }, [formData.woreda_id]);
-
-  // 3. Fetch Subcities based on City
-  useEffect(() => {
-    if (!formData.city_id) return setSubcities([]);
-    const loadSubCities = async () => {
-      try {
-        const res = await getSubCities({ city_id: formData.city_id });
-        setSubcities(Array.isArray(res) ? res : res?.data || []);
-      } catch (err) {
-        setSubcities([]);
-      }
-    };
-    loadSubCities();
-  }, [formData.city_id]);
-
-  // Preload cities in edit mode
-  useEffect(() => {
-    if (isEditMode && existingPersonal?.region?.id) {
-      const loadInitialCities = async () => {
-        showLoader();
-        try {
-          const res = await getCities({
-            woreda_id: Number(existingPersonal.wereda.id),
-          });
-          setCities(Array.isArray(res) ? res : res?.data || []);
-        } catch (err) {
-          addMessage(false, err.message || "Failed to load saved cities");
-          setCities([]);
-        } finally {
-          hideLoader();
-        }
-      };
-      loadInitialCities();
-    }
-  }, [isEditMode, existingPersonal?.region?.id]);
-
   useEffect(() => {
     if (isEditMode && existingPersonal?.status?.id) {
       setFormData((prev) => ({
@@ -193,11 +101,9 @@ function WorkerPersonalInfo() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // CHANGED: region/woreda/city/subcity are now free text, not FK ids —
+    // dropped from numericFields.
     const numericFields = [
-      "region_id",
-      "woreda_id",
-      "city_id",
-      "subcity_id",
       "status_id",
       "number_of_children",
       "height_cm",
@@ -209,20 +115,7 @@ function WorkerPersonalInfo() {
         : ""
       : value;
 
-    setFormData((prev) => {
-      const updated = { ...prev, [name]: val };
-      if (name === "region_id") {
-        updated.woreda_id = "";
-        updated.city_id = "";
-        updated.subcity_id = "";
-      } else if (name === "woreda_id") {
-        updated.city_id = "";
-        updated.subcity_id = "";
-      } else if (name === "city_id") {
-        updated.subcity_id = "";
-      }
-      return updated;
-    });
+    setFormData((prev) => ({ ...prev, [name]: val }));
   };
 
   const handleFileChange = (e) => {
@@ -230,7 +123,6 @@ function WorkerPersonalInfo() {
     if (!files?.[0]) return;
     if (name === "photo_3x4_url") setPhoto3x4(files[0]);
     if (name === "photo_standing_url") setPhotoStanding(files[0]);
-    if (name === "national_id_scan_url") setNationalIdScan(files[0]);
   };
 
   const isOnlyAlphabetsAndSpaces = (value) => {
@@ -244,16 +136,35 @@ function WorkerPersonalInfo() {
     if (!["Male", "Female"].includes(formData.sex))
       return "Sex must be Male or Female";
 
+    // CHANGED: region/city are now free text — validated like the other
+    // text fields (letters/spaces, max length) instead of as positive
+    // integer FK ids.
     if (
-      formData.region_id &&
-      (!Number.isInteger(formData.region_id) || formData.region_id <= 0)
+      formData.region &&
+      (formData.region.length > 100 ||
+        !isOnlyAlphabetsAndSpaces(formData.region))
     )
-      return "Region must be a positive integer";
+      return "Region must contain only letters and spaces (max 100 chars)";
+
     if (
-      formData.city_id &&
-      (!Number.isInteger(formData.city_id) || formData.city_id <= 0)
+      formData.wereda &&
+      (formData.wereda.length > 100 ||
+        !isOnlyAlphabetsAndSpaces(formData.wereda))
     )
-      return "City must be a positive integer";
+      return "Wereda must contain only letters and spaces (max 100 chars)";
+
+    if (
+      formData.city &&
+      (formData.city.length > 100 || !isOnlyAlphabetsAndSpaces(formData.city))
+    )
+      return "City must contain only letters and spaces (max 100 chars)";
+
+    if (
+      formData.subcity &&
+      (formData.subcity.length > 100 ||
+        !isOnlyAlphabetsAndSpaces(formData.subcity))
+    )
+      return "Sub-city must contain only letters and spaces (max 100 chars)";
 
     if (formData.date_of_birth) {
       const dob = new Date(formData.date_of_birth);
@@ -351,8 +262,6 @@ function WorkerPersonalInfo() {
         dataToSend.append("photo_3x4_url", photo3x4);
       if (photoStanding instanceof File)
         dataToSend.append("photo_standing_url", photoStanding);
-      if (nationalIdScan instanceof File)
-        dataToSend.append("national_id_scan_url", nationalIdScan);
 
       const response = isEditMode
         ? await updatePersonalInfo(id, dataToSend)
@@ -432,91 +341,59 @@ function WorkerPersonalInfo() {
           )}
 
           {/* Region */}
+          {/* CHANGED: was a Region dropdown backed by getRegions(); region
+              is now a free-text column, so this is a plain text input. */}
           <div className="form-group col-md-6">
             {renderLabel("Region", isCreate)}
-            {regions.length === 0 ? (
-              <div className="form-control text-muted">Loading regions...</div>
-            ) : (
-              <select
-                name="region_id"
-                className="form-control"
-                value={formData.region_id}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select region</option>
-                {regions.map((region) => (
-                  <option key={region.id} value={region.id}>
-                    {region.name}
-                  </option>
-                ))}
-              </select>
-            )}
+            <input
+              type="text"
+              name="region"
+              className="form-control"
+              value={formData.region}
+              onChange={handleChange}
+              required={isCreate}
+            />
           </div>
+
           {/* Woreda */}
+          {/* CHANGED: was a cascading Woreda dropdown; now free text. */}
           <div className="form-group col-md-6">
             <label>Woreda</label>
-            <select
-              name="woreda_id"
+            <input
+              type="text"
+              name="wereda"
               className="form-control"
-              value={formData.woreda_id}
+              value={formData.wereda}
               onChange={handleChange}
-              disabled={!formData.region_id}
-            >
-              <option value="">
-                {formData.region_id ? "Select woreda" : "Select region first"}
-              </option>
-              {woredas.length > 0 &&
-                woredas.map((w) => (
-                  <option key={w.id} value={w.id}>
-                    {w.name}
-                  </option>
-                ))}
-            </select>
+            />
           </div>
 
           {/* City */}
+          {/* CHANGED: was a cascading City dropdown; now free text. */}
           <div className="form-group col-md-6">
             <label>City</label>
-            <select
-              name="city_id"
+            <input
+              type="text"
+              name="city"
               className="form-control"
-              value={formData.city_id}
+              value={formData.city}
               onChange={handleChange}
-              disabled={!formData.woreda_id}
-            >
-              <option value="">
-                {formData.woreda_id ? "Select city" : "Select woreda first"}
-              </option>
-              {cities.length > 0 &&
-                cities.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-            </select>
+            />
           </div>
+
           {/* Sub-City */}
+          {/* CHANGED: was a cascading Sub-City dropdown; now free text. */}
           <div className="form-group col-md-6">
             <label>Sub-City</label>
-            <select
-              name="subcity_id"
+            <input
+              type="text"
+              name="subcity"
               className="form-control"
-              value={formData.subcity_id}
+              value={formData.subcity}
               onChange={handleChange}
-              disabled={!formData.city_id}
-            >
-              <option value="">
-                {formData.city_id ? "Select sub-city" : "Select city first"}
-              </option>
-              {subcities.length > 0 &&
-                subcities.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-            </select>
+            />
           </div>
+
           {/* Date of Birth */}
           <div className="form-group col-md-6">
             <label>Date of Birth</label>
@@ -704,6 +581,10 @@ function WorkerPersonalInfo() {
           </div>
 
           {/* National ID Number */}
+          {/* CHANGED: National ID Scan file field removed — 
+              workers_personal_information only has national_id_number now,
+              there is no national_id_scan_url/public_id/resource_type
+              column to upload a scan into. */}
           <div className="form-group col-md-6">
             <label>National ID Number</label>
             <input
@@ -713,35 +594,6 @@ function WorkerPersonalInfo() {
               value={formData.national_id_number}
               onChange={handleChange}
             />
-          </div>
-
-          {/* National ID Scan */}
-          <div className="form-group col-md-6">
-            <label>National ID Scan</label>
-            <input
-              type="file"
-              name="national_id_scan_url"
-              accept="image/*"
-              className="form-control"
-              onChange={handleFileChange}
-            />
-
-            <label>
-              {isEditMode &&
-                existingPersonal?.national_id_scan?.url &&
-                !nationalIdScan && (
-                  <small className="d-block text-muted">
-                    Current scan:{" "}
-                    <a
-                      href={existingPersonal.national_id_scan.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View
-                    </a>
-                  </small>
-                )}
-            </label>
           </div>
         </div>
 

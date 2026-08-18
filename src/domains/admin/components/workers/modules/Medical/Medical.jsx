@@ -39,9 +39,6 @@ function Medical() {
   });
 
   const [medicalFile, setMedicalFile] = useState(null);
-  const [existingFileUrl] = useState(
-    existingMedical?.file?.url || null,
-  );
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -54,11 +51,6 @@ function Medical() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
-    if (e.target.files?.[0]) {
-      setMedicalFile(e.target.files[0]);
-    }
-  };
 
   const validateMedical = () => {
     const { medical_status, medical_issue_date, medical_expiry_date } =
@@ -87,9 +79,6 @@ function Medical() {
       const expiry = new Date(medical_expiry_date);
       if (expiry <= issue) return "Expiry date must be after issue date";
     }
-
-    // File required only on create
-    if (!isEditMode && !medicalFile) return "Medical file is required";
 
     if (medicalFile) {
       const allowed = [
@@ -249,33 +238,6 @@ function Medical() {
               value={formData.medical_expiry_date}
               onChange={handleChange}
             />
-          </div>
-
-          <div className="form-group col-md-6">
-            {renderLabel(" Medical File", isCreate)}
-            <input
-              type="file"
-              ref={fileInputRef}
-              name="medical_file"
-              className="form-control"
-              accept="image/*,.pdf"
-              onChange={handleFileChange}
-              required={!isEditMode}
-            />
-            <label>
-              {isEditMode && existingFileUrl && (
-                <small className="d-block text-muted">
-                  Current file:{" "}
-                  <a
-                    href={existingFileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View
-                  </a>
-                </small>
-              )}
-            </label>
           </div>
         </div>
 

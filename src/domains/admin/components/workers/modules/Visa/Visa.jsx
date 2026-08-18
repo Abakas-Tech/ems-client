@@ -26,9 +26,7 @@ function Visa() {
     sponsor_id: existingVisa?.sponsor_id || "", // NEW
   });
 
-  const [visaFile, setVisaFile] = useState(null);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [existingVisaUrl] = useState(existingVisa?.document?.url || null);
 
   const goBack = () => navigate(-1);
 
@@ -40,12 +38,6 @@ function Visa() {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setVisaFile(file);
-    }
-  };
 
   /* VALIDATION BASED ON JOI */
   const validateVisa = () => {
@@ -76,21 +68,6 @@ function Visa() {
         return "Visa expiry date must be greater than issue date";
       }
     }
-
-    if (!isEditMode && !visaFile) return "Visa scan document is required";
-
-    if (visaFile) {
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/jpg",
-        "application/pdf",
-      ];
-
-      if (!allowedTypes.includes(visaFile.type))
-        return "Visa scan must be JPEG, PNG, JPG, or PDF";
-    }
-
     return null;
   };
 
@@ -112,10 +89,6 @@ function Visa() {
       Object.keys(formData).forEach((key) => {
         if (formData[key]) dataToSend.append(key, formData[key]);
       });
-
-      if (visaFile) {
-        dataToSend.append("visa_url", visaFile); // Note: backend expects this key
-      }
 
       const response = isEditMode
         ? await updateVisa(id, dataToSend)
@@ -233,32 +206,6 @@ function Visa() {
             />
           </div>
 
-          {/* FILE UPLOAD - Kept at the end as requested */}
-          <div className="form-group col-md-6">
-            <label>
-              Visa Scan {!isEditMode && <span className="text-danger">*</span>}
-            </label>
-            <input
-              type="file"
-              className="form-control"
-              accept="image/jpeg,image/png,image/jpg,application/pdf"
-              onChange={handleFileChange}
-              required={!isEditMode}
-            />
-
-            {isEditMode && existingVisaUrl && (
-              <small className="d-block text-muted mt-1">
-                Current Visa:{" "}
-                <a
-                  href={existingVisaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View
-                </a>
-              </small>
-            )}
-          </div>
         </div>
 
         <div className="submit-section">
