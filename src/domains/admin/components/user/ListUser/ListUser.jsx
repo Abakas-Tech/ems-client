@@ -11,11 +11,10 @@ import Badge from "../../../../../shared/components/Badge/Badge";
 import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 import useProfile from "../../../../../context/Profile/useProfile";
 
-const ROLE_MAP = { 2: "Staff", 3: "Partner", 5: "Employer" };
+const ROLE_MAP = { 2: "Staff", 3: "Partner" };
 const ROLE_COLOR = {
   2: "green",
   3: "blue",
-  5: "yellow",
 };
 
 const ListUser = () => {
@@ -304,7 +303,7 @@ const ListUser = () => {
         <div className="flex-grow-1">
           <h2 className="fw-bold text-dark mb-2">User Management</h2>
           <p className="text-muted mb-0">
-            Manage staffs, employers, and partners — filter and control users.
+            Manage staffs and partners — filter and control users.
           </p>
         </div>
         <RoleButton
@@ -394,8 +393,7 @@ const ListUser = () => {
                   <span className="fw-bold" style={{ color: "#1e7a34" }}>
                     {selectedUserIds.length}
                   </span>{" "}
-                  {selectedUserIds.length === 1 ? "user" : "users"}{" "}
-                  selected
+                  {selectedUserIds.length === 1 ? "user" : "users"} selected
                 </p>
               </div>
             </div>
@@ -414,8 +412,6 @@ const ListUser = () => {
               >
                 Alert
               </button>
-
-             
 
               <button
                 type="button"
