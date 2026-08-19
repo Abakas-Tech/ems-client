@@ -10,12 +10,6 @@ const MENU_CONFIG = [
     permission: PERMISSIONS.MANAGE_ANALYTICS,
   },
   {
-    label: "My Profile",
-    path: "/admin/my-profile",
-    icon: "bi bi-person-bounding-box",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
-  },
-  {
     label: "Users",
     path: "/admin/users",
     icon: "bi bi-people",
@@ -64,12 +58,6 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
 
-  // {
-  //   label: "User Manual",
-  //   path: "/admin/user-manual",
-  //   icon: "bi bi-journal-code",
-  //   roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
-  // },
 
   {
     label: "External Links",
@@ -91,41 +79,8 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
 
-  // Worker Menus
-
-  {
-    label: "My Profile",
-    path: "/employee/my-profile",
-    icon: "bi bi-person-bounding-box",
-    roles: [ROLES.WORKER],
-  },
-  {
-    label: "My Application",
-    path: "/employee/my-application",
-    icon: "bi bi-person-vcard-fill",
-    roles: [ROLES.WORKER],
-  },
-  {
-    label: "My CV",
-    path: `/employee/my-cv`,
-    icon: "bi bi-file-earmark-text",
-    roles: [ROLES.WORKER],
-  },
-  {
-    label: "Notifications",
-    path: "/employee/notifications",
-    icon: "bi bi-bell",
-    roles: [ROLES.WORKER],
-  },
 
   // Partner Menus
-
-  {
-    label: "My Profile",
-    path: "/partner/my-profile",
-    icon: "bi bi-person-bounding-box",
-    roles: [ROLES.PARTNER],
-  },
 
   {
     label: "Active Employees",
@@ -156,28 +111,6 @@ const MENU_CONFIG = [
     roles: [ROLES.PARTNER],
   },
 
-  // Employer Menus
-
-  {
-    label: "My Profile",
-    path: "/employer/my-profile",
-    icon: "bi bi-person-bounding-box",
-    roles: [ROLES.EMPLOYER],
-  },
-
-  {
-    label: "My Employees",
-    path: "/employer/my-employees",
-    icon: "bi bi-person-gear",
-    roles: [ROLES.EMPLOYER],
-  },
-
-  {
-    label: "Notifications",
-    path: "/employer/notifications",
-    icon: "bi bi-bell",
-    roles: [ROLES.EMPLOYER],
-  },
 
   // Common menu
 
@@ -190,8 +123,6 @@ const MENU_CONFIG = [
       ROLES.ADMIN,
       ROLES.EMPLOYEE,
       ROLES.PARTNER,
-      ROLES.WORKER,
-      ROLES.EMPLOYER,
     ],
   },
 ];
