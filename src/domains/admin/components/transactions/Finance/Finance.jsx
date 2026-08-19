@@ -87,6 +87,15 @@ const FinancePage = () => {
     if (view === "periods" && !selectedPeriod) loadPeriods();
   }, [periodsFilters, view, selectedPeriod]);
 
+  useEffect(() => {
+    // Re-fetch the currently open period's transaction list whenever the
+    // filters (category/date range) change, same as the main list.
+    if (view === "periods" && selectedPeriod) {
+      loadPeriodTransactions(selectedPeriod, 1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.category, filters.date_from, filters.date_to]);
+
   const loadTransactions = async () => {
     showLoader();
     try {
@@ -148,6 +157,9 @@ const FinancePage = () => {
       const res = await fetchPeriodTransactions(period.id, {
         page,
         limit: filters.limit,
+        category: filters.category,
+        date_from: filters.date_from,
+        date_to: filters.date_to,
       });
       const processedTransactions = res.data.map((transaction) => {
         const isCreator =
@@ -393,6 +405,7 @@ const FinancePage = () => {
                     onClick={handleGeneratePeriodReport}
                     title="Generate the complete financial report for this period"
                   >
+                    <i className="bi bi-file-earmark-text me-2"></i>
                     Generate Report
                   </button>
                   {isClosed ? (
@@ -428,6 +441,27 @@ const FinancePage = () => {
           </div>
 
           <ListingComponent
+            filtersComponent={
+              <TransactionFilters
+                filters={filters}
+                onFilterChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    [e.target.name]: e.target.value,
+                    page: 1,
+                  })
+                }
+                onClear={() =>
+                  setFilters({
+                    page: 1,
+                    limit: 10,
+                    category: "",
+                    date_from: "",
+                    date_to: "",
+                  })
+                }
+              />
+            }
             data={transactions.data}
             columns={[
               {

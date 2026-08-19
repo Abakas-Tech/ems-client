@@ -270,7 +270,7 @@ export const generatePeriodReport = ({ period, transactions = [] }) => {
   .stat-card.stat-income .stat-value{color:#15803d;}
   .stat-card.stat-expense .stat-value{color:#b91c1c;}
 
-  .summary-note{border-left:3px solid #1a3c6e;background:#f8fafc;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:20px;}
+  .summary-note{border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:20px;}
   .summary-note-label{font-size:7.3pt;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#1a3c6e;margin-bottom:4px;}
   .summary-note p{font-size:8.5pt;color:#3c4a63;line-height:1.5;}
 
