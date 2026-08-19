@@ -8,7 +8,7 @@ import PasswordReset from "./../domains/account/pages/PasswordReset/PasswordRese
 function PublicRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/request-otp" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<PasswordReset />} />
       {/* fallback route */}

@@ -9,7 +9,7 @@ import AuthRoutes from "./AuthRoutes.jsx";
 import WorkerRoutes from "./WorkerRoutes.jsx";
 import PartnerRoutes from "./PartnerRoutes.jsx";
 import EmployerRoutes from "./EmployerRoutes.jsx";
-
+import PublicRoutes from "./PublicRoutes.jsx";
 
 function AppRouter() {
   return (
@@ -18,12 +18,12 @@ function AppRouter() {
 
       {/* Global Toaster */}
       <Toaster position="top-right" reverseOrder={false} />
-    
 
       <Routes>
         {/* Auth Routes */}
-        <Route path="/*" element={<AuthRoutes />} />
+        <Route path="/*" element={<PublicRoutes />} />
         {/* Protected Routes */}
+        <Route path="/auth/*" element={<AuthRoutes />} />
         <Route path="/admin/*" element={<AdminRoutes />} />
         <Route path="/employee/*" element={<WorkerRoutes />} />
         <Route path="/partner/*" element={<PartnerRoutes />} />

@@ -22,16 +22,16 @@ const Contact = () => {
   const [location, setLocation] = useState({
     latitude: 7.0559381,
     longitude: 38.4902358,
-    address: "Hawassa",
-    name: "Hawassa Office",
+    address: "Addis Ababa, Ethiopia",
+    name: "Ayisha Office",
   });
 
   const [socialMedia, setSocialMedia] = useState({
-    email: "sultan@ems.com",
+    email: "ayishaagency.com",
     phone: "0911111111",
   });
 
-  // ✅ Google Maps loader for Vite
+  //  Google Maps loader for Vite
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
@@ -136,7 +136,7 @@ const Contact = () => {
     >
       <div>
         <div className="text-center">
-          <h2 className="pb-4 fw-bold">Contact Us For Any Query</h2>
+          <h2 className="pb-4 fw-bold">Contact Us Anytime</h2>
         </div>
         <div className="row g-4 gy-5">
           {/* Contact Info */}
@@ -169,12 +169,7 @@ const Contact = () => {
           </div>
 
           {/* Google Map */}
-          <div
-            className="col-lg-4 col-md-6 "
-            data-aos="fade-up"
-            data-aos-delay="0.3s"
-            style={{ minHeight: "300px" }}
-          >
+          <div className="col-lg-4 col-md-6 " style={{ minHeight: "300px" }}>
             {!isLoaded ? (
               <p>Loading map...</p>
             ) : (
@@ -197,11 +192,7 @@ const Contact = () => {
           </div>
 
           {/* Form */}
-          <div
-            className="col-lg-4 col-md-12"
-            data-aos="fade-up"
-            data-aos-delay="0.5s"
-          >
+          <div className="col-lg-4 col-md-12">
             <form onSubmit={handleSubmit}>
               <div className="row g-3">
                 <div className="col-md-6">
@@ -266,7 +257,7 @@ const Contact = () => {
                   <button
                     type="submit"
                     className="btn text-white w-100 d-flex fw-bold"
-                    style={{ backgroundColor: "#4484BA" }}
+                    style={{ backgroundColor: "#105491" }}
                   >
                     Submit
                   </button>
@@ -284,12 +275,12 @@ const ContactItem = ({ icon: Icon, title, content }) => (
   <div className="d-flex align-items-center mb-3 mt-4">
     <div
       className="d-flex align-items-center justify-content-center flex-shrink-0"
-      style={{ width: "50px", height: "50px", backgroundColor: "#4484BA" }}
+      style={{ width: "50px", height: "50px", backgroundColor: "#105491" }}
     >
       <Icon className="text-white" size={24} />
     </div>
     <div className="ms-3">
-      <h5 style={{ color: "#4484BA" }}>{title}</h5>
+      <h5 style={{ color: "#105491" }}>{title}</h5>
       <p className="mb-0">{content}</p>
     </div>
   </div>

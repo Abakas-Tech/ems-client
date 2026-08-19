@@ -3,6 +3,12 @@ import PERMISSIONS from "./permission.config";
 
 const MENU_CONFIG = [
   {
+    label: "Home",
+    icon: "bi bi-globe",
+    path: "/",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.PARTNER],
+  },
+  {
     label: "Dashboard",
     path: "/admin/dashboard",
     icon: "bi-speedometer2",
@@ -58,7 +64,6 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
 
-
   {
     label: "External Links",
     path: "/admin/external-links",
@@ -73,12 +78,17 @@ const MENU_CONFIG = [
     permission: PERMISSIONS.MANAGE_COMPLAINT,
   },
   {
+    label: "Public Content",
+    path: "/admin/content",
+    icon: "bi bi-layout-text-sidebar-reverse",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  },
+  {
     label: "Settings",
     path: "/admin/settings",
     icon: "bi-gear",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
-
 
   // Partner Menus
 
@@ -96,7 +106,6 @@ const MENU_CONFIG = [
     roles: [ROLES.PARTNER],
   },
 
-
   // Common menu
 
   {
@@ -104,11 +113,7 @@ const MENU_CONFIG = [
     path: "#",
     icon: "bi bi-power",
     isLogout: true,
-    roles: [
-      ROLES.ADMIN,
-      ROLES.EMPLOYEE,
-      ROLES.PARTNER,
-    ],
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE, ROLES.PARTNER],
   },
 ];
 
