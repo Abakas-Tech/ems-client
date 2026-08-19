@@ -30,17 +30,10 @@ function Travel() {
     ticket_number: existingTravel?.ticket_number || "",
     departure_date: existingTravel?.departure_date || "",
     arrival_date: existingTravel?.arrival_date || "",
-    agent_name: existingTravel?.agent_name || "",
-    agent_email: existingTravel?.agent_email || "",
-    agent_phone_number: existingTravel?.agent_phone_number || "",
     departure_location: existingTravel?.departure_location || "",
     arrival_location: existingTravel?.arrival_location || "",
   });
 
-  const [ticketFile, setTicketFile] = useState(null);
-  const [existingTravelUrl] = useState(
-    existingTravel?.ticket_file?.url || null,
-  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -53,39 +46,11 @@ function Travel() {
     }));
   };
 
-  const handleFileChange = (e) => {
-    if (e.target.files?.length) {
-      setTicketFile(e.target.files[0]);
-    }
-  };
-
   const validateTravel = () => {
     // String length validations
     if (formData.ticket_number && formData.ticket_number.length > 100)
       return "Ticket number cannot exceed 100 characters";
 
-    if (formData.agent_name && formData.agent_name.length > 150)
-      return "Agent name cannot exceed 150 characters";
-
-    if (formData.agent_email && formData.agent_email.length > 255)
-      return "Agent email cannot exceed 255 characters";
-
-    if (formData.agent_phone_number && formData.agent_phone_number.length > 20)
-      return "Agent phone number cannot exceed 20 characters";
-
-    // Ticket file required for create mode
-    if (!isEditMode && !ticketFile) return "Ticket file is required";
-
-    if (ticketFile) {
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/jpg",
-        "application/pdf",
-      ];
-      if (!allowedTypes.includes(ticketFile.type))
-        return "Ticket file must be a JPEG, PNG, or PDF file";
-    }
     // Date validations
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -142,11 +107,6 @@ function Travel() {
       Object.keys(formData).forEach((key) => {
         if (formData[key]) dataToSend.append(key, formData[key]);
       });
-
-      if (ticketFile) {
-        dataToSend.append("ticket_file_url", ticketFile);
-      }
-
       const response = isEditMode
         ? await updateTravel(id, dataToSend)
         : await createTravel(id, dataToSend);
@@ -214,40 +174,7 @@ function Travel() {
             />
           </div>
 
-          <div className="form-group col-md-6">
-            <label>Agent Name</label>
-            <input
-              type="text"
-              name="agent_name"
-              className="form-control"
-              value={formData.agent_name}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group col-md-6">
-            <label>Agent Email</label>
-            <input
-              type="email"
-              name="agent_email"
-              className="form-control"
-              value={formData.agent_email}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group col-md-6">
-            <label>Agent Phone Number</label>
-            <input
-              type="text"
-              name="agent_phone_number"
-              className="form-control"
-              value={formData.agent_phone_number}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group col-md-6">
+            <div className="form-group col-md-6">
             <label>Departure Location</label>
             <input
               type="text"
@@ -267,32 +194,6 @@ function Travel() {
               value={formData.arrival_location}
               onChange={handleChange}
             />
-          </div>
-
-          <div className="form-group col-md-6">
-            {renderLabel("Ticket File", isCreate)}
-            <input
-              type="file"
-              className="form-control"
-              accept="image/jpeg,image/png,image/jpg,application/pdf"
-              onChange={handleFileChange}
-              required={!isEditMode}
-            />
-
-            <label>
-              {isEditMode && existingTravelUrl && (
-                <small className="d-block text-muted">
-                  Current Ticket:{" "}
-                  <a
-                    href={existingTravelUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View
-                  </a>
-                </small>
-              )}
-            </label>
           </div>
         </div>
 

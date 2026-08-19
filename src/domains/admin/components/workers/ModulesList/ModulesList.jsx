@@ -76,7 +76,6 @@ function ModulesList() {
       path: "emergency-contact",
     },
     { name: "Visa", icon: <HiDocumentDuplicate />, path: "visa" },
-    { name: "LMIS", icon: <IoDocumentAttach />, path: "lmis" },
     { name: "Travel Records", icon: <FaPlane />, path: "travel-records" },
     { name: "Contract", icon: <FaFileContract />, path: "contract" },
     { name: "Attributes", icon: <FiGrid />, path: "attributes" },

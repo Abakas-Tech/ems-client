@@ -36,9 +36,6 @@ function Coc() {
   });
 
   const [cocDocument, setCocDocument] = useState(null);
-  const [existingDocumentUrl] = useState(
-    existingCoc?.document?.url || null,
-  );
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -49,12 +46,6 @@ function Coc() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e) => {
-    if (e.target.files?.[0]) {
-      setCocDocument(e.target.files[0]);
-    }
   };
 
   const validateCoc = () => {
@@ -80,9 +71,6 @@ function Coc() {
 
     if (isNaN(expiryDate.getTime())) return "Invalid expiry date";
     if (expiryDate <= issueDate) return "Expiry must be after issue date";
-
-    // File required only on create
-    if (!isEditMode && !cocDocument) return "COC document is required";
 
     if (cocDocument) {
       const allowed = [
@@ -241,32 +229,6 @@ function Coc() {
             />
           </div>
 
-          <div className="form-group col-md-6">
-            {renderLabel(" COC Document  ", isCreate)}
-            <input
-              type="file"
-              ref={fileInputRef}
-              name="coc_document"
-              className="form-control"
-              accept="image/*,.pdf"
-              onChange={handleFileChange}
-              required={!isEditMode}
-            />
-            <label>
-              {isEditMode && existingDocumentUrl && (
-                <small className="d-block text-muted">
-                  Current document:{" "}
-                  <a
-                    href={existingDocumentUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View
-                  </a>
-                </small>
-              )}
-            </label>
-          </div>
         </div>
 
         <div className="submit-section">

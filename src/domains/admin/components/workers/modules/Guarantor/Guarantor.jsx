@@ -33,10 +33,6 @@ function Guarantor() {
     guarantor_phone_number: existingGuarantor?.guarantor_phone_number || "",
   });
 
-  const [idScanFile, setIdScanFile] = useState(null);
-  const [existingGuarantorUrl] = useState(
-    existingGuarantor?.id_scan?.url || null,
-  );
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const goBack = () => navigate(-1);
@@ -49,13 +45,6 @@ function Guarantor() {
       [name]: value,
     }));
   };
-
-  const handleFileChange = (e) => {
-    if (e.target.files?.length) {
-      setIdScanFile(e.target.files[0]);
-    }
-  };
-
   /* VALIDATION FOLLOWING BACKEND JOI */
   const validateGuarantor = () => {
     if (formData.guarantor_name.length > 150)
@@ -68,21 +57,6 @@ function Guarantor() {
 
     if (!phoneRegex.test(formData.guarantor_phone_number))
       return "Phone must be valid format";
-
-    if (!isEditMode && !idScanFile) return "ID scan file is required";
-
-    if (idScanFile) {
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/jpg",
-        "application/pdf",
-      ];
-
-      if (!allowedTypes.includes(idScanFile.type))
-        return "ID scan must be JPEG, PNG, JPG, or PDF";
-    }
-
     return null;
   };
 
@@ -106,9 +80,6 @@ function Guarantor() {
         if (formData[key]) dataToSend.append(key, formData[key]);
       });
 
-      if (idScanFile) {
-        dataToSend.append("id_scan_url", idScanFile);
-      }
 
       const response = isEditMode
         ? await updateGuarantor(id, dataToSend)
@@ -196,33 +167,7 @@ function Guarantor() {
             />
           </div>
 
-          {/* FILE */}
-          <div className="form-group col-md-6">
-            {renderLabel("ID Scan", isCreate)}
 
-            <input
-              type="file"
-              className="form-control"
-              accept="image/jpeg,image/png,image/jpg,application/pdf"
-              onChange={handleFileChange}
-              required={!isEditMode}
-            />
-
-            <label>
-              {isEditMode && existingGuarantorUrl && (
-                <small className="d-block text-muted">
-                  Current Id:{" "}
-                  <a
-                    href={existingGuarantorUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View
-                  </a>
-                </small>
-              )}
-            </label>
-          </div>
         </div>
 
         <div className="submit-section">

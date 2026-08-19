@@ -18,8 +18,6 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
     1: "admin",
     2: "employee",
     3: "partner",
-    4: "worker",
-    5: "employer",
   };
 
   const roleId = profile?.role_id;
@@ -28,15 +26,10 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
     ? "admin"
     : rolePathMap[roleId] || "admin";
 
-
-
-
   const roleMap = {
     1: "Admin",
     2: "Staff",
     3: "Partner",
-    4: "Employee",
-    5: "Employer",
   };
 
   const roleName = roleMap[Number(profile?.role_id)] || "";
@@ -73,7 +66,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
       {/* Mobile Header */}
       {!isDesktop && (
         <header
-          className="sticky-top d-flex justify-content-between align-items-center bg-white border-bottom px-3"
+          className="sticky-top d-flex justify-content-between align-items-center bg-white border-bottom px-3 py-2"
           style={{ zIndex: 100 }}
         >
           <h5 className="mb-0 fw-semibold text-dark">{activePage}</h5>
@@ -138,7 +131,6 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
           </div>
 
           <div className="d-flex align-items-center gap-3">
-
             <ProfileCell
               profile={{
                 firstName: profile?.full_name,

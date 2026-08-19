@@ -221,8 +221,6 @@ const ActiveWorkers = () => {
     }
   };
 
-
-
   const handleArchive = (id) => {
     openModal(
       async () => {
@@ -268,7 +266,6 @@ const ActiveWorkers = () => {
       },
     );
   };
-
 
   // --- Visa Application Handlers ---
   const handleDownloadVisaApplication = async (id) => {

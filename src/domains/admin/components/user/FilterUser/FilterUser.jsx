@@ -31,7 +31,6 @@ const FilterUser = ({ filters, onFilterChange, onClear }) => {
               <option value="1">All Users</option>
               <option value="2">Staff</option>
               <option value="3">Partner</option>
-              <option value="5">Employer</option>
             </select>
           </div>
 

@@ -46,7 +46,7 @@ const LoginFormWithEmail = () => {
       addMessage(response.success, response.message);
       const { role } = response.data;
       if (role === "partner") {
-        navigate("/partner/my-profile", { replace: true });
+        navigate("/partner/settings", { replace: true });
       } else {
         navigate("/admin/dashboard", { replace: true });
       }

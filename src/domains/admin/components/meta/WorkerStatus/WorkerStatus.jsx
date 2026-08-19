@@ -11,9 +11,6 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
-import { useNavigate } from "react-router-dom";
-import BackButton from "../../../../../shared/components/BackButton/BackButton";
-
 // Validation for worker status name
 const validateWorkerStatusName = (name) => {
   if (!name || !name.trim()) return "Employee status name is required";
@@ -27,7 +24,6 @@ const validateWorkerStatusName = (name) => {
 };
 
 const WorkerStatus = () => {
-  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
@@ -40,9 +36,6 @@ const WorkerStatus = () => {
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
   // Go back to previous page
-  const goBack = () => {
-    navigate(-1);
-  };
   const fetchWorkerStatuses = async (page = 1, limit = 10) => {
     showLoader();
     try {
@@ -182,9 +175,6 @@ const WorkerStatus = () => {
                 Manage employee statuses — create, rename, or delete entries as
                 needed.
               </p>
-            </div>
-            <div className="position-absolute top-0 end-0 mt-4 pt-2">
-              <BackButton onClick={goBack} />
             </div>
             <button
               className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
