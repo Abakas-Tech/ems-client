@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import styles from "./Hero.module.css";
 import bg1 from "../../../../assets/img/banner/hero-1.jpg";
-import bg2 from "../../../../assets/img/banner/hero-1.jpg";
-import bg3 from "../../../../assets/img/banner/hero-1.jpg";
-import bg4 from "../../../../assets/img/banner/hero-1.jpg";
-import bg5 from "../../../../assets/img/banner/hero-1.jpg";
+import bg2 from "../../../../assets/img/banner/hero-2.jpg";
+import bg3 from "../../../../assets/img/banner/hero-3.jpg";
+import bg4 from "../../../../assets/img/banner/hero-4.jpg";
+import bg5 from "../../../../assets/img/banner/hero-5.jpg";
 
 const slides = [
   {
@@ -12,7 +12,7 @@ const slides = [
     bg: bg1,
     eyebrow: "Your trusted partner in overseas employment",
     heading: "Your Future\nStarts Here.",
-    sub: "Ethiopia's leading agency connecting skilled workers with top employers in Saudi Arabia, UAE, Kuwait, and Qatar.",
+    sub: "Ethiopia's leading agency connecting skilled workers with top employers in Saudi Arabi and Jordan.",
   },
   {
     id: 2,
@@ -43,6 +43,16 @@ const slides = [
     sub: "Our simple application process gets you in front of verified employers fast. No hidden fees. No middlemen. Just results.",
   },
 ];
+
+// The company's verified primary tagline, in both languages. This is
+// deliberately static across all five slides rather than translated
+// per-slide — the client's company profile only provides an approved
+// Amharic version of this one core tagline, not of the five different
+// rotating marketing headlines, so making up translations for those risks
+// shipping wording the client never signed off on.
+const TAGLINE_EN =
+  "Connecting People. Creating Opportunities. Building Better Futures.";
+const TAGLINE_AM = "ሰዎችን እናገናኛለን። ዕድሎችን እንፈጥራለን። የተሻለ ወደፊት እንገነባለን።";
 
 function Hero() {
   const [current, setCurrent] = useState(0);
@@ -92,6 +102,22 @@ function Hero() {
           className={`${styles["hero-sub"]} ${animating ? styles["fade-out"] : styles["fade-in"]}`}
         >
           {slide.sub}
+        </p>
+
+        {/* Static bilingual tagline — same on every slide, see note above. */}
+        <p
+          title={TAGLINE_EN}
+          style={{
+            fontSize: "15px",
+            lineHeight: 1.5,
+            color: "rgba(255,255,255,0.8)",
+            fontStyle: "italic",
+            letterSpacing: "0.2px",
+            margin: "-4px 0 20px",
+            maxWidth: "560px",
+          }}
+        >
+          {TAGLINE_AM}
         </p>
 
         <div className={styles["hero-actions"]}>

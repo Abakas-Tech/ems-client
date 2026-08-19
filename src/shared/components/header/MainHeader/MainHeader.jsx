@@ -5,7 +5,7 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import { FaBars } from "react-icons/fa";
 
-import logo from "../../../../assets/img/logo/header-logo.png";
+import logo from "../../../../assets/img/logo/aletisalat-header-logo.png";
 import useProfile from "../../../../context/Profile/useProfile";
 import { hasAccessToken } from "../../../../utils/axios";
 

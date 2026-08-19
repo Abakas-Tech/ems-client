@@ -2,46 +2,46 @@ import React from "react";
 
 const services = [
   {
-    title: "International Recruitment",
+    title: "Foreign Employment Recruitment",
     description:
-      "Bridging the gap between elite Ethiopian talent and premier global organizations through strategic placement.",
+      "We connect qualified Ethiopian workers with suitable employment opportunities in international markets.",
     iconClass: "first-service",
     icon: "bi bi-briefcase",
   },
   {
-    title: "Travel & Visa Logistics",
+    title: "Workforce Selection & Placement",
     description:
-      "Expert management of legal entry permits and embassy certifications to ensure a seamless approval process.",
+      "We identify, screen, assess, and place candidates according to employer requirements and applicable regulations.",
     iconClass: "second-service",
-    icon: "bi bi-passport",
+    icon: "bi bi-person-check",
   },
   {
-    title: "Regulatory Compliance",
+    title: "Employer Recruitment Services",
     description:
-      "Facilitating essential labor clearances and work authorization permits in strict accordance with host laws.",
+      "We support international employers in sourcing suitable, qualified, and dependable workers.",
     iconClass: "third-service",
+    icon: "bi bi-building",
+  },
+  {
+    title: "Candidate Support",
+    description:
+      "We guide candidates throughout the recruitment and placement process and provide the necessary information and assistance.",
+    iconClass: "fourth-service",
+    icon: "bi bi-life-preserver",
+  },
+  {
+    title: "Documentation & Processing Support",
+    description:
+      "We assist with the necessary recruitment, employment, and travel documentation in accordance with applicable requirements.",
+    iconClass: "first-service",
     icon: "bi bi-file-earmark-check",
   },
   {
-    title: "Legal Contract Services",
+    title: "Pre-Departure Orientation",
     description:
-      "Drafting transparent, binding employment agreements that protect the rights and duties of all stakeholders.",
-    iconClass: "fourth-service",
-    icon: "bi bi-file-text",
-  },
-  {
-    title: "Deployment Logistics",
-    description:
-      "Comprehensive travel coordination and arrival support services to guarantee a safe transition for personnel.",
-    iconClass: "first-service",
-    icon: "bi bi-airplane",
-  },
-  {
-    title: "Cultural Readiness",
-    description:
-      "Equipping candidates with vital cross-cultural training and professional ethics for success in foreign markets.",
+      "We help selected workers understand their employment conditions, responsibilities, rights, and expectations before departure.",
     iconClass: "second-service",
-    icon: "bi bi-people",
+    icon: "bi bi-airplane",
   },
 ];
 
@@ -63,9 +63,11 @@ const Services = () => {
               <h2 className="fw-bold">Our Services</h2>
               <img src="assets/images/heading-line-dec.png" alt="" />
               <p className="mt-3">
-                Aysha Overseas Employment Agency delivers premium, end-to-end
-                labor solutions designed to empower Ethiopian professionals on
-                the global stage through integrity and excellence.
+                ALETISALAT Private Foreign Employment Agency delivers ethical,
+                transparent, and professional foreign employment services —
+                connecting qualified Ethiopian workers with legitimate
+                international opportunities while creating value for workers,
+                employers, families, and communities.
               </p>
             </div>
           </div>

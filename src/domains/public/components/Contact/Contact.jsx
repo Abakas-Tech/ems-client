@@ -23,12 +23,12 @@ const Contact = () => {
     latitude: 7.0559381,
     longitude: 38.4902358,
     address: "Addis Ababa, Ethiopia",
-    name: "Ayisha Office",
+    name: "a Office",
   });
 
   const [socialMedia, setSocialMedia] = useState({
-    email: "ayishaagency.com",
-    phone: "0911111111",
+    email: "",
+    phone: "",
   });
 
   //  Google Maps loader for Vite

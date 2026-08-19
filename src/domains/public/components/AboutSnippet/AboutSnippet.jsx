@@ -6,7 +6,7 @@ import {
   FaUserShield,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import about from "../../../../assets/img/logo/image.png";
+import about from "../../../../assets/img/logo/aletisalat-about.png";
 
 import styles from "./AboutSnippet.module.css";
 
@@ -50,7 +50,7 @@ function AboutSnippet() {
 
               <img
                 src={about}
-                alt="Global Trust Overseas Employment Agency"
+                alt="ALETISALAT Private Foreign Employment Agency"
                 className={`img-fluid ${styles.aboutImage}`}
                 loading="lazy"
               />
@@ -59,18 +59,21 @@ function AboutSnippet() {
 
           {/* CONTENT SIDE */}
           <div className="col-lg-6">
-            <div className={styles.tag}>ABOUT GLOBAL TRUST</div>
+            <div className={styles.tag}>ABOUT ALETISALAT</div>
 
             <p className={styles.description}>
-              <strong>Global Trust Overseas Employment Agency Plc</strong> is a
-              licensed recruitment agency dedicated to connecting Ethiopian
-              licensed recruitment agency dedicated to connecting Ethiopian
+              <strong>ALETISALAT Private Foreign Employment Agency</strong> is a
+              professional foreign employment and workforce placement agency
+              committed to connecting qualified Ethiopian workers with
+              legitimate employment opportunities abroad.
             </p>
 
             <p className={styles.description}>
-              We manage the full overseas employment process including job
-              matching, visa processing, LMIS/work permits, employer contract
-              verification, and deployment coordination.
+              We build a trusted bridge between Ethiopian job seekers and
+              international employers by providing responsible, transparent,
+              professional, and efficient recruitment services — protecting the
+              dignity and interests of workers while helping employers access
+              reliable, qualified human resources.
             </p>
 
             {/* STATS */}
