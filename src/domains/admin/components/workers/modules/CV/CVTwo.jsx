@@ -3,7 +3,6 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { getWorkerCVData } from "../../../../api/worker.api";
 import { getUsersLookup } from "../../../../api/user.api";
-import { uploadFile } from "../../../../api/file.api";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
@@ -188,7 +187,7 @@ const CVTwo = ({ templateSwitcher }) => {
       );
       formData.append("worker_id", worker.id);
 
-      await uploadFile(formData);
+      // await uploadFile(formData);
 
       const responseType = worker.cv_two_url ? "updated" : "generated";
       addMessage(true, `CV ${responseType} and uploaded successfully!`);

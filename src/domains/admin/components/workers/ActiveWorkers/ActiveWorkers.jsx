@@ -36,9 +36,8 @@ const ActiveWorkers = () => {
 
   // --- Selection Mode States ---
   // Used for:
-  // 1. Bulk notifications
-  // 2. Autofill queue preparation
-  // 3. Bulk insurance printing
+  // 1. Autofill queue preparation
+  // 2. Bulk insurance printing
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
 
@@ -169,40 +168,6 @@ const ActiveWorkers = () => {
     setSelectedWorkerIds([]);
   };
 
-  // Notification flow — unchanged, but now supports selected IDs across pages
-  const handleNotify = (row = null) => {
-    let idsToNotify = [];
-    let full_name = "";
-
-    const roleType = "worker";
-
-    if (row?.id) {
-      // Single worker click from action icon
-      idsToNotify = [row.id];
-      full_name = row.full_name || "";
-    } else {
-      // Bulk action click from top floating bar
-      idsToNotify = selectedWorkerIds;
-
-      if (idsToNotify.length === 1) {
-        const selectedWorker = workers.find((w) => w.id === idsToNotify[0]);
-        full_name = selectedWorker?.full_name || "";
-      } else if (idsToNotify.length > 1) {
-        full_name = "Multiple Workers";
-      }
-    }
-
-    if (idsToNotify.length === 0) return;
-
-    navigate("/admin/notifications", {
-      state: {
-        bulkIds: idsToNotify,
-        bulkType: roleType,
-        bulkName: full_name,
-      },
-    });
-  };
-
   // 4 cards: Wafid / Tasheer / Insurance / Musaned
   const handleAutofillSelected = () => {
     if (selectedWorkerIds.length === 0) return;
@@ -256,29 +221,7 @@ const ActiveWorkers = () => {
     }
   };
 
-  const handleFiles = (row) => {
-    if (role === 3) {
-      navigate("/partner/files", {
-        state: {
-          workerId: row.id,
-          tab: "workers",
-        },
-      });
-    } else if (role === 5) {
-      navigate(`/employer/my-employees/cv/${row.id}`, {
-        state: {
-          workerId: row.id,
-        },
-      });
-    } else {
-      navigate("/admin/files", {
-        state: {
-          workerId: row.id,
-          tab: "workers",
-        },
-      });
-    }
-  };
+
 
   const handleArchive = (id) => {
     openModal(
@@ -325,22 +268,7 @@ const ActiveWorkers = () => {
       },
     );
   };
-  const handleViewFiles = (row) => {
-    if (role == 5) {
-      navigate(`/employer/my-employees/cv/${row.id}`, {
-        state: {
-          workerId: row.id,
-        },
-      });
-      return;
-    }
 
-    navigate("/admin/files", {
-      state: {
-        workerId: row.id,
-      },
-    });
-  };
 
   // --- Visa Application Handlers ---
   const handleDownloadVisaApplication = async (id) => {
@@ -551,16 +479,6 @@ const ActiveWorkers = () => {
             >
               <button
                 type="button"
-                className="btn btn-outline-main btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-1 "
-                disabled={selectedWorkerIds.length === 0}
-                onClick={handleNotify}
-                style={{ fontSize: "16px" }}
-              >
-                Alert
-              </button>
-
-              <button
-                type="button"
                 className="btn btn-outline-success btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-2 "
                 disabled={selectedWorkerIds.length === 0}
                 onClick={handleAutofillSelected}
@@ -646,16 +564,8 @@ const ActiveWorkers = () => {
 
             { type: "edit", onClick: (row) => handleEdit(row) },
             {
-              type: "notify",
-              onClick: (row) => handleNotify(row),
-            },
-            {
               type: "transaction",
               onClick: (row) => handleRecordTransaction(row),
-            },
-            {
-              type: "files",
-              onClick: (row) => handleFiles(row),
             },
             {
               type: "downloadVisa",

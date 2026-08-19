@@ -6,7 +6,6 @@ import { getUsersLookup } from "../../../../api/user.api";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { useParams, useNavigate } from "react-router-dom";
 import useLoader from "../../../../../../context/Loader/useLoader";
-import { uploadFile } from "../../../../api/file.api";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
 import cvHeader from "../../../../../../assets/img/cv/cv-header.png";
@@ -288,7 +287,7 @@ const CVOne = ({ templateSwitcher }) => {
       fd.append("is_private", 0);
       fd.append("description", `CV for ${worker.full_name}`);
       fd.append("worker_id", worker.id);
-      await uploadFile(fd);
+      // await uploadFile(fd);
       addMessage(
         true,
         "CV " +

@@ -6,7 +6,6 @@ import { getUsersLookup } from "../../../../api/user.api";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { useNavigate, useParams } from "react-router-dom";
 import useLoader from "../../../../../../context/Loader/useLoader";
-import { uploadFile } from "../../../../api/file.api";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
 import CreateModal from "../../../../../../shared/components/CreateModal/CreateModal";
@@ -414,7 +413,7 @@ const CVThree = ({ templateSwitcher }) => {
       formData.append("worker_id", worker.id);
       formData.append("partner_id", selectedPartnerId);
 
-      await uploadFile(formData);
+      // await uploadFile(formData);
 
       /*
        * Keep the local state in sync so the button immediately changes from

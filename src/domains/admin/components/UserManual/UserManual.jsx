@@ -49,12 +49,6 @@ const UserManual = () => {
       video: "https://www.youtube.com/embed/VIDEO_ID_7",
     },
     {
-      title: "Notifications",
-      desc: "Send and manage alerts",
-      icon: "bi-bell",
-      video: "https://www.youtube.com/embed/VIDEO_ID_8",
-    },
-    {
       title: "Public Content",
       desc: "Gallery, location, social media",
       icon: "bi bi-layout-text-sidebar-reverse",

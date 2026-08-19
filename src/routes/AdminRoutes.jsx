@@ -1,6 +1,5 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Files from "../domains/admin/pages/FileManager/FileManager.jsx";
 import Finances from "../domains/admin/pages/FinancePage/FinancePage.jsx";
 import Analytics from "../domains/admin/pages/AnalyticsPage/AnalyticsPage.jsx";
 import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/WorkerDashboard.jsx";
@@ -21,7 +20,6 @@ import ListUser from "./../domains/admin/pages/user/ListUser/ListUser";
 import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
 import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
 import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
-import Notifications from "../domains/admin/pages/NotificationPage/NotificationPage.jsx";
 import Passport from "../domains/admin/pages/workers/modules/Passport/Passport.jsx";
 import Coc from "../domains/admin/pages/workers/modules/Coc/Coc.jsx";
 import Medical from "../domains/admin/pages/workers/modules/Medical/Medical.jsx";
@@ -50,7 +48,6 @@ import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx";
 import UserManual from "../domains/admin/pages/UserManual/UserManual.jsx";
 import WeredaPage from "../domains/admin/pages/meta/WeredaPage/WeredaPage.jsx";
 import SubCityPage from "../domains/admin/pages/meta/SubCityPage/SubCityPage.jsx";
-import FileSearch from "../domains/admin/pages/FileSearch/FileSearch.jsx";
 import ExternalLinks from "../domains/admin/pages/ExternalLinks/ExternalLinks.jsx";
 import ListComplaint from "../domains/admin/pages/complaints/ListComplaint/ListComplaint.jsx";
 import CreateComplaint from "../domains/admin/pages/complaints/CreateComplaint/CreateComplaint.jsx";
@@ -75,7 +72,6 @@ const AdminRoutes = () => {
         <Route path="dashboard" element={<Analytics />} />
         <Route path="autofill" element={<WorkerAutoFill />} />
         <Route path="tickets" element={<Tickets />} />
-        <Route path="files" element={<Files />} />
         <Route
           path="finances"
           element={
@@ -84,7 +80,6 @@ const AdminRoutes = () => {
             </>
           }
         />
-        <Route path="notifications" element={<Notifications />} />
         <Route path="*" element={<NotFound />} />
         <Route
           path="/employees"
@@ -136,7 +131,6 @@ const AdminRoutes = () => {
         <Route path="employee/modules/:id/cv" element={<CV />} />
         <Route path="employee/modules/:id/visa" element={<Visa />} />
         <Route path="/meta-data" element={<MetaDataDashboard />} />
-        <Route path="documents" element={<FileSearch />} />
 
         <Route path="user-manual" element={<UserManual />} />
 

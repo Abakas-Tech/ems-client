@@ -102,47 +102,6 @@ const ListUser = () => {
     fetchUsers(newPage);
   };
   const loggedInUserId = profile?.id;
-  // 1. Updated handler to accept an optional single user row
-  const handleNotify = (row = null) => {
-    let idsToNotify = [];
-    let roleType = filters.role_id || "employee";
-    let full_name = "";
-
-    if (row && row.id) {
-      // Single user click (from the table row)
-      idsToNotify = [row.id];
-      full_name = row.full_name || "";
-      roleType = ROLE_MAP[row.role_id]?.toLowerCase() || roleType;
-    } else {
-      // Bulk action click (from the top bar)
-      idsToNotify = selectedUserIds;
-
-      // If only one person is selected, let's grab their name for a better UX
-      if (idsToNotify.length === 1) {
-        const selectedUser = users.find((u) => u.id === idsToNotify[0]);
-        if (selectedUser) {
-          full_name = selectedUser.full_name || "";
-          roleType = ROLE_MAP[selectedUser.role_id]?.toLowerCase() || roleType;
-        }
-      } else if (idsToNotify.length > 1) {
-        // For multiple users, we usually just pass the role type from filters
-        full_name = "Multiple Users";
-        const firstSelected = users.find((u) => u.id === idsToNotify[0]);
-        roleType = ROLE_MAP[firstSelected?.role_id]?.toLowerCase() || roleType;
-      }
-    }
-
-    if (idsToNotify.length === 0) return;
-
-    navigate("/admin/notifications", {
-      state: {
-        bulkIds: idsToNotify,
-        bulkType: roleType,
-        bulkName: full_name,
-      },
-    });
-  };
-
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
@@ -264,8 +223,6 @@ const ListUser = () => {
 
   const actions = [
     { type: "edit", onClick: handleEdit },
-
-    { type: "notify", onClick: (row) => handleNotify(row) },
 
     {
       type: "archive",
@@ -394,8 +351,7 @@ const ListUser = () => {
                   <span className="fw-bold" style={{ color: "#1e7a34" }}>
                     {selectedUserIds.length}
                   </span>{" "}
-                  {selectedUserIds.length === 1 ? "user" : "users"}{" "}
-                  selected
+                  {selectedUserIds.length === 1 ? "user" : "users"} selected
                 </p>
               </div>
             </div>
@@ -405,18 +361,6 @@ const ListUser = () => {
               className="d-flex flex-row gap-2 w-100 w-md-auto justify-content-md-end align-items-center"
               style={{ fontSize: "13px" }}
             >
-              <button
-                type="button"
-                className="btn btn-outline-main btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-1 "
-                disabled={selectedUserIds.length === 0}
-                onClick={handleNotify}
-                style={{ fontSize: "16px" }}
-              >
-                Alert
-              </button>
-
-             
-
               <button
                 type="button"
                 className="btn btn-outline-danger btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-3 "

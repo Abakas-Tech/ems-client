@@ -58,36 +58,11 @@ const MENU_CONFIG = [
     permission: PERMISSIONS.MANAGE_FINANCE,
   },
   {
-    label: "File Manager",
-    path: "/admin/files",
-    icon: "bi bi-folder2-open",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
-  },
-  {
     label: "Meta Data",
     path: "/admin/meta-data",
     icon: "bi bi-database-add",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
-  {
-    label: "Notifications",
-    path: "/admin/notifications",
-    icon: "bi bi-bell",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
-  },
-  {
-    label: "Documents",
-    path: "/admin/documents",
-    icon: "bi bi-file-earmark-medical",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
-  },
-
-  // {
-  //   label: "User Manual",
-  //   path: "/admin/user-manual",
-  //   icon: "bi bi-journal-code",
-  //   roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
-  // },
 
   {
     label: "External Links",
@@ -129,12 +104,6 @@ const MENU_CONFIG = [
     icon: "bi bi-file-earmark-text",
     roles: [ROLES.WORKER],
   },
-  {
-    label: "Notifications",
-    path: "/employee/notifications",
-    icon: "bi bi-bell",
-    roles: [ROLES.WORKER],
-  },
 
   // Partner Menus
 
@@ -149,21 +118,6 @@ const MENU_CONFIG = [
     label: "Active Employees",
     path: "/partner/active-employees",
     icon: "bi bi-people",
-    roles: [ROLES.PARTNER],
-  },
-
-  {
-    label: "File Manager",
-    path: "/partner/files",
-    icon: "bi bi-folder2-open",
-    roles: [ROLES.PARTNER],
-    isHidden: true,
-  },
-
-  {
-    label: "Notifications",
-    path: "/partner/notifications",
-    icon: "bi bi-bell",
     roles: [ROLES.PARTNER],
   },
 
@@ -187,13 +141,6 @@ const MENU_CONFIG = [
     label: "My Employees",
     path: "/employer/my-employees",
     icon: "bi bi-person-gear",
-    roles: [ROLES.EMPLOYER],
-  },
-
-  {
-    label: "Notifications",
-    path: "/employer/notifications",
-    icon: "bi bi-bell",
     roles: [ROLES.EMPLOYER],
   },
 
