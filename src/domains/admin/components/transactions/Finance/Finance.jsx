@@ -73,6 +73,11 @@ const FinancePage = () => {
   // CreateModal instead of a bare inline form.
   const [showCloseModal, setShowCloseModal] = useState(false);
 
+  // Data backing the on-screen period summary (view === "summary") — the
+  // full transaction set for the period, fetched on demand so the totals
+  // match the printed report exactly.
+  const [summaryData, setSummaryData] = useState(null);
+
   useEffect(() => {
     if (view === "list") loadTransactions();
   }, [filters, view]);
@@ -215,6 +220,27 @@ const FinancePage = () => {
       hideLoader();
     }
   };
+
+  // Loads the full (unpaginated) transaction set for the selected period —
+  // same fetch pattern as handleGeneratePeriodReport — then hands it to the
+  // TransactionDetail summary view instead of printing it directly.
+  const handleViewSummary = async () => {
+    if (!selectedPeriod) return;
+    showLoader();
+    try {
+      const total = transactions.meta?.total || 1000;
+      const res = await fetchPeriodTransactions(selectedPeriod.id, {
+        page: 1,
+        limit: total > 0 ? total : 1000,
+      });
+      setSummaryData({ period: selectedPeriod, transactions: res.data || [] });
+      setView("summary");
+    } catch (err) {
+      addMessage(false, err.message || "Failed to load period summary");
+    } finally {
+      hideLoader();
+    }
+  };
   // NEW: deleting a period also deletes all of its transactions — the
   // confirmation copy makes that explicit before anything happens.
   const handleDeletePeriod = (period) => {
@@ -318,15 +344,38 @@ const FinancePage = () => {
     );
   }
 
-  if (view === "report") {
+  if (view === "summary") {
+    // Same page shell/flow as viewing a single transaction's receipt —
+    // just fed period-summary data instead of a transaction id.
     return (
-      <FinanceReportSummary
-        filters={{
+      <TransactionDetail
+        mode="summary"
+        summaryPeriod={summaryData?.period}
+        summaryTransactions={summaryData?.transactions}
+        onBack={() => setView("periods")}
+      />
+    );
+  }
+
+  if (view === "report") {
+    // Legacy summary route — no longer linked from the UI (the period
+    // Summary button now uses view === "summary" / TransactionDetail
+    // instead). Left in place in case it's wired up again elsewhere.
+    const reportFilters = selectedPeriod
+      ? {
+          ...filters,
+          startDate: selectedPeriod.started_at,
+          endDate: selectedPeriod.closed_at || new Date().toISOString(),
+        }
+      : {
           ...filters,
           startDate: filters.date_from, // Map date_from to startDate
           endDate: filters.date_to, // Map date_to to endDate
-        }}
-        onBack={() => setView("list")}
+        };
+    return (
+      <FinanceReportSummary
+        filters={reportFilters}
+        onBack={() => setView(selectedPeriod ? "periods" : "list")}
       />
     );
   }
@@ -398,16 +447,26 @@ const FinancePage = () => {
                 </div>
 
                 <div className="text-md-end">
-                  {/* Generate Report — only shown here, in the period
-                      transactions header, alongside the title/duration. */}
-                  <button
-                    className="btn btn-main btn-sm px-4 rounded-3 shadow-sm fw-semibold text-white mb-2"
-                    onClick={handleGeneratePeriodReport}
-                    title="Generate the complete financial report for this period"
-                  >
-                    <i className="bi bi-file-earmark-text me-2"></i>
-                    Generate Report
-                  </button>
+                  {/* Summary + Generate Report — shown only here, in the
+                      period transactions header, alongside the title/duration. */}
+                  <div className="d-flex gap-2 justify-content-md-end mb-2 flex-wrap">
+                    <button
+                      className="btn btn-outline-primary btn-sm px-4 rounded-3 fw-semibold"
+                      onClick={handleViewSummary}
+                      title="View a summary of this period's transactions"
+                    >
+                      <i className="bi bi-bar-chart-line me-2"></i>
+                      Summary
+                    </button>
+                    <button
+                      className="btn btn-main btn-sm px-4 rounded-3 shadow-sm fw-semibold text-white"
+                      onClick={handleGeneratePeriodReport}
+                      title="Generate the complete financial report for this period"
+                    >
+                      <i className="bi bi-file-earmark-text me-2"></i>
+                      Generate Report
+                    </button>
+                  </div>
                   {isClosed ? (
                     <>
                       <div className="fw-semibold">

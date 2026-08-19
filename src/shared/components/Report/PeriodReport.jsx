@@ -18,7 +18,9 @@ const fmtAmount = (val) =>
   });
 
 // Falls back to computing income/expense/net from the transaction set
-// itself when the period record doesn't carry those totals yet.
+// itself when the period record doesn't carry those totals yet. Net
+// profit/loss accounts for commission and VAT as well, not just the raw
+// income vs. expense difference.
 const computeTotals = (period, transactions) => {
   const computedIncome = transactions
     .filter((t) => t.category === "income")
@@ -27,17 +29,26 @@ const computeTotals = (period, transactions) => {
     .filter((t) => t.category === "expense")
     .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
+  const commission = period.total_commission ?? period.commission ?? null;
+  const vat = period.total_vat ?? period.vat ?? null;
+
+  const computedNet =
+    computedIncome -
+    computedExpense -
+    Number(commission || 0) -
+    Number(vat || 0);
+
   return {
     income: period.total_income ?? computedIncome,
     expense: period.total_expense ?? computedExpense,
-    commission: period.total_commission ?? period.commission ?? null,
-    vat: period.total_vat ?? period.vat ?? null,
-    netProfit: period.net_profit ?? computedIncome - computedExpense,
+    commission,
+    vat,
+    netProfit: period.net_profit ?? computedNet,
     transactionCount: period.transaction_count ?? transactions.length,
   };
 };
 
-const buildHeader = (period) => {
+const buildHeader = (period, summaryOnly = false) => {
   const { orgName, orgSub, logoPath, logoInitials, logoColor } = REPORT_META;
   const logoHtml = logoPath
     ? `<img src="${logoPath}" alt="${orgName}" style="height:48px;max-width:130px;object-fit:contain;" />`
@@ -52,7 +63,9 @@ const buildHeader = (period) => {
         </div>
       </div>
       <div class="title-block">
-        <div class="report-title">Financial Period Report</div>
+        <div class="report-title">Financial Period ${
+          summaryOnly ? "Summary" : "Report"
+        }</div>
         <div class="report-sub">${period.title}</div>
       </div>
       <div class="meta-r">
@@ -135,14 +148,20 @@ const buildTransactionPages = (period, transactions, totalPages) => {
 // Net Profit/Loss is the hero figure (largest, most prominent), with
 // Income, Expenses, Commission, VAT, and Transaction Count as supporting
 // stat cards underneath — establishing a clear hierarchy between the
-// headline number and everything backing it up.
+// headline number and everything backing it up. Net Profit/Loss factors
+// in commission and VAT, not just income vs. expense.
 const buildStatCard = (label, value, tone = "neutral") => `
   <div class="stat-card stat-${tone}">
     <div class="stat-label">${label}</div>
     <div class="stat-value">${value}</div>
   </div>`;
 
-const buildSummaryPage = (period, transactions, totalPages) => {
+const buildSummaryPage = (
+  period,
+  transactions,
+  totalPages,
+  summaryOnly = false,
+) => {
   const totals = computeTotals(period, transactions);
   const isProfit = Number(totals.netProfit) >= 0;
   const generatedOn = fmtDate(new Date());
@@ -171,7 +190,7 @@ const buildSummaryPage = (period, transactions, totalPages) => {
   ].join("");
 
   return `<div class="page">
-    ${buildHeader(period)}
+    ${buildHeader(period, summaryOnly)}
     <div class="summary-wrap">
       <div class="summary-eyebrow">Period Financial Summary</div>
 
@@ -205,21 +224,7 @@ const buildSummaryPage = (period, transactions, totalPages) => {
   </div>`;
 };
 
-export const generatePeriodReport = ({ period, transactions = [] }) => {
-  if (!period) return;
-
-  const txTotalPages = Math.max(
-    1,
-    Math.ceil(transactions.length / ROWS_PER_PAGE),
-  );
-  const totalPages = txTotalPages + 1; // + summary page
-
-  const txPagesHtml = buildTransactionPages(period, transactions, totalPages);
-  const summaryHtml = buildSummaryPage(period, transactions, totalPages);
-
-  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
-<title>${period.title} Report</title>
-<style>
+const REPORT_STYLES = `
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   @page{size:A4 landscape;margin:11mm 13mm;}
   body{font-family:"Segoe UI",Tahoma,sans-serif;font-size:8.5pt;color:#1a2640;background:#fff;print-color-adjust:exact;-webkit-print-color-adjust:exact;}
@@ -277,12 +282,89 @@ export const generatePeriodReport = ({ period, transactions = [] }) => {
   .summary-signoff{border-top:1px solid #e2e8f0;padding-top:12px;display:flex;flex-direction:column;gap:5px;}
   .signoff-line{display:flex;justify-content:space-between;font-size:7.8pt;color:#5a6a85;}
   .signoff-line span:last-child{font-weight:600;color:#1a2640;}
-</style>
+`;
+
+// Renders the report HTML into a hidden, off-screen iframe and triggers
+// the browser's native print dialog against it — no new tab/window is
+// opened, so nothing extra ever becomes visible in the background. The
+// iframe is removed automatically once printing finishes (or after a
+// timeout fallback, since some browsers don't reliably fire "afterprint").
+const openAndPrint = (html) => {
+  const iframe = document.createElement("iframe");
+  iframe.style.position = "fixed";
+  iframe.style.right = "0";
+  iframe.style.bottom = "0";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "0";
+  iframe.style.visibility = "hidden";
+
+  let cleaned = false;
+  const cleanup = () => {
+    if (cleaned) return;
+    cleaned = true;
+    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+  };
+
+  iframe.onload = () => {
+    // Guard against browsers firing "load" for the initial blank frame
+    // before srcdoc content has actually been parsed in.
+    const win = iframe.contentWindow;
+    if (!win) return;
+
+    win.focus();
+    win.addEventListener("afterprint", cleanup);
+
+    // Give the frame a beat to finish layout before printing.
+    setTimeout(() => {
+      try {
+        win.print();
+      } catch (e) {
+        cleanup();
+      }
+    }, 150);
+
+    // Fallback cleanup in case "afterprint" doesn't fire in this browser.
+    setTimeout(cleanup, 4000);
+  };
+
+  iframe.srcdoc = html;
+  document.body.appendChild(iframe);
+};
+
+// Full report: every transaction (paginated) followed by the summary page.
+// Pass summaryOnly: true to print just the summary page (used by the
+// on-screen period summary's Print button) with no transaction listing.
+export const generatePeriodReport = ({
+  period,
+  transactions = [],
+  summaryOnly = false,
+}) => {
+  if (!period) return;
+
+  if (summaryOnly) {
+    const summaryHtml = buildSummaryPage(period, transactions, 1, true);
+    const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
+<title>${period.title} Summary</title>
+<style>${REPORT_STYLES}</style>
+</head><body>${summaryHtml}</body></html>`;
+    openAndPrint(html);
+    return;
+  }
+
+  const txTotalPages = Math.max(
+    1,
+    Math.ceil(transactions.length / ROWS_PER_PAGE),
+  );
+  const totalPages = txTotalPages + 1; // + summary page
+
+  const txPagesHtml = buildTransactionPages(period, transactions, totalPages);
+  const summaryHtml = buildSummaryPage(period, transactions, totalPages);
+
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
+<title>${period.title} Report</title>
+<style>${REPORT_STYLES}</style>
 </head><body>${txPagesHtml}${summaryHtml}</body></html>`;
 
-  const win = window.open("", "_blank", "width=1280,height=900");
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  setTimeout(() => win.print(), 400);
+  openAndPrint(html);
 };

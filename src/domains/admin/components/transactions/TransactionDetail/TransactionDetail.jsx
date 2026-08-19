@@ -31,14 +31,60 @@ const formatAmount = (value) =>
     maximumFractionDigits: 2,
   });
 
+// Same fallback logic as the printed report (PeriodReport.jsx): prefer the
+// period's own stored totals, fall back to computing from the transaction
+// set when those fields aren't present yet. Net profit/loss accounts for
+// commission and VAT too, not just the raw income vs. expense difference.
+const computeSummaryTotals = (period, transactions) => {
+  const list = transactions || [];
+  const computedIncome = list
+    .filter((t) => t.category === "income")
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+  const computedExpense = list
+    .filter((t) => t.category === "expense")
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+  const commission = period.total_commission ?? period.commission ?? null;
+  const vat = period.total_vat ?? period.vat ?? null;
+
+  const computedNet =
+    computedIncome -
+    computedExpense -
+    Number(commission || 0) -
+    Number(vat || 0);
+
+  return {
+    income: period.total_income ?? computedIncome,
+    expense: period.total_expense ?? computedExpense,
+    commission,
+    vat,
+    netProfit: period.net_profit ?? computedNet,
+    transactionCount: period.transaction_count ?? list.length,
+  };
+};
+
 // NOTE: Generate Report is no longer shown from this page — it now only
 // appears in the period transactions view header (see FinancePage).
-const TransactionDetail = ({ transactionId, onBack }) => {
+//
+// mode="transaction" (default): fetches and shows a single transaction's
+// receipt, exactly as before.
+// mode="summary": shows a period's financial summary instead — same page
+// shell/flow (back button, card), but the content and the print action
+// mirror the printed report generator (PeriodReport.jsx) rather than a
+// single transaction's fields.
+const TransactionDetail = ({
+  transactionId,
+  onBack,
+  mode = "transaction",
+  summaryPeriod,
+  summaryTransactions = [],
+}) => {
   const [transaction, setTransaction] = useState(null);
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
   useEffect(() => {
+    if (mode !== "transaction") return;
     const getDetails = async () => {
       showLoader();
       try {
@@ -52,14 +98,30 @@ const TransactionDetail = ({ transactionId, onBack }) => {
       }
     };
     if (transactionId) getDetails();
-  }, [transactionId]);
+  }, [transactionId, mode]);
 
-  if (!transaction) return null;
+  const isSummaryMode = mode === "summary";
 
-  const isIncome = transaction.category === "income";
-  const isCompany = !transaction.user_id;
-  const isPeriodClosed = transaction.period_status === "closed";
-  const accent = isIncome ? "income" : "expense";
+  if (isSummaryMode && !summaryPeriod) return null;
+  if (!isSummaryMode && !transaction) return null;
+
+  // ── Transaction-mode derived values ──
+  const isIncome = !isSummaryMode && transaction.category === "income";
+  const isCompany = !isSummaryMode && !transaction.user_id;
+  const isPeriodClosed =
+    !isSummaryMode && transaction.period_status === "closed";
+
+  // ── Summary-mode derived values ──
+  const totals = isSummaryMode
+    ? computeSummaryTotals(summaryPeriod, summaryTransactions)
+    : null;
+  const isProfit = isSummaryMode ? Number(totals.netProfit) >= 0 : false;
+  const isSummaryPeriodClosed =
+    isSummaryMode && summaryPeriod.status === "closed";
+
+  // Drives the header gradient / amount color across both modes.
+  const isPositiveAccent = isSummaryMode ? isProfit : isIncome;
+  const accent = isPositiveAccent ? "income" : "expense";
 
   return (
     <div className="txn-receipt dashboard-wraper">
@@ -90,7 +152,7 @@ const TransactionDetail = ({ transactionId, onBack }) => {
           align-items: flex-start;
           gap: 1.5rem;
           background: ${
-            isIncome
+            isPositiveAccent
               ? "linear-gradient(135deg, #e9fbf0 0%, #ffffff 60%)"
               : "linear-gradient(135deg, #fdeeee 0%, #ffffff 60%)"
           };
@@ -141,6 +203,9 @@ const TransactionDetail = ({ transactionId, onBack }) => {
           border-top: 1px solid var(--border);
           border-bottom: 1px solid var(--border);
           background: var(--soft);
+        }
+        .txn-receipt .receipt-stats-strip.stats-strip-fluid {
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         }
         .txn-receipt .stat-item {
           padding: 1.1rem 1.6rem;
@@ -300,226 +365,355 @@ const TransactionDetail = ({ transactionId, onBack }) => {
         <BackButton onClick={onBack} />
       </div>
 
-      {/* Receipt */}
-      <div className="receipt-shell" id="printable-receipt">
-        {/* Summary header */}
-        <div className="receipt-topbar">
-          <div>
-            <div className="d-flex gap-2 mb-3">
-              <Badge
-                content={transaction.category?.toUpperCase()}
-                color={isIncome ? "green" : "red"}
-              />
-              {transaction.period_title && (
-                <Badge
-                  content={transaction.period_title}
-                  color={isPeriodClosed ? "gray" : "cyan"}
-                />
-              )}
+      {isSummaryMode ? (
+        <>
+          {/* Summary receipt */}
+          <div className="receipt-shell" id="printable-receipt">
+            {/* Summary header */}
+            <div className="receipt-topbar">
+              <div>
+                <div className="d-flex gap-2 mb-3">
+                  <Badge
+                    content={isSummaryPeriodClosed ? "CLOSED" : "ACTIVE"}
+                    color={isSummaryPeriodClosed ? "red" : "green"}
+                  />
+                </div>
+                <p className="receipt-eyebrow">Period Summary</p>
+                <h2 className="receipt-title">{summaryPeriod.title}</h2>
+                <p className="receipt-subtext">
+                  {formatDate(summaryPeriod.started_at)} –{" "}
+                  {summaryPeriod.closed_at
+                    ? formatDate(summaryPeriod.closed_at)
+                    : "Present"}
+                </p>
+              </div>
+
+              <div className="receipt-amount-block">
+                <p className="receipt-eyebrow" style={{ textAlign: "right" }}>
+                  Net {isProfit ? "Profit" : "Loss"}
+                </p>
+                <div className="receipt-amount">
+                  {isProfit ? "+" : "-"}
+                  {formatAmount(Math.abs(totals.netProfit))}
+                  <span className="receipt-amount-currency">Birr</span>
+                </div>
+              </div>
             </div>
-            <p className="receipt-eyebrow">Transaction Receipt</p>
-            <h2 className="receipt-title">
-              {isIncome ? "Income" : "Expense"} Transaction
-            </h2>
-            <p className="receipt-subtext">
-              {formatDate(
-                transaction.transaction_date || transaction.created_at,
-              )}
-              {transaction.reference && <> · {transaction.reference}</>}
-            </p>
-          </div>
 
-          <div className="receipt-amount-block">
-            <div className="receipt-amount">
-              {isIncome ? "+" : "-"}
-              {formatAmount(transaction.amount)}
-              <span className="receipt-amount-currency">Birr</span>
+            {/* Summary stat cards — same figures as the printed report */}
+            <div className="receipt-stats-strip stats-strip-fluid">
+              <div className="stat-item">
+                <span className="stat-label">Total Income</span>
+                <span className="stat-value" style={{ color: "var(--income)" }}>
+                  + {formatAmount(totals.income)} Birr
+                </span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Total Expenses</span>
+                <span
+                  className="stat-value"
+                  style={{ color: "var(--expense)" }}
+                >
+                  - {formatAmount(totals.expense)} Birr
+                </span>
+              </div>
+              {totals.commission !== null && (
+                <div className="stat-item">
+                  <span className="stat-label">Total Commission</span>
+                  <span className="stat-value">
+                    {formatAmount(totals.commission)} Birr
+                  </span>
+                </div>
+              )}
+              {totals.vat !== null && (
+                <div className="stat-item">
+                  <span className="stat-label">Total VAT</span>
+                  <span className="stat-value">
+                    {formatAmount(totals.vat)} Birr
+                  </span>
+                </div>
+              )}
+              <div className="stat-item">
+                <span className="stat-label">Total Transactions</span>
+                <span className="stat-value">{totals.transactionCount}</span>
+              </div>
+            </div>
+
+            {/* Closing note + period details */}
+            <div className="receipt-body">
+              <div className="receipt-section">
+                <h6 className="section-title">Closing Note</h6>
+                <p className="description-text">
+                  {summaryPeriod.closing_note || "No closing note recorded."}
+                </p>
+              </div>
+
+              <div className="receipt-section">
+                <h6 className="section-title">Details</h6>
+                <dl className="detail-grid">
+                  <dt>Status</dt>
+                  <dd>
+                    {isSummaryPeriodClosed ? "Closed" : "Currently Active"}
+                  </dd>
+
+                  <dt>Started</dt>
+                  <dd>{formatDate(summaryPeriod.started_at)}</dd>
+
+                  <dt>{isSummaryPeriodClosed ? "Closed" : "Open Since"}</dt>
+                  <dd>
+                    {isSummaryPeriodClosed
+                      ? formatDate(summaryPeriod.closed_at)
+                      : formatDate(summaryPeriod.started_at)}
+                  </dd>
+
+                  {isSummaryPeriodClosed && (
+                    <>
+                      <dt>Closed By</dt>
+                      <dd>{summaryPeriod.closed_by_name || "—"}</dd>
+                    </>
+                  )}
+                </dl>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Quick facts strip */}
-        <div className="receipt-stats-strip">
-          <div className="stat-item">
-            <span className="stat-label">Date</span>
-            <span className="stat-value">
-              {formatDate(
-                transaction.transaction_date || transaction.created_at,
-              )}
-            </span>
+          <div className="text-center d-print-none mt-4">
+            <button
+              className="btn btn-outline-primary btn-sm px-4"
+              onClick={() => window.print()}
+            >
+              <i className="bi bi-printer me-2"></i> Print Summary Report
+            </button>
           </div>
-          <div className="stat-item">
-            <span className="stat-label">Reference</span>
-            <span className="stat-value">{transaction.reference || "—"}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">
-              {isCompany ? "Entity" : "Transaction For"}
-            </span>
-            {isCompany ? (
-              <span className="stat-value">Company Account</span>
-            ) : (
-              <span className="stat-value is-flex">
-                {transaction.target_user_name}
-                <Badge
-                  content={ROLE_MAP[transaction.target_user_role] || "User"}
-                  color="red"
-                />
-              </span>
-            )}
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Recorded By</span>
-            <span className="stat-value is-flex">
-              {transaction.creator_name || "System"}
-              <Badge
-                content={ROLE_MAP[transaction.creator_role]}
-                color="green"
-              />
-            </span>
-          </div>
-        </div>
+        </>
+      ) : (
+        <>
+          {/* Receipt */}
+          <div className="receipt-shell" id="printable-receipt">
+            {/* Summary header */}
+            <div className="receipt-topbar">
+              <div>
+                <div className="d-flex gap-2 mb-3">
+                  <Badge
+                    content={transaction.category?.toUpperCase()}
+                    color={isIncome ? "green" : "red"}
+                  />
+                  {transaction.period_title && (
+                    <Badge
+                      content={transaction.period_title}
+                      color={isPeriodClosed ? "gray" : "cyan"}
+                    />
+                  )}
+                </div>
+                <p className="receipt-eyebrow">Transaction Receipt</p>
+                <h2 className="receipt-title">
+                  {isIncome ? "Income" : "Expense"} Transaction
+                </h2>
+                <p className="receipt-subtext">
+                  {formatDate(
+                    transaction.transaction_date || transaction.created_at,
+                  )}
+                  {transaction.reference && <> · {transaction.reference}</>}
+                </p>
+              </div>
 
-        {/* Details + Description */}
-        <div className="receipt-body">
-          <div className="receipt-section">
-            <h6 className="section-title">Details</h6>
-            <dl className="detail-grid">
-              <dt>Category</dt>
-              <dd className="text-capitalize">{transaction.category}</dd>
+              <div className="receipt-amount-block">
+                <div className="receipt-amount">
+                  {isIncome ? "+" : "-"}
+                  {formatAmount(transaction.amount)}
+                  <span className="receipt-amount-currency">Birr</span>
+                </div>
+              </div>
+            </div>
 
-              <dt>Date</dt>
-              <dd>
-                {formatDate(
-                  transaction.transaction_date || transaction.created_at,
-                )}
-              </dd>
-
-              <dt>Reference</dt>
-              <dd>{transaction.reference || "—"}</dd>
-
-              <dt>{isCompany ? "Entity" : "Transaction For"}</dt>
-              <dd>
+            {/* Quick facts strip */}
+            <div className="receipt-stats-strip">
+              <div className="stat-item">
+                <span className="stat-label">Date</span>
+                <span className="stat-value">
+                  {formatDate(
+                    transaction.transaction_date || transaction.created_at,
+                  )}
+                </span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Reference</span>
+                <span className="stat-value">
+                  {transaction.reference || "—"}
+                </span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">
+                  {isCompany ? "Entity" : "Transaction For"}
+                </span>
                 {isCompany ? (
-                  "Company Account"
+                  <span className="stat-value">Company Account</span>
                 ) : (
-                  <span className="d-inline-flex align-items-center gap-2">
+                  <span className="stat-value is-flex">
                     {transaction.target_user_name}
                     <Badge
-                      content={ROLE_MAP[transaction.target_user_role]}
+                      content={ROLE_MAP[transaction.target_user_role] || "User"}
                       color="red"
                     />
                   </span>
                 )}
-              </dd>
-
-              <dt>Recorded By</dt>
-              <dd>
-                <span className="d-inline-flex align-items-center gap-2">
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Recorded By</span>
+                <span className="stat-value is-flex">
                   {transaction.creator_name || "System"}
                   <Badge
                     content={ROLE_MAP[transaction.creator_role]}
                     color="green"
                   />
                 </span>
-              </dd>
-            </dl>
-          </div>
+              </div>
+            </div>
 
-          <div className="receipt-section">
-            <h6 className="section-title">Description</h6>
-            <p className="description-text">
-              {transaction.description || "No description provided."}
-            </p>
-          </div>
-        </div>
+            {/* Details + Description */}
+            <div className="receipt-body">
+              <div className="receipt-section">
+                <h6 className="section-title">Details</h6>
+                <dl className="detail-grid">
+                  <dt>Category</dt>
+                  <dd className="text-capitalize">{transaction.category}</dd>
 
-        {/* Period */}
-        <div className="period-strip">
-          <h6 className="section-title" style={{ marginBottom: "1.25rem" }}>
-            Period
-          </h6>
+                  <dt>Date</dt>
+                  <dd>
+                    {formatDate(
+                      transaction.transaction_date || transaction.created_at,
+                    )}
+                  </dd>
 
-          {transaction.period_title ? (
-            <div className="period-card">
-              <div
-                className="receipt-stats-strip"
-                style={{ border: "none" }}
-              >
-                <div className="stat-item">
-                  <span className="stat-label">Title</span>
-                  <span className="stat-value">{transaction.period_title}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Status</span>
-                  <Badge
-                    content={transaction.period_status?.toUpperCase()}
-                    color={isPeriodClosed ? "red" : "green"}
-                  />
-                </div>
-                {isPeriodClosed ? (
-                  <div className="stat-item">
-                    <span className="stat-label">Closed By</span>
-                    <span className="stat-value">
-                      {transaction.period_closed_by_name || "—"}
+                  <dt>Reference</dt>
+                  <dd>{transaction.reference || "—"}</dd>
+
+                  <dt>{isCompany ? "Entity" : "Transaction For"}</dt>
+                  <dd>
+                    {isCompany ? (
+                      "Company Account"
+                    ) : (
+                      <span className="d-inline-flex align-items-center gap-2">
+                        {transaction.target_user_name}
+                        <Badge
+                          content={ROLE_MAP[transaction.target_user_role]}
+                          color="red"
+                        />
+                      </span>
+                    )}
+                  </dd>
+
+                  <dt>Recorded By</dt>
+                  <dd>
+                    <span className="d-inline-flex align-items-center gap-2">
+                      {transaction.creator_name || "System"}
+                      <Badge
+                        content={ROLE_MAP[transaction.creator_role]}
+                        color="green"
+                      />
                     </span>
-                    <span className="text-muted small">
-                      {formatDate(transaction.period_closed_at, true)}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="stat-item">
-                    <span className="stat-label">Open Since</span>
-                    <span className="stat-value">
-                      {formatDate(transaction.period_started_at)}
-                    </span>
-                  </div>
-                )}
-                <div className="stat-item">
-                  {transaction.period_description ? (
-                    <>
-                      <span className="period-note-label">Description</span>
-                      <p className="period-note-text">
-                        {transaction.period_description}
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <span className="stat-label">Description</span>
-                      <span className="stat-value text-muted">—</span>
-                    </>
-                  )}
-                </div>
+                  </dd>
+                </dl>
               </div>
 
-              {isPeriodClosed && transaction.period_closing_note && (
-                <div
-                  style={{
-                    borderTop: "1px solid var(--border)",
-                    padding: "1.1rem 1.6rem",
-                  }}
-                >
-                  <span className="period-note-label">Closing Note</span>
-                  <p className="period-note-text">
-                    {transaction.period_closing_note}
-                  </p>
+              <div className="receipt-section">
+                <h6 className="section-title">Description</h6>
+                <p className="description-text">
+                  {transaction.description || "No description provided."}
+                </p>
+              </div>
+            </div>
+
+            {/* Period */}
+            <div className="period-strip">
+              <h6 className="section-title" style={{ marginBottom: "1.25rem" }}>
+                Period
+              </h6>
+
+              {transaction.period_title ? (
+                <div className="period-card">
+                  <div
+                    className="receipt-stats-strip"
+                    style={{ border: "none" }}
+                  >
+                    <div className="stat-item">
+                      <span className="stat-label">Title</span>
+                      <span className="stat-value">
+                        {transaction.period_title}
+                      </span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-label">Status</span>
+                      <Badge
+                        content={transaction.period_status?.toUpperCase()}
+                        color={isPeriodClosed ? "red" : "green"}
+                      />
+                    </div>
+                    {isPeriodClosed ? (
+                      <div className="stat-item">
+                        <span className="stat-label">Closed By</span>
+                        <span className="stat-value">
+                          {transaction.period_closed_by_name || "—"}
+                        </span>
+                        <span className="text-muted small">
+                          {formatDate(transaction.period_closed_at, true)}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="stat-item">
+                        <span className="stat-label">Open Since</span>
+                        <span className="stat-value">
+                          {formatDate(transaction.period_started_at)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="stat-item">
+                      {transaction.period_description ? (
+                        <>
+                          <span className="period-note-label">Description</span>
+                          <p className="period-note-text">
+                            {transaction.period_description}
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <span className="stat-label">Description</span>
+                          <span className="stat-value text-muted">—</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {isPeriodClosed && transaction.period_closing_note && (
+                    <div
+                      style={{
+                        borderTop: "1px solid var(--border)",
+                        padding: "1.1rem 1.6rem",
+                      }}
+                    >
+                      <span className="period-note-label">Closing Note</span>
+                      <p className="period-note-text">
+                        {transaction.period_closing_note}
+                      </p>
+                    </div>
+                  )}
                 </div>
+              ) : (
+                <p className="text-muted mb-0">No period information.</p>
               )}
             </div>
-          ) : (
-            <p className="text-muted mb-0">No period information.</p>
-          )}
-        </div>
-      </div>
+          </div>
 
-      <div className="text-center d-print-none mt-4">
-        <button
-          className="btn btn-outline-primary btn-sm px-4"
-          onClick={() => window.print()}
-        >
-          <i className="bi bi-printer me-2"></i> Print Receipt
-        </button>
-      </div>
+          <div className="text-center d-print-none mt-4">
+            <button
+              className="btn btn-outline-primary btn-sm px-4"
+              onClick={() => window.print()}
+            >
+              <i className="bi bi-printer me-2"></i> Print Receipt
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
