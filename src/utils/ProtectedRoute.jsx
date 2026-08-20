@@ -68,7 +68,7 @@ const ProtectedRoute = ({ children }) => {
   }, []);
 
   if (checking) return null;
-  if (!isAuth) return <Navigate to="/" replace />;
+  if (!isAuth) return <Navigate to="/auth/login" replace />;
 
   const userRoleId = profile?.role_id;
   const userPermissions = profile?.permissions || {};

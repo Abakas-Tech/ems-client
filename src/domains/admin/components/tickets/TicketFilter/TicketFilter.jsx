@@ -15,7 +15,7 @@ const TicketFilter = ({
     { value: "JED", label: "Jeddah (JED)" },
     { value: "RUH", label: "Riyadh (RUH)" },
     { value: "DMM", label: "Dammam (DMM)" },
-    { value: "MED", label: "Medina (MED)" },
+    { value: "AMM", label: "Amman (AMM)" },
   ];
 
   return (

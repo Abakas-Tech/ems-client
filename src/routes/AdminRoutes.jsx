@@ -143,6 +143,15 @@ const AdminRoutes = () => {
         />
         <Route path="complaints/edit/:id" element={<CreateComplaint />} />
         <Route path="complaints/view/:id" element={<ViewComplaint />} />
+        <Route path="/content" element={<ContentDashboard />} />
+        <Route path="/content/social-media" element={<SocialMediaPage />} />
+        <Route path="/content/location" element={<LocationPage />} />
+        <Route path="/content/gallery" element={<GalleryListPage />} />
+        <Route path="/content/gallery/create" element={<GalleryUplaodPage />} />
+        <Route
+          path="/content/gallery/edit/:id"
+          element={<GalleryUplaodPage />}
+        />
 
         <Route path="*" element={<NotFound />} />
       </Route>

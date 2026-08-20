@@ -1,128 +1,123 @@
 import React from "react";
+import {
+  BsPersonPlusFill,
+  BsPatchCheckFill,
+  BsBriefcaseFill,
+  BsAirplaneFill,
+} from "react-icons/bs";
+import { PiAirplaneTilt } from "react-icons/pi";
+import { IoPersonAddOutline } from "react-icons/io5";
+import { BsAward } from "react-icons/bs";
+import { LuUserCheck } from "react-icons/lu";
+import { BsPatchCheck } from "react-icons/bs";
+import { BsPersonVcard } from "react-icons/bs";
 import styles from "./HowItWorks.module.css";
 
 function HowItWorks() {
   return (
-    <section
-      id="how"
-      className={`styles["how-section"] pb-0`}
-     
-    >
-      <div className="container">
-        {/* HEADER */}
-        <div className="row justify-content-center">
-          <div className="col-xl-6 col-lg-7 col-md-10 text-center">
-            <div className={styles["section-heading"]}>
-              <h2>How It Works</h2>
-              <p className="mb-5">
-                Follow these simple steps to complete your overseas employment
-                journey smoothly and efficiently.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* STEPS */}
-        <div className="row justify-content-center g-4">
-          {/* STEP 1 */}
-          <div className="col-lg-4 col-md-4">
-            <div className={styles["step-item"]}>
-              <div className={styles["step-number"]}>01</div>
-
-              <div className={styles["icon-wrapper"]}>
-                <div className={styles["icon-box"]}>
-                  <svg width="45" height="45" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 12c2.761 0 5-2.239 5-5S14.761 2 12 2 7 4.239 7 7s2.239 5 5 5z"
-                      fill="currentColor"
-                    />
-                    <path
-                      d="M4 20c0-3.314 3.582-6 8-6s8 2.686 8 6"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M19 8v4M17 10h4"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              <div className={styles["step-content"]}>
-                <h4>Register</h4>
-                <p className="text-muted">
-                  Visit the agency, register and submit your application details
-                  to get started with the process.
+    <section id="how" className={`${styles["how-section"]} pb-0`}>
+      <div id="features" className="features section">
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-lg-7 col-md-10 text-center">
+              <div className="sec-heading center">
+                <h2 id="services-title" className="fw-bold">
+                  The Process
+                </h2>
+                <p>
+                  Our streamlined process ensures a smooth and efficient journey
+                  for overseas employment, guiding you through every step from
+                  registration to deployment.
                 </p>
               </div>
             </div>
           </div>
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="features-content">
+                <div className="row">
+                  <div className={`col-lg-3 ${styles["step-item"]}`}>
+                    <div
+                      className="features-item first-feature wow fadeInUp"
+                      data-wow-duration="1s"
+                      data-wow-delay="0s"
+                    >
+                      <div className={styles["number"]}>01</div>
+                      <div className={styles["icon"]}>
+                        <IoPersonAddOutline />
+                      </div>
+                      <h4>Registration</h4>
+                      <div className="line-dec"></div>
+                      <p>
+                        Register with the agency by submitting your personal
+                        details, identification documents, and creating your
+                        official overseas employment profile.
+                      </p>
+                    </div>
+                  </div>
 
-          {/* STEP 2 */}
-          <div className="col-lg-4 col-md-4">
-            <div className={styles["step-item"]}>
-              <div className={styles["step-number"]}>02</div>
+                  <div className={`col-lg-3 ${styles["step-item"]}`}>
+                    <div
+                      className="features-item second-feature wow fadeInUp"
+                      data-wow-duration="1s"
+                      data-wow-delay="0.2s"
+                    >
+                      <div className={styles["number"]}>02</div>
+                      <div className={styles["icon"]}>
+                        <BsPatchCheck />
+                      </div>
+                      <h4>Qualification</h4>
+                      <div className="line-dec"></div>
+                      <p>
+                        Complete required training, competency assessment,
+                        medical examination, and pre-employment orientation to
+                        become eligible for overseas placement.
+                      </p>
+                    </div>
+                  </div>
 
-              <div className={styles["icon-wrapper"]}>
-                <div className={`${styles["icon-box"]} ${styles["warning"]}`}>
-                  <svg width="45" height="45" viewBox="0 0 24 24" fill="none">
-                    {/* Document */}
-                    <path
-                      d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      fill="none"
-                    />
+                  <div className={`col-lg-3 ${styles["step-item"]}`}>
+                    <div
+                      className="features-item first-feature wow fadeInUp"
+                      data-wow-duration="1s"
+                      data-wow-delay="0.4s"
+                    >
+                      <div className={styles["number"]}>03</div>
+                      <div className={styles["icon"]}>
+                        <BsPersonVcard />
+                      </div>
+                      <h4>Job Placement</h4>
+                      <div className="line-dec"></div>
+                      <p>
+                        Get matched with a verified employer, complete
+                        interviews, sign your employment contract, and process
+                        your visa and work permit.
+                      </p>
+                    </div>
+                  </div>
 
-                    {/* Fold corner */}
-                    <path d="M14 2v6h6" stroke="currentColor" strokeWidth="2" />
-
-                    {/* Check / process line */}
-                    <path
-                      d="M9 13l2 2 4-4"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <div
+                    className={`col-lg-3 ${styles["step-item"]} ${styles["last"]}`}
+                  >
+                    <div
+                      className="features-item second-feature last-features-item wow fadeInUp"
+                      data-wow-duration="1s"
+                      data-wow-delay="0.6s"
+                    >
+                      <div className={styles["number"]}>04</div>
+                      <div className={styles["icon"]}>
+                        <PiAirplaneTilt />
+                      </div>
+                      <h4>Deployment</h4>
+                      <div className="line-dec"></div>
+                      <p>
+                        Attend pre-departure orientation, finalize travel
+                        arrangements, receive exit clearance, and begin your
+                        overseas employment journey.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              <div className={styles["step-content"]}>
-                <h4>Processing</h4>
-                <p className="text-muted">
-                  Your application is reviewed, verified, and prepared by the
-                  agency for approval.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* STEP 3 */}
-          <div className="col-lg-4 col-md-4">
-            <div className={`${styles["step-item"]} ${styles["last"]}`}>
-              <div className={styles["step-number"]}>03</div>
-
-              <div className={styles["icon-wrapper"]}>
-                <div className={`${styles["icon-box"]} ${styles["primary"]}`}>
-                  <svg width="45" height="45" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M2 16l20-5-20-5v4l14 1-14 1v4z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              <div className={styles["step-content"]}>
-                <h4>Deployment</h4>
-                <p className="text-muted">
-                  Once approved, you are deployed to your destination country to
-                  begin your job.
-                </p>
               </div>
             </div>
           </div>
