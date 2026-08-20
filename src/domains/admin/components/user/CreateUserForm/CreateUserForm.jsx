@@ -43,7 +43,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [partnerCvHeader, setPartnerCvHeader] = useState(null);
   const [existingPartnerCvHeader, setExistingPartnerCvHeader] = useState(null);
-  const [cvTemplateCode, setCvTemplateCode] = useState("");
   const { profile } = useProfile();
   const userId = profile?.id;
   const navigate = useNavigate();
@@ -68,7 +67,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
       setExistingPartnerCvHeader(userData.cv_header_url || null);
       setPartnerCvHeader(null);
-      setCvTemplateCode(userData.cv_template_code || "");
       if (userData.permissions && userData.permissions.length > 0) {
         const permissionObject = userData.permissions[0];
         const activePermissions = PERMISSIONS.filter(
@@ -90,7 +88,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
     setPartnerCvHeader(null);
     setExistingPartnerCvHeader(null);
-    setCvTemplateCode("");
     setSelectedPermissions([]);
     setSelectAll(false);
   };
@@ -229,9 +226,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         is_active: Number(status),
         country: role === "3" ? country : undefined,
       });
-      if (role === "3") {
-        payload.cv_template_code = cvTemplateCode || null;
-      }
 
       let response = isEditMode
         ? await updateUser(userData.id, payload)
@@ -422,21 +416,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   />
                 </div>
               )}
-              {role === "3" && (
-                <div className="form-group col-md-6 mb-3">
-                  <label>CV Type</label>
-
-                  <select
-                    className="form-control"
-                    value={cvTemplateCode}
-                    onChange={(event) => setCvTemplateCode(event.target.value)}
-                  >
-                    <option value="">New Partner</option>
-                    <option value="CV_ONE">Abo Bejad</option>
-                    <option value="CV_TWO">Semu Al-Shifa</option>
-                  </select>
-                </div>
-              )}
               {/* Partner CV Header */}
               {role === "3" && (
                 <div className="form-group col-md-6 mb-3">
@@ -481,7 +460,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   )}
                 </div>
               )}
-              
 
               {/* Employee Permissions */}
               {role === "2" && (!userData || userId !== userData?.id) && (

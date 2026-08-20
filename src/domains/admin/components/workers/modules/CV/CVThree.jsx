@@ -8,7 +8,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
-import CreateModal from "../../../../../../shared/components/CreateModal/CreateModal";
 
 const safeDate = (date) => (date ? date.slice(0, 10) : "");
 
@@ -35,120 +34,299 @@ const subtractDate = (firstDate, secondDate) => {
   return years > 0 ? `${years} years` : `${months} months`;
 };
 
-const GOLD = "#7a5c1e";
-const FONT = "'Times New Roman', Times, serif";
+/* ------------------------------------------------------------------ */
+/*  THEME - matches the Musaned / Al Esnad Almasi blue paper template  */
+/* ------------------------------------------------------------------ */
+const BLUE = "#3D6DA6";
+const FONT = "Arial, Helvetica, sans-serif";
+
+/* Fallback agency contact info shown on the page-2 header strip.
+   Prefer live values from the selected partner when available. */
+const AGENCY_CONTACT = {
+  email: "alesnadalmasi@hotma.com",
+  phone: "837310029",
+  addressAr: "طريق الملك عبدالعزيز، المروج، الرياض 4368، الرياض 12282",
+};
 
 const css = {
-  enLabel: {
-    padding: "2px 6px",
-    fontWeight: "bold",
-    fontStyle: "italic",
-    fontSize: 14,
-    borderRight: "1px solid #000",
-  },
-  enValue: {
-    padding: "2px 6px",
-    fontStyle: "italic",
-    fontSize: 12,
-    borderRight: "1px solid #000",
-  },
-  enValueBold: {
-    padding: "2px 6px",
-    fontWeight: "bold",
-    fontStyle: "italic",
-    fontSize: 12,
-    borderRight: "1px solid #000",
-  },
-  arLabel: {
-    padding: "2px 6px",
-    fontWeight: "bold",
-    fontSize: 14,
-    textAlign: "right",
-    direction: "rtl",
-  },
-  arLabelBold: {
-    padding: "2px 6px",
-    fontWeight: "bold",
-    fontStyle: "italic",
-    fontSize: 14,
-    textAlign: "right",
-    direction: "rtl",
-  },
-  goldBar: {
-    background: GOLD,
+  titleBar: {
+    background: BLUE,
     color: "#fff",
+    fontWeight: "bold",
     fontSize: 15,
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    textAlign: "center",
+    padding: "5px 8px",
     borderBottom: "1px solid #000",
   },
-  goldLeft: {
-    padding: "2.5px 8px",
-    fontWeight: "bold",
-    fontStyle: "italic",
-    fontSize: 15,
+  sectionBar: {
+    background: BLUE,
+    color: "#fff",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 22,
+    fontSize: 13,
+    padding: "4px 8px",
+    borderTop: "1px solid #000",
+    borderBottom: "1px solid #000",
+    textAlign: "center",
   },
-  goldRight: {
-    padding: "2.5px 8px",
+  sectionBarEn: { fontWeight: "bold" },
+  sectionBarAr: { fontWeight: "bold", direction: "rtl" },
+  titleStack: {
+    background: BLUE,
+    color: "#fff",
+    textAlign: "center",
+    padding: "4px 8px 6px",
+    borderTop: "1px solid #000",
+    borderBottom: "1px solid #000",
+  },
+  titleStackMain: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 22,
+    fontSize: 13,
     fontWeight: "bold",
-    fontSize: 15,
+  },
+  titleStackSub: {
+    fontSize: 11,
+    fontWeight: "bold",
+    marginTop: 3,
+  },
+  rowLabel: {
+    padding: "3px 6px",
+    fontWeight: "bold",
+    fontSize: 12,
+    borderRight: "1px solid #000",
+  },
+  rowValue: {
+    padding: "3px 6px",
+    fontSize: 12,
+    borderRight: "1px solid #000",
+    display: "flex",
+    alignItems: "center",
+  },
+  rowValueBold: {
+    padding: "3px 6px",
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#c0392b",
+    borderRight: "1px solid #000",
+    display: "flex",
+    alignItems: "center",
+  },
+  rowAr: {
+    padding: "3px 6px",
+    fontSize: 12,
+    fontWeight: "bold",
+    textAlign: "right",
+    direction: "rtl",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  fullNameRow: {
+    display: "grid",
+    gridTemplateColumns: "150px 1fr 200px",
+    background: BLUE,
+    color: "#fff",
+    borderTop: "1px solid #000",
+    borderBottom: "1px solid #000",
+  },
+  fullNameLabel: { padding: "5px 8px", fontWeight: "bold", fontSize: 13 },
+  fullNameValue: {
+    padding: "5px 8px",
+    fontWeight: "bold",
+    fontSize: 14,
+    textAlign: "center",
+    borderLeft: "1px solid rgba(255,255,255,0.5)",
+    borderRight: "1px solid rgba(255,255,255,0.5)",
+  },
+  fullNameAr: {
+    padding: "5px 8px",
+    fontWeight: "bold",
+    fontSize: 13,
     textAlign: "right",
     direction: "rtl",
   },
-  tdGoldHeader: {
-    padding: "4px 7px",
-    fontSize: 15,
-    fontFamily: FONT,
-    fontWeight: "bold",
-    fontStyle: "italic",
-    background: GOLD,
+  summaryWrap: {
+    background: BLUE,
     color: "#fff",
     textAlign: "center",
-    verticalAlign: "middle",
+    padding: "10px 18px 16px",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: 8,
+    borderTop: "1px solid #000",
+  },
+  summaryTitle: {
+    fontWeight: "bold",
+    fontSize: 14,
+    display: "flex",
+    justifyContent: "center",
+    gap: 10,
+  },
+  summaryTitleAr: { direction: "rtl" },
+  summaryText: {
+    fontWeight: "bold",
+    fontSize: 13,
+    lineHeight: 1.7,
+  },
+  contactHeader: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    border: "2px solid #000",
+    borderBottom: "none",
+  },
+  contactCellEn: {
+    padding: "10px 12px",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 12,
+    lineHeight: 1.8,
+    borderRight: "1px solid #000",
+  },
+  contactCellAr: {
+    padding: "10px 12px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  contactCellArBox: {
+    background: BLUE,
+    color: "#fff",
+    border: "1px solid #000",
+    borderRadius: 2,
+    padding: "8px 14px",
+    margin: "2px",
+    fontWeight: "bold",
+    fontSize: 12,
+    lineHeight: 1.8,
+    textAlign: "center",
+    direction: "rtl",
   },
 };
 
-const GoldBar = ({ en, ar }) => (
-  <div style={css.goldBar}>
-    <div style={css.goldLeft}>{en}</div>
-    <div style={css.goldRight}>{ar}</div>
+const SectionBar = ({ en, ar }) => (
+  <div style={css.sectionBar}>
+    <div style={css.sectionBarEn}>{en}</div>
+    {ar ? <div style={css.sectionBarAr}>{ar}</div> : null}
   </div>
 );
 
+/* A title bar with a subheading stacked directly beneath it, both inside
+   the SAME blue block with no divider between them - used where the
+   template treats the title and the subheading as one continuous title
+   (e.g. "PREVIOUS EMPLOYMENT / العمل السابق" + "COUNTRY WORKED BEFORE"). */
+const TitleStack = ({ en, ar, sub }) => (
+  <div style={css.titleStack}>
+    <div style={css.titleStackMain}>
+      <span>{en}</span>
+      {ar ? <span style={{ direction: "rtl" }}>{ar}</span> : null}
+    </div>
+    {sub ? <div style={css.titleStackSub}>{sub}</div> : null}
+  </div>
+);
+
+/* Data row: EN label | value | AR label - mirrors the template.
+   Always renders the same 3 fixed-width columns (even when arLabel is
+   empty) so the vertical divider lines stay connected from row to row
+   instead of jumping around when a row happens to skip the Arabic cell. */
 const Row3 = ({
   label,
   value,
   arLabel,
   boldValue,
   last,
-  cols = "110px 100px 1fr",
-  minHeight,
+  cols = "150px 1fr 170px",
 }) => (
   <div
     style={{
       display: "grid",
       gridTemplateColumns: cols,
-      minHeight,
       ...(last ? {} : { borderBottom: "1px solid #000" }),
     }}
   >
-    <div style={css.enLabel}>{label}</div>
-    <div style={boldValue ? css.enValueBold : css.enValue}>{value ?? ""}</div>
-    <div style={css.arLabel}>{arLabel}</div>
+    <div style={css.rowLabel}>{label}</div>
+    <div style={boldValue ? css.rowValueBold : css.rowValue}>{value ?? ""}</div>
+    <div style={css.rowAr}>{arLabel ?? ""}</div>
   </div>
 );
 
-const SkillRow = ({ en, value, ar, last }) => (
+/* Checklist row with a ✓ / ✗ mark, used for Skills & Languages.
+   Defaults to the SAME column widths as Row3 so the divider lines run
+   straight through from Personal Data into Skills, but a table can pass
+   its own `cols` (e.g. equal thirds) when it needs to match a neighbouring
+   table instead. */
+const CheckRow = ({ en, checked, ar, last, cols = "150px 1fr 170px" }) => (
   <div
     style={{
       display: "grid",
-      gridTemplateColumns: "110px 80px 1fr",
+      gridTemplateColumns: cols,
       ...(last ? {} : { borderBottom: "1px solid #000" }),
     }}
   >
-    <div style={css.enLabel}>{en}</div>
-    <div style={{ ...css.enValueBold, textAlign: "center" }}>{value}</div>
-    <div style={css.arLabelBold}>{ar}</div>
+    <div style={css.rowLabel}>{en}</div>
+    <div
+      style={{
+        padding: "3px 6px",
+        textAlign: "center",
+        fontWeight: "bold",
+        fontSize: 14,
+        color: checked ? "#1f7a3d" : "#b5231b",
+        borderRight: "1px solid #000",
+      }}
+    >
+      {checked ? "✓" : "✗"}
+    </div>
+    <div style={css.rowAr}>{ar}</div>
+  </div>
+);
+
+const PhotoBox = ({ url, alt, placeholderLabel }) => (
+  <div
+    style={{
+      position: "relative",
+      width: "100%",
+      height: "100%",
+      minHeight: 140,
+    }}
+  >
+    {url ? (
+      <img
+        src={url}
+        alt={alt}
+        crossOrigin="anonymous"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          display: "block",
+        }}
+      />
+    ) : (
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "#e2e2e2",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#999",
+          fontSize: 11,
+          textAlign: "center",
+          padding: 6,
+        }}
+      >
+        {placeholderLabel}
+      </div>
+    )}
   </div>
 );
 
@@ -205,11 +383,6 @@ const CVThree = ({ templateSwitcher }) => {
   const [worker, setWorker] = useState(null);
   const [partners, setPartners] = useState([]);
   const [selectedPartnerId, setSelectedPartnerId] = useState("");
-
-  const [showRemarkModal, setShowRemarkModal] = useState(false);
-  const [remarkOverride, setRemarkOverride] = useState(null);
-  const [remarkDateOverride, setRemarkDateOverride] = useState(null);
-  const [pendingGenerate, setPendingGenerate] = useState(false);
 
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -373,7 +546,7 @@ const CVThree = ({ templateSwitcher }) => {
       return;
     }
 
-    setShowRemarkModal(true);
+    handleGenerateAndUpload();
   };
 
   const handleGenerateAndUpload = async () => {
@@ -389,10 +562,10 @@ const CVThree = ({ templateSwitcher }) => {
     try {
       const pdf = new jsPDF("p", "mm", "a4");
 
-      // Page 1: CV
+      // Page 1: application + personal data + skills
       await captureElementToPage(pdf, cvRef.current, 400);
 
-      // Page 2: passport
+      // Page 2: previous employment, languages/education, passport scan
       if (passportRef.current) {
         pdf.addPage();
         await captureElementToPage(pdf, passportRef.current, 800);
@@ -457,118 +630,150 @@ const CVThree = ({ templateSwitcher }) => {
     }
   };
 
-  const handleRemarkSubmit = (inputValues) => {
-    const remarkText = inputValues.remark?.trim();
-
-    if (!remarkText) {
-      addMessage(false, "Remark is required");
-      return;
-    }
-
-    if (!selectedPartnerId) {
-      addMessage(false, "Partner is required");
-      return;
-    }
-
-    if (!selectedPartnerHeaderUrl) {
-      addMessage(false, "The selected partner does not have a CV header");
-      return;
-    }
-
-    setRemarkOverride(remarkText);
-    setRemarkDateOverride(new Date().toISOString().slice(0, 10));
-    setShowRemarkModal(false);
-    setPendingGenerate(true);
-  };
-
-  useEffect(() => {
-    if (pendingGenerate) {
-      setPendingGenerate(false);
-      handleGenerateAndUpload();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pendingGenerate]);
-
   if (!worker) return null;
 
+  /* ---------------------------------------------------------------- */
+  /*  Field mapping (worker -> template fields)                       */
+  /* ---------------------------------------------------------------- */
   const ref = generateReferenceNumber(worker);
-  const post = worker.primary_positions?.[0] ?? "House Maid";
-  const salary = worker.monthly_salary ? `${worker.monthly_salary} SR` : "";
+  const category = worker.primary_positions?.[0] ?? "House Maid";
+  const salary = worker.monthly_salary ? `${worker.monthly_salary} S.R` : "";
   const contract =
     worker.contract_start_date && worker.contract_end_date
       ? subtractDate(worker.contract_end_date, worker.contract_start_date)
       : (worker.contract_period ?? "2 Years");
+  const code = worker.agency_code ?? worker.code ?? "";
+  const applicationDate =
+    safeDate(worker.application_date) || safeDate(worker.created_at);
+
   const phone = worker.phone_number ?? "";
   const name = (worker.full_name ?? "").toUpperCase();
   const nationality = worker.nationality ?? "";
   const religion = worker.religion ?? "";
   const dateOfBirth = safeDate(worker.date_of_birth);
   const placeOfBirth = (worker.place_of_birth ?? "").toUpperCase();
+  const livingTown = (worker.living_town ?? worker.address ?? "").toUpperCase();
   const age = worker.date_of_birth
     ? String(
         new Date().getFullYear() - new Date(worker.date_of_birth).getFullYear(),
       )
     : "";
-  const address = (worker.address ?? "").toUpperCase();
   const maritalStatus = worker.marital_status ?? "";
   const numberOfChildren = String(worker.number_of_children ?? "");
   const height = worker.height_cm ? `${worker.height_cm} cm` : "";
   const weight = worker.weight_kg ? `${worker.weight_kg} kg` : "";
-  const languages =
-    worker.languages
-      ?.map((language) => language.language ?? language.name)
-      .join(", ") ?? "";
+  const complexion = worker.complexion ?? "";
+  const nearestRelative = worker.nearest_relative ?? "";
+
   const education = (worker.education ?? "").toUpperCase();
-  const experiencePeriod = worker.experience?.length
-    ? worker.experience
-        .map((experience) =>
-          experience.years ? `${experience.years} yrs` : "",
-        )
-        .join(" / ")
-    : "";
-  const experienceCountry = worker.experience?.length
-    ? worker.experience
-        .map((experience) => experience.country ?? "")
-        .join(" / ")
-    : "";
+
   const passportNumber = worker.passport_number ?? "";
   const passportIssueDate = safeDate(worker.passport_issue_date);
   const passportIssuePlace = worker.passport_issuing_country ?? "";
   const passportExpiryDate = safeDate(worker.passport_expiry_date);
+
   const faceUrl = worker.photo_3x4_url ?? "";
   const bodyUrl = worker.photo_standing_url ?? "";
 
-  const remarks = remarkOverride ?? worker.remarks ?? "";
-  const remarkDate = remarkDateOverride ?? safeDate(worker.remarks_date);
+  const profileSummary = worker.profile_summary ?? worker.summary ?? "";
 
+  /* Page-2 contact strip: prefer the selected partner's own details,
+     fall back to the agency defaults shown in the sample template. */
+  const agencyEmail = selectedPartner?.email ?? AGENCY_CONTACT.email;
+  const agencyPhone =
+    selectedPartner?.phone ?? selectedPartner?.tel ?? AGENCY_CONTACT.phone;
+  const agencyAddress =
+    selectedPartner?.address_ar ??
+    selectedPartner?.address ??
+    AGENCY_CONTACT.addressAr;
+
+  /* Skills checklist - matches the template's tick list exactly.
+     HARD-CODED for now per your request: checked through "Arabic Cooking",
+     unchecked from "Sewing" onward. Swap back to the worker.skills lookup
+     (kept below, commented out) once skill data is wired up per worker. */
   const SKILL_DEFINITIONS = [
-    { en: "Cooking", ar: "الطبخ", key: "Cooking" },
-    { en: "Cleaning", ar: "التنظيف", key: "Cleaning" },
-    { en: "Washing", ar: "الغسيل", key: "Washing" },
-    { en: "Ironing", ar: "الكوي", key: "Ironing" },
-    { en: "Babysitting", ar: "مجا لسه الكفال", key: "Babysitting" },
-    { en: "Children Care", ar: "رعايه الطفال", key: "Children Care" },
-    { en: "Arabic Cooking", ar: "الطبخ العربي", key: "Arabic Cooking" },
-    { en: "Sewing", ar: "الخياطه", key: "Sewing" },
+    {
+      en: "Baby Sitting",
+      ar: "مجالسة الاطفال",
+      key: "Baby Sitting",
+      checked: true,
+    },
+    {
+      en: "Children Care",
+      ar: "رعاية الأطفال",
+      key: "Children Care",
+      checked: true,
+    },
+    { en: "Tutoring", ar: "دروس خصوصية", key: "Tutoring", checked: true },
+    {
+      en: "Disabled Care",
+      ar: "رعاية المعاقين",
+      key: "Disabled Care",
+      checked: true,
+    },
+    { en: "Cleaning", ar: "تنظيف", key: "Cleaning", checked: true },
+    { en: "Washing", ar: "غسل", key: "Washing", checked: true },
+    { en: "Ironing", ar: "كي الملابس", key: "Ironing", checked: true },
+    {
+      en: "Arabic Cooking",
+      ar: "الطبخ العربي",
+      key: "Arabic Cooking",
+      checked: true,
+    },
+    { en: "Sewing", ar: "خياطة", key: "Sewing", checked: false },
+    {
+      en: "Computers",
+      ar: "أجهزة الكمبيوتر",
+      key: "Computers",
+      checked: false,
+    },
+    { en: "Driving", ar: "القيادة", key: "Driving", checked: false },
+    { en: "Others", ar: "مهارات اخرى", key: "Others", checked: false },
   ];
 
-  const workerSkillNames =
-    worker.skills?.map((skill) =>
-      (skill.skill_name ?? skill.name ?? skill).toLowerCase(),
-    ) ?? [];
+  // const workerSkillNames =
+  //   worker.skills?.map((skill) =>
+  //     (skill.skill_name ?? skill.name ?? skill).toLowerCase(),
+  //   ) ?? [];
 
   const skills = SKILL_DEFINITIONS.map((skill) => ({
     en: skill.en,
     ar: skill.ar,
-    value: workerSkillNames.includes(skill.key.toLowerCase()) ? "YES" : "NO",
+    checked: skill.checked,
+    // checked: workerSkillNames.includes(skill.key.toLowerCase()), // <- switch to this later
   }));
+
+  /* Languages checklist */
+  const LANGUAGE_DEFINITIONS = [
+    { en: "English", ar: "الإنجليزية" },
+    { en: "Arabic", ar: "عربى" },
+  ];
+
+  const workerLanguageNames =
+    worker.languages?.map((language) =>
+      (language.language ?? language.name ?? language).toLowerCase(),
+    ) ?? [];
+
+  const languages = LANGUAGE_DEFINITIONS.map((language) => ({
+    en: language.en,
+    ar: language.ar,
+    checked: workerLanguageNames.includes(language.en.toLowerCase()),
+  }));
+
+  /* Previous employment - array of { country, years } */
+  const previousEmployment =
+    Array.isArray(worker.experience) && worker.experience.length
+      ? worker.experience
+      : [
+          { country: "", years: "" },
+          { country: "", years: "" },
+        ];
 
   const cvStyle = {
     width: 760,
     minWidth: 760,
     background: "#fff",
     fontFamily: FONT,
-    fontSize: 15,
     color: "#000",
     boxSizing: "border-box",
     border: "2px solid #000",
@@ -603,28 +808,22 @@ const CVThree = ({ templateSwitcher }) => {
       <div className="mb-3 mt-1">{templateSwitcher}</div>
 
       {/* Partner control remains outside cvRef, so it is not captured in the PDF. */}
-      <div
-        className="d-flex align-items-center gap-2 mb-2 flex-wrap"
-        style={{ width: "100%", maxWidth: "420px" }}
-      >
-        <label className="mb-0 fw-semibold" htmlFor="cv-three-partner">
-          Partner
-        </label>
-
+      <div className="mb-2">
         <select
           id="cv-three-partner"
-          className="form-control"
+          className="form-select form-select-sm d-inline-block w-auto"
           value={selectedPartnerId}
           onChange={handlePartnerChange}
           disabled={Number(profile?.role_id) === 3}
           style={{
-            flex: "1 1 260px",
-            width: "100%",
-            minWidth: 0,
-            maxWidth: "100%",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
+            borderRadius: 999,
+            fontWeight: 600,
+            fontSize: 13,
+            paddingTop: 4,
+            paddingBottom: 4,
+            paddingLeft: 14,
+            paddingRight: 30,
+            maxWidth: 220,
           }}
         >
           <option value="">Select Partner</option>
@@ -638,9 +837,9 @@ const CVThree = ({ templateSwitcher }) => {
       </div>
 
       <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-        {/* Page 1: CV */}
+        {/* Page 1: application, passport, personal data, skills, summary */}
         <div ref={cvRef} style={cvStyle}>
-          {/* Dynamic header from the selected partner */}
+          {/* Agency banner (Musaned / Al Esnad Almasi logo strip) */}
           {selectedPartnerHeaderUrl ? (
             <img
               src={selectedPartnerHeaderUrl}
@@ -652,23 +851,21 @@ const CVThree = ({ templateSwitcher }) => {
                 width: "100%",
                 height: "auto",
                 display: "block",
-                marginBottom: 8,
-                boxShadow: "0 0 12px 4px rgba(0,0,0,0.25)",
+                marginBottom: 6,
               }}
             />
           ) : (
             <div
               style={{
                 width: "100%",
-                height: 120,
-                marginBottom: 8,
+                height: 90,
+                marginBottom: 6,
                 border: "2px dashed #999",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#999",
-                fontSize: 13,
-                fontStyle: "italic",
+                fontSize: 12,
               }}
             >
               {selectedPartnerId
@@ -678,355 +875,168 @@ const CVThree = ({ templateSwitcher }) => {
           )}
 
           <div style={{ border: "2px solid #000" }}>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 220px",
-                borderBottom: "1px solid #000",
-              }}
-            >
-              <div style={css.tdGoldHeader}>
-                Application for Employment &nbsp;|&nbsp; طلب التوظيف
+            {/* APPLICATION FOR EMPLOYMENT title */}
+            <div style={css.titleBar}>APPLICATION FOR EMPLOYMENT</div>
+
+            {/* Headshot photo (left) + Application/Passport details (right) */}
+            <div style={{ display: "flex", borderBottom: "1px solid #000" }}>
+              <div style={{ flex: "0 0 260px", borderRight: "1px solid #000" }}>
+                <PhotoBox
+                  url={faceUrl}
+                  alt="Headshot"
+                  placeholderLabel="Photo"
+                />
               </div>
-              <div style={css.tdGoldHeader}>{name}</div>
+
+              <div
+                style={{ flex: 1, display: "flex", flexDirection: "column" }}
+              >
+                <Row3 label="Category" value={category} />
+                <Row3
+                  label="Monthly Salary"
+                  value={salary}
+                  arLabel="راتب شهري"
+                />
+                <Row3
+                  label="Contract Period"
+                  value={contract}
+                  arLabel="مدة العقد"
+                />
+                <Row3 label="CODE" value={code} />
+                <Row3 label="Date" value={applicationDate} last />
+
+                <SectionBar en="PASSPORT DETAILS" ar="تفاصيل جواز السفر" />
+                <Row3
+                  label="Number"
+                  value={passportNumber}
+                  arLabel="رقم الجواز"
+                  boldValue
+                />
+                <Row3
+                  label="Date of Issue"
+                  value={passportIssueDate}
+                  arLabel="تاريخ الجواز"
+                />
+                <Row3
+                  label="Date of Expiry"
+                  value={passportExpiryDate}
+                  arLabel="انتهاء الصلاحية"
+                />
+                <Row3
+                  label="Place of Issue"
+                  value={passportIssuePlace}
+                  arLabel="مكان صدوره"
+                  last
+                />
+              </div>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                alignItems: "stretch",
-                minHeight: 160,
-                borderBottom: "1px solid #000",
-              }}
-            >
+            {/* FULL NAME */}
+            <div style={css.fullNameRow}>
+              <div style={css.fullNameLabel}>FULL NAME</div>
+              <div style={css.fullNameValue}>{name}</div>
+              <div style={css.fullNameAr}>الاسم بالكامل</div>
+            </div>
+
+            {/* Personal data + skills + profile summary (left) / standing photo (right,
+                stretched to match the full combined height of the left column) */}
+            <div style={{ display: "flex" }}>
               <div
                 style={{
-                  flex: "1 1 auto",
+                  flex: 1,
                   display: "flex",
                   flexDirection: "column",
                   borderRight: "1px solid #000",
                 }}
               >
-                <Row3
-                  label="Reference No."
-                  value={ref}
-                  minHeight={40}
-                  arLabel="رقم المرجع"
-                  cols="150px 130px 1fr"
-                />
-                <Row3
-                  label="Post Applied For"
-                  value={post}
-                  minHeight={40}
-                  arLabel="وظيفة"
-                  cols="150px 130px 1fr"
-                />
-                <Row3
-                  label="Monthly Salary"
-                  value={salary}
-                  minHeight={40}
-                  arLabel="راتب شهري"
-                  cols="150px 130px 1fr"
-                />
-                <Row3
-                  label="Contract Period"
-                  value={contract}
-                  minHeight={40}
-                  arLabel="مدة العقد"
-                  last
-                  cols="150px 130px 1fr"
-                />
-              </div>
-
-              <div style={{ position: "relative", flex: "0 0 220px" }}>
-                {faceUrl ? (
-                  <img
-                    src={faceUrl}
-                    alt="Candidate"
-                    crossOrigin="anonymous"
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background: "#ddd",
-                    }}
-                  />
-                )}
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "180px 1fr",
-                marginBottom: "3px",
-              }}
-            >
-              <div
-                style={{
-                  padding: "4px 8px",
-                  fontWeight: "bold",
-                  fontSize: 12,
-                  borderRight: "1px solid #000",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                PHONE NO:
-                <span style={{ fontWeight: "normal", marginLeft: 4 }}>
-                  {phone}
-                </span>
-              </div>
-
-              <div
-                style={{
-                  padding: "4px 8px",
-                  background: GOLD,
-                  color: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 16,
-                }}
-              >
-                <div style={{ fontWeight: "bold", fontSize: 15 }}>{name}</div>
-                <div
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 12,
-                    fontStyle: "italic",
-                    direction: "rtl",
-                  }}
-                >
-                  اسم العامله :
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                borderBottom: "1px solid #000",
-              }}
-            >
-              <div style={{ borderRight: "2px solid #000" }}>
-                <GoldBar en="Details of Applicant" ar="بيانات الطلب" />
+                <SectionBar en="PERSONAL DATA" ar="البيانات الشخصية" />
                 <Row3
                   label="Nationality"
                   value={nationality}
-                  arLabel="الجنسيه"
+                  arLabel="الجنسية"
                 />
-                <Row3 label="Religion" value={religion} arLabel="الديانه" />
+                <Row3 label="Religion" value={religion} arLabel="الديانة" />
+                <Row3 label="Age" value={age} arLabel="السن" />
                 <Row3
                   label="Date of Birth"
                   value={dateOfBirth}
-                  arLabel="التاريخ"
+                  arLabel="تاريخ الميلاد"
                 />
                 <Row3
                   label="Place of Birth"
                   value={placeOfBirth}
-                  arLabel="مكان الولاده"
+                  arLabel="مكان الميلاد"
                 />
-                <Row3 label="Age" value={age} arLabel="العمر" />
-                <Row3 label="Address" value={address} arLabel="العنوان" />
+                <Row3
+                  label="Living Town"
+                  value={livingTown}
+                  arLabel="المدينة"
+                />
                 <Row3
                   label="Marital Status"
                   value={maritalStatus}
-                  arLabel="الحاله"
+                  arLabel="الحالة الاجتماعية"
                 />
                 <Row3
                   label="No. of Children"
                   value={numberOfChildren}
                   arLabel="عدد الاطفال"
                 />
-                <Row3 label="Height" value={height} arLabel="ارتفاع" />
-                <Row3 label="Weight" value={weight} arLabel="وزن" />
-
-                <GoldBar en="Languages & Education" ar="اللغه & التعليم" />
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "80px 130px 1fr",
-                    borderBottom: "1px solid #000",
-                  }}
-                >
-                  <div
-                    style={{
-                      padding: "2px 6px",
-                      fontWeight: "bold",
-                      fontStyle: "italic",
-                      fontSize: 11,
-                      borderRight: "1px solid #000",
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    Language of
-                    <br />
-                    worker
-                  </div>
-                  <div
-                    style={{
-                      padding: "2px 6px",
-                      fontWeight: "bold",
-                      fontStyle: "italic",
-                      fontSize: 11,
-                      borderRight: "1px solid #000",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    {languages}
-                  </div>
-                  <div
-                    style={{
-                      padding: "2px 6px",
-                      fontSize: 11,
-                      textAlign: "right",
-                      direction: "rtl",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    العاملة لغة
-                  </div>
-                </div>
-
+                <Row3 label="Weight" value={weight} arLabel="الوزن" />
+                <Row3 label="Height" value={height} arLabel="الارتفاع" />
                 <Row3
-                  label="Education"
-                  value={education}
-                  arLabel="المستوي التعليمي"
-                  boldValue
+                  label="Complexion"
+                  value={complexion}
+                  arLabel="لون البشرة"
+                />
+                <Row3
+                  label="Nearest relative"
+                  value={nearestRelative}
+                  arLabel="اسم قريب"
+                />
+                <Row3
+                  label="Mobile No"
+                  value={phone}
+                  arLabel="رقم الجوال"
+                  last
                 />
 
-                <GoldBar en="Work Experience" ar="خبره العمل" />
-                <Row3 label="Period" value={experiencePeriod} arLabel="المده" />
-                <Row3
-                  label="Country"
-                  value={experienceCountry}
-                  arLabel="البلد"
-                />
-
-                <GoldBar en="Skills & Experience" ar="الخبره & المهارات" />
+                <SectionBar en="SKILLS & EXPERIENCES" ar="المهارات والخبرات" />
                 {skills.map((skill, index) => (
-                  <SkillRow
+                  <CheckRow
                     key={skill.en}
                     en={skill.en}
-                    value={skill.value}
+                    checked={skill.checked}
                     ar={skill.ar}
                     last={index === skills.length - 1}
                   />
                 ))}
-              </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  position: "relative",
-                }}
-              >
-                <GoldBar en="Passport Detail" ar="تفاصيل جواز" />
-                <Row3
-                  label="Passport No."
-                  value={passportNumber}
-                  arLabel="رقيم الجواز"
-                  boldValue
-                  cols="100px 110px 1fr"
-                />
-                <Row3
-                  label="Issue Date"
-                  value={passportIssueDate}
-                  arLabel="تاريخ الإصدار"
-                  cols="100px 110px 1fr"
-                />
-                <Row3
-                  label="Place of Issue"
-                  value={passportIssuePlace}
-                  arLabel="مكان الاصدار"
-                  cols="100px 110px 1fr"
-                />
-                <Row3
-                  label="Expiry Date"
-                  value={passportExpiryDate}
-                  arLabel="تاريخ الانتهاء"
-                  cols="100px 110px 1fr"
-                />
-
-                <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
-                  {bodyUrl ? (
-                    <img
-                      src={bodyUrl}
-                      alt="full body"
-                      crossOrigin="anonymous"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        display: "block",
-                        border: "1px solid #999",
-                      }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        minHeight: 200,
-                        background: "#ddd",
-                        border: "1px solid #999",
-                      }}
-                    />
-                  )}
+                {/* PROFILE SUMMARY lives inside this same column, so the
+                    standing photo naturally stretches to its bottom edge.
+                    Title and text share one uninterrupted blue block, like
+                    the template, instead of a separate header bar. */}
+                <div style={css.summaryWrap}>
+                  <div style={css.summaryTitle}>
+                    <span>PROFILE SUMMARY</span>
+                    <span style={css.summaryTitleAr}>ملخص الملف</span>
+                  </div>
+                  <div style={css.summaryText}>{profileSummary || "—"}</div>
                 </div>
               </div>
-            </div>
 
-            <div
-              style={{
-                padding: "3px 10px",
-                display: "flex",
-                gap: 20,
-                alignItems: "center",
-              }}
-            >
-              <span
-                style={{
-                  fontWeight: "bold",
-                  fontStyle: "italic",
-                  fontSize: 11,
-                }}
-              >
-                Remarks
-              </span>
-              <span style={{ color: GOLD, fontWeight: "bold", fontSize: 12 }}>
-                {remarks}
-              </span>
-              <span style={{ color: GOLD, fontWeight: "bold", fontSize: 12 }}>
-                {remarkDate}
-              </span>
+              <div style={{ flex: "0 0 400px" }}>
+                <PhotoBox
+                  url={bodyUrl}
+                  alt="Full body"
+                  placeholderLabel="Photo"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Page 2: passport scan */}
+        {/* Page 2: previous employment, languages/education, passport scan */}
         <div
           ref={passportRef}
           style={{
@@ -1037,58 +1047,119 @@ const CVThree = ({ templateSwitcher }) => {
             fontFamily: FONT,
           }}
         >
-          <div
-            style={{
-              textAlign: "center",
-              fontSize: 11,
-              color: "#999",
-              marginBottom: 6,
-              fontStyle: "italic",
-            }}
-          >
-            — Page 2 —
+          {/* Agency contact strip - email / tel on the left, street address
+              (Arabic) on the right, as its own bordered box above the
+              Previous Employment table. */}
+          <div style={css.contactHeader}>
+            <div style={css.contactCellEn}>
+              EMAIL
+              <br />
+              {agencyEmail || "—"}
+              <br />
+              Tell
+              <br />
+              {agencyPhone || "—"}
+            </div>
+            <div style={css.contactCellAr}>
+              <div style={css.contactCellArBox}>{agencyAddress || "—"}</div>
+            </div>
           </div>
 
-          <div
-            style={{
-              background: "#fff",
-              border: "2px solid #000",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              padding: 12,
-            }}
-          >
-            {worker.passport_scan_url ? (
+          <div style={{ border: "2px solid #000" }}>
+            {/* PREVIOUS EMPLOYMENT / العمل السابق / COUNTRY WORKED BEFORE
+                is treated as ONE title block - no divider between the two
+                lines, matching the template. Both tables below use equal
+                thirds so their columns line up with each other. */}
+            <TitleStack
+              en="PREVIOUS EMPLOYMENT"
+              ar="العمل السابق"
+              sub="COUNTRY WORKED BEFORE"
+            />
+            {previousEmployment.map((entry, index) => (
               <div
+                key={`${entry.country}-${index}`}
                 style={{
-                  width: "100%",
-                  border: "1px solid #999",
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr",
+                  borderBottom: "1px solid #000",
+                  textAlign: "center",
+                  fontSize: 12,
                 }}
               >
-                <img
-                  src={worker.passport_scan_url}
-                  alt="Passport Scan"
-                  crossOrigin="anonymous"
+                <div
                   style={{
-                    width: "100%",
-                    height: "auto",
-                    display: "block",
+                    padding: "3px 6px",
+                    fontWeight: "bold",
+                    color: "#c0392b",
+                    borderRight: "1px solid #000",
                   }}
-                />
+                >
+                  {(entry.country ?? "").toUpperCase()}
+                </div>
+                <div
+                  style={{ padding: "3px 6px", borderRight: "1px solid #000" }}
+                >
+                  {entry.years ?? ""}
+                </div>
+                <div
+                  style={{
+                    padding: "3px 6px",
+                    fontWeight: "bold",
+                    color: "#c0392b",
+                  }}
+                >
+                  YEAR
+                </div>
               </div>
+            ))}
+
+            <SectionBar en="LANGUAGES & EDUCATION" ar="اللغات والتعليم" />
+            {languages.map((language, index) => (
+              <CheckRow
+                key={language.en}
+                en={language.en}
+                checked={language.checked}
+                ar={language.ar}
+                last={false}
+                cols="1fr 1fr 1fr"
+              />
+            ))}
+            <Row3
+              label="Education (Course)"
+              value={education}
+              arLabel="دورة تعليم"
+              boldValue
+              last
+              cols="1fr 1fr 1fr"
+            />
+          </div>
+
+          {/* Passport scan - its own bordered box, separate from the
+              Previous Employment / Languages table above it */}
+          <div style={{ border: "2px solid #000", padding: 10, marginTop: 12 }}>
+            {worker.passport_scan_url ? (
+              <img
+                src={worker.passport_scan_url}
+                alt="Passport Scan"
+                crossOrigin="anonymous"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  display: "block",
+                  border: "1px solid #999",
+                }}
+              />
             ) : (
               <div
                 style={{
                   width: "100%",
-                  height: 500,
+                  height: 300,
                   background: "#ddd",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 14,
+                  fontSize: 13,
                   color: "#999",
-                  fontStyle: "italic",
                 }}
               >
                 No passport scan available
@@ -1097,14 +1168,6 @@ const CVThree = ({ templateSwitcher }) => {
           </div>
         </div>
       </div>
-
-      <CreateModal
-        show={showRemarkModal}
-        onClose={() => setShowRemarkModal(false)}
-        onCreate={handleRemarkSubmit}
-        fields={[{ name: "remark", label: "Remark" }]}
-        title="Add Remark"
-      />
     </div>
   );
 };
