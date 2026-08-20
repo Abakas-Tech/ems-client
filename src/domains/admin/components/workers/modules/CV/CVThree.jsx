@@ -1025,7 +1025,7 @@ const CVThree = ({ templateSwitcher }) => {
                 </div>
               </div>
 
-              <div style={{ flex: "0 0 400px" }}>
+              <div style={{ flex: "0 0 330px" }}>
                 <PhotoBox
                   url={bodyUrl}
                   alt="Full body"
