@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
+import cvFooterLogo from "../../../../../../assets/img/cv/cv-footer.png";
 
 const safeDate = (date) => (date ? date.slice(0, 10) : "");
 
@@ -1025,7 +1026,7 @@ const CVThree = ({ templateSwitcher }) => {
                 </div>
               </div>
 
-              <div style={{ flex: "0 0 330px" }}>
+              <div style={{ flex: "0 0 400px" }}>
                 <PhotoBox
                   url={bodyUrl}
                   alt="Full body"
@@ -1165,6 +1166,57 @@ const CVThree = ({ templateSwitcher }) => {
                 No passport scan available
               </div>
             )}
+          </div>
+
+          {/* Spacer row between the passport scan and the footer logo.
+              It has no top/bottom border of its own - the passport box's
+              bottom border above and the footer box's top border below
+              serve as its top/bottom edges, so only the left/right sides
+              are drawn here. ~1.5cm tall, same width as the boxes above
+              and below so everything stays aligned. Holds the agency's
+              hard-coded contact email, centered. */}
+          <div
+            style={{
+              borderLeft: "2px solid #000",
+              borderRight: "2px solid #000",
+              height: "1.5cm",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <span
+              style={{
+                color: "#1a56db",
+                textDecoration: "underline",
+                fontWeight: "bold",
+                fontSize: 13,
+              }}
+            >
+              aletesalat.eth.agency@gmail.com
+            </span>
+          </div>
+
+          {/* CV footer - the agency's ALETESALAT logo strip, imported as a
+              static asset (not per-worker/per-partner data). Same border
+              treatment as the passport box above, sitting flush against
+              the spacer row. */}
+          <div
+            style={{
+              border: "2px solid #000",
+              padding: 10,
+              textAlign: "center",
+            }}
+          >
+            <img
+              src={cvFooterLogo}
+              alt="Agency footer"
+              style={{
+                maxWidth: "100%",
+                height: "auto",
+                display: "inline-block",
+              }}
+            />
           </div>
         </div>
       </div>
