@@ -1,5 +1,237 @@
-/* Only for Our Approach slider */
+/* AboutDetail.module.css */
 
+.page {
+  color: var(--color-text-primary);
+}
+
+/* ================= HERO ================= */
+.hero {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+  padding-bottom: 3.5rem;
+}
+
+.heroTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin-bottom: 0.6rem;
+}
+
+.heroKicker {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--brand);
+  font-weight: 600;
+  margin-bottom: 1.75rem;
+}
+
+.heroKicker span {
+  font-style: normal;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.heroLead {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-text-primary);
+  margin-bottom: 1rem;
+}
+
+.heroLead strong {
+  color: var(--brand-dark);
+}
+
+.heroText {
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+  margin-bottom: 2rem;
+}
+
+.tagline {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 30px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  /* color: var(--color-text-inverse); */
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+  box-shadow: var(--color-shadow-elevated);
+}
+
+.tagline span {
+  font-weight: 500;
+  font-size: 0.82rem;
+  opacity: 0.88;
+}
+
+/* ================= UNIFORM SECTION RHYTHM ================= */
+/* One gap value controls the spacing between every section on the
+   page, so nothing drifts out of alignment section to section. */
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.sectionHead {
+  margin-bottom: 1.75rem;
+}
+
+.sectionHeadCenter {
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--brand);
+  margin-bottom: 0.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin-bottom: 0.3rem;
+}
+
+.sectionSubtitle {
+  font-size: 0.94rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0;
+}
+
+/* Soft tinted panel used to visually separate content-dense grid
+   sections without adding hairlines or dead vertical space. */
+.panel {
+  padding: 2rem;
+  border-radius: var(--radius-default);
+  background: var(--color-surface-sidebar);
+  border: 1px solid var(--color-border-subtle);
+}
+
+/* ================= VISION / MISSION ================= */
+.pillarCard {
+  height: 100%;
+  padding: 32px 28px;
+  border-radius: var(--radius-default);
+  background: var(--color-surface-sidebar);
+  border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--color-shadow-elevated);
+  transition: var(--transition-default);
+}
+
+.pillarCard:hover {
+  transform: translateY(-4px);
+}
+
+.pillarIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--brand);
+  background: var(--brand-border, rgba(68, 132, 186, 0.12));
+  margin-bottom: 1rem;
+}
+
+.pillarLabel {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--brand);
+  margin-bottom: 0.6rem;
+}
+
+.pillarQuote {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  font-style: italic;
+  color: var(--color-text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.pillarAmharic {
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--color-border-subtle);
+}
+
+/* ================= CORE VALUES ================= */
+.valueCard {
+  height: 100%;
+  padding: 22px;
+  border-radius: var(--radius-default);
+  background: #ffffff;
+  border: 1px solid var(--color-border-subtle);
+  transition: var(--transition-default);
+}
+
+.valueCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--color-shadow-elevated);
+}
+
+.valueIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--brand);
+  background: var(--brand-border, rgba(68, 132, 186, 0.12));
+  margin-bottom: 0.9rem;
+}
+
+.valueTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.valueAmharic {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.valueDesc {
+  font-size: 0.87rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* ================= WHAT WE DO - SLIDER (client base, retheme) ================= */
 .scrollWrapper {
   overflow: hidden;
   position: relative;
@@ -7,20 +239,41 @@
   padding: 15px 0;
 }
 
+.scrollWrapper::before,
+.scrollWrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.scrollWrapper::before {
+  left: 0;
+  background: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0));
+}
+
+.scrollWrapper::after {
+  right: 0;
+  background: linear-gradient(to left, #ffffff, rgba(255, 255, 255, 0));
+}
+
 .scrollTrack {
   display: flex;
   gap: 1.5rem;
-  animation: scrollAnim 25s linear infinite;
+  animation: scrollAnim 30s linear infinite;
 }
 
 .featureCard {
   flex: 0 0 33.33%;
   max-width: 340px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
-  border: 1px solid #f1f1f1;
-  transition: all 0.3s ease;
+  background: var(--color-surface-sidebar);
+  border-radius: var(--radius-default);
+  box-shadow: var(--color-shadow-elevated);
+  border: 1px solid var(--color-border-subtle);
+  transition: var(--transition-default);
   min-height: 270px;
 }
 
@@ -30,9 +283,9 @@
 }
 
 .iconWrapper {
-  font-size: 2.8rem;
+  font-size: 2.4rem;
   margin-bottom: 1rem;
-  color: #0dcaf0;
+  color: var(--brand);
 }
 
 .scrollTrack:hover {
@@ -48,10 +301,207 @@
   }
 }
 
-/* Responsive */
+/* ================= WHY CHOOSE ================= */
+.whyItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  height: 100%;
+  padding: 16px;
+  border-radius: var(--radius-default);
+  background: #ffffff;
+  border: 1px solid var(--color-border-subtle);
+  transition: var(--transition-default);
+}
+
+.whyItem:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--color-shadow-elevated);
+}
+
+.whyIconWrap {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-border, rgba(68, 132, 186, 0.12));
+  flex-shrink: 0;
+}
+
+.whyIcon {
+  color: var(--brand);
+}
+
+.whyTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 3px;
+}
+
+.whyDesc {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* ================= COMMITMENT BANNER ================= */
+.commitmentBanner {
+  position: relative;
+  padding: 48px 44px;
+  border-radius: var(--radius-default);
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  color: var(--color-text-inverse);
+  text-align: center;
+  overflow: hidden;
+}
+
+.quoteIcon {
+  font-size: 1.6rem;
+  opacity: 0.5;
+  margin-bottom: 1rem;
+}
+
+.commitmentText {
+  max-width: 720px;
+  margin: 0 auto 1.75rem;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.commitmentTagline {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.commitmentTagline span {
+  font-size: 0.88rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+/* ================= OUR PROMISE ================= */
+.promiseCard {
+  position: relative;
+  height: 100%;
+  padding: 28px 24px;
+  border-radius: var(--radius-default);
+  background: var(--color-surface-sidebar);
+  border: 1px solid var(--color-border-subtle);
+  transition: var(--transition-default);
+}
+
+.promiseCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--color-shadow-elevated);
+}
+
+.promiseNumber {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--brand);
+  opacity: 0.55;
+  margin-bottom: 0.75rem;
+}
+
+.promiseTitle {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.promiseDesc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* ================= AT A GLANCE ================= */
+.glanceGrid {
+  border-radius: var(--radius-default);
+  border: 1px solid var(--color-border-subtle);
+  overflow: hidden;
+}
+
+.glanceRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  padding: 16px 22px;
+  background: #ffffff;
+}
+
+.glanceRow:nth-child(even) {
+  background: var(--color-surface-sidebar);
+}
+
+.glanceRow + .glanceRow {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.glanceLabel {
+  flex: 0 0 200px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.glanceValue {
+  flex: 1 1 300px;
+  font-size: 0.92rem;
+  color: var(--color-text-primary);
+}
+
+/* ================= OUR FUTURE ================= */
+.futureSection {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.futureText {
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.futureTagline {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--brand-dark);
+}
+
+.futureTagline span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+/* ================= RESPONSIVE ================= */
 @media (max-width: 1200px) {
   .featureCard {
     flex: 0 0 45%;
+  }
+}
+
+@media (max-width: 991px) {
+  .sections {
+    gap: 4rem;
   }
 }
 
@@ -59,10 +509,26 @@
   .featureCard {
     flex: 0 0 60%;
   }
+
+  .heroTitle {
+    font-size: 1.9rem;
+  }
+
+  .commitmentBanner {
+    padding: 32px 24px;
+  }
 }
 
 @media (max-width: 576px) {
   .featureCard {
-    flex: 0 0 80%;
+    flex: 0 0 82%;
+  }
+
+  .glanceLabel {
+    flex: 0 0 100%;
+  }
+
+  .sections {
+    gap: 3.25rem;
   }
 }

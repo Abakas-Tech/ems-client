@@ -1,264 +1,398 @@
-import { useEffect, useState } from "react";
 import {
-  FaUsers,
-  FaGlobe,
-  FaShieldAlt,
-  FaHandsHelping,
+  FaGlobeAfrica,
+  FaHandshake,
+  FaUserCheck,
+  FaFileSignature,
+  FaPlaneDeparture,
+  FaUsersCog,
   FaBalanceScale,
+  FaHeart,
+  FaBriefcase,
   FaAward,
-  FaPeopleArrows,
-  FaBrain,
+  FaStar,
   FaCheckCircle,
+  FaQuoteLeft,
+  FaCompass,
+  FaBullseye,
 } from "react-icons/fa";
 import styles from "./AboutDetail.module.css";
 
-const brandColor = "#4484BA";
-
-const publicFeatures = [
+/* --- What We Do (6 services) --- */
+const services = [
   {
-    icon: <FaUsers size={45} />,
-    title: "Accessible Opportunities",
-    desc: "We provide verified international job openings, making it easy for individuals to find suitable positions across multiple countries.",
+    icon: <FaGlobeAfrica />,
+    title: "Foreign Employment Recruitment",
+    desc: "We connect qualified Ethiopian workers with suitable employment opportunities in international markets.",
   },
   {
-    icon: <FaGlobe size={45} />,
-    title: "Global Reach",
-    desc: "Our network connects people with employers worldwide, creating opportunities beyond borders for career growth and experience.",
+    icon: <FaUsersCog />,
+    title: "Workforce Selection & Placement",
+    desc: "We identify, screen, assess, and place candidates according to employer requirements and applicable regulations.",
   },
   {
-    icon: <FaShieldAlt size={45} />,
-    title: "Transparent Process",
-    desc: "Every step is clear and honest. We make sure you know the requirements, timelines, and expectations before you proceed.",
+    icon: <FaHandshake />,
+    title: "Employer Recruitment Services",
+    desc: "We support international employers in sourcing suitable, qualified, and dependable workers.",
   },
   {
-    icon: <FaHandsHelping size={45} />,
-    title: "Guidance & Support",
-    desc: "From applications to preparation, we guide you through the process, helping you feel confident and ready at every stage.",
+    icon: <FaUserCheck />,
+    title: "Candidate Support",
+    desc: "We guide candidates throughout the recruitment and placement process and provide the necessary information and assistance.",
   },
   {
-    icon: <FaBalanceScale size={45} />,
-    title: "Fair Opportunities",
-    desc: "We ensure ethical and responsible recruitment practices, promoting equal chances for all candidates.",
+    icon: <FaFileSignature />,
+    title: "Documentation & Processing Support",
+    desc: "We assist with the necessary recruitment, employment, and travel documentation in accordance with applicable requirements.",
   },
   {
-    icon: <FaAward size={45} />,
-    title: "Trusted Service",
-    desc: "Reliability and transparency are at our core, giving you peace of mind as you take steps toward your international career.",
+    icon: <FaPlaneDeparture />,
+    title: "Pre-Departure Orientation",
+    desc: "We help selected workers understand their employment conditions, responsibilities, rights, and expectations before departure.",
   },
 ];
 
-const Counter = ({ target, label }) => {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    let start = 0;
-    const duration = 2000;
-    const increment = target / (duration / 20);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 20);
-    return () => clearInterval(timer);
-  }, [target]);
+/* --- Core Values (6) --- */
+const coreValues = [
+  {
+    icon: <FaBalanceScale />,
+    title: "Integrity",
+    amharic: "ታማኝነት",
+    desc: "We conduct our business with honesty, fairness, accountability, and respect.",
+  },
+  {
+    icon: <FaHandshake />,
+    title: "Trust",
+    amharic: "እምነት",
+    desc: "We build lasting relationships through transparency, reliability, and responsible service.",
+  },
+  {
+    icon: <FaHeart />,
+    title: "People First",
+    amharic: "ሰው ቅድሚያ",
+    desc: "We put the dignity, safety, rights, and interests of people at the heart of our work.",
+  },
+  {
+    icon: <FaBriefcase />,
+    title: "Professionalism",
+    amharic: "ሙያዊነት",
+    desc: "We deliver our services with competence, efficiency, discipline, and professionalism.",
+  },
+  {
+    icon: <FaStar />,
+    title: "Opportunity",
+    amharic: "የዕድል ፈጠራ",
+    desc: "We connect people with opportunities that can improve their livelihoods and future.",
+  },
+  {
+    icon: <FaAward />,
+    title: "Excellence",
+    amharic: "የላቀ አገልግሎት",
+    desc: "We continuously improve our services to achieve the highest standards of quality and client satisfaction.",
+  },
+];
 
+/* --- Why Choose ALETISALAT (6) --- */
+const whyChoose = [
+  {
+    title: "Trusted",
+    desc: "We value honesty, transparency, and long-term relationships.",
+  },
+  {
+    title: "Professional",
+    desc: "We provide organized and professional recruitment and placement services.",
+  },
+  {
+    title: "People-Centered",
+    desc: "We respect the dignity, rights, safety, and interests of workers.",
+  },
+  {
+    title: "Employer-Focused",
+    desc: "We help employers find suitable and dependable human resources.",
+  },
+  {
+    title: "Opportunity-Driven",
+    desc: "We work to open new pathways for Ethiopian workers in the international employment market.",
+  },
+  {
+    title: "Responsible",
+    desc: "We are committed to responsible recruitment and compliance with applicable laws and regulations.",
+  },
+];
+
+/* --- Our Promise (3) --- */
+const promises = [
+  {
+    title: "To Workers",
+    desc: "We strive to connect you with legitimate opportunities and provide professional guidance throughout your employment journey.",
+  },
+  {
+    title: "To Employers",
+    desc: "We strive to provide qualified, reliable, and suitable human resources according to your requirements.",
+  },
+  {
+    title: "To Our Partners",
+    desc: "We build relationships based on trust, professionalism, transparency, and mutual success.",
+  },
+];
+
+/* --- ALETISALAT at a Glance --- */
+const glance = [
+  {
+    label: "Company Name",
+    value: "ALETISALAT Private Foreign Employment Agency",
+  },
+  { label: "Industry", value: "Foreign Employment & Workforce Recruitment" },
+  {
+    label: "Core Service",
+    value: "International Recruitment & Employment Placement",
+  },
+  {
+    label: "Primary Market",
+    value: "Ethiopian Workforce & International Employers",
+  },
+  {
+    label: "Core Values",
+    value:
+      "Integrity • Trust • People First • Professionalism • Opportunity • Excellence",
+  },
+];
+
+/* Small reusable heading block used above every section */
+function SectionHeading({ eyebrow, title, subtitle, center }) {
   return (
-    <div className="text-center">
-      <h2 className=" fw-bold" style={{ color: brandColor }}>
-        {count}+
-      </h2>
-      <p className="mb-0">{label}</p>
+    <div
+      className={`${styles.sectionHead} ${center ? styles.sectionHeadCenter : ""}`}
+    >
+      {eyebrow && <span className={styles.eyebrow}>{eyebrow}</span>}
+      <h3 className={styles.sectionTitle}>{title}</h3>
+      {subtitle && <p className={styles.sectionSubtitle}>{subtitle}</p>}
     </div>
   );
-};
+}
 
 export default function AboutDetail() {
-  useEffect(() => {
-    window.dispatchEvent(new Event("resize"));
-  }, []);
-
   return (
-    <div className="container mt-5 py-4">
-      {/* HERO */}
-      <div className="mb-5">
-        <h2 className="fw-bold  mb-3" style={{ color: brandColor }}>
-          About Us
-        </h2>
+    <div className={styles.page}>
+      <div className="container py-5">
+        {/* HERO */}
+        <div className={styles.hero}>
+          <h2 className={styles.heroTitle}>About ALETISALAT</h2>
+          <p className={styles.heroKicker}>
+            Striving for a Better Future for Others.
+            <span>ለሌሎች የተሻለ ወደፊት እንጥራለን።</span>
+          </p>
 
-        <p className="mb-4">
-          We open doors to international employment opportunities by connecting
-          Ethiopian employees with trusted and verified employers across the
-          Middle East and other global destinations. As a licensed overseas
-          employment agency, our mission is to make every step of the
-          journey—from application to deployment—simple, transparent, and
-          accessible, so each candidate can confidently plan and pursue a career
-          abroad.
-        </p>
-        <p className="mb-4">
-          Whether you are entering the workforce for the first time or seeking
-          better opportunities overseas, we provide end-to-end support tailored
-          to your needs. From document preparation and job matching to visa
-          processing, contract verification, and pre-departure guidance, our
-          experienced team ensures that you are well-prepared and informed at
-          every stage of the process.
-        </p>
-        <p className="mb-4">
-          We are committed to transparency, accuracy, and employees protection. By
-          providing clear information, regular updates, and practical guidance,
-          we help reduce uncertainty and build trust throughout the journey. Our
-          goal is to ensure that every candidate travels safely, understands
-          their rights, and reaches their employer with confidence and peace of
-          mind.
-        </p>
-      </div>
+          <p className={styles.heroLead}>
+            <strong>ALETISALAT Private Foreign Employment Agency</strong> is a
+            professional foreign employment and workforce placement agency
+            committed to connecting qualified Ethiopian workers with legitimate
+            employment opportunities abroad.
+          </p>
 
-      {/* Our Reach */}
-      <div className="mb-5 pt-4 border-top">
-        <h3 className=" mb-4" style={{ color: brandColor }}>
-          Our Reach
-        </h3>
+          <p className={styles.heroText}>
+            We believe that employment is more than simply finding a job. It is
+            about creating opportunities that improve lives, strengthen
+            families, develop skills, and contribute to a better future. Our
+            agency works to build a trusted bridge between Ethiopian job seekers
+            and international employers by providing responsible, transparent,
+            professional, and efficient recruitment services.
+          </p>
 
-        <div className="row g-4">
-          <div className="col-md-3 col-6">
-            <Counter target={15} label="Years of Service" />
-          </div>
-          <div className="col-md-3 col-6">
-            <Counter target={2000} label="People Supported" />
-          </div>
-          <div className="col-md-3 col-6">
-            <Counter target={3} label="Countries Covered" />
-          </div>
-          <div className="col-md-3 col-6">
-            <Counter target={100} label="Transparency %" />
+          <div className={styles.tagline}>
+            "Connecting People. Creating Opportunities. Building Better
+            Futures."
+            <span>"ሰዎችን እናገናኛለን። ዕድሎችን እንፈጥራለን። የተሻለ ወደፊት እንገነባለን።"</span>
           </div>
         </div>
-      </div>
 
-      {/* What We Offer */}
-      <div className="mb-5 pt-4">
-        <h3 className=" mb-4" style={{ color: brandColor }}>
-          What We Offer
-        </h3>
-
-        <div className="row g-3">
-          {[
-            "Access to verified international job opportunities",
-            "Clear explanation of requirements and application steps",
-            "Guidance to help you prepare for working abroad",
-            "Reliable updates and communication",
-            "Support throughout your journey",
-            "Simple and transparent process visibility",
-          ].map((text, idx) => (
-            <div className="col-12 col-md-6 d-flex align-items-start" key={idx}>
-              <FaCheckCircle
-                className=" me-2 mt-1"
-                size={20}
-                style={{ color: brandColor }}
-              />
-              <p className="mb-0">{text}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Our Approach - Slider */}
-      <div className="mb-5 pt-4 border-top">
-        <h3 className="mb-4" style={{ color: brandColor }}>
-          Our Approach
-        </h3>
-        <div className={styles.scrollWrapper}>
-          <div className={styles.scrollTrack}>
-            {[...publicFeatures, ...publicFeatures].map((feature, index) => (
-              <div className={styles.featureCard} key={index}>
-                <div className="text-center p-4">
-                  <div
-                    className={styles.iconWrapper}
-                    style={{ color: brandColor }}
-                  >
-                    {feature.icon}
+        <div className={styles.sections}>
+          {/* VISION & MISSION */}
+          <div>
+            <SectionHeading eyebrow="Who We Are" title="Vision & Mission" />
+            <div className="row g-4 mt-1">
+              <div className="col-md-6">
+                <div className={styles.pillarCard}>
+                  <div className={styles.pillarIcon}>
+                    <FaCompass />
                   </div>
-                  <h6 className="fw-bold mb-3">{feature.title}</h6>
-                  <p className="small mb-0">{feature.desc}</p>
+                  <span className={styles.pillarLabel}>Our Vision</span>
+                  <p className={styles.pillarQuote}>
+                    "We strive to create a better future for others by
+                    connecting people with meaningful opportunities."
+                  </p>
+                  <p className={styles.pillarAmharic}>
+                    "ሰዎችን ከትርጉም ያለው የሥራ ዕድል በማገናኘት ለሌሎች የተሻለ ወደፊት ለመፍጠር እንጥራለን።"
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
-      {/* Our Values */}
-      <div className="mb-5 pt-4 border-top">
-        <h3 className=" mb-4" style={{ color: brandColor }}>
-          Our Values
-        </h3>
-
-        <div className="row g-4">
-          {[
-            {
-              icon: <FaPeopleArrows size={40} />,
-              title: "Accessibility",
-              desc: "We make opportunities easy to understand, ensuring everyone can access the information they need.",
-            },
-            {
-              icon: <FaBalanceScale size={40} />,
-              title: "Fairness",
-              desc: "Equal and ethical opportunities for all, promoting trust and responsibility in every process.",
-            },
-            {
-              icon: <FaBrain size={40} />,
-              title: "Clarity",
-              desc: "Providing clear, simple, and accurate information to guide decisions effectively.",
-            },
-            {
-              icon: <FaAward size={40} />,
-              title: "Trust",
-              desc: "Building confidence through honesty, transparency, and consistent support.",
-            },
-          ].map((item, idx) => (
-            <div className="col-md-6" key={idx}>
-              <div className="d-flex">
-                <div className=" me-3" style={{ color: brandColor }}>
-                  {item.icon}
-                </div>
-                <div>
-                  <h6 className="fw-bold">{item.title}</h6>
-                  <p className="small">{item.desc}</p>
+              <div className="col-md-6">
+                <div className={styles.pillarCard}>
+                  <div className={styles.pillarIcon}>
+                    <FaBullseye />
+                  </div>
+                  <span className={styles.pillarLabel}>Our Mission</span>
+                  <p className={styles.pillarQuote}>
+                    Our mission is to provide ethical, transparent, reliable,
+                    and professional foreign employment services by connecting
+                    qualified workers with legitimate international employment
+                    opportunities while creating value for workers, employers,
+                    families, and communities.
+                  </p>
+                  <p className={styles.pillarAmharic}>
+                    ብቁ የሆኑ ሰራተኞችን ከህጋዊና ተገቢ የውጭ ሀገር የሥራ ዕድሎች ጋር በማገናኘት፣ ለሰራተኞች፣
+                    ለአሰሪዎች፣ ለቤተሰቦች እና ለማህበረሰቡ ዋጋ የሚፈጥር ሥነ-ምግባራዊ፣ ግልጽ፣ አስተማማኝና
+                    ፕሮፌሽናል የውጭ ሥራ ማገናኛ አገልግሎት መስጠት ተልዕኮአችን ነው።
+                  </p>
                 </div>
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* CORE VALUES */}
+          <div>
+            <SectionHeading
+              eyebrow="What We Stand For"
+              title="Our Core Values"
+              subtitle="The principles that guide every placement we make."
+            />
+            <div className={styles.panel}>
+              <div className="row g-4">
+                {coreValues.map((item, idx) => (
+                  <div className="col-md-4 col-sm-6" key={idx}>
+                    <div className={styles.valueCard}>
+                      <div className={styles.valueIcon}>{item.icon}</div>
+                      <h6 className={styles.valueTitle}>
+                        {item.title}
+                        <span className={styles.valueAmharic}>
+                          {item.amharic}
+                        </span>
+                      </h6>
+                      <p className={styles.valueDesc}>{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* WHAT WE DO - SLIDER */}
+          <div>
+            <SectionHeading
+              eyebrow="Our Services"
+              title="What We Do"
+              subtitle="End-to-end recruitment services for workers and employers alike."
+            />
+            <div className={styles.scrollWrapper}>
+              <div className={styles.scrollTrack}>
+                {[...services, ...services].map((service, index) => (
+                  <div className={styles.featureCard} key={index}>
+                    <div className="text-center p-4">
+                      <div className={styles.iconWrapper}>{service.icon}</div>
+                      <h6 className="fw-bold mb-3">{service.title}</h6>
+                      <p className="small mb-0">{service.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* WHY CHOOSE ALETISALAT */}
+          <div>
+            <SectionHeading eyebrow="Why Us" title="Why Choose ALETISALAT?" />
+            <div className={styles.panel}>
+              <div className="row g-3">
+                {whyChoose.map((item, idx) => (
+                  <div className="col-12 col-md-6" key={idx}>
+                    <div className={styles.whyItem}>
+                      <span className={styles.whyIconWrap}>
+                        <FaCheckCircle className={styles.whyIcon} size={16} />
+                      </span>
+                      <div>
+                        <h6 className={styles.whyTitle}>{item.title}</h6>
+                        <p className={styles.whyDesc}>{item.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* OUR COMMITMENT - BANNER */}
+          {/* <div>
+            <div className={styles.commitmentBanner}>
+              <FaQuoteLeft className={styles.quoteIcon} />
+              <p className={styles.commitmentText}>
+                At ALETISALAT, we are committed to building a foreign employment
+                service that is based on trust, transparency, dignity,
+                professionalism, and opportunity. We aim not only to connect
+                workers with employers, but also to create responsible and
+                sustainable employment pathways that can positively impact
+                individuals, families, and communities.
+              </p>
+              <div className={styles.commitmentTagline}>
+                We connect people today to build better futures tomorrow.
+                <span>ዛሬ ሰዎችን እናገናኛለን፤ ነገ የተሻለ ወደፊት እንገነባለን።</span>
+              </div>
+            </div>
+          </div> */}
+
+          {/* OUR PROMISE */}
+          <div>
+            <SectionHeading
+              eyebrow="Our Commitment To You"
+              title="Our Promise"
+            />
+            <div className="row g-4 mt-1">
+              {promises.map((item, idx) => (
+                <div className="col-md-4" key={idx}>
+                  <div className={styles.promiseCard}>
+                    <span className={styles.promiseNumber}>0{idx + 1}</span>
+                    <h6 className={styles.promiseTitle}>{item.title}</h6>
+                    <p className={styles.promiseDesc}>{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* AT A GLANCE */}
+          <div>
+            <SectionHeading
+              eyebrow="Quick Facts"
+              title="ALETISALAT at a Glance"
+            />
+            <div className={styles.glanceGrid}>
+              {glance.map((item, idx) => (
+                <div className={styles.glanceRow} key={idx}>
+                  <span className={styles.glanceLabel}>{item.label}</span>
+                  <span className={styles.glanceValue}>{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* OUR FUTURE */}
+          <div className={styles.futureSection}>
+            <SectionHeading eyebrow="Looking Ahead" title="Our Future" center />
+            <p className={styles.futureText}>
+              ALETISALAT aspires to become a trusted and recognized foreign
+              employment agency known for responsible recruitment, professional
+              service, strong international partnerships, and positive impact on
+              the lives of workers and their families. We envision a future
+              where Ethiopian workers can access legitimate international
+              employment opportunities through a trusted, transparent, and
+              professional pathway.
+            </p>
+            <div className={styles.futureTagline}>
+              ALETISALAT — Connecting People. Creating Opportunities. Building
+              Better Futures.
+              <span>ሰዎችን እናገናኛለን። ዕድሎችን እንፈጥራለን። የተሻለ ወደፊት እንገነባለን።</span>
+            </div>
+          </div>
         </div>
-      </div>
-
-      {/* Our Impact */}
-      <div className="pt-4 border-top">
-        <h3 className=" mb-3" style={{ color: brandColor }}>
-          Our Impact
-        </h3>
-
-        <p className="mb-4">
-          We play a vital role in creating life-changing opportunities by
-          connecting Ethiopian employees with secure and verified employment
-          abroad. Through our structured and transparent processes, we help
-          individuals move from local job limitations to stable international
-          careers, improving their income, experience, and quality of life.
-        </p>
-        <p className="mb-4">
-          Beyond job placement, we ensure every candidate clearly understands
-          each step of the journey—from documentation and visa processing to
-          contract signing and final deployment. Our continuous support reduces
-          confusion, prevents exploitation, and builds trust, making overseas
-          employment safer and more reliable.
-        </p>
-        <p className="mb-4">
-          By providing accurate information, timely updates, and hands-on
-          guidance, we minimize delays and uncertainties in the process. Our
-          impact is measured not only by successful deployments, but by the
-          confidence, safety, and long-term success of the employees we serve.
-        </p>
       </div>
     </div>
   );

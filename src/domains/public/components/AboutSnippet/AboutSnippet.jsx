@@ -1,10 +1,3 @@
-import {
-  FaArrowRight,
-  FaCheckCircle,
-  FaGlobeAfrica,
-  FaPassport,
-  FaUserShield,
-} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import about from "../../../../assets/img/logo/aletisalat-about.png";
 
@@ -17,28 +10,10 @@ function AboutSnippet() {
     navigate("/about-detail");
   };
 
-  const stats = [
-    {
-      icon: <FaGlobeAfrica />,
-      value: "10+",
-      label: "Countries",
-    },
-    {
-      icon: <FaPassport />,
-      value: "5K+",
-      label: "Deployments",
-    },
-    {
-      icon: <FaUserShield />,
-      value: "100%",
-      label: "Verified Process",
-    },
-  ];
-
   return (
     <section id="about" className={styles.aboutSection}>
       <div className="container position-relative">
-        <div className="row align-items-center">
+        <div className={`row align-items-stretch ${styles.aboutRow}`}>
           {/* IMAGE SIDE */}
           <div className="col-lg-6">
             <div className={styles.imageWrapper}>
@@ -59,45 +34,42 @@ function AboutSnippet() {
 
           {/* CONTENT SIDE */}
           <div className="col-lg-6">
-            <div className={styles.tag}>ABOUT ALETISALAT</div>
+            <div className={styles.contentInner}>
+              <div className={styles.tag}>ABOUT ALETISALAT</div>
+              <p className={styles.description}>
+                <strong>ALETISALAT Private Foreign Employment Agency</strong> is
+                a professional foreign employment and workforce placement agency
+                committed to connecting qualified Ethiopian workers with
+                legitimate employment opportunities abroad.
+              </p>
+              <p className={styles.description}>
+                We believe that employment is more than simply finding a job. It
+                is about creating opportunities that improve lives, strengthen
+                families, develop skills, and contribute to a better future.
+              </p>
 
-            <p className={styles.description}>
-              <strong>ALETISALAT Private Foreign Employment Agency</strong> is a
-              professional foreign employment and workforce placement agency
-              committed to connecting qualified Ethiopian workers with
-              legitimate employment opportunities abroad.
-            </p>
+              <p className={styles.description}>
+                Our agency works to build a trusted bridge between Ethiopian job
+                seekers and international employers by providing responsible,
+                transparent, professional, and efficient recruitment services.
+              </p>
 
-            <p className={styles.description}>
-              We build a trusted bridge between Ethiopian job seekers and
-              international employers by providing responsible, transparent,
-              professional, and efficient recruitment services — protecting the
-              dignity and interests of workers while helping employers access
-              reliable, qualified human resources.
-            </p>
+              <p className={styles.description}>
+                At <strong>ALETISALAT</strong>, we are committed to protecting
+                the dignity and interests of workers while helping employers
+                access reliable, qualified, and motivated human resources.
+              </p>
 
-            {/* STATS */}
-            <div className="row g-3 mb-3">
-              {stats.map((item, idx) => (
-                <div className="col-sm-4" key={idx}>
-                  <div className={styles.statCard}>
-                    <div className={styles.statIcon}>{item.icon}</div>
-
-                    <h3>{item.value}</h3>
-                    <p>{item.label}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* BUTTONS */}
-            <div className="m-0">
-              <button
-                className={`btn ${styles.primaryBtn}`}
-                onClick={goToAboutDetail}
-              >
-                Learn More
-              </button>
+              {/* BUTTON */}
+              <div className={styles.btnWrapper}>
+                <button
+                  onClick={goToAboutDetail}
+                  className="btn text-white d-flex fw-bold"
+                  style={{ background: "rgb(16, 84, 145)" }}
+                >
+                  Learn More
+                </button>
+              </div>
             </div>
           </div>
         </div>
