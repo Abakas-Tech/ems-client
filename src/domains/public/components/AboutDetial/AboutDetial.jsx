@@ -11,7 +11,6 @@ import {
   FaAward,
   FaStar,
   FaCheckCircle,
-  FaQuoteLeft,
   FaCompass,
   FaBullseye,
 } from "react-icons/fa";
@@ -319,25 +318,6 @@ export default function AboutDetail() {
               </div>
             </div>
           </div>
-
-          {/* OUR COMMITMENT - BANNER */}
-          {/* <div>
-            <div className={styles.commitmentBanner}>
-              <FaQuoteLeft className={styles.quoteIcon} />
-              <p className={styles.commitmentText}>
-                At ALETISALAT, we are committed to building a foreign employment
-                service that is based on trust, transparency, dignity,
-                professionalism, and opportunity. We aim not only to connect
-                workers with employers, but also to create responsible and
-                sustainable employment pathways that can positively impact
-                individuals, families, and communities.
-              </p>
-              <div className={styles.commitmentTagline}>
-                We connect people today to build better futures tomorrow.
-                <span>ዛሬ ሰዎችን እናገናኛለን፤ ነገ የተሻለ ወደፊት እንገነባለን።</span>
-              </div>
-            </div>
-          </div> */}
 
           {/* OUR PROMISE */}
           <div>
