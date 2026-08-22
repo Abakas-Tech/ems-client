@@ -8,7 +8,7 @@ import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import File from "../domains/admin/pages/FileManager/FileManager.jsx";
 import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePassword.jsx";
-import WorkerProfile from "../domains/admin/pages/workers/WorkerProfile/WorkerProfile.jsx";
+// import WorkerProfile from "../domains/admin/pages/workers/WorkerProfile/WorkerProfile.jsx";
 
 function PartnerRoutes() {
   return (

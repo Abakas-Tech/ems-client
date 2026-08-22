@@ -244,10 +244,9 @@ const ActiveWorkers = () => {
           state: workerProfile,
         });
       } else {
-        // Admin / Employee
-        navigate(`/admin/employees/active/${id}`, {
-          state: workerProfile,
-        });
+   navigate(`/admin/employees/edit/${id}`, {
+     state: { ...workerProfile, openInPreview: true },
+   });
       }
     } catch (err) {
       console.error("Failed to fetch worker profile:", err);
@@ -620,11 +619,6 @@ const ActiveWorkers = () => {
             {
               type: "delete",
               onClick: (row) => handleDelete(row.id),
-            },
-            {
-              type: "addModule",
-              onClick: (row) =>
-                navigate(`/admin/employees/modules/${row.id}/add`),
             },
           ]}
           emptyState={{

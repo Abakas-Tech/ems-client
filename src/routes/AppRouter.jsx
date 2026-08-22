@@ -8,7 +8,7 @@ import AdminRoutes from "./AdminRoutes.jsx";
 import AuthRoutes from "./AuthRoutes.jsx";
 import WorkerRoutes from "./WorkerRoutes.jsx";
 import PartnerRoutes from "./PartnerRoutes.jsx";
-import EmployerRoutes from "./EmployerRoutes.jsx";
+// import EmployerRoutes from "./EmployerRoutes.jsx";
 
 
 function AppRouter() {
@@ -27,7 +27,7 @@ function AppRouter() {
         <Route path="/admin/*" element={<AdminRoutes />} />
         <Route path="/employee/*" element={<WorkerRoutes />} />
         <Route path="/partner/*" element={<PartnerRoutes />} />
-        <Route path="/employer/*" element={<EmployerRoutes />} />
+        {/* <Route path="/employer/*" element={<EmployerRoutes />} /> */}
 
         {/* 404 - Always Last */}
         <Route path="*" element={<NotFound />} />
