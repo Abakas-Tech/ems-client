@@ -1949,14 +1949,17 @@ function WorkerForm() {
     );
   };
 
-  // The single primary action button — reused for the fixed desktop tree
-  // and the mobile top nav. Label/behavior only depends on mode + loading
-  // state, matching the existing Create User Form button styling exactly
+  // The single primary action button — reused for the fixed desktop tree,
+  // the mobile top nav, and (compact) the Preview header once the tree is
+  // hidden there. Label/behavior only depends on mode + loading state,
+  // matching the existing Create User Form button styling exactly
   // (`btn btn-main px-4 rounded`).
-  const renderActionButton = (extraClassName = "") => (
+  const renderActionButton = (compact = false) => (
     <button
       type="button"
-      className={`btn btn-main px-4 rounded w-100 ${extraClassName}`}
+      className={`btn btn-main rounded ${
+        compact ? "btn-sm px-3" : "px-4 w-100"
+      }`}
       onClick={handleSubmit}
       disabled={submitLoading}
     >
@@ -2517,75 +2520,64 @@ function WorkerForm() {
 
       {/* mobile / small-screen section nav: horizontal connected tree at top,
           plus the primary action button right below it so it stays
-          reachable once the tree moves to the top of the page. Shared
-          identically between Form Mode and Preview Mode, and between
-          Create and Edit. */}
-      <div className="d-lg-none mb-3">
-        <div className="tree-nav-mobile-wrap shadow-sm rounded-4 bg-white">
-          <div className="tree-nav-mobile">
-            {navItems.map((s, idx) => renderNavItem(s, true, idx))}
-          </div>
-          <div className="tree-nav-mobile-action-wrap">
-            {renderActionButton()}
+          reachable once the tree moves to the top of the page. Hidden while
+          reviewing the Preview — the Preview card carries its own action
+          button instead. Shared identically between Create and Edit. */}
+      {!previewMode && (
+        <div className="d-lg-none mb-3">
+          <div className="tree-nav-mobile-wrap shadow-sm rounded-4 bg-white">
+            <div className="tree-nav-mobile">
+              {navItems.map((s, idx) => renderNavItem(s, true, idx))}
+            </div>
+            <div className="tree-nav-mobile-action-wrap">
+              {renderActionButton()}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="row">
         {/* main content column — swaps between the editable modules and the
-            Worker-Profile-style preview; the tree stays mounted either way */}
-        <div className="col-12 col-lg-9 order-2 order-lg-1">
+            Worker-Profile-style preview; takes the full width once the tree
+            is hidden for Preview. */}
+        <div
+          className={
+            previewMode ? "col-12" : "col-12 col-lg-9 order-2 order-lg-1"
+          }
+        >
           {!previewMode ? (
             <>{SECTIONS.map((s) => renderSectionCard(s))}</>
           ) : (
             <div className="card border-0 shadow-sm rounded-4 mb-4">
               <div className="card-header bg-white border-0 rounded-4 pt-3 pb-0 d-flex justify-content-between align-items-start">
-                <div>
-                  <h5 className="fw-bold text-dark mb-1">Worker Preview</h5>
-                  <p className="text-muted small mb-0">
-                    Review the worker profile below before{" "}
-                    {isEditMode ? "saving changes" : "creating this worker"}.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary btn-sm"
-                  onClick={() => setPreviewMode(false)}
-                >
-                  Back to Form
-                </button>
               </div>
               <div className="card-body pt-2">{renderPreview()}</div>
             </div>
           )}
         </div>
 
-        {/* desktop / large-screen section nav: vertical connected tree, fixed
-            in place on the right so it stays visible without ever scrolling
-            on its own, with the primary action button anchored at the
-            bottom of the same fixed panel; this spacer column reserves the
-            layout space while the panel itself is positioned via fixed
-            coordinates below. This single tree is shared by Form Mode and
-            Preview Mode, and by Create and Edit. */}
-        <div
-          className="col-lg-3 order-1 order-lg-2 d-none d-lg-block"
-          ref={treeNavSpacerRef}
-        >
+  
+        {!previewMode && (
           <div
-            className="tree-nav-fixed"
-            style={{
-              top: "100px",
-              left: treeNavRect.left,
-              width: treeNavRect.width,
-            }}
+            className="col-lg-3 order-1 order-lg-2 d-none d-lg-block"
+            ref={treeNavSpacerRef}
           >
-            <div className="tree-nav-title">Worker Sections</div>
-            <ul className="tree-nav-list list-unstyled mb-0">
-              {navItems.map((s, idx) => renderNavItem(s, false, idx))}
-            </ul>
-            <div className="tree-nav-action-wrap">{renderActionButton()}</div>
+            <div
+              className="tree-nav-fixed"
+              style={{
+                top: "100px",
+                left: treeNavRect.left,
+                width: treeNavRect.width,
+              }}
+            >
+              <div className="tree-nav-title">Worker Sections</div>
+              <ul className="tree-nav-list list-unstyled mb-0">
+                {navItems.map((s, idx) => renderNavItem(s, false, idx))}
+              </ul>
+              <div className="tree-nav-action-wrap">{renderActionButton()}</div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Status assignment modal — same CreateModal + fields shape used by
