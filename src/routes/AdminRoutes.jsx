@@ -18,9 +18,9 @@ import ListUser from "./../domains/admin/pages/user/ListUser/ListUser";
 import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
 import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
 import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
-import Passport from "../domains/admin/pages/workers/modules/Passport/Passport.jsx";
-import Coc from "../domains/admin/pages/workers/modules/Coc/Coc.jsx";
-import Medical from "../domains/admin/pages/workers/modules/Medical/Medical.jsx";
+// import Passport from "../domains/admin/pages/workers/modules/Passport/Passport.jsx";
+// import Coc from "../domains/admin/pages/workers/modules/Coc/Coc.jsx";
+// import Medical from "../domains/admin/pages/workers/modules/Medical/Medical.jsx";
 
 import SkillPage from "../domains/admin/pages/meta/SkillPage/SkillPage.jsx";
 import CountryPage from "../domains/admin/pages/meta/CountryPage/CountryPage.jsx";
@@ -92,7 +92,7 @@ const AdminRoutes = () => {
         {/* <Route path="/employees/active/:id" element={<WorkerProfile />} /> */}
         <Route path="/employees/archived" element={<ArchivedWorkers />} />
         {/* <Route path="/employees/modules" element={<WorkerModuleManagemet />} /> */}
-        <Route path="/employees/modules/:id/add" element={<ModulesList />} />
+        {/* <Route path="/employees/modules/:id/add" element={<ModulesList />} /> */}
         <Route path="/meta-data/country" element={<CountryPage />} />
         <Route path="/meta-data/region" element={<RegionPage />} />
         <Route path="/meta-data/wereda" element={<WeredaPage />} />
