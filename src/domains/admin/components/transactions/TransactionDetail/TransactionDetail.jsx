@@ -6,20 +6,85 @@ import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import ProfileCell from "../../../../../shared/components/ProfileCell/ProfileCell";
 import Badge from "../../../../../shared/components/Badge/Badge";
 
-const TransactionDetail = ({ transactionId, onBack }) => {
+const ROLE_MAP = {
+  1: "Admin",
+  2: "Staff",
+  3: "Partner",
+  4: "Employee",
+  5: "Employer",
+};
+
+const formatDate = (value, withTime = false) => {
+  if (!value) return "—";
+  const d = new Date(value);
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    ...(withTime && { hour: "2-digit", minute: "2-digit" }),
+  });
+};
+
+const formatAmount = (value) =>
+  Number(value ?? 0).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+// Same fallback logic as the printed report (PeriodReport.jsx): prefer the
+// period's own stored totals, fall back to computing from the transaction
+// set when those fields aren't present yet. Net profit/loss accounts for
+// commission and VAT too, not just the raw income vs. expense difference.
+const computeSummaryTotals = (period, transactions) => {
+  const list = transactions || [];
+  const computedIncome = list
+    .filter((t) => t.category === "income")
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+  const computedExpense = list
+    .filter((t) => t.category === "expense")
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+  const commission = period.total_commission ?? period.commission ?? null;
+  const vat = period.total_vat ?? period.vat ?? null;
+
+  const computedNet =
+    computedIncome -
+    computedExpense -
+    Number(commission || 0) -
+    Number(vat || 0);
+
+  return {
+    income: period.total_income ?? computedIncome,
+    expense: period.total_expense ?? computedExpense,
+    commission,
+    vat,
+    netProfit: period.net_profit ?? computedNet,
+    transactionCount: period.transaction_count ?? list.length,
+  };
+};
+
+// NOTE: Generate Report is no longer shown from this page — it now only
+// appears in the period transactions view header (see FinancePage).
+//
+// mode="transaction" (default): fetches and shows a single transaction's
+// receipt, exactly as before.
+// mode="summary": shows a period's financial summary instead — same page
+// shell/flow (back button, card), but the content and the print action
+// mirror the printed report generator (PeriodReport.jsx) rather than a
+// single transaction's fields.
+const TransactionDetail = ({
+  transactionId,
+  onBack,
+  mode = "transaction",
+  summaryPeriod,
+  summaryTransactions = [],
+}) => {
   const [transaction, setTransaction] = useState(null);
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
-  const ROLE_MAP = {
-    1: "Admin",
-    2: "Staff",
-    3: "Partner",
-    4: "Employee",
-    5: "Employer",
-  };
-
   useEffect(() => {
+    if (mode !== "transaction") return;
     const getDetails = async () => {
       showLoader();
       try {
@@ -33,200 +98,622 @@ const TransactionDetail = ({ transactionId, onBack }) => {
       }
     };
     if (transactionId) getDetails();
-  }, [transactionId]);
+  }, [transactionId, mode]);
 
-  if (!transaction) return null;
+  const isSummaryMode = mode === "summary";
 
-  const isIncome = transaction.category === "income";
-  const isCompany = !transaction.user_id;
+  if (isSummaryMode && !summaryPeriod) return null;
+  if (!isSummaryMode && !transaction) return null;
+
+  // ── Transaction-mode derived values ──
+  const isIncome = !isSummaryMode && transaction.category === "income";
+  const isCompany = !isSummaryMode && !transaction.user_id;
+  const isPeriodClosed =
+    !isSummaryMode && transaction.period_status === "closed";
+
+  // ── Summary-mode derived values ──
+  const totals = isSummaryMode
+    ? computeSummaryTotals(summaryPeriod, summaryTransactions)
+    : null;
+  const isProfit = isSummaryMode ? Number(totals.netProfit) >= 0 : false;
+  const isSummaryPeriodClosed =
+    isSummaryMode && summaryPeriod.status === "closed";
+
+  // Drives the header gradient / amount color across both modes.
+  const isPositiveAccent = isSummaryMode ? isProfit : isIncome;
+  const accent = isPositiveAccent ? "income" : "expense";
 
   return (
-    <div className="dashboard-wraper">
-      {/* Header */}
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-        <div className="mb-4">
-          <BackButton onClick={onBack} />
-          <h2 className="fw-bold text-dark mb-2">Receipt</h2>
-        </div>
+    <div className="txn-receipt dashboard-wraper">
+      <style>{`
+        .txn-receipt {
+          --ink: #101828;
+          --muted: #667085;
+          --border: #e4e7ec;
+          --surface: #ffffff;
+          --soft: #f9fafb;
+          --income: #059669;
+          --income-soft: #ecfdf5;
+          --expense: #dc2626;
+          --expense-soft: #fef2f2;
+        }
+        .txn-receipt .receipt-shell {
+          border: 1px solid var(--border);
+          border-radius: 18px;
+          background: var(--surface);
+          box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 12px rgba(16, 24, 40, 0.05);
+          overflow: hidden;
+        }
+        .txn-receipt .receipt-topbar {
+          padding: 2rem 2.25rem;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 1.5rem;
+          background: ${
+            isPositiveAccent
+              ? "linear-gradient(135deg, #e9fbf0 0%, #ffffff 60%)"
+              : "linear-gradient(135deg, #fdeeee 0%, #ffffff 60%)"
+          };
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .txn-receipt .receipt-eyebrow {
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: var(--muted);
+          margin-bottom: 0.6rem;
+        }
+        .txn-receipt .receipt-title {
+          font-size: 1.6rem;
+          font-weight: 800;
+          color: var(--ink);
+          margin: 0 0 0.35rem;
+          letter-spacing: -0.01em;
+        }
+        .txn-receipt .receipt-subtext {
+          color: var(--muted);
+          font-size: 0.875rem;
+          margin: 0;
+        }
+        .txn-receipt .receipt-amount-block {
+          text-align: right;
+        }
+        .txn-receipt .receipt-amount {
+          font-size: 2.6rem;
+          font-weight: 800;
+          line-height: 1;
+          letter-spacing: -0.02em;
+          font-variant-numeric: tabular-nums;
+          color: var(--${accent});
+          white-space: nowrap;
+        }
+        .txn-receipt .receipt-amount-currency {
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--muted);
+          margin-left: 0.35rem;
+        }
+        .txn-receipt .receipt-stats-strip {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          border-top: 1px solid var(--border);
+          border-bottom: 1px solid var(--border);
+          background: var(--soft);
+        }
+        .txn-receipt .receipt-stats-strip.stats-strip-fluid {
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+        .txn-receipt .stat-item {
+          padding: 1.1rem 1.6rem;
+          border-right: 1px solid var(--border);
+          min-width: 0;
+        }
+        .txn-receipt .stat-item:last-child {
+          border-right: none;
+        }
+        .txn-receipt .stat-label {
+          display: block;
+          text-transform: uppercase;
+          font-size: 0.66rem;
+          letter-spacing: 0.07em;
+          font-weight: 700;
+          color: var(--muted);
+          margin-bottom: 0.35rem;
+        }
+        .txn-receipt .stat-value {
+          display: block;
+          font-size: 0.925rem;
+          font-weight: 600;
+          color: var(--ink);
+          overflow-wrap: break-word;
+        }
+        .txn-receipt .stat-value.is-flex {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+        .txn-receipt .receipt-body {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+        .txn-receipt .receipt-body > .receipt-section:first-child {
+          border-right: 1px solid var(--border);
+        }
+        .txn-receipt .receipt-section {
+          padding: 2rem 2.25rem;
+        }
+        .txn-receipt .section-title {
+          text-transform: uppercase;
+          font-size: 0.72rem;
+          letter-spacing: 0.08em;
+          font-weight: 700;
+          color: var(--muted);
+          margin: 0 0 1.25rem;
+          padding-bottom: 0.75rem;
+          border-bottom: 2px solid var(--border);
+        }
+        .txn-receipt .detail-grid {
+          margin: 0;
+          display: grid;
+          grid-template-columns: auto 1fr;
+          row-gap: 1.1rem;
+          column-gap: 1rem;
+        }
+        .txn-receipt .detail-grid dt {
+          color: var(--muted);
+          font-size: 0.85rem;
+          font-weight: 500;
+          align-self: center;
+        }
+        .txn-receipt .detail-grid dd {
+          margin: 0;
+          text-align: right;
+          font-weight: 600;
+          font-size: 0.9rem;
+          color: var(--ink);
+        }
+        .txn-receipt .description-text {
+          font-size: 0.95rem;
+          line-height: 1.75;
+          color: var(--ink);
+          white-space: pre-wrap;
+          word-break: break-word;
+          max-height: 230px;
+          overflow-y: auto;
+          padding-right: 0.5rem;
+          margin: 0;
+        }
+        .txn-receipt .period-strip {
+          border-top: 1px solid var(--border);
+          background: var(--soft);
+          padding: 1.75rem 2.25rem 2rem;
+        }
+        .txn-receipt .period-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .txn-receipt .period-note-label {
+          text-transform: uppercase;
+          font-size: 0.66rem;
+          letter-spacing: 0.07em;
+          font-weight: 700;
+          color: var(--muted);
+          display: block;
+          margin-bottom: 0.35rem;
+        }
+        .txn-receipt .period-note-text {
+          font-size: 0.9rem;
+          line-height: 1.6;
+          margin: 0;
+          color: var(--ink);
+        }
+        @media (max-width: 767px) {
+          .txn-receipt .receipt-body {
+            grid-template-columns: 1fr;
+          }
+          .txn-receipt .receipt-body > .receipt-section:first-child {
+            border-right: none;
+            border-bottom: 1px solid var(--border);
+          }
+          .txn-receipt .receipt-stats-strip {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .txn-receipt .stat-item:nth-child(2) {
+            border-right: none;
+          }
+          .txn-receipt .stat-item:nth-child(3),
+          .txn-receipt .stat-item:nth-child(4) {
+            border-top: 1px solid var(--border);
+          }
+          .txn-receipt .receipt-amount-block {
+            text-align: left;
+          }
+          .txn-receipt .receipt-topbar,
+          .txn-receipt .receipt-section {
+            padding: 1.5rem;
+          }
+        }
+        @media print {
+          .txn-receipt .receipt-shell {
+            box-shadow: none;
+            border-radius: 0;
+          }
+          .txn-receipt .receipt-body {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+          }
+          .txn-receipt .description-text,
+          .txn-receipt .period-note-text {
+            max-height: none;
+            overflow: visible;
+            padding-right: 0;
+          }
+          .txn-receipt .stat-item .text-muted.small {
+            margin: 0;
+          }
+        }
+      `}</style>
+
+      {/* Page header action — Back only. */}
+      <div className="mb-3 d-print-none">
+        <BackButton onClick={onBack} />
       </div>
 
-      <div
-        className="card border-0 shadow-sm overflow-hidden"
-        id="printable-receipt"
-      >
-        {/* Top Status Bar (Green for Income, Red for Expense) */}
-        <div
-          style={{
-            height: "6px",
-            backgroundColor: isIncome ? "#198754" : "#dc3545",
-          }}
-        />
-
-        <div className="card-body p-4 p-md-5">
-          {/* Section 1: Parties Involved */}
-          {/* Beautiful Bordered Header Card */}
-          <div
-            className="card border-2 mb-5"
-            style={{
-              borderRadius: "16px",
-              borderColor: "#e9ecef",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-            }}
-          >
-            <div className="card-body p-4 p-md-5">
-              <div className="row align-items-center">
-                {/* Left: Entity/Person Info */}
-                <div className="col-sm-6">
-                  <h6 className="text-uppercase text-muted small fw-bold mb-3">
-                    {isCompany ? "Entity" : "Transaction For"}
-                  </h6>
-
-                  <div className="d-flex align-items-center gap-3">
-                    {isCompany ? (
-                      <>
-                        <div
-                          className="rounded-circle d-flex align-items-center justify-content-center border border-2 border-primary"
-                          style={{
-                            width: "55px",
-                            height: "55px",
-                            backgroundColor: "#e7f1ff",
-                          }}
-                        >
-                          <i className="bi bi-building text-primary fs-3"></i>
-                        </div>
-                        <div>
-                          <h5 className="mb-0 fw-bold text-dark">
-                            Company Related
-                          </h5>
-                          <span className="badge bg-primary bg-opacity-10 text-primary small fw-semibold px-2 py-1">
-                            Agency Account
-                          </span>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div
-                          className="rounded-circle border border-2 border-primary d-flex align-items-center justify-content-center"
-                          style={{ width: "55px", height: "55px" }}
-                        >
-                          <ProfileCell
-                            profile={{
-                              firstName: transaction.target_user_name,
-                              image: transaction.target_profile_photo,
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <h5 className="mb-0 fw-bold text-dark">
-                            {transaction.target_user_name}
-                          </h5>
-                          <span className="badge bg-secondary bg-opacity-10 text-secondary text-capitalize small fw-semibold px-2 py-1">
-                            {ROLE_MAP[transaction.target_user_role] || "User"}
-                          </span>
-                        </div>
-                      </>
-                    )}
-                  </div>
+      {isSummaryMode ? (
+        <>
+          {/* Summary receipt */}
+          <div className="receipt-shell" id="printable-receipt">
+            {/* Summary header */}
+            <div className="receipt-topbar">
+              <div>
+                <div className="d-flex gap-2 mb-3">
+                  <Badge
+                    content={isSummaryPeriodClosed ? "CLOSED" : "ACTIVE"}
+                    color={isSummaryPeriodClosed ? "red" : "green"}
+                  />
                 </div>
+                <p className="receipt-eyebrow">Period Summary</p>
+                <h2 className="receipt-title">{summaryPeriod.title}</h2>
+                <p className="receipt-subtext">
+                  {formatDate(summaryPeriod.started_at)} –{" "}
+                  {summaryPeriod.closed_at
+                    ? formatDate(summaryPeriod.closed_at)
+                    : "Present"}
+                </p>
+              </div>
 
-                {/* Right: Amount */}
-                <div className="col-sm-6 text-sm-end mt-4 mt-sm-0">
-                  <h6 className="text-uppercase text-muted small fw-bold mb-2">
-                    Total Amount
-                  </h6>
-                  <div
-                    className="d-inline-block px-4 py-2 rounded-3"
-                    style={{
-                      backgroundColor: isIncome ? "#d1fae5" : "#fee2e2",
-                      border: `2px solid ${isIncome ? "#10b981" : "#ef4444"}`,
-                    }}
-                  >
-                    <h2
-                      className={`fw-bold mb-0 ${isIncome ? "text-success" : "text-danger"}`}
-                    >
-                      {isIncome ? "+" : "-"}{" "}
-                      {transaction.amount?.toLocaleString()} Birr
-                    </h2>
-                  </div>
+              <div className="receipt-amount-block">
+                <p className="receipt-eyebrow" style={{ textAlign: "right" }}>
+                  Net {isProfit ? "Profit" : "Loss"}
+                </p>
+                <div className="receipt-amount">
+                  {isProfit ? "+" : "-"}
+                  {formatAmount(Math.abs(totals.netProfit))}
+                  <span className="receipt-amount-currency">Birr</span>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Section 2: Key Metadata */}
-          <div className="bg-light rounded-4 p-4 mb-5">
-            <div className="row g-4">
-              <div className="col-md-3 col-6">
-                <label className="text-muted d-block small mb-1">
-                  Category
-                </label>
-                <span className="fw-semibold text-capitalize">
-                  {transaction.category}
+            {/* Summary stat cards — same figures as the printed report */}
+            <div className="receipt-stats-strip stats-strip-fluid">
+              <div className="stat-item">
+                <span className="stat-label">Total Income</span>
+                <span className="stat-value" style={{ color: "var(--income)" }}>
+                  + {formatAmount(totals.income)} Birr
                 </span>
               </div>
-              <div className="col-md-3 col-6">
-                <label className="text-muted d-block small mb-1">Date</label>
-                <span className="fw-semibold">
-                  {new Date(
-                    transaction.transaction_date || transaction.created_at,
-                  ).toLocaleDateString()}
+              <div className="stat-item">
+                <span className="stat-label">Total Expenses</span>
+                <span
+                  className="stat-value"
+                  style={{ color: "var(--expense)" }}
+                >
+                  - {formatAmount(totals.expense)} Birr
                 </span>
               </div>
-              <div className="col-md-3 col-6">
-                <label className="text-muted d-block small mb-1">
-                  Reference
-                </label>
-                <span className="fw-semibold text-break">
-                  {transaction.reference || "N/A"}
-                </span>
-              </div>
-              <div className="col-md-3 col-6">
-                <label className="text-muted d-block small mb-1">Status</label>
-                <Badge
-                  content={isIncome ? "Income" : "Expense"}
-                  color={isIncome ? "green" : "red"}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Section 3: Description */}
-          <div className="mb-5">
-            <h6 className="text-uppercase text-muted small fw-bold mb-3">
-              Description
-            </h6>
-            <div className="p-3 border rounded-3 bg-white min-vh-10">
-              {transaction.description ||
-                "No description provided for this transaction."}
-            </div>
-          </div>
-
-          {/* Section 4: Audit Trail (The "Creator" Info) */}
-          <div className="mt-5 pt-4 border-top">
-            <div className="row align-items-center">
-              <div className="col-md-6">
-                <p className=" mb-0">
-                  Recorded by:{" "}
-                  <strong>{transaction.creator_name || "System"}</strong>
-                  <span className="ms-1">
-                    ({ROLE_MAP[transaction.creator_role] || "Staff"})
+              {totals.commission !== null && (
+                <div className="stat-item">
+                  <span className="stat-label">Total Commission</span>
+                  <span className="stat-value">
+                    {formatAmount(totals.commission)} Birr
                   </span>
+                </div>
+              )}
+              {totals.vat !== null && (
+                <div className="stat-item">
+                  <span className="stat-label">Total VAT</span>
+                  <span className="stat-value">
+                    {formatAmount(totals.vat)} Birr
+                  </span>
+                </div>
+              )}
+              <div className="stat-item">
+                <span className="stat-label">Total Transactions</span>
+                <span className="stat-value">{totals.transactionCount}</span>
+              </div>
+            </div>
+
+            {/* Closing note + period details */}
+            <div className="receipt-body">
+              <div className="receipt-section">
+                <h6 className="section-title">Closing Note</h6>
+                <p className="description-text">
+                  {summaryPeriod.closing_note || "No closing note recorded."}
+                </p>
+              </div>
+
+              <div className="receipt-section">
+                <h6 className="section-title">Details</h6>
+                <dl className="detail-grid">
+                  <dt>Status</dt>
+                  <dd>
+                    {isSummaryPeriodClosed ? "Closed" : "Currently Active"}
+                  </dd>
+
+                  <dt>Started</dt>
+                  <dd>{formatDate(summaryPeriod.started_at)}</dd>
+
+                  <dt>{isSummaryPeriodClosed ? "Closed" : "Open Since"}</dt>
+                  <dd>
+                    {isSummaryPeriodClosed
+                      ? formatDate(summaryPeriod.closed_at)
+                      : formatDate(summaryPeriod.started_at)}
+                  </dd>
+
+                  {isSummaryPeriodClosed && (
+                    <>
+                      <dt>Closed By</dt>
+                      <dd>{summaryPeriod.closed_by_name || "—"}</dd>
+                    </>
+                  )}
+                </dl>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center d-print-none mt-4">
+            <button
+              className="btn btn-outline-primary btn-sm px-4"
+              onClick={() => window.print()}
+            >
+              <i className="bi bi-printer me-2"></i> Print Summary Report
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Receipt */}
+          <div className="receipt-shell" id="printable-receipt">
+            {/* Summary header */}
+            <div className="receipt-topbar">
+              <div>
+                <div className="d-flex gap-2 mb-3">
+                  <Badge
+                    content={transaction.category?.toUpperCase()}
+                    color={isIncome ? "green" : "red"}
+                  />
+                  {transaction.period_title && (
+                    <Badge
+                      content={transaction.period_title}
+                      color={isPeriodClosed ? "gray" : "cyan"}
+                    />
+                  )}
+                </div>
+                <p className="receipt-eyebrow">Transaction Receipt</p>
+                <h2 className="receipt-title">
+                  {isIncome ? "Income" : "Expense"} Transaction
+                </h2>
+                <p className="receipt-subtext">
+                  {formatDate(
+                    transaction.transaction_date || transaction.created_at,
+                  )}
+                  {transaction.reference && <> · {transaction.reference}</>}
+                </p>
+              </div>
+
+              <div className="receipt-amount-block">
+                <div className="receipt-amount">
+                  {isIncome ? "+" : "-"}
+                  {formatAmount(transaction.amount)}
+                  <span className="receipt-amount-currency">Birr</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick facts strip */}
+            <div className="receipt-stats-strip">
+              <div className="stat-item">
+                <span className="stat-label">Date</span>
+                <span className="stat-value">
+                  {formatDate(
+                    transaction.transaction_date || transaction.created_at,
+                  )}
+                </span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Reference</span>
+                <span className="stat-value">
+                  {transaction.reference || "—"}
+                </span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">
+                  {isCompany ? "Entity" : "Transaction For"}
+                </span>
+                {isCompany ? (
+                  <span className="stat-value">Company Account</span>
+                ) : (
+                  <span className="stat-value is-flex">
+                    {transaction.target_user_name}
+                    <Badge
+                      content={ROLE_MAP[transaction.target_user_role] || "User"}
+                      color="red"
+                    />
+                  </span>
+                )}
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Recorded By</span>
+                <span className="stat-value is-flex">
+                  {transaction.creator_name || "System"}
+                  <Badge
+                    content={ROLE_MAP[transaction.creator_role]}
+                    color="green"
+                  />
+                </span>
+              </div>
+            </div>
+
+            {/* Details + Description */}
+            <div className="receipt-body">
+              <div className="receipt-section">
+                <h6 className="section-title">Details</h6>
+                <dl className="detail-grid">
+                  <dt>Category</dt>
+                  <dd className="text-capitalize">{transaction.category}</dd>
+
+                  <dt>Date</dt>
+                  <dd>
+                    {formatDate(
+                      transaction.transaction_date || transaction.created_at,
+                    )}
+                  </dd>
+
+                  <dt>Reference</dt>
+                  <dd>{transaction.reference || "—"}</dd>
+
+                  <dt>{isCompany ? "Entity" : "Transaction For"}</dt>
+                  <dd>
+                    {isCompany ? (
+                      "Company Account"
+                    ) : (
+                      <span className="d-inline-flex align-items-center gap-2">
+                        {transaction.target_user_name}
+                        <Badge
+                          content={ROLE_MAP[transaction.target_user_role]}
+                          color="red"
+                        />
+                      </span>
+                    )}
+                  </dd>
+
+                  <dt>Recorded By</dt>
+                  <dd>
+                    <span className="d-inline-flex align-items-center gap-2">
+                      {transaction.creator_name || "System"}
+                      <Badge
+                        content={ROLE_MAP[transaction.creator_role]}
+                        color="green"
+                      />
+                    </span>
+                  </dd>
+                </dl>
+              </div>
+
+              <div className="receipt-section">
+                <h6 className="section-title">Description</h6>
+                <p className="description-text">
+                  {transaction.description || "No description provided."}
                 </p>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Footer Actions */}
-        <div className="card-footer bg-white border-top-0 p-4 text-center d-print-none">
-          <button
-            className="btn btn-outline-primary btn-sm px-4"
-            onClick={() => window.print()}
-          >
-            <i className="bi bi-printer me-2"></i> Print Receipt
-          </button>
-        </div>
-      </div>
+            {/* Period */}
+            <div className="period-strip">
+              <h6 className="section-title" style={{ marginBottom: "1.25rem" }}>
+                Period
+              </h6>
+
+              {transaction.period_title ? (
+                <div className="period-card">
+                  <div
+                    className="receipt-stats-strip"
+                    style={{ border: "none" }}
+                  >
+                    <div className="stat-item">
+                      <span className="stat-label">Title</span>
+                      <span className="stat-value">
+                        {transaction.period_title}
+                      </span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-label">Status</span>
+                      <Badge
+                        content={transaction.period_status?.toUpperCase()}
+                        color={isPeriodClosed ? "red" : "green"}
+                      />
+                    </div>
+                    {isPeriodClosed ? (
+                      <div className="stat-item">
+                        <span className="stat-label">Closed By</span>
+                        <span className="stat-value">
+                          {transaction.period_closed_by_name || "—"}
+                        </span>
+                        <span className="text-muted small">
+                          {formatDate(transaction.period_closed_at, true)}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="stat-item">
+                        <span className="stat-label">Open Since</span>
+                        <span className="stat-value">
+                          {formatDate(transaction.period_started_at)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="stat-item">
+                      {transaction.period_description ? (
+                        <>
+                          <span className="period-note-label">Description</span>
+                          <p className="period-note-text">
+                            {transaction.period_description}
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <span className="stat-label">Description</span>
+                          <span className="stat-value text-muted">—</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {isPeriodClosed && transaction.period_closing_note && (
+                    <div
+                      style={{
+                        borderTop: "1px solid var(--border)",
+                        padding: "1.1rem 1.6rem",
+                      }}
+                    >
+                      <span className="period-note-label">Closing Note</span>
+                      <p className="period-note-text">
+                        {transaction.period_closing_note}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-muted mb-0">No period information.</p>
+              )}
+            </div>
+          </div>
+
+          <div className="text-center d-print-none mt-4">
+            <button
+              className="btn btn-outline-primary btn-sm px-4"
+              onClick={() => window.print()}
+            >
+              <i className="bi bi-printer me-2"></i> Print Receipt
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
