@@ -135,14 +135,20 @@ const css = {
     borderTop: "1px solid #000",
     borderBottom: "1px solid #000",
   },
-  fullNameLabel: { padding: "5px 8px", fontWeight: "bold", fontSize: 13 },
+  fullNameLabel: {
+    padding: "5px 8px",
+    fontWeight: "bold",
+    fontSize: 13,
+    borderRight: "1px solid #000",
+  },
   fullNameValue: {
     padding: "5px 8px",
     fontWeight: "bold",
     fontSize: 14,
     textAlign: "center",
-    borderLeft: "1px solid rgba(255,255,255,0.5)",
-    borderRight: "1px solid rgba(255,255,255,0.5)",
+    color: "#000",
+    background: "#fff",
+    borderRight: "1px solid #000",
   },
   fullNameAr: {
     padding: "5px 8px",
@@ -236,14 +242,7 @@ const TitleStack = ({ en, ar, sub }) => (
    Always renders the same 3 fixed-width columns (even when arLabel is
    empty) so the vertical divider lines stay connected from row to row
    instead of jumping around when a row happens to skip the Arabic cell. */
-const Row3 = ({
-  label,
-  value,
-  arLabel,
-  boldValue,
-  last,
-  cols = "150px 1fr 170px",
-}) => (
+const Row3 = ({ label, value, arLabel, boldValue, last, cols = "125px 1fr 140px" }) => (
   <div
     style={{
       display: "grid",
@@ -262,7 +261,7 @@ const Row3 = ({
    straight through from Personal Data into Skills, but a table can pass
    its own `cols` (e.g. equal thirds) when it needs to match a neighbouring
    table instead. */
-const CheckRow = ({ en, checked, ar, last, cols = "150px 1fr 170px" }) => (
+const CheckRow = ({ en, checked, ar, last, cols = "125px 1fr 140px" }) => (
   <div
     style={{
       display: "grid",
@@ -288,14 +287,7 @@ const CheckRow = ({ en, checked, ar, last, cols = "150px 1fr 170px" }) => (
 );
 
 const PhotoBox = ({ url, alt, placeholderLabel }) => (
-  <div
-    style={{
-      position: "relative",
-      width: "100%",
-      height: "100%",
-      minHeight: 140,
-    }}
-  >
+  <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 140 }}>
     {url ? (
       <img
         src={url}
@@ -644,8 +636,7 @@ const CVThree = ({ templateSwitcher }) => {
       ? subtractDate(worker.contract_end_date, worker.contract_start_date)
       : (worker.contract_period ?? "2 Years");
   const code = worker.agency_code ?? worker.code ?? "";
-  const applicationDate =
-    safeDate(worker.application_date) || safeDate(worker.created_at);
+  const applicationDate = safeDate(worker.application_date) || safeDate(worker.created_at);
 
   const phone = worker.phone_number ?? "";
   const name = (worker.full_name ?? "").toUpperCase();
@@ -684,50 +675,23 @@ const CVThree = ({ templateSwitcher }) => {
   const agencyPhone =
     selectedPartner?.phone ?? selectedPartner?.tel ?? AGENCY_CONTACT.phone;
   const agencyAddress =
-    selectedPartner?.address_ar ??
-    selectedPartner?.address ??
-    AGENCY_CONTACT.addressAr;
+    selectedPartner?.address_ar ?? selectedPartner?.address ?? AGENCY_CONTACT.addressAr;
 
   /* Skills checklist - matches the template's tick list exactly.
      HARD-CODED for now per your request: checked through "Arabic Cooking",
      unchecked from "Sewing" onward. Swap back to the worker.skills lookup
      (kept below, commented out) once skill data is wired up per worker. */
   const SKILL_DEFINITIONS = [
-    {
-      en: "Baby Sitting",
-      ar: "مجالسة الاطفال",
-      key: "Baby Sitting",
-      checked: true,
-    },
-    {
-      en: "Children Care",
-      ar: "رعاية الأطفال",
-      key: "Children Care",
-      checked: true,
-    },
+    { en: "Baby Sitting", ar: "مجالسة الاطفال", key: "Baby Sitting", checked: true },
+    { en: "Children Care", ar: "رعاية الأطفال", key: "Children Care", checked: true },
     { en: "Tutoring", ar: "دروس خصوصية", key: "Tutoring", checked: true },
-    {
-      en: "Disabled Care",
-      ar: "رعاية المعاقين",
-      key: "Disabled Care",
-      checked: true,
-    },
+    { en: "Disabled Care", ar: "رعاية المعاقين", key: "Disabled Care", checked: true },
     { en: "Cleaning", ar: "تنظيف", key: "Cleaning", checked: true },
     { en: "Washing", ar: "غسل", key: "Washing", checked: true },
     { en: "Ironing", ar: "كي الملابس", key: "Ironing", checked: true },
-    {
-      en: "Arabic Cooking",
-      ar: "الطبخ العربي",
-      key: "Arabic Cooking",
-      checked: true,
-    },
+    { en: "Arabic Cooking", ar: "الطبخ العربي", key: "Arabic Cooking", checked: true },
     { en: "Sewing", ar: "خياطة", key: "Sewing", checked: false },
-    {
-      en: "Computers",
-      ar: "أجهزة الكمبيوتر",
-      key: "Computers",
-      checked: false,
-    },
+    { en: "Computers", ar: "أجهزة الكمبيوتر", key: "Computers", checked: false },
     { en: "Driving", ar: "القيادة", key: "Driving", checked: false },
     { en: "Others", ar: "مهارات اخرى", key: "Others", checked: false },
   ];
@@ -762,13 +726,12 @@ const CVThree = ({ templateSwitcher }) => {
   }));
 
   /* Previous employment - array of { country, years } */
-  const previousEmployment =
-    Array.isArray(worker.experience) && worker.experience.length
-      ? worker.experience
-      : [
-          { country: "", years: "" },
-          { country: "", years: "" },
-        ];
+  const previousEmployment = Array.isArray(worker.experience) && worker.experience.length
+    ? worker.experience
+    : [
+        { country: "", years: "" },
+        { country: "", years: "" },
+      ];
 
   const cvStyle = {
     width: 760,
@@ -825,6 +788,7 @@ const CVThree = ({ templateSwitcher }) => {
             paddingLeft: 14,
             paddingRight: 30,
             maxWidth: 220,
+            cursor: Number(profile?.role_id) === 3 ? "default" : "pointer",
           }}
         >
           <option value="">Select Partner</option>
@@ -882,53 +846,21 @@ const CVThree = ({ templateSwitcher }) => {
             {/* Headshot photo (left) + Application/Passport details (right) */}
             <div style={{ display: "flex", borderBottom: "1px solid #000" }}>
               <div style={{ flex: "0 0 260px", borderRight: "1px solid #000" }}>
-                <PhotoBox
-                  url={faceUrl}
-                  alt="Headshot"
-                  placeholderLabel="Photo"
-                />
+                <PhotoBox url={faceUrl} alt="Headshot" placeholderLabel="Photo" />
               </div>
 
-              <div
-                style={{ flex: 1, display: "flex", flexDirection: "column" }}
-              >
+              <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
                 <Row3 label="Category" value={category} />
-                <Row3
-                  label="Monthly Salary"
-                  value={salary}
-                  arLabel="راتب شهري"
-                />
-                <Row3
-                  label="Contract Period"
-                  value={contract}
-                  arLabel="مدة العقد"
-                />
+                <Row3 label="Monthly Salary" value={salary} arLabel="راتب شهري" />
+                <Row3 label="Contract Period" value={contract} arLabel="مدة العقد" />
                 <Row3 label="CODE" value={code} />
                 <Row3 label="Date" value={applicationDate} last />
 
                 <SectionBar en="PASSPORT DETAILS" ar="تفاصيل جواز السفر" />
-                <Row3
-                  label="Number"
-                  value={passportNumber}
-                  arLabel="رقم الجواز"
-                  boldValue
-                />
-                <Row3
-                  label="Date of Issue"
-                  value={passportIssueDate}
-                  arLabel="تاريخ الجواز"
-                />
-                <Row3
-                  label="Date of Expiry"
-                  value={passportExpiryDate}
-                  arLabel="انتهاء الصلاحية"
-                />
-                <Row3
-                  label="Place of Issue"
-                  value={passportIssuePlace}
-                  arLabel="مكان صدوره"
-                  last
-                />
+                <Row3 label="Number" value={passportNumber} arLabel="رقم الجواز" boldValue />
+                <Row3 label="Date of Issue" value={passportIssueDate} arLabel="تاريخ الجواز" />
+                <Row3 label="Date of Expiry" value={passportExpiryDate} arLabel="انتهاء الصلاحية" />
+                <Row3 label="Place of Issue" value={passportIssuePlace} arLabel="مكان صدوره" last />
               </div>
             </div>
 
@@ -942,65 +874,21 @@ const CVThree = ({ templateSwitcher }) => {
             {/* Personal data + skills + profile summary (left) / standing photo (right,
                 stretched to match the full combined height of the left column) */}
             <div style={{ display: "flex" }}>
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  borderRight: "1px solid #000",
-                }}
-              >
+              <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", borderRight: "1px solid #000" }}>
                 <SectionBar en="PERSONAL DATA" ar="البيانات الشخصية" />
-                <Row3
-                  label="Nationality"
-                  value={nationality}
-                  arLabel="الجنسية"
-                />
+                <Row3 label="Nationality" value={nationality} arLabel="الجنسية" />
                 <Row3 label="Religion" value={religion} arLabel="الديانة" />
                 <Row3 label="Age" value={age} arLabel="السن" />
-                <Row3
-                  label="Date of Birth"
-                  value={dateOfBirth}
-                  arLabel="تاريخ الميلاد"
-                />
-                <Row3
-                  label="Place of Birth"
-                  value={placeOfBirth}
-                  arLabel="مكان الميلاد"
-                />
-                <Row3
-                  label="Living Town"
-                  value={livingTown}
-                  arLabel="المدينة"
-                />
-                <Row3
-                  label="Marital Status"
-                  value={maritalStatus}
-                  arLabel="الحالة الاجتماعية"
-                />
-                <Row3
-                  label="No. of Children"
-                  value={numberOfChildren}
-                  arLabel="عدد الاطفال"
-                />
+                <Row3 label="Date of Birth" value={dateOfBirth} arLabel="تاريخ الميلاد" />
+                <Row3 label="Place of Birth" value={placeOfBirth} arLabel="مكان الميلاد" />
+                <Row3 label="Living Town" value={livingTown} arLabel="المدينة" />
+                <Row3 label="Marital Status" value={maritalStatus} arLabel="الحالة الاجتماعية" />
+                <Row3 label="No. of Children" value={numberOfChildren} arLabel="عدد الاطفال" />
                 <Row3 label="Weight" value={weight} arLabel="الوزن" />
                 <Row3 label="Height" value={height} arLabel="الارتفاع" />
-                <Row3
-                  label="Complexion"
-                  value={complexion}
-                  arLabel="لون البشرة"
-                />
-                <Row3
-                  label="Nearest relative"
-                  value={nearestRelative}
-                  arLabel="اسم قريب"
-                />
-                <Row3
-                  label="Mobile No"
-                  value={phone}
-                  arLabel="رقم الجوال"
-                  last
-                />
+                <Row3 label="Complexion" value={complexion} arLabel="لون البشرة" />
+                <Row3 label="Nearest relative" value={nearestRelative} arLabel="اسم قريب" />
+                <Row3 label="Mobile No" value={phone} arLabel="رقم الجوال" last />
 
                 <SectionBar en="SKILLS & EXPERIENCES" ar="المهارات والخبرات" />
                 {skills.map((skill, index) => (
@@ -1026,12 +914,8 @@ const CVThree = ({ templateSwitcher }) => {
                 </div>
               </div>
 
-              <div style={{ flex: "0 0 330px" }}>
-                <PhotoBox
-                  url={bodyUrl}
-                  alt="Full body"
-                  placeholderLabel="Photo"
-                />
+              <div style={{ flex: "0 0 430px" }}>
+                <PhotoBox url={bodyUrl} alt="Full body" placeholderLabel="Photo" />
               </div>
             </div>
           </div>
@@ -1071,11 +955,7 @@ const CVThree = ({ templateSwitcher }) => {
                 is treated as ONE title block - no divider between the two
                 lines, matching the template. Both tables below use equal
                 thirds so their columns line up with each other. */}
-            <TitleStack
-              en="PREVIOUS EMPLOYMENT"
-              ar="العمل السابق"
-              sub="COUNTRY WORKED BEFORE"
-            />
+            <TitleStack en="PREVIOUS EMPLOYMENT" ar="العمل السابق" sub="COUNTRY WORKED BEFORE" />
             {previousEmployment.map((entry, index) => (
               <div
                 key={`${entry.country}-${index}`}
@@ -1087,28 +967,13 @@ const CVThree = ({ templateSwitcher }) => {
                   fontSize: 12,
                 }}
               >
-                <div
-                  style={{
-                    padding: "3px 6px",
-                    fontWeight: "bold",
-                    color: "#c0392b",
-                    borderRight: "1px solid #000",
-                  }}
-                >
+                <div style={{ padding: "3px 6px", fontWeight: "bold", color: "#c0392b", borderRight: "1px solid #000" }}>
                   {(entry.country ?? "").toUpperCase()}
                 </div>
-                <div
-                  style={{ padding: "3px 6px", borderRight: "1px solid #000" }}
-                >
+                <div style={{ padding: "3px 6px", borderRight: "1px solid #000" }}>
                   {entry.years ?? ""}
                 </div>
-                <div
-                  style={{
-                    padding: "3px 6px",
-                    fontWeight: "bold",
-                    color: "#c0392b",
-                  }}
-                >
+                <div style={{ padding: "3px 6px", fontWeight: "bold", color: "#c0392b" }}>
                   YEAR
                 </div>
               </div>
@@ -1143,12 +1008,7 @@ const CVThree = ({ templateSwitcher }) => {
                 src={worker.passport_scan_url}
                 alt="Passport Scan"
                 crossOrigin="anonymous"
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  display: "block",
-                  border: "1px solid #999",
-                }}
+                style={{ width: "100%", height: "auto", display: "block", border: "1px solid #999" }}
               />
             ) : (
               <div
@@ -1201,21 +1061,11 @@ const CVThree = ({ templateSwitcher }) => {
               static asset (not per-worker/per-partner data). Same border
               treatment as the passport box above, sitting flush against
               the spacer row. */}
-          <div
-            style={{
-              border: "2px solid #000",
-              padding: 10,
-              textAlign: "center",
-            }}
-          >
+          <div style={{ border: "2px solid #000", padding: 10, textAlign: "center" }}>
             <img
               src={cvFooterLogo}
               alt="Agency footer"
-              style={{
-                maxWidth: "100%",
-                height: "auto",
-                display: "inline-block",
-              }}
+              style={{ maxWidth: "100%", height: "auto", display: "inline-block" }}
             />
           </div>
         </div>
