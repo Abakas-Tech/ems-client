@@ -185,16 +185,13 @@ export default function AboutDetail() {
             <strong>ALETISALAT Private Foreign Employment Agency</strong> is a
             professional foreign employment and workforce placement agency
             committed to connecting qualified Ethiopian workers with legitimate
-            employment opportunities abroad.
-          </p>
-
-          <p className={styles.heroText}>
-            We believe that employment is more than simply finding a job. It is
-            about creating opportunities that improve lives, strengthen
-            families, develop skills, and contribute to a better future. Our
-            agency works to build a trusted bridge between Ethiopian job seekers
-            and international employers by providing responsible, transparent,
-            professional, and efficient recruitment services.
+            employment opportunities abroad. We believe that employment is more
+            than simply finding a job. It is about creating opportunities that
+            improve lives, strengthen families, develop skills, and contribute
+            to a better future. Our agency works to build a trusted bridge
+            between Ethiopian job seekers and international employers by
+            providing responsible, transparent, professional, and efficient
+            recruitment services.
           </p>
 
           <div className={styles.tagline}>
@@ -208,7 +205,7 @@ export default function AboutDetail() {
           {/* VISION & MISSION */}
           <div>
             <SectionHeading eyebrow="Who We Are" title="Vision & Mission" />
-            <div className="row g-4 mt-1">
+            <div className="row g-4">
               <div className="col-md-6">
                 <div className={styles.pillarCard}>
                   <div className={styles.pillarIcon}>
@@ -275,28 +272,6 @@ export default function AboutDetail() {
             </div>
           </div>
 
-          {/* WHAT WE DO - SLIDER */}
-          <div>
-            <SectionHeading
-              eyebrow="Our Services"
-              title="What We Do"
-              subtitle="End-to-end recruitment services for workers and employers alike."
-            />
-            <div className={styles.scrollWrapper}>
-              <div className={styles.scrollTrack}>
-                {[...services, ...services].map((service, index) => (
-                  <div className={styles.featureCard} key={index}>
-                    <div className="text-center p-4">
-                      <div className={styles.iconWrapper}>{service.icon}</div>
-                      <h6 className="fw-bold mb-3">{service.title}</h6>
-                      <p className="small mb-0">{service.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
           {/* WHY CHOOSE ALETISALAT */}
           <div>
             <SectionHeading eyebrow="Why Us" title="Why Choose ALETISALAT?" />
@@ -325,7 +300,7 @@ export default function AboutDetail() {
               eyebrow="Our Commitment To You"
               title="Our Promise"
             />
-            <div className="row g-4 mt-1">
+            <div className="row g-4">
               {promises.map((item, idx) => (
                 <div className="col-md-4" key={idx}>
                   <div className={styles.promiseCard}>
