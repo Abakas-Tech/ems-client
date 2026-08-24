@@ -12,6 +12,7 @@ import {
   deleteWorkerStatus,
 } from "../../../api/workerMeta.api";
 import { getUsers } from "../../../api/user.api";
+import { extractPassport } from "../../../api/passport.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
@@ -171,6 +172,8 @@ function WorkerForm() {
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
   const { profile } = useProfile();
+  const passportInputRef = useRef(null);
+  const [scanLoading, setScanLoading] = useState(false);
 
   const [loadingProfile, setLoadingProfile] = useState(isEditMode);
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -395,6 +398,75 @@ function WorkerForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  // Passport scan handler
+  const handlePassportScan = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Save file into state (same as manual upload)
+    handlePassportScanChange(e);
+
+    const form = new FormData();
+    form.append("passport", file);
+
+    setScanLoading(true);
+    showLoader();
+
+    try {
+      const response = await extractPassport(form);
+      const data = response?.data;
+
+      if (!data) {
+        addMessage(
+          false,
+          "Could not extract passport data. Please fill in manually.",
+        );
+        return;
+      }
+
+      if (data.fullName) {
+        setBasic((prev) => ({
+          ...prev,
+          full_name: data.fullName,
+        }));
+      }
+
+      setPassport((prev) => ({
+        ...prev,
+        ...(data.passportNumber && { passport_number: data.passportNumber }),
+        ...(data.dateOfIssue && { passport_issue_date: data.dateOfIssue }),
+        ...(data.expiryDate && { passport_expiry_date: data.expiryDate }),
+        ...(data.issuingCountry && {
+          passport_issuing_country: data.issuingCountry,
+        }),
+      }));
+
+      if (data.dateOfBirth) {
+        setPersonal((prev) => ({
+          ...prev,
+          date_of_birth: data.dateOfBirth,
+        }));
+      }
+
+      if (data.placeOfBirth) {
+        setPersonal((prev) => ({
+          ...prev,
+          ...(data.placeOfBirth && { place_of_birth: data.placeOfBirth }),
+        }));
+      }
+
+      addMessage(true, "Passport scanned successfully.");
+    } catch (err) {
+      addMessage(
+        false,
+        err.message || "Passport scan failed. Please fill in manually.",
+      );
+    } finally {
+      setScanLoading(false);
+      hideLoader();
+    }
+  };
+
   // map the aggregated getWorkerProfile response onto the form state
   const applyProfileToForm = (profileData) => {
     setBasic({
@@ -585,6 +657,7 @@ function WorkerForm() {
   const handlePassportScanChange = (e) => {
     if (e.target.files?.[0]) setPassportScan(e.target.files[0]);
   };
+  console.log(passportScan);
 
   const toggleSection = (key) => {
     setSectionsEnabled((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -1016,7 +1089,6 @@ function WorkerForm() {
       dataToSend.append("full_name", basic.full_name);
       dataToSend.append("phone_number", basic.phone_number);
       dataToSend.append("is_active", basic.is_active);
-
       // status is only sent on create — edit mode manages status separately
       // through the assign/revoke flow, never through this form submission
       const personalPayload = { ...personal };
@@ -1398,6 +1470,7 @@ function WorkerForm() {
 
   const renderPassportFields = () => (
     <div className="row">
+      {/* Right side — scan button only, mirrors + Status button */}
       <div className="form-group col-md-6 mb-3">
         {renderLabel("Passport Number", true)}
         <input
@@ -1439,7 +1512,7 @@ function WorkerForm() {
           onChange={handlePassportChange}
         />
       </div>
-      <div className="form-group col-md-6 mb-3">
+      {/* <div className="form-group col-md-6 mb-3">
         {renderLabel("Passport Scan", !existingPassportScanUrl)}
         <input
           type="file"
@@ -1460,7 +1533,7 @@ function WorkerForm() {
             </a>
           </small>
         )}
-      </div>
+      </div> */}
     </div>
   );
 
@@ -2516,6 +2589,53 @@ function WorkerForm() {
               ? "Update this worker's information section by section."
               : "Fill in each section to register a new worker."}
         </p>
+        {!previewMode && (
+          <>
+            <input
+              ref={passportInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              style={{ display: "none" }}
+              onChange={handlePassportScan}
+            />
+            <div className="d-flex gap-2 mt-3">
+              <button
+                type="button"
+                className="btn btn-main text-white d-flex align-items-center justify-content-center"
+                onClick={() => passportInputRef.current?.click()}
+                style={{ whiteSpace: "nowrap" }}
+              >
+                Upload Passport
+              </button>
+
+              {(basic.full_name || passport.passport_number) && (
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
+                  onClick={() => {
+                    setPassport({
+                      passport_number: " ",
+                      passport_issue_date: "",
+                      passport_expiry_date: "",
+                      passport_issuing_country: "Ethiopia",
+                    });
+                    setBasic({
+                      full_name: "",
+                    });
+                    setPersonal({
+                      date_of_birth: "",
+                    });
+                  }}
+                  style={{ whiteSpace: "nowrap" }}
+                  disabled={scanLoading}
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+          </>
+        )}
+        {/* Right side — scan button only, mirrors + Status button */}
       </div>
 
       {/* mobile / small-screen section nav: horizontal connected tree at top,
@@ -2549,14 +2669,12 @@ function WorkerForm() {
             <>{SECTIONS.map((s) => renderSectionCard(s))}</>
           ) : (
             <div className="card border-0 shadow-sm rounded-4 mb-4">
-              <div className="card-header bg-white border-0 rounded-4 pt-3 pb-0 d-flex justify-content-between align-items-start">
-              </div>
+              <div className="card-header bg-white border-0 rounded-4 pt-3 pb-0 d-flex justify-content-between align-items-start"></div>
               <div className="card-body pt-2">{renderPreview()}</div>
             </div>
           )}
         </div>
 
-  
         {!previewMode && (
           <div
             className="col-lg-3 order-1 order-lg-2 d-none d-lg-block"
