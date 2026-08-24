@@ -4,9 +4,12 @@ import { useNavigate } from "react-router-dom";
 import {
   listWorkers,
   listWorkersForPartners,
-  getWorkerProfile,
   deleteWorker,
+  restoreWorker, // ADDED — merged in from ArchivedWorkers
 } from "../../../api/worker.api";
+// REMOVED — deleteArchivedWorker. One deleteWorker(id, true) endpoint
+// permanently deletes a worker from either the Active or Archived list;
+// there's no need for a second, archive-only delete API/code path.
 
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 
@@ -34,10 +37,11 @@ const ActiveWorkers = () => {
   const [workers, setWorkers] = useState([]);
   const [filters, setFilters] = useState({});
 
+  // ADDED — the archived page is retired; is_active now doubles as the
+  // active/archived toggle in this single list. "false" = archived view.
+  const isArchivedView = filters.is_active === "false";
+
   // --- Selection Mode States ---
-  // Used for:
-  // 1. Autofill queue preparation
-  // 2. Bulk insurance printing
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
 
@@ -54,23 +58,30 @@ const ActiveWorkers = () => {
     showLoader();
 
     try {
+      // FIXED — always send an explicit is_active filter instead of only
+      // spreading `filters`. Before this fix, the Active view left
+      // is_active unset, so a worker who was just archived (is_active ->
+      // false) could still be returned by this same query and appear to
+      // "not leave" the Active list on refresh. Restore worked correctly
+      // because the Archived view always sent an explicit
+      // is_active: "false", which correctly excludes a worker as soon as
+      // its is_active flips back to true. Defaulting to "true" here makes
+      // the Active view behave the same way — explicit, not implicit.
       const params = {
         ...filters,
+        is_active: filters.is_active !== undefined ? filters.is_active : "true",
         page,
         limit,
       };
 
-      // 1. Declare the variable outside the blocks so it's scoped to the whole try block
       let res;
 
-      // 2. Coerce or safely compare the role (using == handles string vs number differences)
       if (Number(role) === 3) {
         res = await listWorkersForPartners(params);
       } else {
         res = await listWorkers(params);
       }
 
-      // 3. Now res is accessible here!
       setWorkers(res?.data?.items || []);
       setTotalItems(res?.data?.meta?.total_items || 0);
     } catch (err) {
@@ -94,6 +105,7 @@ const ActiveWorkers = () => {
       },
     });
   };
+
   // Edit Handler
   const handleEdit = (row) => {
     navigate(`/admin/employees/edit/${row.id}`, { state: row });
@@ -154,11 +166,9 @@ const ActiveWorkers = () => {
 
     setSelectedWorkerIds((prev) => {
       if (checked) {
-        // Add current page IDs without removing selections from previous pages
         return Array.from(new Set([...prev, ...currentPageIds]));
       }
 
-      // Remove only current page IDs, keep other page selections
       return prev.filter((selectedId) => !currentPageIds.includes(selectedId));
     });
   };
@@ -168,7 +178,6 @@ const ActiveWorkers = () => {
     setSelectedWorkerIds([]);
   };
 
-  // 4 cards: Wafid / Tasheer / Insurance / Musaned
   const handleAutofillSelected = () => {
     if (selectedWorkerIds.length === 0) return;
 
@@ -196,30 +205,41 @@ const ActiveWorkers = () => {
     showLoader();
 
     try {
-      const workerProfile = await getWorkerProfile(id);
+      // FIXED — explicitly match is_active to the current view (Active vs
+      // Archived) instead of omitting it. Once fetchWorkers started
+      // defaulting to is_active: "true", an unfiltered lookup here would
+      // never find an archived worker by id (the backend only returns
+      // active ones by default), which is exactly why View from the
+      // Archived list was always reporting "Employee profile not found".
+      // Sending the same is_active the list itself is currently showing
+      // makes View work identically from both lists.
+      const res = await listWorkers({
+        assignedWorkerIds: [id],
+        is_active: isArchivedView ? "false" : "true",
+        page: 1,
+        limit: 1,
+      });
+      const workerProfile = res?.data?.items?.[0];
 
-      if (role === 3) {
-        // Partner
-        navigate(`/partner/active-employees/${id}`, {
-          state: workerProfile,
-        });
-      } else if (role === 5) {
-        // Employer
-        navigate(`/employer/my-employees/${id}`, {
-          state: workerProfile,
-        });
-      } else {
-   navigate(`/admin/employees/edit/${id}`, {
-     state: { ...workerProfile, openInPreview: true },
-   });
+      if (!workerProfile) {
+        addMessage(false, "Employee profile not found");
+        return;
       }
+
+      navigate(`/admin/employees/edit/${id}`, {
+        state: {
+          ...workerProfile,
+          openInPreview: true,
+          isArchived: isArchivedView,
+        },
+      });
     } catch (err) {
       console.error("Failed to fetch worker profile:", err);
+      addMessage(false, err.message || "Failed to load employee profile");
     } finally {
       hideLoader();
     }
   };
-
   const handleArchive = (id) => {
     openModal(
       async () => {
@@ -231,7 +251,8 @@ const ActiveWorkers = () => {
             response?.message || "Employee archived successfully",
           );
 
-          fetchWorkers();
+          await fetchWorkers(); // CHANGED: awaited so the modal's callback
+          // doesn't resolve until the refreshed list has actually loaded
         } catch (err) {
           addMessage(false, err.message);
         }
@@ -254,7 +275,7 @@ const ActiveWorkers = () => {
             response?.message || "Employee deleted successfully",
           );
 
-          fetchWorkers();
+          await fetchWorkers(); // CHANGED
         } catch (err) {
           addMessage(false, err.message);
         }
@@ -266,6 +287,55 @@ const ActiveWorkers = () => {
     );
   };
 
+  const handleRestore = (id) => {
+    openModal(
+      async () => {
+        try {
+          const response = await restoreWorker(id);
+
+          addMessage(
+            response?.success,
+            response?.message || "Employee restored successfully",
+          );
+
+          await fetchWorkers(); // CHANGED
+        } catch (err) {
+          addMessage(false, err.message || "Failed to restore employee");
+        }
+      },
+      {
+        title: "Are you sure you want to restore this employee?",
+        confirmText: "Restore",
+      },
+    );
+  };
+
+  const handleDeleteArchived = (id) => {
+    // CHANGED — reuses the same deleteWorker(id, true) call the Active
+    // list's permanent-delete action uses, instead of a separate
+    // deleteArchivedWorker endpoint. Same API, same code flow, for both
+    // lists.
+    openModal(
+      async () => {
+        try {
+          const response = await deleteWorker(id, true);
+
+          addMessage(
+            response?.success,
+            response?.message || "Employee deleted successfully",
+          );
+
+          await fetchWorkers(); // CHANGED
+        } catch (err) {
+          addMessage(false, err.message || "Failed to delete employee");
+        }
+      },
+      {
+        title: "Are you sure you want to delete this employee permanently?",
+        confirmText: "Delete",
+      },
+    );
+  };
   // --- Visa Application Handlers ---
   const handleDownloadVisaApplication = async (id) => {
     showLoader();
@@ -301,7 +371,6 @@ const ActiveWorkers = () => {
     document.body.removeChild(link);
   };
 
-  // Share the generated visa application PDF via WhatsApp.
   const shareVisaOnWhatsapp = async () => {
     if (!visaPreview) return;
 
@@ -330,37 +399,72 @@ const ActiveWorkers = () => {
       );
     }
 
-    // Fallback: text-only WhatsApp link (wa.me cannot attach files).
     const message = `Visa application for ${fullName} is ready: ${fileName}`;
     const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(waUrl, "_blank", "noopener,noreferrer");
   };
 
-  const goBack = () => {
-    navigate(-1);
-  };
+  // const goBack = () => {
+  //   navigate(-1);
+  // };
+
+  const actions = isArchivedView
+    ? [
+        { type: "view", onClick: (row) => handleView(row.id) },
+        { type: "restore", onClick: (row) => handleRestore(row.id) },
+        { type: "delete", onClick: (row) => handleDeleteArchived(row.id) },
+      ]
+    : [
+        { type: "view", onClick: (row) => handleView(row.id) },
+        { type: "edit", onClick: (row) => handleEdit(row) },
+        {
+          type: "transaction",
+          onClick: (row) => handleRecordTransaction(row),
+        },
+        {
+          type: "downloadVisa",
+          onClick: (row) => handleDownloadVisaApplication(row.id),
+        },
+        { type: "archive", onClick: (row) => handleArchive(row.id) },
+        { type: "delete", onClick: (row) => handleDelete(row.id) },
+      ];
 
   return (
     <div className="dashboard-wraper position-relative">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-start gap-3">
-        <div className={`mb-${role === 5 ? "0" : "4"}`}>
-          <h2 className="fw-bold text-dark mb-2">
-            {role === 5 ? "My Employees" : "Active Employees"}
-          </h2>
-          <p className="text-muted mb-0">
-            {role === 5
-              ? "View the employees assigned to you and access their profiles."
-              : role === 3
-                ? "View active employees and access their profiles."
-                : "View and manage active employees, access detailed profiles, archive records, or remove employees when needed."}
-          </p>
+        <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 w-100">
+          <div>
+            <h2 className="fw-bold text-dark mb-2">
+              {role === 5
+                ? "My Employees"
+                : isArchivedView
+                  ? "Archived Employees"
+                  : "Active Employees"}
+            </h2>
+            <p className="text-muted mb-0">
+              {role === 5
+                ? "View the employees assigned to you and access their profiles."
+                : role === 3
+                  ? "View active employees and access their profiles."
+                  : isArchivedView
+                    ? "Browse archived employees, restore records, or permanently delete them."
+                    : "View and manage active employees, access detailed profiles, archive records, or remove employees when needed."}
+            </p>
+          </div>
+          <button
+            type="button"
+            className="btn btn-main text-nowrap align-self-end"
+            onClick={() => navigate("/admin/employees/add")}
+          >
+            Add Employee
+          </button>
         </div>
-
+        {/* 
         {role !== 3 && role !== 5 && (
-          <div className="position-absolute top-0 end-0 mt-4 pt-2">
+          <div className="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2 w-100 w-md-auto">
             <BackButton onClick={goBack} />
           </div>
-        )}
+        )} */}
 
         {visaPreview && (
           <div
@@ -434,7 +538,6 @@ const ActiveWorkers = () => {
               transition: "all 0.3s ease",
             }}
           >
-            {/* Left Side: Status Info */}
             <div className="d-flex align-items-center mb-3 mb-md-0 w-100 w-md-auto justify-content-start">
               <div
                 className="bulk-icon-wrap rounded-circle d-flex align-items-center justify-content-center me-3"
@@ -468,7 +571,6 @@ const ActiveWorkers = () => {
               </div>
             </div>
 
-            {/* Right Side: Actions */}
             <div
               className="d-flex flex-row flex-wrap gap-2 w-100 w-md-auto justify-content-md-end align-items-center"
               style={{ fontSize: "13px" }}
@@ -521,7 +623,6 @@ const ActiveWorkers = () => {
       ) : (
         <ListingComponent
           showAvater={true}
-          // Selection Props
           isSelectionMode={isSelectionMode}
           selectedIds={selectedWorkerIds}
           onSelectRow={handleSelectRow}
@@ -552,35 +653,14 @@ const ActiveWorkers = () => {
               accessor: "status",
             },
           ]}
-          actions={[
-            {
-              type: "view",
-              onClick: (row) => handleView(row.id),
-            },
-
-            { type: "edit", onClick: (row) => handleEdit(row) },
-            {
-              type: "transaction",
-              onClick: (row) => handleRecordTransaction(row),
-            },
-            {
-              type: "downloadVisa",
-              onClick: (row) => handleDownloadVisaApplication(row.id),
-            },
-            {
-              type: "archive",
-              onClick: (row) => handleArchive(row.id),
-            },
-            {
-              type: "delete",
-              onClick: (row) => handleDelete(row.id),
-            },
-          ]}
+          actions={actions}
           emptyState={{
             title:
               role === 5
                 ? "No employees is assigned to you yet"
-                : "No Active employees found",
+                : isArchivedView
+                  ? "No archived employees found"
+                  : "No Active employees found",
           }}
           pagination={{
             page,

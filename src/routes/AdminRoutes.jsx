@@ -36,7 +36,6 @@ import GalleryListPage from "./../domains/admin/pages/content/Gallery/Gallery/Ga
 import GalleryUplaodPage from "../domains/admin/pages/content/Gallery/GalleryUpload/GalleryUplaod.jsx";
 import LocationPage from "./../domains/admin/pages/content/Location/Location";
 import ContentDashboard from "../domains/admin/components/content/Dashboard/Dashboard.jsx";
-import useProfile from "../context/Profile/useProfile.jsx";
 // import Lmis from "./../domains/admin/pages/workers/modules/Lmis/Lmis";
 // import Travel from "../domains/admin/pages/workers/modules/Travel/Travel.jsx";
 // import Contract from "../domains/admin/pages/workers/modules/Contract/Contract.jsx";
@@ -53,8 +52,6 @@ import ViewComplaint from "../domains/admin/pages/complaints/ViewComplaint/ViewC
 import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx";
 
 const AdminRoutes = () => {
-  const { profile } = useProfile();
-  const role = profile?.role_id;
   return (
     <Routes>
       <Route
@@ -83,7 +80,7 @@ const AdminRoutes = () => {
         <Route
           path="/employees"
           element={
-            role === 3 || role === 5 ? <ActiveWorkers /> : <WorkerDashboard />
+           <ActiveWorkers /> 
           }
         />
         <Route path="/employees/add" element={<WorkerForm/>} />

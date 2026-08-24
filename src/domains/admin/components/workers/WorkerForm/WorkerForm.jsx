@@ -175,12 +175,11 @@ function WorkerForm() {
   const [loadingProfile, setLoadingProfile] = useState(isEditMode);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [activeSection, setActiveSection] = useState(
-    location.state?.openInPreview ? "preview" : "basic",
+    location.state?.openSection ||
+      (location.state?.openInPreview ? "preview" : "basic"),
   );
 
-  // Form Mode vs Preview Mode — the tree nav stays mounted in both, only the
-  // main content area swaps between the editable modules and the
-  // Worker-Profile-style preview.
+  // Form Mode vs Preview Mode.
   const [previewMode, setPreviewMode] = useState(
     Boolean(location.state?.openInPreview),
   );
@@ -240,27 +239,34 @@ function WorkerForm() {
   const treeNavSpacerRef = useRef(null);
   const [treeNavRect, setTreeNavRect] = useState({ left: 0, width: 0 });
 
-  useEffect(() => {
-    const updateTreeNavRect = () => {
-      if (treeNavSpacerRef.current) {
-        const rect = treeNavSpacerRef.current.getBoundingClientRect();
-        setTreeNavRect({ left: rect.left, width: rect.width });
-      }
-    };
-    updateTreeNavRect();
-    window.addEventListener("resize", updateTreeNavRect);
-    return () => window.removeEventListener("resize", updateTreeNavRect);
-    // re-measure once the tree column actually mounts: in Edit mode the
-    // first render is the "Loading worker data..." screen (no tree column
-    // in the DOM yet), so the initial measurement finds nothing. Re-running
-    // this when loadingProfile flips to false catches the tree column as
-    // soon as it's actually rendered.
-  }, [loadingProfile]);
+useEffect(() => {
+  if (previewMode || loadingProfile) return;
 
+  const updateTreeNavRect = () => {
+    if (!treeNavSpacerRef.current) return;
+
+    const rect = treeNavSpacerRef.current.getBoundingClientRect();
+
+    setTreeNavRect({
+      left: rect.left,
+      width: rect.width,
+    });
+  };
+
+  // Wait until the edit tree has actually mounted.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(updateTreeNavRect);
+  });
+
+  window.addEventListener("resize", updateTreeNavRect);
+
+  return () => {
+    window.removeEventListener("resize", updateTreeNavRect);
+  };
+}, [previewMode, loadingProfile]);
   const goBack = () => navigate(-1);
 
-  // Navigates the tree. Works the same in Form Mode and Preview Mode; the
-  // only special case is jumping *into* Preview Mode from the tree.
+  // Navigates between form sections and Preview Mode.
   const scrollToSection = (key) => {
     setActiveSection(key);
 
@@ -275,26 +281,33 @@ function WorkerForm() {
     }
   };
 
-  // Used by the Preview module edit icons: leaves Preview Mode, then scrolls
-  // to the matching form section once it has actually mounted.
-  const jumpToStep = (key) => {
-    setPreviewMode(false);
-    setPendingScroll(key);
-  };
+  // Used by Preview module Edit/Add buttons to return to the Create/Edit page.
+const jumpToStep = (key) => {
+  setPreviewMode(false);
+  setActiveSection(key);
+  setPendingScroll(key);
+};
+useEffect(() => {
+  if (!previewMode && pendingScroll) {
+    const key = pendingScroll;
 
-  useEffect(() => {
-    if (!previewMode && pendingScroll) {
-      const key = pendingScroll;
-      setPendingScroll(null);
-      setActiveSection(key);
-      // wait a tick so the form section refs are attached after the mode switch
+    setPendingScroll(null);
+    setActiveSection(key);
+
+    requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const node = sectionRefs.current[key];
-        if (node) node.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-    }
-  }, [previewMode, pendingScroll]);
 
+        if (node) {
+          node.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      });
+    });
+  }
+}, [previewMode, pendingScroll]);
   // Keeps the tree in sync with whatever section is actually on screen.
   // Only tracked in Form Mode, where every module in SECTIONS has its own
   // scroll anchor — Preview Mode is a single continuous page and is
@@ -505,13 +518,13 @@ function WorkerForm() {
     }
 
     setSectionsEnabled({
-      passport: Boolean(profileData.passport),
-      coc: Boolean(profileData.coc),
-      medical: Boolean(profileData.medical),
-      guarantor: Boolean(profileData.emergency),
-      visa: Boolean(profileData.visa),
-      travel: Boolean(travelRecord),
-      contract: Boolean(contractRecord),
+      passport: true,
+      coc: true,
+      medical: true,
+      guarantor: true,
+      visa: true,
+      travel: true,
+      contract: true,
     });
   };
 
@@ -1380,7 +1393,6 @@ function WorkerForm() {
                 {...(canDeleteStatus && {
                   onDelete: () => handleDeleteStatus(status),
                 })}
-                solid
               />
             </span>
           ))}
@@ -1873,13 +1885,8 @@ function WorkerForm() {
 
   /* ---------------- section navigation (shared data + markup for the tree nav) ---------------- */
 
-  // section list plus a trailing "Preview" node so the tree nav and the
-  // mobile top bar both walk the exact same ordered set of destinations —
-  // this is the single tree implementation reused by both Create and Edit.
-  const navItems = [
-    ...SECTIONS,
-    { key: "preview", label: "Preview", optional: false },
-  ];
+  // Create/Edit navigation contains only the actual form modules.
+  const navItems = SECTIONS;
 
   // a module counts as "completed" once it actually has information on it.
   // Status is judged by whether a status exists (assigned statuses in edit
@@ -1976,52 +1983,57 @@ function WorkerForm() {
   // Optional modules are always rendered and editable — the "Include"
   // switch only controls whether the module's data is attached to the
   // request payload in handleSubmit, never whether the module is visible.
-  const renderSectionCard = (section) => {
-    const isOptional = section.optional;
+const renderSectionCard = (section) => {
+  const isOptional = section.optional;
 
-    return (
-      <div
-        key={section.key}
-        id={`section-${section.key}`}
-        ref={setSectionRef(section.key)}
-        className="card border-0 shadow-sm rounded-4 mb-4 section-scroll-anchor"
-      >
-        <div className="card-header bg-white border-0 rounded-4 pt-3 pb-0">
-          <div className="d-flex justify-content-between align-items-start">
-            <div>
-              <h5 className="fw-bold text-dark mb-1">{section.label}</h5>
-              <p className="text-muted small mb-0">
-                {SECTION_SUBTITLES[section.key]}
-              </p>
-            </div>
-            {isOptional && (
-              <div className="form-check form-switch">
-                <input
-                  type="checkbox"
-                  role="switch"
-                  className="form-check-input"
-                  id={`toggle-${section.key}`}
-                  checked={sectionsEnabled[section.key]}
-                  onChange={() => toggleSection(section.key)}
-                />
-                <label
-                  className="form-check-label small text-muted"
-                  htmlFor={`toggle-${section.key}`}
-                >
-                  Include
-                </label>
-              </div>
-            )}
+  return (
+    <div
+      key={section.key}
+      id={`section-${section.key}`}
+      ref={setSectionRef(section.key)}
+      className="card border-0 shadow-sm rounded-4 mb-4 section-scroll-anchor position-relative"
+    >
+      {isOptional && (
+        <div
+          className="position-absolute top-0 end-0 m-3"
+          style={{ zIndex: 2 }}
+        >
+          <div className="form-check form-switch d-flex align-items-center gap-2 ps-0 mb-0">
+            <input
+              type="checkbox"
+              role="switch"
+              className="form-check-input ms-0"
+              id={`toggle-${section.key}`}
+              checked={sectionsEnabled[section.key]}
+              onChange={() => toggleSection(section.key)}
+            />
+            <label
+              className="form-check-label small text-muted"
+              htmlFor={`toggle-${section.key}`}
+            >
+              Include
+            </label>
           </div>
         </div>
-        <div className="card-body pt-2">
-          <div className="submit-section">
-            {SECTION_FIELD_RENDERERS[section.key]()}
-          </div>
+      )}
+
+      <div className="card-header bg-white border-0 rounded-4 pt-3 pb-0 pe-5">
+        <div>
+          <h5 className="fw-bold text-dark mb-1">{section.label}</h5>
+          <p className="text-muted small mb-0">
+            {SECTION_SUBTITLES[section.key]}
+          </p>
         </div>
       </div>
-    );
-  };
+
+      <div className="card-body pt-2">
+        <div className="submit-section">
+          {SECTION_FIELD_RENDERERS[section.key]()}
+        </div>
+      </div>
+    </div>
+  );
+};
 
   /* ---------------- preview (mirrors Worker Profile module layout) ---------------- */
 
@@ -2497,6 +2509,12 @@ function WorkerForm() {
         .section-scroll-anchor {
           scroll-margin-top: 100px;
         }
+
+        .dashboard-wraper input.form-control,
+        .dashboard-wraper select.form-control,
+        .dashboard-wraper textarea.form-control {
+          background-color: #EDF1FB;
+        }
       `}</style>
 
       <BackButton onClick={goBack} />
@@ -2549,14 +2567,12 @@ function WorkerForm() {
             <>{SECTIONS.map((s) => renderSectionCard(s))}</>
           ) : (
             <div className="card border-0 shadow-sm rounded-4 mb-4">
-              <div className="card-header bg-white border-0 rounded-4 pt-3 pb-0 d-flex justify-content-between align-items-start">
-              </div>
+              <div className="card-header bg-white border-0 rounded-4 pt-3 pb-0 d-flex justify-content-between align-items-start"></div>
               <div className="card-body pt-2">{renderPreview()}</div>
             </div>
           )}
         </div>
 
-  
         {!previewMode && (
           <div
             className="col-lg-3 order-1 order-lg-2 d-none d-lg-block"
