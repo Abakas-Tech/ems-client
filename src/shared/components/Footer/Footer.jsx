@@ -119,7 +119,7 @@ const Footer = () => {
         <div className="container">
           <div className="row align-items-center">
             {/* Left side */}
-            <div className="col-lg-6 col-md-6 text-center text-md-start mb-2 mb-md-0">
+            <div className="col-lg-8 col-md-8 text-center text-md-start mb-2 mb-md-0">
               <p className="mb-0">
                 © {new Date().getFullYear()} ALETISALAT Private Foreign
                 Employment Agency | Developed by{" "}
@@ -127,14 +127,14 @@ const Footer = () => {
                   href="https://abakastech.com/"
                   className="brand-link fw-bold"
                 >
-                  Abakas Technologies 
+                  Abakas Technologies
                 </a>
                 | All Rights Reserved.
               </p>
             </div>
 
             {/* Social icons */}
-            <div className="col-lg-6 col-md-6 text-center text-md-end">
+            <div className="col-lg-4 col-md-4 text-center text-md-end">
               <ul className="d-inline-flex d-md-flex justify-content-center justify-content-md-end  mb-0 me-4">
                 {Object.entries(socialLinks).map(([platform, url]) =>
                   url ? (

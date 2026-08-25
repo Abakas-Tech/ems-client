@@ -1,5 +1,6 @@
+Aboutsnippet.module · CSS
 /* AboutSnippet.module.css */
-
+ 
 .aboutSection {
   position: relative;
   overflow: hidden;
@@ -9,13 +10,20 @@
   margin-bottom: 0;
 }
 
+/* Row — stretch so image + content columns match height */
+.aboutRow {
+  display: flex;
+}
+
 /* Image Section */
 .imageWrapper {
   position: relative;
+  height: 100%;
 }
 
 .aboutImage {
   width: 100%;
+  height: 100%;
   object-fit: cover;
   border-radius: var(--radius-default);
   box-shadow: var(--color-shadow-elevated);
@@ -50,19 +58,14 @@
   margin-right: 8px;
 }
 
-/* Glass Card */
-.glassCard h5 {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: var(--brand-dark);
-}
-
-.glassCard p {
-  margin: 0;
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-  font-size: 0.9rem;
+/* Content Side — fills the same height as the image, content
+   centered vertically, button anchored to the bottom */
+.contentInner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  margin-top: -10px;
 }
 
 /* Tag */
@@ -79,86 +82,18 @@
 .description {
   color: var(--color-text-secondary);
   font-size: 1rem;
-  line-height: 1.5;
-  max-width: 85%;
+  line-height: 1.6;
+  max-width: 90%;
 }
 
 .description strong {
   color: var(--brand-dark);
 }
 
-/* Feature Card */
-.featureCard {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  padding: 18px;
-  height: 100%;
-
-  border-radius: var(--radius-default);
-
-  background: var(--color-surface-sidebar);
-  border: 1px solid var(--color-border-subtle);
-
-  transition: var(--transition-default);
-  box-shadow: var(--color-shadow-elevated);
-}
-
-.featureCard:hover {
-  transform: translateY(-4px);
-  background: var(--color-surface-hover);
-}
-
-.featureCard span {
-  font-size: 0.9rem;
-  color: var(--color-text-body);
-}
-
-.featureIcon {
-  color: var(--brand);
-  font-size: 1rem;
-
-  flex-shrink: 0;
-}
-
-/* Stats */
-.statCard {
-  text-align: center;
-  margin-bottom: 5px;
-  padding: 17px;
-
-  border-radius: var(--radius-default);
-
-  background: var(--color-surface-sidebar);
-  border: 1px solid var(--color-border-subtle);
-
-  transition: var(--transition-default);
-  box-shadow: var(--color-shadow-elevated);
-}
-
-.statCard:hover {
-  transform: translateY(-4px);
-}
-
-.statIcon {
-  font-size: 1.3rem;
-  margin: 3px;
-  color: var(--brand);
-}
-
-.statCard h3 {
-  font-size: 1.6rem;
-  font-weight: 800;
-  margin-bottom: 4px;
-
-  color: var(--color-text-primary);
-}
-
-.statCard p {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: 0.82rem;
+/* Button wrapper */
+.btnWrapper {
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
 
 /* Buttons */
@@ -183,21 +118,26 @@
 
 /* Responsive */
 @media (max-width: 991px) {
-  .title {
-    font-size: 2.5rem;
+  .aboutRow {
+    display: block;
+  }
+
+  .imageWrapper {
+    height: auto;
+    margin-bottom: 2rem;
+  }
+
+  .aboutImage {
+    height: auto;
+  }
+
+  .contentInner {
+    height: auto;
   }
 }
 
 @media (max-width: 576px) {
-  .title {
-    font-size: 2rem;
-  }
-
   .description {
     max-width: 100%;
-  }
-
-  .featureCard {
-    padding: 14px;
   }
 }

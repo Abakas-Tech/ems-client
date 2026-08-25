@@ -1,5 +1,248 @@
-/* Only for Our Approach slider */
+/* AboutDetail.module.css */
 
+/*
+  Palette (no CSS variables — plain values only, per request):
+  brand         rgb(16, 84, 145)
+  brand-dark    rgb(10, 58, 101)
+  brand-tint    rgba(16, 84, 145, 0.12)  -- icon chips / hover backgrounds
+  text-primary  #1c2733
+  text-secondary #5c6b7a
+  surface       #f4f7fa
+  border        #e2e8ee
+  shadow        0 10px 30px rgba(16, 24, 40, 0.08)
+*/
+
+.page {
+  color: #1c2733;
+}
+
+/* ================= HERO ================= */
+.hero {
+  text-align: center;
+  padding-bottom: 3.5rem;
+  padding-top: 30px;
+}
+
+.heroTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1c2733;
+  margin-bottom: 0.6rem;
+}
+
+.heroKicker {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 1rem;
+  font-style: italic;
+  color: rgb(16, 84, 145);
+  font-weight: 600;
+  margin-bottom: 1.75rem;
+}
+
+.heroKicker span {
+  font-style: normal;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #5c6b7a;
+}
+
+.heroLead {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #1c2733;
+  margin-bottom: 1rem;
+}
+
+.heroLead strong {
+  color: rgb(10, 58, 101);
+}
+
+.heroText {
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: #5c6b7a;
+  margin-bottom: 2rem;
+}
+
+.tagline {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.75rem 1rem;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgb(16, 84, 145), rgb(10, 58, 101));
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.14);
+}
+
+.tagline span {
+  font-weight: 500;
+  font-size: 0.82rem;
+  opacity: 0.88;
+}
+
+/* ================= UNIFORM SECTION RHYTHM ================= */
+/* One gap value controls the spacing between every section on the
+   page, so nothing drifts out of alignment section to section. */
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 5.5rem;
+}
+
+.sectionHead {
+  margin-bottom: 1.75rem;
+}
+
+.sectionHeadCenter {
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: rgb(16, 84, 145);
+  margin-bottom: 0.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1c2733;
+  margin-bottom: 0.3rem;
+}
+
+.sectionSubtitle {
+  font-size: 0.94rem;
+  color: #5c6b7a;
+  margin-bottom: 0;
+}
+
+/* Soft tinted panel used to visually separate content-dense grid
+   sections without adding hairlines or dead vertical space. */
+.panel {
+  padding: 2rem;
+  border-radius: 14px;
+  background: #f4f7fa;
+  border: 1px solid #e2e8ee;
+}
+
+/* ================= VISION / MISSION ================= */
+.pillarCard {
+  height: 100%;
+  padding: 32px 28px;
+  border-radius: 14px;
+  background: #f4f7fa;
+  border: 1px solid #e2e8ee;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+  transition: all 0.3s ease;
+}
+
+.pillarCard:hover {
+  transform: translateY(-4px);
+}
+
+.pillarIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: rgb(16, 84, 145);
+  background: rgba(16, 84, 145, 0.12);
+  margin-bottom: 1rem;
+}
+
+.pillarLabel {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgb(16, 84, 145);
+  margin-bottom: 0.6rem;
+}
+
+.pillarQuote {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  font-style: italic;
+  color: #1c2733;
+  margin-bottom: 0.75rem;
+}
+
+.pillarAmharic {
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: #5c6b7a;
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #e2e8ee;
+}
+
+/* ================= CORE VALUES ================= */
+.valueCard {
+  height: 100%;
+  padding: 22px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8ee;
+  transition: all 0.3s ease;
+}
+
+.valueCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+}
+
+.valueIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: rgb(16, 84, 145);
+  background: rgba(16, 84, 145, 0.12);
+  margin-bottom: 0.9rem;
+}
+
+.valueTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1c2733;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.valueAmharic {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #5c6b7a;
+}
+
+.valueDesc {
+  font-size: 0.87rem;
+  line-height: 1.6;
+  color: #5c6b7a;
+  margin: 0;
+}
+
+/* ================= WHAT WE DO - SLIDER (client base, retheme) ================= */
 .scrollWrapper {
   overflow: hidden;
   position: relative;
@@ -7,19 +250,40 @@
   padding: 15px 0;
 }
 
+.scrollWrapper::before,
+.scrollWrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.scrollWrapper::before {
+  left: 0;
+  background: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0));
+}
+
+.scrollWrapper::after {
+  right: 0;
+  background: linear-gradient(to left, #ffffff, rgba(255, 255, 255, 0));
+}
+
 .scrollTrack {
   display: flex;
   gap: 1.5rem;
-  animation: scrollAnim 25s linear infinite;
+  animation: scrollAnim 30s linear infinite;
 }
 
 .featureCard {
   flex: 0 0 33.33%;
   max-width: 340px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
-  border: 1px solid #f1f1f1;
+  background: #f4f7fa;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+  border: 1px solid #e2e8ee;
   transition: all 0.3s ease;
   min-height: 270px;
 }
@@ -30,9 +294,9 @@
 }
 
 .iconWrapper {
-  font-size: 2.8rem;
+  font-size: 2.4rem;
   margin-bottom: 1rem;
-  color: #0dcaf0;
+  color: rgb(16, 84, 145);
 }
 
 .scrollTrack:hover {
@@ -48,10 +312,166 @@
   }
 }
 
-/* Responsive */
+/* ================= WHY CHOOSE ================= */
+.whyItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  height: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8ee;
+  transition: all 0.3s ease;
+}
+
+.whyItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+}
+
+.whyIconWrap {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(16, 84, 145, 0.12);
+  flex-shrink: 0;
+}
+
+.whyIcon {
+  color: rgb(16, 84, 145);
+}
+
+.whyTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1c2733;
+  margin-bottom: 3px;
+}
+
+.whyDesc {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: #5c6b7a;
+  margin: 0;
+}
+
+/* ================= OUR PROMISE ================= */
+.promiseCard {
+  position: relative;
+  height: 100%;
+  padding: 28px 24px;
+  border-radius: 14px;
+  background: #f4f7fa;
+  border: 1px solid #e2e8ee;
+  transition: all 0.3s ease;
+}
+
+.promiseCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+}
+
+.promiseNumber {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: rgb(16, 84, 145);
+  opacity: 0.55;
+  margin-bottom: 0.75rem;
+}
+
+.promiseTitle {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #1c2733;
+  margin-bottom: 0.5rem;
+}
+
+.promiseDesc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #5c6b7a;
+  margin: 0;
+}
+
+/* ================= AT A GLANCE ================= */
+.glanceGrid {
+  border-radius: 14px;
+  border: 1px solid #e2e8ee;
+  overflow: hidden;
+}
+
+.glanceRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  padding: 16px 22px;
+  background: #ffffff;
+}
+
+.glanceRow:nth-child(even) {
+  background: #f4f7fa;
+}
+
+.glanceRow + .glanceRow {
+  border-top: 1px solid #e2e8ee;
+}
+
+.glanceLabel {
+  flex: 0 0 200px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgb(16, 84, 145);
+}
+
+.glanceValue {
+  flex: 1 1 300px;
+  font-size: 0.92rem;
+  color: #1c2733;
+}
+
+/* ================= OUR FUTURE ================= */
+.futureSection {
+  text-align: center;
+}
+
+.futureText {
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: #5c6b7a;
+  margin-bottom: 1.5rem;
+}
+
+.futureTagline {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: rgb(10, 58, 101);
+}
+
+.futureTagline span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #5c6b7a;
+}
+
+/* ================= RESPONSIVE ================= */
 @media (max-width: 1200px) {
   .featureCard {
     flex: 0 0 45%;
+  }
+}
+
+@media (max-width: 991px) {
+  .sections {
+    gap: 4rem;
   }
 }
 
@@ -59,10 +479,22 @@
   .featureCard {
     flex: 0 0 60%;
   }
+
+  .heroTitle {
+    font-size: 1.9rem;
+  }
 }
 
 @media (max-width: 576px) {
   .featureCard {
-    flex: 0 0 80%;
+    flex: 0 0 82%;
+  }
+
+  .glanceLabel {
+    flex: 0 0 100%;
+  }
+
+  .sections {
+    gap: 3.25rem;
   }
 }
