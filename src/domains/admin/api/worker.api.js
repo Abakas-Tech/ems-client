@@ -98,6 +98,43 @@ const getWorkerProfile = async (id) => {
   }
 };
 
+// Get worker data formatted for CV generation (personal info, passport,
+// skills, languages, experience, photos - everything the CV templates need).
+// Matches: router.get("/:id", ...) in the workerCV router.
+// NOTE: adjust the base path below ("/worker-cv") if this router is mounted
+// under a different prefix in your app.js/index.js (app.use("<prefix>", router)).
+const getWorkerCVData = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/worker-cv/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to get worker CV data",
+    );
+  }
+};
+
+// Ask the backend to generate the CV PDF for a given partner and upload it
+// (admin/employee only). Matches: router.post("/:id/generate-cv", ...).
+// This is the server-side counterpart to handleGenerateAndUpload() in
+// CVThree.jsx - use this instead once client-side PDF generation there is
+// swapped out for a backend-generated CV.
+const generateCvForPartner = async (id, payload) => {
+  try {
+    const response = await axiosInstance.post(
+      `/worker-cv/${id}/generate-cv`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || error.message || "Failed to generate CV",
+    );
+  }
+};
+
 // List workers with pagination and filters
 const listWorkers = async (params = {}) => {
   try {
@@ -147,6 +184,8 @@ export {
   listWorkers,
   listWorkersForPartners,
   getWorkerProfile,
+  getWorkerCVData,
+  generateCvForPartner,
   listArchivedWorkers,
   deleteArchivedWorker,
   getArchivedWorkerProfile,

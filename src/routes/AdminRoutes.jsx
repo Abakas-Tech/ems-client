@@ -41,8 +41,8 @@ import ContentDashboard from "../domains/admin/components/content/Dashboard/Dash
 // import Contract from "../domains/admin/pages/workers/modules/Contract/Contract.jsx";
 // import Guarantor from "../domains/admin/pages/workers/modules/Guarantor/Guarantor.jsx";
 // import Visa from "../domains/admin/pages/workers/modules/Visa/Visa.jsx";
-// import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx";
-import UserManual from "../domains/admin/pages/UserManual/UserManual.jsx";
+import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx";
+// import UserManual from "../domains/admin/pages/UserManual/UserManual.jsx";
 import WeredaPage from "../domains/admin/pages/meta/WeredaPage/WeredaPage.jsx";
 import SubCityPage from "../domains/admin/pages/meta/SubCityPage/SubCityPage.jsx";
 import ExternalLinks from "../domains/admin/pages/ExternalLinks/ExternalLinks.jsx";
@@ -124,11 +124,13 @@ const AdminRoutes = () => {
           path="employee/modules/:id/emergency-contact"
           element={<Guarantor />}
         /> */}
-        {/* <Route path="employee/modules/:id/cv" element={<CV />} />
-        <Route path="employee/modules/:id/visa" element={<Visa />} /> */}
+        {/* 
+        // <Route path="employee/modules/:id/visa" element={<Visa />} /> */}
+        
         <Route path="/meta-data" element={<MetaDataDashboard />} />
 
-        <Route path="user-manual" element={<UserManual />} />
+        {/* <Route path="user-manual" element={<UserManual />} /> */}
+        <Route path="employee/modules/:id/cv" element={<CV />} />
 
         <Route path="external-links" element={<ExternalLinks />} />
 
