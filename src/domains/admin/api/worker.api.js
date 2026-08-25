@@ -100,12 +100,11 @@ const getWorkerProfile = async (id) => {
 
 // Get worker data formatted for CV generation (personal info, passport,
 // skills, languages, experience, photos - everything the CV templates need).
-// Matches: router.get("/:id", ...) in the workerCV router.
-// NOTE: adjust the base path below ("/worker-cv") if this router is mounted
-// under a different prefix in your app.js/index.js (app.use("<prefix>", router)).
+// Matches: router.get("/:id", ...) in workerCV.route.js, mounted at
+// "/workers/cv" in the main index route file.
 const getWorkerCVData = async (id) => {
   try {
-    const response = await axiosInstance.get(`/worker-cv/${id}`);
+    const response = await axiosInstance.get(`/workers/cv/${id}`);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -117,14 +116,15 @@ const getWorkerCVData = async (id) => {
 };
 
 // Ask the backend to generate the CV PDF for a given partner and upload it
-// (admin/employee only). Matches: router.post("/:id/generate-cv", ...).
+// (admin/employee only). Matches: router.post("/:id/generate-cv", ...) in
+// workerCV.route.js, mounted at "/workers/cv" in the main index route file.
 // This is the server-side counterpart to handleGenerateAndUpload() in
 // CVThree.jsx - use this instead once client-side PDF generation there is
 // swapped out for a backend-generated CV.
 const generateCvForPartner = async (id, payload) => {
   try {
     const response = await axiosInstance.post(
-      `/worker-cv/${id}/generate-cv`,
+      `/workers/cv/${id}/generate-cv`,
       payload,
     );
     return response.data;

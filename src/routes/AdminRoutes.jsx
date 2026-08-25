@@ -77,13 +77,8 @@ const AdminRoutes = () => {
           }
         />
         <Route path="*" element={<NotFound />} />
-        <Route
-          path="/employees"
-          element={
-           <ActiveWorkers /> 
-          }
-        />
-        <Route path="/employees/add" element={<WorkerForm/>} />
+        <Route path="/employees" element={<ActiveWorkers />} />
+        <Route path="/employees/add" element={<WorkerForm />} />
         <Route path="/employees/edit/:id" element={<WorkerForm />} />
         <Route path="/employees/active" element={<ActiveWorkers />} />
         {/* <Route path="/employees/active/:id" element={<WorkerProfile />} /> */}
@@ -126,11 +121,11 @@ const AdminRoutes = () => {
         /> */}
         {/* 
         // <Route path="employee/modules/:id/visa" element={<Visa />} /> */}
-        
+
         <Route path="/meta-data" element={<MetaDataDashboard />} />
 
         {/* <Route path="user-manual" element={<UserManual />} /> */}
-        <Route path="employee/modules/:id/cv" element={<CV />} />
+        <Route path="employees/:id/cv" element={<CV />} />
 
         <Route path="external-links" element={<ExternalLinks />} />
 
