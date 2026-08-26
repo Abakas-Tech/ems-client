@@ -12,6 +12,15 @@ import cvFooterLogo from "../../../../../../assets/img/cv/cv-footer.png";
 
 const safeDate = (date) => (date ? date.slice(0, 10) : "");
 
+// Formats a Date as "1-Jul-26" (day-Mon-YY), matching the template's
+// "Date" field on the Application section.
+const formatShortDate = (date) => {
+  const day = date.getDate();
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = String(date.getFullYear()).slice(-2);
+  return `${day}-${month}-${year}`;
+};
+
 const REFERENCE_PREFIX = "CV";
 
 const generateReferenceNumber = (worker) => {
@@ -91,7 +100,7 @@ const css = {
     fontWeight: "bold",
   },
   titleStackSub: {
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: "bold",
     marginTop: 3,
   },
@@ -651,9 +660,8 @@ const CVThree = ({ templateSwitcher }) => {
     worker.contract_start_date && worker.contract_end_date
       ? subtractDate(worker.contract_end_date, worker.contract_start_date)
       : (worker.contract_period ?? "2 Years");
-  const code = worker.agency_code ?? worker.code ?? "";
-  const applicationDate =
-    safeDate(worker.application_date) || safeDate(worker.created_at);
+  // "CODE" row was removed from the template - no longer read from worker.
+  const applicationDate = formatShortDate(new Date());
 
   const phone = worker.phone_number ?? "";
   const name = (worker.full_name ?? "").toUpperCase();
@@ -671,8 +679,9 @@ const CVThree = ({ templateSwitcher }) => {
   const numberOfChildren = String(worker.number_of_children ?? "");
   const height = worker.height_cm ? `${worker.height_cm} cm` : "";
   const weight = worker.weight_kg ? `${worker.weight_kg} kg` : "";
-  const complexion = worker.complexion ?? "";
-  const nearestRelative = worker.nearest_relative ?? "";
+  // Hard-coded per your request - not read from worker data.
+  const complexion = "Brown";
+  const nearestRelative = "Father";
 
   const education = (worker.education ?? "").toUpperCase();
 
@@ -684,7 +693,17 @@ const CVThree = ({ templateSwitcher }) => {
   const faceUrl = worker.photo_3x4_url ?? "";
   const bodyUrl = worker.photo_standing_url ?? "";
 
-  const profileSummary = worker.profile_summary ?? worker.summary ?? "";
+  // "First time abroad" = no recorded work experience yet. Drives both the
+  // Profile Summary wording and the Previous Employment table below.
+  const isFirstTimeAbroad =
+    !Array.isArray(worker.experience) || worker.experience.length === 0;
+
+  const PROFILE_SUMMARY_BASE =
+    "She can do all house hold chores that includes taking care of kids. She is hard working and family oriented.";
+
+  const profileSummary = isFirstTimeAbroad
+    ? `First time to work abroad. ${PROFILE_SUMMARY_BASE}`
+    : PROFILE_SUMMARY_BASE;
 
   /* Page-2 contact strip: prefer the selected partner's own details,
      fall back to the agency defaults shown in the sample template. */
@@ -696,72 +715,65 @@ const CVThree = ({ templateSwitcher }) => {
     selectedPartner?.address ??
     AGENCY_CONTACT.addressAr;
 
-  /* Skills checklist - matches the template's tick list exactly.
-     HARD-CODED for now per your request: checked through "Arabic Cooking",
-     unchecked from "Sewing" onward. Swap back to the worker.skills lookup
-     (kept below, commented out) once skill data is wired up per worker. */
+  /* Skills checklist - checked/unchecked based on what's actually
+     assigned to this worker (worker_skills.skills SET column). The `key`
+     values below match the DB's SET literals exactly - note "other"
+     (singular), not "others". Handles the value coming back either as a
+     single comma-separated string (typical for a MySQL SET column) or as
+     an array. */
   const SKILL_DEFINITIONS = [
-    {
-      en: "Baby Sitting",
-      ar: "مجالسة الاطفال",
-      key: "Baby Sitting",
-      checked: true,
-    },
-    {
-      en: "Children Care",
-      ar: "رعاية الأطفال",
-      key: "Children Care",
-      checked: true,
-    },
-    { en: "Tutoring", ar: "دروس خصوصية", key: "Tutoring", checked: true },
-    {
-      en: "Disabled Care",
-      ar: "رعاية المعاقين",
-      key: "Disabled Care",
-      checked: true,
-    },
-    { en: "Cleaning", ar: "تنظيف", key: "Cleaning", checked: true },
-    { en: "Washing", ar: "غسل", key: "Washing", checked: true },
-    { en: "Ironing", ar: "كي الملابس", key: "Ironing", checked: true },
-    {
-      en: "Arabic Cooking",
-      ar: "الطبخ العربي",
-      key: "Arabic Cooking",
-      checked: true,
-    },
-    { en: "Sewing", ar: "خياطة", key: "Sewing", checked: false },
-    {
-      en: "Computers",
-      ar: "أجهزة الكمبيوتر",
-      key: "Computers",
-      checked: false,
-    },
-    { en: "Driving", ar: "القيادة", key: "Driving", checked: false },
-    { en: "Others", ar: "مهارات اخرى", key: "Others", checked: false },
+    { en: "Baby Sitting", ar: "مجالسة الاطفال", key: "baby sitting" },
+    { en: "Children Care", ar: "رعاية الأطفال", key: "children care" },
+    { en: "Tutoring", ar: "دروس خصوصية", key: "tutoring" },
+    { en: "Disabled Care", ar: "رعاية المعاقين", key: "disabled care" },
+    { en: "Cleaning", ar: "تنظيف", key: "cleaning" },
+    { en: "Washing", ar: "غسل", key: "washing" },
+    { en: "Ironing", ar: "كي الملابس", key: "ironing" },
+    { en: "Arabic Cooking", ar: "الطبخ العربي", key: "arabic cooking" },
+    { en: "Sewing", ar: "خياطة", key: "sewing" },
+    { en: "Computers", ar: "أجهزة الكمبيوتر", key: "computers" },
+    { en: "Driving", ar: "القيادة", key: "driving" },
+    { en: "Others", ar: "مهارات اخرى", key: "other" },
   ];
 
-  // const workerSkillNames =
-  //   worker.skills?.map((skill) =>
-  //     (skill.skill_name ?? skill.name ?? skill).toLowerCase(),
-  //   ) ?? [];
+  const workerSkillNames = Array.isArray(worker.skills)
+    ? worker.skills.map((skill) =>
+        (skill.skill_name ?? skill.name ?? skill ?? "")
+          .toString()
+          .trim()
+          .toLowerCase(),
+      )
+    : (worker.skills ?? "")
+        .toString()
+        .split(",")
+        .map((skill) => skill.trim().toLowerCase())
+        .filter(Boolean);
 
   const skills = SKILL_DEFINITIONS.map((skill) => ({
     en: skill.en,
     ar: skill.ar,
-    checked: skill.checked,
-    // checked: workerSkillNames.includes(skill.key.toLowerCase()), // <- switch to this later
+    checked: workerSkillNames.includes(skill.key),
   }));
 
-  /* Languages checklist */
+  /* Languages checklist - only these three are sent from the frontend. */
   const LANGUAGE_DEFINITIONS = [
     { en: "English", ar: "الإنجليزية" },
     { en: "Arabic", ar: "عربى" },
+    { en: "Amharic", ar: "أمهرية" },
   ];
 
-  const workerLanguageNames =
-    worker.languages?.map((language) =>
-      (language.language ?? language.name ?? language).toLowerCase(),
-    ) ?? [];
+  const workerLanguageNames = Array.isArray(worker.languages)
+    ? worker.languages.map((language) =>
+        (language.language ?? language.name ?? language ?? "")
+          .toString()
+          .trim()
+          .toLowerCase(),
+      )
+    : (worker.languages ?? "")
+        .toString()
+        .split(",")
+        .map((language) => language.trim().toLowerCase())
+        .filter(Boolean);
 
   const languages = LANGUAGE_DEFINITIONS.map((language) => ({
     en: language.en,
@@ -769,14 +781,11 @@ const CVThree = ({ templateSwitcher }) => {
     checked: workerLanguageNames.includes(language.en.toLowerCase()),
   }));
 
-  /* Previous employment - array of { country, years } */
-  const previousEmployment =
-    Array.isArray(worker.experience) && worker.experience.length
-      ? worker.experience
-      : [
-          { country: "", years: "" },
-          { country: "", years: "" },
-        ];
+  /* Previous employment - array of { country, years }. First-time-abroad
+     workers get a single "First Time" row instead of country/year data. */
+  const previousEmployment = isFirstTimeAbroad
+    ? [{ country: "First Time", years: "", isFirstTime: true }]
+    : worker.experience;
 
   const cvStyle = {
     width: 760,
@@ -912,7 +921,6 @@ const CVThree = ({ templateSwitcher }) => {
                   value={contract}
                   arLabel="مدة العقد"
                 />
-                <Row3 label="CODE" value={code} />
                 <Row3 label="Date" value={applicationDate} last />
 
                 <SectionBar en="PASSPORT DETAILS" ar="تفاصيل جواز السفر" />
@@ -1085,43 +1093,59 @@ const CVThree = ({ templateSwitcher }) => {
               ar="العمل السابق"
               sub="COUNTRY WORKED BEFORE"
             />
-            {previousEmployment.map((entry, index) => (
-              <div
-                key={`${entry.country}-${index}`}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr",
-                  borderBottom: "1px solid #000",
-                  textAlign: "center",
-                  fontSize: 12,
-                }}
-              >
+            {previousEmployment.map((entry, index) =>
+              entry.isFirstTime ? (
                 <div
+                  key="first-time"
                   style={{
-                    padding: "3px 6px",
-                    fontWeight: "bold",
-                    color: "#c0392b",
-                    borderRight: "1px solid #000",
-                  }}
-                >
-                  {(entry.country ?? "").toUpperCase()}
-                </div>
-                <div
-                  style={{ padding: "3px 6px", borderRight: "1px solid #000" }}
-                >
-                  {entry.years ?? ""}
-                </div>
-                <div
-                  style={{
-                    padding: "3px 6px",
+                    padding: "6px 6px",
+                    borderBottom: "1px solid #000",
+                    textAlign: "center",
+                    fontSize: 12,
                     fontWeight: "bold",
                     color: "#c0392b",
                   }}
                 >
-                  YEAR
+                  FIRST TIME
                 </div>
-              </div>
-            ))}
+              ) : (
+                <div
+                  key={`${entry.country}-${index}`}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr 1fr",
+                    borderBottom: "1px solid #000",
+                    textAlign: "center",
+                    fontSize: 12,
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: "3px 6px",
+                      fontWeight: "bold",
+                      color: "#c0392b",
+                      borderRight: "1px solid #000",
+                    }}
+                  >
+                    {(entry.country ?? "").toUpperCase()}
+                  </div>
+                  <div
+                    style={{ padding: "3px 6px", borderRight: "1px solid #000" }}
+                  >
+                    {entry.years ?? ""}
+                  </div>
+                  <div
+                    style={{
+                      padding: "3px 6px",
+                      fontWeight: "bold",
+                      color: "#c0392b",
+                    }}
+                  >
+                    YEAR
+                  </div>
+                </div>
+              ),
+            )}
 
             <SectionBar en="LANGUAGES & EDUCATION" ar="اللغات والتعليم" />
             {languages.map((language, index) => (
