@@ -1,16 +1,15 @@
 import { axiosInstance } from "../../../utils/axios";
-import Country from './../components/meta/Country/Country';
-import JobPosition from './../components/meta/JobPosition/JobPostion';
 
-// skill apis
+
 
 // Assign skill to worker
-const assignWorkerSkill = async (worker_id, data) => {
+const assignWorkerSkill = async (workerId, data) => {
   try {
     const response = await axiosInstance.post(
-      `/workers/meta/${worker_id}/skills`,
+      `/workers/meta/${workerId}/skills`,
       data,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Assign skill error");
@@ -18,11 +17,12 @@ const assignWorkerSkill = async (worker_id, data) => {
 };
 
 // List worker skills
-const getWorkerSkills = async (worker_id) => {
+const getWorkerSkills = async (workerId) => {
   try {
     const response = await axiosInstance.get(
-      `/workers/meta/${worker_id}/skills`,
+      `/workers/meta/${workerId}/skills`,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Fetch skills error");
@@ -30,18 +30,20 @@ const getWorkerSkills = async (worker_id) => {
 };
 
 // Remove worker skill
-const deleteWorkerSkill = async (worker_id, skill_id) => {
+const deleteWorkerSkill = async (workerId, skill) => {
   try {
     const response = await axiosInstance.delete(
-      `/workers/meta/${worker_id}/skills/${skill_id}`,
+      `/workers/meta/${workerId}/skills/${encodeURIComponent(skill)}`,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Delete skill error");
   }
 };
 
-// language apis
+
+
 // Add language
 const addWorkerLanguage = async (workerId, data) => {
   try {
@@ -49,6 +51,7 @@ const addWorkerLanguage = async (workerId, data) => {
       `/workers/meta/${workerId}/languages`,
       data,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Add language error");
@@ -61,6 +64,7 @@ const getWorkerLanguages = async (workerId) => {
     const response = await axiosInstance.get(
       `/workers/meta/${workerId}/languages`,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Fetch languages error");
@@ -68,12 +72,14 @@ const getWorkerLanguages = async (workerId) => {
 };
 
 // Update language
-const updateWorkerLanguage = async (workerId, languageId, data) => {
+// Backend identifies the old language by its actual string value.
+const updateWorkerLanguage = async (workerId, oldLanguage, data) => {
   try {
     const response = await axiosInstance.patch(
-      `/workers/meta/${workerId}/languages/${languageId}`,
+      `/workers/meta/${workerId}/languages/${encodeURIComponent(oldLanguage)}`,
       data,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Update language error");
@@ -81,18 +87,19 @@ const updateWorkerLanguage = async (workerId, languageId, data) => {
 };
 
 // Delete language
-const deleteWorkerLanguage = async (workerId, languageId) => {
+const deleteWorkerLanguage = async (workerId, language) => {
   try {
     const response = await axiosInstance.delete(
-      `/workers/meta/${workerId}/languages/${languageId}`,
+      `/workers/meta/${workerId}/languages/${encodeURIComponent(language)}`,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Delete language error");
   }
 };
 
-// position apis
+// ==================== WORKER JOB POSITIONS ====================
 
 // Add position
 const addWorkerPosition = async (workerId, data) => {
@@ -101,6 +108,7 @@ const addWorkerPosition = async (workerId, data) => {
       `/workers/meta/${workerId}/positions`,
       data,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Add position error");
@@ -113,24 +121,16 @@ const getWorkerPositions = async (workerId) => {
     const response = await axiosInstance.get(
       `/workers/meta/${workerId}/positions`,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Fetch positions error");
   }
 };
 
-// Update position
-const updateWorkerPosition = async (workerId, positionId, data) => {
-  try {
-    const response = await axiosInstance.patch(
-      `/workers/meta/${workerId}/positions/${positionId}`,
-      data,
-    );
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || "Update position error");
-  }
-};
+// NOTE:
+// There is NO update position endpoint in the backend.
+// Therefore updateWorkerPosition has been removed.
 
 // Delete position
 const deleteWorkerPosition = async (workerId, positionId) => {
@@ -138,46 +138,71 @@ const deleteWorkerPosition = async (workerId, positionId) => {
     const response = await axiosInstance.delete(
       `/workers/meta/${workerId}/positions/${positionId}`,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Delete position error");
   }
 };
 
-// status api
-// Get current status of a worker
+
+
+// Get worker status history
 const getWorkerCurrentStatus = async (workerId) => {
   try {
     const response = await axiosInstance.get(
       `/workers/meta/${workerId}/statuses`,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Failed to fetch worker status",
+      error.response?.data?.message || "Failed to fetch worker statuses",
     );
   }
 };
 
-// Assign a status to a worker
+// Assign status to worker
 const assignWorkerStatus = async (workerId, statusId) => {
   try {
     const response = await axiosInstance.post(
       `/workers/meta/${workerId}/statuses`,
-      { status_id: statusId },
+      {
+        status_id: statusId,
+      },
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to assign status");
   }
 };
 
-// Delete/revoke a status from a worker
-const deleteWorkerStatus = async (workerId, statusId) => {
+// Update worker status
+const updateWorkerStatus = async (workerId, statusId) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/meta/${workerId}/status`,
+      {
+        status_id: statusId,
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Update status error");
+  }
+};
+
+// Delete status history record
+// Backend expects this route parameter as the history ID,
+// even though the route calls it status_id.
+const deleteWorkerStatus = async (workerId, historyId) => {
   try {
     const response = await axiosInstance.delete(
-      `/workers/meta/${workerId}/statuses/${statusId}`,
+      `/workers/meta/${workerId}/statuses/${historyId}`,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(
@@ -186,20 +211,8 @@ const deleteWorkerStatus = async (workerId, statusId) => {
   }
 };
 
-// Update worker status
-// export const updateWorkerStatuse = async (workerId, statusId) => {
-//   try {
-//     const response = await axiosInstance.patch(
-//       `/workers/meta/${workerId}/status`,
-//       { status_id: statusId },
-//     );
-//     return response.data;
-//   } catch (error) {
-//     throw new Error(error.response?.data?.message || "Update status error");
-//   }
-// };
 
-// worker country apis
+
 // Add experience
 const addWorkerExperience = async (workerId, data) => {
   try {
@@ -207,6 +220,7 @@ const addWorkerExperience = async (workerId, data) => {
       `/workers/meta/${workerId}/experiences`,
       data,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Add experience error");
@@ -219,46 +233,68 @@ const getWorkerExperiences = async (workerId) => {
     const response = await axiosInstance.get(
       `/workers/meta/${workerId}/experiences`,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Fetch experiences error");
   }
 };
 
-// Remove experience
-const deleteWorkerExperience = async (workerId, CountryId,JobPositionId) => {
+// Update experience
+const updateWorkerExperience = async (workerId, experienceId, data) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/meta/${workerId}/experiences/${experienceId}`,
+      data,
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Update experience error");
+  }
+};
+
+// Delete experience
+const deleteWorkerExperience = async (workerId, experienceId) => {
   try {
     const response = await axiosInstance.delete(
-      `/workers/meta/${workerId}/experiences/${CountryId}/${JobPositionId}`,
+      `/workers/meta/${workerId}/experiences/${experienceId}`,
     );
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Delete experience error");
   }
 };
 
+
+
 export {
-  // skill apis
+  // Skills
   assignWorkerSkill,
   getWorkerSkills,
   deleteWorkerSkill,
-  // language apis
+
+  // Languages
   addWorkerLanguage,
   getWorkerLanguages,
   updateWorkerLanguage,
   deleteWorkerLanguage,
-  // position apis
+
+  // Positions
   addWorkerPosition,
   getWorkerPositions,
-  updateWorkerPosition,
   deleteWorkerPosition,
-  // status apis
+
+  // Status
   getWorkerCurrentStatus,
   assignWorkerStatus,
+  updateWorkerStatus,
   deleteWorkerStatus,
-  // updateWorkerStatuses,
-  // worker experience apis
+
+  // Experiences
   addWorkerExperience,
   getWorkerExperiences,
+  updateWorkerExperience,
   deleteWorkerExperience,
 };
