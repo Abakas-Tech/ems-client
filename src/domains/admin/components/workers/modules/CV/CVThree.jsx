@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import { getWorkerCVData } from "../../../../api/worker.api";
+import {
+  getWorkerCVData,
+  generateCvForPartner,
+} from "../../../../api/worker.api";
 import { getUsersLookup } from "../../../../api/user.api";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { useNavigate, useParams } from "react-router-dom";
@@ -348,12 +351,40 @@ const PhotoBox = ({ url, alt, placeholderLabel }) => (
   </div>
 );
 
+/*
+ * FIX (content cut off at the page edges + page 2 narrower than page 1):
+ *
+ * 1. Scroll compensation - html2canvas measures capture position relative
+ *    to the page's CURRENT scroll offset. `scrollX: 0, scrollY: 0` assumed
+ *    the page is never scrolled, which is wrong the moment the person has
+ *    scrolled down (exactly when they'd reach the Download button on a
+ *    long form). Since passportRef sits further down the DOM than cvRef,
+ *    a wrong scroll assumption skewed its capture differently than the
+ *    first element's - that's what made page 2 come out narrower/shifted.
+ *    Passing the NEGATIVE of the live scroll position (`-window.scrollX`,
+ *    `-window.scrollY`) is the correct, standard compensation so both
+ *    captures line up regardless of where the page happens to be scrolled.
+ *    `windowHeight` is also set to the element's own full height so
+ *    html2canvas's offscreen render frame always has room to lay out the
+ *    entire element, not just whatever fits in the current browser window.
+ *
+ * 2. Bottom cutoff - the image was previously scaled to fit the page's
+ *    WIDTH only (`ratio = printableWidth / canvasWidth`), with no check
+ *    that the resulting height fit the page. Tall content (this CV) ended
+ *    up taller than one A4 page, and jsPDF simply draws past the page
+ *    edge - anything below the bottom margin is invisible, which is the
+ *    cutoff you saw (Skills table stopping at "Ironing", photo sliced,
+ *    passport image sliced). Using `Math.min(widthRatio, heightRatio)`
+ *    fits the whole element within the page on BOTH axes, so nothing gets
+ *    clipped; the image is centered horizontally in case that leaves a
+ *    little extra width margin on one side.
+ */
 const captureElementToPage = async (
   pdf,
   element,
   waitMs = 500,
-  marginX = 8,
-  marginY = 8,
+  marginX = 1.5,
+  marginY = 1.5,
 ) => {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
@@ -368,6 +399,9 @@ const captureElementToPage = async (
     allowTaint: false,
     scale: 2,
     windowWidth: 760,
+    windowHeight: element.scrollHeight,
+    scrollX: -window.scrollX,
+    scrollY: -window.scrollY,
   });
 
   element.style.width = originalWidth;
@@ -378,15 +412,14 @@ const captureElementToPage = async (
 
   const printableWidth = pageWidth - marginX * 2;
   const printableHeight = pageHeight - marginY * 2;
-  const ratio = Math.min(
-    printableWidth / canvasWidth,
-    printableHeight / canvasHeight,
-  );
+  const widthRatio = printableWidth / canvasWidth;
+  const heightRatio = printableHeight / canvasHeight;
+  const ratio = Math.min(widthRatio, heightRatio);
 
   const imageWidth = canvasWidth * ratio;
   const imageHeight = canvasHeight * ratio;
   const offsetX = marginX + (printableWidth - imageWidth) / 2;
-  const offsetY = marginY + (printableHeight - imageHeight) / 2;
+  const offsetY = marginY;
 
   pdf.addImage(imageData, "JPEG", offsetX, offsetY, imageWidth, imageHeight);
 };
@@ -413,7 +446,12 @@ const CVThree = ({ templateSwitcher }) => {
     showLoader();
 
     try {
-      const response = await getWorkerCVData(workerId);
+      // Passing the currently selected partner as a preview so the backend
+      // can flag whether this worker's CV has already been shared with them.
+      const response = await getWorkerCVData(
+        workerId,
+        selectedPartnerId || undefined,
+      );
       setWorker(response.data);
     } catch (error) {
       console.error("fetch error:", error);
@@ -421,7 +459,7 @@ const CVThree = ({ templateSwitcher }) => {
     } finally {
       hideLoader();
     }
-  }, [id, profile?.id]);
+  }, [id, profile?.id, selectedPartnerId]);
 
   useEffect(() => {
     fetchWorkerData();
@@ -551,9 +589,19 @@ const CVThree = ({ templateSwitcher }) => {
       ) || null
     : null;
 
-  const hasSelectedPartnerCv = Boolean(existingSelectedPartnerCv);
+  // Backend flags whether this CV has already been shared with the
+  // partner passed as ?partnerId= (the "preview" param). Field name is a
+  // best guess across a few likely candidates - confirm against the real
+  // getWorkerCV response shape and trim this down to the actual key.
+  const alreadySharedWithPartner = Boolean(
+    worker?.already_shared_with_partner ??
+    worker?.alreadyShared ??
+    worker?.shared_with_partner ??
+    worker?.is_shared_with_partner ??
+    false,
+  );
 
-  const handleGenerateClick = () => {
+  const handleDownloadClick = () => {
     if (!selectedPartnerId) {
       addMessage(false, "Please select a partner");
       return;
@@ -564,10 +612,10 @@ const CVThree = ({ templateSwitcher }) => {
       return;
     }
 
-    handleGenerateAndUpload();
+    handleGenerateAndDownload();
   };
 
-  const handleGenerateAndUpload = async () => {
+  const handleGenerateAndDownload = async () => {
     if (!cvRef.current || !worker) return;
 
     if (!selectedPartnerId || !selectedPartnerHeaderUrl) {
@@ -589,26 +637,21 @@ const CVThree = ({ templateSwitcher }) => {
         await captureElementToPage(pdf, passportRef.current, 800);
       }
 
-      const blob = pdf.output("blob");
       const name = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
-      const file = new File([blob], `${name}.pdf`, {
-        type: "application/pdf",
+
+      // Grant the selected partner backend access to this worker's CV
+      // (creates/updates the worker_partner_cvs row), so they can come
+      // back and view/download it themselves later - not just this once.
+      await generateCvForPartner(worker.id, {
+        partnerId: selectedPartnerId,
       });
 
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("file_name", name);
-      formData.append("category", "CV_THREE");
-      formData.append("is_private", 0);
-      formData.append("description", `CV for ${worker.full_name}`);
-      formData.append("worker_id", worker.id);
-      formData.append("partner_id", selectedPartnerId);
-
-      // await uploadFile(formData);
+      // Trigger an actual browser download of the PDF we just built.
+      pdf.save(`${name}.pdf`);
 
       /*
-       * Keep the local state in sync so the button immediately changes from
-       * "Generate CV" to "Update CV" for this selected partner.
+       * Keep the local state in sync so the partner shows up as already
+       * having access to this worker's CV without needing a full refetch.
        */
       setWorker((previous) => {
         const previousCvs = Array.isArray(previous?.generated_cvs)
@@ -636,13 +679,10 @@ const CVThree = ({ templateSwitcher }) => {
         };
       });
 
-      addMessage(
-        true,
-        `CV ${hasSelectedPartnerCv ? "updated" : "generated"} and uploaded successfully!`,
-      );
+      addMessage(true, "CV downloaded and shared with the partner!");
     } catch (error) {
       console.error(error);
-      addMessage(false, "Failed to generate PDF");
+      addMessage(false, error.message || "Failed to generate PDF");
     } finally {
       hideLoader();
     }
@@ -813,14 +853,22 @@ const CVThree = ({ templateSwitcher }) => {
           )}
         </div>
 
-        {(Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) && (
-          <button
-            className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
-            onClick={handleGenerateClick}
-          >
-            {hasSelectedPartnerCv ? "Update CV" : "Generate CV"}
-          </button>
-        )}
+        {(Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) &&
+          selectedPartnerId && (
+            <div className="d-flex flex-column align-items-md-end mt-3 mt-md-5">
+              <button
+                className="btn btn-main text-white w-45 d-flex align-items-center justify-content-center"
+                onClick={handleDownloadClick}
+              >
+                Download CV
+              </button>
+              {alreadySharedWithPartner && (
+                <span className="text-success small mt-1">
+                  ✓ Already shared with this partner
+                </span>
+              )}
+            </div>
+          )}
       </div>
 
       <div className="mb-3 mt-1">{templateSwitcher}</div>
@@ -1130,7 +1178,10 @@ const CVThree = ({ templateSwitcher }) => {
                     {(entry.country ?? "").toUpperCase()}
                   </div>
                   <div
-                    style={{ padding: "3px 6px", borderRight: "1px solid #000" }}
+                    style={{
+                      padding: "3px 6px",
+                      borderRight: "1px solid #000",
+                    }}
                   >
                     {entry.years ?? ""}
                   </div>
@@ -1187,7 +1238,7 @@ const CVThree = ({ templateSwitcher }) => {
               <div
                 style={{
                   width: "100%",
-                  height: 300,
+                  height: 200,
                   background: "#ddd",
                   display: "flex",
                   alignItems: "center",

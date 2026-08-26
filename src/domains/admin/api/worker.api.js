@@ -102,9 +102,14 @@ const getWorkerProfile = async (id) => {
 // skills, languages, experience, photos - everything the CV templates need).
 // Matches: router.get("/:id", ...) in workerCV.route.js, mounted at
 // "/workers/cv" in the main index route file.
-const getWorkerCVData = async (id) => {
+// Optional `partnerId` is sent as ?partnerId=... - the controller reads this
+// as `previewPartnerId` and, per confirmation, uses it to flag whether this
+// CV has already been shared with that specific partner.
+const getWorkerCVData = async (id, partnerId) => {
   try {
-    const response = await axiosInstance.get(`/workers/cv/${id}`);
+    const response = await axiosInstance.get(`/workers/cv/${id}`, {
+      params: partnerId ? { partnerId } : undefined,
+    });
     return response.data;
   } catch (error) {
     throw new Error(
