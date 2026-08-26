@@ -7,9 +7,6 @@ import {
   deleteWorker,
   restoreWorker, // ADDED — merged in from ArchivedWorkers
 } from "../../../api/worker.api";
-// REMOVED — deleteArchivedWorker. One deleteWorker(id, true) endpoint
-// permanently deletes a worker from either the Active or Archived list;
-// there's no need for a second, archive-only delete API/code path.
 
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 
@@ -20,7 +17,7 @@ import { useDelete } from "../../../../../context/Delete/useDelete";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import useProfile from "../../../../../context/Profile/useProfile";
-import { generateVisaApplicationPdf } from "../../Application/visaApplicationPdfGenerator";
+import { generateVisaApplicationPdf } from "../../Application/VisaApplicationPdfGenerator";
 import VisaApplicationTemplate from "../../Application/VisaApplicationTemplate";
 import { printInsuranceParticulars } from "../../Insurance/InsuranceReport";
 
@@ -41,11 +38,11 @@ const ActiveWorkers = () => {
   // active/archived toggle in this single list. "false" = archived view.
   const isArchivedView = filters.is_active === "false";
 
-  // --- Selection Mode States ---
+  //  Selection Mode States 
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
 
-  // --- Visa Application Preview State ---
+  // Visa Application Preview State 
   const [visaPreview, setVisaPreview] = useState(null);
 
   // Pagination
@@ -89,6 +86,7 @@ const ActiveWorkers = () => {
     } finally {
       hideLoader();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, page, limit, role]);
 
   useEffect(() => {
@@ -356,6 +354,21 @@ const ActiveWorkers = () => {
     } catch (err) {
       hideLoader();
       console.error("Failed to generate visa application PDF:", err);
+
+      // Required worker information is missing — instead of surfacing a
+      // plain error message, send the user straight into that worker's
+      // Edit mode with the exact missing fields carried along so the
+      // Worker Form can flag them for completion.
+      if (err?.missingFields?.length > 0) {
+        navigate(`/admin/employees/edit/${err.workerId ?? id}`, {
+          state: {
+            openSection: err.missingFields[0]?.section,
+            missingFields: err.missingFields,
+          },
+        });
+        return;
+      }
+
       addMessage(false, err.message || "Failed to generate visa application");
     }
   };
@@ -402,6 +415,11 @@ const ActiveWorkers = () => {
     const message = `Visa application for ${fullName} is ready: ${fileName}`;
     const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(waUrl, "_blank", "noopener,noreferrer");
+  };
+
+  // Cancel out of the Application Generator preview and return to the list.
+  const handleCancelVisaPreview = () => {
+    setVisaPreview(null);
   };
 
   // const goBack = () => {
@@ -451,13 +469,17 @@ const ActiveWorkers = () => {
                     : "View and manage active employees, access detailed profiles, archive records, or remove employees when needed."}
             </p>
           </div>
-          <button
-            type="button"
-            className="btn btn-main text-nowrap align-self-end"
-            onClick={() => navigate("/admin/employees/add")}
-          >
-            Add Employee
-          </button>
+          {/* In Application Generator preview mode, only Cancel/Download/Share
+              should show — Add Employee is hidden while visaPreview is set. */}
+          {!visaPreview && (
+            <button
+              type="button"
+              className="btn btn-main text-nowrap align-self-end"
+              onClick={() => navigate("/admin/employees/add")}
+            >
+              Add Employee
+            </button>
+          )}
         </div>
         {/* 
         {role !== 3 && role !== 5 && (
@@ -471,6 +493,12 @@ const ActiveWorkers = () => {
             className="d-flex flex-nowrap justify-content-end gap-2 mt-sm-0 mt-lg-5 mb-2 mb-sm-0"
             style={{ marginTop: "-1.5rem" }}
           >
+            <button
+              className="btn btn-outline-secondary fw-bold px-3 px-md-4"
+              onClick={handleCancelVisaPreview}
+            >
+              Cancel
+            </button>
             <button
               className="btn btn-main text-white fw-bold px-3 px-md-4"
               onClick={triggerVisaDownload}

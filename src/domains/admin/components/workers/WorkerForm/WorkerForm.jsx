@@ -30,13 +30,24 @@ import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 
 // helper function
-const renderLabel = (text, required = false) => {
+const renderLabel = (text, required = false, missing = false) => {
   return (
     <label>
       {text} {required && <span className="text-danger">*</span>}
+      {missing && <span className="text-danger fw-bold ms-1">!</span>}
     </label>
   );
 };
+
+// Same as renderLabel but for fields that aren't otherwise marked
+// required — still needs a way to show the Application Generator's
+// red "!" flag when that field is the one that's missing.
+const renderPlainLabel = (text, missing = false) => (
+  <label>
+    {text}
+    {missing && <span className="text-danger fw-bold ms-1">!</span>}
+  </label>
+);
 
 // Small check-circle icon used by the tree nav to mark a completed module.
 // Plain inline SVG (no new icon-library dependency) so it's positioned
@@ -334,6 +345,47 @@ function WorkerForm() {
   const [visa, setVisa] = useState(defaultVisa());
   const [travel, setTravel] = useState(defaultTravel());
   const [contract, setContract] = useState(defaultContract());
+
+  // ---- Application Generator integration: missing required fields ----
+  // When opened via the Application Generator's missing-field redirect,
+  // location.state.missingFields carries the exact fields (each with its
+  // Worker Form section + field name) that were missing at generation
+  // time. This ref is read once on mount — the set of originally-missing
+  // fields never grows; whether each one is STILL missing is re-checked
+  // against live form state on every render (below), so flags disappear
+  // automatically as the user fills them in. Everything else in the form
+  // (structure, nav, validation, submit) is untouched by this.
+  const flaggedFieldsRef = useRef(location.state?.missingFields || []);
+
+  const getFieldValueForFlag = (section, field) => {
+    if (section === "basic") {
+      if (Object.prototype.hasOwnProperty.call(basic, field))
+        return basic[field];
+      if (Object.prototype.hasOwnProperty.call(personal, field))
+        return personal[field];
+      return undefined;
+    }
+    if (section === "passport") return passport[field];
+    if (section === "visa") return visa[field];
+    if (section === "contract") return contract[field];
+    return undefined;
+  };
+
+  const isFieldValueMissing = (section, field) => {
+    const value = getFieldValueForFlag(section, field);
+    return value === undefined || value === null || value === "";
+  };
+
+  const currentlyMissingFields = flaggedFieldsRef.current.filter((f) =>
+    isFieldValueMissing(f.section, f.field),
+  );
+
+  const missingSections = new Set(currentlyMissingFields.map((f) => f.section));
+
+  const isFieldFlaggedMissing = (section, field) =>
+    currentlyMissingFields.some(
+      (f) => f.section === section && f.field === field,
+    );
 
   // Languages / Skills — plain arrays of the checked option strings.
   // Experiences — array of { localId, country, years_of_experience } rows.
@@ -1031,7 +1083,7 @@ function WorkerForm() {
     });
   };
 
-  // ---- required-fields-filled checks, one per optional module ----------
+  // required-fields-filled checks, one per optional module
   // These mirror the fields marked required (renderLabel(..., true)) in
   // each module's own render function, and drive ONLY the auto Include
   // toggle below — they are intentionally simpler than the full
@@ -1124,7 +1176,7 @@ function WorkerForm() {
     experiences,
   ]);
 
-  // ---------------- status assignment (reuses WorkerProfile's flow) ----------------
+  //  status assignment (reuses WorkerProfile's flow)
 
   // Fields for the existing CreateModal, identical to WorkerProfile's
   // fieldsStatuses so the same modal UX is reused rather than reinvented.
@@ -1734,7 +1786,7 @@ function WorkerForm() {
     }
   };
 
-  /* ---------------- section field content (no wrapper/title — the card wrapper handles that) ---------------- */
+  /* section field content (no wrapper/title — the card wrapper handles that) */
   /* Input classes below intentionally mirror the Create User Form exactly
      (`row` + `form-group col-md-6 mb-3` + `form-control`) so both forms
      share the same input look and feel. */
@@ -1742,7 +1794,11 @@ function WorkerForm() {
   const renderBasicFields = () => (
     <div className="row">
       <div className="form-group col-md-6 mb-3">
-        {renderLabel("Full Name", true)}
+        {renderLabel(
+          "Full Name",
+          true,
+          isFieldFlaggedMissing("basic", "full_name"),
+        )}
         <input
           type="text"
           name="full_name"
@@ -1769,7 +1825,7 @@ function WorkerForm() {
   const renderPersonalFields = () => (
     <div className="row">
       <div className="form-group col-md-6 mb-3">
-        {renderLabel("Sex", true)}
+        {renderLabel("Sex", true, isFieldFlaggedMissing("basic", "sex"))}
         <select
           name="sex"
           className="form-control"
@@ -1825,7 +1881,10 @@ function WorkerForm() {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Date of Birth</label>
+        {renderPlainLabel(
+          "Date of Birth",
+          isFieldFlaggedMissing("basic", "date_of_birth"),
+        )}
         <input
           type="date"
           name="date_of_birth"
@@ -1835,7 +1894,10 @@ function WorkerForm() {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Place of Birth</label>
+        {renderPlainLabel(
+          "Place of Birth",
+          isFieldFlaggedMissing("basic", "place_of_birth"),
+        )}
         <input
           type="text"
           name="place_of_birth"
@@ -1855,7 +1917,10 @@ function WorkerForm() {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Marital Status</label>
+        {renderPlainLabel(
+          "Marital Status",
+          isFieldFlaggedMissing("basic", "marital_status"),
+        )}
         <select
           name="marital_status"
           className="form-control"
@@ -1870,7 +1935,10 @@ function WorkerForm() {
         </select>
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Nationality</label>
+        {renderPlainLabel(
+          "Nationality",
+          isFieldFlaggedMissing("basic", "nationality"),
+        )}
         <input
           type="text"
           name="nationality"
@@ -2062,7 +2130,11 @@ function WorkerForm() {
     <div className="row">
       {/* Right side — scan button only, mirrors + Status button */}
       <div className="form-group col-md-6 mb-3">
-        {renderLabel("Passport Number", true)}
+        {renderLabel(
+          "Passport Number",
+          true,
+          isFieldFlaggedMissing("passport", "passport_number"),
+        )}
         <input
           type="text"
           name="passport_number"
@@ -2073,7 +2145,10 @@ function WorkerForm() {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Issuing Country</label>
+        {renderPlainLabel(
+          "Issuing Country",
+          isFieldFlaggedMissing("passport", "passport_issuing_country"),
+        )}
         <input
           type="text"
           name="passport_issuing_country"
@@ -2083,7 +2158,10 @@ function WorkerForm() {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Issue Date</label>
+        {renderPlainLabel(
+          "Issue Date",
+          isFieldFlaggedMissing("passport", "passport_issue_date"),
+        )}
         <input
           type="date"
           name="passport_issue_date"
@@ -2093,7 +2171,10 @@ function WorkerForm() {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Expiry Date</label>
+        {renderPlainLabel(
+          "Expiry Date",
+          isFieldFlaggedMissing("passport", "passport_expiry_date"),
+        )}
         <input
           type="date"
           name="passport_expiry_date"
@@ -2359,7 +2440,10 @@ function WorkerForm() {
   const renderVisaFields = () => (
     <div className="row">
       <div className="form-group col-md-6 mb-3">
-        <label>Visa Number</label>
+        {renderPlainLabel(
+          "Visa Number",
+          isFieldFlaggedMissing("visa", "visa_number"),
+        )}
         <input
           type="text"
           name="visa_number"
@@ -2490,7 +2574,11 @@ function WorkerForm() {
   const renderContractFields = () => (
     <div className="row">
       <div className="form-group col-md-6 mb-3">
-        {renderLabel("Employer", true)}
+        {renderLabel(
+          "Employer",
+          true,
+          isFieldFlaggedMissing("contract", "employer"),
+        )}
         <input
           type="text"
           name="employer"
@@ -2733,7 +2821,7 @@ function WorkerForm() {
       "Optional — add this worker's prior work experience by country.",
   };
 
-  /* ---------------- section navigation (shared data + markup for the tree nav) ---------------- */
+  /* section navigation (shared data + markup for the tree nav) */
 
   // Tree nav uses NAV_ITEMS (Skills + Experience collapsed into one entry)
   // — module rendering, validation, and preview all keep using SECTIONS.
@@ -2768,6 +2856,10 @@ function WorkerForm() {
     const isActive = navKeys.includes(activeSection);
     const nodeNumber = index + 1;
     const isComplete = isSectionComplete(section);
+    // A nav entry is flagged if any of the section keys it represents
+    // (itself, or — for the combined "Skills & Experience" entry — either
+    // underlying module) still has a missing required field.
+    const isMissing = navKeys.some((key) => missingSections.has(key));
     // Combined entries jump to the first underlying module.
     const targetKey = section.groupKeys ? section.groupKeys[0] : section.key;
 
@@ -2783,7 +2875,10 @@ function WorkerForm() {
         >
           {isComplete && <CompletionCheckIcon />}
           <span className="tree-node-dot">{nodeNumber}</span>
-          <span className="tree-node-label">{section.label}</span>
+          <span className="tree-node-label">
+            {section.label}
+            {isMissing && <span className="tree-node-missing-flag">!</span>}
+          </span>
         </div>
       );
     }
@@ -2800,7 +2895,10 @@ function WorkerForm() {
         {isComplete && <CompletionCheckIcon />}
         <span className="tree-node-dot">{nodeNumber}</span>
         <span className="tree-node-label-wrap">
-          <span className="tree-node-label">{section.label}</span>
+          <span className="tree-node-label">
+            {section.label}
+            {isMissing && <span className="tree-node-missing-flag">!</span>}
+          </span>
           {section.optional && (
             <span className="tree-node-badge">Optional</span>
           )}
@@ -2828,7 +2926,7 @@ function WorkerForm() {
     </button>
   );
 
-  /* ---------------- section card wrapper ---------------- */
+  /*  section card wrapper*/
 
   // Optional modules are always rendered and editable — the "Include"
   // switch only controls whether the module's data is attached to the
@@ -2885,7 +2983,7 @@ function WorkerForm() {
     );
   };
 
-  /* ---------------- preview (mirrors Worker Profile module layout) ---------------- */
+  /*preview (mirrors Worker Profile module layout)*/
 
   const previewRow = (label, value) => (
     <p className="mb-2">
@@ -3375,6 +3473,11 @@ function WorkerForm() {
           top: 4px;
           right: 6px;
           color: #198754;
+        }
+        .tree-node-missing-flag {
+          color: #dc3545;
+          font-weight: 700;
+          margin-left: 0.35rem;
         }
 
         .tree-nav-action-wrap {
