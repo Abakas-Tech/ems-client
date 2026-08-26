@@ -68,11 +68,50 @@ const REQUIRED_FIELDS = [
   { label: "Sponsor Name", get: (p) => p.contracts[0]?.employer_name },
 ];
 
+// Maps each Application Generator required field label to the exact
+// Worker Form section + field name it corresponds to, so a missing field
+// can be flagged directly inside the Worker Form when the user is routed
+// there to complete it. Kept as a separate lookup (rather than baked into
+// REQUIRED_FIELDS) so REQUIRED_FIELDS' own shape/behavior stays unchanged.
+const REQUIRED_FIELD_TO_FORM_FIELD = {
+  "Full Name": { section: "basic", field: "full_name" },
+  "Date of Birth": { section: "basic", field: "date_of_birth" },
+  "Place of Birth": { section: "basic", field: "place_of_birth" },
+  Nationality: { section: "basic", field: "nationality" },
+  Sex: { section: "basic", field: "sex" },
+  "Marital Status": { section: "basic", field: "marital_status" },
+  "Passport Number": { section: "passport", field: "passport_number" },
+  "Passport Issue Date": { section: "passport", field: "passport_issue_date" },
+  "Passport Expiry Date": {
+    section: "passport",
+    field: "passport_expiry_date",
+  },
+  "Passport Issuing Country": {
+    section: "passport",
+    field: "passport_issuing_country",
+  },
+  "Visa Number": { section: "visa", field: "visa_number" },
+  "Sponsor Name": { section: "contract", field: "employer" },
+};
+
 const getMissingRequiredFields = (profile) =>
   REQUIRED_FIELDS.filter(({ get }) => {
     const value = get(profile);
     return value === undefined || value === null || value === "";
   }).map(({ label }) => label);
+
+// Same missing-field check as getMissingRequiredFields, but keeps each
+// field's Worker Form section/field mapping attached — this is what gets
+// handed to the Worker Form so it can flag the exact fields and sections
+// that still need to be completed.
+const getMissingRequiredFieldsDetailed = (profile) =>
+  REQUIRED_FIELDS.filter(({ get }) => {
+    const value = get(profile);
+    return value === undefined || value === null || value === "";
+  }).map(({ label }) => ({
+    label,
+    ...(REQUIRED_FIELD_TO_FORM_FIELD[label] || {}),
+  }));
 
 // Returns a snapshot of all the required fields and their values (or "MISSING" if not present).
 const getRequiredFieldsSnapshot = (profile) =>
@@ -163,7 +202,16 @@ export async function generateVisaApplicationPdf(employeeId, options = {}) {
       getRequiredFieldsSnapshot(profile),
     );
     console.warn("Missing fields:", missingFields);
-    throw new Error("Required worker information is missing.");
+    // Carried on the error (instead of just a message) so the caller can
+    // route the user straight into that worker's Edit mode with the exact
+    // missing fields flagged, rather than just reporting an error.
+    const missingFieldsError = new Error(
+      "Required worker information is missing.",
+    );
+    missingFieldsError.missingFields =
+      getMissingRequiredFieldsDetailed(profile);
+    missingFieldsError.workerId = employeeId;
+    throw missingFieldsError;
   }
 
   const pi = profile.personal_information || {};

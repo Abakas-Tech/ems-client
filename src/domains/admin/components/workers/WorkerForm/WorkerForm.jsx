@@ -11,6 +11,12 @@ import {
   assignWorkerStatus,
   deleteWorkerStatus,
 } from "../../../api/workerMeta.api";
+import {
+  getWorkerAgent,
+  createWorkerAgent,
+  updateWorkerAgent,
+  getWorkerAgents,
+} from "../../../api/workerAgent.api.js";
 import { getUsers } from "../../../api/user.api";
 import { extractPassport } from "../../../api/passport.api";
 import useLoader from "../../../../../context/Loader/useLoader";
@@ -24,13 +30,83 @@ import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 
 // helper function
-const renderLabel = (text, required = false) => {
+const renderLabel = (text, required = false, missing = false) => {
   return (
     <label>
       {text} {required && <span className="text-danger">*</span>}
+      {missing && <span className="text-danger fw-bold ms-1">!</span>}
     </label>
   );
 };
+
+// Same as renderLabel but for fields that aren't otherwise marked
+// required — still needs a way to show the Application Generator's
+// red "!" flag when that field is the one that's missing.
+const renderPlainLabel = (text, missing = false) => (
+  <label>
+    {text}
+    {missing && <span className="text-danger fw-bold ms-1">!</span>}
+  </label>
+);
+
+// Small check-circle icon used by the tree nav to mark a completed module.
+// Plain inline SVG (no new icon-library dependency) so it's positioned
+// freely and colored via CSS, matching the rest of the tree nav's styling.
+const CompletionCheckIcon = () => (
+  <svg
+    className="tree-node-check-icon"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.25"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-label="Completed"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <path d="M8 12.5l2.5 2.5L16 9.5" />
+  </svg>
+);
+
+// Plain inline SVG icons for the Experience add/remove controls — kept
+// dependency-free, matching CompletionCheckIcon's approach above.
+const PlusIcon = () => (
+  <svg
+    width="15"
+    height="15"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+);
+
+const TrashIcon = () => (
+  <svg
+    width="15"
+    height="15"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M3 6h18" />
+    <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+    <path d="M19 6l-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6" />
+    <path d="M10 11v6" />
+    <path d="M14 11v6" />
+  </svg>
+);
 
 // section definitions, in the order they appear on the page / in the nav
 const SECTIONS = [
@@ -40,10 +116,63 @@ const SECTIONS = [
   { key: "coc", label: "COC", optional: true },
   { key: "medical", label: "Medical", optional: true },
   { key: "guarantor", label: "Emergency Contact", optional: true },
+  { key: "agent", label: "Agent Information", optional: true },
   { key: "visa", label: "Visa", optional: true },
   { key: "travel", label: "Travel", optional: true },
   { key: "contract", label: "Contract", optional: true },
+  { key: "languages", label: "Languages", optional: true },
+  { key: "skills", label: "Skills", optional: true },
+  { key: "experience", label: "Experience", optional: true },
 ];
+
+// Nav tree only — groups Skills + Experience under a single tree entry
+// while SECTIONS above (and every module/validation/preview keyed off it)
+// keeps them as two fully independent modules. Clicking the combined nav
+// entry jumps to the first of the two ("skills"); it's marked active while
+// either module is in view and complete only once both modules are.
+const NAV_ITEMS = SECTIONS.reduce((acc, section) => {
+  if (section.key === "experience") return acc; // folded into the combined entry below
+  if (section.key === "skills") {
+    acc.push({
+      key: "skills_experience",
+      label: "Skills & Experience",
+      optional: true,
+      groupKeys: ["skills", "experience"],
+    });
+    return acc;
+  }
+  acc.push(section);
+  return acc;
+}, []);
+
+// Hardcoded option lists for Languages and Skills — these are fixed,
+// backend-defined enums and are never fetched from the server (per spec).
+const LANGUAGE_OPTIONS = ["English", "Amharic", "Arabic"];
+
+const SKILL_OPTIONS = [
+  "baby sitting",
+  "children care",
+  "tutoring",
+  "disabled care",
+  "cleaning",
+  "washing",
+  "ironing",
+  "arabic cooking",
+  "sewing",
+  "computers",
+  "driving",
+  "other",
+];
+
+// One blank experience row. Each row carries a client-only `localId` used
+// purely as a React key / for add-remove bookkeeping — it is stripped out
+// before the row is sent to the API.
+let experienceRowSeq = 0;
+const makeExperienceRow = (country = "", years_of_experience = "") => ({
+  localId: `exp-${Date.now()}-${experienceRowSeq++}`,
+  country,
+  years_of_experience,
+});
 
 const defaultBasic = () => ({
   full_name: "",
@@ -99,6 +228,14 @@ const defaultGuarantor = () => ({
   relation: "",
   guarantor_address: "",
   guarantor_phone_number: "",
+});
+
+// Agent Information default state — mirrors defaultGuarantor's shape,
+// following the same "flat object of editable fields" pattern used by
+// every other module.
+const defaultAgent = () => ({
+  agent_name: "",
+  agent_phone: "",
 });
 
 const defaultVisa = () => ({
@@ -204,20 +341,115 @@ function WorkerForm() {
   const [coc, setCoc] = useState(defaultCoc());
   const [medical, setMedical] = useState(defaultMedical());
   const [guarantor, setGuarantor] = useState(defaultGuarantor());
+  const [agent, setAgent] = useState(defaultAgent());
   const [visa, setVisa] = useState(defaultVisa());
   const [travel, setTravel] = useState(defaultTravel());
   const [contract, setContract] = useState(defaultContract());
 
-  // Optional modules default to Include = ON, so their data is part of the
-  // request payload unless the user explicitly switches a module off.
+  // ---- Application Generator integration: missing required fields ----
+  // When opened via the Application Generator's missing-field redirect,
+  // location.state.missingFields carries the exact fields (each with its
+  // Worker Form section + field name) that were missing at generation
+  // time. This ref is read once on mount — the set of originally-missing
+  // fields never grows; whether each one is STILL missing is re-checked
+  // against live form state on every render (below), so flags disappear
+  // automatically as the user fills them in. Everything else in the form
+  // (structure, nav, validation, submit) is untouched by this.
+  const flaggedFieldsRef = useRef(location.state?.missingFields || []);
+
+  const getFieldValueForFlag = (section, field) => {
+    if (section === "basic") {
+      if (Object.prototype.hasOwnProperty.call(basic, field))
+        return basic[field];
+      if (Object.prototype.hasOwnProperty.call(personal, field))
+        return personal[field];
+      return undefined;
+    }
+    if (section === "passport") return passport[field];
+    if (section === "visa") return visa[field];
+    if (section === "contract") return contract[field];
+    return undefined;
+  };
+
+  const isFieldValueMissing = (section, field) => {
+    const value = getFieldValueForFlag(section, field);
+    return value === undefined || value === null || value === "";
+  };
+
+  const currentlyMissingFields = flaggedFieldsRef.current.filter((f) =>
+    isFieldValueMissing(f.section, f.field),
+  );
+
+  const missingSections = new Set(currentlyMissingFields.map((f) => f.section));
+
+  const isFieldFlaggedMissing = (section, field) =>
+    currentlyMissingFields.some(
+      (f) => f.section === section && f.field === field,
+    );
+
+  // Languages / Skills — plain arrays of the checked option strings.
+  // Experiences — array of { localId, country, years_of_experience } rows.
+  // Experience defaults to a single blank row so the module never opens
+  // empty — the user can still remove it down to zero via the row's
+  // remove control.
+  const [languages, setLanguages] = useState([]);
+  const [skills, setSkills] = useState([]);
+  const [experiences, setExperiences] = useState(() => [makeExperienceRow()]);
+
+  // Tracks whether a worker-agent record already exists for this worker
+  // (edit mode only) — decides POST vs PUT to /worker-agent/:userId on
+  // submit, mirroring the create-vs-update branching used for the worker
+  // itself (createWorker vs updateWorker).
+  const [agentExists, setAgentExists] = useState(false);
+
+  // All agents on file (fetched once), used to power the Agent Name
+  // search/select suggestions.
+  const [allAgents, setAllAgents] = useState([]);
+
+  // Whether the Agent Name suggestion dropdown is open.
+  const [agentDropdownOpen, setAgentDropdownOpen] = useState(false);
+
+  // The id of the agent currently assigned to THIS worker (edit mode only,
+  // set once from getWorkerAgent on load). Used only to visually highlight
+  // that agent in the Agent Name suggestion list as "Current Agent" — it is
+  // not re-derived from whatever is selected/typed afterwards.
+  const [currentAssignedAgentId, setCurrentAssignedAgentId] = useState(null);
+
+  // Optional modules default to Include = OFF until their required fields
+  // are filled (see the auto-toggle effect below). In edit mode this is
+  // overwritten to reflect whatever was actually saved for this worker.
   const [sectionsEnabled, setSectionsEnabled] = useState({
-    passport: true,
-    coc: true,
-    medical: true,
-    guarantor: true,
-    visa: true,
-    travel: true,
-    contract: true,
+    passport: false,
+    coc: false,
+    medical: false,
+    guarantor: false,
+    agent: false,
+    visa: false,
+    travel: false,
+    contract: false,
+    languages: false,
+    skills: false,
+    experience: false,
+  });
+
+  // Tracks, per optional module, whether the user explicitly switched
+  // Include OFF while its required fields were already filled. While true,
+  // the auto-toggle effect below leaves that module OFF even though its
+  // fields are filled. It resets back to false the moment the module's
+  // required fields become incomplete — so the next time they're filled
+  // again, Include turns back ON automatically, per the requested behavior.
+  const [manualOverride, setManualOverride] = useState({
+    passport: false,
+    coc: false,
+    medical: false,
+    guarantor: false,
+    agent: false,
+    visa: false,
+    travel: false,
+    contract: false,
+    languages: false,
+    skills: false,
+    experience: false,
   });
 
   const [photo3x4, setPhoto3x4] = useState(null);
@@ -242,31 +474,31 @@ function WorkerForm() {
   const treeNavSpacerRef = useRef(null);
   const [treeNavRect, setTreeNavRect] = useState({ left: 0, width: 0 });
 
-useEffect(() => {
-  if (previewMode || loadingProfile) return;
+  useEffect(() => {
+    if (previewMode || loadingProfile) return;
 
-  const updateTreeNavRect = () => {
-    if (!treeNavSpacerRef.current) return;
+    const updateTreeNavRect = () => {
+      if (!treeNavSpacerRef.current) return;
 
-    const rect = treeNavSpacerRef.current.getBoundingClientRect();
+      const rect = treeNavSpacerRef.current.getBoundingClientRect();
 
-    setTreeNavRect({
-      left: rect.left,
-      width: rect.width,
+      setTreeNavRect({
+        left: rect.left,
+        width: rect.width,
+      });
+    };
+
+    // Wait until the edit tree has actually mounted.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(updateTreeNavRect);
     });
-  };
 
-  // Wait until the edit tree has actually mounted.
-  requestAnimationFrame(() => {
-    requestAnimationFrame(updateTreeNavRect);
-  });
+    window.addEventListener("resize", updateTreeNavRect);
 
-  window.addEventListener("resize", updateTreeNavRect);
-
-  return () => {
-    window.removeEventListener("resize", updateTreeNavRect);
-  };
-}, [previewMode, loadingProfile]);
+    return () => {
+      window.removeEventListener("resize", updateTreeNavRect);
+    };
+  }, [previewMode, loadingProfile]);
   const goBack = () => navigate(-1);
 
   // Navigates between form sections and Preview Mode.
@@ -285,32 +517,32 @@ useEffect(() => {
   };
 
   // Used by Preview module Edit/Add buttons to return to the Create/Edit page.
-const jumpToStep = (key) => {
-  setPreviewMode(false);
-  setActiveSection(key);
-  setPendingScroll(key);
-};
-useEffect(() => {
-  if (!previewMode && pendingScroll) {
-    const key = pendingScroll;
-
-    setPendingScroll(null);
+  const jumpToStep = (key) => {
+    setPreviewMode(false);
     setActiveSection(key);
+    setPendingScroll(key);
+  };
+  useEffect(() => {
+    if (!previewMode && pendingScroll) {
+      const key = pendingScroll;
 
-    requestAnimationFrame(() => {
+      setPendingScroll(null);
+      setActiveSection(key);
+
       requestAnimationFrame(() => {
-        const node = sectionRefs.current[key];
+        requestAnimationFrame(() => {
+          const node = sectionRefs.current[key];
 
-        if (node) {
-          node.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }
+          if (node) {
+            node.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
       });
-    });
-  }
-}, [previewMode, pendingScroll]);
+    }
+  }, [previewMode, pendingScroll]);
   // Keeps the tree in sync with whatever section is actually on screen.
   // Only tracked in Form Mode, where every module in SECTIONS has its own
   // scroll anchor — Preview Mode is a single continuous page and is
@@ -375,6 +607,21 @@ useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // load all agents on file, to power the Agent Name search/select
+  // suggestions. Independent of edit/create mode — the list is useful
+  // either way.
+  useEffect(() => {
+    const loadAllAgents = async () => {
+      try {
+        const res = await getWorkerAgents();
+        setAllAgents(res?.data || []);
+      } catch (err) {
+        console.error("Failed to load agent list:", err);
+      }
+    };
+    loadAllAgents();
+  }, []);
+
   // load the worker's currently assigned statuses (edit mode only — a
   // worker must exist before statuses can be assigned/revoked), the same
   // source WorkerProfile uses.
@@ -389,6 +636,43 @@ useEffect(() => {
       }
     };
     loadWorkerStatuses();
+  }, [id, isEditMode]);
+
+  // load the worker's Agent Information (edit mode only) via the dedicated
+  // /worker-agent/:userId endpoint, the same way workerStatuses is loaded
+  // separately from the aggregated profile above. A 404 here just means no
+  // agent record exists yet for this worker — not an error the user needs
+  // to see. Also seeds sectionsEnabled.agent and currentAssignedAgentId so
+  // the saved state and the "Current Agent" highlight are correct from the
+  // start.
+  useEffect(() => {
+    if (!isEditMode || !id) return;
+    const loadAgent = async () => {
+      try {
+        const res = await getWorkerAgent(id);
+        if (res?.data) {
+          setAgent({
+            agent_name: res.data.agent_name || "",
+            agent_phone: res.data.agent_phone || "",
+          });
+          setAgentExists(true);
+          setCurrentAssignedAgentId(
+            res.data.id != null ? String(res.data.id) : null,
+          );
+          setSectionsEnabled((prev) => ({ ...prev, agent: true }));
+        }
+      } catch (err) {
+        const statusCode = err?.response?.status || err?.status;
+        if (statusCode === 404) {
+          setAgentExists(false);
+          setCurrentAssignedAgentId(null);
+          setSectionsEnabled((prev) => ({ ...prev, agent: false }));
+        } else {
+          console.error("Failed to fetch worker agent information:", err);
+        }
+      }
+    };
+    loadAgent();
   }, [id, isEditMode]);
 
   // load the full worker profile automatically when editing
@@ -589,14 +873,63 @@ useEffect(() => {
       });
     }
 
-    setSectionsEnabled({
-      passport: true,
-      coc: true,
-      medical: true,
-      guarantor: true,
-      visa: true,
-      travel: true,
-      contract: true,
+    // NOTE: Agent Information is intentionally NOT populated here — it is
+    // loaded separately via getWorkerAgent(id) in its own effect above,
+    // per the dedicated /worker-agent/:userId endpoint. That effect also
+    // owns sectionsEnabled.agent.
+
+    // Languages / Skills come back as plain arrays of strings — used
+    // as-is to drive the checkboxes.
+    const loadedLanguages = Array.isArray(profileData.languages)
+      ? profileData.languages
+      : [];
+    const loadedSkills = Array.isArray(profileData.skills)
+      ? profileData.skills
+      : [];
+    setLanguages(loadedLanguages);
+    setSkills(loadedSkills);
+
+    // Experiences come back with a read-only `id` — kept around only for
+    // reference, never sent back on update (see handleSubmit). When the
+    // worker has none on file, seed a single blank row so the module never
+    // opens empty.
+    const loadedExperiences = Array.isArray(profileData.experiences)
+      ? profileData.experiences.map((exp) =>
+          makeExperienceRow(exp.country || "", exp.years_of_experience ?? ""),
+        )
+      : [];
+    setExperiences(
+      loadedExperiences.length > 0 ? loadedExperiences : [makeExperienceRow()],
+    );
+
+    // Include toggles for every OTHER optional module initially reflect
+    // whatever was actually saved for this worker. The auto-toggle effect
+    // below will keep them in sync afterwards as fields are edited.
+    setSectionsEnabled((prev) => ({
+      ...prev,
+      passport: Boolean(profileData.passport),
+      coc: Boolean(profileData.coc),
+      medical: Boolean(profileData.medical),
+      guarantor: Boolean(profileData.emergency),
+      visa: Boolean(profileData.visa),
+      travel: Boolean(travelRecord),
+      contract: Boolean(contractRecord),
+      languages: loadedLanguages.length > 0,
+      skills: loadedSkills.length > 0,
+      experience: loadedExperiences.length > 0,
+    }));
+    setManualOverride({
+      passport: false,
+      coc: false,
+      medical: false,
+      guarantor: false,
+      agent: false,
+      visa: false,
+      travel: false,
+      contract: false,
+      languages: false,
+      skills: false,
+      experience: false,
     });
   };
 
@@ -644,6 +977,32 @@ useEffect(() => {
     setGuarantor((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Agent Phone — plain controlled input, same pattern as every other
+  // module's change handler.
+  const handleAgentChange = (e) => {
+    const { name, value } = e.target;
+    setAgent((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Agent Name — the same input doubles as "search existing" and "type new".
+  // Typing just updates agent_name and opens the suggestion list; it never
+  // touches agent_phone, so a manually-typed name doesn't clobber a
+  // manually-typed phone.
+  const handleAgentNameInputChange = (e) => {
+    const value = e.target.value;
+    setAgent((prev) => ({ ...prev, agent_name: value }));
+    setAgentDropdownOpen(true);
+  };
+
+  // Picking a suggestion autofills both fields from that agent's record.
+  const handleAgentOptionSelect = (option) => {
+    setAgent({
+      agent_name: option.agent_name || "",
+      agent_phone: option.agent_phone || "",
+    });
+    setAgentDropdownOpen(false);
+  };
+
   const handleVisaChange = (e) => {
     const { name, value } = e.target;
     setVisa((prev) => ({ ...prev, [name]: value }));
@@ -659,6 +1018,44 @@ useEffect(() => {
     setContract((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Languages / Skills — checkbox toggles. Checking/unchecking an option
+  // adds/removes it from the array that gets sent as `languages` /
+  // `skills` on submit (see handleSubmit).
+  const handleLanguageToggle = (option) => {
+    setLanguages((prev) =>
+      prev.includes(option)
+        ? prev.filter((v) => v !== option)
+        : [...prev, option],
+    );
+  };
+
+  const handleSkillToggle = (option) => {
+    setSkills((prev) =>
+      prev.includes(option)
+        ? prev.filter((v) => v !== option)
+        : [...prev, option],
+    );
+  };
+
+  // Experience — repeatable row group. Adding appends a blank row; removing
+  // drops a row by its client-only localId; changing updates one field on
+  // one row without touching the others.
+  const handleAddExperience = () => {
+    setExperiences((prev) => [...prev, makeExperienceRow()]);
+  };
+
+  const handleRemoveExperience = (localId) => {
+    setExperiences((prev) => prev.filter((row) => row.localId !== localId));
+  };
+
+  const handleExperienceChange = (localId, field, value) => {
+    setExperiences((prev) =>
+      prev.map((row) =>
+        row.localId === localId ? { ...row, [field]: value } : row,
+      ),
+    );
+  };
+
   const handlePhoto3x4Change = (e) => {
     if (e.target.files?.[0]) setPhoto3x4(e.target.files[0]);
   };
@@ -670,13 +1067,116 @@ useEffect(() => {
   const handlePassportScanChange = (e) => {
     if (e.target.files?.[0]) setPassportScan(e.target.files[0]);
   };
-  console.log(passportScan);
 
+  // Manual Include toggle. Turning it OFF while the module's required
+  // fields are filled marks manualOverride so the auto-toggle effect below
+  // leaves it OFF; turning it back ON manually clears that override.
   const toggleSection = (key) => {
-    setSectionsEnabled((prev) => ({ ...prev, [key]: !prev[key] }));
+    setSectionsEnabled((prev) => {
+      const nextVal = !prev[key];
+      setManualOverride((prevOverride) =>
+        prevOverride[key] === !nextVal
+          ? prevOverride
+          : { ...prevOverride, [key]: !nextVal },
+      );
+      return { ...prev, [key]: nextVal };
+    });
   };
 
-  // ---------------- status assignment (reuses WorkerProfile's flow) ----------------
+  // required-fields-filled checks, one per optional module
+  // These mirror the fields marked required (renderLabel(..., true)) in
+  // each module's own render function, and drive ONLY the auto Include
+  // toggle below — they are intentionally simpler than the full
+  // stepValidators (which also check formats, lengths, cross-field date
+  // rules, etc. for actual submission).
+  const isPassportFilled = () => Boolean(passport.passport_number?.trim());
+  const isCocFilled = () =>
+    Boolean(coc.coc_assessment_center?.trim()) &&
+    Boolean(coc.coc_assessment_date) &&
+    Boolean(coc.coc_issue_date) &&
+    Boolean(coc.coc_expiry_date);
+  const isMedicalFilled = () => Boolean(medical.medical_status);
+  const isGuarantorFilled = () =>
+    Boolean(guarantor.guarantor_name?.trim()) &&
+    Boolean(guarantor.guarantor_phone_number?.trim());
+  const isAgentFilled = () =>
+    Boolean(agent.agent_name?.trim()) && Boolean(agent.agent_phone?.trim());
+  const isVisaFilled = () =>
+    Object.values(visa).some((v) => v !== "" && v != null);
+  const isTravelFilled = () => Boolean(travel.ticket_number?.trim());
+  const isContractFilled = () =>
+    Boolean(contract.employer?.trim()) && Boolean(contract.monthly_salary);
+  const isLanguagesFilled = () => languages.length > 0;
+  const isSkillsFilled = () => skills.length > 0;
+  const isExperienceFilled = () =>
+    experiences.some((row) => row.country?.trim());
+
+  const OPTIONAL_FILLED_CHECKS = {
+    passport: isPassportFilled,
+    coc: isCocFilled,
+    medical: isMedicalFilled,
+    guarantor: isGuarantorFilled,
+    agent: isAgentFilled,
+    visa: isVisaFilled,
+    travel: isTravelFilled,
+    contract: isContractFilled,
+    languages: isLanguagesFilled,
+    skills: isSkillsFilled,
+    experience: isExperienceFilled,
+  };
+
+  // Auto-toggle effect: keeps Include in sync with "are this module's
+  // required fields filled?" — turning it ON automatically once they are,
+  // and turning it OFF automatically (and clearing any manual override)
+  // once they're not. A manual OFF while filled is respected (see
+  // toggleSection) until the fields cycle through incomplete again.
+  useEffect(() => {
+    setSectionsEnabled((prevEnabled) => {
+      let changed = false;
+      const next = { ...prevEnabled };
+      Object.keys(OPTIONAL_FILLED_CHECKS).forEach((key) => {
+        const filled = OPTIONAL_FILLED_CHECKS[key]();
+        if (filled) {
+          if (!manualOverride[key] && !prevEnabled[key]) {
+            next[key] = true;
+            changed = true;
+          }
+        } else if (prevEnabled[key] !== false) {
+          next[key] = false;
+          changed = true;
+        }
+      });
+      return changed ? next : prevEnabled;
+    });
+
+    setManualOverride((prevOverride) => {
+      let changed = false;
+      const next = { ...prevOverride };
+      Object.keys(OPTIONAL_FILLED_CHECKS).forEach((key) => {
+        const filled = OPTIONAL_FILLED_CHECKS[key]();
+        if (!filled && prevOverride[key]) {
+          next[key] = false;
+          changed = true;
+        }
+      });
+      return changed ? next : prevOverride;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    passport,
+    coc,
+    medical,
+    guarantor,
+    agent,
+    visa,
+    travel,
+    contract,
+    languages,
+    skills,
+    experiences,
+  ]);
+
+  //  status assignment (reuses WorkerProfile's flow)
 
   // Fields for the existing CreateModal, identical to WorkerProfile's
   // fieldsStatuses so the same modal UX is reused rather than reinvented.
@@ -963,6 +1463,25 @@ useEffect(() => {
     return null;
   };
 
+  // Agent Information validation — mirrors validateGuarantor's shape and
+  // enforces the same NOT NULL / length constraints as the
+  // workers_agent_information table (agent_name VARCHAR(150), agent_phone
+  // VARCHAR(50)). Applies whether the agent came from a suggestion pick or
+  // was typed manually — either way `agent` must be valid.
+  const validateAgent = () => {
+    if (!sectionsEnabled.agent) return null;
+    const name = agent.agent_name?.trim();
+    if (!name) return "Agent name is required";
+    if (name.length > 150) return "Agent name cannot exceed 150 characters";
+    if (!agent.agent_phone || !agent.agent_phone.trim())
+      return "Agent phone is required";
+    if (!guarantorPhoneRegex.test(agent.agent_phone))
+      return "Agent phone must be a valid format";
+    if (agent.agent_phone.length > 50)
+      return "Agent phone cannot exceed 50 characters";
+    return null;
+  };
+
   const validateVisa = () => {
     if (!sectionsEnabled.visa) return null;
     if (visa.visa_number && visa.visa_number.length > 100)
@@ -1064,6 +1583,41 @@ useEffect(() => {
     return null;
   };
 
+  // Languages / Skills are constrained to the hardcoded checkbox options,
+  // so there's nothing further to validate beyond "Include is on" (which
+  // the auto-toggle keeps in sync with "is anything checked").
+  const validateLanguages = () => {
+    if (!sectionsEnabled.languages) return null;
+    const invalid = languages.filter((l) => !LANGUAGE_OPTIONS.includes(l));
+    if (invalid.length > 0) return "Invalid language selected";
+    return null;
+  };
+
+  const validateSkills = () => {
+    if (!sectionsEnabled.skills) return null;
+    const invalid = skills.filter((s) => !SKILL_OPTIONS.includes(s));
+    if (invalid.length > 0) return "Invalid skill selected";
+    return null;
+  };
+
+  const validateExperience = () => {
+    if (!sectionsEnabled.experience) return null;
+    for (const row of experiences) {
+      if (!row.country?.trim()) return "Experience country is required";
+      const years = Number(row.years_of_experience);
+      if (
+        row.years_of_experience === "" ||
+        row.years_of_experience == null ||
+        isNaN(years) ||
+        !Number.isInteger(years) ||
+        years < 0 ||
+        years > 99
+      )
+        return "Years of experience must be a whole number between 0 and 99";
+    }
+    return null;
+  };
+
   // Basic Information and Personal Information now live in a single module,
   // so a single step validates both — order matters: basic-info errors
   // surface before personal-info errors, matching the field order on screen.
@@ -1076,9 +1630,13 @@ useEffect(() => {
     coc: validateCoc,
     medical: validateMedical,
     guarantor: validateGuarantor,
+    agent: validateAgent,
     visa: validateVisa,
     travel: validateTravel,
     contract: validateContract,
+    languages: validateLanguages,
+    skills: validateSkills,
+    experience: validateExperience,
   };
 
   const handleSubmit = async () => {
@@ -1117,7 +1675,10 @@ useEffect(() => {
 
       // Optional modules are always rendered/editable; the "Include" toggle
       // is the only thing that decides whether a module's data is attached
-      // to the request payload.
+      // to the request payload. Agent Information is handled separately
+      // below (its own endpoint, keyed off user_id), so it is deliberately
+      // NOT appended to this FormData — the existing worker payload stays
+      // exactly as it was.
       if (sectionsEnabled.passport)
         dataToSend.append("passport", JSON.stringify(passport));
       if (sectionsEnabled.coc) dataToSend.append("coc", JSON.stringify(coc));
@@ -1131,6 +1692,30 @@ useEffect(() => {
       if (sectionsEnabled.contract)
         dataToSend.append("contract", JSON.stringify(contract));
 
+      // Languages / Skills / Experiences are sent as JSON-stringified
+      // fields, same as the other optional sections above, and go through
+      // the same parseJsonFields middleware. Sending any of these on
+      // update REPLACES the worker's entire set for that field — this is
+      // why the full current array (whatever is checked / listed right
+      // now) is always sent, never a partial "add one" diff. The
+      // read-only `id` on each experience row is never sent back.
+      if (sectionsEnabled.languages)
+        dataToSend.append("languages", JSON.stringify(languages));
+      if (sectionsEnabled.skills)
+        dataToSend.append("skills", JSON.stringify(skills));
+      if (sectionsEnabled.experience)
+        dataToSend.append(
+          "experiences",
+          JSON.stringify(
+            experiences
+              .filter((row) => row.country?.trim())
+              .map((row) => ({
+                country: row.country.trim(),
+                years_of_experience: Number(row.years_of_experience),
+              })),
+          ),
+        );
+
       if (photo3x4) dataToSend.append("photo_3x4_url", photo3x4);
       if (photoStanding) dataToSend.append("photo_standing_url", photoStanding);
       if (passportScan) dataToSend.append("passport_scan_url", passportScan);
@@ -1138,6 +1723,51 @@ useEffect(() => {
       const response = isEditMode
         ? await updateWorker(id, dataToSend)
         : await createWorker(dataToSend);
+
+      // Agent Information create/update flow.
+      // - Edit mode: the worker's user_id is already known (`id`).
+      // - Create mode: the worker was just created above, so the user_id
+      //   comes from that response instead.
+      // Whether to POST or PUT is decided by `agentExists`, which was set
+      // by the getWorkerAgent load effect (edit mode) and stays false for
+      // brand-new workers, since there is nothing to update yet. This is
+      // unaffected by whether the agent's name/phone came from a
+      // suggestion pick or manual typing — in both cases `agent` holds the
+      // values sent here, and the worker-agent link created/updated is
+      // always specific to this one worker (never a second record).
+      const workerId = isEditMode ? id : response?.data?.id;
+
+      if (sectionsEnabled.agent && workerId) {
+        const agentPayload = {
+          agent_name: agent.agent_name,
+          agent_phone: agent.agent_phone,
+        };
+        try {
+          if (agentExists) {
+            await updateWorkerAgent(workerId, agentPayload);
+          } else {
+            await createWorkerAgent(workerId, agentPayload);
+          }
+        } catch (agentErr) {
+          const statusCode = agentErr?.response?.status || agentErr?.status;
+          if (statusCode === 409) {
+            addMessage(
+              false,
+              "Agent information already exists for this worker.",
+            );
+          } else if (statusCode === 404) {
+            addMessage(
+              false,
+              "Worker not found while saving agent information.",
+            );
+          } else {
+            addMessage(
+              false,
+              agentErr.message || "Failed to save agent information",
+            );
+          }
+        }
+      }
 
       addMessage(
         response?.success,
@@ -1156,7 +1786,7 @@ useEffect(() => {
     }
   };
 
-  /* ---------------- section field content (no wrapper/title — the card wrapper handles that) ---------------- */
+  /* section field content (no wrapper/title — the card wrapper handles that) */
   /* Input classes below intentionally mirror the Create User Form exactly
      (`row` + `form-group col-md-6 mb-3` + `form-control`) so both forms
      share the same input look and feel. */
@@ -1164,7 +1794,11 @@ useEffect(() => {
   const renderBasicFields = () => (
     <div className="row">
       <div className="form-group col-md-6 mb-3">
-        {renderLabel("Full Name", true)}
+        {renderLabel(
+          "Full Name",
+          true,
+          isFieldFlaggedMissing("basic", "full_name"),
+        )}
         <input
           type="text"
           name="full_name"
@@ -1191,7 +1825,7 @@ useEffect(() => {
   const renderPersonalFields = () => (
     <div className="row">
       <div className="form-group col-md-6 mb-3">
-        {renderLabel("Sex", true)}
+        {renderLabel("Sex", true, isFieldFlaggedMissing("basic", "sex"))}
         <select
           name="sex"
           className="form-control"
@@ -1247,7 +1881,10 @@ useEffect(() => {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Date of Birth</label>
+        {renderPlainLabel(
+          "Date of Birth",
+          isFieldFlaggedMissing("basic", "date_of_birth"),
+        )}
         <input
           type="date"
           name="date_of_birth"
@@ -1257,7 +1894,10 @@ useEffect(() => {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Place of Birth</label>
+        {renderPlainLabel(
+          "Place of Birth",
+          isFieldFlaggedMissing("basic", "place_of_birth"),
+        )}
         <input
           type="text"
           name="place_of_birth"
@@ -1277,7 +1917,10 @@ useEffect(() => {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Marital Status</label>
+        {renderPlainLabel(
+          "Marital Status",
+          isFieldFlaggedMissing("basic", "marital_status"),
+        )}
         <select
           name="marital_status"
           className="form-control"
@@ -1292,7 +1935,10 @@ useEffect(() => {
         </select>
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Nationality</label>
+        {renderPlainLabel(
+          "Nationality",
+          isFieldFlaggedMissing("basic", "nationality"),
+        )}
         <input
           type="text"
           name="nationality"
@@ -1484,7 +2130,11 @@ useEffect(() => {
     <div className="row">
       {/* Right side — scan button only, mirrors + Status button */}
       <div className="form-group col-md-6 mb-3">
-        {renderLabel("Passport Number", true)}
+        {renderLabel(
+          "Passport Number",
+          true,
+          isFieldFlaggedMissing("passport", "passport_number"),
+        )}
         <input
           type="text"
           name="passport_number"
@@ -1495,7 +2145,10 @@ useEffect(() => {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Issuing Country</label>
+        {renderPlainLabel(
+          "Issuing Country",
+          isFieldFlaggedMissing("passport", "passport_issuing_country"),
+        )}
         <input
           type="text"
           name="passport_issuing_country"
@@ -1505,7 +2158,10 @@ useEffect(() => {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Issue Date</label>
+        {renderPlainLabel(
+          "Issue Date",
+          isFieldFlaggedMissing("passport", "passport_issue_date"),
+        )}
         <input
           type="date"
           name="passport_issue_date"
@@ -1515,7 +2171,10 @@ useEffect(() => {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Expiry Date</label>
+        {renderPlainLabel(
+          "Expiry Date",
+          isFieldFlaggedMissing("passport", "passport_expiry_date"),
+        )}
         <input
           type="date"
           name="passport_expiry_date"
@@ -1524,28 +2183,6 @@ useEffect(() => {
           onChange={handlePassportChange}
         />
       </div>
-      {/* <div className="form-group col-md-6 mb-3">
-        {renderLabel("Passport Scan", !existingPassportScanUrl)}
-        <input
-          type="file"
-          accept="image/*"
-          className="form-control"
-          onChange={handlePassportScanChange}
-          required={!existingPassportScanUrl}
-        />
-        {isEditMode && existingPassportScanUrl && !passportScan && (
-          <small className="text-muted">
-            Current scan:{" "}
-            <a
-              href={existingPassportScanUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View
-            </a>
-          </small>
-        )}
-      </div> */}
     </div>
   );
 
@@ -1715,10 +2352,98 @@ useEffect(() => {
     </div>
   );
 
+  // Agent Information fields — exactly two visible inputs. Agent Name
+  // doubles as a search/select-or-create field: typing filters a
+  // suggestion list drawn from every agent on file; picking a suggestion
+  // autofills Agent Phone; typing a name that matches nothing is simply
+  // treated as a brand-new agent once both fields are filled. The worker's
+  // currently assigned agent (edit mode) is visually called out in the
+  // suggestion list with a distinct background and a "Current Agent" badge.
+  const uniqueAgentOptions = React.useMemo(() => {
+    const seen = new Set();
+    const result = [];
+    for (const a of allAgents) {
+      const key = `${a.agent_name}||${a.agent_phone}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push(a);
+      }
+    }
+    return result;
+  }, [allAgents]);
+
+  const filteredAgentOptions = React.useMemo(() => {
+    const query = agent.agent_name?.trim().toLowerCase() || "";
+    if (!query) return uniqueAgentOptions;
+    return uniqueAgentOptions.filter((a) =>
+      a.agent_name?.toLowerCase().includes(query),
+    );
+  }, [agent.agent_name, uniqueAgentOptions]);
+
+  const renderAgentFields = () => (
+    <div className="row">
+      <div className="form-group col-md-6 mb-3 position-relative">
+        {renderLabel("Agent Name", true)}
+        <input
+          type="text"
+          name="agent_name"
+          className="form-control"
+          autoComplete="off"
+          value={agent.agent_name}
+          onChange={handleAgentNameInputChange}
+          onFocus={() => setAgentDropdownOpen(true)}
+          onBlur={() => setTimeout(() => setAgentDropdownOpen(false), 150)}
+          placeholder="Search an existing agent or type a new one"
+          required
+        />
+        {agentDropdownOpen && filteredAgentOptions.length > 0 && (
+          <ul
+            className="list-group position-absolute w-100 shadow-sm"
+            style={{ zIndex: 2000, maxHeight: 220, overflowY: "auto" }}
+          >
+            {filteredAgentOptions.map((a) => {
+              const isCurrent =
+                currentAssignedAgentId != null &&
+                String(a.id) === String(currentAssignedAgentId);
+              return (
+                <li
+                  key={a.id}
+                  className="list-group-item list-group-item-action d-flex justify-content-between align-items-center "
+                  style={isCurrent ? { backgroundColor: "#e7f1ff" } : undefined}
+                  role="button"
+                  onMouseDown={() => handleAgentOptionSelect(a)}
+                >
+                  <span>
+                    {a.agent_name}{" "}
+                    <small className="text-muted">— {a.agent_phone}</small>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+      <div className="form-group col-md-6 mb-3">
+        {renderLabel("Agent Phone", true)}
+        <input
+          type="text"
+          name="agent_phone"
+          className="form-control"
+          value={agent.agent_phone}
+          onChange={handleAgentChange}
+          required
+        />
+      </div>
+    </div>
+  );
+
   const renderVisaFields = () => (
     <div className="row">
       <div className="form-group col-md-6 mb-3">
-        <label>Visa Number</label>
+        {renderPlainLabel(
+          "Visa Number",
+          isFieldFlaggedMissing("visa", "visa_number"),
+        )}
         <input
           type="text"
           name="visa_number"
@@ -1849,7 +2574,11 @@ useEffect(() => {
   const renderContractFields = () => (
     <div className="row">
       <div className="form-group col-md-6 mb-3">
-        {renderLabel("Employer", true)}
+        {renderLabel(
+          "Employer",
+          true,
+          isFieldFlaggedMissing("contract", "employer"),
+        )}
         <input
           type="text"
           name="employer"
@@ -1924,6 +2653,133 @@ useEffect(() => {
     </div>
   );
 
+  // Languages — fixed-list checkboxes. Checked state is derived directly
+  // from `languages.includes(option)`; toggling calls handleLanguageToggle.
+  const renderLanguagesFields = () => (
+    <div className="row">
+      {LANGUAGE_OPTIONS.map((option) => (
+        <div className="form-group col-md-4 mb-3" key={option}>
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id={`language-${option}`}
+              checked={languages.includes(option)}
+              onChange={() => handleLanguageToggle(option)}
+            />
+            <label className="form-check-label" htmlFor={`language-${option}`}>
+              {option}
+            </label>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Skills — fixed-list checkboxes, same pattern as Languages.
+  const renderSkillsFields = () => (
+    <div className="row">
+      {SKILL_OPTIONS.map((option) => (
+        <div className="form-group col-md-4 mb-3" key={option}>
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id={`skill-${option}`}
+              checked={skills.includes(option)}
+              onChange={() => handleSkillToggle(option)}
+            />
+            <label
+              className="form-check-label text-capitalize"
+              htmlFor={`skill-${option}`}
+            >
+              {option}
+            </label>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Experience — repeatable Country + Years of Experience rows, with an
+  // "Add experience" button and a per-row remove control. Icon-only
+  // controls (inline SVG, no new dependency) keep each row compact.
+  const renderExperienceFields = () => (
+    <div>
+      {experiences.length === 0 && (
+        <p className="text-muted small mb-3">
+          No experience rows yet — click "Add experience" to add one.
+        </p>
+      )}
+      {experiences.map((row, idx) => (
+        <div className="experience-row" key={row.localId}>
+          <div className="row align-items-end g-2">
+            <div className="form-group col-md-5 mb-2">
+              <label>Country</label>
+              <input
+                type="text"
+                className="form-control"
+                value={row.country}
+                onChange={(e) =>
+                  handleExperienceChange(row.localId, "country", e.target.value)
+                }
+                placeholder="e.g. Saudi Arabia"
+              />
+            </div>
+            <div className="form-group col-md-5 mb-2">
+              <label>Years of Experience</label>
+              <input
+                type="number"
+                className="form-control"
+                min="0"
+                max="99"
+                value={row.years_of_experience}
+                onChange={(e) =>
+                  handleExperienceChange(
+                    row.localId,
+                    "years_of_experience",
+                    e.target.value,
+                  )
+                }
+              />
+            </div>
+            <div className="form-group col-md-2 mb-2 d-flex justify-content-end gap-2">
+              <button
+                type="button"
+                className="experience-icon-btn experience-icon-btn-danger"
+                onClick={() => handleRemoveExperience(row.localId)}
+                title="Remove this row"
+                aria-label="Remove experience row"
+              >
+                <TrashIcon />
+              </button>
+              {idx === experiences.length - 1 && (
+                <button
+                  type="button"
+                  className="experience-icon-btn experience-icon-btn-primary"
+                  onClick={handleAddExperience}
+                  title="Add another row"
+                  aria-label="Add experience row"
+                >
+                  <PlusIcon />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+      {experiences.length === 0 && (
+        <button
+          type="button"
+          className="experience-add-btn"
+          onClick={handleAddExperience}
+        >
+          <PlusIcon /> Add experience
+        </button>
+      )}
+    </div>
+  );
+
   const SECTION_FIELD_RENDERERS = {
     basic: () => (
       <>
@@ -1936,9 +2792,13 @@ useEffect(() => {
     coc: renderCocFields,
     medical: renderMedicalFields,
     guarantor: renderGuarantorFields,
+    agent: renderAgentFields,
     visa: renderVisaFields,
     travel: renderTravelFields,
     contract: renderContractFields,
+    languages: renderLanguagesFields,
+    skills: renderSkillsFields,
+    experience: renderExperienceFields,
   };
 
   const SECTION_SUBTITLES = {
@@ -1951,15 +2811,21 @@ useEffect(() => {
     coc: "Optional — add if the worker has a COC assessment on record.",
     medical: "Optional — add if a medical fitness result is on record.",
     guarantor: "Optional — add a guarantor or emergency contact.",
+    agent: "Optional — add if the worker has an assigned agent.",
     visa: "Optional — add if visa details are available.",
     travel: "Optional — add if a travel ticket has been booked.",
     contract: "Optional — add if an employer contract has been agreed.",
+    languages: "Optional — check any languages this worker speaks.",
+    skills: "Optional — check any skills this worker has.",
+    experience:
+      "Optional — add this worker's prior work experience by country.",
   };
 
-  /* ---------------- section navigation (shared data + markup for the tree nav) ---------------- */
+  /* section navigation (shared data + markup for the tree nav) */
 
-  // Create/Edit navigation contains only the actual form modules.
-  const navItems = SECTIONS;
+  // Tree nav uses NAV_ITEMS (Skills + Experience collapsed into one entry)
+  // — module rendering, validation, and preview all keep using SECTIONS.
+  const navItems = NAV_ITEMS;
 
   // a module counts as "completed" once it actually has information on it.
   // Status is judged by whether a status exists (assigned statuses in edit
@@ -1973,32 +2839,45 @@ useEffect(() => {
         ? workerStatuses.length > 0
         : Boolean(personal.status_id);
     }
+    // Combined "Skills & Experience" nav entry — complete only once both
+    // underlying modules (still independent everywhere else) are complete.
+    if (section.groupKeys) {
+      return section.groupKeys.every((key) =>
+        isSectionComplete(SECTIONS.find((s) => s.key === key)),
+      );
+    }
     if (section.optional && !sectionsEnabled[section.key]) return false;
     const validate = stepValidators[section.key];
     return validate ? !validate() : false;
   };
 
   const renderNavItem = (section, mobile = false, index = 0) => {
-    const isActive = activeSection === section.key;
+    const navKeys = section.groupKeys || [section.key];
+    const isActive = navKeys.includes(activeSection);
     const nodeNumber = index + 1;
     const isComplete = isSectionComplete(section);
+    // A nav entry is flagged if any of the section keys it represents
+    // (itself, or — for the combined "Skills & Experience" entry — either
+    // underlying module) still has a missing required field.
+    const isMissing = navKeys.some((key) => missingSections.has(key));
+    // Combined entries jump to the first underlying module.
+    const targetKey = section.groupKeys ? section.groupKeys[0] : section.key;
 
     if (mobile) {
       return (
         <div
           key={section.key}
-          className={`tree-nav-mobile-item ${isActive ? "active" : ""}`}
+          className={`tree-nav-mobile-item position-relative ${
+            isActive ? "active" : ""
+          }`}
           role="button"
-          onClick={() => scrollToSection(section.key)}
+          onClick={() => scrollToSection(targetKey)}
         >
+          {isComplete && <CompletionCheckIcon />}
           <span className="tree-node-dot">{nodeNumber}</span>
-          <span className="tree-node-label d-inline-flex align-items-center">
+          <span className="tree-node-label">
             {section.label}
-            {isComplete && (
-              <span className="tree-node-check text-success" title="Completed">
-                »»
-              </span>
-            )}
+            {isMissing && <span className="tree-node-missing-flag">!</span>}
           </span>
         </div>
       );
@@ -2007,19 +2886,18 @@ useEffect(() => {
     return (
       <li
         key={section.key}
-        className={`tree-nav-item ${isActive ? "active" : ""}`}
+        className={`tree-nav-item position-relative pe-4 ${
+          isActive ? "active" : ""
+        }`}
         role="button"
-        onClick={() => scrollToSection(section.key)}
+        onClick={() => scrollToSection(targetKey)}
       >
+        {isComplete && <CompletionCheckIcon />}
         <span className="tree-node-dot">{nodeNumber}</span>
         <span className="tree-node-label-wrap">
-          <span className="tree-node-label d-inline-flex align-items-center">
+          <span className="tree-node-label">
             {section.label}
-            {isComplete && (
-              <span className="tree-node-check text-success" title="Completed">
-                »»
-              </span>
-            )}
+            {isMissing && <span className="tree-node-missing-flag">!</span>}
           </span>
           {section.optional && (
             <span className="tree-node-badge">Optional</span>
@@ -2031,15 +2909,12 @@ useEffect(() => {
 
   // The single primary action button — reused for the fixed desktop tree,
   // the mobile top nav, and (compact) the Preview header once the tree is
-  // hidden there. Label/behavior only depends on mode + loading state,
-  // matching the existing Create User Form button styling exactly
-  // (`btn btn-main px-4 rounded`).
-  const renderActionButton = (compact = false) => (
+  // hidden there. Label/behavior only depends on mode + loading state.
+  // Kept compact (btn-sm) everywhere so it never dominates the tree nav.
+  const renderActionButton = () => (
     <button
       type="button"
-      className={`btn btn-main rounded ${
-        compact ? "btn-sm px-3" : "px-4 w-100"
-      }`}
+      className="btn btn-main btn-sm rounded px-3 w-100"
       onClick={handleSubmit}
       disabled={submitLoading}
     >
@@ -2051,64 +2926,64 @@ useEffect(() => {
     </button>
   );
 
-  /* ---------------- section card wrapper ---------------- */
+  /*  section card wrapper*/
 
   // Optional modules are always rendered and editable — the "Include"
   // switch only controls whether the module's data is attached to the
   // request payload in handleSubmit, never whether the module is visible.
-const renderSectionCard = (section) => {
-  const isOptional = section.optional;
+  const renderSectionCard = (section) => {
+    const isOptional = section.optional;
 
-  return (
-    <div
-      key={section.key}
-      id={`section-${section.key}`}
-      ref={setSectionRef(section.key)}
-      className="card border-0 shadow-sm rounded-4 mb-4 section-scroll-anchor position-relative"
-    >
-      {isOptional && (
-        <div
-          className="position-absolute top-0 end-0 m-3"
-          style={{ zIndex: 2 }}
-        >
-          <div className="form-check form-switch d-flex align-items-center gap-2 ps-0 mb-0">
-            <input
-              type="checkbox"
-              role="switch"
-              className="form-check-input ms-0"
-              id={`toggle-${section.key}`}
-              checked={sectionsEnabled[section.key]}
-              onChange={() => toggleSection(section.key)}
-            />
-            <label
-              className="form-check-label small text-muted"
-              htmlFor={`toggle-${section.key}`}
-            >
-              Include
-            </label>
+    return (
+      <div
+        key={section.key}
+        id={`section-${section.key}`}
+        ref={setSectionRef(section.key)}
+        className="mb-4 pb-4 border-bottom section-scroll-anchor position-relative"
+      >
+        {isOptional && (
+          <div
+            className="position-absolute top-0 end-0 m-3"
+            style={{ zIndex: 2 }}
+          >
+            <div className="form-check form-switch d-flex align-items-center gap-2 ps-0 mb-0">
+              <input
+                type="checkbox"
+                role="switch"
+                className="form-check-input ms-0"
+                id={`toggle-${section.key}`}
+                checked={sectionsEnabled[section.key]}
+                onChange={() => toggleSection(section.key)}
+              />
+              <label
+                className="form-check-label small text-muted"
+                htmlFor={`toggle-${section.key}`}
+              >
+                Include
+              </label>
+            </div>
+          </div>
+        )}
+
+        <div className="pt-3 pb-0 pe-5">
+          <div>
+            <h5 className="fw-bold text-dark mb-1">{section.label}</h5>
+            <p className="text-muted small mb-0">
+              {SECTION_SUBTITLES[section.key]}
+            </p>
           </div>
         </div>
-      )}
 
-      <div className="card-header bg-white border-0 rounded-4 pt-3 pb-0 pe-5">
-        <div>
-          <h5 className="fw-bold text-dark mb-1">{section.label}</h5>
-          <p className="text-muted small mb-0">
-            {SECTION_SUBTITLES[section.key]}
-          </p>
+        <div className="pt-2">
+          <div className="submit-section">
+            {SECTION_FIELD_RENDERERS[section.key]()}
+          </div>
         </div>
       </div>
+    );
+  };
 
-      <div className="card-body pt-2">
-        <div className="submit-section">
-          {SECTION_FIELD_RENDERERS[section.key]()}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-  /* ---------------- preview (mirrors Worker Profile module layout) ---------------- */
+  /*preview (mirrors Worker Profile module layout)*/
 
   const previewRow = (label, value) => (
     <p className="mb-2">
@@ -2160,8 +3035,8 @@ const renderSectionCard = (section) => {
     colClass = "col-12 col-md-6",
   ) => (
     <div className={colClass}>
-      <div className="card h-100 border rounded-4 border-info">
-        <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+      <div className="h-100 pb-3">
+        <div className="d-flex justify-content-between align-items-center pb-2 border-bottom mb-2">
           <h6 className="fw-bold text-info mb-0">{title}</h6>
           <ActionButtons
             actions={[
@@ -2172,7 +3047,7 @@ const renderSectionCard = (section) => {
             ]}
           />
         </div>
-        <div className="card-body">{content}</div>
+        <div>{content}</div>
       </div>
     </div>
   );
@@ -2235,8 +3110,8 @@ const renderSectionCard = (section) => {
           ref={setSectionRef("status")}
           id="section-status"
         >
-          <div className="card h-100 border rounded-4 border-info">
-            <div className="card-header border-0 d-flex justify-content-between align-items-center pb-0">
+          <div className="pb-3">
+            <div className="d-flex justify-content-between align-items-center pb-2 border-bottom mb-2">
               <h6 className="fw-bold text-info mb-0">Status</h6>
               <ActionButtons
                 actions={[
@@ -2247,7 +3122,7 @@ const renderSectionCard = (section) => {
                 ]}
               />
             </div>
-            <div className="card-body d-flex flex-wrap gap-2">
+            <div className="d-flex flex-wrap gap-2">
               {currentStatusBadges()}
             </div>
           </div>
@@ -2350,6 +3225,16 @@ const renderSectionCard = (section) => {
         )}
 
         {renderPreviewModule(
+          "Agent Information",
+          "agent",
+          <>
+            {previewRow("Agent Name", agent.agent_name)}
+            {previewRow("Agent Phone", agent.agent_phone)}
+          </>,
+          !sectionsEnabled.agent,
+        )}
+
+        {renderPreviewModule(
           "Visa",
           "visa",
           <>
@@ -2395,6 +3280,59 @@ const renderSectionCard = (section) => {
           </>,
           !sectionsEnabled.contract,
         )}
+
+        {renderPreviewModule(
+          "Languages",
+          "languages",
+          languages.length > 0 ? (
+            <div className="d-flex flex-wrap gap-2">
+              {languages.map((l) => (
+                <Badge key={l} content={l} color="blue" />
+              ))}
+            </div>
+          ) : (
+            <span className="text-muted">No languages selected</span>
+          ),
+          !sectionsEnabled.languages,
+        )}
+
+        {renderPreviewModule(
+          "Skills",
+          "skills",
+          skills.length > 0 ? (
+            <div className="d-flex flex-wrap gap-2">
+              {skills.map((s) => (
+                <Badge key={s} content={s} color="green" />
+              ))}
+            </div>
+          ) : (
+            <span className="text-muted">No skills selected</span>
+          ),
+          !sectionsEnabled.skills,
+        )}
+
+        {renderPreviewModule(
+          "Experience",
+          "experience",
+          experiences.length > 0 ? (
+            <>
+              {experiences.map((row) => (
+                <p className="mb-2" key={row.localId}>
+                  <small className="text-muted">{fallback(row.country)}</small>
+                  <br />
+                  {fallback(row.years_of_experience)}{" "}
+                  {row.years_of_experience === "" ||
+                  row.years_of_experience == null
+                    ? ""
+                    : "years"}
+                </p>
+              ))}
+            </>
+          ) : (
+            <span className="text-muted">No experience added</span>
+          ),
+          !sectionsEnabled.experience,
+        )}
       </div>
     </div>
   );
@@ -2405,9 +3343,7 @@ const renderSectionCard = (section) => {
     return (
       <section className="dashboard-wraper">
         <BackButton onClick={goBack} />
-        <div className="card border-0 shadow-sm rounded-4 p-5 text-center text-muted">
-          Loading worker data...
-        </div>
+        <div className="p-5 text-center text-muted">Loading worker data...</div>
       </section>
     );
   }
@@ -2428,29 +3364,45 @@ const renderSectionCard = (section) => {
         .tree-nav-fixed {
           position: fixed;
           background: transparent;
-          padding: 0.25rem 0 0.25rem 1.1rem;
+          padding: 0.15rem 0 0.15rem 0.85rem;
           z-index: 5;
           display: flex;
           flex-direction: column;
+          justify-content: space-between;
+          height: calc(100vh - 130px);
+          max-height: calc(100vh - 130px);
+        }
+        .tree-nav-scroll {
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-evenly;
+          flex: 1 1 auto;
+          min-height: 0;
         }
         .tree-nav-title {
-          font-size: 0.72rem;
+          font-size: 0.68rem;
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.06em;
           color: #98a2b3;
-          margin-bottom: 1rem;
-          padding-left: 2.75rem;
+          margin-bottom: 0.4rem;
+          padding-left: 2.5rem;
+          flex: 0 0 auto;
         }
         .tree-nav-list {
           position: relative;
           margin: 0;
           padding: 0;
+          flex: 1 1 auto;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-evenly;
         }
         .tree-nav-list::before {
           content: "";
           position: absolute;
-          left: 15px;
+          left: 14px;
           top: 4px;
           bottom: 4px;
           width: 2px;
@@ -2460,10 +3412,10 @@ const renderSectionCard = (section) => {
           position: relative;
           display: flex;
           align-items: center;
-          gap: 0.85rem;
-          padding: 0.5rem 0.5rem;
-          margin-bottom: 0.15rem;
-          border-radius: 0.6rem;
+          gap: 0.7rem;
+          padding: 0.3rem 0.4rem;
+          margin-bottom: 0;
+          border-radius: 0.5rem;
           cursor: pointer;
           transition: background-color 0.15s ease;
         }
@@ -2477,8 +3429,8 @@ const renderSectionCard = (section) => {
           position: relative;
           z-index: 1;
           flex: 0 0 auto;
-          width: 32px;
-          height: 32px;
+          width: 28px;
+          height: 28px;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -2486,7 +3438,7 @@ const renderSectionCard = (section) => {
           background: #fff;
           border: 2px solid #d9dee5;
           color: #8a94a6;
-          font-size: 0.78rem;
+          font-size: 0.72rem;
           font-weight: 700;
           transition: all 0.15s ease;
         }
@@ -2494,15 +3446,15 @@ const renderSectionCard = (section) => {
           border-color: #0d6efd;
           background: #0d6efd;
           color: #fff;
-          box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+          box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
         }
         .tree-node-label-wrap {
           display: flex;
           flex-direction: column;
-          line-height: 1.25;
+          line-height: 1.15;
         }
         .tree-node-label {
-          font-size: 0.875rem;
+          font-size: 0.82rem;
           font-weight: 500;
           color: #495057;
         }
@@ -2511,21 +3463,27 @@ const renderSectionCard = (section) => {
           font-weight: 700;
         }
         .tree-node-badge {
-          font-size: 0.65rem;
+          font-size: 0.62rem;
           color: #adb5bd;
           text-transform: uppercase;
           letter-spacing: 0.03em;
         }
-        .tree-node-check {
-          margin-left: 0.4rem;
+        .tree-node-check-icon {
+          position: absolute;
+          top: 4px;
+          right: 6px;
+          color: #198754;
+        }
+        .tree-node-missing-flag {
+          color: #dc3545;
           font-weight: 700;
-          font-size: 0.8rem;
-          line-height: 1;
+          margin-left: 0.35rem;
         }
 
         .tree-nav-action-wrap {
-          padding-right: 1.1rem;
-          margin-top: 1.25rem;
+          padding-right: 0.85rem;
+          margin-top: 0.6rem;
+          flex: 0 0 auto;
         }
 
         .tree-nav-mobile-wrap {
@@ -2574,6 +3532,10 @@ const renderSectionCard = (section) => {
           color: #0d6efd;
           font-weight: 700;
         }
+        .tree-nav-mobile-item .tree-node-check-icon {
+          top: -4px;
+          right: -4px;
+        }
         .tree-nav-mobile-action-wrap {
           padding: 0 0.75rem 0.75rem;
         }
@@ -2587,6 +3549,59 @@ const renderSectionCard = (section) => {
         .dashboard-wraper select.form-control,
         .dashboard-wraper textarea.form-control {
           background-color: #EDF1FB;
+        }
+
+        /* Experience rows */
+        .experience-row {
+          padding: 0.65rem 0.85rem 0.1rem;
+          margin-bottom: 0.75rem;
+        }
+        .experience-row:hover {
+          border-color: #d9dee8;
+          box-shadow: 0 1px 4px rgba(16, 24, 40, 0.04);
+        }
+        .experience-icon-btn {
+          width: 34px;
+          height: 34px;
+          flex: 0 0 auto;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          border: 1px solid #dde1e8;
+          background: #fff;
+          color: #6c757d;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .experience-icon-btn-danger:hover {
+          background: #fdecec;
+          border-color: #f3b7b7;
+          color: #dc3545;
+        }
+        .experience-icon-btn-primary:hover {
+          background: #e8f1ff;
+          border-color: #b6d3ff;
+          color: #0d6efd;
+        }
+        .experience-add-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          border: 1px dashed #c7cedb;
+          background: #fff;
+          color: #495057;
+          font-size: 0.85rem;
+          font-weight: 500;
+          padding: 0.4rem 0.9rem;
+          border-radius: 2rem;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .experience-add-btn:hover {
+          border-color: #0d6efd;
+          color: #0d6efd;
+          background: #f4f8ff;
         }
       `}</style>
 
@@ -2686,10 +3701,7 @@ const renderSectionCard = (section) => {
           {!previewMode ? (
             <>{SECTIONS.map((s) => renderSectionCard(s))}</>
           ) : (
-            <div className="card border-0 shadow-sm rounded-4 mb-4">
-              <div className="card-header bg-white border-0 rounded-4 pt-3 pb-0 d-flex justify-content-between align-items-start"></div>
-              <div className="card-body pt-2">{renderPreview()}</div>
-            </div>
+            <div className="pt-2">{renderPreview()}</div>
           )}
         </div>
 
@@ -2707,9 +3719,11 @@ const renderSectionCard = (section) => {
               }}
             >
               <div className="tree-nav-title">Worker Sections</div>
-              <ul className="tree-nav-list list-unstyled mb-0">
-                {navItems.map((s, idx) => renderNavItem(s, false, idx))}
-              </ul>
+              <div className="tree-nav-scroll">
+                <ul className="tree-nav-list list-unstyled mb-0">
+                  {navItems.map((s, idx) => renderNavItem(s, false, idx))}
+                </ul>
+              </div>
               <div className="tree-nav-action-wrap">{renderActionButton()}</div>
             </div>
           </div>
