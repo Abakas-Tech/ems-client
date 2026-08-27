@@ -61,7 +61,7 @@ const MENU_CONFIG = [
     label: "Status",
     path: "/admin/meta-data/employee-status",
     icon: "bi bi-database-add",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    roles: [ROLES.ADMIN],
   },
 
   {
@@ -81,7 +81,7 @@ const MENU_CONFIG = [
     label: "Public Content",
     path: "/admin/content",
     icon: "bi bi-layout-text-sidebar-reverse",
-    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    roles: [ROLES.ADMIN],
   },
   {
     label: "Settings",
