@@ -78,7 +78,6 @@ const ActiveWorkers = () => {
       } else {
         res = await listWorkers(params);
       }
-
       setWorkers(res?.data?.items || []);
       setTotalItems(res?.data?.meta?.total_items || 0);
     } catch (err) {

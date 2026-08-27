@@ -198,6 +198,7 @@ const defaultPersonal = () => ({
   height_cm: "",
   weight_kg: "",
   national_id_number: "",
+  fingerprint_number:""
 });
 
 const defaultPassport = () => ({
@@ -793,6 +794,7 @@ function WorkerForm() {
       height_cm: pi.height_cm || "",
       weight_kg: pi.weight_kg || "",
       national_id_number: pi.national_id_number || "",
+      fingerprint_number: pi.fingerprint_number || "",
     });
     setExistingPhoto3x4Url(pi.photo_3x4?.url || null);
     setExistingPhotoStandingUrl(pi.photo_standing?.url || null);
@@ -2056,6 +2058,16 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
+      <div className="form-group col-md-6 mb-3">
+        <label>Fingerprint Number</label>
+        <input
+          type="text"
+          name="fingerprint_number"
+          className="form-control"
+          value={personal.fingerprint_number}
+          onChange={handlePersonalChange}
+        />
+      </div>
     </div>
   );
 
@@ -3155,6 +3167,7 @@ function WorkerForm() {
             {previewRowCol("Height (cm)", personal.height_cm)}
             {previewRowCol("Weight (kg)", personal.weight_kg)}
             {previewRowCol("National ID", personal.national_id_number)}
+            {previewRowCol("Fingerprint Number", personal.fingerprint_number)}
             {previewFileRowCol("Photo 3x4", photo3x4, existingPhoto3x4Url)}
             {previewFileRowCol(
               "Photo Standing",

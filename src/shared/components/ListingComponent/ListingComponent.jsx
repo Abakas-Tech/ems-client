@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import ActionButtons from "../ActionButtons/ActionButtons";
 import BottomPagination from "../BottomPagination/BottomPagination";
@@ -89,7 +88,7 @@ const ListingComponent = ({
               />
             </th>
           )}
-          {showAvater && <th className="p-0" />}
+          {showAvater && <th className="p-0 " />}
           {columns.map((col) => (
             <th key={col.header} className={fewColumns ? "px-5" : ""}>
               {col.header}
@@ -123,12 +122,12 @@ const ListingComponent = ({
                 </td>
               )}
               {showAvater && (
-                <td className="p-0 align-middle">
+                <td className="align-middle w-1">
                   <ProfileCell
                     profile={{
                       firstName:
                         row.full_name || row.candidate_name || row.name || "?",
-                      image: row.profile_photo_url || "",
+                      image: row.photo_3x4_url || "",
                     }}
                   />
                 </td>
