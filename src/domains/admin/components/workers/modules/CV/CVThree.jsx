@@ -640,44 +640,48 @@ const CVThree = ({ templateSwitcher }) => {
       const name = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
 
       // Grant the selected partner backend access to this worker's CV
-      // (creates/updates the worker_partner_cvs row), so they can come
-      // back and view/download it themselves later - not just this once.
-      await generateCvForPartner(worker.id, {
-        partnerId: selectedPartnerId,
-      });
+      // (creates/updates the worker_partner_cvs row) — only when an
+      // admin/employee is downloading. If the viewer IS the partner, they
+      // already have access (that's how they got here), and this route is
+      // admin/employee-only server-side, so calling it would 403.
+      if (Number(profile?.role_id) !== 3) {
+        await generateCvForPartner(worker.id, {
+          partnerId: selectedPartnerId,
+        });
+
+        /*
+         * Keep the local state in sync so the partner shows up as already
+         * having access to this worker's CV without needing a full refetch.
+         */
+        setWorker((previous) => {
+          const previousCvs = Array.isArray(previous?.generated_cvs)
+            ? previous.generated_cvs
+            : [];
+
+          const otherCvs = previousCvs.filter(
+            (cv) =>
+              !(
+                cv.category === "CV_THREE" &&
+                String(cv.partner_id) === String(selectedPartnerId)
+              ),
+          );
+
+          return {
+            ...previous,
+            generated_cvs: [
+              {
+                ...existingSelectedPartnerCv,
+                category: "CV_THREE",
+                partner_id: Number(selectedPartnerId),
+              },
+              ...otherCvs,
+            ],
+          };
+        });
+      }
 
       // Trigger an actual browser download of the PDF we just built.
       pdf.save(`${name}.pdf`);
-
-      /*
-       * Keep the local state in sync so the partner shows up as already
-       * having access to this worker's CV without needing a full refetch.
-       */
-      setWorker((previous) => {
-        const previousCvs = Array.isArray(previous?.generated_cvs)
-          ? previous.generated_cvs
-          : [];
-
-        const otherCvs = previousCvs.filter(
-          (cv) =>
-            !(
-              cv.category === "CV_THREE" &&
-              String(cv.partner_id) === String(selectedPartnerId)
-            ),
-        );
-
-        return {
-          ...previous,
-          generated_cvs: [
-            {
-              ...existingSelectedPartnerCv,
-              category: "CV_THREE",
-              partner_id: Number(selectedPartnerId),
-            },
-            ...otherCvs,
-          ],
-        };
-      });
 
       addMessage(true, "CV downloaded and shared with the partner!");
     } catch (error) {
@@ -853,7 +857,9 @@ const CVThree = ({ templateSwitcher }) => {
           )}
         </div>
 
-        {(Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) &&
+        {(Number(profile?.role_id) === 1 ||
+          Number(profile?.role_id) === 2 ||
+          Number(profile?.role_id) === 3) &&
           selectedPartnerId && (
             <div className="d-flex flex-column align-items-md-end mt-3 mt-md-5">
               <button
@@ -862,46 +868,41 @@ const CVThree = ({ templateSwitcher }) => {
               >
                 Download CV
               </button>
-              {alreadySharedWithPartner && (
-                <span className="text-success small mt-1">
-                  ✓ Already shared with this partner
-                </span>
-              )}
             </div>
           )}
       </div>
 
       <div className="mb-3 mt-1">{templateSwitcher}</div>
 
-      {/* Partner control remains outside cvRef, so it is not captured in the PDF. */}
-      <div className="mb-2">
-        <select
-          id="cv-three-partner"
-          className="form-select form-select-sm d-inline-block w-auto"
-          value={selectedPartnerId}
-          onChange={handlePartnerChange}
-          disabled={Number(profile?.role_id) === 3}
-          style={{
-            borderRadius: 999,
-            fontWeight: 600,
-            fontSize: 13,
-            paddingTop: 4,
-            paddingBottom: 4,
-            paddingLeft: 14,
-            paddingRight: 30,
-            maxWidth: 220,
-            cursor: Number(profile?.role_id) === 3 ? "default" : "pointer",
-          }}
-        >
-          <option value="">Select Partner</option>
+      {Number(profile?.role_id) !== 3 && (
+        <div className="mb-2">
+          <select
+            id="cv-three-partner"
+            className="form-select form-select-sm d-inline-block w-auto"
+            value={selectedPartnerId}
+            onChange={handlePartnerChange}
+            style={{
+              borderRadius: 999,
+              fontWeight: 600,
+              fontSize: 13,
+              paddingTop: 4,
+              paddingBottom: 4,
+              paddingLeft: 14,
+              paddingRight: 30,
+              maxWidth: 220,
+              cursor: "pointer",
+            }}
+          >
+            <option value="">Select Partner</option>
 
-          {partners.map((partner) => (
-            <option key={partner.partner_id} value={partner.partner_id}>
-              {getPartnerOptionLabel(partner)}
-            </option>
-          ))}
-        </select>
-      </div>
+            {partners.map((partner) => (
+              <option key={partner.partner_id} value={partner.partner_id}>
+                {getPartnerOptionLabel(partner)}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         {/* Page 1: application, passport, personal data, skills, summary */}
