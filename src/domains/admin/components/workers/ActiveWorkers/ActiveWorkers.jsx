@@ -108,6 +108,10 @@ const ActiveWorkers = () => {
     navigate(`/admin/employees/edit/${row.id}`, { state: row });
   };
 
+  const handleViewCv = (row) => {
+    navigate(`/admin/employees/${row.id}/cv`, { state: row });
+  };
+
   // Bulk Insurance Print Handler
   const handlePrintInsurance = async () => {
     if (selectedWorkerIds.length === 0) return;
@@ -433,6 +437,7 @@ const ActiveWorkers = () => {
       ]
     : [
         { type: "view", onClick: (row) => handleView(row.id) },
+        { type: "viewCV", onClick: (row) => handleViewCv(row) },
         { type: "edit", onClick: (row) => handleEdit(row) },
         {
           type: "transaction",

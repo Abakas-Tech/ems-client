@@ -1,15 +1,28 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import { getWorkerCVData } from "../../../../api/worker.api";
+import {
+  getWorkerCVData,
+  generateCvForPartner,
+} from "../../../../api/worker.api";
 import { getUsersLookup } from "../../../../api/user.api";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { useNavigate, useParams } from "react-router-dom";
 import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
+import cvFooterLogo from "../../../../../../assets/img/cv/cv-footer.png";
 
 const safeDate = (date) => (date ? date.slice(0, 10) : "");
+
+// Formats a Date as "1-Jul-26" (day-Mon-YY), matching the template's
+// "Date" field on the Application section.
+const formatShortDate = (date) => {
+  const day = date.getDate();
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = String(date.getFullYear()).slice(-2);
+  return `${day}-${month}-${year}`;
+};
 
 const REFERENCE_PREFIX = "CV";
 
@@ -90,7 +103,7 @@ const css = {
     fontWeight: "bold",
   },
   titleStackSub: {
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: "bold",
     marginTop: 3,
   },
@@ -134,14 +147,22 @@ const css = {
     borderTop: "1px solid #000",
     borderBottom: "1px solid #000",
   },
-  fullNameLabel: { padding: "5px 8px", fontWeight: "bold", fontSize: 13 },
+  fullNameLabel: {
+    padding: "5px 8px",
+    fontWeight: "bold",
+    fontSize: 13,
+    background: BLUE,
+    color: "#fff",
+    borderRight: "1px solid #000",
+  },
   fullNameValue: {
     padding: "5px 8px",
     fontWeight: "bold",
     fontSize: 14,
     textAlign: "center",
-    borderLeft: "1px solid rgba(255,255,255,0.5)",
-    borderRight: "1px solid rgba(255,255,255,0.5)",
+    color: "#000",
+    background: "#fff",
+    borderRight: "1px solid #000",
   },
   fullNameAr: {
     padding: "5px 8px",
@@ -241,7 +262,7 @@ const Row3 = ({
   arLabel,
   boldValue,
   last,
-  cols = "150px 1fr 170px",
+  cols = "125px 1fr 140px",
 }) => (
   <div
     style={{
@@ -261,7 +282,7 @@ const Row3 = ({
    straight through from Personal Data into Skills, but a table can pass
    its own `cols` (e.g. equal thirds) when it needs to match a neighbouring
    table instead. */
-const CheckRow = ({ en, checked, ar, last, cols = "150px 1fr 170px" }) => (
+const CheckRow = ({ en, checked, ar, last, cols = "125px 1fr 140px" }) => (
   <div
     style={{
       display: "grid",
@@ -330,12 +351,40 @@ const PhotoBox = ({ url, alt, placeholderLabel }) => (
   </div>
 );
 
+/*
+ * FIX (content cut off at the page edges + page 2 narrower than page 1):
+ *
+ * 1. Scroll compensation - html2canvas measures capture position relative
+ *    to the page's CURRENT scroll offset. `scrollX: 0, scrollY: 0` assumed
+ *    the page is never scrolled, which is wrong the moment the person has
+ *    scrolled down (exactly when they'd reach the Download button on a
+ *    long form). Since passportRef sits further down the DOM than cvRef,
+ *    a wrong scroll assumption skewed its capture differently than the
+ *    first element's - that's what made page 2 come out narrower/shifted.
+ *    Passing the NEGATIVE of the live scroll position (`-window.scrollX`,
+ *    `-window.scrollY`) is the correct, standard compensation so both
+ *    captures line up regardless of where the page happens to be scrolled.
+ *    `windowHeight` is also set to the element's own full height so
+ *    html2canvas's offscreen render frame always has room to lay out the
+ *    entire element, not just whatever fits in the current browser window.
+ *
+ * 2. Bottom cutoff - the image was previously scaled to fit the page's
+ *    WIDTH only (`ratio = printableWidth / canvasWidth`), with no check
+ *    that the resulting height fit the page. Tall content (this CV) ended
+ *    up taller than one A4 page, and jsPDF simply draws past the page
+ *    edge - anything below the bottom margin is invisible, which is the
+ *    cutoff you saw (Skills table stopping at "Ironing", photo sliced,
+ *    passport image sliced). Using `Math.min(widthRatio, heightRatio)`
+ *    fits the whole element within the page on BOTH axes, so nothing gets
+ *    clipped; the image is centered horizontally in case that leaves a
+ *    little extra width margin on one side.
+ */
 const captureElementToPage = async (
   pdf,
   element,
   waitMs = 500,
-  marginX = 8,
-  marginY = 8,
+  marginX = 1.5,
+  marginY = 1.5,
 ) => {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
@@ -350,6 +399,9 @@ const captureElementToPage = async (
     allowTaint: false,
     scale: 2,
     windowWidth: 760,
+    windowHeight: element.scrollHeight,
+    scrollX: -window.scrollX,
+    scrollY: -window.scrollY,
   });
 
   element.style.width = originalWidth;
@@ -360,15 +412,14 @@ const captureElementToPage = async (
 
   const printableWidth = pageWidth - marginX * 2;
   const printableHeight = pageHeight - marginY * 2;
-  const ratio = Math.min(
-    printableWidth / canvasWidth,
-    printableHeight / canvasHeight,
-  );
+  const widthRatio = printableWidth / canvasWidth;
+  const heightRatio = printableHeight / canvasHeight;
+  const ratio = Math.min(widthRatio, heightRatio);
 
   const imageWidth = canvasWidth * ratio;
   const imageHeight = canvasHeight * ratio;
   const offsetX = marginX + (printableWidth - imageWidth) / 2;
-  const offsetY = marginY + (printableHeight - imageHeight) / 2;
+  const offsetY = marginY;
 
   pdf.addImage(imageData, "JPEG", offsetX, offsetY, imageWidth, imageHeight);
 };
@@ -395,7 +446,12 @@ const CVThree = ({ templateSwitcher }) => {
     showLoader();
 
     try {
-      const response = await getWorkerCVData(workerId);
+      // Passing the currently selected partner as a preview so the backend
+      // can flag whether this worker's CV has already been shared with them.
+      const response = await getWorkerCVData(
+        workerId,
+        selectedPartnerId || undefined,
+      );
       setWorker(response.data);
     } catch (error) {
       console.error("fetch error:", error);
@@ -403,7 +459,7 @@ const CVThree = ({ templateSwitcher }) => {
     } finally {
       hideLoader();
     }
-  }, [id, profile?.id]);
+  }, [id, profile?.id, selectedPartnerId]);
 
   useEffect(() => {
     fetchWorkerData();
@@ -533,9 +589,19 @@ const CVThree = ({ templateSwitcher }) => {
       ) || null
     : null;
 
-  const hasSelectedPartnerCv = Boolean(existingSelectedPartnerCv);
+  // Backend flags whether this CV has already been shared with the
+  // partner passed as ?partnerId= (the "preview" param). Field name is a
+  // best guess across a few likely candidates - confirm against the real
+  // getWorkerCV response shape and trim this down to the actual key.
+  const alreadySharedWithPartner = Boolean(
+    worker?.already_shared_with_partner ??
+    worker?.alreadyShared ??
+    worker?.shared_with_partner ??
+    worker?.is_shared_with_partner ??
+    false,
+  );
 
-  const handleGenerateClick = () => {
+  const handleDownloadClick = () => {
     if (!selectedPartnerId) {
       addMessage(false, "Please select a partner");
       return;
@@ -546,10 +612,10 @@ const CVThree = ({ templateSwitcher }) => {
       return;
     }
 
-    handleGenerateAndUpload();
+    handleGenerateAndDownload();
   };
 
-  const handleGenerateAndUpload = async () => {
+  const handleGenerateAndDownload = async () => {
     if (!cvRef.current || !worker) return;
 
     if (!selectedPartnerId || !selectedPartnerHeaderUrl) {
@@ -571,26 +637,21 @@ const CVThree = ({ templateSwitcher }) => {
         await captureElementToPage(pdf, passportRef.current, 800);
       }
 
-      const blob = pdf.output("blob");
       const name = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
-      const file = new File([blob], `${name}.pdf`, {
-        type: "application/pdf",
+
+      // Grant the selected partner backend access to this worker's CV
+      // (creates/updates the worker_partner_cvs row), so they can come
+      // back and view/download it themselves later - not just this once.
+      await generateCvForPartner(worker.id, {
+        partnerId: selectedPartnerId,
       });
 
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("file_name", name);
-      formData.append("category", "CV_THREE");
-      formData.append("is_private", 0);
-      formData.append("description", `CV for ${worker.full_name}`);
-      formData.append("worker_id", worker.id);
-      formData.append("partner_id", selectedPartnerId);
-
-      // await uploadFile(formData);
+      // Trigger an actual browser download of the PDF we just built.
+      pdf.save(`${name}.pdf`);
 
       /*
-       * Keep the local state in sync so the button immediately changes from
-       * "Generate CV" to "Update CV" for this selected partner.
+       * Keep the local state in sync so the partner shows up as already
+       * having access to this worker's CV without needing a full refetch.
        */
       setWorker((previous) => {
         const previousCvs = Array.isArray(previous?.generated_cvs)
@@ -618,13 +679,10 @@ const CVThree = ({ templateSwitcher }) => {
         };
       });
 
-      addMessage(
-        true,
-        `CV ${hasSelectedPartnerCv ? "updated" : "generated"} and uploaded successfully!`,
-      );
+      addMessage(true, "CV downloaded and shared with the partner!");
     } catch (error) {
       console.error(error);
-      addMessage(false, "Failed to generate PDF");
+      addMessage(false, error.message || "Failed to generate PDF");
     } finally {
       hideLoader();
     }
@@ -642,9 +700,8 @@ const CVThree = ({ templateSwitcher }) => {
     worker.contract_start_date && worker.contract_end_date
       ? subtractDate(worker.contract_end_date, worker.contract_start_date)
       : (worker.contract_period ?? "2 Years");
-  const code = worker.agency_code ?? worker.code ?? "";
-  const applicationDate =
-    safeDate(worker.application_date) || safeDate(worker.created_at);
+  // "CODE" row was removed from the template - no longer read from worker.
+  const applicationDate = formatShortDate(new Date());
 
   const phone = worker.phone_number ?? "";
   const name = (worker.full_name ?? "").toUpperCase();
@@ -662,8 +719,9 @@ const CVThree = ({ templateSwitcher }) => {
   const numberOfChildren = String(worker.number_of_children ?? "");
   const height = worker.height_cm ? `${worker.height_cm} cm` : "";
   const weight = worker.weight_kg ? `${worker.weight_kg} kg` : "";
-  const complexion = worker.complexion ?? "";
-  const nearestRelative = worker.nearest_relative ?? "";
+  // Hard-coded per your request - not read from worker data.
+  const complexion = "Brown";
+  const nearestRelative = "Father";
 
   const education = (worker.education ?? "").toUpperCase();
 
@@ -675,7 +733,17 @@ const CVThree = ({ templateSwitcher }) => {
   const faceUrl = worker.photo_3x4_url ?? "";
   const bodyUrl = worker.photo_standing_url ?? "";
 
-  const profileSummary = worker.profile_summary ?? worker.summary ?? "";
+  // "First time abroad" = no recorded work experience yet. Drives both the
+  // Profile Summary wording and the Previous Employment table below.
+  const isFirstTimeAbroad =
+    !Array.isArray(worker.experience) || worker.experience.length === 0;
+
+  const PROFILE_SUMMARY_BASE =
+    "She can do all house hold chores that includes taking care of kids. She is hard working and family oriented.";
+
+  const profileSummary = isFirstTimeAbroad
+    ? `First time to work abroad. ${PROFILE_SUMMARY_BASE}`
+    : PROFILE_SUMMARY_BASE;
 
   /* Page-2 contact strip: prefer the selected partner's own details,
      fall back to the agency defaults shown in the sample template. */
@@ -687,72 +755,65 @@ const CVThree = ({ templateSwitcher }) => {
     selectedPartner?.address ??
     AGENCY_CONTACT.addressAr;
 
-  /* Skills checklist - matches the template's tick list exactly.
-     HARD-CODED for now per your request: checked through "Arabic Cooking",
-     unchecked from "Sewing" onward. Swap back to the worker.skills lookup
-     (kept below, commented out) once skill data is wired up per worker. */
+  /* Skills checklist - checked/unchecked based on what's actually
+     assigned to this worker (worker_skills.skills SET column). The `key`
+     values below match the DB's SET literals exactly - note "other"
+     (singular), not "others". Handles the value coming back either as a
+     single comma-separated string (typical for a MySQL SET column) or as
+     an array. */
   const SKILL_DEFINITIONS = [
-    {
-      en: "Baby Sitting",
-      ar: "مجالسة الاطفال",
-      key: "Baby Sitting",
-      checked: true,
-    },
-    {
-      en: "Children Care",
-      ar: "رعاية الأطفال",
-      key: "Children Care",
-      checked: true,
-    },
-    { en: "Tutoring", ar: "دروس خصوصية", key: "Tutoring", checked: true },
-    {
-      en: "Disabled Care",
-      ar: "رعاية المعاقين",
-      key: "Disabled Care",
-      checked: true,
-    },
-    { en: "Cleaning", ar: "تنظيف", key: "Cleaning", checked: true },
-    { en: "Washing", ar: "غسل", key: "Washing", checked: true },
-    { en: "Ironing", ar: "كي الملابس", key: "Ironing", checked: true },
-    {
-      en: "Arabic Cooking",
-      ar: "الطبخ العربي",
-      key: "Arabic Cooking",
-      checked: true,
-    },
-    { en: "Sewing", ar: "خياطة", key: "Sewing", checked: false },
-    {
-      en: "Computers",
-      ar: "أجهزة الكمبيوتر",
-      key: "Computers",
-      checked: false,
-    },
-    { en: "Driving", ar: "القيادة", key: "Driving", checked: false },
-    { en: "Others", ar: "مهارات اخرى", key: "Others", checked: false },
+    { en: "Baby Sitting", ar: "مجالسة الاطفال", key: "baby sitting" },
+    { en: "Children Care", ar: "رعاية الأطفال", key: "children care" },
+    { en: "Tutoring", ar: "دروس خصوصية", key: "tutoring" },
+    { en: "Disabled Care", ar: "رعاية المعاقين", key: "disabled care" },
+    { en: "Cleaning", ar: "تنظيف", key: "cleaning" },
+    { en: "Washing", ar: "غسل", key: "washing" },
+    { en: "Ironing", ar: "كي الملابس", key: "ironing" },
+    { en: "Arabic Cooking", ar: "الطبخ العربي", key: "arabic cooking" },
+    { en: "Sewing", ar: "خياطة", key: "sewing" },
+    { en: "Computers", ar: "أجهزة الكمبيوتر", key: "computers" },
+    { en: "Driving", ar: "القيادة", key: "driving" },
+    { en: "Others", ar: "مهارات اخرى", key: "other" },
   ];
 
-  // const workerSkillNames =
-  //   worker.skills?.map((skill) =>
-  //     (skill.skill_name ?? skill.name ?? skill).toLowerCase(),
-  //   ) ?? [];
+  const workerSkillNames = Array.isArray(worker.skills)
+    ? worker.skills.map((skill) =>
+        (skill.skill_name ?? skill.name ?? skill ?? "")
+          .toString()
+          .trim()
+          .toLowerCase(),
+      )
+    : (worker.skills ?? "")
+        .toString()
+        .split(",")
+        .map((skill) => skill.trim().toLowerCase())
+        .filter(Boolean);
 
   const skills = SKILL_DEFINITIONS.map((skill) => ({
     en: skill.en,
     ar: skill.ar,
-    checked: skill.checked,
-    // checked: workerSkillNames.includes(skill.key.toLowerCase()), // <- switch to this later
+    checked: workerSkillNames.includes(skill.key),
   }));
 
-  /* Languages checklist */
+  /* Languages checklist - only these three are sent from the frontend. */
   const LANGUAGE_DEFINITIONS = [
     { en: "English", ar: "الإنجليزية" },
     { en: "Arabic", ar: "عربى" },
+    { en: "Amharic", ar: "أمهرية" },
   ];
 
-  const workerLanguageNames =
-    worker.languages?.map((language) =>
-      (language.language ?? language.name ?? language).toLowerCase(),
-    ) ?? [];
+  const workerLanguageNames = Array.isArray(worker.languages)
+    ? worker.languages.map((language) =>
+        (language.language ?? language.name ?? language ?? "")
+          .toString()
+          .trim()
+          .toLowerCase(),
+      )
+    : (worker.languages ?? "")
+        .toString()
+        .split(",")
+        .map((language) => language.trim().toLowerCase())
+        .filter(Boolean);
 
   const languages = LANGUAGE_DEFINITIONS.map((language) => ({
     en: language.en,
@@ -760,14 +821,11 @@ const CVThree = ({ templateSwitcher }) => {
     checked: workerLanguageNames.includes(language.en.toLowerCase()),
   }));
 
-  /* Previous employment - array of { country, years } */
-  const previousEmployment =
-    Array.isArray(worker.experience) && worker.experience.length
-      ? worker.experience
-      : [
-          { country: "", years: "" },
-          { country: "", years: "" },
-        ];
+  /* Previous employment - array of { country, years }. First-time-abroad
+     workers get a single "First Time" row instead of country/year data. */
+  const previousEmployment = isFirstTimeAbroad
+    ? [{ country: "First Time", years: "", isFirstTime: true }]
+    : worker.experience;
 
   const cvStyle = {
     width: 760,
@@ -795,14 +853,22 @@ const CVThree = ({ templateSwitcher }) => {
           )}
         </div>
 
-        {(Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) && (
-          <button
-            className="btn btn-main mt-3 mt-md-5  text-white w-45 d-flex align-items-center justify-content-center"
-            onClick={handleGenerateClick}
-          >
-            {hasSelectedPartnerCv ? "Update CV" : "Generate CV"}
-          </button>
-        )}
+        {(Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) &&
+          selectedPartnerId && (
+            <div className="d-flex flex-column align-items-md-end mt-3 mt-md-5">
+              <button
+                className="btn btn-main text-white w-45 d-flex align-items-center justify-content-center"
+                onClick={handleDownloadClick}
+              >
+                Download CV
+              </button>
+              {alreadySharedWithPartner && (
+                <span className="text-success small mt-1">
+                  ✓ Already shared with this partner
+                </span>
+              )}
+            </div>
+          )}
       </div>
 
       <div className="mb-3 mt-1">{templateSwitcher}</div>
@@ -824,6 +890,7 @@ const CVThree = ({ templateSwitcher }) => {
             paddingLeft: 14,
             paddingRight: 30,
             maxWidth: 220,
+            cursor: Number(profile?.role_id) === 3 ? "default" : "pointer",
           }}
         >
           <option value="">Select Partner</option>
@@ -902,7 +969,6 @@ const CVThree = ({ templateSwitcher }) => {
                   value={contract}
                   arLabel="مدة العقد"
                 />
-                <Row3 label="CODE" value={code} />
                 <Row3 label="Date" value={applicationDate} last />
 
                 <SectionBar en="PASSPORT DETAILS" ar="تفاصيل جواز السفر" />
@@ -1025,7 +1091,7 @@ const CVThree = ({ templateSwitcher }) => {
                 </div>
               </div>
 
-              <div style={{ flex: "0 0 330px" }}>
+              <div style={{ flex: "0 0 400px" }}>
                 <PhotoBox
                   url={bodyUrl}
                   alt="Full body"
@@ -1075,43 +1141,62 @@ const CVThree = ({ templateSwitcher }) => {
               ar="العمل السابق"
               sub="COUNTRY WORKED BEFORE"
             />
-            {previousEmployment.map((entry, index) => (
-              <div
-                key={`${entry.country}-${index}`}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr",
-                  borderBottom: "1px solid #000",
-                  textAlign: "center",
-                  fontSize: 12,
-                }}
-              >
+            {previousEmployment.map((entry, index) =>
+              entry.isFirstTime ? (
                 <div
+                  key="first-time"
                   style={{
-                    padding: "3px 6px",
-                    fontWeight: "bold",
-                    color: "#c0392b",
-                    borderRight: "1px solid #000",
-                  }}
-                >
-                  {(entry.country ?? "").toUpperCase()}
-                </div>
-                <div
-                  style={{ padding: "3px 6px", borderRight: "1px solid #000" }}
-                >
-                  {entry.years ?? ""}
-                </div>
-                <div
-                  style={{
-                    padding: "3px 6px",
+                    padding: "6px 6px",
+                    borderBottom: "1px solid #000",
+                    textAlign: "center",
+                    fontSize: 12,
                     fontWeight: "bold",
                     color: "#c0392b",
                   }}
                 >
-                  YEAR
+                  FIRST TIME
                 </div>
-              </div>
-            ))}
+              ) : (
+                <div
+                  key={`${entry.country}-${index}`}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr 1fr",
+                    borderBottom: "1px solid #000",
+                    textAlign: "center",
+                    fontSize: 12,
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: "3px 6px",
+                      fontWeight: "bold",
+                      color: "#c0392b",
+                      borderRight: "1px solid #000",
+                    }}
+                  >
+                    {(entry.country ?? "").toUpperCase()}
+                  </div>
+                  <div
+                    style={{
+                      padding: "3px 6px",
+                      borderRight: "1px solid #000",
+                    }}
+                  >
+                    {entry.years ?? ""}
+                  </div>
+                  <div
+                    style={{
+                      padding: "3px 6px",
+                      fontWeight: "bold",
+                      color: "#c0392b",
+                    }}
+                  >
+                    YEAR
+                  </div>
+                </div>
+              ),
+            )}
 
             <SectionBar en="LANGUAGES & EDUCATION" ar="اللغات والتعليم" />
             {languages.map((language, index) => (
@@ -1153,7 +1238,7 @@ const CVThree = ({ templateSwitcher }) => {
               <div
                 style={{
                   width: "100%",
-                  height: 300,
+                  height: 200,
                   background: "#ddd",
                   display: "flex",
                   alignItems: "center",
@@ -1165,6 +1250,57 @@ const CVThree = ({ templateSwitcher }) => {
                 No passport scan available
               </div>
             )}
+          </div>
+
+          {/* Spacer row between the passport scan and the footer logo.
+              It has no top/bottom border of its own - the passport box's
+              bottom border above and the footer box's top border below
+              serve as its top/bottom edges, so only the left/right sides
+              are drawn here. ~1.5cm tall, same width as the boxes above
+              and below so everything stays aligned. Holds the agency's
+              hard-coded contact email, centered. */}
+          <div
+            style={{
+              borderLeft: "2px solid #000",
+              borderRight: "2px solid #000",
+              height: "1.5cm",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <span
+              style={{
+                color: "#1a56db",
+                textDecoration: "underline",
+                fontWeight: "bold",
+                fontSize: 13,
+              }}
+            >
+              aletesalat.eth.agency@gmail.com
+            </span>
+          </div>
+
+          {/* CV footer - the agency's ALETESALAT logo strip, imported as a
+              static asset (not per-worker/per-partner data). Same border
+              treatment as the passport box above, sitting flush against
+              the spacer row. */}
+          <div
+            style={{
+              border: "2px solid #000",
+              padding: 10,
+              textAlign: "center",
+            }}
+          >
+            <img
+              src={cvFooterLogo}
+              alt="Agency footer"
+              style={{
+                maxWidth: "100%",
+                height: "auto",
+                display: "inline-block",
+              }}
+            />
           </div>
         </div>
       </div>

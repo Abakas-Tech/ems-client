@@ -6,7 +6,7 @@ import AdminLayout from "../shared/layout/AdminLayout/AdminLayout.jsx";
 import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePassword.jsx";
-// import WorkerProfile from "../domains/admin/pages/workers/WorkerProfile/WorkerProfile.jsx";
+import WorkerProfile from "../domains/admin/pages/workers/WorkerProfile/WorkerProfile.jsx";
 
 function PartnerRoutes() {
   return (
