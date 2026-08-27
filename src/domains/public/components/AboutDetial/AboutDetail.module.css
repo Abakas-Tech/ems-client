@@ -53,6 +53,7 @@
   line-height: 1.7;
   color: #1c2733;
   margin-bottom: 1rem;
+  text-align: left;
 }
 
 .heroLead strong {
@@ -445,6 +446,7 @@
   line-height: 1.75;
   color: #5c6b7a;
   margin-bottom: 1.5rem;
+  text-align: left;
 }
 
 .futureTagline {
