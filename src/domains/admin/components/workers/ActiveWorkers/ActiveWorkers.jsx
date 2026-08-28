@@ -38,11 +38,11 @@ const ActiveWorkers = () => {
   // active/archived toggle in this single list. "false" = archived view.
   const isArchivedView = filters.is_active === "false";
 
-  //  Selection Mode States 
+  //  Selection Mode States
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
 
-  // Visa Application Preview State 
+  // Visa Application Preview State
   const [visaPreview, setVisaPreview] = useState(null);
 
   // Pagination
@@ -109,7 +109,13 @@ const ActiveWorkers = () => {
   };
 
   const handleViewCv = (row) => {
-    navigate(`/admin/employees/${row.id}/cv`, { state: row });
+    if (Number(role) === 3 && !row.has_cv_access) {
+      addMessage(false, "This worker's CV has not been shared with you yet");
+      return;
+    }
+
+    const basePath = Number(role) === 3 ? "/partner" : "/admin";
+    navigate(`${basePath}/employees/${row.id}/cv`, { state: row });
   };
 
   // Bulk Insurance Print Handler
@@ -435,21 +441,23 @@ const ActiveWorkers = () => {
         { type: "restore", onClick: (row) => handleRestore(row.id) },
         { type: "delete", onClick: (row) => handleDeleteArchived(row.id) },
       ]
-    : [
-        { type: "view", onClick: (row) => handleView(row.id) },
-        { type: "viewCV", onClick: (row) => handleViewCv(row) },
-        { type: "edit", onClick: (row) => handleEdit(row) },
-        {
-          type: "transaction",
-          onClick: (row) => handleRecordTransaction(row),
-        },
-        {
-          type: "downloadVisa",
-          onClick: (row) => handleDownloadVisaApplication(row.id),
-        },
-        { type: "archive", onClick: (row) => handleArchive(row.id) },
-        { type: "delete", onClick: (row) => handleDelete(row.id) },
-      ];
+    : role === 3
+      ? [{ type: "viewCV", onClick: (row) => handleViewCv(row) }]
+      : [
+          { type: "view", onClick: (row) => handleView(row.id) },
+          { type: "viewCV", onClick: (row) => handleViewCv(row) },
+          { type: "edit", onClick: (row) => handleEdit(row) },
+          {
+            type: "transaction",
+            onClick: (row) => handleRecordTransaction(row),
+          },
+          {
+            type: "downloadVisa",
+            onClick: (row) => handleDownloadVisaApplication(row.id),
+          },
+          { type: "archive", onClick: (row) => handleArchive(row.id) },
+          { type: "delete", onClick: (row) => handleDelete(row.id) },
+        ];
 
   return (
     <div className="dashboard-wraper position-relative">
