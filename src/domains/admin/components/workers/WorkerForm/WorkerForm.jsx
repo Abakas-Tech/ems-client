@@ -198,7 +198,7 @@ const defaultPersonal = () => ({
   height_cm: "",
   weight_kg: "",
   national_id_number: "",
-  fingerprint_number:""
+  fingerprint_number: "",
 });
 
 const defaultPassport = () => ({
@@ -1269,11 +1269,7 @@ function WorkerForm() {
         !isOnlyAlphabetsAndSpaces(personal.region))
     )
       return "Region must contain only letters and spaces (max 100 chars)";
-    if (
-      personal.wereda &&
-      (personal.wereda.length > 100 ||
-        !isOnlyAlphabetsAndSpaces(personal.wereda))
-    )
+    if (personal.wereda && personal.wereda.length > 100)
       return "Wereda must contain only letters and spaces (max 100 chars)";
     if (
       personal.city &&
