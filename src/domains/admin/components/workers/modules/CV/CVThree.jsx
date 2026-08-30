@@ -351,41 +351,7 @@ const PhotoBox = ({ url, alt, placeholderLabel }) => (
   </div>
 );
 
-/*
- * FIX (content cut off at the page edges + page 2 narrower than page 1):
- *
- * 1. Scroll compensation - html2canvas measures capture position relative
- *    to the page's CURRENT scroll offset. `scrollX: 0, scrollY: 0` assumed
- *    the page is never scrolled, which is wrong the moment the person has
- *    scrolled down (exactly when they'd reach the Download button on a
- *    long form). Since passportRef sits further down the DOM than cvRef,
- *    a wrong scroll assumption skewed its capture differently than the
- *    first element's - that's what made page 2 come out narrower/shifted.
- *    Passing the NEGATIVE of the live scroll position (`-window.scrollX`,
- *    `-window.scrollY`) is the correct, standard compensation so both
- *    captures line up regardless of where the page happens to be scrolled.
- *    `windowHeight` is also set to the element's own full height so
- *    html2canvas's offscreen render frame always has room to lay out the
- *    entire element, not just whatever fits in the current browser window.
- *
- * 2. Bottom cutoff - the image was previously scaled to fit the page's
- *    WIDTH only (`ratio = printableWidth / canvasWidth`), with no check
- *    that the resulting height fit the page. Tall content (this CV) ended
- *    up taller than one A4 page, and jsPDF simply draws past the page
- *    edge - anything below the bottom margin is invisible, which is the
- *    cutoff you saw (Skills table stopping at "Ironing", photo sliced,
- *    passport image sliced). Using `Math.min(widthRatio, heightRatio)`
- *    fits the whole element within the page on BOTH axes, so nothing gets
- *    clipped; the image is centered horizontally in case that leaves a
- *    little extra width margin on one side.
- */
-const captureElementToPage = async (
-  pdf,
-  element,
-  waitMs = 500,
-  marginX = 1.5,
-  marginY = 1.5,
-) => {
+const captureElementToPage = async (pdf, element, waitMs = 500, margin = 6) => {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
@@ -399,29 +365,86 @@ const captureElementToPage = async (
     allowTaint: false,
     scale: 2,
     windowWidth: 760,
-    windowHeight: element.scrollHeight,
-    scrollX: -window.scrollX,
-    scrollY: -window.scrollY,
   });
 
   element.style.width = originalWidth;
 
-  const imageData = canvas.toDataURL("image/jpeg", 0.95);
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
 
-  const printableWidth = pageWidth - marginX * 2;
-  const printableHeight = pageHeight - marginY * 2;
-  const widthRatio = printableWidth / canvasWidth;
-  const heightRatio = printableHeight / canvasHeight;
-  const ratio = Math.min(widthRatio, heightRatio);
+  // Fit-to-width only, with the SAME margin on every page, so every page
+  // ends up the exact same width and stays aligned. Fitting to BOTH width
+  // AND height (and centering the result) - the old approach - gave each
+  // page its own independent scale factor based on its own content height,
+  // which is exactly why page 2 (taller, more stacked sections) rendered
+  // narrower than page 1 with big empty margins padding it out to center.
+  const printableWidth = pageWidth - margin * 2;
+  const printableHeight = pageHeight - margin * 2;
+  const ratio = printableWidth / canvasWidth; // mm per source pixel
 
-  const imageWidth = canvasWidth * ratio;
-  const imageHeight = canvasHeight * ratio;
-  const offsetX = marginX + (printableWidth - imageWidth) / 2;
-  const offsetY = marginY;
+  const imageWidth = printableWidth;
+  const totalImageHeight = canvasHeight * ratio;
 
-  pdf.addImage(imageData, "JPEG", offsetX, offsetY, imageWidth, imageHeight);
+  if (totalImageHeight <= printableHeight) {
+    // Fits on one page - the common case for both cvRef and passportRef.
+    const imageData = canvas.toDataURL("image/jpeg", 0.95);
+    pdf.addImage(
+      imageData,
+      "JPEG",
+      margin,
+      margin,
+      imageWidth,
+      totalImageHeight,
+    );
+    return;
+  }
+
+  // Content is taller than a single page at this width. Slice the source
+  // canvas into page-height chunks and add each as its own page, so the
+  // fit-to-width fix above can never silently cut content off the bottom.
+  const sliceHeightPx = Math.floor(printableHeight / ratio);
+  let renderedPx = 0;
+  let isFirstSlice = true;
+
+  while (renderedPx < canvasHeight) {
+    const currentSliceHeightPx = Math.min(
+      sliceHeightPx,
+      canvasHeight - renderedPx,
+    );
+
+    const sliceCanvas = document.createElement("canvas");
+    sliceCanvas.width = canvasWidth;
+    sliceCanvas.height = currentSliceHeightPx;
+    sliceCanvas
+      .getContext("2d")
+      .drawImage(
+        canvas,
+        0,
+        renderedPx,
+        canvasWidth,
+        currentSliceHeightPx,
+        0,
+        0,
+        canvasWidth,
+        currentSliceHeightPx,
+      );
+
+    const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.95);
+    const sliceImageHeight = currentSliceHeightPx * ratio;
+
+    if (!isFirstSlice) pdf.addPage();
+    pdf.addImage(
+      sliceData,
+      "JPEG",
+      margin,
+      margin,
+      imageWidth,
+      sliceImageHeight,
+    );
+
+    renderedPx += currentSliceHeightPx;
+    isFirstSlice = false;
+  }
 };
 
 const CVThree = ({ templateSwitcher }) => {
@@ -601,7 +624,16 @@ const CVThree = ({ templateSwitcher }) => {
     false,
   );
 
+  const isPartnerRole = Number(profile?.role_id) === 3;
+
   const handleDownloadClick = () => {
+    // Partner viewing their own already-shared CV: nothing to select,
+    // nothing to grant - just build and download the PDF.
+    if (isPartnerRole) {
+      handleGenerateAndDownload({ grantAccess: false });
+      return;
+    }
+
     if (!selectedPartnerId) {
       addMessage(false, "Please select a partner");
       return;
@@ -612,13 +644,13 @@ const CVThree = ({ templateSwitcher }) => {
       return;
     }
 
-    handleGenerateAndDownload();
+    handleGenerateAndDownload({ grantAccess: true });
   };
 
-  const handleGenerateAndDownload = async () => {
+  const handleGenerateAndDownload = async ({ grantAccess } = {}) => {
     if (!cvRef.current || !worker) return;
 
-    if (!selectedPartnerId || !selectedPartnerHeaderUrl) {
+    if (grantAccess && (!selectedPartnerId || !selectedPartnerHeaderUrl)) {
       addMessage(false, "Please select a partner with a CV header");
       return;
     }
@@ -639,16 +671,23 @@ const CVThree = ({ templateSwitcher }) => {
 
       const name = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
 
-      // Grant the selected partner backend access to this worker's CV
-      // (creates/updates the worker_partner_cvs row) — only when an
-      // admin/employee is downloading. If the viewer IS the partner, they
-      // already have access (that's how they got here), and this route is
-      // admin/employee-only server-side, so calling it would 403.
-      if (Number(profile?.role_id) !== 3) {
+      if (grantAccess) {
+        // Grant the selected partner backend access to this worker's CV
+        // (creates/updates the worker_partner_cvs row), so they can come
+        // back and view/download it themselves later - not just this once.
+        // NOTE: this hits POST /workers/cv/:id/generate-cv, which your
+        // backend restricts to admin/employee - never call this for a
+        // partner, they'd get a 403 (and don't need to grant themselves
+        // access to something they can already see).
         await generateCvForPartner(worker.id, {
           partnerId: selectedPartnerId,
         });
+      }
 
+      // Trigger an actual browser download of the PDF we just built.
+      pdf.save(`${name}.pdf`);
+
+      if (grantAccess) {
         /*
          * Keep the local state in sync so the partner shows up as already
          * having access to this worker's CV without needing a full refetch.
@@ -680,10 +719,12 @@ const CVThree = ({ templateSwitcher }) => {
         });
       }
 
-      // Trigger an actual browser download of the PDF we just built.
-      pdf.save(`${name}.pdf`);
-
-      addMessage(true, "CV downloaded and shared with the partner!");
+      addMessage(
+        true,
+        grantAccess
+          ? "CV downloaded and shared with the partner!"
+          : "CV downloaded!",
+      );
     } catch (error) {
       console.error(error);
       addMessage(false, error.message || "Failed to generate PDF");
@@ -857,24 +898,31 @@ const CVThree = ({ templateSwitcher }) => {
           )}
         </div>
 
-        {(Number(profile?.role_id) === 1 ||
-          Number(profile?.role_id) === 2 ||
-          Number(profile?.role_id) === 3) &&
-          selectedPartnerId && (
-            <div className="d-flex flex-column align-items-md-end mt-3 mt-md-5">
-              <button
-                className="btn btn-main text-white w-45 d-flex align-items-center justify-content-center"
-                onClick={handleDownloadClick}
-              >
-                Download CV
-              </button>
-            </div>
-          )}
+        {((Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) &&
+          selectedPartnerId) ||
+        isPartnerRole ? (
+          <div className="d-flex flex-column align-items-md-end mt-3 mt-md-5">
+            <button
+              className="btn btn-main text-white w-45 d-flex align-items-center justify-content-center"
+              onClick={handleDownloadClick}
+            >
+              Download CV
+            </button>
+            {!isPartnerRole && alreadySharedWithPartner && (
+              <span className="text-success small mt-1">
+                ✓ Already shared with this partner
+              </span>
+            )}
+          </div>
+        ) : null}
       </div>
 
       <div className="mb-3 mt-1">{templateSwitcher}</div>
 
-      {Number(profile?.role_id) !== 3 && (
+      {/* Partner control remains outside cvRef, so it is not captured in the
+          PDF. Hidden entirely for the partner role - it's always locked to
+          just their own single entry, so it's pure clutter for them. */}
+      {!isPartnerRole && (
         <div className="mb-2">
           <select
             id="cv-three-partner"
