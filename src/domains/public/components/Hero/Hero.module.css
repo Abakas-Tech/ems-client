@@ -57,15 +57,14 @@
 }
 
 .hero-heading {
-  /* font-family: "Playfair Display", serif; */
   font-weight: 900;
   font-size: clamp(2.8rem, 7vw, 6rem);
-  line-height: 1.05;
+  line-height: 1.2; /* Healthy line spacing for high-density modern display headers */
   color: #ffffff;
   margin: 0 0 1.6rem;
   display: flex;
   flex-direction: column;
-  gap: 0.05em;
+  gap: 0.15em; /* Standard clean spacing between header blocks */
 }
 
 .heading-line {
@@ -73,8 +72,14 @@
 }
 
 .heading-line:last-child {
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.6);
+  color: #08082a; /* Match your exact hero background color to simulate transparency */
+
+  /* Generates a sharp, clean 1px border on all sides without breaking font geometries */
+  text-shadow:
+    -1px -1px 0 rgba(255, 255, 255, 0.6),
+    1px -1px 0 rgba(255, 255, 255, 0.6),
+    -1px 1px 0 rgba(255, 255, 255, 0.6),
+    1px 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .hero-sub {
