@@ -73,7 +73,7 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
           <div className={styles.embassyEn}>EMBASSY OF SAUDI ARABIA</div>
           <div className={styles.consularAr}>القسم القنصلي</div>
           <div className={styles.consularEn}>CONSULAR SECTION</div>
-          <div className={styles.agentName}>MMH FOREIGN EMPLOYMENT AGENT</div>
+          <div className={styles.agentName}>Al_Itisalat FOREIGN EMPLOYMENT AGENT</div>
         </div>
       </div>
 

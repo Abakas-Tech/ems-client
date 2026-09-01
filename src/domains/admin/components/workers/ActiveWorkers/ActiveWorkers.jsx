@@ -38,11 +38,11 @@ const ActiveWorkers = () => {
   // active/archived toggle in this single list. "false" = archived view.
   const isArchivedView = filters.is_active === "false";
 
-  //  Selection Mode States 
+  //  Selection Mode States
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
 
-  // Visa Application Preview State 
+  // Visa Application Preview State
   const [visaPreview, setVisaPreview] = useState(null);
 
   // Pagination
@@ -453,7 +453,7 @@ const ActiveWorkers = () => {
 
   return (
     <div className="dashboard-wraper position-relative">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-start gap-3">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-start gap-3 mb-4">
         <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 w-100">
           <div>
             <h2 className="fw-bold text-dark mb-2">
@@ -474,11 +474,14 @@ const ActiveWorkers = () => {
             </p>
           </div>
           {/* In Application Generator preview mode, only Cancel/Download/Share
-              should show — Add Employee is hidden while visaPreview is set. */}
+              should show — Add Employee is hidden while visaPreview is set.
+              align-self-start on small screens (left end),
+              align-self-lg-end restores the original right-end placement
+              from md/lg breakpoints up. */}
           {!visaPreview && (
             <button
               type="button"
-              className="btn btn-main text-nowrap align-self-end"
+              className="btn btn-main text-nowrap align-self-start align-self-lg-end"
               onClick={() => navigate("/admin/employees/add")}
             >
               Add Employee
@@ -491,32 +494,6 @@ const ActiveWorkers = () => {
             <BackButton onClick={goBack} />
           </div>
         )} */}
-
-        {visaPreview && (
-          <div
-            className="d-flex flex-nowrap justify-content-end gap-2 mt-sm-0 mt-lg-5 mb-2 mb-sm-0"
-            style={{ marginTop: "-1.5rem" }}
-          >
-            <button
-              className="btn btn-outline-secondary fw-bold px-3 px-md-4"
-              onClick={handleCancelVisaPreview}
-            >
-              Cancel
-            </button>
-            <button
-              className="btn btn-main text-white fw-bold px-3 px-md-4"
-              onClick={triggerVisaDownload}
-            >
-              Download
-            </button>
-            <button
-              className="btn btn-outline-main fw-bold px-3 px-md-4"
-              onClick={shareVisaOnWhatsapp}
-            >
-              Share
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Floating Selection Bar */}
@@ -641,7 +618,12 @@ const ActiveWorkers = () => {
       )}
 
       {visaPreview ? (
-        <div className="d-flex">
+        // flex-column-reverse (default, small screens) stacks everything
+        // vertically with the preview visually LAST (bottom) since it's
+        // the first child in the DOM and "reverse" flips visual order;
+        // flex-lg-row switches back to the original side-by-side layout
+        // (preview left, buttons right) from lg up.
+        <div className="d-flex flex-column-reverse flex-lg-row align-items-lg-start gap-3">
           <div
             className="border rounded-3"
             style={{ maxWidth: "100%", overflowX: "auto" }}
@@ -650,6 +632,26 @@ const ActiveWorkers = () => {
               data={visaPreview.mapped}
               logoSrc={visaPreview.logoSrc}
             />
+          </div>
+          <div className="d-flex flex-column gap-2 flex-lg-grow-1">
+            <button
+              className="btn btn-outline-secondary btn-sm fw-bold"
+              onClick={handleCancelVisaPreview}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-main btn-sm text-white fw-bold"
+              onClick={triggerVisaDownload}
+            >
+              Download
+            </button>
+            <button
+              className="btn btn-outline-main btn-sm fw-bold"
+              onClick={shareVisaOnWhatsapp}
+            >
+              Share
+            </button>
           </div>
         </div>
       ) : (
@@ -679,6 +681,10 @@ const ActiveWorkers = () => {
             {
               header: "Phone Number",
               accessor: "phone_number",
+            },
+            {
+              header: "Passport Number",
+              accessor: "passport_number",
             },
             {
               header: "Current Status",

@@ -139,8 +139,7 @@ const ComplaintDetail = () => {
     return (
       <div className="dashboard-wraper">
         <div className="form-submit">
-          <div className="d-flex justify-content-between align-items-start mb-3">
-          </div>
+          <div className="d-flex justify-content-between align-items-start mb-3"></div>
         </div>
       </div>
     );
@@ -184,10 +183,7 @@ const ComplaintDetail = () => {
           --neutral-soft: #eff6ff;
         }
         .complaint-receipt .receipt-shell {
-          border: 1px solid var(--border);
-          border-radius: 18px;
           background: var(--surface);
-          box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 12px rgba(16, 24, 40, 0.05);
           overflow: hidden;
         }
         .complaint-receipt .receipt-topbar {
@@ -386,10 +382,6 @@ const ComplaintDetail = () => {
           }
         }
         @media print {
-          .complaint-receipt .receipt-shell {
-            box-shadow: none;
-            border-radius: 0;
-          }
           .complaint-receipt .receipt-body {
             grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
           }

@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchTransactionDetails } from "../../../api/finance.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
-import BackButton from "../../../../../shared/components/BackButton/BackButton";
-import ProfileCell from "../../../../../shared/components/ProfileCell/ProfileCell";
+import BackButton from "../../../../../shared/components/BackButton/BackButton"
 import Badge from "../../../../../shared/components/Badge/Badge";
 
 const ROLE_MAP = {
@@ -98,6 +97,7 @@ const TransactionDetail = ({
       }
     };
     if (transactionId) getDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionId, mode]);
 
   const isSummaryMode = mode === "summary";
@@ -549,12 +549,19 @@ const TransactionDetail = ({
                 {isCompany ? (
                   <span className="stat-value">Company Account</span>
                 ) : (
-                  <span className="stat-value is-flex">
-                    {transaction.target_user_name}
-                    <Badge
-                      content={ROLE_MAP[transaction.target_user_role] || "User"}
-                      color="red"
-                    />
+                  <span className="stat-value">
+                    <span className="d-flex align-items-center gap-2">
+                      {transaction.target_user_name}
+                      <Badge
+                        content={
+                          ROLE_MAP[transaction.target_user_role] || "User"
+                        }
+                        color="red"
+                      />
+                    </span>
+                    <span className="d-block">
+                      {transaction.target_user_phone}
+                    </span>
                   </span>
                 )}
               </div>

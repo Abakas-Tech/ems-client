@@ -40,8 +40,8 @@ const AGENCY_DEFAULTS = {
   homeAddress: "RIYADH",
   purposeOfTravel: "Work",
   placeOfIssue: "Ethiopia",
-  agentEmail: "contact@mmhjobs.com",
-  agentWebsite: "https://mmhjobs.com",
+  agentEmail: "contact@alitisalatagency.com",
+  agentWebsite: "https://alitisalatagency.com",
 };
 // These are the fields the embassy form requires.
 const REQUIRED_FIELDS = [
@@ -65,6 +65,7 @@ const REQUIRED_FIELDS = [
     get: (p) => p.passport?.issuing_country,
   },
   { label: "Visa Number", get: (p) => p.visa?.visa_number },
+  // { label: "Reference Number", get: (p) => p.visa?.visa_reference_number },
   { label: "Sponsor Name", get: (p) => p.contracts[0]?.employer_name },
 ];
 

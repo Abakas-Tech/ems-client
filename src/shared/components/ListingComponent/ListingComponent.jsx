@@ -127,7 +127,7 @@ const ListingComponent = ({
                     profile={{
                       firstName:
                         row.full_name || row.candidate_name || row.name || "?",
-                      image: row.photo_3x4_url || "",
+                      image: row.photo_3x4_url ||row.profile_photo_url || "",
                     }}
                   />
                 </td>
