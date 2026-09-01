@@ -4,6 +4,7 @@ import { jsPDF } from "jspdf";
 import {
   getWorkerCVData,
   generateCvForPartner,
+  setPartnerCvAccess,
 } from "../../../../api/worker.api";
 import { getUsersLookup } from "../../../../api/user.api";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
@@ -582,33 +583,21 @@ const CVThree = ({ templateSwitcher }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const existingSelectedPartnerCv = Array.isArray(worker?.generated_cvs)
-    ? worker.generated_cvs.find(
-        (cv) =>
-          cv.category === "CV_THREE" &&
-          String(cv.partner_id) === String(selectedPartnerId),
-      ) || null
-    : null;
-
-  // Backend flags whether this CV has already been shared with the
-  // partner passed as ?partnerId= (the "preview" param). Field name is a
-  // best guess across a few likely candidates - confirm against the real
-  // getWorkerCV response shape and trim this down to the actual key.
-  const alreadySharedWithPartner = Boolean(
-    worker?.already_shared_with_partner ??
-    worker?.alreadyShared ??
-    worker?.shared_with_partner ??
-    worker?.is_shared_with_partner ??
-    false,
-  );
+  // Backend now returns the real share/revoke status for the worker+partner
+  // pair being previewed (see workerCV.service.js getWorkerCV), replacing
+  // the old best-guess field chain.
+  const alreadySharedWithPartner = Boolean(worker?.shared_with_partner);
+  const isAccessRevoked = Boolean(worker?.access_revoked);
 
   const isPartnerRole = Number(profile?.role_id) === 3;
 
+  // Download only ever builds and saves the PDF - it no longer grants
+  // partner access. Still requires a selected partner (for admin/employee)
+  // since the CV header image comes from that partner and is part of the
+  // rendered PDF.
   const handleDownloadClick = () => {
-    // Partner viewing their own already-shared CV: nothing to select,
-    // nothing to grant - just build and download the PDF.
     if (isPartnerRole) {
-      handleGenerateAndDownload({ grantAccess: false });
+      handleDownloadCv();
       return;
     }
 
@@ -622,16 +611,11 @@ const CVThree = ({ templateSwitcher }) => {
       return;
     }
 
-    handleGenerateAndDownload({ grantAccess: true });
+    handleDownloadCv();
   };
 
-  const handleGenerateAndDownload = async ({ grantAccess } = {}) => {
+  const handleDownloadCv = async () => {
     if (!cvRef.current || !worker) return;
-
-    if (grantAccess && (!selectedPartnerId || !selectedPartnerHeaderUrl)) {
-      addMessage(false, "Please select a partner with a CV header");
-      return;
-    }
 
     showLoader();
 
@@ -678,63 +662,91 @@ const CVThree = ({ templateSwitcher }) => {
 
       const name = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
 
-      if (grantAccess) {
-        // Grant the selected partner backend access to this worker's CV
-        // (creates/updates the worker_partner_cvs row), so they can come
-        // back and view/download it themselves later - not just this once.
-        // NOTE: this hits POST /workers/cv/:id/generate-cv, which your
-        // backend restricts to admin/employee - never call this for a
-        // partner, they'd get a 403 (and don't need to grant themselves
-        // access to something they can already see).
-        await generateCvForPartner(worker.id, {
-          partnerId: selectedPartnerId,
-        });
-      }
-
       // Trigger an actual browser download of the PDF we just built.
       pdf.save(`${name}.pdf`);
 
-      if (grantAccess) {
-        /*
-         * Keep the local state in sync so the partner shows up as already
-         * having access to this worker's CV without needing a full refetch.
-         */
-        setWorker((previous) => {
-          const previousCvs = Array.isArray(previous?.generated_cvs)
-            ? previous.generated_cvs
-            : [];
-
-          const otherCvs = previousCvs.filter(
-            (cv) =>
-              !(
-                cv.category === "CV_THREE" &&
-                String(cv.partner_id) === String(selectedPartnerId)
-              ),
-          );
-
-          return {
-            ...previous,
-            generated_cvs: [
-              {
-                ...existingSelectedPartnerCv,
-                category: "CV_THREE",
-                partner_id: Number(selectedPartnerId),
-              },
-              ...otherCvs,
-            ],
-          };
-        });
-      }
-
-      addMessage(
-        true,
-        grantAccess
-          ? "CV downloaded and shared with the partner!"
-          : "CV downloaded!",
-      );
+      addMessage(true, "CV downloaded!");
     } catch (error) {
       console.error(error);
       addMessage(false, error.message || "Failed to generate PDF");
+    } finally {
+      hideLoader();
+    }
+  };
+
+  // Link only grants (or re-grants, un-revoking) partner access - it never
+  // touches the PDF at all. Admin/employee only; this hits
+  // POST /workers/cv/:id/generate-cv, which the backend restricts to
+  // admin/employee - never call this for a partner.
+  const handleLinkClick = () => {
+    if (!selectedPartnerId) {
+      addMessage(false, "Please select a partner");
+      return;
+    }
+
+    if (!selectedPartnerHeaderUrl) {
+      addMessage(false, "The selected partner does not have a CV header");
+      return;
+    }
+
+    handleLinkCv();
+  };
+
+  const handleLinkCv = async () => {
+    if (!worker || !selectedPartnerId) return;
+
+    showLoader();
+
+    try {
+      await generateCvForPartner(worker.id, {
+        partnerId: selectedPartnerId,
+      });
+
+      // Keep local state in sync so the "already shared" badge and the
+      // revoke toggle reflect the new grant without a full refetch.
+      setWorker((previous) => ({
+        ...previous,
+        shared_with_partner: true,
+        access_revoked: false,
+      }));
+
+      addMessage(true, "CV linked and shared with the partner!");
+    } catch (error) {
+      console.error(error);
+      addMessage(false, error.message || "Failed to link CV to partner");
+    } finally {
+      hideLoader();
+    }
+  };
+
+  // Toggle whether the already-linked partner can currently access this
+  // CV, without deleting the underlying grant (so re-linking isn't
+  // required to restore access later).
+  const handleToggleAccess = async () => {
+    if (!worker || !selectedPartnerId) return;
+
+    const nextRevoked = !isAccessRevoked;
+
+    showLoader();
+
+    try {
+      await setPartnerCvAccess(worker.id, {
+        partnerId: selectedPartnerId,
+        revoked: nextRevoked,
+      });
+
+      setWorker((previous) => ({
+        ...previous,
+        access_revoked: nextRevoked,
+      }));
+
+      addMessage(
+        true,
+        nextRevoked ? "Partner access revoked" : "Partner access restored",
+      );
+    } catch (error) {
+      console.error(error);
+      addMessage(false, error.message || "Failed to update partner access");
     } finally {
       hideLoader();
     }
@@ -921,17 +933,50 @@ const CVThree = ({ templateSwitcher }) => {
         {((Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) &&
           selectedPartnerId) ||
         isPartnerRole ? (
-          <div className="d-flex flex-column align-items-md-end mt-3 mt-md-5">
-            <button
-              className="btn btn-main text-white w-45 d-flex align-items-center justify-content-center"
-              onClick={handleDownloadClick}
-            >
-              Download CV
-            </button>
+          <div className="d-flex flex-column align-items-md-end mt-3 mt-md-5 gap-2">
+            <div className="d-flex gap-2">
+              <button
+                className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
+                onClick={handleDownloadClick}
+              >
+                Download CV
+              </button>
+
+              {!isPartnerRole && (
+                <button
+                  className="btn btn-outline-main px-4 d-flex align-items-center justify-content-center"
+                  onClick={handleLinkClick}
+                >
+                  {alreadySharedWithPartner
+                    ? "Re-link Partner"
+                    : "Link Partner"}
+                </button>
+              )}
+            </div>
+
             {!isPartnerRole && alreadySharedWithPartner && (
-              <span className="text-success small mt-1">
-                ✓ Already shared with this partner
-              </span>
+              <>
+                <span className="text-success small mt-1">
+                  ✓ Already shared with this partner
+                </span>
+
+                <div className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="cv-three-revoke-toggle"
+                    checked={!isAccessRevoked}
+                    onChange={handleToggleAccess}
+                  />
+                  <label
+                    className="form-check-label small"
+                    htmlFor="cv-three-revoke-toggle"
+                  >
+                    {isAccessRevoked ? "Access revoked" : "Partner has access"}
+                  </label>
+                </div>
+              </>
             )}
           </div>
         ) : null}
