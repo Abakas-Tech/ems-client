@@ -36,6 +36,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("1"); // Active = 1, Inactive = 0
   const [country, setCountry] = useState("");
+  const [address, setAddress] = useState("");
 
   const [originalPermissions, setOriginalPermissions] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
@@ -64,6 +65,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         userData.is_active !== undefined ? String(userData.is_active) : "1",
       );
       setCountry(userData.country || "");
+      setAddress(userData.address || "");
 
       setExistingPartnerCvHeader(userData.cv_header_url || null);
       setPartnerCvHeader(null);
@@ -127,6 +129,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     phone_number: !isEditMode,
     role: !isEditMode,
     country: !isEditMode && role === "3",
+    address: !isEditMode && role === "3",
   };
 
   const validateFields = () => {
@@ -225,6 +228,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         role: Number(role),
         is_active: Number(status),
         country: role === "3" ? country : undefined,
+        address: role === "3" ? address : undefined,
       });
 
       let response = isEditMode
@@ -416,6 +420,25 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   />
                 </div>
               )}
+
+              {role === "3" && (
+                <div className="form-group col-md-6 mb-3">
+                  <label>
+                    Street Address{" "}
+                    {requiredFields.address && (
+                      <span className="text-danger">*</span>
+                    )}
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={address}
+                    required={requiredFields.address}
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
+                </div>
+              )}
+              
               {/* Partner CV Header */}
               {role === "3" && (
                 <div className="form-group col-md-6 mb-3">

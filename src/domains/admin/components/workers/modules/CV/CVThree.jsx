@@ -51,7 +51,12 @@ const subtractDate = (firstDate, secondDate) => {
 /*  THEME - matches the Musaned / Al Esnad Almasi blue paper template  */
 /* ------------------------------------------------------------------ */
 const BLUE = "#3D6DA6";
+const RED = "#B22222";
 const FONT = "Arial, Helvetica, sans-serif";
+
+/* Fixed capture / preview width. Must stay identical between what the
+   user sees and what html2canvas captures. */
+const CV_WIDTH = 760;
 
 /* Fallback agency contact info shown on the page-2 header strip.
    Prefer live values from the selected partner when available. */
@@ -63,7 +68,7 @@ const AGENCY_CONTACT = {
 
 const css = {
   titleBar: {
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     fontWeight: "bold",
     fontSize: 15,
@@ -72,7 +77,7 @@ const css = {
     borderBottom: "1px solid #000",
   },
   sectionBar: {
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     display: "flex",
     justifyContent: "center",
@@ -87,7 +92,7 @@ const css = {
   sectionBarEn: { fontWeight: "bold" },
   sectionBarAr: { fontWeight: "bold", direction: "rtl" },
   titleStack: {
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     textAlign: "center",
     padding: "4px 8px 6px",
@@ -142,7 +147,7 @@ const css = {
   fullNameRow: {
     display: "grid",
     gridTemplateColumns: "150px 1fr 200px",
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     borderTop: "1px solid #000",
     borderBottom: "1px solid #000",
@@ -151,7 +156,7 @@ const css = {
     padding: "5px 8px",
     fontWeight: "bold",
     fontSize: 13,
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     borderRight: "1px solid #000",
   },
@@ -172,7 +177,7 @@ const css = {
     direction: "rtl",
   },
   summaryWrap: {
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     textAlign: "center",
     padding: "10px 18px 16px",
@@ -217,7 +222,7 @@ const css = {
     justifyContent: "center",
   },
   contactCellArBox: {
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     border: "1px solid #000",
     borderRadius: 2,
@@ -314,6 +319,7 @@ const PhotoBox = ({ url, alt, placeholderLabel }) => (
       width: "100%",
       height: "100%",
       minHeight: 140,
+      overflow: "hidden",
     }}
   >
     {url ? (
@@ -327,6 +333,7 @@ const PhotoBox = ({ url, alt, placeholderLabel }) => (
           width: "100%",
           height: "100%",
           objectFit: "cover",
+          objectPosition: "center top",
           display: "block",
         }}
       />
@@ -351,100 +358,62 @@ const PhotoBox = ({ url, alt, placeholderLabel }) => (
   </div>
 );
 
-const captureElementToPage = async (pdf, element, waitMs = 500, margin = 6) => {
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-
-  const originalWidth = element.style.width;
-  element.style.width = "760px";
-
+/**
+ * Capture a DOM node to canvas with the same width the user sees.
+ * Waits for fonts + images and uses onclone so the cloned tree keeps
+ * the exact fixed width (no reflow differences vs the live preview).
+ */
+const captureElementCanvas = async (element, waitMs = 600) => {
+  await document.fonts.ready;
   await new Promise((resolve) => setTimeout(resolve, waitMs));
+
+  // Ensure every image inside the element has finished loading
+  const images = Array.from(element.querySelectorAll("img"));
+  await Promise.all(
+    images.map((img) =>
+      img.complete
+        ? Promise.resolve()
+        : new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          }),
+    ),
+  );
 
   const canvas = await html2canvas(element, {
     useCORS: true,
     allowTaint: false,
     scale: 2,
-    windowWidth: 760,
+    width: CV_WIDTH,
+    windowWidth: CV_WIDTH,
+    backgroundColor: "#ffffff",
+    logging: false,
+    onclone: (_clonedDoc, clonedElement) => {
+      clonedElement.style.width = `${CV_WIDTH}px`;
+      clonedElement.style.minWidth = `${CV_WIDTH}px`;
+      clonedElement.style.maxWidth = `${CV_WIDTH}px`;
+      clonedElement.style.boxSizing = "border-box";
+      clonedElement.style.transform = "none";
+      clonedElement.style.zoom = "1";
+
+      // Kill any residual transforms that can shift layout in the clone
+      clonedElement.querySelectorAll("*").forEach((el) => {
+        if (el.style) {
+          el.style.transform = "none";
+        }
+      });
+    },
   });
 
-  element.style.width = originalWidth;
+  return canvas;
+};
 
-  const canvasWidth = canvas.width;
-  const canvasHeight = canvas.height;
-
-  // Fit-to-width only, with the SAME margin on every page, so every page
-  // ends up the exact same width and stays aligned. Fitting to BOTH width
-  // AND height (and centering the result) - the old approach - gave each
-  // page its own independent scale factor based on its own content height,
-  // which is exactly why page 2 (taller, more stacked sections) rendered
-  // narrower than page 1 with big empty margins padding it out to center.
-  const printableWidth = pageWidth - margin * 2;
-  const printableHeight = pageHeight - margin * 2;
-  const ratio = printableWidth / canvasWidth; // mm per source pixel
-
-  const imageWidth = printableWidth;
-  const totalImageHeight = canvasHeight * ratio;
-
-  if (totalImageHeight <= printableHeight) {
-    // Fits on one page - the common case for both cvRef and passportRef.
-    const imageData = canvas.toDataURL("image/jpeg", 0.95);
-    pdf.addImage(
-      imageData,
-      "JPEG",
-      margin,
-      margin,
-      imageWidth,
-      totalImageHeight,
-    );
-    return;
-  }
-
-  // Content is taller than a single page at this width. Slice the source
-  // canvas into page-height chunks and add each as its own page, so the
-  // fit-to-width fix above can never silently cut content off the bottom.
-  const sliceHeightPx = Math.floor(printableHeight / ratio);
-  let renderedPx = 0;
-  let isFirstSlice = true;
-
-  while (renderedPx < canvasHeight) {
-    const currentSliceHeightPx = Math.min(
-      sliceHeightPx,
-      canvasHeight - renderedPx,
-    );
-
-    const sliceCanvas = document.createElement("canvas");
-    sliceCanvas.width = canvasWidth;
-    sliceCanvas.height = currentSliceHeightPx;
-    sliceCanvas
-      .getContext("2d")
-      .drawImage(
-        canvas,
-        0,
-        renderedPx,
-        canvasWidth,
-        currentSliceHeightPx,
-        0,
-        0,
-        canvasWidth,
-        currentSliceHeightPx,
-      );
-
-    const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.95);
-    const sliceImageHeight = currentSliceHeightPx * ratio;
-
-    if (!isFirstSlice) pdf.addPage();
-    pdf.addImage(
-      sliceData,
-      "JPEG",
-      margin,
-      margin,
-      imageWidth,
-      sliceImageHeight,
-    );
-
-    renderedPx += currentSliceHeightPx;
-    isFirstSlice = false;
-  }
+const addCanvasToPage = (pdf, canvas, ratio, margin) => {
+  const imageWidth = canvas.width * ratio;
+  const imageHeight = canvas.height * ratio;
+  // PNG keeps text and thin borders sharper than JPEG
+  const imageData = canvas.toDataURL("image/png");
+  pdf.addImage(imageData, "PNG", margin, margin, imageWidth, imageHeight);
 };
 
 const CVThree = ({ templateSwitcher }) => {
@@ -506,6 +475,9 @@ const CVThree = ({ templateSwitcher }) => {
           id: profile?.id,
           full_name: profile?.full_name,
           email: profile?.email,
+          phone_number: profile?.phone_number,
+          address: profile?.address,
+          country: profile?.country,
           partner_id: profile?.partner_id,
           cv_header_url: profile?.cv_header_url,
           cv_template_code: profile?.cv_template_code,
@@ -547,6 +519,12 @@ const CVThree = ({ templateSwitcher }) => {
   );
 
   const selectedPartnerHeaderUrl = selectedPartner?.cv_header_url || null;
+
+  const isJordanPartner =
+    String(selectedPartner?.country || "")
+      .trim()
+      .toLowerCase() === "jordan";
+  const themeColor = isJordanPartner ? RED : BLUE;
 
   const getPartnerOptionLabel = (partner) => {
     const fullLabel =
@@ -659,14 +637,43 @@ const CVThree = ({ templateSwitcher }) => {
 
     try {
       const pdf = new jsPDF("p", "mm", "a4");
+      const margin = 4;
+
+      // Capture both sections up front, before adding anything to the PDF.
+      const cvCanvas = await captureElementCanvas(cvRef.current, 400);
+      const passportCanvas = passportRef.current
+        ? await captureElementCanvas(passportRef.current, 800)
+        : null;
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const printableWidth = pageWidth - margin * 2;
+      const printableHeight = pageHeight - margin * 2;
+
+      // Prefer fitting to width (keeps column proportions identical to the
+      // preview). Only shrink further if content is taller than the page.
+      const fitRatio = (canvas) => {
+        const widthRatio = printableWidth / canvas.width;
+        const renderedHeight = canvas.height * widthRatio;
+        if (renderedHeight > printableHeight) {
+          return Math.min(widthRatio, printableHeight / canvas.height);
+        }
+        return widthRatio;
+      };
+
+      const ratioCv = fitRatio(cvCanvas);
+      const ratioPassport = passportCanvas ? fitRatio(passportCanvas) : null;
+
+      // Shared ratio so both pages render at the same visual scale.
+      const ratio = Math.min(ratioCv, ratioPassport ?? ratioCv);
 
       // Page 1: application + personal data + skills
-      await captureElementToPage(pdf, cvRef.current, 400);
+      addCanvasToPage(pdf, cvCanvas, ratio, margin);
 
       // Page 2: previous employment, languages/education, passport scan
-      if (passportRef.current) {
+      if (passportCanvas) {
         pdf.addPage();
-        await captureElementToPage(pdf, passportRef.current, 800);
+        addCanvasToPage(pdf, passportCanvas, ratio, margin);
       }
 
       const name = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
@@ -793,12 +800,8 @@ const CVThree = ({ templateSwitcher }) => {
   /* Page-2 contact strip: prefer the selected partner's own details,
      fall back to the agency defaults shown in the sample template. */
   const agencyEmail = selectedPartner?.email ?? AGENCY_CONTACT.email;
-  const agencyPhone =
-    selectedPartner?.phone ?? selectedPartner?.tel ?? AGENCY_CONTACT.phone;
-  const agencyAddress =
-    selectedPartner?.address_ar ??
-    selectedPartner?.address ??
-    AGENCY_CONTACT.addressAr;
+  const agencyPhone = selectedPartner?.phone_number ?? AGENCY_CONTACT.phone;
+  const agencyAddress = selectedPartner?.address ?? AGENCY_CONTACT.addressAr;
 
   /* Skills checklist - checked/unchecked based on what's actually
      assigned to this worker (worker_skills.skills SET column). The `key`
@@ -873,14 +876,31 @@ const CVThree = ({ templateSwitcher }) => {
     : worker.experience;
 
   const cvStyle = {
-    width: 760,
-    minWidth: 760,
+    width: CV_WIDTH,
+    minWidth: CV_WIDTH,
+    maxWidth: CV_WIDTH,
     background: "#fff",
     fontFamily: FONT,
     color: "#000",
     boxSizing: "border-box",
     border: "2px solid #000",
     padding: 6,
+    transform: "none",
+    zoom: 1,
+    "--cv-theme-color": themeColor,
+  };
+
+  const page2Style = {
+    width: CV_WIDTH,
+    minWidth: CV_WIDTH,
+    maxWidth: CV_WIDTH,
+    marginTop: 24,
+    background: "#fff",
+    fontFamily: FONT,
+    boxSizing: "border-box",
+    transform: "none",
+    zoom: 1,
+    "--cv-theme-color": themeColor,
   };
 
   return (
@@ -954,7 +974,7 @@ const CVThree = ({ templateSwitcher }) => {
 
       <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         {/* Page 1: application, passport, personal data, skills, summary */}
-        <div ref={cvRef} style={cvStyle}>
+        <div ref={cvRef} data-cv-capture style={cvStyle}>
           {/* Agency banner (Musaned / Al Esnad Almasi logo strip) */}
           {selectedPartnerHeaderUrl ? (
             <img
@@ -1152,16 +1172,7 @@ const CVThree = ({ templateSwitcher }) => {
         </div>
 
         {/* Page 2: previous employment, languages/education, passport scan */}
-        <div
-          ref={passportRef}
-          style={{
-            width: 760,
-            minWidth: 760,
-            marginTop: 24,
-            background: "#fff",
-            fontFamily: FONT,
-          }}
-        >
+        <div ref={passportRef} data-cv-capture style={page2Style}>
           {/* Agency contact strip - email / tel on the left, street address
               (Arabic) on the right, as its own bordered box above the
               Previous Employment table. */}
