@@ -9,7 +9,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import "./index.css";
 import App from "./App.jsx";
-import LoaderProvider from "./context/loader/LoaderProvider";
+import LoaderProvider from "./context/Loader/LoaderProvider";
 import LogoutProvider from "./context/Logout/LogoutProvider.jsx";
 import ResponseProvider from "./context/Response/ResponseProvider.jsx";
 import ConfirmDeleteProvider from "./context/Delete/DeleteProvider";
@@ -18,20 +18,20 @@ import DemoInfoProvider from "./context/Demo/DemoInfoProvider";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
-    <BrowserRouter>
-      <DemoInfoProvider>
-        <ResponseProvider>
-          <ProfileProvider>
-            <LogoutProvider>
-              <LoaderProvider>
-                <ConfirmDeleteProvider>
-                    <App />
-                </ConfirmDeleteProvider>
-              </LoaderProvider>
-            </LogoutProvider>
-          </ProfileProvider>
-        </ResponseProvider>
-      </DemoInfoProvider>
-    </BrowserRouter>
+  <BrowserRouter>
+    <DemoInfoProvider>
+      <ResponseProvider>
+        <ProfileProvider>
+          <LogoutProvider>
+            <LoaderProvider>
+              <ConfirmDeleteProvider>
+                <App />
+              </ConfirmDeleteProvider>
+            </LoaderProvider>
+          </LogoutProvider>
+        </ProfileProvider>
+      </ResponseProvider>
+    </DemoInfoProvider>
+  </BrowserRouter>,
   // </StrictMode>,
 );

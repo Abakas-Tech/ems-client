@@ -1525,6 +1525,10 @@ function WorkerForm() {
     }
     if (arrivalDate && isNaN(arrivalDate.getTime()))
       return "Arrival date must be a valid date";
+    if (arrivalDate && departureDate) {
+      if (arrivalDate <= departureDate)
+        return "Arrival date cannot be before departure date";
+    }
 
     return null;
   };
