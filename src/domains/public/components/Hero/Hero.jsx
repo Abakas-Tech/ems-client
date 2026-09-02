@@ -1,152 +1,221 @@
-import { useState, useEffect } from "react";
 import styles from "./Hero.module.css";
-import bg1 from "../../../../assets/img/banner/hero-1.jpg";
-import bg2 from "../../../../assets/img/banner/hero-2.jpg";
-import bg3 from "../../../../assets/img/banner/hero-3.jpg";
-import bg4 from "../../../../assets/img/banner/hero-4.jpg";
-import bg5 from "../../../../assets/img/banner/hero-5.jpg";
 
-const slides = [
-  {
-    id: 1,
-    bg: bg1,
-    eyebrow: "Your trusted partner in overseas employment",
-    heading: "Your Future\nStarts Here.",
-    sub: "Ethiopia's leading agency connecting skilled workers with top employers in Saudi Arabi and Jordan.",
-  },
-  {
-    id: 2,
-    bg: bg2,
-    eyebrow: "Legal. Safe. Transparent.",
-    heading: "Your Safe\nPath Abroad.",
-    sub: "From documents to departure — we handle everything so you and your family have peace of mind.",
-  },
-  {
-    id: 3,
-    bg: bg3,
-    eyebrow: "Thousands placed. Countless lives changed.",
-    heading: "Build a Better\nLife Abroad.",
-    sub: "Thousands of Ethiopians have built successful careers in the Middle East — your story starts here.",
-  },
-  {
-    id: 4,
-    bg: bg4,
-    eyebrow: "Your gateway to the Gulf",
-    heading: "Opportunity\nAwaits You.",
-    sub: "From Addis Ababa to Dubai, Riyadh, and Kuwait City — we open doors to life-changing careers for hardworking Ethiopians.",
-  },
-  {
-    id: 5,
-    bg: bg5,
-    eyebrow: "Start your journey today",
-    heading: "Apply Once.\nChange Everything.",
-    sub: "Our simple application process gets you in front of verified employers fast. No hidden fees. No middlemen. Just results.",
-  },
-];
-
-// The company's verified primary tagline, in both languages. This is
-// deliberately static across all five slides rather than translated
-// per-slide — the client's company profile only provides an approved
-// Amharic version of this one core tagline, not of the five different
-// rotating marketing headlines, so making up translations for those risks
-// shipping wording the client never signed off on.
+// The company's verified primary tagline, in both languages. Deliberately
+// static rather than translated per-headline — the client's company profile
+// only provides an approved Amharic version of this one core tagline, so
+// making up a translation for anything else risks shipping wording the
+// client never signed off on.
 const TAGLINE_EN =
   "Connecting People. Creating Opportunities. Building Better Futures.";
 const TAGLINE_AM = "ሰዎችን እናገናኛለን። ዕድሎችን እንፈጥራለን። የተሻለ ወደፊት እንገነባለን።";
 
+const STATS = [
+  { value: "12,000+", label: "Ethiopians placed abroad" },
+  { value: "3", label: "destination countries" },
+  { value: "100%", label: "licensed and contract-checked" },
+];
+
+// Destination nodes for the route illustration, positioned by hand in the
+// artwork's 560x700 coordinate space. Origin is Addis Ababa.
+const ORIGIN = { x: 96, y: 566, label: "Addis Ababa" };
+const ROUTES = [
+  {
+    id: "amman",
+    label: "Amman",
+    node: { x: 268, y: 196 },
+    control: { x: 176, y: 322 },
+  },
+  {
+    id: "riyadh",
+    label: "Riyadh",
+    node: { x: 334, y: 372 },
+    control: { x: 220, y: 418 },
+  },
+  {
+    id: "kuwait",
+    label: "Kuwait City",
+    node: { x: 384, y: 292 },
+    control: { x: 252, y: 372 },
+  },
+  {
+    id: "dubai",
+    label: "Dubai",
+    node: { x: 432, y: 456 },
+    control: { x: 300, y: 520 },
+  },
+];
+
+// The plane loops along this route (Addis Ababa -> Amman, the farthest and
+// most visually prominent leg) — same path string as the drawn SVG path,
+// duplicated here as the CSS offset-path motion track.
+const FLIGHT_PATH = "M96,566 Q176,322 268,196";
+
 function Hero() {
-  const [current, setCurrent] = useState(0);
-  const [animating, setAnimating] = useState(false);
-
-  useEffect(() => {
-    const timer = setInterval(() => goTo((current + 1) % slides.length), 5500);
-    return () => clearInterval(timer);
-  }, [current]);
-
-  function goTo(index) {
-    if (animating || index === current) return;
-    setAnimating(true);
-    setTimeout(() => {
-      setCurrent(index);
-      setAnimating(false);
-    }, 400);
-  }
-
-  const slide = slides[current];
-
   return (
-    <section className={styles["hero"]} id="home">
-      {/* bg image is driven by the current slide */}
-      <div
-        className={styles["hero-bg"]}
-        style={{ backgroundImage: `url(${slide.bg})` }}
-      />
-      <div className={styles["hero-overlay"]} />
+    <section className={styles.hero} id="home">
+      <div className={styles.grain} aria-hidden="true" />
 
-      <div className={styles["hero-content"]}>
-        <p
-          className={`${styles["hero-eyebrow"]} ${animating ? styles["fade-out"] : styles["fade-in"]}`}
-        >
-          {slide.eyebrow}
-        </p>
-        <h1
-          className={`${styles["hero-heading"]} ${animating ? styles["slide-out"] : styles["slide-in"]}`}
-        >
-          {slide.heading.split("\n").map((line, i) => (
-            <span key={i} className={styles["heading-line"]}>
-              {line}
+      <div className={styles.inner}>
+        <div className={styles.content}>
+          <p className={styles.eyebrow}>Ethiopia to the Gulf, done right</p>
+
+          <h1 className={styles.heading}>
+            <span className={styles.line}>Work abroad,</span>
+            <span className={styles.line}>without the guesswork.</span>
+          </h1>
+
+          <p className={styles.sub}>
+            ALETISALAT places skilled Ethiopians in verified jobs across Saudi
+            Arabia, Jordan, and the Gulf — every contract checked, every step
+            explained before you sign.
+          </p>
+
+          {/* Static bilingual tagline — same on every view; see note above the constants. */}
+          <p className={styles.tagline} title={TAGLINE_EN}>
+            {TAGLINE_AM}
+          </p>
+
+          <div className={styles.actions}>
+            <a href="#contact" className={styles.btnPrimary}>
+              <span>Apply now</span>
+              <svg
+                className={styles.btnPlane}
+                viewBox="0 0 16 16"
+                width="14"
+                height="14"
+                aria-hidden="true"
+              >
+                <path d="M1 8l13-6-4 6 4 6-13-6z" fill="currentColor" />
+              </svg>
+            </a>
+            <a href="#about" className={styles.btnSecondary}>
+              About us
+            </a>
+          </div>
+        </div>
+
+        <div className={styles.artwork} aria-hidden="true">
+          <FlightRoutes />
+
+          {/* Playful trust badge — a tilted "stamp", like a visa approval mark */}
+          <div className={styles.stamp}>
+            <span className={styles.stampRing} />
+            <span className={styles.stampText}>
+              Licensed
+              <br />
+              Agency
             </span>
-          ))}
-        </h1>
-        <p
-          className={`${styles["hero-sub"]} ${animating ? styles["fade-out"] : styles["fade-in"]}`}
-        >
-          {slide.sub}
-        </p>
-
-        {/* Static bilingual tagline — same on every slide, see note above. */}
-        <p
-          title={TAGLINE_EN}
-          style={{
-            fontSize: "15px",
-            lineHeight: 1.5,
-            color: "rgba(255,255,255,0.8)",
-            fontStyle: "italic",
-            letterSpacing: "0.2px",
-            margin: "-4px 0 20px",
-            maxWidth: "560px",
-          }}
-        >
-          {TAGLINE_AM}
-        </p>
-
-        <div className={styles["hero-actions"]}>
-          <div className={styles["hero-actions"]}>
-            <a href="#contact" className={styles["btn-primary"]}>
-              Apply Now
-            </a>
-            <a href="#about" className={styles["btn-secondary"]}>
-              About Us
-            </a>
           </div>
         </div>
       </div>
 
-      <div className={styles["carousel-controls"]}>
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            className={`${styles["dot"]} ${i === current ? styles["dot-active"] : ""}`}
-            onClick={() => goTo(i)}
-            aria-label={`Go to slide ${i + 1}`}
-          />
+      <div className={styles.stats}>
+        {STATS.map((stat) => (
+          <div className={styles.stat} key={stat.label}>
+            <span className={styles.statValue}>{stat.value}</span>
+            <span className={styles.statLabel}>{stat.label}</span>
+          </div>
         ))}
       </div>
-
-      <div className={styles["progress-bar"]}>
-        <div key={current} className={styles["progress-fill"]} />
-      </div>
     </section>
+  );
+}
+
+function FlightRoutes() {
+  return (
+    <svg
+      viewBox="0 0 560 700"
+      className={styles.routeSvg}
+      role="img"
+      aria-label="Illustrated flight routes from Addis Ababa to Amman, Riyadh, Kuwait City, and Dubai"
+    >
+      <defs>
+        <linearGradient id="routeGold" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#C9A227" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#E7C96B" stopOpacity="0.95" />
+        </linearGradient>
+        <radialGradient id="originGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#E7C96B" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#E7C96B" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      {/* Faint radar-style arcs centered on the origin */}
+      {[150, 250, 350, 450].map((r) => (
+        <circle
+          key={r}
+          cx={ORIGIN.x}
+          cy={ORIGIN.y}
+          r={r}
+          className={styles.ring}
+        />
+      ))}
+
+      <circle
+        cx={ORIGIN.x}
+        cy={ORIGIN.y}
+        r="60"
+        fill="url(#originGlow)"
+        className={styles.originPulse}
+      />
+
+      {ROUTES.map((route) => {
+        const d = `M${ORIGIN.x},${ORIGIN.y} Q${route.control.x},${route.control.y} ${route.node.x},${route.node.y}`;
+        return <path key={route.id} d={d} className={styles.route} />;
+      })}
+
+      {/* A handful of twinkling waypoint dots scattered along the sky for texture */}
+      {[
+        { x: 210, y: 260 },
+        { x: 150, y: 460 },
+        { x: 320, y: 250 },
+        { x: 400, y: 380 },
+        { x: 460, y: 340 },
+        { x: 230, y: 420 },
+      ].map((p, i) => (
+        <circle
+          key={i}
+          cx={p.x}
+          cy={p.y}
+          r="1.6"
+          className={styles.twinkle}
+          style={{ animationDelay: `${i * 0.7}s` }}
+        />
+      ))}
+
+      {/* Destination nodes */}
+      {ROUTES.map((route) => (
+        <g key={`${route.id}-node`}>
+          <circle
+            cx={route.node.x}
+            cy={route.node.y}
+            r="5"
+            className={styles.node}
+          />
+          <text
+            x={route.node.x + 12}
+            y={route.node.y + 4}
+            className={styles.nodeLabel}
+          >
+            {route.label}
+          </text>
+        </g>
+      ))}
+
+      {/* Origin node */}
+      <circle cx={ORIGIN.x} cy={ORIGIN.y} r="7" className={styles.originNode} />
+      <text x={ORIGIN.x} y={ORIGIN.y + 30} className={styles.originLabel}>
+        {ORIGIN.label}
+      </text>
+
+      {/* Looping plane, flown along the Addis Ababa -> Amman leg */}
+      <g
+        className={styles.plane}
+        style={{ offsetPath: `path("${FLIGHT_PATH}")` }}
+      >
+        <path d="M0 -4 L11 0 L0 4 L2.5 0 Z" fill="#F5F1E6" />
+      </g>
+    </svg>
   );
 }
 
