@@ -62,7 +62,7 @@ const COLOR_OPTIONS = [
   { name: "Blue", value: BLUE },
   { name: "Red", value: RED },
   { name: "Green", value: "#9BBA58" },
-  { name: "Purple", value: "#6A1B9A" },
+  { name: "Purple", value: "#00512E" },
   { name: "Teal", value: "#00796B" },
   { name: "Navy", value: "#001F5F" },
 ];
