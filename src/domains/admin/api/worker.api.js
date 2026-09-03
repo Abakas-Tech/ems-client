@@ -189,11 +189,28 @@ const listSharedCvsForPartner = async () => {
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || error.message || "Failed to list shared CVs",
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to list shared CVs",
     );
   }
 };
 
+const setPartnerCvAccess = async (id, payload) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/cv/${id}/partner-access`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update partner access",
+    );
+  }
+};
 
 export {
   createWorker,
@@ -209,4 +226,5 @@ export {
   restoreWorker,
   deleteWorker,
   listSharedCvsForPartner,
+  setPartnerCvAccess,
 };
