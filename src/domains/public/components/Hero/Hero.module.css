@@ -291,10 +291,10 @@
     opacity: 0;
   }
 }
-
+/* make slow */
 .plane {
   offset-rotate: auto;
-  animation: fly-loop 5.5s ease-in-out infinite;
+  animation: fly-loop 10s linear infinite;
 }
 
 /* Tilted "approved" stamp badge, sitting on the artwork */
