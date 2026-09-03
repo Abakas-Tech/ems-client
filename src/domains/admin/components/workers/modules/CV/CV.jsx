@@ -1560,8 +1560,8 @@ const CVThree = ({ templateSwitcher }) => {
                     <div
                       style={{
                         border: "2px solid #000",
-                        padding: 8,
-                        marginTop: 8,
+                        padding: 10,
+                        marginTop: 12,
                       }}
                     >
                       {worker.passport_scan_url ? (
@@ -1570,10 +1570,9 @@ const CVThree = ({ templateSwitcher }) => {
                           alt="Passport Scan"
                           crossOrigin="anonymous"
                           style={{
+                            width: "100%",
+                            height: "auto",
                             display: "block",
-                            margin: "0 auto",
-                            maxWidth: "100%",
-                            maxHeight: 450,
                             border: "1px solid #999",
                           }}
                         />
