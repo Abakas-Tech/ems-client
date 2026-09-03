@@ -3,6 +3,7 @@ import {
   updateUser,
   createUser,
   uploadPartnerCvHeader,
+  uploadPartnerCvHeaderTwo,
 } from "../../../api/user.api";
 import {
   grantPermissions,
@@ -36,6 +37,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("1"); // Active = 1, Inactive = 0
   const [country, setCountry] = useState("");
+  const [address, setAddress] = useState("");
 
   const [originalPermissions, setOriginalPermissions] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
@@ -43,6 +45,9 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [partnerCvHeader, setPartnerCvHeader] = useState(null);
   const [existingPartnerCvHeader, setExistingPartnerCvHeader] = useState(null);
+  const [partnerCvHeaderTwo, setPartnerCvHeaderTwo] = useState(null);
+  const [existingPartnerCvHeaderTwo, setExistingPartnerCvHeaderTwo] =
+    useState(null);
   const { profile } = useProfile();
   const userId = profile?.id;
   const navigate = useNavigate();
@@ -64,9 +69,12 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         userData.is_active !== undefined ? String(userData.is_active) : "1",
       );
       setCountry(userData.country || "");
+      setAddress(userData.address || "");
 
       setExistingPartnerCvHeader(userData.cv_header_url || null);
       setPartnerCvHeader(null);
+      setExistingPartnerCvHeaderTwo(userData.cv_header_two_url || null);
+      setPartnerCvHeaderTwo(null);
       if (userData.permissions && userData.permissions.length > 0) {
         const permissionObject = userData.permissions[0];
         const activePermissions = PERMISSIONS.filter(
@@ -88,6 +96,8 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
     setPartnerCvHeader(null);
     setExistingPartnerCvHeader(null);
+    setPartnerCvHeaderTwo(null);
+    setExistingPartnerCvHeaderTwo(null);
     setSelectedPermissions([]);
     setSelectAll(false);
   };
@@ -127,6 +137,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     phone_number: !isEditMode,
     role: !isEditMode,
     country: !isEditMode && role === "3",
+    address: !isEditMode && role === "3",
   };
 
   const validateFields = () => {
@@ -211,6 +222,37 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
     setPartnerCvHeader(file);
   };
+
+  const handlePartnerHeaderTwoChange = (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      setPartnerCvHeaderTwo(null);
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)) {
+      addMessage(false, "CV header must be a JPG, PNG, or WEBP image.");
+
+      event.target.value = "";
+      setPartnerCvHeaderTwo(null);
+      return;
+    }
+
+    const maximumSize = 5 * 1024 * 1024;
+
+    if (file.size > maximumSize) {
+      addMessage(false, "CV header image cannot exceed 5 MB.");
+
+      event.target.value = "";
+      setPartnerCvHeaderTwo(null);
+      return;
+    }
+
+    setPartnerCvHeaderTwo(file);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateFields()) return;
@@ -225,6 +267,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         role: Number(role),
         is_active: Number(status),
         country: role === "3" ? country : undefined,
+        address: role === "3" ? address : undefined,
       });
 
       let response = isEditMode
@@ -254,6 +297,21 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
            * Navigate back to prevent accidental duplicate creation.
            * The header can be retried through Edit Partner.
            */
+          navigate(-1);
+          return;
+        }
+      }
+      if (role === "3" && partnerCvHeaderTwo && savedUserId) {
+        try {
+          await uploadPartnerCvHeaderTwo(savedUserId, partnerCvHeaderTwo);
+        } catch (headerError) {
+          addMessage(
+            false,
+            `${
+              isEditMode ? "Partner updated" : "Partner created"
+            }, but the second CV header upload failed: ${headerError.message}`,
+          );
+
           navigate(-1);
           return;
         }
@@ -416,6 +474,25 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   />
                 </div>
               )}
+
+              {role === "3" && (
+                <div className="form-group col-md-6 mb-3">
+                  <label>
+                    Street Address{" "}
+                    {requiredFields.address && (
+                      <span className="text-danger">*</span>
+                    )}
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={address}
+                    required={requiredFields.address}
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
+                </div>
+              )}
+
               {/* Partner CV Header */}
               {role === "3" && (
                 <div className="form-group col-md-6 mb-3">
@@ -453,6 +530,47 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                     )}
 
                   {isEditMode && existingPartnerCvHeader && (
+                    <small className="text-muted d-block mt-1">
+                      Select a new image only if you want to replace the current
+                      header.
+                    </small>
+                  )}
+                </div>
+              )}
+
+              {/* Partner CV Header (page 2) */}
+              {role === "3" && (
+                <div className="form-group col-md-6 mb-3">
+                  <label>CV Header (Page 2)</label>
+
+                  <input
+                    type="file"
+                    className="form-control"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handlePartnerHeaderTwoChange}
+                  />
+
+                  {partnerCvHeaderTwo && (
+                    <small className="text-muted d-block mt-1">
+                      Selected: {partnerCvHeaderTwo.name}
+                    </small>
+                  )}
+
+                  {isEditMode &&
+                    !partnerCvHeaderTwo &&
+                    existingPartnerCvHeaderTwo && (
+                      <small className="d-block mt-1">
+                        <a
+                          href={existingPartnerCvHeaderTwo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View current CV header (page 2)
+                        </a>
+                      </small>
+                    )}
+
+                  {isEditMode && existingPartnerCvHeaderTwo && (
                     <small className="text-muted d-block mt-1">
                       Select a new image only if you want to replace the current
                       header.

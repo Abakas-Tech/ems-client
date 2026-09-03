@@ -4,6 +4,7 @@ import { jsPDF } from "jspdf";
 import {
   getWorkerCVData,
   generateCvForPartner,
+  setPartnerCvAccess,
 } from "../../../../api/worker.api";
 import { getUsersLookup } from "../../../../api/user.api";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
@@ -12,6 +13,7 @@ import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
 import cvFooterLogo from "../../../../../../assets/img/cv/cv-footer.png";
+import CVToolbox from "./CVToolbox";
 
 const safeDate = (date) => (date ? date.slice(0, 10) : "");
 
@@ -51,7 +53,23 @@ const subtractDate = (firstDate, secondDate) => {
 /*  THEME - matches the Musaned / Al Esnad Almasi blue paper template  */
 /* ------------------------------------------------------------------ */
 const BLUE = "#3D6DA6";
+const RED = "#B22222";
 const FONT = "Arial, Helvetica, sans-serif";
+
+/* Selectable CV accent colors, shown as small filled circles in the
+   toolbox. Extend by adding another { name, value } entry. */
+const COLOR_OPTIONS = [
+  { name: "Blue", value: BLUE },
+  { name: "Red", value: RED },
+  { name: "Green", value: "#2E7D32" },
+  { name: "Purple", value: "#6A1B9A" },
+  { name: "Teal", value: "#00796B" },
+  { name: "Navy", value: "#1B2A4A" },
+];
+
+/* Fixed capture / preview width. Must stay identical between what the
+   user sees and what html2canvas captures. */
+const CV_WIDTH = 760;
 
 /* Fallback agency contact info shown on the page-2 header strip.
    Prefer live values from the selected partner when available. */
@@ -63,7 +81,7 @@ const AGENCY_CONTACT = {
 
 const css = {
   titleBar: {
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     fontWeight: "bold",
     fontSize: 15,
@@ -72,7 +90,7 @@ const css = {
     borderBottom: "1px solid #000",
   },
   sectionBar: {
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     display: "flex",
     justifyContent: "center",
@@ -87,7 +105,7 @@ const css = {
   sectionBarEn: { fontWeight: "bold" },
   sectionBarAr: { fontWeight: "bold", direction: "rtl" },
   titleStack: {
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     textAlign: "center",
     padding: "4px 8px 6px",
@@ -142,7 +160,7 @@ const css = {
   fullNameRow: {
     display: "grid",
     gridTemplateColumns: "150px 1fr 200px",
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     borderTop: "1px solid #000",
     borderBottom: "1px solid #000",
@@ -151,7 +169,7 @@ const css = {
     padding: "5px 8px",
     fontWeight: "bold",
     fontSize: 13,
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     borderRight: "1px solid #000",
   },
@@ -172,7 +190,7 @@ const css = {
     direction: "rtl",
   },
   summaryWrap: {
-    background: BLUE,
+    background: "var(--cv-theme-color)",
     color: "#fff",
     textAlign: "center",
     padding: "10px 18px 16px",
@@ -196,38 +214,25 @@ const css = {
     fontSize: 13,
     lineHeight: 1.7,
   },
-  contactHeader: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    border: "2px solid #000",
-    borderBottom: "none",
-  },
-  contactCellEn: {
-    padding: "10px 12px",
+  /* No-passport layout: plain centered contact footer (phone/email/address),
+     matching the sample's simple text strip instead of a bordered box. */
+  noPassportFooter: {
     textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 12,
-    lineHeight: 1.8,
-    borderRight: "1px solid #000",
-  },
-  contactCellAr: {
     padding: "10px 12px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  contactCellArBox: {
-    background: BLUE,
-    color: "#fff",
-    border: "1px solid #000",
-    borderRadius: 2,
-    padding: "8px 14px",
-    margin: "2px",
-    fontWeight: "bold",
     fontSize: 12,
+    fontWeight: "bold",
+    color: "var(--cv-theme-color)",
     lineHeight: 1.8,
+  },
+  /* No-passport layout: a full-width descriptive bar for prior experience,
+     styled like the existing "FIRST TIME" row used on page 2. */
+  experienceRow: {
+    padding: "6px 6px",
+    borderBottom: "1px solid #000",
     textAlign: "center",
-    direction: "rtl",
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#c0392b",
   },
 };
 
@@ -423,6 +428,7 @@ const PhotoBox = ({ url, alt, placeholderLabel }) => (
       width: "100%",
       height: "100%",
       minHeight: 140,
+      overflow: "hidden",
     }}
   >
     {url ? (
@@ -436,6 +442,7 @@ const PhotoBox = ({ url, alt, placeholderLabel }) => (
           width: "100%",
           height: "100%",
           objectFit: "cover",
+          objectPosition: "center top",
           display: "block",
         }}
       />
@@ -497,19 +504,101 @@ const captureElementToPage = async (
   const originalWidth = element.style.width;
   element.style.width = "760px";
 
+/* Backend-driven partner header banner, used identically on both page 1
+   and page 2 - only the image url, alt text and load handlers differ. */
+const HeaderBanner = ({ url, alt, selectedPartnerId, onLoad, onError, emptyLabel }) => (
+  <>
+    {url ? (
+      <img
+        src={url}
+        alt={alt}
+        crossOrigin="anonymous"
+        onLoad={onLoad}
+        onError={onError}
+        style={{
+          width: "100%",
+          height: "auto",
+          display: "block",
+          marginBottom: 6,
+        }}
+      />
+    ) : (
+      <div
+        style={{
+          width: "100%",
+          height: 90,
+          marginBottom: 6,
+          border: "2px dashed #999",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#999",
+          fontSize: 12,
+        }}
+      >
+        {selectedPartnerId ? emptyLabel : "Select a partner above to load the CV header"}
+      </div>
+    )}
+  </>
+);
+
+/**
+ * Capture a DOM node to canvas with the same width the user sees.
+ * Waits for fonts + images and uses onclone so the cloned tree keeps
+ * the exact fixed width (no reflow differences vs the live preview).
+ */
+const captureElementCanvas = async (element, waitMs = 600) => {
+  await document.fonts.ready;
   await new Promise((resolve) => setTimeout(resolve, waitMs));
+
+  // Ensure every image inside the element has finished loading
+  const images = Array.from(element.querySelectorAll("img"));
+  await Promise.all(
+    images.map((img) =>
+      img.complete
+        ? Promise.resolve()
+        : new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          }),
+    ),
+  );
 
   const canvas = await html2canvas(element, {
     useCORS: true,
     allowTaint: false,
     scale: 2,
-    windowWidth: 760,
-    windowHeight: element.scrollHeight,
-    scrollX: -window.scrollX,
-    scrollY: -window.scrollY,
+    width: CV_WIDTH,
+    windowWidth: CV_WIDTH,
+    backgroundColor: "#ffffff",
+    logging: false,
+    onclone: (_clonedDoc, clonedElement) => {
+      clonedElement.style.width = `${CV_WIDTH}px`;
+      clonedElement.style.minWidth = `${CV_WIDTH}px`;
+      clonedElement.style.maxWidth = `${CV_WIDTH}px`;
+      clonedElement.style.boxSizing = "border-box";
+      clonedElement.style.transform = "none";
+      clonedElement.style.zoom = "1";
+
+      // Kill any residual transforms that can shift layout in the clone
+      clonedElement.querySelectorAll("*").forEach((el) => {
+        if (el.style) {
+          el.style.transform = "none";
+        }
+      });
+    },
   });
 
-  element.style.width = originalWidth;
+  return canvas;
+};
+
+const addCanvasToPage = (pdf, canvas, ratio, margin) => {
+  const imageWidth = canvas.width * ratio;
+  const imageHeight = canvas.height * ratio;
+  // PNG keeps text and thin borders sharper than JPEG
+  const imageData = canvas.toDataURL("image/png");
+  pdf.addImage(imageData, "PNG", margin, margin, imageWidth, imageHeight);
+};
 
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
@@ -563,7 +652,9 @@ const CVThree = ({ templateSwitcher }) => {
   const { id } = useParams();
   const cvRef = useRef(null);
   const passportRef = useRef(null);
-  const headerLoadingUrlRef = useRef(null);
+  /* Counts how many header images (page 1 / page 2) are currently expected
+     to load, so the loader stays up until both have resolved. */
+  const pendingHeaderCountRef = useRef(0);
   const navigate = useNavigate();
 
   const [worker, setWorker] = useState(null);
@@ -619,8 +710,12 @@ const CVThree = ({ templateSwitcher }) => {
           id: profile?.id,
           full_name: profile?.full_name,
           email: profile?.email,
+          phone_number: profile?.phone_number,
+          address: profile?.address,
+          country: profile?.country,
           partner_id: profile?.partner_id,
           cv_header_url: profile?.cv_header_url,
+          cv_header_two_url: profile?.cv_header_two_url,
           cv_template_code: profile?.cv_template_code,
         };
 
@@ -629,8 +724,13 @@ const CVThree = ({ templateSwitcher }) => {
         if (ownPartner.partner_id) {
           setSelectedPartnerId(String(ownPartner.partner_id));
 
-          if (ownPartner.cv_header_url) {
-            headerLoadingUrlRef.current = ownPartner.cv_header_url;
+          const headersToLoad = [
+            ownPartner.cv_header_url,
+            ownPartner.cv_header_two_url,
+          ].filter(Boolean);
+
+          if (headersToLoad.length) {
+            pendingHeaderCountRef.current = headersToLoad.length;
             showLoader();
           }
         }
@@ -660,6 +760,17 @@ const CVThree = ({ templateSwitcher }) => {
   );
 
   const selectedPartnerHeaderUrl = selectedPartner?.cv_header_url || null;
+  const selectedPartnerHeaderTwoUrl =
+    selectedPartner?.cv_header_two_url || null;
+
+  const isJordanPartner =
+    String(selectedPartner?.country || "")
+      .trim()
+      .toLowerCase() === "jordan";
+
+  // Selecting a color in the toolbox overrides the country-based default;
+  // until the user picks one, the existing per-country default is kept.
+  const themeColor = selectedCvColor || (isJordanPartner ? RED : BLUE);
 
   const getPartnerOptionLabel = (partner) => {
     const fullLabel =
@@ -677,31 +788,43 @@ const CVThree = ({ templateSwitcher }) => {
       (partner) => String(partner.partner_id) === String(nextPartnerId),
     );
     const nextHeaderUrl = nextPartner?.cv_header_url || null;
+    const nextHeaderTwoUrl = nextPartner?.cv_header_two_url || null;
 
     setSelectedPartnerId(nextPartnerId);
 
-    if (headerLoadingUrlRef.current) {
-      headerLoadingUrlRef.current = null;
+    if (pendingHeaderCountRef.current > 0) {
+      pendingHeaderCountRef.current = 0;
       hideLoader();
     }
 
-    if (nextHeaderUrl) {
-      headerLoadingUrlRef.current = nextHeaderUrl;
+    const headersToLoad = [nextHeaderUrl, nextHeaderTwoUrl].filter(Boolean);
+
+    if (headersToLoad.length) {
+      pendingHeaderCountRef.current = headersToLoad.length;
       showLoader();
     }
   };
 
+  // Shared by both the page-1 and page-2 header <img> elements - each
+  // decrements the pending count independently, so the loader only hides
+  // once every expected header image has finished loading (or errored).
   const handleHeaderLoaded = () => {
-    if (headerLoadingUrlRef.current === selectedPartnerHeaderUrl) {
-      headerLoadingUrlRef.current = null;
-      hideLoader();
+    if (pendingHeaderCountRef.current > 0) {
+      pendingHeaderCountRef.current -= 1;
+      if (pendingHeaderCountRef.current <= 0) {
+        pendingHeaderCountRef.current = 0;
+        hideLoader();
+      }
     }
   };
 
   const handleHeaderLoadError = () => {
-    if (headerLoadingUrlRef.current) {
-      headerLoadingUrlRef.current = null;
-      hideLoader();
+    if (pendingHeaderCountRef.current > 0) {
+      pendingHeaderCountRef.current -= 1;
+      if (pendingHeaderCountRef.current <= 0) {
+        pendingHeaderCountRef.current = 0;
+        hideLoader();
+      }
     }
 
     addMessage(false, "Failed to load the selected partner header");
@@ -709,8 +832,8 @@ const CVThree = ({ templateSwitcher }) => {
 
   useEffect(() => {
     return () => {
-      if (headerLoadingUrlRef.current) {
-        headerLoadingUrlRef.current = null;
+      if (pendingHeaderCountRef.current > 0) {
+        pendingHeaderCountRef.current = 0;
         hideLoader();
       }
     };
@@ -723,7 +846,16 @@ const CVThree = ({ templateSwitcher }) => {
   // access is ever revoked.
   const alreadySharedWithPartner = Boolean(worker?.already_shared_with_partner);
 
+  // Download only ever builds and saves the PDF - it no longer grants
+  // partner access. Still requires a selected partner (for admin/employee)
+  // since the CV header image comes from that partner and is part of the
+  // rendered PDF.
   const handleDownloadClick = () => {
+    if (isPartnerRole) {
+      handleDownloadCv();
+      return;
+    }
+
     if (!selectedPartnerId) {
       addMessage(false, "Please select a partner");
       return;
@@ -734,16 +866,11 @@ const CVThree = ({ templateSwitcher }) => {
       return;
     }
 
-    handleGenerateAndDownload();
+    handleDownloadCv();
   };
 
-  const handleGenerateAndDownload = async () => {
+  const handleDownloadCv = async () => {
     if (!cvRef.current || !worker) return;
-
-    if (!selectedPartnerId || !selectedPartnerHeaderUrl) {
-      addMessage(false, "Please select a partner with a CV header");
-      return;
-    }
 
     showLoader();
 
@@ -758,7 +885,7 @@ const CVThree = ({ templateSwitcher }) => {
       // is naturally skipped when it's off.
       if (passportRef.current) {
         pdf.addPage();
-        await captureElementToPage(pdf, passportRef.current, 800);
+        addCanvasToPage(pdf, passportCanvas, fitRatio(passportCanvas), margin);
       }
 
       const name = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
@@ -784,10 +911,88 @@ const CVThree = ({ templateSwitcher }) => {
       // Trigger an actual browser download of the PDF we just built.
       pdf.save(`${name}.pdf`);
 
-      addMessage(true, "CV downloaded and shared with the partner!");
+      addMessage(true, "CV downloaded!");
     } catch (error) {
       console.error(error);
       addMessage(false, error.message || "Failed to generate PDF");
+    } finally {
+      hideLoader();
+    }
+  };
+
+  // Link only grants (or re-grants, un-revoking) partner access - it never
+  // touches the PDF at all. Admin/employee only; this hits
+  // POST /workers/cv/:id/generate-cv, which the backend restricts to
+  // admin/employee - never call this for a partner.
+  const handleLinkClick = () => {
+    if (!selectedPartnerId) {
+      addMessage(false, "Please select a partner");
+      return;
+    }
+
+    if (!selectedPartnerHeaderUrl) {
+      addMessage(false, "The selected partner does not have a CV header");
+      return;
+    }
+
+    handleLinkCv();
+  };
+
+  const handleLinkCv = async () => {
+    if (!worker || !selectedPartnerId) return;
+
+    showLoader();
+
+    try {
+      await generateCvForPartner(worker.id, {
+        partnerId: selectedPartnerId,
+      });
+
+      // Keep local state in sync so the "already shared" badge and the
+      // revoke toggle reflect the new grant without a full refetch.
+      setWorker((previous) => ({
+        ...previous,
+        shared_with_partner: true,
+        access_revoked: false,
+      }));
+
+      addMessage(true, "CV linked and shared with the partner!");
+    } catch (error) {
+      console.error(error);
+      addMessage(false, error.message || "Failed to link CV to partner");
+    } finally {
+      hideLoader();
+    }
+  };
+
+  // Toggle whether the already-linked partner can currently access this
+  // CV, without deleting the underlying grant (so re-linking isn't
+  // required to restore access later).
+  const handleToggleAccess = async () => {
+    if (!worker || !selectedPartnerId) return;
+
+    const nextRevoked = !isAccessRevoked;
+
+    showLoader();
+
+    try {
+      await setPartnerCvAccess(worker.id, {
+        partnerId: selectedPartnerId,
+        revoked: nextRevoked,
+      });
+
+      setWorker((previous) => ({
+        ...previous,
+        access_revoked: nextRevoked,
+      }));
+
+      addMessage(
+        true,
+        nextRevoked ? "Partner access revoked" : "Partner access restored",
+      );
+    } catch (error) {
+      console.error(error);
+      addMessage(false, error.message || "Failed to update partner access");
     } finally {
       hideLoader();
     }
@@ -853,12 +1058,8 @@ const CVThree = ({ templateSwitcher }) => {
   /* Page-2 contact strip: prefer the selected partner's own details,
      fall back to the agency defaults shown in the sample template. */
   const agencyEmail = selectedPartner?.email ?? AGENCY_CONTACT.email;
-  const agencyPhone =
-    selectedPartner?.phone ?? selectedPartner?.tel ?? AGENCY_CONTACT.phone;
-  const agencyAddress =
-    selectedPartner?.address_ar ??
-    selectedPartner?.address ??
-    AGENCY_CONTACT.addressAr;
+  const agencyPhone = selectedPartner?.phone_number ?? AGENCY_CONTACT.phone;
+  const agencyAddress = selectedPartner?.address ?? AGENCY_CONTACT.addressAr;
 
   /* Skills checklist - checked/unchecked based on what's actually
      assigned to this worker (worker_skills.skills SET column). The `key`
@@ -932,15 +1133,53 @@ const CVThree = ({ templateSwitcher }) => {
     ? [{ country: "First Time", years: "", isFirstTime: true }]
     : worker.experience;
 
+  /* No-passport layout only: a single descriptive experience line replacing
+     the full Previous Employment table (which lives on the removed page 2). */
+  const experienceLine = isFirstTimeAbroad
+    ? "FIRST TIME TO WORK ABROAD"
+    : `EXPERIENCED ${category.toUpperCase()} ${previousEmployment
+        .map((entry) => `${(entry.country ?? "").toUpperCase()} ${entry.years ?? ""} YEARS`)
+        .join(", ")}`.trim();
+
+  /* No-passport layout only: compact Arabic/English rating rows, in place
+     of the full Languages & Education checklist on the removed page 2. */
+  const languageRatings = languages
+    .filter((language) => language.en === "Arabic" || language.en === "English")
+    .map((language) => ({
+      ...language,
+      rating: language.checked
+        ? language.en === "Arabic"
+          ? "VERY GOOD"
+          : "GOOD"
+        : "—",
+    }));
+
   const cvStyle = {
-    width: 760,
-    minWidth: 760,
+    width: CV_WIDTH,
+    minWidth: CV_WIDTH,
+    maxWidth: CV_WIDTH,
     background: "#fff",
     fontFamily: FONT,
     color: "#000",
     boxSizing: "border-box",
     border: "2px solid #000",
     padding: 6,
+    transform: "none",
+    zoom: 1,
+    "--cv-theme-color": themeColor,
+  };
+
+  const page2Style = {
+    width: CV_WIDTH,
+    minWidth: CV_WIDTH,
+    maxWidth: CV_WIDTH,
+    marginTop: 24,
+    background: "#fff",
+    fontFamily: FONT,
+    boxSizing: "border-box",
+    transform: "none",
+    zoom: 1,
+    "--cv-theme-color": themeColor,
   };
 
   return (
@@ -964,7 +1203,7 @@ const CVThree = ({ templateSwitcher }) => {
           selectedPartnerId && (
             <div className="d-flex flex-column align-items-md-end mt-2">
               <button
-                className="btn btn-main text-white w-45 d-flex align-items-center justify-content-center"
+                className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
                 onClick={handleDownloadClick}
               >
                 Download CV
@@ -975,7 +1214,33 @@ const CVThree = ({ templateSwitcher }) => {
                 </span>
               )}
             </div>
-          )}
+
+            {!isPartnerRole && alreadySharedWithPartner && (
+              <>
+                <span className="text-success small mt-1">
+                  ✓ Already shared with this partner
+                </span>
+
+                <div className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="cv-three-revoke-toggle"
+                    checked={!isAccessRevoked}
+                    onChange={handleToggleAccess}
+                  />
+                  <label
+                    className="form-check-label small"
+                    htmlFor="cv-three-revoke-toggle"
+                  >
+                    {isAccessRevoked ? "Access revoked" : "Partner has access"}
+                  </label>
+                </div>
+              </>
+            )}
+          </div>
+        ) : null}
       </div>
 
       <div className="mb-3 mt-1">{templateSwitcher}</div>
@@ -1070,7 +1335,13 @@ const CVThree = ({ templateSwitcher }) => {
 
             {/* Headshot photo (left) + Application/Passport details (right) */}
             <div style={{ display: "flex", borderBottom: "1px solid #000" }}>
-              <div style={{ flex: "0 0 260px", borderRight: "1px solid #000" }}>
+              <div
+                style={{
+                  flex: "0 0 260px",
+                  borderRight: "1px solid #000",
+                  height: detailsColHeight ? `${detailsColHeight}px` : undefined,
+                }}
+              >
                 <PhotoBox
                   url={faceUrl}
                   alt="Headshot"
@@ -1079,6 +1350,7 @@ const CVThree = ({ templateSwitcher }) => {
               </div>
 
               <div
+                ref={detailsColRef}
                 style={{ flex: 1, display: "flex", flexDirection: "column" }}
               >
                 <Row3 label="Category" value={category} />
@@ -1127,10 +1399,12 @@ const CVThree = ({ templateSwitcher }) => {
               <div style={css.fullNameAr}>الاسم بالكامل</div>
             </div>
 
-            {/* Personal data + skills + profile summary (left) / standing photo (right,
-                stretched to match the full combined height of the left column) */}
+            {/* Personal data + skills (+ profile summary when included) on the
+                left / standing photo (right, stretched to match the full
+                combined height of the left column) */}
             <div style={{ display: "flex" }}>
               <div
+                ref={bodyColRef}
                 style={{
                   flex: 1,
                   display: "flex",
@@ -1197,7 +1471,7 @@ const CVThree = ({ templateSwitcher }) => {
                     en={skill.en}
                     checked={skill.checked}
                     ar={skill.ar}
-                    last={index === skills.length - 1}
+                    last={index === skills.length - 1 && !showProfileSummary}
                   />
                 ))}
 
@@ -1228,7 +1502,12 @@ const CVThree = ({ templateSwitcher }) => {
                 )}
               </div>
 
-              <div style={{ flex: "0 0 400px" }}>
+              <div
+                style={{
+                  flex: "0 0 400px",
+                  height: bodyColHeight ? `${bodyColHeight}px` : undefined,
+                }}
+              >
                 <PhotoBox
                   url={bodyUrl}
                   alt="Full body"
@@ -1283,35 +1562,26 @@ const CVThree = ({ templateSwitcher }) => {
             <LanguagesEducationTable languages={languages} education={education} />
           </div>
 
-          {/* Passport scan - its own bordered box, separate from the
-              Previous Employment / Languages table above it */}
-          <div style={{ border: "2px solid #000", padding: 10, marginTop: 12 }}>
-            {worker.passport_scan_url ? (
-              <img
-                src={worker.passport_scan_url}
-                alt="Passport Scan"
-                crossOrigin="anonymous"
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  display: "block",
-                  border: "1px solid #999",
-                }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: "100%",
-                  height: 200,
-                  background: "#ddd",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 13,
-                  color: "#999",
-                }}
-              >
-                No passport scan available
+            {/* Toolbox column - UI only, never captured for the PDF. Stacks
+                below the preview on narrow screens instead of shrinking the
+                CV's own A4 proportions. Hidden entirely for partners - they
+                can still view/download their CV, but partner selection,
+                color choice and the passport toggle are admin/employee-only
+                controls. */}
+            {!isPartnerRole && (
+              <div className="w-100" style={{ flex: "0 0 260px", maxWidth: 320 }}>
+                <CVToolbox
+                  isPartnerRole={isPartnerRole}
+                  partners={partners}
+                  selectedPartnerId={selectedPartnerId}
+                  onPartnerChange={handlePartnerChange}
+                  getPartnerOptionLabel={getPartnerOptionLabel}
+                  colorOptions={COLOR_OPTIONS}
+                  selectedColor={themeColor}
+                  onColorChange={setSelectedCvColor}
+                  includePassport={includePassport}
+                  onTogglePassport={setIncludePassport}
+                />
               </div>
             )}
           </div>
