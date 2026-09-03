@@ -368,16 +368,12 @@ const PhotoBox = ({ url, alt, placeholderLabel }) => (
  *    html2canvas's offscreen render frame always has room to lay out the
  *    entire element, not just whatever fits in the current browser window.
  *
- * 2. Bottom cutoff - the image was previously scaled to fit the page's
- *    WIDTH only (`ratio = printableWidth / canvasWidth`), with no check
- *    that the resulting height fit the page. Tall content (this CV) ended
- *    up taller than one A4 page, and jsPDF simply draws past the page
- *    edge - anything below the bottom margin is invisible, which is the
- *    cutoff you saw (Skills table stopping at "Ironing", photo sliced,
- *    passport image sliced). Using `Math.min(widthRatio, heightRatio)`
- *    fits the whole element within the page on BOTH axes, so nothing gets
- *    clipped; the image is centered horizontally in case that leaves a
- *    little extra width margin on one side.
+ * 2. Full-width pages that never shrink below the preview - the image is
+ *    always scaled to fill the printable WIDTH exactly, matching what you
+ *    see on screen. Content taller than one A4 page is sliced across
+ *    additional pages instead of being shrunk to fit a single page's
+ *    height (that shrinking is what made the downloaded CV look narrower
+ *    than the preview).
  */
 const captureElementToPage = async (
   pdf,
@@ -406,22 +402,52 @@ const captureElementToPage = async (
 
   element.style.width = originalWidth;
 
-  const imageData = canvas.toDataURL("image/jpeg", 0.95);
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
 
   const printableWidth = pageWidth - marginX * 2;
   const printableHeight = pageHeight - marginY * 2;
-  const widthRatio = printableWidth / canvasWidth;
-  const heightRatio = printableHeight / canvasHeight;
-  const ratio = Math.min(widthRatio, heightRatio);
 
-  const imageWidth = canvasWidth * ratio;
-  const imageHeight = canvasHeight * ratio;
-  const offsetX = marginX + (printableWidth - imageWidth) / 2;
-  const offsetY = marginY;
+  // Always fill the printable WIDTH (1:1 with the preview); the height per
+  // page is however many source pixels fit at that width.
+  const ratio = printableWidth / canvasWidth;
+  const pageCanvasHeight = Math.floor(printableHeight / ratio);
 
-  pdf.addImage(imageData, "JPEG", offsetX, offsetY, imageWidth, imageHeight);
+  let renderedHeight = 0;
+  let isFirstSlice = true;
+
+  while (renderedHeight < canvasHeight) {
+    const sliceHeight = Math.min(
+      pageCanvasHeight,
+      canvasHeight - renderedHeight,
+    );
+
+    const sliceCanvas = document.createElement("canvas");
+    sliceCanvas.width = canvasWidth;
+    sliceCanvas.height = sliceHeight;
+    sliceCanvas
+      .getContext("2d")
+      .drawImage(
+        canvas,
+        0,
+        renderedHeight,
+        canvasWidth,
+        sliceHeight,
+        0,
+        0,
+        canvasWidth,
+        sliceHeight,
+      );
+
+    const imageData = sliceCanvas.toDataURL("image/jpeg", 0.95);
+    const imageHeight = sliceHeight * ratio;
+
+    if (!isFirstSlice) pdf.addPage();
+    pdf.addImage(imageData, "JPEG", marginX, marginY, printableWidth, imageHeight);
+
+    renderedHeight += sliceHeight;
+    isFirstSlice = false;
+  }
 };
 
 const CVThree = ({ templateSwitcher }) => {
@@ -581,25 +607,11 @@ const CVThree = ({ templateSwitcher }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const existingSelectedPartnerCv = Array.isArray(worker?.generated_cvs)
-    ? worker.generated_cvs.find(
-        (cv) =>
-          cv.category === "CV_THREE" &&
-          String(cv.partner_id) === String(selectedPartnerId),
-      ) || null
-    : null;
-
-  // Backend flags whether this CV has already been shared with the
-  // partner passed as ?partnerId= (the "preview" param). Field name is a
-  // best guess across a few likely candidates - confirm against the real
-  // getWorkerCV response shape and trim this down to the actual key.
-  const alreadySharedWithPartner = Boolean(
-    worker?.already_shared_with_partner ??
-    worker?.alreadyShared ??
-    worker?.shared_with_partner ??
-    worker?.is_shared_with_partner ??
-    false,
-  );
+  // Backend flags whether this CV currently has access granted to the
+  // partner passed as ?partnerId= (the "preview" param) - true only while
+  // that access still exists, so this naturally goes back to false if
+  // access is ever revoked.
+  const alreadySharedWithPartner = Boolean(worker?.already_shared_with_partner);
 
   const handleDownloadClick = () => {
     if (!selectedPartnerId) {
@@ -649,35 +661,12 @@ const CVThree = ({ templateSwitcher }) => {
           partnerId: selectedPartnerId,
         });
 
-        /*
-         * Keep the local state in sync so the partner shows up as already
-         * having access to this worker's CV without needing a full refetch.
-         */
-        setWorker((previous) => {
-          const previousCvs = Array.isArray(previous?.generated_cvs)
-            ? previous.generated_cvs
-            : [];
-
-          const otherCvs = previousCvs.filter(
-            (cv) =>
-              !(
-                cv.category === "CV_THREE" &&
-                String(cv.partner_id) === String(selectedPartnerId)
-              ),
-          );
-
-          return {
-            ...previous,
-            generated_cvs: [
-              {
-                ...existingSelectedPartnerCv,
-                category: "CV_THREE",
-                partner_id: Number(selectedPartnerId),
-              },
-              ...otherCvs,
-            ],
-          };
-        });
+        // Keep the local state in sync so the "already shared" indicator
+        // shows up immediately without needing a full refetch.
+        setWorker((previous) => ({
+          ...previous,
+          already_shared_with_partner: true,
+        }));
       }
 
       // Trigger an actual browser download of the PDF we just built.
@@ -861,13 +850,18 @@ const CVThree = ({ templateSwitcher }) => {
           Number(profile?.role_id) === 2 ||
           Number(profile?.role_id) === 3) &&
           selectedPartnerId && (
-            <div className="d-flex flex-column align-items-md-end mt-3 mt-md-5">
+            <div className="d-flex flex-column align-items-md-end mt-2">
               <button
                 className="btn btn-main text-white w-45 d-flex align-items-center justify-content-center"
                 onClick={handleDownloadClick}
               >
                 Download CV
               </button>
+              {alreadySharedWithPartner && (
+                <span className="text-success small mt-1">
+                  ✓ Already shared with this partner
+                </span>
+              )}
             </div>
           )}
       </div>
