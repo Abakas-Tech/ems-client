@@ -312,115 +312,6 @@ const CheckRow = ({ en, checked, ar, last, cols = "125px 1fr 140px" }) => (
   </div>
 );
 
-/* PREVIOUS EMPLOYMENT / COUNTRY WORKED BEFORE table. Lives on page 2
-   when the passport scan is included, but moves onto the bottom of page 1
-   (inside the SKILLS & EXPERIENCES column) when it's excluded - extracted
-   so both layouts render the exact same markup. */
-const PreviousEmploymentTable = ({ entries }) => (
-  <>
-    <TitleStack
-      en="PREVIOUS EMPLOYMENT"
-      ar="العمل السابق"
-      sub="COUNTRY WORKED BEFORE"
-    />
-    {entries.map((entry, index) =>
-      entry.isFirstTime ? (
-        <div
-          key="first-time"
-          style={{
-            padding: "6px 6px",
-            borderBottom: "1px solid #000",
-            textAlign: "center",
-            fontSize: 12,
-            fontWeight: "bold",
-            color: "#c0392b",
-          }}
-        >
-          FIRST TIME
-        </div>
-      ) : (
-        <div
-          key={`${entry.country}-${index}`}
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            borderBottom: "1px solid #000",
-            textAlign: "center",
-            fontSize: 12,
-          }}
-        >
-          <div
-            style={{
-              padding: "3px 6px",
-              fontWeight: "bold",
-              color: "#c0392b",
-              borderRight: "1px solid #000",
-            }}
-          >
-            {(entry.country ?? "").toUpperCase()}
-          </div>
-          <div style={{ padding: "3px 6px", borderRight: "1px solid #000" }}>
-            {entry.years ?? ""}
-          </div>
-          <div
-            style={{ padding: "3px 6px", fontWeight: "bold", color: "#c0392b" }}
-          >
-            YEAR
-          </div>
-        </div>
-      ),
-    )}
-  </>
-);
-
-/* LANGUAGES & EDUCATION table - same relocation as PreviousEmploymentTable
-   above, and for the same reason (both move to page 1 without the
-   passport scan). */
-const LanguagesEducationTable = ({ languages, education }) => (
-  <>
-    <SectionBar en="LANGUAGES & EDUCATION" ar="اللغات والتعليم" />
-    {languages.map((language) => (
-      <CheckRow
-        key={language.en}
-        en={language.en}
-        checked={language.checked}
-        ar={language.ar}
-        last={false}
-        cols="1fr 1fr 1fr"
-      />
-    ))}
-    <Row3
-      label="Education (Course)"
-      value={education}
-      arLabel="دورة تعليم"
-      boldValue
-      last
-      cols="1fr 1fr 1fr"
-    />
-  </>
-);
-
-/* Agency contact strip - email / tel on one side, street address (Arabic)
-   on the other. Sits above the Previous Employment table on page 2 when
-   the passport scan is included, or as the final block on page 1 (right
-   under the standing photo) when it's excluded. */
-const ContactAddressStrip = ({ email, phone, address }) => (
-  <div style={css.contactHeader}>
-    <div style={css.contactCellEn}>
-      EMAIL
-      <br />
-      {email || "—"}
-      <br />
-      Tell
-      <br />
-      {phone || "—"}
-    </div>
-    <div style={css.contactCellAr}>
-      <div style={css.contactCellArBox}>{address || "—"}</div>
-    </div>
-  </div>
-);
-
 const PhotoBox = ({ url, alt, placeholderLabel }) => (
   <div
     style={{
@@ -467,42 +358,21 @@ const PhotoBox = ({ url, alt, placeholderLabel }) => (
   </div>
 );
 
-/*
- * FIX (content cut off at the page edges + page 2 narrower than page 1):
- *
- * 1. Scroll compensation - html2canvas measures capture position relative
- *    to the page's CURRENT scroll offset. `scrollX: 0, scrollY: 0` assumed
- *    the page is never scrolled, which is wrong the moment the person has
- *    scrolled down (exactly when they'd reach the Download button on a
- *    long form). Since passportRef sits further down the DOM than cvRef,
- *    a wrong scroll assumption skewed its capture differently than the
- *    first element's - that's what made page 2 come out narrower/shifted.
- *    Passing the NEGATIVE of the live scroll position (`-window.scrollX`,
- *    `-window.scrollY`) is the correct, standard compensation so both
- *    captures line up regardless of where the page happens to be scrolled.
- *    `windowHeight` is also set to the element's own full height so
- *    html2canvas's offscreen render frame always has room to lay out the
- *    entire element, not just whatever fits in the current browser window.
- *
- * 2. Full-width pages that never shrink below the preview - the image is
- *    always scaled to fill the printable WIDTH exactly, matching what you
- *    see on screen. Content taller than one A4 page is sliced across
- *    additional pages instead of being shrunk to fit a single page's
- *    height (that shrinking is what made the downloaded CV look narrower
- *    than the preview).
- */
-const captureElementToPage = async (
-  pdf,
-  element,
-  waitMs = 500,
-  marginX = 1.5,
-  marginY = 1.5,
-) => {
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-
-  const originalWidth = element.style.width;
-  element.style.width = "760px";
+/* Language row: EN label | rating | AR label - same 3-column grid as
+   Row3/CheckRow so divider lines stay aligned with the tables above it. */
+const LanguageRow = ({ en, ar, rating, last, cols = "125px 1fr 140px" }) => (
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: cols,
+      ...(last ? {} : { borderBottom: "1px solid #000" }),
+    }}
+  >
+    <div style={css.rowLabel}>{en}</div>
+    <div style={css.rowValueBold}>{rating || "—"}</div>
+    <div style={css.rowAr}>{ar}</div>
+  </div>
+);
 
 /* Backend-driven partner header banner, used identically on both page 1
    and page 2 - only the image url, alt text and load handlers differ. */
@@ -592,36 +462,35 @@ const captureElementCanvas = async (element, waitMs = 600) => {
   return canvas;
 };
 
-const addCanvasToPage = (pdf, canvas, ratio, margin) => {
-  const imageWidth = canvas.width * ratio;
-  const imageHeight = canvas.height * ratio;
-  // PNG keeps text and thin borders sharper than JPEG
-  const imageData = canvas.toDataURL("image/png");
-  pdf.addImage(imageData, "PNG", margin, margin, imageWidth, imageHeight);
-};
+/*
+ * Draws a captured canvas onto the PDF always at the full printable WIDTH
+ * (1:1 with the on-screen preview), never shrinking it down to squeeze
+ * onto a single page. Content taller than one page is sliced into
+ * additional pages instead - that's what actually keeps the downloaded
+ * CV's width matching the preview, since scaling to fit BOTH width and
+ * height on one page (the previous approach) is what made tall pages come
+ * out narrower than the preview.
+ */
+const addCanvasAcrossPages = (pdf, canvas, margin) => {
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const printableWidth = pageWidth - margin * 2;
+  const printableHeight = pageHeight - margin * 2;
 
-  const canvasWidth = canvas.width;
-  const canvasHeight = canvas.height;
-
-  const printableWidth = pageWidth - marginX * 2;
-  const printableHeight = pageHeight - marginY * 2;
-
-  // Always fill the printable WIDTH (1:1 with the preview); the height per
-  // page is however many source pixels fit at that width.
-  const ratio = printableWidth / canvasWidth;
+  const ratio = printableWidth / canvas.width;
   const pageCanvasHeight = Math.floor(printableHeight / ratio);
 
   let renderedHeight = 0;
   let isFirstSlice = true;
 
-  while (renderedHeight < canvasHeight) {
+  while (renderedHeight < canvas.height) {
     const sliceHeight = Math.min(
       pageCanvasHeight,
-      canvasHeight - renderedHeight,
+      canvas.height - renderedHeight,
     );
 
     const sliceCanvas = document.createElement("canvas");
-    sliceCanvas.width = canvasWidth;
+    sliceCanvas.width = canvas.width;
     sliceCanvas.height = sliceHeight;
     sliceCanvas
       .getContext("2d")
@@ -629,23 +498,62 @@ const addCanvasToPage = (pdf, canvas, ratio, margin) => {
         canvas,
         0,
         renderedHeight,
-        canvasWidth,
+        canvas.width,
         sliceHeight,
         0,
         0,
-        canvasWidth,
+        canvas.width,
         sliceHeight,
       );
 
-    const imageData = sliceCanvas.toDataURL("image/jpeg", 0.95);
+    // PNG keeps text and thin borders sharper than JPEG
+    const imageData = sliceCanvas.toDataURL("image/png");
     const imageHeight = sliceHeight * ratio;
 
     if (!isFirstSlice) pdf.addPage();
-    pdf.addImage(imageData, "JPEG", marginX, marginY, printableWidth, imageHeight);
+    pdf.addImage(imageData, "PNG", margin, margin, printableWidth, imageHeight);
 
     renderedHeight += sliceHeight;
     isFirstSlice = false;
   }
+};
+
+/**
+ * Measures a DOM node's live rendered height via ResizeObserver.
+ *
+ * Why this exists: the headshot/standing-photo columns are stretched by
+ * flexbox to match their sibling text column's height. Real browsers do
+ * this correctly, but html2canvas's internal re-layout of the cloned tree
+ * does not reliably replicate flex "stretch" for children sized with
+ * percentage heights - the photo column was rendering at its own
+ * (much taller) natural size instead of being cropped to match, which is
+ * exactly the distortion seen in the downloaded PDF. Reading the already-
+ * correct height straight from the live DOM and baking it in as a fixed
+ * pixel value sidesteps html2canvas's flex recalculation entirely, since
+ * captureElementCanvas clones the DOM (inline styles and all) only after
+ * this value has been committed.
+ */
+const useMeasuredHeight = (deps) => {
+  const ref = useRef(null);
+  const [height, setHeight] = useState(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return undefined;
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        setHeight(entry.contentRect.height);
+      }
+    });
+
+    observer.observe(node);
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+
+  return [ref, height];
 };
 
 const CVThree = ({ templateSwitcher }) => {
@@ -660,7 +568,22 @@ const CVThree = ({ templateSwitcher }) => {
   const [worker, setWorker] = useState(null);
   const [partners, setPartners] = useState([]);
   const [selectedPartnerId, setSelectedPartnerId] = useState("");
+  const [selectedCvColor, setSelectedCvColor] = useState(null);
   const [includePassport, setIncludePassport] = useState(true);
+
+  // See useMeasuredHeight's comment for why this exists - matches the
+  // photo columns' height to their sibling text columns explicitly, so
+  // html2canvas's PDF capture doesn't distort the layout.
+  const [detailsColRef, detailsColHeight] = useMeasuredHeight([
+    worker,
+    includePassport,
+    selectedCvColor,
+  ]);
+  const [bodyColRef, bodyColHeight] = useMeasuredHeight([
+    worker,
+    includePassport,
+    selectedCvColor,
+  ]);
 
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -840,11 +763,13 @@ const CVThree = ({ templateSwitcher }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Backend flags whether this CV currently has access granted to the
-  // partner passed as ?partnerId= (the "preview" param) - true only while
-  // that access still exists, so this naturally goes back to false if
-  // access is ever revoked.
-  const alreadySharedWithPartner = Boolean(worker?.already_shared_with_partner);
+  // Backend now returns the real share/revoke status for the worker+partner
+  // pair being previewed (see workerCV.service.js getWorkerCV), replacing
+  // the old best-guess field chain.
+  const alreadySharedWithPartner = Boolean(worker?.shared_with_partner);
+  const isAccessRevoked = Boolean(worker?.access_revoked);
+
+  const isPartnerRole = Number(profile?.role_id) === 3;
 
   // Download only ever builds and saves the PDF - it no longer grants
   // partner access. Still requires a selected partner (for admin/employee)
@@ -876,37 +801,28 @@ const CVThree = ({ templateSwitcher }) => {
 
     try {
       const pdf = new jsPDF("p", "mm", "a4");
+      const margin = 4;
 
-      // Page 1: application + personal data + skills
-      await captureElementToPage(pdf, cvRef.current, 400);
+      // Page 1: application + personal data + skills (+ profile summary
+      // when passport is included, or the language/contact footer when it
+      // is not - see the two layouts rendered below). Always drawn at full
+      // printable width; overflow spills onto extra pages rather than
+      // shrinking below the preview's width.
+      const cvCanvas = await captureElementCanvas(cvRef.current, 400);
+      addCanvasAcrossPages(pdf, cvCanvas, margin);
 
-      // Page 2: previous employment, languages/education, passport scan -
-      // only rendered (and only ref'd) when includePassport is on, so this
-      // is naturally skipped when it's off.
-      if (passportRef.current) {
+      // Page 2 only exists in the passport-included layout: previous
+      // employment, languages/education, passport scan.
+      if (includePassport && passportRef.current) {
+        const passportCanvas = await captureElementCanvas(
+          passportRef.current,
+          800,
+        );
         pdf.addPage();
-        addCanvasToPage(pdf, passportCanvas, fitRatio(passportCanvas), margin);
+        addCanvasAcrossPages(pdf, passportCanvas, margin);
       }
 
       const name = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
-
-      // Grant the selected partner backend access to this worker's CV
-      // (creates/updates the worker_partner_cvs row) — only when an
-      // admin/employee is downloading. If the viewer IS the partner, they
-      // already have access (that's how they got here), and this route is
-      // admin/employee-only server-side, so calling it would 403.
-      if (Number(profile?.role_id) !== 3) {
-        await generateCvForPartner(worker.id, {
-          partnerId: selectedPartnerId,
-        });
-
-        // Keep the local state in sync so the "already shared" indicator
-        // shows up immediately without needing a full refetch.
-        setWorker((previous) => ({
-          ...previous,
-          already_shared_with_partner: true,
-        }));
-      }
 
       // Trigger an actual browser download of the PDF we just built.
       pdf.save(`${name}.pdf`);
@@ -1197,21 +1113,25 @@ const CVThree = ({ templateSwitcher }) => {
           )}
         </div>
 
-        {(Number(profile?.role_id) === 1 ||
-          Number(profile?.role_id) === 2 ||
-          Number(profile?.role_id) === 3) &&
-          selectedPartnerId && (
-            <div className="d-flex flex-column align-items-md-end mt-2">
+        {((Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) &&
+          selectedPartnerId) ||
+        isPartnerRole ? (
+          <div className="d-flex flex-column align-items-md-end mt-3 mt-md-5 gap-2">
+            <div className="d-flex gap-2">
               <button
                 className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
                 onClick={handleDownloadClick}
               >
                 Download CV
               </button>
-              {alreadySharedWithPartner && (
-                <span className="text-success small mt-1">
-                  ✓ Already shared with this partner
-                </span>
+
+              {!isPartnerRole && !alreadySharedWithPartner && (
+                <button
+                  className="btn btn-outline-main px-4 d-flex align-items-center justify-content-center"
+                  onClick={handleLinkClick}
+                >
+                  Link Partner
+                </button>
               )}
             </div>
 
@@ -1245,90 +1165,11 @@ const CVThree = ({ templateSwitcher }) => {
 
       <div className="mb-3 mt-1">{templateSwitcher}</div>
 
-      {Number(profile?.role_id) !== 3 && (
-        <div className="mb-2 d-flex align-items-center flex-wrap gap-3">
-          <select
-            id="cv-three-partner"
-            className="form-select form-select-sm d-inline-block w-auto"
-            value={selectedPartnerId}
-            onChange={handlePartnerChange}
-            style={{
-              borderRadius: 999,
-              fontWeight: 600,
-              fontSize: 13,
-              paddingTop: 4,
-              paddingBottom: 4,
-              paddingLeft: 14,
-              paddingRight: 30,
-              maxWidth: 220,
-              cursor: "pointer",
-            }}
-          >
-            <option value="">Select Partner</option>
-
-            {partners.map((partner) => (
-              <option key={partner.partner_id} value={partner.partner_id}>
-                {getPartnerOptionLabel(partner)}
-              </option>
-            ))}
-          </select>
-
-          <div className="form-check">
-            <input
-              type="checkbox"
-              id="cv-three-include-passport"
-              className="form-check-input"
-              checked={includePassport}
-              onChange={(event) => setIncludePassport(event.target.checked)}
-            />
-            <label
-              className="form-check-label small fw-semibold"
-              htmlFor="cv-three-include-passport"
-            >
-              Include Passport
-            </label>
-          </div>
-        </div>
-      )}
-
-      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-        {/* Page 1: application, passport, personal data, skills, summary */}
-        <div ref={cvRef} style={cvStyle}>
-          {/* Agency banner (Musaned / Al Esnad Almasi logo strip) */}
-          {selectedPartnerHeaderUrl ? (
-            <img
-              src={selectedPartnerHeaderUrl}
-              alt={`${selectedPartner?.full_name || "Partner"} CV Header`}
-              crossOrigin="anonymous"
-              onLoad={handleHeaderLoaded}
-              onError={handleHeaderLoadError}
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "block",
-                marginBottom: 6,
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: "100%",
-                height: 90,
-                marginBottom: 6,
-                border: "2px dashed #999",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#999",
-                fontSize: 12,
-              }}
-            >
-              {selectedPartnerId
-                ? "The selected partner does not have a CV header"
-                : "Select a partner above to load the CV header"}
-            </div>
-          )}
-
+      {/* Shared bordered "application" block (headshot + application/passport
+          details, full name, personal data + skills + standing photo).
+          Reused by both layouts below - only the profile summary differs. */}
+      {(() => {
+        const renderApplicationBlock = (showProfileSummary, extraFullWidthContent) => (
           <div style={{ border: "2px solid #000" }}>
             {/* APPLICATION FOR EMPLOYMENT title */}
             <div style={css.titleBar}>APPLICATION FOR EMPLOYMENT</div>
@@ -1475,11 +1316,14 @@ const CVThree = ({ templateSwitcher }) => {
                   />
                 ))}
 
-                {includePassport ? (
-                  /* PROFILE SUMMARY lives inside this same column, so the
-                     standing photo naturally stretches to its bottom edge.
-                     Title and text share one uninterrupted blue block, like
-                     the template, instead of a separate header bar. */
+                {/* PROFILE SUMMARY lives inside this same column, so the
+                    standing photo naturally stretches to its bottom edge.
+                    Title and text share one uninterrupted blue block, like
+                    the template, instead of a separate header bar. Only
+                    rendered in the passport-included layout - the
+                    passport-excluded layout replaces it with the
+                    EXPERIENCE / LANGUAGE section below instead. */}
+                {showProfileSummary && (
                   <div style={css.summaryWrap}>
                     <div style={css.summaryTitle}>
                       <span>PROFILE SUMMARY</span>
@@ -1487,18 +1331,6 @@ const CVThree = ({ templateSwitcher }) => {
                     </div>
                     <div style={css.summaryText}>{profileSummary || "—"}</div>
                   </div>
-                ) : (
-                  /* No passport scan page - Previous Employment and
-                     Languages & Education move up onto page 1 instead, so
-                     the CV still fits on a single page. The standing photo
-                     (right column) stretches to match this taller column. */
-                  <>
-                    <PreviousEmploymentTable entries={previousEmployment} />
-                    <LanguagesEducationTable
-                      languages={languages}
-                      education={education}
-                    />
-                  </>
                 )}
               </div>
 
@@ -1515,52 +1347,275 @@ const CVThree = ({ templateSwitcher }) => {
                 />
               </div>
             </div>
-          </div>
 
-          {!includePassport && (
-            /* Contact/address strip becomes the last thing on the page,
-               directly under the SKILLS & EXPERIENCES column - its bottom
-               lands right where the standing photo ends. */
-            <div style={{ marginTop: 8 }}>
-              <ContactAddressStrip
-                email={agencyEmail}
-                phone={agencyPhone}
-                address={agencyAddress}
-              />
+            {/* Extra full-width content (EXPERIENCE / LANGUAGE, for the
+                passport-excluded layout) stays inside this SAME outer
+                border - matching the sample, which treats the whole page
+                as one continuous table rather than stacked boxes. */}
+            {extraFullWidthContent}
+          </div>
+        );
+
+        return (
+          <div className="d-flex flex-column flex-lg-row align-items-start gap-3">
+            {/* CV preview column - only this column (via cvRef / passportRef)
+                is ever captured for the PDF. The toolbox next to it is UI
+                only and is never captured. */}
+            <div
+              style={{
+                // flex-grow: 0 - the column hugs the CV's actual (fixed)
+                // width instead of stretching to fill all remaining row
+                // space, which was pushing the toolbox far to the right
+                // and leaving a large empty gap between them on desktop.
+                // flex-shrink: 1 (with minWidth: 0) still lets it shrink
+                // and scroll horizontally on narrower viewports.
+                flex: "0 1 auto",
+                minWidth: 0,
+                overflowX: "auto",
+                WebkitOverflowScrolling: "touch",
+              }}
+            >
+              {includePassport ? (
+                <>
+                  {/* Page 1: application, passport, personal data, skills, summary */}
+                  <div ref={cvRef} data-cv-capture style={cvStyle}>
+                    <HeaderBanner
+                      url={selectedPartnerHeaderUrl}
+                      alt={`${selectedPartner?.full_name || "Partner"} CV Header`}
+                      selectedPartnerId={selectedPartnerId}
+                      onLoad={handleHeaderLoaded}
+                      onError={handleHeaderLoadError}
+                      emptyLabel="The selected partner does not have a CV header"
+                    />
+                    {renderApplicationBlock(true)}
+                  </div>
+
+                  {/* Page 2: partner header, previous employment,
+                      languages/education, passport scan */}
+                  <div ref={passportRef} data-cv-capture style={page2Style}>
+                    <HeaderBanner
+                      url={selectedPartnerHeaderTwoUrl}
+                      alt={`${selectedPartner?.full_name || "Partner"} CV Header (Page 2)`}
+                      selectedPartnerId={selectedPartnerId}
+                      onLoad={handleHeaderLoaded}
+                      onError={handleHeaderLoadError}
+                      emptyLabel="The selected partner does not have a second CV header"
+                    />
+
+                    <div style={{ border: "2px solid #000" }}>
+                      {/* PREVIOUS EMPLOYMENT / العمل السابق / COUNTRY WORKED BEFORE
+                          is treated as ONE title block - no divider between the two
+                          lines, matching the template. Both tables below use equal
+                          thirds so their columns line up with each other. */}
+                      <TitleStack
+                        en="PREVIOUS EMPLOYMENT"
+                        ar="العمل السابق"
+                        sub="COUNTRY WORKED BEFORE"
+                      />
+                      {previousEmployment.map((entry, index) =>
+                        entry.isFirstTime ? (
+                          <div key="first-time" style={css.experienceRow}>
+                            FIRST TIME
+                          </div>
+                        ) : (
+                          <div
+                            key={`${entry.country}-${index}`}
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "1fr 1fr 1fr",
+                              borderBottom: "1px solid #000",
+                              textAlign: "center",
+                              fontSize: 12,
+                            }}
+                          >
+                            <div
+                              style={{
+                                padding: "3px 6px",
+                                fontWeight: "bold",
+                                color: "#c0392b",
+                                borderRight: "1px solid #000",
+                              }}
+                            >
+                              {(entry.country ?? "").toUpperCase()}
+                            </div>
+                            <div
+                              style={{
+                                padding: "3px 6px",
+                                borderRight: "1px solid #000",
+                              }}
+                            >
+                              {entry.years ?? ""}
+                            </div>
+                            <div
+                              style={{
+                                padding: "3px 6px",
+                                fontWeight: "bold",
+                                color: "#c0392b",
+                              }}
+                            >
+                              YEAR
+                            </div>
+                          </div>
+                        ),
+                      )}
+
+                      <SectionBar en="LANGUAGES & EDUCATION" ar="اللغات والتعليم" />
+                      {languages.map((language, index) => (
+                        <CheckRow
+                          key={language.en}
+                          en={language.en}
+                          checked={language.checked}
+                          ar={language.ar}
+                          last={false}
+                          cols="1fr 1fr 1fr"
+                        />
+                      ))}
+                      <Row3
+                        label="Education (Course)"
+                        value={education}
+                        arLabel="دورة تعليم"
+                        boldValue
+                        last
+                        cols="1fr 1fr 1fr"
+                      />
+                    </div>
+
+                    {/* Passport scan - its own bordered box, separate from the
+                        Previous Employment / Languages table above it */}
+                    <div
+                      style={{
+                        border: "2px solid #000",
+                        padding: 10,
+                        marginTop: 12,
+                      }}
+                    >
+                      {worker.passport_scan_url ? (
+                        <img
+                          src={worker.passport_scan_url}
+                          alt="Passport Scan"
+                          crossOrigin="anonymous"
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            display: "block",
+                            border: "1px solid #999",
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: 200,
+                            background: "#ddd",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 13,
+                            color: "#999",
+                          }}
+                        >
+                          No passport scan available
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Spacer row between the passport scan and the footer logo.
+                        It has no top/bottom border of its own - the passport box's
+                        bottom border above and the footer box's top border below
+                        serve as its top/bottom edges, so only the left/right sides
+                        are drawn here. ~1.5cm tall, same width as the boxes above
+                        and below so everything stays aligned. Holds the agency's
+                        hard-coded contact email, centered. */}
+                    <div
+                      style={{
+                        borderLeft: "2px solid #000",
+                        borderRight: "2px solid #000",
+                        height: "1.5cm",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "#1a56db",
+                          textDecoration: "underline",
+                          fontWeight: "bold",
+                          fontSize: 13,
+                        }}
+                      >
+                        aletesalat.eth.agency@gmail.com
+                      </span>
+                    </div>
+
+                    {/* CV footer - the agency's ALETESALAT logo strip, imported as a
+                        static asset (not per-worker/per-partner data). Same border
+                        treatment as the passport box above, sitting flush against
+                        the spacer row. */}
+                    <div
+                      style={{
+                        border: "2px solid #000",
+                        padding: 10,
+                        textAlign: "center",
+                      }}
+                    >
+                      <img
+                        src={cvFooterLogo}
+                        alt="Agency footer"
+                        style={{
+                          maxWidth: "100%",
+                          height: "auto",
+                          display: "inline-block",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* Passport-excluded layout: a single A4 page - application,
+                   personal data, skills and standing photo (shared block
+                   above), followed by a compact EXPERIENCE line and a
+                   LANGUAGE rating table, and a plain contact footer, instead
+                   of the profile summary / previous employment / passport
+                   scan / footer logo used in the passport-included layout. */
+                <div ref={cvRef} data-cv-capture style={cvStyle}>
+                  <HeaderBanner
+                    url={selectedPartnerHeaderUrl}
+                    alt={`${selectedPartner?.full_name || "Partner"} CV Header`}
+                    selectedPartnerId={selectedPartnerId}
+                    onLoad={handleHeaderLoaded}
+                    onError={handleHeaderLoadError}
+                    emptyLabel="The selected partner does not have a CV header"
+                  />
+                  {renderApplicationBlock(
+                    false,
+                    <>
+                      <SectionBar en="EXPERIENCE" ar="الخبرة" />
+                      <div style={css.experienceRow}>{experienceLine}</div>
+
+                      <SectionBar en="LANGUAGE" ar="اللغة" />
+                      {languageRatings.map((language, index) => (
+                        <LanguageRow
+                          key={language.en}
+                          en={language.en}
+                          ar={language.ar}
+                          rating={language.rating}
+                          last={index === languageRatings.length - 1}
+                        />
+                      ))}
+                    </>,
+                  )}
+
+                  <div style={css.noPassportFooter}>
+                    {agencyPhone && <div>{agencyPhone}</div>}
+                    {agencyEmail && <div>{agencyEmail}</div>}
+                    {agencyAddress && (
+                      <div style={{ direction: "rtl" }}>{agencyAddress}</div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-
-        {/* Page 2: previous employment, languages/education, passport scan -
-            only rendered when includePassport is on. */}
-        {includePassport && (
-        <div
-          ref={passportRef}
-          style={{
-            width: 760,
-            minWidth: 760,
-            marginTop: 24,
-            background: "#fff",
-            fontFamily: FONT,
-          }}
-        >
-          {/* Agency contact strip - email / tel on the left, street address
-              (Arabic) on the right, as its own bordered box above the
-              Previous Employment table. */}
-          <ContactAddressStrip
-            email={agencyEmail}
-            phone={agencyPhone}
-            address={agencyAddress}
-          />
-
-          <div style={{ border: "2px solid #000" }}>
-            {/* PREVIOUS EMPLOYMENT / العمل السابق / COUNTRY WORKED BEFORE
-                is treated as ONE title block - no divider between the two
-                lines, matching the template. Both tables below use equal
-                thirds so their columns line up with each other. */}
-            <PreviousEmploymentTable entries={previousEmployment} />
-            <LanguagesEducationTable languages={languages} education={education} />
-          </div>
 
             {/* Toolbox column - UI only, never captured for the PDF. Stacks
                 below the preview on narrow screens instead of shrinking the
@@ -1585,60 +1640,8 @@ const CVThree = ({ templateSwitcher }) => {
               </div>
             )}
           </div>
-
-          {/* Spacer row between the passport scan and the footer logo.
-              It has no top/bottom border of its own - the passport box's
-              bottom border above and the footer box's top border below
-              serve as its top/bottom edges, so only the left/right sides
-              are drawn here. ~1.5cm tall, same width as the boxes above
-              and below so everything stays aligned. Holds the agency's
-              hard-coded contact email, centered. */}
-          <div
-            style={{
-              borderLeft: "2px solid #000",
-              borderRight: "2px solid #000",
-              height: "1.5cm",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <span
-              style={{
-                color: "#1a56db",
-                textDecoration: "underline",
-                fontWeight: "bold",
-                fontSize: 13,
-              }}
-            >
-              aletesalat.eth.agency@gmail.com
-            </span>
-          </div>
-
-          {/* CV footer - the agency's ALETESALAT logo strip, imported as a
-              static asset (not per-worker/per-partner data). Same border
-              treatment as the passport box above, sitting flush against
-              the spacer row. */}
-          <div
-            style={{
-              border: "2px solid #000",
-              padding: 10,
-              textAlign: "center",
-            }}
-          >
-            <img
-              src={cvFooterLogo}
-              alt="Agency footer"
-              style={{
-                maxWidth: "100%",
-                height: "auto",
-                display: "inline-block",
-              }}
-            />
-          </div>
-        </div>
-        )}
-      </div>
+        );
+      })()}
     </div>
   );
 };
