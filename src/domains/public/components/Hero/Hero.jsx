@@ -45,10 +45,44 @@ const ROUTES = [
   },
 ];
 
-// The plane loops along this route (Addis Ababa -> Amman, the farthest and
-// most visually prominent leg) — same path string as the drawn SVG path,
-// duplicated here as the CSS offset-path motion track.
-const FLIGHT_PATH = "M96,566 Q176,322 268,196";
+// The plane loops along one continuous journey — Addis Ababa -> Amman ->
+// Riyadh -> Kuwait City -> Dubai -> back to Addis Ababa — so it visits
+// every destination instead of only the Amman leg. The first leg reuses
+// its hand-tuned control point from ROUTES; the legs between destinations
+// get a gentle perpendicular bow so the whole trip reads as one smooth
+// flight, and the return leg arcs south of all routes so the loop closes
+// seamlessly (the plane flies home instead of teleporting back to start).
+const buildFlightPath = () => {
+  const segments = [`M${ORIGIN.x},${ORIGIN.y}`];
+
+  ROUTES.forEach((route, index) => {
+    const from = index === 0 ? ORIGIN : ROUTES[index - 1].node;
+    const to = route.node;
+    let control;
+
+    if (index === 0) {
+      control = route.control;
+    } else {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const length = Math.hypot(dx, dy) || 1;
+      const bow = length * 0.22;
+      control = {
+        x: +((from.x + to.x) / 2 + (-dy / length) * bow).toFixed(1),
+        y: +((from.y + to.y) / 2 + (dx / length) * bow).toFixed(1),
+      };
+    }
+
+    segments.push(`Q${control.x},${control.y} ${to.x},${to.y}`);
+  });
+
+  // Return leg home (Dubai -> Addis Ababa), arcing below all routes.
+  segments.push(`Q300,640 ${ORIGIN.x},${ORIGIN.y}`);
+
+  return segments.join(" ");
+};
+
+const FLIGHT_PATH = buildFlightPath();
 
 function Hero() {
   return (
@@ -85,7 +119,7 @@ function Hero() {
                 height="14"
                 aria-hidden="true"
               >
-                <path d="M1 8l13-6-4 6 4 6-13-6z" fill="currentColor" />
+                <path d="M15 8l-13-6 4 6-4 6 13-6z" fill="currentColor" />
               </svg>
             </a>
             <a href="#about" className={styles.btnSecondary}>
@@ -208,7 +242,8 @@ function FlightRoutes() {
         {ORIGIN.label}
       </text>
 
-      {/* Looping plane, flown along the Addis Ababa -> Amman leg */}
+      {/* Looping plane, flown along the full journey Addis Ababa -> Amman ->
+          Riyadh -> Kuwait City -> Dubai -> home to Addis Ababa */}
       <g
         className={styles.plane}
         style={{ offsetPath: `path("${FLIGHT_PATH}")` }}
