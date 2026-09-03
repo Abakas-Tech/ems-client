@@ -61,10 +61,10 @@ const FONT = "Arial, Helvetica, sans-serif";
 const COLOR_OPTIONS = [
   { name: "Blue", value: BLUE },
   { name: "Red", value: RED },
-  { name: "Green", value: "#2E7D32" },
+  { name: "Green", value: "#9BBA58" },
   { name: "Purple", value: "#6A1B9A" },
   { name: "Teal", value: "#00796B" },
-  { name: "Navy", value: "#1B2A4A" },
+  { name: "Navy", value: "#001F5F" },
 ];
 
 /* Fixed capture / preview width. Must stay identical between what the
@@ -86,7 +86,7 @@ const css = {
     fontWeight: "bold",
     fontSize: 15,
     textAlign: "center",
-    padding: "5px 8px",
+    padding: "4px 8px",
     borderBottom: "1px solid #000",
   },
   sectionBar: {
@@ -95,9 +95,9 @@ const css = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    gap: 22,
+    gap: 18,
     fontSize: 13,
-    padding: "4px 8px",
+    padding: "3px 8px",
     borderTop: "1px solid #000",
     borderBottom: "1px solid #000",
     textAlign: "center",
@@ -108,7 +108,7 @@ const css = {
     background: "var(--cv-theme-color)",
     color: "#fff",
     textAlign: "center",
-    padding: "4px 8px 6px",
+    padding: "3px 8px 5px",
     borderTop: "1px solid #000",
     borderBottom: "1px solid #000",
   },
@@ -123,23 +123,23 @@ const css = {
   titleStackSub: {
     fontSize: 13,
     fontWeight: "bold",
-    marginTop: 3,
+    marginTop: 2,
   },
   rowLabel: {
-    padding: "3px 6px",
+    padding: "2px 5px",
     fontWeight: "bold",
     fontSize: 12,
     borderRight: "1px solid #000",
   },
   rowValue: {
-    padding: "3px 6px",
+    padding: "2px 5px",
     fontSize: 12,
     borderRight: "1px solid #000",
     display: "flex",
     alignItems: "center",
   },
   rowValueBold: {
-    padding: "3px 6px",
+    padding: "2px 5px",
     fontSize: 12,
     fontWeight: "bold",
     color: "#c0392b",
@@ -148,7 +148,7 @@ const css = {
     alignItems: "center",
   },
   rowAr: {
-    padding: "3px 6px",
+    padding: "2px 5px",
     fontSize: 12,
     fontWeight: "bold",
     textAlign: "right",
@@ -166,7 +166,7 @@ const css = {
     borderBottom: "1px solid #000",
   },
   fullNameLabel: {
-    padding: "5px 8px",
+    padding: "3px 8px",
     fontWeight: "bold",
     fontSize: 13,
     background: "var(--cv-theme-color)",
@@ -174,7 +174,7 @@ const css = {
     borderRight: "1px solid #000",
   },
   fullNameValue: {
-    padding: "5px 8px",
+    padding: "3px 8px",
     fontWeight: "bold",
     fontSize: 14,
     textAlign: "center",
@@ -183,7 +183,7 @@ const css = {
     borderRight: "1px solid #000",
   },
   fullNameAr: {
-    padding: "5px 8px",
+    padding: "3px 8px",
     fontWeight: "bold",
     fontSize: 13,
     textAlign: "right",
@@ -193,12 +193,12 @@ const css = {
     background: "var(--cv-theme-color)",
     color: "#fff",
     textAlign: "center",
-    padding: "10px 18px 16px",
+    padding: "7px 14px 10px",
     flex: 1,
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    gap: 8,
+    gap: 6,
     borderTop: "1px solid #000",
   },
   summaryTitle: {
@@ -212,22 +212,22 @@ const css = {
   summaryText: {
     fontWeight: "bold",
     fontSize: 13,
-    lineHeight: 1.7,
+    lineHeight: 1.5,
   },
   /* No-passport layout: plain centered contact footer (phone/email/address),
      matching the sample's simple text strip instead of a bordered box. */
   noPassportFooter: {
     textAlign: "center",
-    padding: "10px 12px",
+    padding: "7px 10px",
     fontSize: 12,
     fontWeight: "bold",
     color: "var(--cv-theme-color)",
-    lineHeight: 1.8,
+    lineHeight: 1.5,
   },
   /* No-passport layout: a full-width descriptive bar for prior experience,
      styled like the existing "FIRST TIME" row used on page 2. */
   experienceRow: {
-    padding: "6px 6px",
+    padding: "4px 5px",
     borderBottom: "1px solid #000",
     textAlign: "center",
     fontSize: 12,
@@ -298,10 +298,10 @@ const CheckRow = ({ en, checked, ar, last, cols = "125px 1fr 140px" }) => (
     <div style={css.rowLabel}>{en}</div>
     <div
       style={{
-        padding: "3px 6px",
+        padding: "2px 5px",
         textAlign: "center",
         fontWeight: "bold",
-        fontSize: 14,
+        fontSize: 13,
         color: checked ? "#1f7a3d" : "#b5231b",
         borderRight: "1px solid #000",
       }}
@@ -394,9 +394,10 @@ const HeaderBanner = ({
         onError={onError}
         style={{
           width: "100%",
-          height: "auto",
+          maxHeight: 120,
+          objectFit: "contain",
           display: "block",
-          marginBottom: 6,
+          margin: "0 auto 4px",
         }}
       />
     ) : (
@@ -471,12 +472,91 @@ const captureElementCanvas = async (element, waitMs = 600) => {
   return canvas;
 };
 
-const addCanvasToPage = (pdf, canvas, ratio, margin) => {
-  const imageWidth = canvas.width * ratio;
-  const imageHeight = canvas.height * ratio;
-  // PNG keeps text and thin borders sharper than JPEG
-  const imageData = canvas.toDataURL("image/png");
-  pdf.addImage(imageData, "PNG", margin, margin, imageWidth, imageHeight);
+/* Adds a captured CV page to the PDF so that EVERY page is filled edge to
+   edge at FULL printable width - the same width the preview shows. If the
+   capture is taller than one A4 page, the overflow continues on an extra
+   page. Exception: when the overflow is just a small trailing sliver (a CV
+   page is often only a few percent taller than A4, which used to spill onto
+   a nearly-empty trailing page), the capture is squeezed VERTICALLY - never
+   narrowed - by that small percentage, spread evenly across the pages, so
+   no page ends up with an empty strip on the right and no near-empty
+   trailing page is emitted. The squeeze is bounded by
+   OVERFLOW_ABSORB_TOLERANCE; anything larger is real overflow and is sliced
+   onto extra pages at exact full width instead. */
+const OVERFLOW_ABSORB_TOLERANCE = 0.22; // absorb last-page overflow up to 22% of a page
+
+const addCanvasToPages = (pdf, canvas, margin) => {
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const printableWidth = pageWidth - margin * 2;
+  const printableHeight = pageHeight - margin * 2;
+
+  // Scale where the captured width exactly fills the printable width. This
+  // never changes, so the PDF always uses the full page width.
+  const fullWidthScale = printableWidth / canvas.width;
+  // How many canvas pixels fit on one PDF page at that scale.
+  const fullPageCapacity = printableHeight / fullWidthScale;
+
+  let pageCount = Math.ceil(canvas.height / fullPageCapacity);
+
+  // Canvas pixels consumed by each page's band. Normally exactly one page's
+  // worth; while absorbing, the same content is spread over one page fewer
+  // and each band is drawn slightly vertically compressed into the full
+  // page height instead.
+  let bandCapacity = fullPageCapacity;
+
+  if (pageCount > 1) {
+    const lastPageFraction =
+      (canvas.height - (pageCount - 1) * fullPageCapacity) / fullPageCapacity;
+    if (lastPageFraction <= OVERFLOW_ABSORB_TOLERANCE) {
+      pageCount -= 1;
+      bandCapacity = canvas.height / pageCount;
+    }
+  }
+
+  for (let page = 0; page < pageCount; page++) {
+    if (page > 0) pdf.addPage();
+
+    const offset = page * bandCapacity;
+    const sourceSliceHeight = Math.min(bandCapacity, canvas.height - offset);
+    // Each band is drawn into the FULL page height (a slight vertical
+    // compression while absorbing; a no-op 1:1 draw otherwise).
+    const destSliceHeight = Math.min(
+      fullPageCapacity,
+      sourceSliceHeight * (fullPageCapacity / bandCapacity),
+    );
+
+    // Slice just this page's band out of the full capture (white-filled so
+    // a short final page has no transparent strip).
+    const slice = document.createElement("canvas");
+    slice.width = canvas.width;
+    slice.height = Math.ceil(destSliceHeight);
+    const context = slice.getContext("2d");
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, slice.width, slice.height);
+    context.drawImage(
+      canvas,
+      0,
+      offset,
+      canvas.width,
+      sourceSliceHeight,
+      0,
+      0,
+      canvas.width,
+      destSliceHeight,
+    );
+
+    // PNG keeps text and thin borders sharper than JPEG. The drawn width is
+    // ALWAYS the full printable width, on every page, in every case.
+    pdf.addImage(
+      slice.toDataURL("image/png"),
+      "PNG",
+      margin,
+      margin,
+      canvas.width * fullWidthScale,
+      destSliceHeight * fullWidthScale,
+    );
+  }
 };
 
 /**
@@ -732,6 +812,13 @@ const CVThree = ({ templateSwitcher }) => {
 
   const isPartnerRole = Number(profile?.role_id) === 3;
 
+  // Action cluster (download/link buttons + share status) - shown for
+  // admin/employee with a selected partner, and for partners themselves.
+  const showActionCluster =
+    ((Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) &&
+      selectedPartnerId) ||
+    isPartnerRole;
+
   // Download only ever builds and saves the PDF - it no longer grants
   // partner access. Still requires a selected partner (for admin/employee)
   // since the CV header image comes from that partner and is part of the
@@ -764,32 +851,17 @@ const CVThree = ({ templateSwitcher }) => {
       const pdf = new jsPDF("p", "mm", "a4");
       const margin = 4;
 
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const printableWidth = pageWidth - margin * 2;
-      const printableHeight = pageHeight - margin * 2;
-
-      // Fit each page to the printable width, only shrinking further if
-      // that specific page's content is taller than the page. Computed
-      // independently per page - a tall page 2 must never shrink page 1
-      // below full width (that previously left the CV looking unnaturally
-      // small with unused margins).
-      const fitRatio = (canvas) => {
-        const widthRatio = printableWidth / canvas.width;
-        const renderedHeight = canvas.height * widthRatio;
-        if (renderedHeight > printableHeight) {
-          return Math.min(widthRatio, printableHeight / canvas.height);
-        }
-        return widthRatio;
-      };
-
+      // Every captured page is added at FULL printable width - the same
+      // width the preview shows. When a captured page is taller than one
+      // A4 page, the overflow continues on an extra PDF page instead of
+      // shrinking the CV below full width.
       // Page 1: application + personal data + skills (+ profile summary
-      // when passport is included, or the language/contact footer when it
+      // when passport is included, or experience/language/address when it
       // is not - see the two layouts rendered below).
       const cvCanvas = await captureElementCanvas(cvRef.current, 400);
-      addCanvasToPage(pdf, cvCanvas, fitRatio(cvCanvas), margin);
+      addCanvasToPages(pdf, cvCanvas, margin);
 
-      // Page 2 only exists in the passport-included layout: previous
+      // Next page(s) only exist in the passport-included layout: previous
       // employment, languages/education, passport scan.
       if (includePassport && passportRef.current) {
         const passportCanvas = await captureElementCanvas(
@@ -797,7 +869,7 @@ const CVThree = ({ templateSwitcher }) => {
           800,
         );
         pdf.addPage();
-        addCanvasToPage(pdf, passportCanvas, fitRatio(passportCanvas), margin);
+        addCanvasToPages(pdf, passportCanvas, margin);
       }
 
       const name = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
@@ -1060,7 +1132,7 @@ const CVThree = ({ templateSwitcher }) => {
     color: "#000",
     boxSizing: "border-box",
     border: "2px solid #000",
-    padding: 6,
+    padding: 4,
     transform: "none",
     zoom: 1,
     "--cv-theme-color": themeColor,
@@ -1093,58 +1165,7 @@ const CVThree = ({ templateSwitcher }) => {
             <BackButton onClick={() => navigate(-1)} />
           )}
         </div>
-
-        {((Number(profile?.role_id) === 1 || Number(profile?.role_id) === 2) &&
-          selectedPartnerId) ||
-        isPartnerRole ? (
-          <div className="d-flex flex-column align-items-md-end mt-3 mt-md-5 gap-2">
-            <div className="d-flex gap-2">
-              <button
-                className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
-                onClick={handleDownloadClick}
-              >
-                Download CV
-              </button>
-
-              {!isPartnerRole && !alreadySharedWithPartner && (
-                <button
-                  className="btn btn-outline-main px-4 d-flex align-items-center justify-content-center"
-                  onClick={handleLinkClick}
-                >
-                  Link Partner
-                </button>
-              )}
-            </div>
-
-            {!isPartnerRole && alreadySharedWithPartner && (
-              <>
-                <span className="text-success small mt-1">
-                  ✓ Already shared with this partner
-                </span>
-
-                <div className="form-check form-switch">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="cv-three-revoke-toggle"
-                    checked={!isAccessRevoked}
-                    onChange={handleToggleAccess}
-                  />
-                  <label
-                    className="form-check-label small"
-                    htmlFor="cv-three-revoke-toggle"
-                  >
-                    {isAccessRevoked ? "Access revoked" : "Partner has access"}
-                  </label>
-                </div>
-              </>
-            )}
-          </div>
-        ) : null}
       </div>
-
-      <div className="mb-3 mt-1">{templateSwitcher}</div>
 
       {/* Shared bordered "application" block (headshot + application/passport
           details, full name, personal data + skills + standing photo).
@@ -1152,7 +1173,7 @@ const CVThree = ({ templateSwitcher }) => {
       {(() => {
         const renderApplicationBlock = (
           showProfileSummary,
-          extraFullWidthContent,
+          extraColumnContent,
         ) => (
           <div style={{ border: "2px solid #000" }}>
             {/* APPLICATION FOR EMPLOYMENT title */}
@@ -1298,7 +1319,11 @@ const CVThree = ({ templateSwitcher }) => {
                     en={skill.en}
                     checked={skill.checked}
                     ar={skill.ar}
-                    last={index === skills.length - 1 && !showProfileSummary}
+                    last={
+                      index === skills.length - 1 &&
+                      !showProfileSummary &&
+                      !extraColumnContent
+                    }
                   />
                 ))}
 
@@ -1318,6 +1343,12 @@ const CVThree = ({ templateSwitcher }) => {
                     <div style={css.summaryText}>{profileSummary || "—"}</div>
                   </div>
                 )}
+
+                {/* Passport-excluded layout: EXPERIENCE / LANGUAGE / contact
+                    address stack here, at the bottom of this column, so the
+                    standing photo (stretched to this column's height) ends
+                    exactly at the address's last line. */}
+                {extraColumnContent}
               </div>
 
               <div
@@ -1333,17 +1364,14 @@ const CVThree = ({ templateSwitcher }) => {
                 />
               </div>
             </div>
-
-            {/* Extra full-width content (EXPERIENCE / LANGUAGE, for the
-                passport-excluded layout) stays inside this SAME outer
-                border - matching the sample, which treats the whole page
-                as one continuous table rather than stacked boxes. */}
-            {extraFullWidthContent}
           </div>
         );
 
         return (
-          <div className="d-flex flex-column flex-lg-row align-items-start gap-3">
+          <div
+            className="d-flex flex-column flex-lg-row align-items-start gap-3"
+            style={{ marginTop: -30 }}
+          >
             {/* CV preview column - only this column (via cvRef / passportRef)
                 is ever captured for the PDF. The toolbox next to it is UI
                 only and is never captured. */}
@@ -1361,6 +1389,64 @@ const CVThree = ({ templateSwitcher }) => {
                 WebkitOverflowScrolling: "touch",
               }}
             >
+              {/* Action cluster lives directly above the CV instead of in
+                  the page header, so it never stretches the header row and
+                  leaves a large empty gap above the preview. When it is
+                  hidden the CV simply sits at the normal position. */}
+              {showActionCluster && (
+                <div className="d-flex flex-column align-items-end gap-2 mb-2">
+                  <div className="d-flex gap-2">
+                    <button
+                      className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
+                      onClick={handleDownloadClick}
+                    >
+                      Download CV
+                    </button>
+
+                    {!isPartnerRole && !alreadySharedWithPartner && (
+                      <button
+                        className="btn btn-outline-main px-4 d-flex align-items-center justify-content-center"
+                        onClick={handleLinkClick}
+                      >
+                        Link Partner
+                      </button>
+                    )}
+                  </div>
+
+                  {!isPartnerRole && alreadySharedWithPartner && (
+                    <>
+                      {/* Only shown while the partner actually has access -
+                          when access is revoked only the toggle below stays
+                          visible so access can be restored. */}
+                      {!isAccessRevoked && (
+                        <span className="text-success small">
+                          ✓ Already shared with this partner
+                        </span>
+                      )}
+
+                      <div className="form-check form-switch mb-0">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          role="switch"
+                          id="cv-three-revoke-toggle"
+                          checked={!isAccessRevoked}
+                          onChange={handleToggleAccess}
+                        />
+                        <label
+                          className="form-check-label small"
+                          htmlFor="cv-three-revoke-toggle"
+                        >
+                          {isAccessRevoked
+                            ? "Access revoked"
+                            : "Partner has access"}
+                        </label>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
               {includePassport ? (
                 <>
                   {/* Page 1: application, passport, personal data, skills, summary */}
@@ -1416,7 +1502,7 @@ const CVThree = ({ templateSwitcher }) => {
                           >
                             <div
                               style={{
-                                padding: "3px 6px",
+                                padding: "2px 5px",
                                 fontWeight: "bold",
                                 color: "#c0392b",
                                 borderRight: "1px solid #000",
@@ -1426,7 +1512,7 @@ const CVThree = ({ templateSwitcher }) => {
                             </div>
                             <div
                               style={{
-                                padding: "3px 6px",
+                                padding: "2px 5px",
                                 borderRight: "1px solid #000",
                               }}
                             >
@@ -1434,7 +1520,7 @@ const CVThree = ({ templateSwitcher }) => {
                             </div>
                             <div
                               style={{
-                                padding: "3px 6px",
+                                padding: "2px 5px",
                                 fontWeight: "bold",
                                 color: "#c0392b",
                               }}
@@ -1474,8 +1560,8 @@ const CVThree = ({ templateSwitcher }) => {
                     <div
                       style={{
                         border: "2px solid #000",
-                        padding: 10,
-                        marginTop: 12,
+                        padding: 8,
+                        marginTop: 8,
                       }}
                     >
                       {worker.passport_scan_url ? (
@@ -1484,9 +1570,10 @@ const CVThree = ({ templateSwitcher }) => {
                           alt="Passport Scan"
                           crossOrigin="anonymous"
                           style={{
-                            width: "100%",
-                            height: "auto",
                             display: "block",
+                            margin: "0 auto",
+                            maxWidth: "100%",
+                            maxHeight: 450,
                             border: "1px solid #999",
                           }}
                         />
@@ -1512,14 +1599,14 @@ const CVThree = ({ templateSwitcher }) => {
                         It has no top/bottom border of its own - the passport box's
                         bottom border above and the footer box's top border below
                         serve as its top/bottom edges, so only the left/right sides
-                        are drawn here. ~1.5cm tall, same width as the boxes above
+                        are drawn here. ~0.8cm tall, same width as the boxes above
                         and below so everything stays aligned. Holds the agency's
                         hard-coded contact email, centered. */}
                     <div
                       style={{
                         borderLeft: "2px solid #000",
                         borderRight: "2px solid #000",
-                        height: "1.5cm",
+                        height: "0.8cm",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -1544,7 +1631,7 @@ const CVThree = ({ templateSwitcher }) => {
                     <div
                       style={{
                         border: "2px solid #000",
-                        padding: 10,
+                        padding: 8,
                         textAlign: "center",
                       }}
                     >
@@ -1592,16 +1679,26 @@ const CVThree = ({ templateSwitcher }) => {
                           last={index === languageRatings.length - 1}
                         />
                       ))}
+
+                      {/* Contact / address block - the last element of the
+                          column, so its final line aligns with the bottom
+                          edge of the standing photo next to it. */}
+                      <div
+                        style={{
+                          ...css.noPassportFooter,
+                          borderTop: "1px solid #000",
+                        }}
+                      >
+                        {agencyPhone && <div>{agencyPhone}</div>}
+                        {agencyEmail && <div>{agencyEmail}</div>}
+                        {agencyAddress && (
+                          <div style={{ direction: "rtl" }}>
+                            {agencyAddress}
+                          </div>
+                        )}
+                      </div>
                     </>,
                   )}
-
-                  <div style={css.noPassportFooter}>
-                    {agencyPhone && <div>{agencyPhone}</div>}
-                    {agencyEmail && <div>{agencyEmail}</div>}
-                    {agencyAddress && (
-                      <div style={{ direction: "rtl" }}>{agencyAddress}</div>
-                    )}
-                  </div>
                 </div>
               )}
             </div>

@@ -483,7 +483,7 @@ const ActiveWorkers = () => {
           </div>
           {/* In Application Generator preview mode, only Cancel/Download/Share
               should show — Add Employee is hidden while visaPreview is set. */}
-          {!visaPreview && (
+          {!visaPreview && role !== 3 && (
             <button
               type="button"
               className="btn btn-main text-nowrap align-self-end"
