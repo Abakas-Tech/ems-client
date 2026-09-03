@@ -307,6 +307,115 @@ const CheckRow = ({ en, checked, ar, last, cols = "125px 1fr 140px" }) => (
   </div>
 );
 
+/* PREVIOUS EMPLOYMENT / COUNTRY WORKED BEFORE table. Lives on page 2
+   when the passport scan is included, but moves onto the bottom of page 1
+   (inside the SKILLS & EXPERIENCES column) when it's excluded - extracted
+   so both layouts render the exact same markup. */
+const PreviousEmploymentTable = ({ entries }) => (
+  <>
+    <TitleStack
+      en="PREVIOUS EMPLOYMENT"
+      ar="العمل السابق"
+      sub="COUNTRY WORKED BEFORE"
+    />
+    {entries.map((entry, index) =>
+      entry.isFirstTime ? (
+        <div
+          key="first-time"
+          style={{
+            padding: "6px 6px",
+            borderBottom: "1px solid #000",
+            textAlign: "center",
+            fontSize: 12,
+            fontWeight: "bold",
+            color: "#c0392b",
+          }}
+        >
+          FIRST TIME
+        </div>
+      ) : (
+        <div
+          key={`${entry.country}-${index}`}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            borderBottom: "1px solid #000",
+            textAlign: "center",
+            fontSize: 12,
+          }}
+        >
+          <div
+            style={{
+              padding: "3px 6px",
+              fontWeight: "bold",
+              color: "#c0392b",
+              borderRight: "1px solid #000",
+            }}
+          >
+            {(entry.country ?? "").toUpperCase()}
+          </div>
+          <div style={{ padding: "3px 6px", borderRight: "1px solid #000" }}>
+            {entry.years ?? ""}
+          </div>
+          <div
+            style={{ padding: "3px 6px", fontWeight: "bold", color: "#c0392b" }}
+          >
+            YEAR
+          </div>
+        </div>
+      ),
+    )}
+  </>
+);
+
+/* LANGUAGES & EDUCATION table - same relocation as PreviousEmploymentTable
+   above, and for the same reason (both move to page 1 without the
+   passport scan). */
+const LanguagesEducationTable = ({ languages, education }) => (
+  <>
+    <SectionBar en="LANGUAGES & EDUCATION" ar="اللغات والتعليم" />
+    {languages.map((language) => (
+      <CheckRow
+        key={language.en}
+        en={language.en}
+        checked={language.checked}
+        ar={language.ar}
+        last={false}
+        cols="1fr 1fr 1fr"
+      />
+    ))}
+    <Row3
+      label="Education (Course)"
+      value={education}
+      arLabel="دورة تعليم"
+      boldValue
+      last
+      cols="1fr 1fr 1fr"
+    />
+  </>
+);
+
+/* Agency contact strip - email / tel on one side, street address (Arabic)
+   on the other. Sits above the Previous Employment table on page 2 when
+   the passport scan is included, or as the final block on page 1 (right
+   under the standing photo) when it's excluded. */
+const ContactAddressStrip = ({ email, phone, address }) => (
+  <div style={css.contactHeader}>
+    <div style={css.contactCellEn}>
+      EMAIL
+      <br />
+      {email || "—"}
+      <br />
+      Tell
+      <br />
+      {phone || "—"}
+    </div>
+    <div style={css.contactCellAr}>
+      <div style={css.contactCellArBox}>{address || "—"}</div>
+    </div>
+  </div>
+);
+
 const PhotoBox = ({ url, alt, placeholderLabel }) => (
   <div
     style={{
@@ -460,6 +569,7 @@ const CVThree = ({ templateSwitcher }) => {
   const [worker, setWorker] = useState(null);
   const [partners, setPartners] = useState([]);
   const [selectedPartnerId, setSelectedPartnerId] = useState("");
+  const [includePassport, setIncludePassport] = useState(true);
 
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -643,7 +753,9 @@ const CVThree = ({ templateSwitcher }) => {
       // Page 1: application + personal data + skills
       await captureElementToPage(pdf, cvRef.current, 400);
 
-      // Page 2: previous employment, languages/education, passport scan
+      // Page 2: previous employment, languages/education, passport scan -
+      // only rendered (and only ref'd) when includePassport is on, so this
+      // is naturally skipped when it's off.
       if (passportRef.current) {
         pdf.addPage();
         await captureElementToPage(pdf, passportRef.current, 800);
@@ -869,7 +981,7 @@ const CVThree = ({ templateSwitcher }) => {
       <div className="mb-3 mt-1">{templateSwitcher}</div>
 
       {Number(profile?.role_id) !== 3 && (
-        <div className="mb-2">
+        <div className="mb-2 d-flex align-items-center flex-wrap gap-3">
           <select
             id="cv-three-partner"
             className="form-select form-select-sm d-inline-block w-auto"
@@ -895,6 +1007,22 @@ const CVThree = ({ templateSwitcher }) => {
               </option>
             ))}
           </select>
+
+          <div className="form-check">
+            <input
+              type="checkbox"
+              id="cv-three-include-passport"
+              className="form-check-input"
+              checked={includePassport}
+              onChange={(event) => setIncludePassport(event.target.checked)}
+            />
+            <label
+              className="form-check-label small fw-semibold"
+              htmlFor="cv-three-include-passport"
+            >
+              Include Passport
+            </label>
+          </div>
         </div>
       )}
 
@@ -1073,17 +1201,31 @@ const CVThree = ({ templateSwitcher }) => {
                   />
                 ))}
 
-                {/* PROFILE SUMMARY lives inside this same column, so the
-                    standing photo naturally stretches to its bottom edge.
-                    Title and text share one uninterrupted blue block, like
-                    the template, instead of a separate header bar. */}
-                <div style={css.summaryWrap}>
-                  <div style={css.summaryTitle}>
-                    <span>PROFILE SUMMARY</span>
-                    <span style={css.summaryTitleAr}>ملخص الملف</span>
+                {includePassport ? (
+                  /* PROFILE SUMMARY lives inside this same column, so the
+                     standing photo naturally stretches to its bottom edge.
+                     Title and text share one uninterrupted blue block, like
+                     the template, instead of a separate header bar. */
+                  <div style={css.summaryWrap}>
+                    <div style={css.summaryTitle}>
+                      <span>PROFILE SUMMARY</span>
+                      <span style={css.summaryTitleAr}>ملخص الملف</span>
+                    </div>
+                    <div style={css.summaryText}>{profileSummary || "—"}</div>
                   </div>
-                  <div style={css.summaryText}>{profileSummary || "—"}</div>
-                </div>
+                ) : (
+                  /* No passport scan page - Previous Employment and
+                     Languages & Education move up onto page 1 instead, so
+                     the CV still fits on a single page. The standing photo
+                     (right column) stretches to match this taller column. */
+                  <>
+                    <PreviousEmploymentTable entries={previousEmployment} />
+                    <LanguagesEducationTable
+                      languages={languages}
+                      education={education}
+                    />
+                  </>
+                )}
               </div>
 
               <div style={{ flex: "0 0 400px" }}>
@@ -1095,9 +1237,24 @@ const CVThree = ({ templateSwitcher }) => {
               </div>
             </div>
           </div>
+
+          {!includePassport && (
+            /* Contact/address strip becomes the last thing on the page,
+               directly under the SKILLS & EXPERIENCES column - its bottom
+               lands right where the standing photo ends. */
+            <div style={{ marginTop: 8 }}>
+              <ContactAddressStrip
+                email={agencyEmail}
+                phone={agencyPhone}
+                address={agencyAddress}
+              />
+            </div>
+          )}
         </div>
 
-        {/* Page 2: previous employment, languages/education, passport scan */}
+        {/* Page 2: previous employment, languages/education, passport scan -
+            only rendered when includePassport is on. */}
+        {includePassport && (
         <div
           ref={passportRef}
           style={{
@@ -1111,107 +1268,19 @@ const CVThree = ({ templateSwitcher }) => {
           {/* Agency contact strip - email / tel on the left, street address
               (Arabic) on the right, as its own bordered box above the
               Previous Employment table. */}
-          <div style={css.contactHeader}>
-            <div style={css.contactCellEn}>
-              EMAIL
-              <br />
-              {agencyEmail || "—"}
-              <br />
-              Tell
-              <br />
-              {agencyPhone || "—"}
-            </div>
-            <div style={css.contactCellAr}>
-              <div style={css.contactCellArBox}>{agencyAddress || "—"}</div>
-            </div>
-          </div>
+          <ContactAddressStrip
+            email={agencyEmail}
+            phone={agencyPhone}
+            address={agencyAddress}
+          />
 
           <div style={{ border: "2px solid #000" }}>
             {/* PREVIOUS EMPLOYMENT / العمل السابق / COUNTRY WORKED BEFORE
                 is treated as ONE title block - no divider between the two
                 lines, matching the template. Both tables below use equal
                 thirds so their columns line up with each other. */}
-            <TitleStack
-              en="PREVIOUS EMPLOYMENT"
-              ar="العمل السابق"
-              sub="COUNTRY WORKED BEFORE"
-            />
-            {previousEmployment.map((entry, index) =>
-              entry.isFirstTime ? (
-                <div
-                  key="first-time"
-                  style={{
-                    padding: "6px 6px",
-                    borderBottom: "1px solid #000",
-                    textAlign: "center",
-                    fontSize: 12,
-                    fontWeight: "bold",
-                    color: "#c0392b",
-                  }}
-                >
-                  FIRST TIME
-                </div>
-              ) : (
-                <div
-                  key={`${entry.country}-${index}`}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr 1fr",
-                    borderBottom: "1px solid #000",
-                    textAlign: "center",
-                    fontSize: 12,
-                  }}
-                >
-                  <div
-                    style={{
-                      padding: "3px 6px",
-                      fontWeight: "bold",
-                      color: "#c0392b",
-                      borderRight: "1px solid #000",
-                    }}
-                  >
-                    {(entry.country ?? "").toUpperCase()}
-                  </div>
-                  <div
-                    style={{
-                      padding: "3px 6px",
-                      borderRight: "1px solid #000",
-                    }}
-                  >
-                    {entry.years ?? ""}
-                  </div>
-                  <div
-                    style={{
-                      padding: "3px 6px",
-                      fontWeight: "bold",
-                      color: "#c0392b",
-                    }}
-                  >
-                    YEAR
-                  </div>
-                </div>
-              ),
-            )}
-
-            <SectionBar en="LANGUAGES & EDUCATION" ar="اللغات والتعليم" />
-            {languages.map((language, index) => (
-              <CheckRow
-                key={language.en}
-                en={language.en}
-                checked={language.checked}
-                ar={language.ar}
-                last={false}
-                cols="1fr 1fr 1fr"
-              />
-            ))}
-            <Row3
-              label="Education (Course)"
-              value={education}
-              arLabel="دورة تعليم"
-              boldValue
-              last
-              cols="1fr 1fr 1fr"
-            />
+            <PreviousEmploymentTable entries={previousEmployment} />
+            <LanguagesEducationTable languages={languages} education={education} />
           </div>
 
           {/* Passport scan - its own bordered box, separate from the
@@ -1298,6 +1367,7 @@ const CVThree = ({ templateSwitcher }) => {
             />
           </div>
         </div>
+        )}
       </div>
     </div>
   );
