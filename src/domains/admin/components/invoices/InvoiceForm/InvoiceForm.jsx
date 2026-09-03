@@ -4,7 +4,6 @@ import {
   createInvoice,
   updateInvoice,
   massApplyInvoiceItems,
-  updateInvoiceItem,
   deleteInvoiceItem,
   fetchCustomerOptions,
 } from "../../../api/invoice.api";
@@ -12,10 +11,8 @@ import { listWorkers } from "../../../api/worker.api";
 
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
-import { useDelete } from "../../../../../context/Delete/useDelete.jsx";
 
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
-import Badge from "../../../../../shared/components/Badge/Badge";
 
 const todayIso = () => new Date().toISOString().split("T")[0];
 
@@ -25,14 +22,15 @@ const formatAmount = (value) =>
     maximumFractionDigits: 2,
   });
 
-// Local-only id for items that don't exist in the DB yet (create mode) —
-// mirrors the shape of a saved item so both modes share the same renderer.
-let localItemSeq = 0;
-const nextLocalId = () => `local-${Date.now()}-${localItemSeq++}`;
-
-// Items only ever expose Description (optional) + Amount to the user.
-// Under the hood quantity is always 1 and unit_price === amount, so
-// amount = quantity * unit_price still holds for the backend/reports.
+// As simple as an invoice gets: Customer, Invoice Date, Notes, and one
+// Amount applied to every selected employee. No description, no due
+// date, no discount/VAT — those columns still exist on the backend
+// (always 0/empty from here on) but this page never touches them.
+//
+// `workerIds`, when provided, always wins for resolving who's on the
+// invoice — this is what lets a round trip through Active Employees
+// (add/remove there, then come back) update an invoice already being
+// edited, instead of only being usable for a brand new one.
 const InvoiceForm = ({
   isEditMode = false,
   initialData = null,
@@ -42,39 +40,25 @@ const InvoiceForm = ({
 }) => {
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
-  const { openModal } = useDelete();
   const navigate = useNavigate();
 
   const invoiceId = isEditMode ? initialData?.id : null;
+  const firstItem = isEditMode ? initialData?.items?.[0] : null;
 
-  const [header, setHeader] = useState({
-    customer_user_id: initialData?.customer_user_id || "",
-    invoice_date: initialData?.invoice_date?.split("T")[0] || todayIso(),
-    due_date: initialData?.due_date?.split("T")[0] || "",
-    discount_amount: initialData?.discount_amount || 0,
-    vat_amount: initialData?.vat_amount || 0,
-    notes: initialData?.notes || "",
-  });
-
-  const [items, setItems] = useState(
-    isEditMode && Array.isArray(initialData?.items)
-      ? initialData.items.map((item) => ({ ...item }))
-      : [],
+  const [customerUserId, setCustomerUserId] = useState(
+    initialData?.customer_user_id || "",
   );
+  const [invoiceDate, setInvoiceDate] = useState(
+    initialData?.invoice_date?.split("T")[0] || todayIso(),
+  );
+  const [notes, setNotes] = useState(initialData?.notes || "");
+  const [amount, setAmount] = useState(firstItem?.unit_price ?? "");
 
   const [customers, setCustomers] = useState([]);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // The fixed set of workers this invoice is for — {id, full_name, phone_number}
   const [selectedWorkers, setSelectedWorkers] = useState([]);
   const [loadingWorkers, setLoadingWorkers] = useState(true);
-  // Which of selectedWorkers the next "Apply" targets
-  const [checkedWorkerIds, setCheckedWorkerIds] = useState([]);
-
-  // Mass-apply controls
-  const [massDescription, setMassDescription] = useState("");
-  const [massAmount, setMassAmount] = useState("");
-  const [massDuplicateAction, setMassDuplicateAction] = useState("skip");
 
   useEffect(() => {
     fetchCustomerOptions()
@@ -82,39 +66,37 @@ const InvoiceForm = ({
       .catch(() => setCustomers([]));
   }, []);
 
-  // Resolve the worker set once, on mount: from the passed-in ids (create
-  // mode) or from the invoice's own items (edit mode).
+  // Resolve the worker set: an explicit `workerIds` prop always wins
+  // (covers create mode, and edit mode returning from Active Employees
+  // with an updated selection); otherwise, in edit mode, derive the set
+  // from the invoice's existing items.
   useEffect(() => {
     const resolveWorkers = async () => {
       setLoadingWorkers(true);
       try {
-        if (isEditMode) {
-          const unique = [];
-          const seen = new Set();
-          (initialData?.items || []).forEach((item) => {
-            if (item.user_id && !seen.has(item.user_id)) {
-              seen.add(item.user_id);
-              unique.push({ id: item.user_id, full_name: item.user_full_name });
-            }
-          });
-          setSelectedWorkers(unique);
-          setCheckedWorkerIds(unique.map((w) => w.id));
-          return;
+        let idsToResolve = workerIds && workerIds.length ? workerIds : null;
+
+        if (!idsToResolve && isEditMode) {
+          idsToResolve = Array.from(
+            new Set(
+              (initialData?.items || [])
+                .map((item) => item.user_id)
+                .filter(Boolean),
+            ),
+          );
         }
 
-        if (!workerIds || workerIds.length === 0) {
+        if (!idsToResolve || idsToResolve.length === 0) {
           setSelectedWorkers([]);
           return;
         }
 
         const res = await listWorkers({
-          assignedWorkerIds: workerIds,
+          assignedWorkerIds: idsToResolve,
           page: 1,
-          limit: workerIds.length,
+          limit: idsToResolve.length,
         });
-        const found = res?.data?.items || [];
-        setSelectedWorkers(found);
-        setCheckedWorkerIds(found.map((w) => w.id));
+        setSelectedWorkers(res?.data?.items || []);
       } catch (err) {
         addMessage(false, err.message || "Failed to load selected employees");
       } finally {
@@ -124,191 +106,118 @@ const InvoiceForm = ({
 
     resolveWorkers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [workerIds]);
 
-  const handleHeaderChange = (e) => {
-    const { name, value } = e.target;
-    setHeader((prev) => ({ ...prev, [name]: value }));
+  const handleRemoveWorker = (worker) => {
+    setSelectedWorkers((prev) => prev.filter((w) => w.id !== worker.id));
   };
 
-  const toggleChecked = (id) => {
-    setCheckedWorkerIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
-  };
+  // Jump to Active Employees with the current selection pre-checked so
+  // more can be added (or some deselected) there, then routed straight
+  // back here. Create mode has nothing to "return" to yet, so it silently
+  // saves a draft first — nothing is lost, and it becomes an edit from
+  // that point on.
+  const handleAddEmployee = async () => {
+    let targetInvoiceId = invoiceId;
 
-  // ── Mass apply: create mode does this purely in local state;
-  // edit mode calls the live endpoint and refreshes items from it. ──
-  const handleApplyToChecked = async () => {
-    if (checkedWorkerIds.length === 0) {
-      return addMessage(false, "Select at least one employee first");
-    }
-    if (massAmount === "" || Number(massAmount) < 0 || isNaN(massAmount)) {
-      return addMessage(false, "Amount must be a valid non-negative number");
-    }
+    if (!isEditMode) {
+      if (!invoiceDate) {
+        return addMessage(
+          false,
+          "Invoice date is required before adding employees",
+        );
+      }
 
-    const description = massDescription.trim();
-
-    if (isEditMode) {
       showLoader();
       try {
-        const res = await massApplyInvoiceItems(invoiceId, {
-          user_ids: checkedWorkerIds,
-          description,
-          unit_price: Number(massAmount),
-          quantity: 1,
-          duplicate_action: massDuplicateAction,
+        const response = await createInvoice({
+          customer_user_id: customerUserId || null,
+          invoice_date: invoiceDate,
+          notes: notes || null,
+          items: selectedWorkers.map((w) => ({
+            user_id: w.id,
+            description: "",
+            quantity: 1,
+            unit_price: Number(amount) || 0,
+          })),
         });
-        setItems(res.data?.invoice?.items || []);
-        addMessage(true, "Items applied to selected employees");
-        setMassDescription("");
-        setMassAmount("");
+        targetInvoiceId = response?.data?.id;
+        addMessage(true, "Draft saved — continue adding employees");
       } catch (err) {
-        addMessage(false, err.message || "Failed to apply items");
+        addMessage(false, err.message || "Failed to save draft");
+        return;
       } finally {
         hideLoader();
       }
-      return;
     }
 
-    setItems((prev) => {
-      const next = [...prev];
-
-      checkedWorkerIds.forEach((userId) => {
-        const worker = selectedWorkers.find((w) => w.id === userId);
-        const existingIndex = next.findIndex(
-          (item) => item.user_id === userId && item.description === description,
-        );
-
-        if (existingIndex !== -1 && massDuplicateAction === "skip") return;
-
-        const unit_price = Number(massAmount);
-
-        if (existingIndex !== -1 && massDuplicateAction === "update") {
-          next[existingIndex] = {
-            ...next[existingIndex],
-            quantity: 1,
-            unit_price,
-          };
-          return;
-        }
-
-        next.push({
-          id: nextLocalId(),
-          user_id: userId,
-          user_full_name: worker?.full_name || "Unknown",
-          description,
-          quantity: 1,
-          unit_price,
-        });
-      });
-
-      return next;
-    });
-
-    addMessage(true, `Applied to ${checkedWorkerIds.length} employee(s)`);
-    setMassDescription("");
-    setMassAmount("");
-  };
-
-  // ── Per-item editing ─────────────────────────────────────────
-  const handleItemFieldChange = (itemId, field, value) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === itemId ? { ...item, [field]: value } : item,
-      ),
-    );
-  };
-
-  const commitItemChange = async (item) => {
-    if (!isEditMode) return; // create mode: local state is the source of truth until submit
-    showLoader();
-    try {
-      const res = await updateInvoiceItem(invoiceId, item.id, {
-        description: item.description || "",
-        quantity: 1,
-        unit_price: Number(item.unit_price) || 0,
-      });
-      setItems(res.data?.items || []);
-    } catch (err) {
-      addMessage(false, err.message || "Failed to update item");
-    } finally {
-      hideLoader();
-    }
-  };
-
-  const handleRemoveItem = (item) => {
-    if (!isEditMode) {
-      setItems((prev) => prev.filter((i) => i.id !== item.id));
-      return;
-    }
-
-    openModal(
-      async () => {
-        showLoader();
-        try {
-          const res = await deleteInvoiceItem(invoiceId, item.id);
-          setItems(res.data?.items || []);
-          addMessage(true, "Item removed");
-        } catch (err) {
-          addMessage(false, err.message || "Failed to remove item");
-        } finally {
-          hideLoader();
-        }
+    navigate("/admin/employees", {
+      state: {
+        preSelectedWorkerIds: selectedWorkers.map((w) => w.id),
+        returnInvoiceId: targetInvoiceId,
       },
-      { title: "Remove this item from the invoice?", confirmText: "Remove" },
-    );
+    });
   };
 
-  // ── Totals preview (server always recalculates the real numbers) ──
-  const subtotal = items.reduce(
-    (sum, item) => sum + Number(item.unit_price || 0),
-    0,
-  );
-  const discount = Number(header.discount_amount) || 0;
-  const vat = Number(header.vat_amount) || 0;
-  const total = subtotal - discount + vat;
+  const perWorkerAmount = Number(amount) || 0;
+  const total = perWorkerAmount * selectedWorkers.length;
 
-  // ── Submit header (create or update) ─────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!header.invoice_date) {
+    if (selectedWorkers.length === 0) {
+      return addMessage(false, "No employees selected");
+    }
+    if (!invoiceDate) {
       return addMessage(false, "Invoice date is required");
     }
-    if (
-      header.due_date &&
-      new Date(header.due_date) < new Date(header.invoice_date)
-    ) {
-      return addMessage(false, "Due date cannot be before the invoice date");
-    }
-    if (discount < 0 || vat < 0) {
-      return addMessage(false, "Discount and VAT cannot be negative");
+    if (amount === "" || Number(amount) < 0 || isNaN(amount)) {
+      return addMessage(false, "Amount must be a valid non-negative number");
     }
 
     setSubmitLoading(true);
     showLoader();
     try {
       const payload = {
-        customer_user_id: header.customer_user_id || null,
-        invoice_date: header.invoice_date,
-        due_date: header.due_date || null,
-        discount_amount: discount,
-        vat_amount: vat,
-        notes: header.notes || null,
+        customer_user_id: customerUserId || null,
+        invoice_date: invoiceDate,
+        notes: notes || null,
       };
 
       let response;
       if (isEditMode) {
         response = await updateInvoice(invoiceId, payload);
+
+        // Reconcile items against the invoice's original set: delete
+        // items for anyone no longer selected, then create/update the
+        // rest in one call — massApplyItems inserts for anyone who
+        // doesn't already have an item and updates whoever does.
+        const currentIds = new Set(selectedWorkers.map((w) => w.id));
+        const removedItems = (initialData?.items || []).filter(
+          (item) => item.user_id && !currentIds.has(item.user_id),
+        );
+
+        for (const item of removedItems) {
+          await deleteInvoiceItem(invoiceId, item.id);
+        }
+
+        if (selectedWorkers.length > 0) {
+          await massApplyInvoiceItems(invoiceId, {
+            user_ids: selectedWorkers.map((w) => w.id),
+            description: "",
+            unit_price: perWorkerAmount,
+            quantity: 1,
+            duplicate_action: "update",
+          });
+        }
       } else {
         response = await createInvoice({
           ...payload,
-          items: items.map((item) => ({
-            user_id: item.user_id || null,
-            description: item.description || "",
+          items: selectedWorkers.map((w) => ({
+            user_id: w.id,
+            description: "",
             quantity: 1,
-            unit_price: Number(item.unit_price) || 0,
+            unit_price: perWorkerAmount,
           })),
         });
       }
@@ -326,24 +235,6 @@ const InvoiceForm = ({
     }
   };
 
-  // Group items by worker for display.
-  const groupedItems = items.reduce((groups, item) => {
-    const key = item.user_id || "unassigned";
-    if (!groups[key]) {
-      groups[key] = {
-        label:
-          item.user_full_name ||
-          (item.user_id ? `Employee #${item.user_id}` : "Unassigned"),
-        rows: [],
-      };
-    }
-    groups[key].rows.push(item);
-    return groups;
-  }, {});
-
-  // No workers to work with (arrived here without a selection, or a
-  // direct link/refresh) — send them back to Active Employees instead of
-  // rendering a blank/broken form.
   if (!isEditMode && !loadingWorkers && selectedWorkers.length === 0) {
     return (
       <section className="dashboard-wraper">
@@ -383,18 +274,15 @@ const InvoiceForm = ({
           </div>
         </div>
 
-        {/* Header card */}
         <div className="card border-0 shadow-sm rounded-4 mb-4">
           <div className="card-body p-4">
-            <h5 className="fw-bold mb-3">Invoice Details</h5>
             <div className="row g-3">
               <div className="col-md-4">
                 <label className="form-label">Customer</label>
                 <select
-                  name="customer_user_id"
                   className="form-control"
-                  value={header.customer_user_id}
-                  onChange={handleHeaderChange}
+                  value={customerUserId}
+                  onChange={(e) => setCustomerUserId(e.target.value)}
                 >
                   <option value="">Select customer (partner)</option>
                   {customers.map((c) => (
@@ -411,59 +299,36 @@ const InvoiceForm = ({
                 </label>
                 <input
                   type="date"
-                  name="invoice_date"
                   className="form-control"
-                  value={header.invoice_date}
-                  onChange={handleHeaderChange}
+                  value={invoiceDate}
+                  onChange={(e) => setInvoiceDate(e.target.value)}
                   required
                 />
               </div>
 
               <div className="col-md-4">
-                <label className="form-label">Due Date</label>
-                <input
-                  type="date"
-                  name="due_date"
-                  className="form-control"
-                  value={header.due_date}
-                  onChange={handleHeaderChange}
-                />
-              </div>
-
-              <div className="col-md-4">
-                <label className="form-label">Discount</label>
+                <label className="form-label">
+                  Amount (per employee) <span className="text-danger">*</span>
+                </label>
                 <input
                   type="number"
-                  name="discount_amount"
                   step="0.01"
                   min="0"
                   className="form-control"
-                  value={header.discount_amount}
-                  onChange={handleHeaderChange}
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0.00"
+                  required
                 />
               </div>
 
-              <div className="col-md-4">
-                <label className="form-label">VAT</label>
-                <input
-                  type="number"
-                  name="vat_amount"
-                  step="0.01"
-                  min="0"
-                  className="form-control"
-                  value={header.vat_amount}
-                  onChange={handleHeaderChange}
-                />
-              </div>
-
-              <div className="col-md-4">
+              <div className="col-12">
                 <label className="form-label">Notes</label>
                 <input
                   type="text"
-                  name="notes"
                   className="form-control"
-                  value={header.notes}
-                  onChange={handleHeaderChange}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
                   placeholder="Optional notes"
                 />
               </div>
@@ -471,190 +336,58 @@ const InvoiceForm = ({
           </div>
         </div>
 
-        {/* Selected employees + apply amount card */}
         <div className="card border-0 shadow-sm rounded-4 mb-4">
           <div className="card-body p-4">
-            <h5 className="fw-bold mb-3">
-              Selected Employees{" "}
-              <span className="text-muted fw-normal">
-                ({selectedWorkers.length})
-              </span>
-            </h5>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="fw-bold mb-0">
+                Employees{" "}
+                <span className="text-muted fw-normal">
+                  ({selectedWorkers.length})
+                </span>
+              </h5>
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm"
+                onClick={handleAddEmployee}
+              >
+                <i className="bi bi-person-plus me-1"></i> Add Employee
+              </button>
+            </div>
 
             {loadingWorkers ? (
               <p className="text-muted mb-0">Loading employees…</p>
+            ) : selectedWorkers.length === 0 ? (
+              <p className="text-muted mb-0">
+                No employees on this invoice yet — use Add Employee to pick
+                some.
+              </p>
             ) : (
-              <>
-                <div className="d-flex flex-wrap gap-2 mb-4">
-                  {selectedWorkers.map((worker) => (
-                    <label
-                      key={worker.id}
-                      className="d-flex align-items-center gap-2 border rounded-3 px-3 py-2"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checkedWorkerIds.includes(worker.id)}
-                        onChange={() => toggleChecked(worker.id)}
-                      />
-                      <span className="fw-semibold">{worker.full_name}</span>
-                    </label>
-                  ))}
-                </div>
-
-                <div className="row g-3 align-items-end">
-                  <div className="col-md-5">
-                    <label className="form-label">Description (optional)</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={massDescription}
-                      onChange={(e) => setMassDescription(e.target.value)}
-                      placeholder="e.g. Visa Processing"
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <label className="form-label">Amount</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      className="form-control"
-                      value={massAmount}
-                      onChange={(e) => setMassAmount(e.target.value)}
-                      placeholder="0.00"
-                    />
-                  </div>
-                  <div className="col-md-2">
-                    <label className="form-label">If already applied</label>
-                    <select
-                      className="form-control"
-                      value={massDuplicateAction}
-                      onChange={(e) => setMassDuplicateAction(e.target.value)}
-                    >
-                      <option value="skip">Skip</option>
-                      <option value="update">Update amount</option>
-                      <option value="add">Add another line</option>
-                    </select>
-                  </div>
-                  <div className="col-md-2 d-grid">
+              <div className="d-flex flex-wrap gap-2">
+                {selectedWorkers.map((worker) => (
+                  <span
+                    key={worker.id}
+                    className="badge rounded-pill text-bg-light border px-3 py-2 fw-semibold d-flex align-items-center gap-2"
+                  >
+                    {worker.full_name}
                     <button
                       type="button"
-                      className="btn btn-main"
-                      onClick={handleApplyToChecked}
-                    >
-                      Apply ({checkedWorkerIds.length})
-                    </button>
-                  </div>
-                </div>
-              </>
+                      className="btn-close"
+                      style={{ fontSize: "0.6rem" }}
+                      aria-label={`Remove ${worker.full_name}`}
+                      onClick={() => handleRemoveWorker(worker)}
+                    ></button>
+                  </span>
+                ))}
+              </div>
             )}
           </div>
         </div>
 
-        {/* Items card, grouped by worker */}
         <div className="card border-0 shadow-sm rounded-4 mb-4">
-          <div className="card-body p-4">
-            <h5 className="fw-bold mb-3">Invoice Items</h5>
-
-            {Object.keys(groupedItems).length === 0 && (
-              <p className="text-muted mb-0">
-                No items yet — check employees above and apply an amount.
-              </p>
-            )}
-
-            {Object.entries(groupedItems).map(([key, group]) => (
-              <div key={key} className="mb-4">
-                <div className="fw-bold mb-2">{group.label}</div>
-                <div className="table-responsive">
-                  <table className="table table-sm align-middle">
-                    <thead>
-                      <tr>
-                        <th>Description</th>
-                        <th style={{ width: 160 }}>Amount</th>
-                        <th style={{ width: 60 }}></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {group.rows.map((item) => (
-                        <tr key={item.id}>
-                          <td>
-                            <input
-                              type="text"
-                              className="form-control form-control-sm"
-                              placeholder="Optional"
-                              value={item.description || ""}
-                              onChange={(e) =>
-                                handleItemFieldChange(
-                                  item.id,
-                                  "description",
-                                  e.target.value,
-                                )
-                              }
-                              onBlur={() => commitItemChange(item)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              className="form-control form-control-sm"
-                              value={item.unit_price}
-                              onChange={(e) =>
-                                handleItemFieldChange(
-                                  item.id,
-                                  "unit_price",
-                                  e.target.value,
-                                )
-                              }
-                              onBlur={() => commitItemChange(item)}
-                            />
-                          </td>
-                          <td>
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-outline-danger"
-                              onClick={() => handleRemoveItem(item)}
-                            >
-                              <i className="bi bi-trash"></i>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Totals card — one horizontal row instead of a stacked list */}
-        <div className="card border-0 shadow-sm rounded-4 mb-4">
-          <div className="card-body p-4">
-            <div className="d-flex flex-wrap justify-content-between text-center gy-3">
-              <div className="px-3 flex-fill">
-                <div className="text-muted small text-uppercase">Subtotal</div>
-                <div className="fw-bold fs-5">{formatAmount(subtotal)}</div>
-              </div>
-              <div className="px-3 flex-fill border-start">
-                <div className="text-muted small text-uppercase">Discount</div>
-                <div className="fw-bold fs-5">-{formatAmount(discount)}</div>
-              </div>
-              <div className="px-3 flex-fill border-start">
-                <div className="text-muted small text-uppercase">VAT</div>
-                <div className="fw-bold fs-5">+{formatAmount(vat)}</div>
-              </div>
-              <div className="px-3 flex-fill border-start">
-                <div className="text-muted small text-uppercase">Total</div>
-                <div className="fw-bold fs-4 text-primary">
-                  {formatAmount(total)}
-                </div>
-              </div>
-            </div>
-            <div className="text-center mt-3">
-              <Badge content="Server recalculates final totals" color="blue" />
+          <div className="card-body p-4 text-center">
+            <div className="text-muted small text-uppercase">Total</div>
+            <div className="fw-bold fs-3 text-primary">
+              {formatAmount(total)}
             </div>
           </div>
         </div>

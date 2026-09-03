@@ -5,6 +5,7 @@ import InvoiceForm from "../InvoiceForm/InvoiceForm";
 import InvoiceDetail from "../InvoiceDetail/InvoiceDetail";
 import {
   fetchInvoices,
+  fetchInvoiceDetails,
   deleteInvoice,
   issueInvoice,
   cancelInvoice,
@@ -50,7 +51,8 @@ const Invoices = () => {
 
   const [editingInvoice, setEditingInvoice] = useState(null);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
-  // Worker ids handed off from Active Employees' bulk "Create Invoice" action
+  // Worker ids handed off from Active Employees, either for a brand new
+  // invoice or as an updated selection for one already being edited.
   const [prefillWorkerIds, setPrefillWorkerIds] = useState(null);
 
   useEffect(() => {
@@ -58,20 +60,31 @@ const Invoices = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, view]);
 
-  // Arriving here from Active Employees' bulk selection -> straight into
-  // Create Invoice, same pattern Finance.jsx uses for "record transaction
-  // for this worker". Arriving from a Finance transaction linked to an
-  // invoice (invoice_id) -> straight into that invoice's detail view.
+  // Arriving here from Active Employees carries at most one of:
+  //  - invoiceId + workerIds: returning mid-edit with an updated worker
+  //    selection (via InvoiceForm's "Add Employee") -> reopen that
+  //    invoice's edit form with the new set.
+  //  - invoiceId only: a Finance transaction linked to an invoice -> its
+  //    detail view.
+  //  - workerIds only: a fresh bulk selection -> Create Invoice.
   useEffect(() => {
-    if (location.state?.invoiceId) {
-      setSelectedInvoiceId(location.state.invoiceId);
+    const state = location.state;
+    if (!state) return;
+
+    if (state.invoiceId && state.workerIds?.length) {
+      openInvoiceForEdit(state.invoiceId, state.workerIds);
+      return;
+    }
+    if (state.invoiceId) {
+      setSelectedInvoiceId(state.invoiceId);
       setView("detail");
       return;
     }
-    if (location.state?.workerIds?.length) {
-      setPrefillWorkerIds(location.state.workerIds);
+    if (state.workerIds?.length) {
+      setPrefillWorkerIds(state.workerIds);
       setView("create");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state]);
 
   const loadInvoices = async () => {
@@ -81,6 +94,23 @@ const Invoices = () => {
       setInvoices(res);
     } catch (err) {
       addMessage(false, err.message || "Failed to load invoices");
+    } finally {
+      hideLoader();
+    }
+  };
+
+  // Always fetch the full invoice (with items) before opening the edit
+  // form — a list row alone doesn't carry items, which is what left the
+  // amount/employees blank when editing straight from the list.
+  const openInvoiceForEdit = async (id, overrideWorkerIds = null) => {
+    showLoader();
+    try {
+      const res = await fetchInvoiceDetails(id);
+      setEditingInvoice(res.data);
+      setPrefillWorkerIds(overrideWorkerIds);
+      setView("edit");
+    } catch (err) {
+      addMessage(false, err.message || "Failed to load invoice");
     } finally {
       hideLoader();
     }
@@ -151,11 +181,11 @@ const Invoices = () => {
       <InvoiceForm
         isEditMode={view === "edit"}
         initialData={view === "edit" ? editingInvoice : null}
-        workerIds={view === "create" ? prefillWorkerIds : null}
+        workerIds={prefillWorkerIds}
         onSuccess={(savedInvoice) => {
           setEditingInvoice(null);
           setPrefillWorkerIds(null);
-          // Clear location state so a refresh doesn't re-trigger create mode
+          // Clear location state so a refresh doesn't re-trigger create/edit
           window.history.replaceState({}, document.title);
           if (savedInvoice?.id) {
             setSelectedInvoiceId(savedInvoice.id);
@@ -178,10 +208,6 @@ const Invoices = () => {
       <InvoiceDetail
         invoiceId={selectedInvoiceId}
         onBack={() => setView("list")}
-        onEdit={(invoice) => {
-          setEditingInvoice(invoice);
-          setView("edit");
-        }}
       />
     );
   }
@@ -230,25 +256,10 @@ const Invoices = () => {
             render: (row) => row.customer_full_name || "—",
           },
           {
-            header: "Workers / Items",
-            render: (row) =>
-              `${row.worker_count ?? 0} / ${row.item_count ?? 0}`,
-          },
-          {
             header: "Date",
             render: (row) => new Date(row.invoice_date).toLocaleDateString(),
           },
-          {
-            header: "Due",
-            render: (row) =>
-              row.due_date ? new Date(row.due_date).toLocaleDateString() : "—",
-          },
           { header: "Total", render: (row) => formatAmount(row.total_amount) },
-          { header: "Paid", render: (row) => formatAmount(row.paid_amount) },
-          {
-            header: "Balance",
-            render: (row) => formatAmount(row.balance_amount),
-          },
           {
             header: "Status",
             render: (row) => (
@@ -278,10 +289,7 @@ const Invoices = () => {
           },
           {
             type: "edit",
-            onClick: (row) => {
-              setEditingInvoice(row);
-              setView("edit");
-            },
+            onClick: (row) => openInvoiceForEdit(row.id),
             showOn: (row) => row.status === "draft",
           },
           {

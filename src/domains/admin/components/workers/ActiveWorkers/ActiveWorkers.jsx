@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import {
   listWorkers,
@@ -7,8 +7,10 @@ import {
   deleteWorker,
   restoreWorker, // ADDED — merged in from ArchivedWorkers
 } from "../../../api/worker.api";
+import { getUsersLookup } from "../../../api/user.api";
 
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
+import { printWorkerReport } from "../WorkerReport/WorkerReport";
 
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -23,6 +25,7 @@ import { printInsuranceParticulars } from "../../Insurance/InsuranceReport";
 
 const ActiveWorkers = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { openModal } = useDelete();
   const { showLoader, hideLoader } = useloader();
@@ -42,8 +45,34 @@ const ActiveWorkers = () => {
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
 
+  // ADDED — set when we arrived here from InvoiceForm's "Add Employee"
+  // button (mid-create or mid-edit). Selection mode starts pre-populated
+  // with whichever employees were already on that invoice, and "Create
+  // Invoice" below becomes "Update Invoice", routing back to the same
+  // invoice instead of starting a new one.
+  const [returnInvoiceId, setReturnInvoiceId] = useState(null);
+
+  useEffect(() => {
+    if (location.state?.preSelectedWorkerIds?.length) {
+      setIsSelectionMode(true);
+      setSelectedWorkerIds(location.state.preSelectedWorkerIds);
+      setReturnInvoiceId(location.state.returnInvoiceId || null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state]);
+
   // Visa Application Preview State
   const [visaPreview, setVisaPreview] = useState(null);
+
+  // ADDED — partner options for the filter dropdown, and to resolve the
+  // selected partner's name when printing the worker report.
+  const [partners, setPartners] = useState([]);
+
+  useEffect(() => {
+    getUsersLookup({ role_id: 3 })
+      .then((res) => setPartners(res?.data || []))
+      .catch(() => setPartners([]));
+  }, []);
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -67,6 +96,14 @@ const ActiveWorkers = () => {
       const params = {
         ...filters,
         is_active: filters.is_active !== undefined ? filters.is_active : "true",
+        // ADDED — filtering to a partner should show only workers under
+        // contract with them ("belonging to that partner"), not also
+        // unassigned workers. The query layer's partner_id clause is
+        // (no contract OR contract with this partner); pairing it with
+        // has_contract: "true" collapses that down to just "contract with
+        // this partner", since an unassigned worker can never satisfy
+        // has_contract: "true" in the first place.
+        has_contract: filters.partner_id ? "true" : filters.has_contract,
         page,
         limit,
       };
@@ -140,6 +177,59 @@ const ActiveWorkers = () => {
     }
   };
 
+  // Worker Report — full report for the selected partner, restricted to
+  // the currently selected employees if any are checked, otherwise the
+  // partner's whole (filtered) roster. Always re-fetched fresh with a
+  // high limit rather than reading the `workers` state, since that's
+  // only the current page.
+  const handlePrintWorkerReport = async () => {
+    if (!filters.partner_id) return;
+
+    const partner = partners.find(
+      (p) => String(p.id) === String(filters.partner_id),
+    );
+    if (!partner) {
+      addMessage(false, "Partner not found");
+      return;
+    }
+
+    showLoader();
+    try {
+      const params =
+        selectedWorkerIds.length > 0
+          ? {
+              assignedWorkerIds: selectedWorkerIds,
+              limit: selectedWorkerIds.length,
+              page: 1,
+            }
+          : {
+              partner_id: filters.partner_id,
+              has_contract: "true",
+              is_active:
+                filters.is_active !== undefined ? filters.is_active : "true",
+              limit: 1000,
+              page: 1,
+            };
+
+      const res = await listWorkers(params);
+      const reportWorkers = res?.data?.items || [];
+
+      if (reportWorkers.length === 0) {
+        addMessage(false, "No employees found for this report");
+        return;
+      }
+
+      printWorkerReport({
+        partnerName: partner.full_name,
+        workers: reportWorkers,
+      });
+    } catch (err) {
+      addMessage(false, err.message || "Failed to generate worker report");
+    } finally {
+      hideLoader();
+    }
+  };
+
   // --- Selection Handlers ---
 
   const canUseBulkSelection = role === 1 || role === 2;
@@ -189,6 +279,7 @@ const ActiveWorkers = () => {
   const handleExitSelection = () => {
     setIsSelectionMode(false);
     setSelectedWorkerIds([]);
+    setReturnInvoiceId(null);
   };
 
   const handleAutofillSelected = () => {
@@ -206,12 +297,17 @@ const ActiveWorkers = () => {
   // Invoices page, which resolves them into the invoice's item list.
   // No worker data is looked up here; the Invoice page fetches full
   // details for these ids itself, same as Autofill only passes ids.
+  //
+  // If we arrived here mid-invoice (returnInvoiceId set, via InvoiceForm's
+  // "Add Employee" button), this instead routes back to that same
+  // invoice with the updated worker set — add/remove happened right here.
   const handleCreateInvoiceForSelected = () => {
     if (selectedWorkerIds.length === 0) return;
 
     navigate("/admin/invoices", {
       state: {
         workerIds: selectedWorkerIds,
+        invoiceId: returnInvoiceId || undefined,
         source: "active-workers",
       },
     });
@@ -493,33 +589,45 @@ const ActiveWorkers = () => {
                   : "Active Employees"}
             </h2>
             <p className="text-muted mb-0">
-              {role === 5
-                ? "View the employees assigned to you and access their profiles."
-                : role === 3
-                  ? "View active employees and access their profiles."
-                  : isArchivedView
-                    ? "Browse archived employees, restore records, or permanently delete them."
-                    : "View and manage active employees, access detailed profiles, archive records, or remove employees when needed."}
+              {returnInvoiceId
+                ? "Select or deselect employees for this invoice, then choose Update Invoice."
+                : role === 5
+                  ? "View the employees assigned to you and access their profiles."
+                  : role === 3
+                    ? "View active employees and access their profiles."
+                    : isArchivedView
+                      ? "Browse archived employees, restore records, or permanently delete them."
+                      : "View and manage active employees, access detailed profiles, archive records, or remove employees when needed."}
             </p>
           </div>
           {/* In Application Generator preview mode, only Cancel/Download/Share
-<<<<<<< HEAD
               should show — Add Employee is hidden while visaPreview is set.
               align-self-start on small screens (left end),
               align-self-lg-end restores the original right-end placement
               from md/lg breakpoints up. */}
           {!visaPreview && (
-=======
-              should show — Add Employee is hidden while visaPreview is set. */}
-          {!visaPreview && role !== 3 && (
->>>>>>> fae6ca103337ca55509ec3d9b7be935a224a64f2
-            <button
-              type="button"
-              className="btn btn-main text-nowrap align-self-start align-self-lg-end"
-              onClick={() => navigate("/admin/employees/add")}
-            >
-              Add Employee
-            </button>
+            <div className="d-flex gap-2 align-self-start align-self-lg-end">
+              <button
+                type="button"
+                className="btn btn-outline-primary text-nowrap"
+                disabled={!filters.partner_id}
+                title={
+                  filters.partner_id
+                    ? "Print a report for the selected partner"
+                    : "Select a partner from the filters to enable this"
+                }
+                onClick={handlePrintWorkerReport}
+              >
+                <i className="bi bi-printer me-2"></i> Print Report
+              </button>
+              <button
+                type="button"
+                className="btn btn-main text-nowrap"
+                onClick={() => navigate("/admin/employees/add")}
+              >
+                Add Employee
+              </button>
+            </div>
           )}
         </div>
         {/* 
@@ -625,7 +733,7 @@ const ActiveWorkers = () => {
                 onClick={handleCreateInvoiceForSelected}
                 style={{ fontSize: "16px" }}
               >
-                Create Invoice
+                {returnInvoiceId ? "Update Invoice" : "Create Invoice"}
               </button>
 
               <button

@@ -74,6 +74,8 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
         lockCategory
         initialData={{
           userId: invoice.customer_user_id,
+          userName: invoice.customer_full_name,
+          userRole: "partner",
           amount: invoice.balance_amount,
           category: "income",
           reference: invoice.invoice_number,
@@ -94,7 +96,6 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
   const isProfit = invoice.status === "paid";
   const accent = invoice.status === "paid" ? "income" : "expense";
 
-  // ── Status-gated actions (Edit/Delete live only in the invoice list now) ──
   const handleIssue = () => {
     openModal(
       async () => {
@@ -137,23 +138,14 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
     );
   };
 
-  // Print now builds a fully isolated HTML document in a hidden iframe and
-  // prints that (same technique as the Finance Period Report generator) —
-  // this can't be blanked out by any of this app's own layout/print CSS,
-  // which is what was causing the white-screen print before.
   const handlePrint = () => printInvoiceDocument(invoice);
 
-  // Server-computed worker_count/item_count are used when present; falling
-  // back to counting the loaded items client-side covers any older cached
-  // response that predates that fix.
   const workerCount =
     invoice.worker_count ??
     new Set(
       (invoice.items || []).filter((i) => i.user_id).map((i) => i.user_id),
     ).size;
-  const itemCount = invoice.item_count ?? invoice.items?.length ?? 0;
 
-  // Flat items list (Worker | Description | Amount), sorted by worker.
   const flatItems = [...(invoice.items || [])].sort((a, b) => {
     const nameA = a.user_full_name || "";
     const nameB = b.user_full_name || "";
@@ -193,6 +185,7 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
         .txn-receipt .stat-value { font-weight: 700; color: #101828; }
         .txn-receipt .receipt-body { padding: 1.75rem 2.25rem; }
         .txn-receipt .items-table th { background: #f9fafb; font-size: .78rem; text-transform: uppercase; color: #667085; }
+        .txn-receipt .totals-row td { font-weight: 800; background: #eaf1fc; border-top: 2px solid #1a3c6e; font-size: 1rem; }
       `}</style>
 
       <div className="mb-3 d-flex justify-content-between align-items-center">
@@ -261,20 +254,12 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
             </span>
           </div>
           <div className="stat-item">
-            <span className="stat-label">Due Date</span>
-            <span className="stat-value">{formatDate(invoice.due_date)}</span>
-          </div>
-          <div className="stat-item">
             <span className="stat-label">Created By</span>
             <span className="stat-value">{invoice.created_by_name || "—"}</span>
           </div>
           <div className="stat-item">
             <span className="stat-label">Workers</span>
             <span className="stat-value">{workerCount}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Items</span>
-            <span className="stat-value">{itemCount}</span>
           </div>
         </div>
 
@@ -289,7 +274,8 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
                 <thead>
                   <tr>
                     <th>Worker</th>
-                    <th>Description</th>
+                    <th>Passport #</th>
+                    <th>Employer</th>
                     <th>Amount</th>
                   </tr>
                 </thead>
@@ -297,57 +283,21 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
                   {flatItems.map((row) => (
                     <tr key={row.id}>
                       <td>{row.user_full_name || "Unassigned"}</td>
-                      <td>{row.description || "—"}</td>
+                      <td>{row.passport_number || "—"}</td>
+                      <td>{row.employer_full_name || "—"}</td>
                       <td>{formatAmount(row.unit_price)}</td>
                     </tr>
                   ))}
                 </tbody>
+                <tfoot>
+                  <tr className="totals-row">
+                    <td colSpan={3}>Total</td>
+                    <td>{formatAmount(invoice.total_amount)}</td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
           )}
-
-          {/* Totals — one row of stat boxes instead of a stacked list */}
-          <div
-            className="receipt-stats-strip mb-2"
-            style={{ border: "1px solid #e4e7ec", borderRadius: 12 }}
-          >
-            <div className="stat-item">
-              <span className="stat-label">Subtotal</span>
-              <span className="stat-value">
-                {formatAmount(invoice.subtotal)}
-              </span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Discount</span>
-              <span className="stat-value">
-                -{formatAmount(invoice.discount_amount)}
-              </span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">VAT</span>
-              <span className="stat-value">
-                +{formatAmount(invoice.vat_amount)}
-              </span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Total</span>
-              <span className="stat-value">
-                {formatAmount(invoice.total_amount)}
-              </span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Paid</span>
-              <span className="stat-value">
-                {formatAmount(invoice.paid_amount)}
-              </span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Balance</span>
-              <span className="stat-value">
-                {formatAmount(invoice.balance_amount)}
-              </span>
-            </div>
-          </div>
 
           {invoice.notes && (
             <div className="mt-4">
