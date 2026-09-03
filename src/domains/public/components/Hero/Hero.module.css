@@ -294,7 +294,7 @@
 /* make slow */
 .plane {
   offset-rotate: auto;
-  animation: fly-loop 10s linear infinite;
+  animation: fly-loop 15s linear infinite;
 }
 
 /* Tilted "approved" stamp badge, sitting on the artwork */

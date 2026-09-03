@@ -286,28 +286,34 @@ function FlightRoutes() {
           with it and a fading contrail trailing behind its tail. */}
       <g
         className={styles.plane}
-        style={{ offsetPath: `path("${FLIGHT_PATH}")` }}
+        style={{
+          offsetPath: `path("${FLIGHT_PATH}")`,
+        }}
       >
-        {/* soft golden glow travelling with the plane */}
-        <circle r="11" fill="url(#originGlow)" opacity="0.7" />
+        {/* One dial for the whole plane's size - scales the silhouette,
+            its glow and its contrail together. 1 = original size. */}
+        <g transform="scale(1.35)">
+          {/* soft golden glow travelling with the plane */}
+          <circle r="11" fill="url(#originGlow)" opacity="0.7" />
 
-        {/* contrail: one main trail plus two short vapor streaks */}
-        <path
-          d="M-10 0h-4M-10 -2.4h-2.5M-10 2.4h-2.5"
-          stroke="#F5F1E6"
-          strokeWidth="1.4"
-          strokeLinecap="round"
-          opacity="0.55"
-          fill="none"
-        />
-
-        {/* airplane silhouette: the 24-unit "flight" icon, recentered on
-            (0,0) and rotated 90deg so its nose points along the path */}
-        <g transform="rotate(90) scale(0.85) translate(-12 -12)">
+          {/* contrail: one main trail plus two short vapor streaks */}
           <path
-            d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
-            fill="#F5F1E6"
+            d="M-10 0h-4M-10 -2.4h-2.5M-10 2.4h-2.5"
+            stroke="#F5F1E6"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+            opacity="0.55"
+            fill="none"
           />
+
+          {/* airplane silhouette: the 24-unit "flight" icon, recentered on
+              (0,0) and rotated 90deg so its nose points along the path */}
+          <g transform="rotate(90) scale(0.85) translate(-12 -12)">
+            <path
+              d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
+              fill="#F5F1E6"
+            />
+          </g>
         </g>
       </g>
     </svg>
