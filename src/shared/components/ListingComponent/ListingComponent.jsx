@@ -21,6 +21,7 @@ const ListingComponent = ({
   onRowDoubleClick,
   showCount = true,
 }) => {
+  console.log(data)
   const [editing, setEditing] = useState({ rowId: null, accessor: null });
   const [tempValue, setTempValue] = useState("");
   const [pendingRenameHandler, setPendingRenameHandler] = useState(null);
