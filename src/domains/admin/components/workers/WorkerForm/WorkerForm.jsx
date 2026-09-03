@@ -198,7 +198,7 @@ const defaultPersonal = () => ({
   height_cm: "",
   weight_kg: "",
   national_id_number: "",
-  fingerprint_number:""
+  fingerprint_number: "",
 });
 
 const defaultPassport = () => ({
@@ -1267,11 +1267,7 @@ function WorkerForm() {
         !isOnlyAlphabetsAndSpaces(personal.region))
     )
       return "Region must contain only letters and spaces (max 100 chars)";
-    if (
-      personal.wereda &&
-      (personal.wereda.length > 100 ||
-        !isOnlyAlphabetsAndSpaces(personal.wereda))
-    )
+    if (personal.wereda && personal.wereda.length > 100)
       return "Wereda must contain only letters and spaces (max 100 chars)";
     if (
       personal.city &&
@@ -1533,6 +1529,10 @@ function WorkerForm() {
     }
     if (arrivalDate && isNaN(arrivalDate.getTime()))
       return "Arrival date must be a valid date";
+    if (arrivalDate && departureDate) {
+      if (arrivalDate <= departureDate)
+        return "Arrival date cannot be before departure date";
+    }
 
     return null;
   };

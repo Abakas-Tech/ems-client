@@ -1,277 +1,468 @@
-/* ---- Layout ---- */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap");
+
 .hero {
+  --navy-950: #0a1830;
+  --navy-900: #0d2043;
+  --navy-800: #123058;
+  --gold-500: #c9a227;
+  --gold-300: #e7c96b;
+  --cream-100: #f5f1e6;
+  --slate-400: #90a0be;
+
   position: relative;
-  width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   overflow: hidden;
-  /* font-family: "DM Sans", sans-serif; */
+  background:
+    radial-gradient(
+      ellipse 900px 600px at 78% 30%,
+      var(--navy-800) 0%,
+      transparent 60%
+    ),
+    linear-gradient(
+      160deg,
+      var(--navy-950) 0%,
+      var(--navy-900) 55%,
+      var(--navy-950) 100%
+    );
+  color: var(--cream-100);
+  padding: 96px 6vw 40px;
+  font-family:
+    "Inter",
+    -apple-system,
+    sans-serif;
 }
 
-/* ---- Background Image (swap url() for your asset) ---- */
-.hero-bg {
+.grain {
   position: absolute;
   inset: 0;
-  /* background-image: url("https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=80"); */
-  background-size: cover;
-  background-position: center;
-  transform: scale(1.04);
-  transition: transform 8s ease;
-}
-
-.hero:hover .hero-bg {
-  transform: scale(1);
-}
-
-/* ---- Overlay ---- */
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    125deg,
-    rgba(5, 5, 20, 0.82) 0%,
-    rgba(10, 10, 40, 0.65) 60%,
-    rgba(20, 5, 50, 0.45) 100%
+  background-image: radial-gradient(
+    rgba(231, 201, 107, 0.09) 1px,
+    transparent 1px
   );
+  background-size: 26px 26px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 40%, black, transparent);
+  pointer-events: none;
 }
 
-/* ---- Content ---- */
-.hero-content {
+.inner {
   position: relative;
-  z-index: 2;
-  max-width: 780px;
-  padding: 0 clamp(1.5rem, 6vw, 6rem);
-  margin-top: -2rem;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 560px) minmax(320px, 480px);
+  align-items: center;
+  gap: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-.hero-eyebrow {
-  /* font-family: "DM Sans", sans-serif; */
+/* ---------- Text content ----------
+   Pure CSS entrance: each child animates on paint via @keyframes with
+   animation-fill-mode both, so it never depends on a JS state flip to
+   become visible. If motion is disabled, the animation is removed below
+   and everything simply renders at full opacity. */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.content > * {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.content > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.content > *:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.content > *:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.content > *:nth-child(4) {
+  animation-delay: 0.42s;
+}
+.content > *:nth-child(5) {
+  animation-delay: 0.52s;
+}
+
+.eyebrow {
+  margin: 0 0 18px;
+  font-size: 15px;
+  color: var(--gold-300);
   font-weight: 500;
-  font-size: clamp(0.7rem, 1.2vw, 0.85rem);
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: rgba(160, 220, 255, 0.75);
-  margin: 0 0 1.2rem;
+  letter-spacing: 0.1px;
 }
 
-.hero-heading {
-  /* font-family: "Playfair Display", serif; */
-  font-weight: 900;
-  font-size: clamp(2.8rem, 7vw, 6rem);
-  line-height: 1.05;
-  color: #ffffff;
-  margin: 0 0 1.6rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.05em;
+.heading {
+  margin: 0 0 22px;
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  font-size: clamp(38px, 4.4vw, 56px);
+  line-height: 1.1;
+  color: var(--cream-100);
 }
 
-.heading-line {
+.line {
   display: block;
+  color: inherit;
 }
 
-.heading-line:last-child {
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.6);
+.sub {
+  margin: 0 0 20px;
+  max-width: 52ch;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--slate-400);
 }
 
-.hero-sub {
-  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
-  font-weight: 300;
-  line-height: 1.75;
-  color: rgba(220, 230, 255, 0.75);
-  max-width: 520px;
-  margin: 0 0 2.8rem;
+.tagline {
+  margin: 0 0 32px;
+  max-width: 46ch;
+  font-size: 14px;
+  line-height: 1.6;
+  font-style: italic;
+  color: rgba(245, 241, 230, 0.65);
 }
 
-/* ---- Buttons ---- */
-.hero-actions {
+.actions {
   display: flex;
-  gap: 1rem;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
-.btn-primary {
-  /* font-family: "DM Sans", sans-serif; */
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  padding: 0.85rem 2.2rem;
-  border-radius: 3px;
-  border: none;
-  cursor: pointer;
-  background: #ffffff;
-  color: #08082a;
-  transition:
-    background 0.25s,
-    transform 0.2s,
-    box-shadow 0.25s;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
-}
-
-.btn-primary:hover {
-  background: #dce8ff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(100, 160, 255, 0.35);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-.btn-secondary {
-  /* font-family: "DM Sans", sans-serif; */
-  font-size: 0.9rem;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  padding: 0.85rem 2.2rem;
-  border-radius: 3px;
-  cursor: pointer;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  transition:
-    border-color 0.25s,
-    background 0.25s,
-    transform 0.2s;
-  backdrop-filter: blur(6px);
-}
-
-.btn-secondary:hover {
-  border-color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px);
-}
-
-.btn-secondary:active {
-  transform: translateY(0);
-}
-
-/* ---- Carousel Dots ---- */
-.carousel-controls {
-  position: absolute;
-  bottom: 2.8rem;
-  left: clamp(1.5rem, 6vw, 6rem);
-  z-index: 3;
-  display: flex;
-  gap: 0.55rem;
+.btnPrimary,
+.btnSecondary {
+  display: inline-flex;
   align-items: center;
-}
-
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  background: rgba(255, 255, 255, 0.3);
+  gap: 9px;
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 3px;
+  text-decoration: none;
   transition:
-    background 0.3s,
-    transform 0.3s;
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
-.dot:hover {
-  background: rgba(255, 255, 255, 0.6);
+.btnPrimary {
+  background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+  color: var(--navy-950);
 }
 
-.dot-active {
-  background: #ffffff;
-  transform: scale(1.4);
+.btnPrimary:hover {
+  transform: translateY(-2px);
 }
 
-/* ---- Progress Bar ---- */
-.progress-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+.btnPlane {
+  transition: transform 0.25s ease;
+}
+
+.btnPrimary:hover .btnPlane {
+  transform: translate(4px, -1px);
+}
+
+.btnSecondary {
+  border: 1px solid rgba(231, 201, 107, 0.4);
+  color: var(--cream-100);
+  background: transparent;
+}
+
+.btnSecondary:hover {
+  border-color: var(--gold-300);
+  transform: translateY(-2px);
+}
+
+/* ---------- Illustration ---------- */
+
+.artwork {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+.routeSvg {
   width: 100%;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  z-index: 3;
+  height: auto;
+  max-height: 640px;
 }
 
-.progress-fill {
-  height: 100%;
-  background: rgba(160, 210, 255, 0.7);
-  animation: progress-run 5.5s linear forwards;
-  transform-origin: left;
+.ring {
+  fill: none;
+  stroke: rgba(231, 201, 107, 0.14);
+  stroke-width: 1;
 }
 
-@keyframes progress-run {
-  from {
-    width: 0%;
-  }
-  to {
-    width: 100%;
-  }
+.route {
+  fill: none;
+  stroke: url(#routeGold);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 6 7;
 }
 
-/* ---- Slide Animations ---- */
-.fade-in {
-  animation: fade-up-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+.node {
+  fill: var(--navy-950);
+  stroke: var(--gold-300);
+  stroke-width: 1.5;
 }
 
-.fade-out {
-  animation: fade-down-out 0.35s ease forwards;
+.nodeLabel {
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  fill: var(--slate-400);
 }
 
-.slide-in {
-  animation: slide-up-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 0.06s;
+.originNode {
+  fill: var(--gold-300);
+  stroke: var(--cream-100);
+  stroke-width: 1.5;
 }
 
-.slide-out {
-  animation: slide-down-out 0.35s ease forwards;
+.originLabel {
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--cream-100);
+  text-anchor: middle;
 }
 
-@keyframes fade-up-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
     opacity: 1;
-    transform: translateY(0);
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.85;
   }
 }
 
-@keyframes fade-down-out {
-  to {
-    opacity: 0;
-    transform: translateY(-8px);
+.originPulse {
+  transform-origin: 96px 566px;
+  animation: breathe 4s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.9;
   }
 }
 
-@keyframes slide-up-in {
-  from {
+.twinkle {
+  fill: var(--gold-300);
+  animation: twinkle 3.5s ease-in-out infinite;
+}
+
+/* Plane flies the Addis Ababa -> Amman leg on a continuous loop */
+@keyframes fly-loop {
+  0% {
+    offset-distance: 0%;
     opacity: 0;
-    transform: translateY(30px);
   }
-  to {
+  6% {
     opacity: 1;
-    transform: translateY(0);
   }
-}
-
-@keyframes slide-down-out {
-  to {
+  94% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
     opacity: 0;
-    transform: translateY(-20px);
   }
 }
 
-/* ---- Responsive ---- */
-@media (max-width: 600px) {
-  .hero-actions {
-    flex-direction: column;
+.plane {
+  offset-rotate: auto;
+  animation: fly-loop 5.5s ease-in-out infinite;
+}
+
+/* Tilted "approved" stamp badge, sitting on the artwork */
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: rotate(-18deg) scale(0.6);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(-9deg) scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-9deg) scale(1);
+  }
+}
+
+@keyframes stamp-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(231, 201, 107, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(231, 201, 107, 0);
+  }
+}
+
+.stamp {
+  position: absolute;
+  top: 6%;
+  right: 4%;
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px dashed var(--gold-300);
+  background: rgba(10, 24, 48, 0.55);
+  backdrop-filter: blur(2px);
+  animation:
+    stamp-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.9s both,
+    stamp-pulse 3s ease-out 1.6s infinite;
+}
+
+.stampRing {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(231, 201, 107, 0.35);
+}
+
+.stampText {
+  font-family: "Fraunces", serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  color: var(--gold-300);
+  text-align: center;
+  line-height: 1.35;
+}
+
+/* ---------- Stats strip ---------- */
+
+.stats {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 56px auto 0;
+  width: 100%;
+  display: flex;
+  border-top: 1px solid rgba(245, 241, 230, 0.12);
+  padding-top: 28px;
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 32px;
+  border-left: 1px solid rgba(245, 241, 230, 0.12);
+  transition: transform 0.2s ease;
+}
+
+.stat:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.stat:hover {
+  transform: translateY(-3px);
+}
+
+.statValue {
+  font-family: "Fraunces", serif;
+  font-size: 26px;
+  color: var(--gold-300);
+}
+
+.statLabel {
+  font-size: 13px;
+  color: var(--slate-400);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 980px) {
+  .inner {
+    grid-template-columns: 1fr;
   }
 
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-    text-align: center;
+  .artwork {
+    order: -1;
+    opacity: 0.55;
+    max-width: 420px;
+    margin: 0 auto -20px;
+  }
+
+  .stamp {
+    width: 88px;
+    height: 88px;
+    top: 2%;
+  }
+
+  .stats {
+    flex-wrap: wrap;
+    row-gap: 20px;
+  }
+
+  .stat {
+    flex: 1 1 40%;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero {
+    padding: 84px 6vw 32px;
+  }
+
+  .stat {
+    flex: 1 1 100%;
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid rgba(245, 241, 230, 0.12);
+    padding-top: 16px;
+  }
+
+  .stat:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content > *,
+  .artwork,
+  .stats,
+  .stamp {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .originPulse,
+  .twinkle,
+  .plane {
+    animation: none !important;
   }
 }

@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import styles from "./ComplaintReportTemplate.module.css";
-import { companyInfo } from "./companyInfo";
+import { companyInfo } from "./CompanyInfo";
 import logo from "../../../../../assets/img/logo/logo-nbg.png";
 
 const LinedValue = ({ text }) => {

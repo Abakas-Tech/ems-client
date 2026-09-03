@@ -7,6 +7,8 @@ import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePassword.jsx";
 // import WorkerProfile from "../domains/admin/pages/workers/WorkerProfile/WorkerProfile.jsx";
+import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx";
+import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx"
 
 function PartnerRoutes() {
   return (
@@ -19,7 +21,8 @@ function PartnerRoutes() {
         }
       >
         <Route path="active-employees" element={<ActiveWorkers />} />
-        {/* <Route path="active-employees/:id" element={<WorkerProfile />} /> */}
+        <Route path="active-employees/:id" element={<WorkerForm />} />
+        <Route path="employees/:id/cv" element={<CV />} />
         <Route path="my-profile" element={<MyProfile />} />
         <Route path="settings" element={<ChangePasswordPage />} />
         <Route path="*" element={<NotFound />} />

@@ -1,6 +1,6 @@
 import React from "react";
 
-import CVThreeComponent from "./../../../../components/workers/modules/CV/CVThree";
+import CVComponent from "../../../../components/workers/modules/CV/CV";
 
 /**
  * Single shared CV layout. All partners use this same layout —
@@ -10,5 +10,5 @@ import CVThreeComponent from "./../../../../components/workers/modules/CV/CVThre
  * cv_template_code / CVOne / CVTwo.
  */
 export default function CV() {
-  return <CVThreeComponent />;
+  return <CVComponent />;
 }

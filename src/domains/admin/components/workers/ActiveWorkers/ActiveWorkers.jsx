@@ -109,7 +109,13 @@ const ActiveWorkers = () => {
   };
 
   const handleViewCv = (row) => {
-    navigate(`/admin/employees/${row.id}/cv`, { state: row });
+    if (Number(role) === 3 && !row.has_cv_access) {
+      addMessage(false, "This worker's CV has not been shared with you yet");
+      return;
+    }
+
+    const basePath = Number(role) === 3 ? "/partner" : "/admin";
+    navigate(`${basePath}/employees/${row.id}/cv`, { state: row });
   };
 
   // Bulk Insurance Print Handler
@@ -456,21 +462,23 @@ const ActiveWorkers = () => {
         { type: "restore", onClick: (row) => handleRestore(row.id) },
         { type: "delete", onClick: (row) => handleDeleteArchived(row.id) },
       ]
-    : [
-        { type: "view", onClick: (row) => handleView(row.id) },
-        { type: "viewCV", onClick: (row) => handleViewCv(row) },
-        { type: "edit", onClick: (row) => handleEdit(row) },
-        {
-          type: "transaction",
-          onClick: (row) => handleRecordTransaction(row),
-        },
-        {
-          type: "downloadVisa",
-          onClick: (row) => handleDownloadVisaApplication(row.id),
-        },
-        { type: "archive", onClick: (row) => handleArchive(row.id) },
-        { type: "delete", onClick: (row) => handleDelete(row.id) },
-      ];
+    : role === 3
+      ? [{ type: "viewCV", onClick: (row) => handleViewCv(row) }]
+      : [
+          { type: "view", onClick: (row) => handleView(row.id) },
+          { type: "viewCV", onClick: (row) => handleViewCv(row) },
+          { type: "edit", onClick: (row) => handleEdit(row) },
+          {
+            type: "transaction",
+            onClick: (row) => handleRecordTransaction(row),
+          },
+          {
+            type: "downloadVisa",
+            onClick: (row) => handleDownloadVisaApplication(row.id),
+          },
+          { type: "archive", onClick: (row) => handleArchive(row.id) },
+          { type: "delete", onClick: (row) => handleDelete(row.id) },
+        ];
 
   return (
     <div className="dashboard-wraper position-relative">
@@ -495,11 +503,16 @@ const ActiveWorkers = () => {
             </p>
           </div>
           {/* In Application Generator preview mode, only Cancel/Download/Share
+<<<<<<< HEAD
               should show — Add Employee is hidden while visaPreview is set.
               align-self-start on small screens (left end),
               align-self-lg-end restores the original right-end placement
               from md/lg breakpoints up. */}
           {!visaPreview && (
+=======
+              should show — Add Employee is hidden while visaPreview is set. */}
+          {!visaPreview && role !== 3 && (
+>>>>>>> fae6ca103337ca55509ec3d9b7be935a224a64f2
             <button
               type="button"
               className="btn btn-main text-nowrap align-self-start align-self-lg-end"

@@ -4,7 +4,6 @@ import WorkerProfileComponent from "../../../components/workers/WorkerProfile/Wo
 const WorkerProfile = () => {
   return (
     <>
-      <WorkerProfileComponent />
     </>
   );
 };

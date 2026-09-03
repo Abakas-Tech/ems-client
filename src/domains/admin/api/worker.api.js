@@ -183,6 +183,35 @@ const deleteWorker = async (id, hard = false) => {
   }
 };
 
+const listSharedCvsForPartner = async () => {
+  try {
+    const response = await axiosInstance.get("/workers/cv/shared/list");
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to list shared CVs",
+    );
+  }
+};
+
+const setPartnerCvAccess = async (id, payload) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/workers/cv/${id}/partner-access`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to update partner access",
+    );
+  }
+};
+
 export {
   createWorker,
   updateWorker,
@@ -196,4 +225,6 @@ export {
   getArchivedWorkerProfile,
   restoreWorker,
   deleteWorker,
+  listSharedCvsForPartner,
+  setPartnerCvAccess,
 };
