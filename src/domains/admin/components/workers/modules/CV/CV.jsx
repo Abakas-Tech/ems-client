@@ -62,7 +62,7 @@ const COLOR_OPTIONS = [
   { name: "Blue", value: BLUE },
   { name: "Red", value: RED },
   { name: "Green", value: "#9BBA58" },
-  { name: "Purple", value: "#6A1B9A" },
+  { name: "Purple", value: "#00512E" },
   { name: "Teal", value: "#00796B" },
   { name: "Navy", value: "#001F5F" },
 ];
@@ -1370,7 +1370,7 @@ const CVThree = ({ templateSwitcher }) => {
         return (
           <div
             className="d-flex flex-column flex-lg-row align-items-start gap-3"
-            style={{ marginTop: -30 }}
+            style={{ ...(selectedPartner && { marginTop: -30 }) }}
           >
             {/* CV preview column - only this column (via cvRef / passportRef)
                 is ever captured for the PDF. The toolbox next to it is UI

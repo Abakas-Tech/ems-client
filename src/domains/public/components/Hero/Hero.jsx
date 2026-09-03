@@ -161,7 +161,7 @@ function FlightRoutes() {
       viewBox="0 0 560 700"
       className={styles.routeSvg}
       role="img"
-      aria-label="Illustrated flight routes from Addis Ababa to Amman, Riyadh, Kuwait City, and Dubai"
+      aria-label="Animated map of flight routes from Addis Ababa looping through Amman, Riyadh, Kuwait City, and Dubai, flown by a plane"
     >
       <defs>
         <linearGradient id="routeGold" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -198,6 +198,17 @@ function FlightRoutes() {
         return <path key={route.id} d={d} className={styles.route} />;
       })}
 
+      {/* The full journey the plane flies, drawn over the solid legs as a
+          dotted golden bead-line - so the looping route itself becomes part
+          of the artwork. Reuses the .route class for the gradient stroke. */}
+      <path
+        d={FLIGHT_PATH}
+        className={styles.route}
+        style={{ strokeDasharray: "1 9", strokeWidth: 2.5, opacity: 0.9 }}
+        strokeLinecap="round"
+        fill="none"
+      />
+
       {/* A handful of twinkling waypoint dots scattered along the sky for texture */}
       {[
         { x: 210, y: 260 },
@@ -217,9 +228,35 @@ function FlightRoutes() {
         />
       ))}
 
-      {/* Destination nodes */}
-      {ROUTES.map((route) => (
+      {/* Destination nodes, each with an expanding radar pulse ring
+          (staggered per city). Uses SMIL <animate> so no CSS changes are
+          needed for the effect. */}
+      {ROUTES.map((route, index) => (
         <g key={`${route.id}-node`}>
+          <circle
+            cx={route.node.x}
+            cy={route.node.y}
+            r="5"
+            fill="none"
+            stroke="#E7C96B"
+            strokeWidth="1.5"
+            opacity="0"
+          >
+            <animate
+              attributeName="r"
+              values="5;16"
+              dur="2.8s"
+              begin={`${index * 0.7}s`}
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="opacity"
+              values="0.7;0"
+              dur="2.8s"
+              begin={`${index * 0.7}s`}
+              repeatCount="indefinite"
+            />
+          </circle>
           <circle
             cx={route.node.x}
             cy={route.node.y}
@@ -243,12 +280,41 @@ function FlightRoutes() {
       </text>
 
       {/* Looping plane, flown along the full journey Addis Ababa -> Amman ->
-          Riyadh -> Kuwait City -> Dubai -> home to Addis Ababa */}
+          Riyadh -> Kuwait City -> Dubai -> home to Addis Ababa. Drawn as a
+          real airplane silhouette (nose pointing along +x, the direction
+          offset-rotate: auto faces) with a soft golden glow that travels
+          with it and a fading contrail trailing behind its tail. */}
       <g
         className={styles.plane}
-        style={{ offsetPath: `path("${FLIGHT_PATH}")` }}
+        style={{
+          offsetPath: `path("${FLIGHT_PATH}")`,
+        }}
       >
-        <path d="M0 -4 L11 0 L0 4 L2.5 0 Z" fill="#F5F1E6" />
+        {/* One dial for the whole plane's size - scales the silhouette,
+            its glow and its contrail together. 1 = original size. */}
+        <g transform="scale(1.35)">
+          {/* soft golden glow travelling with the plane */}
+          <circle r="11" fill="url(#originGlow)" opacity="0.7" />
+
+          {/* contrail: one main trail plus two short vapor streaks */}
+          <path
+            d="M-10 0h-4M-10 -2.4h-2.5M-10 2.4h-2.5"
+            stroke="#F5F1E6"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+            opacity="0.55"
+            fill="none"
+          />
+
+          {/* airplane silhouette: the 24-unit "flight" icon, recentered on
+              (0,0) and rotated 90deg so its nose points along the path */}
+          <g transform="rotate(90) scale(0.85) translate(-12 -12)">
+            <path
+              d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
+              fill="#F5F1E6"
+            />
+          </g>
+        </g>
       </g>
     </svg>
   );
