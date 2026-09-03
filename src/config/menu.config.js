@@ -58,6 +58,13 @@ const MENU_CONFIG = [
     permission: PERMISSIONS.MANAGE_FINANCE,
   },
   {
+    label: "Invoices",
+    path: "/admin/invoices",
+    icon: "bi bi-receipt",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_FINANCE,
+  },
+  {
     label: "Status",
     path: "/admin/meta-data/employee-status",
     icon: "bi bi-database-add",

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchTransactionDetails } from "../../../api/finance.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
-import BackButton from "../../../../../shared/components/BackButton/BackButton"
+import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import Badge from "../../../../../shared/components/Badge/Badge";
 
 const ROLE_MAP = {
@@ -81,6 +82,7 @@ const TransactionDetail = ({
   const [transaction, setTransaction] = useState(null);
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (mode !== "transaction") return;
@@ -712,6 +714,18 @@ const TransactionDetail = ({
           </div>
 
           <div className="text-center d-print-none mt-4">
+            {!isSummaryMode && transaction.invoice_id && (
+              <button
+                className="btn btn-outline-primary btn-sm px-4 me-2"
+                onClick={() =>
+                  navigate("/admin/invoices", {
+                    state: { invoiceId: transaction.invoice_id },
+                  })
+                }
+              >
+                <i className="bi bi-receipt me-2"></i> View Invoice
+              </button>
+            )}
             <button
               className="btn btn-outline-primary btn-sm px-4"
               onClick={() => window.print()}

@@ -138,6 +138,9 @@ const ActiveWorkers = () => {
 
   const canUseBulkSelection = role === 1 || role === 2;
 
+  // Double-click enters selection mode and selects the row; once already
+  // in selection mode, double-clicking a row toggles it (same as clicking
+  // its checkbox) instead of doing nothing.
   const handleRowDoubleClick = (row) => {
     if (!canUseBulkSelection) return;
     if (!row?.id) return;
@@ -145,7 +148,10 @@ const ActiveWorkers = () => {
     if (!isSelectionMode) {
       setIsSelectionMode(true);
       setSelectedWorkerIds([row.id]);
+      return;
     }
+
+    handleSelectRow(row.id);
   };
 
   const handleSelectRow = (id) => {
@@ -183,6 +189,21 @@ const ActiveWorkers = () => {
     if (selectedWorkerIds.length === 0) return;
 
     navigate("/admin/autofill", {
+      state: {
+        workerIds: selectedWorkerIds,
+        source: "active-workers",
+      },
+    });
+  };
+
+  // Bulk "Create Invoice" — hands the selected worker ids off to the
+  // Invoices page, which resolves them into the invoice's item list.
+  // No worker data is looked up here; the Invoice page fetches full
+  // details for these ids itself, same as Autofill only passes ids.
+  const handleCreateInvoiceForSelected = () => {
+    if (selectedWorkerIds.length === 0) return;
+
+    navigate("/admin/invoices", {
       state: {
         workerIds: selectedWorkerIds,
         source: "active-workers",
@@ -584,6 +605,16 @@ const ActiveWorkers = () => {
               className="d-flex flex-row flex-wrap gap-2 w-100 w-md-auto justify-content-md-end align-items-center"
               style={{ fontSize: "13px" }}
             >
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-1 "
+                disabled={selectedWorkerIds.length === 0}
+                onClick={handleCreateInvoiceForSelected}
+                style={{ fontSize: "16px" }}
+              >
+                Create Invoice
+              </button>
+
               <button
                 type="button"
                 className="btn btn-outline-success btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-2 "

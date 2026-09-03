@@ -539,6 +539,26 @@ const FinancePage = () => {
                 ),
               },
               { header: "Amount", accessor: "amount" },
+              {
+                header: "Invoice",
+                render: (row) =>
+                  row.invoice_id ? (
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate("/admin/invoices", {
+                          state: { invoiceId: row.invoice_id },
+                        });
+                      }}
+                    >
+                      View Invoice
+                    </button>
+                  ) : (
+                    "—"
+                  ),
+              },
             ]}
             actions={[
               {
@@ -809,6 +829,26 @@ const FinancePage = () => {
           {
             header: "Amount",
             accessor: "amount",
+          },
+          {
+            header: "Invoice",
+            render: (row) =>
+              row.invoice_id ? (
+                <button
+                  type="button"
+                  className="btn btn-link btn-sm p-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate("/admin/invoices", {
+                      state: { invoiceId: row.invoice_id },
+                    });
+                  }}
+                >
+                  View Invoice
+                </button>
+              ) : (
+                "—"
+              ),
           },
         ]}
         actions={[
