@@ -1370,7 +1370,7 @@ const CVThree = ({ templateSwitcher }) => {
         return (
           <div
             className="d-flex flex-column flex-lg-row align-items-start gap-3"
-            style={{ marginTop: -30 }}
+            style={{ ...(selectedPartner && { marginTop: -30 }) }}
           >
             {/* CV preview column - only this column (via cvRef / passportRef)
                 is ever captured for the PDF. The toolbox next to it is UI
