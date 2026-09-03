@@ -1,29 +1,20 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { WINDOWS, optimise } from "../../../../../utils/ticket/optimiser";
-import { buildMegaQuery } from "../../../../../utils/ticket/queryBuilder";
-import { normaliseResults } from "../../../../../utils/ticket/normaliser";
-import { cacheGet, cacheSet } from "../../../../../utils/ticket/cache";
-import {
-  getResult,
-  saveResult,
-  formatFetchedAt,
-} from "../../../../../utils/ticket/indexedDb";
+import { WINDOWS } from "../../../../../utils/ticket/optimiser";
+import { formatFetchedAt } from "../../../../../utils/ticket/indexedDb";
 import {
   onPrefetchUpdate,
   getPrefetchStatus,
 } from "../../../../../utils/ticket/prefetch";
 import {
-  fetchAgencies,
-  fetchFlightData,
-  CONTRACT_ID,
-} from "../../../../../utils/ticket/ticketApi";
+  startSearch,
+  cancelSearch,
+  onSearchUpdate,
+  getSearchState,
+} from "../../../../../utils/ticket/searchManager";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
-import styles from "./TicketOptimiser.module.css";
 import TicketFilter from "../TicketFilter/TicketFilter";
 
-const AGENCIES_PER_BATCH = 50;
-const MAX_CONCURRENT = 7;
-const CACHE_TTL_MS = 30 * 60 * 1000;
+// Batch size, concurrency and cache TTL now live in searchManager.js
 const LIST_LIMIT = 10;
 
 // How many alternative offers the "Also available" list shows. Raising this
@@ -555,44 +546,46 @@ const RoutePill = ({ route, tone }) => {
 // MAIN
 // ────────────────────────────────────────────
 const TicketOptimiser = () => {
-  const [destination, setDestination] = useState("JED");
-  const [departureDate, setDepartureDate] = useState(() =>
-    new Date().toISOString().slice(0, 10),
+  // Filter inputs are restored from the search engine on mount, so coming
+  // back to this page mid-search re-attaches to the running/last search
+  // instead of resetting to defaults — defaults would trigger a new
+  // default search on mount and supersede the running one ("latest wins").
+  const lastParams = getSearchState().params;
+  const [destination, setDestination] = useState(
+    lastParams?.destination ?? "JED",
   );
-  const [windowDays, setWindowDays] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState(null);
-  const [result, setResult] = useState(null);
-  const [liveResult, setLiveResult] = useState(null);
-  const [agencies, setAgencies] = useState([]);
+  const [departureDate, setDepartureDate] = useState(
+    () => lastParams?.departureDate ?? new Date().toISOString().slice(0, 10),
+  );
+  const [windowDays, setWindowDays] = useState(lastParams?.windowDays ?? 1);
   const [fakeProgress, setFakeProgress] = useState(0);
-  const [show15Warning, setShow15Warning] = useState(false);
-  const [dataSource, setDataSource] = useState(null);
-  const [fetchedAt, setFetchedAt] = useState(null);
-  const [isStale, setIsStale] = useState(false);
+  const [show15Warning, setShow15Warning] = useState(
+    lastParams?.windowDays === 15,
+  );
   const [listPage, setListPage] = useState(1);
   const [prefetchState, setPrefetchState] = useState(() => getPrefetchStatus());
-  // Was a boolean `cancelledRef` that was only ever reset to false and never
-  // set to true, so every `if (cancelledRef.current) return;` check was dead
-  // code. A monotonically increasing request id lets us tell whether the
-  // in-flight search is still the latest one requested, and actually bail
-  // out of stale searches when the user changes filters mid-flight.
-  const requestIdRef = useRef(0);
-  const backgroundRefreshRef = useRef(false);
+  // ...but search state (status/results/progress) lives in the module-level
+  // searchManager, so an in-flight search keeps running when the user
+  // navigates away from this page. This component only subscribes to it.
+  const [search, setSearch] = useState(getSearchState);
   const fakeProgressTimerRef = useRef(null);
   const fakeProgressStartRef = useRef(null);
-  // Captured at the moment a search starts, so if this ever runs while
-  // windowDays could change (it can't right now — inputs are disabled while
-  // loading — this is just a safety net) the ETA math doesn't shift mid-run.
-  const fakeProgressWindowRef = useRef(windowDays);
 
-  const airports = [
-    { value: "JED", label: "Jeddah (JED)" },
-    { value: "RUH", label: "Riyadh (RUH)" },
-    { value: "DMM", label: "Dammam (DMM)" },
-    { value: "AMM", label: "Amman (AMM)" },
-  ];
+  // Derived from the search manager — same names the render below has
+  // always used, so the JSX stays untouched.
+  const loading = search.status === "running";
+  const refreshing = search.refreshing;
+  const error = search.error;
+  const result = search.result;
+  const liveResult = search.liveResult;
+  const fetchedAt = search.fetchedAt;
+  const isStale = search.isStale;
+  const agenciesCount = search.agenciesCount;
+
+  // Search state listener
+  useEffect(function () {
+    return onSearchUpdate(setSearch);
+  }, []);
 
   // Prefetch state listener
   useEffect(function () {
@@ -610,12 +603,14 @@ const TicketOptimiser = () => {
   // `loading` actually goes false and unmounts.
   useEffect(() => {
     if (loading) {
-      fakeProgressWindowRef.current = windowDays;
-      fakeProgressStartRef.current = Date.now();
+      // startedAt comes from the manager — the search may have started
+      // before this page mounted (or while the user was on another page),
+      // so we sync to it instead of "now".
+      fakeProgressStartRef.current = search.startedAt || Date.now();
+      const progressWindow = search.params?.windowDays || windowDays;
       setFakeProgress(4);
       const estimatedMs =
-        WINDOW_ESTIMATED_MS[fakeProgressWindowRef.current] ||
-        WINDOW_ESTIMATED_MS[1];
+        WINDOW_ESTIMATED_MS[progressWindow] || WINDOW_ESTIMATED_MS[1];
       const tau = estimatedMs / 3;
       fakeProgressTimerRef.current = setInterval(() => {
         const elapsed = Date.now() - fakeProgressStartRef.current;
@@ -629,73 +624,12 @@ const TicketOptimiser = () => {
     return () => clearInterval(fakeProgressTimerRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
-
-  // Note: the dedicated "load cached JED/today result on mount" effect that
-  // used to live here was removed — it raced the auto-search effect below,
-  // which fires on the same initial render (destination/departureDate are
-  // already set) and performs the identical getResult/cacheGet/stale-refresh
-  // lookup itself. Keeping both meant the cached result would flash in, then
-  // get wiped by handleSearch's `setResult(null)` and reloaded a moment
-  // later. The auto-search effect now covers the mount case on its own.
-
-  var triggerBackgroundRefresh = async function (dest, date, days) {
-    if (backgroundRefreshRef.current) return;
-    backgroundRefreshRef.current = true;
-    setRefreshing(true);
-    try {
-      var list = await fetchAgencies();
-      var batches = [];
-      for (var i = 0; i < list.length; i += AGENCIES_PER_BATCH)
-        batches.push(list.slice(i, i + AGENCIES_PER_BATCH));
-      var all = [];
-      for (var r = 0; r < batches.length; r += MAX_CONCURRENT) {
-        var tasks = batches.slice(r, r + MAX_CONCURRENT).map(function (b) {
-          return async function () {
-            try {
-              return normaliseResults(
-                await fetchFlightData(
-                  buildMegaQuery(b, dest, date, 1, CONTRACT_ID),
-                ),
-                b,
-                [date],
-              );
-            } catch (_) {
-              return [];
-            }
-          };
-        });
-        var settled = await Promise.allSettled(
-          tasks.map(function (t) {
-            return t();
-          }),
-        );
-        for (var s = 0; s < settled.length; s++) {
-          if (
-            settled[s].status === "fulfilled" &&
-            Array.isArray(settled[s].value)
-          )
-            all = all.concat(settled[s].value);
-        }
-      }
-      if (all.length) {
-        var fr = optimise(all, new Date(date), "price");
-        cacheSet(dest + "-" + date + "-" + days, fr, CACHE_TTL_MS);
-        await saveResult(dest + "-" + date + "-" + days, fr, CACHE_TTL_MS);
-        if (dest === destination && date === departureDate) {
-          setResult(fr);
-          setDataSource("fresh-idb");
-          setFetchedAt(Date.now());
-          setIsStale(false);
-        }
-      }
-    } catch (err) {
-      console.warn("Bg refresh:", err.message);
-    } finally {
-      backgroundRefreshRef.current = false;
-      setRefreshing(false);
-    }
-  };
-
+  // Note: there is intentionally no "load cached result on mount" effect —
+  // the auto-search effect below fires on the initial render and delegates
+  // to searchManager.startSearch, which resolves fresh IndexedDB / memory
+  // caches instantly and never restarts a search that is already running.
+  // (Stale-while-revalidate moved into searchManager.revalidateInBackground —
+  // it is background work by nature, so it belongs outside the component.)
   var handleWindowChange = function (v) {
     var d = Number(v);
     setWindowDays(d);
@@ -703,138 +637,33 @@ const TicketOptimiser = () => {
   };
 
   var handleCancel = function () {
-    // Bumping the id invalidates every `if (requestId !== requestIdRef.current)`
-    // check already threaded through handleSearch, so the in-flight search
-    // stops making further batches/requests and won't overwrite state once
-    // any already-started network calls resolve. Whatever partial results
-    // were gathered so far (liveResult) are kept rather than cleared. The
-    // fake progress bar resets on its own via the `loading` effect once
-    // setLoading(false) below takes effect.
-    requestIdRef.current++;
-    setLoading(false);
+    // Cancels the background engine: searchManager bumps its request id so
+    // the in-flight pipeline short-circuits at its next checkpoint (stops
+    // scheduling new batches and won't publish state anymore). Partial
+    // results gathered so far (liveResult) are kept rather than cleared.
+    // The engine stays cancelled for these params — navigating away and
+    // back will NOT restart it; changing filters starts a new search.
+    cancelSearch();
   };
 
-  var handleSearch = async function () {
-    if (!destination || !departureDate) return;
-    const requestId = ++requestIdRef.current;
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    setLiveResult(null);
-    setFetchedAt(null);
-    setIsStale(false);
-    setDataSource(null);
-    setShow15Warning(false);
-    setListPage(1);
-    try {
-      var key = destination + "-" + departureDate + "-" + windowDays;
-      var e = await getResult(key);
-      if (requestId !== requestIdRef.current) return;
-      if (e) {
-        setResult(e.data);
-        setFetchedAt(e.fetchedAt);
-        setDataSource(e.fresh ? "fresh-idb" : "stale-idb");
-        setLoading(false);
-        if (!e.fresh) {
-          setIsStale(true);
-          triggerBackgroundRefresh(destination, departureDate, windowDays);
-        }
-        return;
-      }
-      var m = cacheGet(key);
-      if (m) {
-        setResult(m);
-        setDataSource("memory");
-        setFetchedAt(Date.now());
-        setLoading(false);
-        return;
-      }
+  // (Search pipeline moved into searchManager.startSearch — it runs at
+  // module level so it survives page navigation.)
 
-      setDataSource("live");
-      var list = await fetchAgencies();
-      if (requestId !== requestIdRef.current) return;
-      setAgencies(list);
-
-      var dates = [];
-      for (var i = 0; i < windowDays; i++) {
-        var d = new Date(departureDate);
-        d.setDate(d.getDate() + i);
-        dates.push(d.toISOString().slice(0, 10));
-      }
-      var batches = [];
-      for (var j = 0; j < list.length; j += AGENCIES_PER_BATCH)
-        batches.push(list.slice(j, j + AGENCIES_PER_BATCH));
-      var tasks = [];
-      dates.forEach(function (date) {
-        batches.forEach(function (bA) {
-          tasks.push(async function () {
-            if (requestId !== requestIdRef.current) return [];
-            try {
-              return normaliseResults(
-                await fetchFlightData(
-                  buildMegaQuery(bA, destination, date, 1, CONTRACT_ID),
-                ),
-                bA,
-                [date],
-              );
-            } catch (_) {
-              return [];
-            }
-          });
-        });
-      });
-
-      var totalB = tasks.length;
-      var all = [],
-        cc = 0;
-      for (var k = 0; k < totalB; k += MAX_CONCURRENT) {
-        if (requestId !== requestIdRef.current) break;
-        var round = await Promise.allSettled(
-          tasks.slice(k, k + MAX_CONCURRENT).map(function (t) {
-            return t();
-          }),
-        );
-        for (var ri = 0; ri < round.length; ri++) {
-          cc++;
-          if (
-            round[ri].status === "fulfilled" &&
-            Array.isArray(round[ri].value)
-          )
-            all = all.concat(round[ri].value);
-        }
-        if (all.length)
-          setLiveResult(optimise(all, new Date(departureDate), "price"));
-      }
-      if (requestId !== requestIdRef.current) return;
-      if (!all.length) {
-        setError(
-          "No flights found for " + destination + " on " + departureDate,
-        );
-        setLoading(false);
-        return;
-      }
-      var fr = optimise(all, new Date(departureDate), "price");
-      var now = Date.now();
-      cacheSet(key, fr, CACHE_TTL_MS);
-      try {
-        await saveResult(key, fr, CACHE_TTL_MS);
-      } catch (_) {}
-      setResult(fr);
-      setLiveResult(fr);
-      setFetchedAt(now);
-      setDataSource("live");
-    } catch (err) {
-      if (requestId === requestIdRef.current) setError(err.message || "Error");
-    } finally {
-      if (requestId === requestIdRef.current) setLoading(false);
-    }
-  };
-  // Auto-search when filters change
+  // Auto-search when filters change (including on mount). Delegates to the
+  // background engine: same-params calls are no-ops there, so navigating
+  // away and back never restarts or duplicates a search; changed params
+  // start a new search and invalidate the old one ("latest wins").
   useEffect(() => {
     if (destination && departureDate) {
-      handleSearch();
+      startSearch({ destination, departureDate, windowDays });
     }
   }, [destination, departureDate, windowDays]);
+
+  // New search started → back to the first page of the results list.
+  // (params is a fresh object only when a genuinely new search begins.)
+  useEffect(() => {
+    setListPage(1);
+  }, [search.params]);
 
   const displayResult = result || liveResult;
   const rawTickets = displayResult?.all_tickets || [];
@@ -862,7 +691,7 @@ const TicketOptimiser = () => {
         <h2 className="fw-bold text-dark mb-1">Ticket Optimiser</h2>
         <div className="d-flex align-items-center flex-wrap gap-2">
           <p className="text-muted mb-0">
-            Compare prices across {agencies.length || "all"} travel agencies.
+            Compare prices across {agenciesCount || "all"} travel agencies.
           </p>
           {/* Your badges */}
         </div>

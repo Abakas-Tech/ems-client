@@ -189,7 +189,7 @@ const FinancePage = () => {
       const res = await closePeriod({ closing_note });
       addMessage(
         true,
-        `Period closed. "${res.data?.newPeriod?.title}" is now open.`,
+        `Period closed. "${res.data?.newPeriod?.label}" is now open.`,
       );
       setShowCloseModal(false);
       loadCurrentPeriod();
@@ -249,7 +249,7 @@ const FinancePage = () => {
         showLoader();
         try {
           await deletePeriod(period.id);
-          addMessage(true, `${period.title} and its transactions were deleted`);
+          addMessage(true, `${period.label} and its transactions were deleted`);
           loadPeriods();
         } catch (err) {
           addMessage(false, err.message || "Failed to delete period");
@@ -258,7 +258,7 @@ const FinancePage = () => {
         }
       },
       {
-        title: `Delete ${period.title}? This permanently removes the period AND every transaction recorded in it. This cannot be undone.`,
+        title: `Delete ${period.label}? This permanently removes the period AND every transaction recorded in it. This cannot be undone.`,
         confirmText: "Delete Period",
       },
     );
@@ -437,7 +437,7 @@ const FinancePage = () => {
                     />
                   </div>
                   <h2 className="fw-bold text-dark mb-1">
-                    {selectedPeriod.title}
+                    {selectedPeriod.label}
                   </h2>
                   {selectedPeriod.description && (
                     <p className="text-muted mb-0">
@@ -654,7 +654,7 @@ const FinancePage = () => {
           columns={[
             {
               header: "Period",
-              render: (row) => <div className="fw-semibold">{row.title}</div>,
+              render: (row) => <div className="fw-semibold">{row.label}</div>,
             },
             {
               header: "Status",

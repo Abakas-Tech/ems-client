@@ -177,12 +177,6 @@ const Analytics = () => {
           colorClass="widget-3"
         />
         <StatCard
-          title="LMIS Approved"
-          value={data.operations.lmis_approved}
-          icon="bi bi-qr-code"
-          colorClass="widget-4"
-        />
-        <StatCard
           title="Total Users"
           value={data.workers.total_non_workers}
           icon="bi bi-person-badge"

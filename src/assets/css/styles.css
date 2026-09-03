@@ -8741,7 +8741,7 @@ footer {
   position: relative;
 }
 footer.dark-footer {
-  background: #105491;
+  background: #0b1f3a;
 }
 .footer-logo {
   padding: 20px 0;
@@ -8863,7 +8863,7 @@ footer.skin-dark-footer .footer-widget ul li a:focus {
   border-top: 1px solid var(--formborder);
 }
 .skin-dark-footer .footer-bottom {
-  background: #105491;
+  background: #0B1F3A;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 ul.footer-bottom-social {

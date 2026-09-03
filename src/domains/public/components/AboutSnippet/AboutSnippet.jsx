@@ -65,7 +65,7 @@ function AboutSnippet() {
                 <button
                   onClick={goToAboutDetail}
                   className="btn text-white d-flex fw-bold"
-                  style={{ background: "rgb(16, 84, 145)" }}
+                  style={{ background: "#0B1F3A" }}
                 >
                   Learn More
                 </button>
