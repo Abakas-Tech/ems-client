@@ -141,6 +141,7 @@ const makeExperienceRow = (country = "", years_of_experience = "") => ({
 const defaultBasic = () => ({
   full_name: "",
   phone_number: "",
+  email: "",
   is_active: true,
 });
 
@@ -163,6 +164,7 @@ const defaultPersonal = () => ({
   weight_kg: "",
   national_id_number: "",
   fingerprint_number: "",
+  labour_id: "",
 });
 
 const defaultPassport = () => ({
@@ -267,6 +269,8 @@ const dateOrderError = (startValue, endValue, endLabel) => {
 };
 
 const fallback = (value) => (value === "" || value == null ? "—" : value);
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Utility to get a consistent color for a status badge based on its name
 // (mirrors WorkerProfile's getConsistentColor so badges look identical
@@ -757,10 +761,10 @@ function WorkerForm() {
 
   // map the aggregated getWorkerProfile response onto the form state
   const applyProfileToForm = (profileData) => {
-    console.log(profileData)
     setBasic({
       full_name: profileData.full_name || "",
       phone_number: profileData.phone_number || "",
+      email: profileData.email || "",
       is_active: !!profileData.is_active,
     });
 
@@ -786,6 +790,7 @@ function WorkerForm() {
       weight_kg: pi.weight_kg || "",
       national_id_number: pi.national_id_number || "",
       fingerprint_number: pi.fingerprint_number || "",
+      labour_id: pi.labour_id || "",
     });
     setExistingPhoto3x4Url(pi.photo_3x4?.url || null);
     setExistingPhotoStandingUrl(pi.photo_standing?.url || null);
@@ -1254,12 +1259,13 @@ function WorkerForm() {
       return "Full name is too short";
     if (!workerPhoneRegex.test(basic.phone_number))
       return "Enter a valid phone number";
+    if (basic.email && !emailRegex.test(basic.email))
+      return "Enter a valid email address";
     return null;
   };
 
   const validatePersonal = () => {
-    if (!["Male", "Female"].includes(personal.sex))
-      return "Sex is required";
+    if (!["Male", "Female"].includes(personal.sex)) return "Sex is required";
     if (!isEditMode && !personal.region) return "Region is required";
 
     if (
@@ -1501,7 +1507,10 @@ function WorkerForm() {
       if (isNaN(issue.getTime())) return "Issue date must be valid";
       if (issue > today) return "Issue date cannot be in the future";
     }
-    if (visa.visa_expiry_date && isNaN(new Date(visa.visa_expiry_date).getTime()))
+    if (
+      visa.visa_expiry_date &&
+      isNaN(new Date(visa.visa_expiry_date).getTime())
+    )
       return "Expiry date must be valid";
 
     const dateOrderErr = dateOrderError(
@@ -1526,15 +1535,11 @@ function WorkerForm() {
 
     if (travel.departure_date) {
       const departureDate = new Date(travel.departure_date);
-      if (isNaN(departureDate.getTime()))
-        return "Departure date must be valid";
+      if (isNaN(departureDate.getTime())) return "Departure date must be valid";
       departureDate.setHours(0, 0, 0, 0);
       if (departureDate < now) return "Departure date cannot be in the past";
     }
-    if (
-      travel.arrival_date &&
-      isNaN(new Date(travel.arrival_date).getTime())
-    )
+    if (travel.arrival_date && isNaN(new Date(travel.arrival_date).getTime()))
       return "Arrival date must be valid";
 
     const dateOrderErr = dateOrderError(
@@ -1670,6 +1675,7 @@ function WorkerForm() {
 
       dataToSend.append("full_name", basic.full_name);
       dataToSend.append("phone_number", basic.phone_number);
+      dataToSend.append("email", basic.email);
       dataToSend.append("is_active", basic.is_active);
       // status is only sent on create — edit mode manages status separately
       // through the assign/revoke flow, never through this form submission
@@ -2077,6 +2083,26 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
+      <div className="form-group col-md-6 mb-3">
+        <label>Email</label>
+        <input
+          type="email"
+          name="email"
+          className="form-control"
+          value={basic.email}
+          onChange={handleBasicChange}
+        />
+      </div>
+      <div className="form-group col-md-6 mb-3">
+        <label>Labour ID</label>
+        <input
+          type="text"
+          name="labour_id"
+          className="form-control"
+          value={personal.labour_id}
+          onChange={handlePersonalChange}
+        />
+      </div>
     </div>
   );
 
@@ -2207,60 +2233,60 @@ function WorkerForm() {
     </div>
   );
 
-   const renderCocFields = () => (
-     <div className="row">
-       <div className="form-group col-md-6 mb-3">
-         <label>COC Number</label>
-         <input
-           type="text"
-           name="coc_number"
-           className="form-control"
-           value={coc.coc_number}
-           onChange={handleCocChange}
-         />
-       </div>
-       <div className="form-group col-md-6 mb-3">
-         <label>Assessment Center</label>
-         <input
-           type="text"
-           name="coc_assessment_center"
-           className="form-control"
-           value={coc.coc_assessment_center}
-           onChange={handleCocChange}
-         />
-       </div>
-       <div className="form-group col-md-6 mb-3">
-         <label>Assessment Date</label>
-         <input
-           type="date"
-           name="coc_assessment_date"
-           className="form-control"
-           value={coc.coc_assessment_date}
-           onChange={handleCocChange}
-         />
-       </div>
-       <div className="form-group col-md-6 mb-3">
-         <label>Issue Date</label>
-         <input
-           type="date"
-           name="coc_issue_date"
-           className="form-control"
-           value={coc.coc_issue_date}
-           onChange={handleCocChange}
-         />
-       </div>
-       <div className="form-group col-md-6 mb-3">
-         <label>Expiry Date</label>
-         <input
-           type="date"
-           name="coc_expiry_date"
-           className="form-control"
-           value={coc.coc_expiry_date}
-           onChange={handleCocChange}
-         />
-       </div>
-     </div>
-   );
+  const renderCocFields = () => (
+    <div className="row">
+      <div className="form-group col-md-6 mb-3">
+        <label>COC Number</label>
+        <input
+          type="text"
+          name="coc_number"
+          className="form-control"
+          value={coc.coc_number}
+          onChange={handleCocChange}
+        />
+      </div>
+      <div className="form-group col-md-6 mb-3">
+        <label>Assessment Center</label>
+        <input
+          type="text"
+          name="coc_assessment_center"
+          className="form-control"
+          value={coc.coc_assessment_center}
+          onChange={handleCocChange}
+        />
+      </div>
+      <div className="form-group col-md-6 mb-3">
+        <label>Assessment Date</label>
+        <input
+          type="date"
+          name="coc_assessment_date"
+          className="form-control"
+          value={coc.coc_assessment_date}
+          onChange={handleCocChange}
+        />
+      </div>
+      <div className="form-group col-md-6 mb-3">
+        <label>Issue Date</label>
+        <input
+          type="date"
+          name="coc_issue_date"
+          className="form-control"
+          value={coc.coc_issue_date}
+          onChange={handleCocChange}
+        />
+      </div>
+      <div className="form-group col-md-6 mb-3">
+        <label>Expiry Date</label>
+        <input
+          type="date"
+          name="coc_expiry_date"
+          className="form-control"
+          value={coc.coc_expiry_date}
+          onChange={handleCocChange}
+        />
+      </div>
+    </div>
+  );
   const renderMedicalFields = () => (
     <div className="row">
       <div className="form-group col-md-6 mb-3">
@@ -2901,7 +2927,9 @@ function WorkerForm() {
           role="button"
           onClick={() => scrollToSection(targetKey)}
         >
-          {isComplete && <FiCheckCircle className="tree-node-check-icon" size={16} />}
+          {isComplete && (
+            <FiCheckCircle className="tree-node-check-icon" size={16} />
+          )}
           <span className="tree-node-dot">{nodeNumber}</span>
           <span className="tree-node-label">
             {section.label}
@@ -2920,7 +2948,9 @@ function WorkerForm() {
         role="button"
         onClick={() => scrollToSection(targetKey)}
       >
-        {isComplete && <FiCheckCircle className="tree-node-check-icon" size={16} />}
+        {isComplete && (
+          <FiCheckCircle className="tree-node-check-icon" size={16} />
+        )}
         <span className="tree-node-dot">{nodeNumber}</span>
         <span className="tree-node-label-wrap">
           <span className="tree-node-label">
