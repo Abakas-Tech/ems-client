@@ -119,7 +119,7 @@ export default function Install() {
           </div>
 
           <div className={styles.headerText}>
-            <p className={styles.appTitle}>Install MMH Jobs</p>
+            <p className={styles.appTitle}>Install ALETISALAT</p>
             <p className={styles.appSubtitle}>
               Get quick access from your home screen
             </p>
