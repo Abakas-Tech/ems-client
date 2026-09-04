@@ -1,4 +1,4 @@
-import logoAsset from "../../../assets/img/logo/logo.jpg";
+import logoAsset from "../../../assets/img/logo/aletisalat-about.png";
 
 export const REPORT_META = {
   orgName: "Al_Itisalat Agency",

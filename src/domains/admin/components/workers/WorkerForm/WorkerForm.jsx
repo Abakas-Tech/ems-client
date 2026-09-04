@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { FiCheckCircle, FiPlus, FiTrash2 } from "react-icons/fi";
 import {
   createWorker,
   updateWorker,
@@ -47,65 +48,6 @@ const renderPlainLabel = (text, missing = false) => (
     {text}
     {missing && <span className="text-danger fw-bold ms-1">!</span>}
   </label>
-);
-
-// Small check-circle icon used by the tree nav to mark a completed module.
-// Plain inline SVG (no new icon-library dependency) so it's positioned
-// freely and colored via CSS, matching the rest of the tree nav's styling.
-const CompletionCheckIcon = () => (
-  <svg
-    className="tree-node-check-icon"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.25"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-label="Completed"
-  >
-    <circle cx="12" cy="12" r="10" />
-    <path d="M8 12.5l2.5 2.5L16 9.5" />
-  </svg>
-);
-
-// Plain inline SVG icons for the Experience add/remove controls — kept
-// dependency-free, matching CompletionCheckIcon's approach above.
-const PlusIcon = () => (
-  <svg
-    width="15"
-    height="15"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M12 5v14M5 12h14" />
-  </svg>
-);
-
-const TrashIcon = () => (
-  <svg
-    width="15"
-    height="15"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M3 6h18" />
-    <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-    <path d="M19 6l-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6" />
-    <path d="M10 11v6" />
-    <path d="M14 11v6" />
-  </svg>
 );
 
 // section definitions, in the order they appear on the page / in the nav
@@ -163,6 +105,28 @@ const SKILL_OPTIONS = [
   "driving",
   "other",
 ];
+
+// Fixed dropdown options for the Experience module's Country and Years
+// fields. Values are stored/sent exactly as before (plain strings on the
+// row) — only the input control changed from free text to a select.
+const MIDDLE_EAST_COUNTRIES = [
+  "Bahrain",
+  "Iraq",
+  "Israel",
+  "Jordan",
+  "Kuwait",
+  "Lebanon",
+  "Oman",
+  "Palestine",
+  "Qatar",
+  "Saudi Arabia",
+  "Syria",
+  "Turkey",
+  "United Arab Emirates",
+  "Yemen",
+];
+
+const EXPERIENCE_YEARS_OPTIONS = [1, 2, 3, 4, 5];
 
 // One blank experience row. Each row carries a client-only `localId` used
 // purely as a React key / for add-remove bookkeeping — it is stripped out
@@ -275,6 +239,32 @@ const educationRegex = /^[A-Za-z\s.]+$/;
 const guarantorPhoneRegex = /^(?:\+251[79]\d{8}|09\d{8})$/;
 const workerPhoneRegex = /^(?:\+251[79]\d{8}|09\d{8}|07\d{8})$/;
 const allowedImageTypes = ["image/jpeg", "image/png", "image/jpg"];
+
+// ---------------------------------------------------------------------
+// Shared validation helpers — these mirror validateWorker.middleware.js
+// on the backend exactly (isProvided / dateOrder), so a request that
+// would fail Joi on the server fails the same way here first. This is a
+// UX/safety-net layer only; the backend remains the real source of truth
+// and re-validates everything independently — bypassing this frontend
+// check (e.g. calling the API directly) is still caught server-side.
+// ---------------------------------------------------------------------
+const isProvided = (v) => v !== undefined && v !== null && v !== "";
+
+const dateOrderError = (startValue, endValue, endLabel) => {
+  const hasStart = isProvided(startValue);
+  const hasEnd = isProvided(endValue);
+
+  if (hasEnd && !hasStart) return `${endLabel} needs a start date`;
+
+  if (hasStart && hasEnd) {
+    const start = new Date(startValue);
+    const end = new Date(endValue);
+    if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end <= start) {
+      return `${endLabel} must be after the start date`;
+    }
+  }
+  return null;
+};
 
 const fallback = (value) => (value === "" || value == null ? "—" : value);
 
@@ -1105,7 +1095,9 @@ function WorkerForm() {
     Object.values(visa).some((v) => v !== "" && v != null);
   const isTravelFilled = () => Boolean(travel.ticket_number?.trim());
   const isContractFilled = () =>
-    Boolean(contract.employer?.trim()) && Boolean(contract.monthly_salary);
+    Boolean(contract.employer?.trim()) &&
+    Boolean(contract.monthly_salary) &&
+    Boolean(contract.partner_id);
   const isLanguagesFilled = () => languages.length > 0;
   const isSkillsFilled = () => skills.length > 0;
   const isExperienceFilled = () =>
@@ -1244,21 +1236,30 @@ function WorkerForm() {
     );
   };
 
+  // ---------------------------------------------------------------------
+  // Section validators — mirror validateWorker.middleware.js on the
+  // backend rule-for-rule (same required/optional fields, same date-pair
+  // logic via dateOrderError, same short messages), so a request that
+  // would be rejected by the server is caught here first for instant
+  // feedback. The backend remains the actual source of truth and
+  // re-validates independently regardless of what happens here.
+  // ---------------------------------------------------------------------
+
   const validateBasic = () => {
     if (
       !basic.full_name ||
       basic.full_name.trim().length < 3 ||
       basic.full_name.length > 100
     )
-      return "Full name must be 3-100 characters";
+      return "Full name is too short";
     if (!workerPhoneRegex.test(basic.phone_number))
-      return "Phone number must be a valid ";
+      return "Enter a valid phone number";
     return null;
   };
 
   const validatePersonal = () => {
     if (!["Male", "Female"].includes(personal.sex))
-      return "Sex must be Male or Female";
+      return "Sex is required";
     if (!isEditMode && !personal.region) return "Region is required";
 
     if (
@@ -1305,7 +1306,7 @@ function WorkerForm() {
         personal.marital_status,
       )
     )
-      return "Marital status must be Single, Married, Divorced, or Widowed";
+      return "Invalid marital status";
     if (personal.nationality && !isOnlyAlphabetsAndSpaces(personal.nationality))
       return "Nationality must contain only letters and spaces";
     if (personal.address && personal.address.length > 500)
@@ -1356,28 +1357,30 @@ function WorkerForm() {
 
   const validatePassport = () => {
     if (!sectionsEnabled.passport) return null;
+
     const passportNumber = passport.passport_number?.trim();
     if (!passportNumber) return "Passport number is required";
     if (passportNumber.length < 5 || passportNumber.length > 50)
-      return "Passport number must be 5-50 characters";
+      return "Passport number is too short";
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     if (passport.passport_issue_date) {
       const issue = new Date(passport.passport_issue_date);
-      if (isNaN(issue.getTime())) return "Invalid issue date";
-      if (issue > today) return "Issue date cannot be in future";
+      if (isNaN(issue.getTime())) return "Issue date must be valid";
+      if (issue > today) return "Issue date cannot be in the future";
     }
     if (passport.passport_expiry_date) {
       const expiry = new Date(passport.passport_expiry_date);
-      if (isNaN(expiry.getTime())) return "Invalid expiry date";
-      if (
-        passport.passport_issue_date &&
-        expiry <= new Date(passport.passport_issue_date)
-      )
-        return "Expiry must be after issue date";
+      if (isNaN(expiry.getTime())) return "Expiry date must be valid";
     }
+    const dateOrderErr = dateOrderError(
+      passport.passport_issue_date,
+      passport.passport_expiry_date,
+      "Expiry date",
+    );
+    if (dateOrderErr) return dateOrderErr;
 
     const hasExistingScan = isEditMode && existingPassportScanUrl;
     if (!hasExistingScan && !passportScan) return "Passport scan is required";
@@ -1399,35 +1402,32 @@ function WorkerForm() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const parseDate = (value, label) => {
-      if (!value) return {};
-      const date = new Date(value);
-      if (isNaN(date.getTime()))
-        return { error: `Invalid ${label.toLowerCase()}` };
-      return { date };
-    };
+    if (coc.coc_assessment_date) {
+      const assessment = new Date(coc.coc_assessment_date);
+      if (isNaN(assessment.getTime())) return "Assessment date must be valid";
+      if (assessment > today) return "Assessment date cannot be in the future";
+    }
+    if (coc.coc_issue_date) {
+      const issue = new Date(coc.coc_issue_date);
+      if (isNaN(issue.getTime())) return "Issue date must be valid";
+      if (issue > today) return "Issue date cannot be in the future";
+    }
+    if (coc.coc_expiry_date && isNaN(new Date(coc.coc_expiry_date).getTime()))
+      return "Expiry date must be valid";
 
-    const assessment = parseDate(coc.coc_assessment_date, "Assessment date");
-    if (assessment.error) return assessment.error;
-    if (assessment.date && assessment.date > today)
-      return "Assessment date cannot be in future";
-
-    const issue = parseDate(coc.coc_issue_date, "Issue date");
-    if (issue.error) return issue.error;
-    if (issue.date && issue.date > today)
-      return "Issue date cannot be in future";
-
-    const expiry = parseDate(coc.coc_expiry_date, "Expiry date");
-    if (expiry.error) return expiry.error;
-    if (expiry.date && issue.date && expiry.date <= issue.date)
-      return "Expiry must be after issue date";
+    const dateOrderErr = dateOrderError(
+      coc.coc_issue_date,
+      coc.coc_expiry_date,
+      "Expiry date",
+    );
+    if (dateOrderErr) return dateOrderErr;
 
     return null;
   };
   const validateMedical = () => {
     if (!sectionsEnabled.medical) return null;
     if (!["fit", "unfit", "pending"].includes(medical.medical_status))
-      return "Medical status must be fit, unfit, or pending";
+      return "Medical status is required";
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -1437,17 +1437,18 @@ function WorkerForm() {
       if (isNaN(issue.getTime())) return "Issue date must be valid";
       if (issue > today) return "Issue date cannot be in the future";
     }
-    if (medical.medical_expiry_date) {
-      const expiry = new Date(medical.medical_expiry_date);
-      if (isNaN(expiry.getTime())) return "Expiry date must be valid";
-    }
-    if (medical.medical_issue_date && medical.medical_expiry_date) {
-      if (
-        new Date(medical.medical_expiry_date) <=
-        new Date(medical.medical_issue_date)
-      )
-        return "Expiry date must be after issue date";
-    }
+    if (
+      medical.medical_expiry_date &&
+      isNaN(new Date(medical.medical_expiry_date).getTime())
+    )
+      return "Expiry date must be valid";
+
+    const dateOrderErr = dateOrderError(
+      medical.medical_issue_date,
+      medical.medical_expiry_date,
+      "Expiry date",
+    );
+    if (dateOrderErr) return dateOrderErr;
 
     return null;
   };
@@ -1461,15 +1462,13 @@ function WorkerForm() {
     if (guarantor.relation && guarantor.relation.length > 200)
       return "Relation cannot exceed 200 characters";
     if (!guarantorPhoneRegex.test(guarantor.guarantor_phone_number))
-      return "Phone must be a valid format";
+      return "Enter a valid phone number";
     return null;
   };
 
-  // Agent Information validation — mirrors validateGuarantor's shape and
-  // enforces the same NOT NULL / length constraints as the
-  // workers_agent_information table (agent_name VARCHAR(150), agent_phone
-  // VARCHAR(50)). Applies whether the agent came from a suggestion pick or
-  // was typed manually — either way `agent` must be valid.
+  // Agent Information isn't covered by the backend Joi worker schema (it
+  // goes through its own /worker-agent endpoint), so this stays a
+  // frontend-only check — unchanged.
   const validateAgent = () => {
     if (!sectionsEnabled.agent) return null;
     const name = agent.agent_name?.trim();
@@ -1478,7 +1477,7 @@ function WorkerForm() {
     if (!agent.agent_phone || !agent.agent_phone.trim())
       return "Agent phone is required";
     if (!guarantorPhoneRegex.test(agent.agent_phone))
-      return "Agent phone must be a valid format";
+      return "Enter a valid phone number";
     if (agent.agent_phone.length > 50)
       return "Agent phone cannot exceed 50 characters";
     return null;
@@ -1494,12 +1493,24 @@ function WorkerForm() {
       return "Issuance number cannot exceed 100 characters";
     if (visa.sponsor_id && visa.sponsor_id.length > 100)
       return "Sponsor ID cannot exceed 100 characters";
-    if (visa.visa_expiry_date && !visa.visa_issue_date)
-      return "Visa issue date must be provided if expiry date exists";
-    if (visa.visa_issue_date && visa.visa_expiry_date) {
-      if (new Date(visa.visa_expiry_date) <= new Date(visa.visa_issue_date))
-        return "Visa expiry date must be greater than issue date";
+
+    if (visa.visa_issue_date) {
+      const issue = new Date(visa.visa_issue_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (isNaN(issue.getTime())) return "Issue date must be valid";
+      if (issue > today) return "Issue date cannot be in the future";
     }
+    if (visa.visa_expiry_date && isNaN(new Date(visa.visa_expiry_date).getTime()))
+      return "Expiry date must be valid";
+
+    const dateOrderErr = dateOrderError(
+      visa.visa_issue_date,
+      visa.visa_expiry_date,
+      "Expiry date",
+    );
+    if (dateOrderErr) return dateOrderErr;
+
     return null;
   };
 
@@ -1512,83 +1523,77 @@ function WorkerForm() {
 
     const now = new Date();
     now.setHours(0, 0, 0, 0);
-    const departureDate = travel.departure_date
-      ? new Date(travel.departure_date)
-      : null;
-    const arrivalDate = travel.arrival_date
-      ? new Date(travel.arrival_date)
-      : null;
 
-    if (!departureDate && arrivalDate)
-      return "Departure date must be provided if arrival date is set";
-    if (departureDate) {
+    if (travel.departure_date) {
+      const departureDate = new Date(travel.departure_date);
       if (isNaN(departureDate.getTime()))
-        return "Departure date must be a valid date";
+        return "Departure date must be valid";
       departureDate.setHours(0, 0, 0, 0);
       if (departureDate < now) return "Departure date cannot be in the past";
     }
-    if (arrivalDate && isNaN(arrivalDate.getTime()))
-      return "Arrival date must be a valid date";
-    if (arrivalDate && departureDate) {
-      if (arrivalDate <= departureDate)
-        return "Arrival date cannot be before departure date";
-    }
+    if (
+      travel.arrival_date &&
+      isNaN(new Date(travel.arrival_date).getTime())
+    )
+      return "Arrival date must be valid";
+
+    const dateOrderErr = dateOrderError(
+      travel.departure_date,
+      travel.arrival_date,
+      "Arrival date",
+    );
+    if (dateOrderErr) return dateOrderErr;
 
     return null;
   };
 
   const validateContract = () => {
     if (!sectionsEnabled.contract) return null;
-    if (!contract.employer || !contract.employer.trim())
-      return "Employer name is required";
-    if (contract.partner_id) {
-      if (
-        !Number.isInteger(Number(contract.partner_id)) ||
-        Number(contract.partner_id) <= 0
-      )
-        return "Partner must be a positive integer or empty";
-    }
+
+    // Employer stays optional. Partner is now required.
+    if (!contract.partner_id) return "Partner is required";
+    if (
+      !Number.isInteger(Number(contract.partner_id)) ||
+      Number(contract.partner_id) <= 0
+    )
+      return "Invalid partner selected";
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const startDate = contract.contract_start_date
-      ? new Date(contract.contract_start_date)
-      : null;
-    const endDate = contract.contract_end_date
-      ? new Date(contract.contract_end_date)
-      : null;
 
-    if (!startDate && endDate)
-      return "Contract start date must be provided if end date exists";
-    if (startDate) {
-      if (isNaN(startDate.getTime()))
-        return "Contract start date must be a valid date";
+    if (contract.contract_start_date) {
+      const startDate = new Date(contract.contract_start_date);
+      if (isNaN(startDate.getTime())) return "Start date must be valid";
       startDate.setHours(0, 0, 0, 0);
-      if (startDate < today) return "Contract start date cannot be in the past";
+      if (startDate < today) return "Start date cannot be in the past";
     }
-    if (endDate) {
-      if (isNaN(endDate.getTime()))
-        return "Contract end date must be a valid date";
-      endDate.setHours(0, 0, 0, 0);
-      if (endDate <= startDate)
-        return "Contract end date must be after start date";
-    }
+    if (
+      contract.contract_end_date &&
+      isNaN(new Date(contract.contract_end_date).getTime())
+    )
+      return "End date must be valid";
+
+    const dateOrderErr = dateOrderError(
+      contract.contract_start_date,
+      contract.contract_end_date,
+      "End date",
+    );
+    if (dateOrderErr) return dateOrderErr;
 
     if (!contract.monthly_salary) return "Monthly salary is required";
     const salary = Number(contract.monthly_salary);
     if (isNaN(salary) || salary <= 0)
-      return "Monthly salary must be a positive number";
+      return "Monthly salary must be greater than 0";
     const decimalParts = contract.monthly_salary.toString().split(".");
     if (decimalParts[1]?.length > 2)
-      return "Monthly salary cannot have more than 2 decimal places";
+      return "Monthly salary allows at most 2 decimal places";
 
     const validStatuses = ["pending", "approved", "rejected", "terminated"];
     if (!contract.status || !validStatuses.includes(contract.status))
-      return `Status must be one of: ${validStatuses.join(", ")}`;
+      return "Invalid contract status";
 
     return null;
   };
-
   // Languages / Skills are constrained to the hardcoded checkbox options,
   // so there's nothing further to validate beyond "Include is on" (which
   // the auto-toggle keeps in sync with "is anything checked").
@@ -1609,7 +1614,7 @@ function WorkerForm() {
   const validateExperience = () => {
     if (!sectionsEnabled.experience) return null;
     for (const row of experiences) {
-      if (!row.country?.trim()) return "Experience country is required";
+      if (!row.country?.trim()) return "Country is required";
       const years = Number(row.years_of_experience);
       if (
         row.years_of_experience === "" ||
@@ -1619,7 +1624,7 @@ function WorkerForm() {
         years < 0 ||
         years > 99
       )
-        return "Years of experience must be a whole number between 0 and 99";
+        return "Years of experience is required";
     }
     return null;
   };
@@ -2600,12 +2605,13 @@ function WorkerForm() {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Partner</label>
+        {renderLabel("Partner", true)}
         <select
           name="partner_id"
           className="form-control"
           value={contract.partner_id}
           onChange={handleContractChange}
+          required
         >
           <option value="">Select Partner</option>
           {partners.map((partner) => (
@@ -2713,8 +2719,10 @@ function WorkerForm() {
   );
 
   // Experience — repeatable Country + Years of Experience rows, with an
-  // "Add experience" button and a per-row remove control. Icon-only
-  // controls (inline SVG, no new dependency) keep each row compact.
+  // "Add experience" button and a per-row remove control. Country and
+  // Years are fixed dropdowns (Middle Eastern countries / 1-5 years);
+  // the row's data shape (country, years_of_experience) and everything
+  // downstream (handleExperienceChange, submit payload) is unchanged.
   const renderExperienceFields = () => (
     <div>
       {experiences.length === 0 && (
@@ -2727,23 +2735,25 @@ function WorkerForm() {
           <div className="row align-items-end g-2">
             <div className="form-group col-md-5 mb-2">
               <label>Country</label>
-              <input
-                type="text"
+              <select
                 className="form-control"
                 value={row.country}
                 onChange={(e) =>
                   handleExperienceChange(row.localId, "country", e.target.value)
                 }
-                placeholder="e.g. Saudi Arabia"
-              />
+              >
+                <option value="">Select country</option>
+                {MIDDLE_EAST_COUNTRIES.map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="form-group col-md-5 mb-2">
               <label>Years of Experience</label>
-              <input
-                type="number"
+              <select
                 className="form-control"
-                min="0"
-                max="99"
                 value={row.years_of_experience}
                 onChange={(e) =>
                   handleExperienceChange(
@@ -2752,7 +2762,14 @@ function WorkerForm() {
                     e.target.value,
                   )
                 }
-              />
+              >
+                <option value="">Select years</option>
+                {EXPERIENCE_YEARS_OPTIONS.map((years) => (
+                  <option key={years} value={years}>
+                    {years}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="form-group col-md-2 mb-2 d-flex justify-content-end gap-2">
               <button
@@ -2762,7 +2779,7 @@ function WorkerForm() {
                 title="Remove this row"
                 aria-label="Remove experience row"
               >
-                <TrashIcon />
+                <FiTrash2 size={15} />
               </button>
               {idx === experiences.length - 1 && (
                 <button
@@ -2772,7 +2789,7 @@ function WorkerForm() {
                   title="Add another row"
                   aria-label="Add experience row"
                 >
-                  <PlusIcon />
+                  <FiPlus size={15} />
                 </button>
               )}
             </div>
@@ -2785,7 +2802,7 @@ function WorkerForm() {
           className="experience-add-btn"
           onClick={handleAddExperience}
         >
-          <PlusIcon /> Add experience
+          <FiPlus size={15} /> Add experience
         </button>
       )}
     </div>
@@ -2884,7 +2901,7 @@ function WorkerForm() {
           role="button"
           onClick={() => scrollToSection(targetKey)}
         >
-          {isComplete && <CompletionCheckIcon />}
+          {isComplete && <FiCheckCircle className="tree-node-check-icon" size={16} />}
           <span className="tree-node-dot">{nodeNumber}</span>
           <span className="tree-node-label">
             {section.label}
@@ -2903,7 +2920,7 @@ function WorkerForm() {
         role="button"
         onClick={() => scrollToSection(targetKey)}
       >
-        {isComplete && <CompletionCheckIcon />}
+        {isComplete && <FiCheckCircle className="tree-node-check-icon" size={16} />}
         <span className="tree-node-dot">{nodeNumber}</span>
         <span className="tree-node-label-wrap">
           <span className="tree-node-label">

@@ -203,6 +203,12 @@ const ActiveWorkers = () => {
               page: 1,
             }
           : {
+              // Every filter currently applied on-screen (search,
+              // status_id, region, etc.) carries over into the report,
+              // same as fetchWorkers — the report should reflect exactly
+              // what's currently visible in the list, not just the
+              // partner on its own.
+              ...filters,
               partner_id: filters.partner_id,
               has_contract: "true",
               is_active:
@@ -607,19 +613,15 @@ const ActiveWorkers = () => {
               from md/lg breakpoints up. */}
           {!visaPreview && (
             <div className="d-flex gap-2 align-self-start align-self-lg-end">
-              <button
-                type="button"
-                className="btn btn-outline-primary text-nowrap"
-                disabled={!filters.partner_id}
-                title={
-                  filters.partner_id
-                    ? "Print a report for the selected partner"
-                    : "Select a partner from the filters to enable this"
-                }
-                onClick={handlePrintWorkerReport}
-              >
-                <i className="bi bi-printer me-2"></i> Print Report
-              </button>
+              {filters.partner_id && (
+                <button
+                  type="button"
+                  className="btn btn-outline-primary text-nowrap"
+                  onClick={handlePrintWorkerReport}
+                >
+                  <i className="bi bi-printer me-2"></i> Print Report
+                </button>
+              )}
               <button
                 type="button"
                 className="btn btn-main text-nowrap"

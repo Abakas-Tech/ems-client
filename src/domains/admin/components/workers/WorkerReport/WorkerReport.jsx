@@ -131,7 +131,15 @@ const buildPages = (partnerName, workers) => {
 // PeriodReport.jsx's openAndPrint — renders into a fully isolated document
 // so nothing in this app's own layout/CSS can interfere with or blank out
 // the printed page.
-const openAndPrint = (html) => {
+//
+// printTitle, when given, is what "Save as PDF" suggests as the
+// filename. Browsers take that from the *top-level page's* document
+// title, not the iframe's own <title> — the iframe's title only names
+// its own (invisible) document, so without this the saved file kept
+// picking up whatever the app's real page title happened to be. This
+// swaps document.title in for the duration of the print and puts the
+// original back afterward.
+const openAndPrint = (html, printTitle) => {
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
   iframe.style.right = "0";
@@ -141,16 +149,21 @@ const openAndPrint = (html) => {
   iframe.style.border = "0";
   iframe.style.visibility = "hidden";
 
+  const originalTitle = document.title;
+
   let cleaned = false;
   const cleanup = () => {
     if (cleaned) return;
     cleaned = true;
     if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+    document.title = originalTitle;
   };
 
   iframe.onload = () => {
     const win = iframe.contentWindow;
     if (!win) return;
+
+    if (printTitle) document.title = printTitle;
 
     win.focus();
     win.addEventListener("afterprint", cleanup);
@@ -158,7 +171,7 @@ const openAndPrint = (html) => {
     setTimeout(() => {
       try {
         win.print();
-      } catch (e) {
+      } catch {
         cleanup();
       }
     }, 150);
@@ -175,10 +188,12 @@ const openAndPrint = (html) => {
 export const printWorkerReport = ({ partnerName, workers = [] }) => {
   if (!partnerName) return;
 
+  const printTitle = `${REPORT_META.orgName} - ${partnerName} Employee Report`;
+
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
-<title>${partnerName} Employee Report</title>
+<title>${printTitle}</title>
 <style>${REPORT_STYLES}</style>
 </head><body>${buildPages(partnerName, workers)}</body></html>`;
 
-  openAndPrint(html);
+  openAndPrint(html, printTitle);
 };

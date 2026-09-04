@@ -37,7 +37,7 @@ const buildHeader = (invoice) => {
       </div>
       <div class="meta-r">
         <div><b>Status:</b> ${(invoice.status || "").replace("_", " ").toUpperCase()}</div>
-        <div><b>Customer:</b> ${invoice.customer_full_name || "—"}</div>
+        <div><b>Partner:</b> ${invoice.customer_full_name || "—"}</div>
         <div><b>Invoice Date:</b> ${fmtDate(invoice.invoice_date)}</div>
       </div>
     </div>`;
