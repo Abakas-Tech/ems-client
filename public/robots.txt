@@ -1,5 +1,19 @@
-# Dev Environment robots.txt file
+# ALETISALAT — robots.txt
+# Public marketing pages: crawlable. The admin system: private.
+
 User-agent: *
-#  Allow all public-facing frontend pages to be indexed
 Allow: /
-Sitemap: https://mmhjobs.com/sitemap.xml
+Disallow: /admin
+Disallow: /partner
+Disallow: /worker
+Disallow: /employer
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+Disallow: /reset-password
+
+# AI/answer crawlers: welcome on public pages
+User-agent: GPTBot
+Allow: /
+
+Sitemap: https://alitisalatjobs.com/sitemap.xml

@@ -1,0 +1,74 @@
+/* Extra styling for the dynamic StatCard variants. The card chrome itself
+   (stat-card-v2) stays global and untouched. */
+
+/* CV/office cards: cap how wide a card can grow on very large screens so
+   offices with few entries don't stretch into giant cards. */
+.cvCard {
+  max-width: 300px;
+}
+
+/* structured two-number breakdown under the title */
+.detailsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 8px;
+}
+
+.detailItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.detailValue {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1f2733;
+  line-height: 1;
+}
+
+.detailLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #8a94a6;
+  font-weight: 600;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+.dotBlue {
+  background: #4e7dad;
+}
+
+.dotGold {
+  background: #c9a227;
+}
+
+/* slim proportion bar for the two-part breakdown (blue vs gold) */
+.splitBar {
+  display: flex;
+  height: 4px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #eef0f4;
+  margin-top: 8px;
+  max-width: 220px;
+}
+
+.splitNew {
+  background: #4e7dad;
+}
+
+.splitExp {
+  background: #c9a227;
+  flex: 1;
+}

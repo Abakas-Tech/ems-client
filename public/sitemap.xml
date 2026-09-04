@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ALETISALAT sitemap. Public pages only.
+  - Keep URLs in sync with the app's PublicRoutes.
+  - Remove entries for pages that don't exist yet, add new ones as they ship.
+  - lastmod: update when a page's content meaningfully changes.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <!-- Homepage -->
   <url>
-    <loc>https://mmhjobs.com/</loc>
-    <lastmod>2026-03-31</lastmod>
+    <loc>https://alitisalatjobs.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-
-  <!-- About / Detail Page -->
   <url>
-    <loc>https://mmhjobs.com/about-detail</loc>
-    <lastmod>2026-03-31</lastmod>
+    <loc>https://alitisalatjobs.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
+  <url>
+    <loc>https://alitisalatjobs.com/services</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://alitisalatjobs.com/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://alitisalatjobs.com/gallery</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
 </urlset>
