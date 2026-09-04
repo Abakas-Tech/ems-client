@@ -2,20 +2,15 @@
   "name": "ALETISALAT Private Foreign Employment Agency",
   "short_name": "ALETISALAT",
   "description": "Apply for verified overseas jobs with ALETISALAT Private Foreign Employment Agency. Safe and legal job opportunities for Ethiopians with full visa processing and full support.",
-
   "lang": "en",
   "dir": "ltr",
-
   "start_url": "/?source=pwa&utm_campaign=app_install",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-
+  "theme_color": "#0B1B37",
   "categories": ["business", "jobs", "employment"],
-
   "icons": [
     {
       "src": "/icons/192.png",
@@ -48,7 +43,6 @@
       "purpose": "any"
     }
   ],
-
   "related_applications": [],
   "prefer_related_applications": false
 }
