@@ -164,6 +164,7 @@
 
 .btnPrimary:hover {
   transform: translateY(-2px);
+  color: var(--navy-950);
 }
 
 .btnPlane {
@@ -183,6 +184,7 @@
 .btnSecondary:hover {
   border-color: var(--gold-300);
   transform: translateY(-2px);
+  color: var(--gold-300);
 }
 
 /* ---------- Illustration ---------- */
