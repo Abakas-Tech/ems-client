@@ -3,7 +3,7 @@
 
    The production domain lives in exactly ONE place: SITE_URL below.
    When the final domain is bought (if different from
-   https://alitisalatjobs.com), change it here — every page, the sitemap
+   https://aletisalatjobs.com), change it here — every page, the sitemap
    references, and the social-share image URL follow automatically.
 
    Also remember to update by hand (one find & replace each):
@@ -12,7 +12,7 @@
    - public/sitemap.xml       (<loc> entries)
    ------------------------------------------------------------------ */
 
-export const SITE_URL = "https://alitisalatjobs.com";
+export const SITE_URL = "https://aletisalatjobs.com";
 
 export const SITE_NAME = "ALETISALAT";
 

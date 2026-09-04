@@ -5,17 +5,17 @@ const SEOHelmet = ({
   title = "ALETISALAT Private Foreign Employment Agency | Overseas Jobs for Ethiopians | Verified Recruitment Agency",
   description = "ALETISALAT Private Foreign Employment Agency connects Ethiopian workers with verified international job opportunities. We provide full visa processing, contract verification, LMIS/work permits, and safe deployment to Middle Eastern countries.",
   keywords = "overseas jobs Ethiopia, jobs in Middle East for Ethiopians, recruitment agency Ethiopia, work abroad Ethiopia, Middle East jobs Ethiopia, visa processing Ethiopia, LMIS Ethiopia, overseas employment Ethiopia, legal recruitment Ethiopia, ALETISALAT Private Foreign Employment Agency",
-  canonical = "https://alitisalatjobs.com/",
+  canonical = "https://aletisalatjobs.com/",
   ogTitle = "Verified Overseas Jobs for Ethiopians | ALETISALAT Private Foreign Employment Agency",
   ogDescription = "Apply for safe and verified overseas jobs with full support: job matching, visa processing, contract verification, and travel coordination.",
-  ogUrl = "https://alitisalatjobs.com/",
-  ogImage = "https://alitisalatjobs.com/image.jpg", // replace with your hosted image (1200x630 recommended)
+  ogUrl = "https://aletisalatjobs.com/",
+  ogImage = "https://aletisalatjobs.com/image.jpg", // replace with your hosted image (1200x630 recommended)
   structuredData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: "ALETISALAT Private Foreign Employment Agency",
-    url: "https://alitisalatjobs.com",
-    logo: "https://alitisalatjobs.com/logo.jpg",
+    url: "https://aletisalatjobs.com",
+    logo: "https://aletisalatjobs.com/logo.jpg",
     description:
       "Licensed recruitment agency connecting Ethiopian workers with verified international job opportunities, especially in the Middle East.",
     email: "aletesalat.eth.agency@gmail.com",

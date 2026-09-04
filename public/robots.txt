@@ -16,4 +16,4 @@ Disallow: /reset-password
 User-agent: GPTBot
 Allow: /
 
-Sitemap: https://alitisalatjobs.com/sitemap.xml
+Sitemap: https://aletisalatjobs.com/sitemap.xml
