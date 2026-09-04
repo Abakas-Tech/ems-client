@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
-import StatCard from "../StatCard/StatCard";
 import AnalyticsFilter from "../AnalyticsFilter/AnalyticsFilter";
+import StatCard from "../StatCard/StatCard";
+import WeeklyReport from "../WeeklyReport/WeeklyReport";
 import fetchDashboardData from "../../../api/analytics.api";
 import useloader from "../../../../../context/Loader/useLoader";
+import {
+  getCurrentMonthWeek,
+  monthWeekLabel,
+} from "../../../../../utils/week.utils";
+
 const Analytics = () => {
   const { showLoader, hideLoader } = useloader();
   const [data, setData] = useState(null);
@@ -10,6 +16,7 @@ const Analytics = () => {
     period: "yearly",
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
+    week: getCurrentMonthWeek(),
   });
 
   // Months
@@ -41,10 +48,8 @@ const Analytics = () => {
     try {
       const result = await fetchDashboardData(filters);
       setData(result.data);
-    } 
-  catch {
+    } catch {
       console.error("Failed to fetch dashboard data");
-    
     } finally {
       hideLoader();
     }
@@ -55,7 +60,7 @@ const Analytics = () => {
     const { name, value } = e.target;
     setFilters((prev) => ({
       ...prev,
-      [name]: name === "month" ? parseInt(value) : value,
+      [name]: name === "month" || name === "week" ? parseInt(value) : value,
     }));
   };
 
@@ -65,19 +70,23 @@ const Analytics = () => {
       period: "yearly",
       year: new Date().getFullYear(),
       month: new Date().getMonth() + 1,
+      week: getCurrentMonthWeek(),
     });
   };
 
   if (!data) return null;
 
-  // Only showing the modified return section for brevity
   return (
     <div className="dashboard-wraper">
       <div className="mb-4">
         <h2 className="fw-bold text-dark mb-1">Analytics Dashboard</h2>
         <p className="text-muted mb-0">
           Data for{" "}
-          {filters.period === "monthly" ? `${months[filters.month - 1]} ` : ""}
+          {filters.period === "monthly"
+            ? `${months[filters.month - 1]} `
+            : filters.period === "weekly"
+              ? `${monthWeekLabel(filters.year, filters.month, filters.week)}, `
+              : ""}
           {filters.year}
         </p>
       </div>
@@ -88,6 +97,12 @@ const Analytics = () => {
         onClear={handleClear}
         months={months}
       />
+
+      {/* Client's weekly paper report (ሳምንታዊ ሪፖርት) — live database numbers
+          that follow the SAME filter as the rest of the dashboard. The
+          per-office cards are period-filtered; "Passports in Hand" is a
+          live snapshot. Display-only - see WeeklyReport.jsx. */}
+      <WeeklyReport filters={filters} />
 
       <div className="row mt-4">
         <div className="col-12">

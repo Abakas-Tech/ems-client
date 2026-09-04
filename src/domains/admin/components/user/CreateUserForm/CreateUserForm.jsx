@@ -465,13 +465,16 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                       <span className="text-danger">*</span>
                     )}
                   </label>
-                  <input
-                    type="text"
+                  <select
                     className="form-control"
                     value={country}
                     required={requiredFields.country}
                     onChange={(e) => setCountry(e.target.value)}
-                  />
+                  >
+                    <option value="">Select Country</option>
+                    <option value="Saudi Arabia">Saudi Arabia</option>
+                    <option value="Jordan">Jordan</option>
+                  </select>
                 </div>
               )}
 
