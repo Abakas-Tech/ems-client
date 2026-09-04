@@ -73,13 +73,6 @@ const ListUser = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
-  // Triggered by first double-click
-  const handleRowDoubleClick = (row) => {
-    if (!isSelectionMode) {
-      setIsSelectionMode(true);
-      setSelectedUserIds([row.id]); // Select the first one automatically
-    }
-  };
   const handleSelectRow = (id) => {
     setSelectedUserIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
@@ -382,7 +375,6 @@ const ListUser = () => {
         selectedIds={selectedUserIds}
         onSelectRow={handleSelectRow}
         onSelectAll={handleSelectAll}
-        onRowDoubleClick={handleRowDoubleClick}
         showAvater={true}
         filtersComponent={
           <FilterUser

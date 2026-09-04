@@ -13,10 +13,6 @@ import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterComplaint from "../FilterComplaint/FilterComplaint";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
-import {
-  generateComplaintReportPdf,
-  generateComplaintReportsPdf,
-} from "../ComplaintReport/complaintReport.generator";
 
 const STATUS_MAP = {
   open: "Open",
@@ -91,13 +87,6 @@ const ListComplaint = () => {
     setFilters({ search: "", status: "" });
   };
 
-  // First double-click enters selection mode and selects that row (same UX as ListUser)
-  const handleRowDoubleClick = (row) => {
-    if (!isSelectionMode) {
-      setIsSelectionMode(true);
-      setSelectedComplaintIds([row.id]);
-    }
-  };
 
   const handleSelectRow = (id) => {
     setSelectedComplaintIds((prev) =>
@@ -114,29 +103,8 @@ const ListComplaint = () => {
     setSelectedComplaintIds([]);
   };
 
-  // Bulk report generation -> one combined multi-page PDF
-  const handleBulkGenerateReports = async () => {
-    if (selectedComplaintIds.length === 0) return;
-    showLoader();
-    try {
-      await generateComplaintReportsPdf(selectedComplaintIds);
-    } catch (err) {
-      addMessage(false, err.message || "Failed to generate reports");
-    } finally {
-      hideLoader();
-    }
-  };
 
-  const handleGenerateReport = async (row) => {
-    showLoader();
-    try {
-      await generateComplaintReportPdf(row.id);
-    } catch (err) {
-      addMessage(false, err.message || "Failed to generate report");
-    } finally {
-      hideLoader();
-    }
-  };
+
 
   const handleView = (row) => {
     navigate(`/admin/complaints/view/${row.id}`);
@@ -239,11 +207,6 @@ const ListComplaint = () => {
     { type: "view", onClick: handleView },
     { type: "edit", onClick: handleEdit },
     {
-      type: "report",
-      label: "Generate Report",
-      onClick: handleGenerateReport,
-    },
-    {
       type: "investigate",
       label: "Mark Investigating",
       onClick: (row) => handleStatusChange(row, "investigating"),
@@ -269,8 +232,7 @@ const ListComplaint = () => {
         <div className="flex-grow-1">
           <h2 className="fw-bold text-dark mb-2">Complaint Management</h2>
           <p className="text-muted mb-0">
-            Track, resolve, and report on worker complaints. Double-click a row
-            to select multiple and generate reports in bulk.
+            Track, resolve, and report on worker complaints. 
           </p>
         </div>
         <RoleButton
@@ -359,15 +321,6 @@ const ListComplaint = () => {
             >
               <button
                 type="button"
-                className="btn btn-outline-main btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap action-btn"
-                disabled={selectedComplaintIds.length === 0}
-                onClick={handleBulkGenerateReports}
-                style={{ fontSize: "16px" }}
-              >
-                Generate Reports
-              </button>
-              <button
-                type="button"
                 className="btn btn-outline-danger btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap action-btn"
                 onClick={handleExitSelection}
                 style={{ fontSize: "16px" }}
@@ -388,7 +341,6 @@ const ListComplaint = () => {
         selectedIds={selectedComplaintIds}
         onSelectRow={handleSelectRow}
         onSelectAll={handleSelectAll}
-        onRowDoubleClick={handleRowDoubleClick}
         filtersComponent={
           <FilterComplaint
             filters={filters}

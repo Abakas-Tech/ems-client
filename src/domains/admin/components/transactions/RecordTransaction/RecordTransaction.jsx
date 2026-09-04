@@ -11,6 +11,18 @@ const RecordTransaction = ({
   initialData = null,
   onSuccess,
   onCancel,
+  // Optional: when provided, submit calls this instead of
+  // createTransaction/updateTransaction — same form, same validation,
+  // different destination. Used to record invoice payments straight into
+  // financial_transactions via the invoice API instead of the plain
+  // finance transaction endpoint.
+  onSubmit,
+  // Optional: when true, category is shown read-only (still submitted,
+  // just not user-editable) instead of the select — used for invoice
+  // payments, which are always 'income'.
+  lockCategory = false,
+  // Optional heading override (e.g. "Record Invoice Payment")
+  title,
 }) => {
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
@@ -84,7 +96,9 @@ const RecordTransaction = ({
       };
 
       let response;
-      if (isEditMode) {
+      if (onSubmit) {
+        response = await onSubmit(payload);
+      } else if (isEditMode) {
         response = await updateTransaction(initialData.id, payload);
       } else {
         response = await createTransaction(payload);
@@ -96,7 +110,6 @@ const RecordTransaction = ({
       );
       // If the transaction was recorded for a specific user and we're not in edit mode, we should navigate back to their page after success.
       if (formData.user_id && initialData?.userId && !isEditMode) {
-       
       }
       onSuccess();
     } catch (err) {
@@ -113,7 +126,8 @@ const RecordTransaction = ({
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div className="d-flex align-items-center">
             <h2 className="text-dark fw-bold mb-2">
-              {isEditMode ? "Edit Transaction" : "Record New Transaction"}
+              {title ||
+                (isEditMode ? "Edit Transaction" : "Record New Transaction")}
             </h2>
 
             <BackButton onClick={onCancel} />
@@ -151,19 +165,28 @@ const RecordTransaction = ({
               <label>
                 Category <span className="text-danger">*</span>
               </label>
-              <select
-                name="category"
-                className="form-control"
-                value={formData.category}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Category</option>
-                <option value="income">Income</option>
-                <option value="expense">Expense</option>
-                <option value="commission">Commission</option>
-                <option value="vat">VAT</option>
-              </select>
+              {lockCategory ? (
+                <input
+                  type="text"
+                  className="form-control text-capitalize"
+                  value={formData.category}
+                  disabled
+                />
+              ) : (
+                <select
+                  name="category"
+                  className="form-control"
+                  value={formData.category}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Category</option>
+                  <option value="income">Income</option>
+                  <option value="expense">Expense</option>
+                  <option value="commission">Commission</option>
+                  <option value="vat">VAT</option>
+                </select>
+              )}
             </div>
 
             <div className="form-group col-md-6">

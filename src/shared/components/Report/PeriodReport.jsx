@@ -144,17 +144,53 @@ const buildTransactionPages = (period, transactions, totalPages) => {
   }).join("\n");
 };
 
-// ── Premium financial-summary layout ──────────────────────────────
-// Net Profit/Loss is the hero figure (largest, most prominent), with
-// Income, Expenses, Commission, VAT, and Transaction Count as supporting
-// stat cards underneath — establishing a clear hierarchy between the
-// headline number and everything backing it up. Net Profit/Loss factors
-// in commission and VAT, not just income vs. expense.
-const buildStatCard = (label, value, tone = "neutral") => `
-  <div class="stat-card stat-${tone}">
-    <div class="stat-label">${label}</div>
-    <div class="stat-value">${value}</div>
-  </div>`;
+// ── Summary page — a single plain table, same look as the transaction
+// pages (dark header row, alternating row backgrounds), ending with Net
+// Profit/Loss as the bold final row. No separate tables for the closing
+// note or signoff — everything is one table, one row each.
+const buildSummaryRows = (period, totals) => {
+  const rows = [
+    ["Total Income", `+ ${fmtAmount(totals.income)} Birr`, true, "income"],
+    ["Total Expenses", `- ${fmtAmount(totals.expense)} Birr`, true, "expense"],
+  ];
+
+  if (totals.commission !== null) {
+    rows.push([
+      "Total Commission",
+      `${fmtAmount(totals.commission)} Birr`,
+      true,
+      "neutral",
+    ]);
+  }
+  if (totals.vat !== null) {
+    rows.push(["Total VAT", `${fmtAmount(totals.vat)} Birr`, true, "neutral"]);
+  }
+
+  rows.push(["Total Transactions", totals.transactionCount, true, "neutral"]);
+
+  if (period.closing_note) {
+    rows.push(["Closing Note", period.closing_note, false, "neutral"]);
+  }
+
+  rows.push(["Prepared by", REPORT_META.orgName, true, "neutral"]);
+  rows.push(["Generated on", fmtDate(new Date()), true, "neutral"]);
+
+  return rows
+    .map(([label, value, alignRight, tone], i) => {
+      const bg = i % 2 === 0 ? "#fff" : "#f5f8ff";
+      const color =
+        tone === "income"
+          ? "#15803d"
+          : tone === "expense"
+            ? "#b91c1c"
+            : "#1a2640";
+      return `<tr>
+        <td style="background:${bg};font-weight:600;">${label}</td>
+        <td style="background:${bg};${alignRight ? "text-align:right;" : ""}font-weight:600;color:${color};">${value}</td>
+      </tr>`;
+    })
+    .join("");
+};
 
 const buildSummaryPage = (
   period,
@@ -164,62 +200,23 @@ const buildSummaryPage = (
 ) => {
   const totals = computeTotals(period, transactions);
   const isProfit = Number(totals.netProfit) >= 0;
-  const generatedOn = fmtDate(new Date());
-
-  const statCards = [
-    buildStatCard(
-      "Total Income",
-      `+ ${fmtAmount(totals.income)} Birr`,
-      "income",
-    ),
-    buildStatCard(
-      "Total Expenses",
-      `- ${fmtAmount(totals.expense)} Birr`,
-      "expense",
-    ),
-    totals.commission !== null
-      ? buildStatCard(
-          "Total Commission",
-          `${fmtAmount(totals.commission)} Birr`,
-        )
-      : "",
-    totals.vat !== null
-      ? buildStatCard("Total VAT", `${fmtAmount(totals.vat)} Birr`)
-      : "",
-    buildStatCard("Total Transactions", totals.transactionCount),
-  ].join("");
 
   return `<div class="page">
     ${buildHeader(period, summaryOnly)}
-    <div class="summary-wrap">
-      <div class="summary-eyebrow">Period Financial Summary</div>
 
-      <div class="summary-hero ${isProfit ? "hero-pos" : "hero-neg"}">
-        <div class="hero-label">Net ${isProfit ? "Profit" : "Loss"}</div>
-        <div class="hero-value">${
-          isProfit ? "+" : "-"
-        } ${fmtAmount(Math.abs(totals.netProfit))}<span class="hero-unit">Birr</span></div>
-        <div class="hero-sub">${period.title} &nbsp;·&nbsp; ${fmtDate(
-          period.started_at,
-        )} – ${period.closed_at ? fmtDate(period.closed_at) : "Present"}</div>
-      </div>
+    <table>
+      <thead><tr><th>Summary</th><th style="text-align:right;">Amount (Birr)</th></tr></thead>
+      <tbody>${buildSummaryRows(period, totals)}</tbody>
+      <tfoot>
+        <tr class="totals-row">
+          <td>Net ${isProfit ? "Profit" : "Loss"}</td>
+          <td style="text-align:right;">${isProfit ? "+" : "-"} ${fmtAmount(
+            Math.abs(totals.netProfit),
+          )} Birr</td>
+        </tr>
+      </tfoot>
+    </table>
 
-      <div class="stat-grid">${statCards}</div>
-
-      ${
-        period.closing_note
-          ? `<div class="summary-note">
-              <div class="summary-note-label">Closing Note</div>
-              <p>${period.closing_note}</p>
-            </div>`
-          : ""
-      }
-
-      <div class="summary-signoff">
-        <div class="signoff-line"><span>Prepared by</span><span>${REPORT_META.orgName}</span></div>
-        <div class="signoff-line"><span>Generated on</span><span>${generatedOn}</span></div>
-      </div>
-    </div>
     ${buildFooter(`Page ${totalPages} of ${totalPages}`)}
   </div>`;
 };
@@ -249,39 +246,9 @@ const REPORT_STYLES = `
   tbody tr{border-bottom:1px solid #dde5f5;}
   tbody td{padding:5px 7px;vertical-align:middle;border-right:1px solid #e8edf8;}
   tbody td:last-child{border-right:none;}
+  tfoot .totals-row td{padding:7px;font-weight:800;font-size:9pt;color:#1a3c6e;background:#eaf1fc;border-top:2px solid #1a3c6e;}
   .bp{display:inline-block;padding:2px 8px;border-radius:20px;font-size:7pt;font-weight:600;white-space:nowrap;}
   .pf{position:absolute;bottom:0;left:0;right:0;padding-top:5px;border-top:1.5px solid #c8d8f0;display:flex;justify-content:space-between;font-size:7pt;color:#8a97b0;background:#fff;}
-
-  /* ── Premium financial-summary layout ── */
-  .summary-wrap{max-width:760px;margin:0 auto;padding:22px 10px 6px;}
-  .summary-eyebrow{font-size:10.5pt;font-weight:700;color:#1a3c6e;text-transform:uppercase;letter-spacing:1.6px;text-align:center;margin-bottom:20px;}
-
-  .summary-hero{border:1px solid #d7e4f5;border-radius:14px;padding:22px 30px;margin-bottom:22px;text-align:center;}
-  .hero-pos{background:linear-gradient(135deg,#eefcf3 0%,#f7fbff 75%);}
-  .hero-neg{background:linear-gradient(135deg,#fdeeee 0%,#f7fbff 75%);}
-  .hero-label{font-size:8pt;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:#5a6a85;margin-bottom:6px;}
-  .hero-value{font-size:27pt;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap;}
-  .hero-pos .hero-value{color:#15803d;}
-  .hero-neg .hero-value{color:#b91c1c;}
-  .hero-unit{font-size:11pt;font-weight:600;color:#5a6a85;margin-left:6px;}
-  .hero-sub{font-size:7.8pt;color:#5a6a85;margin-top:9px;}
-
-  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px;}
-  .stat-card{border:1px solid #e2e8f0;border-top:3px solid #cbd5e1;border-radius:10px;padding:14px 16px;background:#fff;}
-  .stat-card.stat-income{border-top-color:#22c55e;}
-  .stat-card.stat-expense{border-top-color:#ef4444;}
-  .stat-label{font-size:7.3pt;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#8a97b0;margin-bottom:6px;}
-  .stat-value{font-size:12.5pt;font-weight:700;color:#1a2640;font-variant-numeric:tabular-nums;}
-  .stat-card.stat-income .stat-value{color:#15803d;}
-  .stat-card.stat-expense .stat-value{color:#b91c1c;}
-
-  .summary-note{border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:20px;}
-  .summary-note-label{font-size:7.3pt;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#1a3c6e;margin-bottom:4px;}
-  .summary-note p{font-size:8.5pt;color:#3c4a63;line-height:1.5;}
-
-  .summary-signoff{border-top:1px solid #e2e8f0;padding-top:12px;display:flex;flex-direction:column;gap:5px;}
-  .signoff-line{display:flex;justify-content:space-between;font-size:7.8pt;color:#5a6a85;}
-  .signoff-line span:last-child{font-weight:600;color:#1a2640;}
 `;
 
 // Renders the report HTML into a hidden, off-screen iframe and triggers

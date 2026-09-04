@@ -8,8 +8,6 @@ import {
   updateComplaintStatus, // <-- new
 } from "../../../api/complaint.api";
 import { listWorkers, getWorkerProfile } from "../../../api/worker.api";
-// NOTE: getCountries here uses the same { name, page, limit } signature already used in Country.jsx
-import { getCountries } from "../../../api/meta.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import BackButton from "./../../../../../shared/components/BackButton/BackButton";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -85,13 +83,11 @@ const ComplaintForm = () => {
   const [workerAutofillLoading, setWorkerAutofillLoading] = useState(false);
   const workerBlurTimeout = useRef(null);
 
-  // Destination country (searchable dropdown, submits an id)
-  const [countryQuery, setCountryQuery] = useState("");
-  const [selectedCountryId, setSelectedCountryId] = useState(null);
-  const [countryOptions, setCountryOptions] = useState([]);
-  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
-  const [countryLoading, setCountryLoading] = useState(false);
-  const countryBlurTimeout = useRef(null);
+  // Destination country — a plain free-text field now (complaints.
+  // destination_country is a VARCHAR column, not an id referencing a
+  // countries table), so this just holds and submits the raw name typed
+  // or autofilled from the worker's travel record.
+  const [destinationCountry, setDestinationCountry] = useState("");
 
   // Complaint info
   const [incidentDescription, setIncidentDescription] = useState("");
@@ -174,20 +170,9 @@ const ComplaintForm = () => {
         : new Date().toISOString().slice(0, 10),
     );
 
-    // Destination country may come back as an id + name, or a nested object —
-    // adjust the field names below to match your API's actual response shape.
-    const countryId =
-      complaintData.destination_country_id ||
-      complaintData.destination_country?.id ||
-      null;
-    const countryName =
-      complaintData.destination_country_name ||
-      complaintData.destination_country?.name ||
-      "";
-    if (countryId) {
-      setSelectedCountryId(countryId);
-      setCountryQuery(countryName);
-    }
+    // destination_country is now a plain string column on the complaint
+    // itself — no id/name resolution needed, just take it as-is.
+    setDestinationCountry(complaintData.destination_country || "");
   }, [isEditMode, complaintData]);
 
   // ---------- Worker search (debounced) ----------
@@ -238,29 +223,9 @@ const ComplaintForm = () => {
       }
       if (latestTravel?.arrival_location) {
         // The travel record only stores a free-text location (e.g. "riyad"),
-        // not a country id — so show it immediately as best-effort text,
-        // then try to resolve it against the countries list to get a real id.
-        setCountryQuery(latestTravel.arrival_location);
-        try {
-          const countryRes = await getCountries({
-            name: latestTravel.arrival_location,
-            page: 1,
-            limit: 5,
-          });
-          const matches = toArray(countryRes);
-          if (matches.length > 0) {
-            const exactMatch = matches.find(
-              (c) =>
-                c.name?.toLowerCase() ===
-                latestTravel.arrival_location.toLowerCase(),
-            );
-            const bestMatch = exactMatch || matches[0];
-            setSelectedCountryId(bestMatch.id);
-            setCountryQuery(bestMatch.name);
-          }
-        } catch {
-          // Lookup failed — leave the free-text value in place, unlinked.
-        }
+        // and destination_country is now itself a free-text column — so the
+        // raw value is used directly, with no id lookup/resolution needed.
+        setDestinationCountry(latestTravel.arrival_location);
       }
 
       const latestContract = profile.contracts?.[0];
@@ -288,47 +253,6 @@ const ComplaintForm = () => {
     );
   };
   useEffect(() => () => clearTimeout(workerBlurTimeout.current), []);
-
-  // ---------- Country search (debounced) ----------
-  useEffect(() => {
-    setCountryLoading(true);
-    const timeoutId = setTimeout(async () => {
-      try {
-        const res = await getCountries({
-          name: countryQuery,
-          page: 1,
-          limit: 20,
-        });
-        setCountryOptions(toArray(res));
-      } catch {
-        setCountryOptions([]);
-      } finally {
-        setCountryLoading(false);
-      }
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [countryQuery]);
-
-  const handleCountryInputChange = (e) => {
-    setCountryQuery(e.target.value);
-    setSelectedCountryId(null);
-    setShowCountryDropdown(true);
-  };
-
-  const handleSelectCountry = (country) => {
-    setCountryQuery(country.name);
-    setSelectedCountryId(country.id);
-    setShowCountryDropdown(false);
-  };
-
-  const handleCountryInputBlur = () => {
-    countryBlurTimeout.current = setTimeout(
-      () => setShowCountryDropdown(false),
-      150,
-    );
-  };
-  useEffect(() => () => clearTimeout(countryBlurTimeout.current), []);
 
   // ---------- Complainant row handlers ----------
   const updateComplainant = (index, field, value) => {
@@ -409,7 +333,9 @@ const ComplaintForm = () => {
         employee_full_name: employeeFullName,
         worker_id: selectedWorkerId || undefined,
         departure_date: departureDate || undefined,
-        destination_country_id: selectedCountryId || undefined,
+        // Raw country name, sent as-is — destination_country is a plain
+        // VARCHAR column on the complaints table now.
+        destination_country: destinationCountry || undefined,
         incident_description: incidentDescription,
         information_source: informationSource || undefined,
         information_reliability: informationReliability || undefined,
@@ -571,51 +497,16 @@ const ComplaintForm = () => {
                   onChange={(e) => setDepartureDate(e.target.value)}
                 />
               </div>
-              <div className="form-group col-md-3 mb-3 position-relative">
+              <div className="form-group col-md-3 mb-3">
                 <label>Destination Country</label>
                 <input
                   type="text"
                   className="form-control"
-                  value={countryQuery}
+                  value={destinationCountry}
                   autoComplete="off"
-                  onChange={handleCountryInputChange}
-                  onFocus={() => setShowCountryDropdown(true)}
-                  onBlur={handleCountryInputBlur}
-                  placeholder="Search country…"
+                  onChange={(e) => setDestinationCountry(e.target.value)}
+                  placeholder="e.g. Saudi Arabia"
                 />
-                {showCountryDropdown && (
-                  <ul
-                    className="list-group position-absolute w-100 pe-4"
-                    style={{
-                      zIndex: 20,
-                      maxHeight: "220px",
-                      overflowY: "auto",
-                    }}
-                  >
-                    {countryLoading && (
-                      <li className="list-group-item text-muted small">
-                        Searching…
-                      </li>
-                    )}
-                    {!countryLoading && countryOptions.length === 0 && (
-                      <li className="list-group-item text-muted small">
-                        No countries found
-                      </li>
-                    )}
-                    {(Array.isArray(countryOptions) ? countryOptions : []).map(
-                      (country) => (
-                        <li
-                          key={country.id}
-                          className="list-group-item list-group-item-action"
-                          style={{ cursor: "pointer" }}
-                          onMouseDown={() => handleSelectCountry(country)}
-                        >
-                          {country.name}
-                        </li>
-                      ),
-                    )}
-                  </ul>
-                )}
               </div>
             </div>
 

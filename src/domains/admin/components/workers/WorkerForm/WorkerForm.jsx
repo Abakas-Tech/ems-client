@@ -767,6 +767,7 @@ function WorkerForm() {
 
   // map the aggregated getWorkerProfile response onto the form state
   const applyProfileToForm = (profileData) => {
+    console.log(profileData)
     setBasic({
       full_name: profileData.full_name || "",
       phone_number: profileData.phone_number || "",
@@ -807,7 +808,7 @@ function WorkerForm() {
         passport_issuing_country:
           profileData.passport.issuing_country || "Ethiopia",
       });
-      setExistingPassportScanUrl(profileData.passport.scan?.url || null);
+      setExistingPassportScanUrl(profileData.passport?.scan?.url || null);
     }
 
     if (profileData.coc) {
@@ -1093,10 +1094,7 @@ function WorkerForm() {
   // rules, etc. for actual submission).
   const isPassportFilled = () => Boolean(passport.passport_number?.trim());
   const isCocFilled = () =>
-    Boolean(coc.coc_assessment_center?.trim()) &&
-    Boolean(coc.coc_assessment_date) &&
-    Boolean(coc.coc_issue_date) &&
-    Boolean(coc.coc_expiry_date);
+    Object.values(coc).some((v) => v !== "" && v != null);
   const isMedicalFilled = () => Boolean(medical.medical_status);
   const isGuarantorFilled = () =>
     Boolean(guarantor.guarantor_name?.trim()) &&
@@ -1254,7 +1252,7 @@ function WorkerForm() {
     )
       return "Full name must be 3-100 characters";
     if (!workerPhoneRegex.test(basic.phone_number))
-      return "Phone number must be a valid Ethiopian number";
+      return "Phone number must be a valid ";
     return null;
   };
 
@@ -1391,8 +1389,7 @@ function WorkerForm() {
 
   const validateCoc = () => {
     if (!sectionsEnabled.coc) return null;
-    const center = coc.coc_assessment_center?.trim();
-    if (!center) return "Assessment center is required";
+
     if (
       coc.coc_number &&
       (coc.coc_number.length < 3 || coc.coc_number.length > 50)
@@ -1402,24 +1399,31 @@ function WorkerForm() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    if (!coc.coc_assessment_date) return "Assessment date is required";
-    const assessmentDate = new Date(coc.coc_assessment_date);
-    if (isNaN(assessmentDate.getTime())) return "Invalid assessment date";
-    if (assessmentDate > today) return "Assessment date cannot be in future";
+    const parseDate = (value, label) => {
+      if (!value) return {};
+      const date = new Date(value);
+      if (isNaN(date.getTime()))
+        return { error: `Invalid ${label.toLowerCase()}` };
+      return { date };
+    };
 
-    if (!coc.coc_issue_date) return "Issue date is required";
-    const issueDate = new Date(coc.coc_issue_date);
-    if (isNaN(issueDate.getTime())) return "Invalid issue date";
-    if (issueDate > today) return "Issue date cannot be in future";
+    const assessment = parseDate(coc.coc_assessment_date, "Assessment date");
+    if (assessment.error) return assessment.error;
+    if (assessment.date && assessment.date > today)
+      return "Assessment date cannot be in future";
 
-    if (!coc.coc_expiry_date) return "Expiry date is required";
-    const expiryDate = new Date(coc.coc_expiry_date);
-    if (isNaN(expiryDate.getTime())) return "Invalid expiry date";
-    if (expiryDate <= issueDate) return "Expiry must be after issue date";
+    const issue = parseDate(coc.coc_issue_date, "Issue date");
+    if (issue.error) return issue.error;
+    if (issue.date && issue.date > today)
+      return "Issue date cannot be in future";
+
+    const expiry = parseDate(coc.coc_expiry_date, "Expiry date");
+    if (expiry.error) return expiry.error;
+    if (expiry.date && issue.date && expiry.date <= issue.date)
+      return "Expiry must be after issue date";
 
     return null;
   };
-
   const validateMedical = () => {
     if (!sectionsEnabled.medical) return null;
     if (!["fit", "unfit", "pending"].includes(medical.medical_status))
@@ -2198,65 +2202,60 @@ function WorkerForm() {
     </div>
   );
 
-  const renderCocFields = () => (
-    <div className="row">
-      <div className="form-group col-md-6 mb-3">
-        <label>COC Number</label>
-        <input
-          type="text"
-          name="coc_number"
-          className="form-control"
-          value={coc.coc_number}
-          onChange={handleCocChange}
-        />
-      </div>
-      <div className="form-group col-md-6 mb-3">
-        {renderLabel("Assessment Center", true)}
-        <input
-          type="text"
-          name="coc_assessment_center"
-          className="form-control"
-          value={coc.coc_assessment_center}
-          onChange={handleCocChange}
-          required
-        />
-      </div>
-      <div className="form-group col-md-6 mb-3">
-        {renderLabel("Assessment Date", true)}
-        <input
-          type="date"
-          name="coc_assessment_date"
-          className="form-control"
-          value={coc.coc_assessment_date}
-          onChange={handleCocChange}
-          required
-        />
-      </div>
-      <div className="form-group col-md-6 mb-3">
-        {renderLabel("Issue Date", true)}
-        <input
-          type="date"
-          name="coc_issue_date"
-          className="form-control"
-          value={coc.coc_issue_date}
-          onChange={handleCocChange}
-          required
-        />
-      </div>
-      <div className="form-group col-md-6 mb-3">
-        {renderLabel("Expiry Date", true)}
-        <input
-          type="date"
-          name="coc_expiry_date"
-          className="form-control"
-          value={coc.coc_expiry_date}
-          onChange={handleCocChange}
-          required
-        />
-      </div>
-    </div>
-  );
-
+   const renderCocFields = () => (
+     <div className="row">
+       <div className="form-group col-md-6 mb-3">
+         <label>COC Number</label>
+         <input
+           type="text"
+           name="coc_number"
+           className="form-control"
+           value={coc.coc_number}
+           onChange={handleCocChange}
+         />
+       </div>
+       <div className="form-group col-md-6 mb-3">
+         <label>Assessment Center</label>
+         <input
+           type="text"
+           name="coc_assessment_center"
+           className="form-control"
+           value={coc.coc_assessment_center}
+           onChange={handleCocChange}
+         />
+       </div>
+       <div className="form-group col-md-6 mb-3">
+         <label>Assessment Date</label>
+         <input
+           type="date"
+           name="coc_assessment_date"
+           className="form-control"
+           value={coc.coc_assessment_date}
+           onChange={handleCocChange}
+         />
+       </div>
+       <div className="form-group col-md-6 mb-3">
+         <label>Issue Date</label>
+         <input
+           type="date"
+           name="coc_issue_date"
+           className="form-control"
+           value={coc.coc_issue_date}
+           onChange={handleCocChange}
+         />
+       </div>
+       <div className="form-group col-md-6 mb-3">
+         <label>Expiry Date</label>
+         <input
+           type="date"
+           name="coc_expiry_date"
+           className="form-control"
+           value={coc.coc_expiry_date}
+           onChange={handleCocChange}
+         />
+       </div>
+     </div>
+   );
   const renderMedicalFields = () => (
     <div className="row">
       <div className="form-group col-md-6 mb-3">

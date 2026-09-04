@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchTransactionDetails } from "../../../api/finance.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
-import ProfileCell from "../../../../../shared/components/ProfileCell/ProfileCell";
 import Badge from "../../../../../shared/components/Badge/Badge";
 
 const ROLE_MAP = {
@@ -82,6 +82,7 @@ const TransactionDetail = ({
   const [transaction, setTransaction] = useState(null);
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (mode !== "transaction") return;
@@ -98,6 +99,7 @@ const TransactionDetail = ({
       }
     };
     if (transactionId) getDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionId, mode]);
 
   const isSummaryMode = mode === "summary";
@@ -549,12 +551,19 @@ const TransactionDetail = ({
                 {isCompany ? (
                   <span className="stat-value">Company Account</span>
                 ) : (
-                  <span className="stat-value is-flex">
-                    {transaction.target_user_name}
-                    <Badge
-                      content={ROLE_MAP[transaction.target_user_role] || "User"}
-                      color="red"
-                    />
+                  <span className="stat-value">
+                    <span className="d-flex align-items-center gap-2">
+                      {transaction.target_user_name}
+                      <Badge
+                        content={
+                          ROLE_MAP[transaction.target_user_role] || "User"
+                        }
+                        color="red"
+                      />
+                    </span>
+                    <span className="d-block">
+                      {transaction.target_user_phone}
+                    </span>
                   </span>
                 )}
               </div>
@@ -705,6 +714,18 @@ const TransactionDetail = ({
           </div>
 
           <div className="text-center d-print-none mt-4">
+            {!isSummaryMode && transaction.invoice_id && (
+              <button
+                className="btn btn-outline-primary btn-sm px-4 me-2"
+                onClick={() =>
+                  navigate("/admin/invoices", {
+                    state: { invoiceId: transaction.invoice_id },
+                  })
+                }
+              >
+                <i className="bi bi-receipt me-2"></i> View Invoice
+              </button>
+            )}
             <button
               className="btn btn-outline-primary btn-sm px-4"
               onClick={() => window.print()}
