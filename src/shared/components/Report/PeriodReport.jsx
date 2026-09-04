@@ -1,5 +1,25 @@
 import { REPORT_META } from "./Data";
 
+// Same mapping TransactionDetail.jsx uses for target_user_role/creator_role.
+const ROLE_MAP = {
+  1: "Admin",
+  2: "Staff",
+  3: "Partner",
+  4: "Employee",
+  5: "Employer",
+};
+
+// One color per role, so the badges are visually distinguishable at a
+// glance the same way the income/expense category badges already are.
+const ROLE_COLORS = {
+  1: { bg: "#e0e7ff", color: "#3730a3" }, // Admin — indigo
+  2: { bg: "#fef9c3", color: "#854d0e" }, // Staff — amber
+  3: { bg: "#dcfce7", color: "#15803d" }, // Partner — green
+  4: { bg: "#dbeafe", color: "#1d4ed8" }, // Employee — blue
+  5: { bg: "#fce7f3", color: "#9d174d" }, // Employer — pink
+};
+const DEFAULT_ROLE_COLOR = { bg: "#e5e7eb", color: "#374151" }; // fallback — grey
+
 const ROWS_PER_PAGE = REPORT_META.rowsPerPage || 15;
 
 const fmtDate = (val) =>
@@ -16,6 +36,18 @@ const fmtAmount = (val) =>
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+
+// FIXED — period.title was always undefined: the financial_periods table
+// has no `title` column, only `label` (plus period_number). This is what
+// was leaking straight into the printed header and the saved filename as
+// literal "undefined". Falls back through every field that could
+// plausibly hold the period's display name before giving up.
+const getPeriodLabel = (period) =>
+  period.title ||
+  period.label ||
+  (period.period_number
+    ? `Period ${period.period_number}`
+    : "Financial Period");
 
 // Falls back to computing income/expense/net from the transaction set
 // itself when the period record doesn't carry those totals yet. Net
@@ -66,7 +98,7 @@ const buildHeader = (period, summaryOnly = false) => {
         <div class="report-title">Financial Period ${
           summaryOnly ? "Summary" : "Report"
         }</div>
-        <div class="report-sub">${period.title}</div>
+        <div class="report-sub">${getPeriodLabel(period)}</div>
       </div>
       <div class="meta-r">
         <div><b>Status:</b> ${
@@ -86,6 +118,30 @@ const buildFooter = (pageLabel) => `
     <span>${pageLabel}</span>
   </div>`;
 
+// Same rule TransactionDetail.jsx uses: no user_id at all means it's a
+// company-level transaction; otherwise show that person's name + role,
+// and their phone number underneath if we have it — never fall back to
+// "Company Account" just because the name happens to be missing, since
+// the transaction genuinely was made for someone (employee, worker,
+// staff, or partner), not the company.
+//
+// FIXED — the backend's findAll (finance.queries.js) now joins in
+// target_user_name/target_user_phone/target_user_role the same way
+// findOne already did, so this data is finally present here too.
+const forColumnValue = (t) => {
+  if (!t.user_id) return "Company Account";
+
+  const roleLabel = ROLE_MAP[t.target_user_role] || "User";
+  const roleColor = ROLE_COLORS[t.target_user_role] || DEFAULT_ROLE_COLOR;
+  const roleBadge = `<span class="bp" style="background:${roleColor.bg};color:${roleColor.color};margin-left:5px;">${roleLabel}</span>`;
+  const name = t.target_user_name || `User #${t.user_id}`;
+  const nameLine = `${name}${roleBadge}`;
+
+  return t.target_user_phone
+    ? `${nameLine}<br/><span style="font-weight:400;color:#8a97b0;">${t.target_user_phone}</span>`
+    : nameLine;
+};
+
 const buildTransactionRows = (transactions, startIdx) =>
   transactions
     .map((t, i) => {
@@ -104,9 +160,7 @@ const buildTransactionRows = (transactions, startIdx) =>
         };color:${isIncome ? "#15803d" : "#b91c1c"}">${(
           t.category || ""
         ).toUpperCase()}</span></td>
-        <td style="background:${bg}">${
-          t.target_user_name || (t.user_id ? "—" : "Company Account")
-        }</td>
+        <td style="background:${bg}">${forColumnValue(t)}</td>
         <td style="background:${bg}">${t.creator_name || "System"}</td>
         <td style="background:${bg};text-align:right;font-weight:600;color:${
           isIncome ? "#15803d" : "#b91c1c"
@@ -256,7 +310,15 @@ const REPORT_STYLES = `
 // opened, so nothing extra ever becomes visible in the background. The
 // iframe is removed automatically once printing finishes (or after a
 // timeout fallback, since some browsers don't reliably fire "afterprint").
-const openAndPrint = (html) => {
+//
+// printTitle, when given, is what "Save as PDF" suggests as the
+// filename. Browsers take that from the *top-level page's* document
+// title, not the iframe's own <title> — the iframe's title only names
+// its own (invisible) document, so without this the saved file kept
+// picking up whatever the app's real page title happened to be. This
+// swaps document.title in for the duration of the print and puts the
+// original back afterward.
+const openAndPrint = (html, printTitle) => {
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
   iframe.style.right = "0";
@@ -266,11 +328,14 @@ const openAndPrint = (html) => {
   iframe.style.border = "0";
   iframe.style.visibility = "hidden";
 
+  const originalTitle = document.title;
+
   let cleaned = false;
   const cleanup = () => {
     if (cleaned) return;
     cleaned = true;
     if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+    document.title = originalTitle;
   };
 
   iframe.onload = () => {
@@ -278,6 +343,8 @@ const openAndPrint = (html) => {
     // before srcdoc content has actually been parsed in.
     const win = iframe.contentWindow;
     if (!win) return;
+
+    if (printTitle) document.title = printTitle;
 
     win.focus();
     win.addEventListener("afterprint", cleanup);
@@ -310,12 +377,13 @@ export const generatePeriodReport = ({
   if (!period) return;
 
   if (summaryOnly) {
+    const printTitle = `${REPORT_META.orgName} - Finance ${getPeriodLabel(period)} Summary`;
     const summaryHtml = buildSummaryPage(period, transactions, 1, true);
     const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
-<title>${period.title} Summary</title>
+<title>${printTitle}</title>
 <style>${REPORT_STYLES}</style>
 </head><body>${summaryHtml}</body></html>`;
-    openAndPrint(html);
+    openAndPrint(html, printTitle);
     return;
   }
 
@@ -328,10 +396,11 @@ export const generatePeriodReport = ({
   const txPagesHtml = buildTransactionPages(period, transactions, totalPages);
   const summaryHtml = buildSummaryPage(period, transactions, totalPages);
 
+  const printTitle = `${REPORT_META.orgName} - Finance ${getPeriodLabel(period)} Report`;
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
-<title>${period.title} Report</title>
+<title>${printTitle}</title>
 <style>${REPORT_STYLES}</style>
 </head><body>${txPagesHtml}${summaryHtml}</body></html>`;
 
-  openAndPrint(html);
+  openAndPrint(html, printTitle);
 };

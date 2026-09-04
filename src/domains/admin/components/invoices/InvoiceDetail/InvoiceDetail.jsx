@@ -248,7 +248,7 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
 
         <div className="receipt-stats-strip">
           <div className="stat-item">
-            <span className="stat-label">Customer</span>
+            <span className="stat-label">Partner</span>
             <span className="stat-value">
               {invoice.customer_full_name || "—"}
             </span>
@@ -345,3 +345,4 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
 };
 
 export default InvoiceDetail;
+

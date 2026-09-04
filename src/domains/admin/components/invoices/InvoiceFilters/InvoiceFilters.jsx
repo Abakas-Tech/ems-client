@@ -7,19 +7,19 @@ const InvoiceFilters = ({ filters, onFilterChange, onClear }) => {
       <div className="card-body">
         <div className="row g-3 align-items-center">
           {/* Search (invoice # or customer name) */}
-          <div className="col-md-2">
+          <div className="col-md-3">
             <input
               type="text"
               name="search"
               className={`form-control ${styles.input}`}
-              placeholder="Search invoice # or customer"
+              placeholder="Search invoice number or partner name"
               value={filters.search}
               onChange={onFilterChange}
             />
           </div>
 
           {/* Status */}
-          <div className="col-md-2">
+          <div className="col-md-3">
             <select
               name="status"
               className={`form-select ${styles.input}`}
@@ -32,20 +32,6 @@ const InvoiceFilters = ({ filters, onFilterChange, onClear }) => {
               <option value="partially_paid">Partially Paid</option>
               <option value="paid">Paid</option>
               <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
-
-          {/* Payment status (simple paid / not paid view) */}
-          <div className="col-md-2">
-            <select
-              name="payment_status"
-              className={`form-select ${styles.input}`}
-              value={filters.payment_status}
-              onChange={onFilterChange}
-            >
-              <option value="">Any Payment Status</option>
-              <option value="paid">Paid</option>
-              <option value="not_paid">Not Paid</option>
             </select>
           </div>
 

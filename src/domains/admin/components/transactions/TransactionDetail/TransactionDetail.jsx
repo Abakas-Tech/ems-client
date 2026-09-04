@@ -5,6 +5,7 @@ import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import Badge from "../../../../../shared/components/Badge/Badge";
+import { REPORT_META } from "../../../../../shared/components/Report/Data";
 
 const ROLE_MAP = {
   1: "Admin",
@@ -30,6 +31,17 @@ const formatAmount = (value) =>
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+
+// FIXED — financial_periods has no `title` column, only `label` (plus
+// period_number) — same bug already fixed in PeriodReport.jsx. This was
+// rendering "undefined" both in the on-screen summary heading and, worse,
+// in the saved PDF's filename.
+const getPeriodLabel = (period) =>
+  period?.title ||
+  period?.label ||
+  (period?.period_number
+    ? `Period ${period.period_number}`
+    : "Financial Period");
 
 // Same fallback logic as the printed report (PeriodReport.jsx): prefer the
 // period's own stored totals, fall back to computing from the transaction
@@ -61,6 +73,68 @@ const computeSummaryTotals = (period, transactions) => {
     netProfit: period.net_profit ?? computedNet,
     transactionCount: period.transaction_count ?? list.length,
   };
+};
+
+// Print-only company header — same org name/logo/confidentiality line as
+// the printed period and worker reports (REPORT_META, shared Data.js),
+// but only shown on the printed page, never on-screen. Kept deliberately
+// compact (small logo, tight padding) — this is a short receipt, not a
+// full report page, so it shouldn't read like one.
+const CompanyHeader = () => {
+  const {
+    orgName,
+    orgSub,
+    logoPath,
+    logoInitials,
+    logoColor,
+    confidentiality,
+  } = REPORT_META;
+
+  return (
+    <div className="receipt-company-header">
+      <div className="d-flex align-items-center gap-2">
+        {logoPath ? (
+          <img src={logoPath} alt={orgName} className="receipt-company-logo" />
+        ) : (
+          <div
+            className="receipt-company-logo-fallback"
+            style={{ background: logoColor }}
+          >
+            {logoInitials}
+          </div>
+        )}
+        <div>
+          <div className="receipt-company-name">{orgName}</div>
+          <div className="receipt-company-sub">{orgSub}</div>
+        </div>
+      </div>
+      <div className="receipt-company-confidentiality">{confidentiality}</div>
+    </div>
+  );
+};
+
+// Swaps document.title to a proper name right before printing and puts
+// the original back afterward — "Save as PDF" takes its suggested
+// filename from the page's real title, not anything inside the printed
+// content, so without this the saved file kept picking up whatever the
+// app's actual page title happened to be (its SEO title, in this case).
+const printWithTitle = (title) => {
+  const originalTitle = document.title;
+  let restored = false;
+
+  const restore = () => {
+    if (restored) return;
+    restored = true;
+    document.title = originalTitle;
+    window.removeEventListener("afterprint", restore);
+  };
+
+  document.title = title;
+  window.addEventListener("afterprint", restore);
+  window.print();
+
+  // Fallback in case "afterprint" doesn't fire in this browser.
+  setTimeout(restore, 4000);
 };
 
 // NOTE: Generate Report is no longer shown from this page — it now only
@@ -125,6 +199,16 @@ const TransactionDetail = ({
   const isPositiveAccent = isSummaryMode ? isProfit : isIncome;
   const accent = isPositiveAccent ? "income" : "expense";
 
+  const handlePrintSummary = () =>
+    printWithTitle(
+      `${REPORT_META.orgName} - Finance ${getPeriodLabel(summaryPeriod)} Summary`,
+    );
+
+  const handlePrintReceipt = () =>
+    printWithTitle(
+      `${REPORT_META.orgName} - Transaction Receipt${transaction?.reference ? ` ${transaction.reference}` : ""}`,
+    );
+
   return (
     <div className="txn-receipt dashboard-wraper">
       <style>{`
@@ -145,6 +229,56 @@ const TransactionDetail = ({
           background: var(--surface);
           box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 12px rgba(16, 24, 40, 0.05);
           overflow: hidden;
+        }
+        /* Print-only company header — never shown on screen, only when printed. */
+        .txn-receipt .receipt-company-header {
+          display: none;
+        }
+        @media print {
+          .txn-receipt .receipt-company-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.6rem 1.5rem;
+            border-bottom: 2px solid #1a3c6e;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+        .txn-receipt .receipt-company-logo {
+          height: 30px;
+          max-width: 100px;
+          object-fit: contain;
+        }
+        .txn-receipt .receipt-company-logo-fallback {
+          width: 30px;
+          height: 30px;
+          border-radius: 7px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-size: 11px;
+          font-weight: 800;
+          flex-shrink: 0;
+        }
+        .txn-receipt .receipt-company-name {
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: #1a3c6e;
+          line-height: 1.15;
+        }
+        .txn-receipt .receipt-company-sub {
+          font-size: 0.62rem;
+          color: var(--muted);
+          margin-top: 1px;
+        }
+        .txn-receipt .receipt-company-confidentiality {
+          font-size: 0.62rem;
+          color: var(--muted);
+          text-align: right;
+          white-space: nowrap;
         }
         .txn-receipt .receipt-topbar {
           padding: 2rem 2.25rem;
@@ -279,6 +413,45 @@ const TransactionDetail = ({
           font-size: 0.9rem;
           color: var(--ink);
         }
+        .txn-receipt .receipt-people {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          border-top: 1px solid var(--border);
+          border-bottom: 1px solid var(--border);
+          background: var(--soft);
+        }
+        .txn-receipt .people-item {
+          padding: 1.1rem 2.25rem;
+          border-right: 1px solid var(--border);
+        }
+        .txn-receipt .people-item:last-child {
+          border-right: none;
+        }
+        .txn-receipt .people-label {
+          display: block;
+          text-transform: uppercase;
+          font-size: 0.66rem;
+          letter-spacing: 0.07em;
+          font-weight: 700;
+          color: var(--muted);
+          margin-bottom: 0.35rem;
+        }
+        .txn-receipt .people-value {
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+          font-size: 0.925rem;
+          font-weight: 600;
+          color: var(--ink);
+        }
+        .txn-receipt .people-sub {
+          font-weight: 500;
+          font-size: 0.8rem;
+          color: var(--muted);
+        }
+        .txn-receipt .receipt-section-full {
+          padding: 2rem 2.25rem;
+        }
         .txn-receipt .description-text {
           font-size: 0.95rem;
           line-height: 1.75;
@@ -338,11 +511,27 @@ const TransactionDetail = ({
             text-align: left;
           }
           .txn-receipt .receipt-topbar,
-          .txn-receipt .receipt-section {
+          .txn-receipt .receipt-section,
+          .txn-receipt .receipt-section-full {
             padding: 1.5rem;
+          }
+          .txn-receipt .receipt-people {
+            grid-template-columns: 1fr;
+          }
+          .txn-receipt .people-item {
+            border-right: none;
+          }
+          .txn-receipt .people-item:first-child {
+            border-bottom: 1px solid var(--border);
+          }
+          .txn-receipt .people-value {
+            align-items: flex-start;
           }
         }
         @media print {
+          /* No forced page size / min-height here on purpose — a
+             receipt is short by nature and should print only as tall
+             as its actual content, not stretched to fill an A4 page. */
           .txn-receipt .receipt-shell {
             box-shadow: none;
             border-radius: 0;
@@ -371,6 +560,8 @@ const TransactionDetail = ({
         <>
           {/* Summary receipt */}
           <div className="receipt-shell" id="printable-receipt">
+            <CompanyHeader />
+
             {/* Summary header */}
             <div className="receipt-topbar">
               <div>
@@ -381,7 +572,9 @@ const TransactionDetail = ({
                   />
                 </div>
                 <p className="receipt-eyebrow">Period Summary</p>
-                <h2 className="receipt-title">{summaryPeriod.title}</h2>
+                <h2 className="receipt-title">
+                  {getPeriodLabel(summaryPeriod)}
+                </h2>
                 <p className="receipt-subtext">
                   {formatDate(summaryPeriod.started_at)} –{" "}
                   {summaryPeriod.closed_at
@@ -482,7 +675,7 @@ const TransactionDetail = ({
           <div className="text-center d-print-none mt-4">
             <button
               className="btn btn-outline-primary btn-sm px-4"
-              onClick={() => window.print()}
+              onClick={handlePrintSummary}
             >
               <i className="bi bi-printer me-2"></i> Print Summary Report
             </button>
@@ -492,6 +685,8 @@ const TransactionDetail = ({
         <>
           {/* Receipt */}
           <div className="receipt-shell" id="printable-receipt">
+            <CompanyHeader />
+
             {/* Summary header */}
             <div className="receipt-topbar">
               <div>
@@ -528,31 +723,20 @@ const TransactionDetail = ({
               </div>
             </div>
 
-            {/* Quick facts strip */}
-            <div className="receipt-stats-strip">
-              <div className="stat-item">
-                <span className="stat-label">Date</span>
-                <span className="stat-value">
-                  {formatDate(
-                    transaction.transaction_date || transaction.created_at,
-                  )}
-                </span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Reference</span>
-                <span className="stat-value">
-                  {transaction.reference || "—"}
-                </span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">
+            {/* Who it's for / who recorded it — Category, Date, and
+                Reference already live in the topbar above, so they don't
+                repeat down here. Just the two things the topbar can't
+                show, then the description, full width — no grid. */}
+            <div className="receipt-people">
+              <div className="people-item">
+                <span className="people-label">
                   {isCompany ? "Entity" : "Transaction For"}
                 </span>
                 {isCompany ? (
-                  <span className="stat-value">Company Account</span>
+                  <span className="people-value">Company Account</span>
                 ) : (
-                  <span className="stat-value">
-                    <span className="d-flex align-items-center gap-2">
+                  <span className="people-value">
+                    <span className="d-inline-flex align-items-center gap-2">
                       {transaction.target_user_name}
                       <Badge
                         content={
@@ -561,76 +745,34 @@ const TransactionDetail = ({
                         color="red"
                       />
                     </span>
-                    <span className="d-block">
-                      {transaction.target_user_phone}
-                    </span>
+                    {transaction.target_user_phone && (
+                      <span className="people-sub">
+                        {transaction.target_user_phone}
+                      </span>
+                    )}
                   </span>
                 )}
               </div>
-              <div className="stat-item">
-                <span className="stat-label">Recorded By</span>
-                <span className="stat-value is-flex">
-                  {transaction.creator_name || "System"}
-                  <Badge
-                    content={ROLE_MAP[transaction.creator_role]}
-                    color="green"
-                  />
+
+              <div className="people-item">
+                <span className="people-label">Recorded By</span>
+                <span className="people-value">
+                  <span className="d-inline-flex align-items-center gap-2">
+                    {transaction.creator_name || "System"}
+                    <Badge
+                      content={ROLE_MAP[transaction.creator_role]}
+                      color="green"
+                    />
+                  </span>
                 </span>
               </div>
             </div>
 
-            {/* Details + Description */}
-            <div className="receipt-body">
-              <div className="receipt-section">
-                <h6 className="section-title">Details</h6>
-                <dl className="detail-grid">
-                  <dt>Category</dt>
-                  <dd className="text-capitalize">{transaction.category}</dd>
-
-                  <dt>Date</dt>
-                  <dd>
-                    {formatDate(
-                      transaction.transaction_date || transaction.created_at,
-                    )}
-                  </dd>
-
-                  <dt>Reference</dt>
-                  <dd>{transaction.reference || "—"}</dd>
-
-                  <dt>{isCompany ? "Entity" : "Transaction For"}</dt>
-                  <dd>
-                    {isCompany ? (
-                      "Company Account"
-                    ) : (
-                      <span className="d-inline-flex align-items-center gap-2">
-                        {transaction.target_user_name}
-                        <Badge
-                          content={ROLE_MAP[transaction.target_user_role]}
-                          color="red"
-                        />
-                      </span>
-                    )}
-                  </dd>
-
-                  <dt>Recorded By</dt>
-                  <dd>
-                    <span className="d-inline-flex align-items-center gap-2">
-                      {transaction.creator_name || "System"}
-                      <Badge
-                        content={ROLE_MAP[transaction.creator_role]}
-                        color="green"
-                      />
-                    </span>
-                  </dd>
-                </dl>
-              </div>
-
-              <div className="receipt-section">
-                <h6 className="section-title">Description</h6>
-                <p className="description-text">
-                  {transaction.description || "No description provided."}
-                </p>
-              </div>
+            <div className="receipt-section-full">
+              <h6 className="section-title">Description</h6>
+              <p className="description-text">
+                {transaction.description || "No description provided."}
+              </p>
             </div>
 
             {/* Period */}
@@ -728,7 +870,7 @@ const TransactionDetail = ({
             )}
             <button
               className="btn btn-outline-primary btn-sm px-4"
-              onClick={() => window.print()}
+              onClick={handlePrintReceipt}
             >
               <i className="bi bi-printer me-2"></i> Print Receipt
             </button>

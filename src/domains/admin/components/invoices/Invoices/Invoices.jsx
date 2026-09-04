@@ -250,9 +250,9 @@ const Invoices = () => {
         }
         data={invoices.data}
         columns={[
-          { header: "Invoice #", accessor: "invoice_number" },
+          { header: "Invoice Number", accessor: "invoice_number" },
           {
-            header: "Customer",
+            header: "Partner",
             render: (row) => row.customer_full_name || "—",
           },
           {
@@ -266,15 +266,6 @@ const Invoices = () => {
               <Badge
                 content={row.status.replace("_", " ").toUpperCase()}
                 color={STATUS_COLORS[row.status]}
-              />
-            ),
-          },
-          {
-            header: "Payment Status",
-            render: (row) => (
-              <Badge
-                content={row.status === "paid" ? "PAID" : "NOT PAID"}
-                color={row.status === "paid" ? "green" : "red"}
               />
             ),
           },
