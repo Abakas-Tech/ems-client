@@ -51,6 +51,8 @@ import ListComplaint from "../domains/admin/pages/complaints/ListComplaint/ListC
 import CreateComplaint from "../domains/admin/pages/complaints/CreateComplaint/CreateComplaint.jsx";
 import ViewComplaint from "../domains/admin/pages/complaints/ViewComplaint/ViewComplaint.jsx";
 import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx";
+// ADDED — Flexible Letter Generator page
+import LetterGenerator from "../domains/admin/pages/Lettergenerator/Lettergenerator.jsx";
 
 const AdminRoutes = () => {
   return (
@@ -94,6 +96,10 @@ const AdminRoutes = () => {
         <Route path="/employees/archived" element={<ArchivedWorkers />} />
         {/* <Route path="/employees/modules" element={<WorkerModuleManagemet />} /> */}
         {/* <Route path="/employees/modules/:id/add" element={<ModulesList />} /> */}
+        {/* ADDED — Flexible Letter Generator, arrived at either directly
+            or via Active Workers' "Create Letter" bulk action, which
+            passes { workerId } through navigate(...) state. */}
+        <Route path="/letter-generator" element={<LetterGenerator />} />
         <Route path="/meta-data/country" element={<CountryPage />} />
         <Route path="/meta-data/region" element={<RegionPage />} />
         <Route path="/meta-data/wereda" element={<WeredaPage />} />

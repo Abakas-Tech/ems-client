@@ -50,6 +50,15 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
     permission: PERMISSIONS.MANAGE_WORKERS,
   },
+  // ADDED — Flexible Letter Generator. Reached either from the sidebar
+  // directly or via Active Workers' "Create Letter" bulk action.
+  {
+    label: "Letter ",
+    path: "/admin/letter-generator",
+    icon: "bi bi-file-earmark-text",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_WORKERS,
+  },
   {
     label: "Finance",
     path: "/admin/finances",
