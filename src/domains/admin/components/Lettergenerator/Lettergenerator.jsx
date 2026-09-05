@@ -10,9 +10,9 @@ import BackButton from "../../../../shared/components/BackButton/BackButton";
 // logo/company name/confidentiality line as every other printed report.
 import { REPORT_META } from "../../../../shared/components/Report/Data";
 
-// ────────────────────────────────────────────────────────────────────────
+
 // Predefined options (ለ / ጉዳዩ / default incident text)
-// ────────────────────────────────────────────────────────────────────────
+
 
 const TO_OPTIONS = [
   "የኢፌድሪ ስራና ክህሎት ሚኒስቴር ለሲስተም ክፍል አዲስ አበባ",
@@ -47,20 +47,19 @@ const fmtDate = (val) =>
     year: "numeric",
   });
 
-// ────────────────────────────────────────────────────────────────────────
+
 // Shared muted input styling — a light fill only, no border/shadow chrome
 // of its own beyond the standard form-control outline.
-// ────────────────────────────────────────────────────────────────────────
+
 
 const FIELD_STYLE = {
   backgroundColor: "#f5f7fa",
 };
 
-// ────────────────────────────────────────────────────────────────────────
+
 // Print / HTML builder — mirrors the Finance period report's
 // buildHeader/buildFooter/openAndPrint pattern class-for-class, so every
 // printed page in the system shares one visual header.
-// ────────────────────────────────────────────────────────────────────────
 
 const buildLetterHeader = (title, subtitle) => {
   const { orgName, orgSub, logoPath, logoInitials, logoColor } = REPORT_META;
@@ -273,12 +272,12 @@ const toDataUri = async (url) => {
   }
 };
 
-// ────────────────────────────────────────────────────────────────────────
+
 // SelectableField — ONE input that both picks a predefined option and
 // stays freely editable: a native <datalist> attached to a plain text
 // input, so the same field is what you pick from AND what you type/edit
 // in — nothing renders into a second field.
-// ────────────────────────────────────────────────────────────────────────
+
 
 const SelectableField = ({ label, options, value, onChange, placeholder }) => {
   const listId = useId();
@@ -305,13 +304,13 @@ const SelectableField = ({ label, options, value, onChange, placeholder }) => {
   );
 };
 
-// ────────────────────────────────────────────────────────────────────────
+
 // CopyField — a single toolkit row: clicking it copies the value and,
 // like the copy button in the Claude console, swaps its own icon/text to
 // a "Copied" confirmation for a moment instead of firing a global toast.
 // Left-aligned via an explicit inline style so it can never fall back to
 // a button's default centered text.
-// ────────────────────────────────────────────────────────────────────────
+
 
 const CopyField = ({ label, value }) => {
   const [status, setStatus] = useState(null); // null | "copied" | "failed"
@@ -362,11 +361,10 @@ const CopyField = ({ label, value }) => {
   );
 };
 
-// ────────────────────────────────────────────────────────────────────────
 // LetterToolkit — compact, plain (no card/border/shadow) panel: worker
 // field copy rows, passport scan + print side by side, screenshot
 // manager. Everything explicitly left-aligned.
-// ────────────────────────────────────────────────────────────────────────
+
 
 const LetterToolkit = ({
   worker,
@@ -498,9 +496,9 @@ const LetterToolkit = ({
   );
 };
 
-// ────────────────────────────────────────────────────────────────────────
+
 // Main component
-// ────────────────────────────────────────────────────────────────────────
+
 
 const LetterGenerator = () => {
   const location = useLocation();

@@ -2,6 +2,7 @@
   "name": "ALETISALAT Private Foreign Employment Agency",
   "short_name": "ALETISALAT",
   "description": "Apply for verified overseas jobs with ALETISALAT Private Foreign Employment Agency. Safe and legal job opportunities for Ethiopians with full visa processing and full support.",
+  "id": "/?source=pwa&utm_campaign=app_install",
   "lang": "en",
   "dir": "ltr",
   "start_url": "/?source=pwa&utm_campaign=app_install",
@@ -16,31 +17,51 @@
       "src": "/icons/192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icons/256.png",
       "sizes": "256x256",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icons/384.png",
       "sizes": "384x384",
       "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icons/512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/icons/192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/image.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/image.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ],
   "related_applications": [],

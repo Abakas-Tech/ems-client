@@ -186,39 +186,36 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
         .txn-receipt .receipt-body { padding: 1.75rem 2.25rem; }
         .txn-receipt .items-table th { background: #f9fafb; font-size: .78rem; text-transform: uppercase; color: #667085; }
         .txn-receipt .totals-row td { font-weight: 800; background: #eaf1fc; border-top: 2px solid #1a3c6e; font-size: 1rem; }
+
+        /* Bottom action bar: Issue / Record Payment / Print — centered & horizontal on larger screens */
+        .txn-receipt .receipt-actions-bottom {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 1.5rem 2.25rem 2rem;
+          border-top: 1px solid #e4e7ec;
+        }
+        .txn-receipt .receipt-actions-bottom .btn {
+          flex: 0 1 auto;
+        }
+
+        /* Smaller screens: let buttons wrap/stack and take available width without overflow */
+        @media (max-width: 576px) {
+          .txn-receipt .receipt-actions-bottom {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.6rem;
+          }
+          .txn-receipt .receipt-actions-bottom .btn {
+            width: 100%;
+          }
+        }
       `}</style>
 
       <div className="mb-3 d-flex justify-content-between align-items-center">
         <BackButton onClick={onBack} />
-        <div className="d-flex gap-2">
-          {canIssue && (
-            <button className="btn btn-main btn-sm" onClick={handleIssue}>
-              Issue Invoice
-            </button>
-          )}
-          {canCancel && (
-            <button
-              className="btn btn-outline-danger btn-sm"
-              onClick={handleCancel}
-            >
-              Cancel Invoice
-            </button>
-          )}
-          {canRecordPayment && (
-            <button
-              className="btn btn-main btn-sm"
-              onClick={() => setShowPaymentForm(true)}
-            >
-              Record Payment
-            </button>
-          )}
-          <button
-            className="btn btn-outline-primary btn-sm"
-            onClick={handlePrint}
-          >
-            <i className="bi bi-printer me-2"></i> Print Invoice
-          </button>
-        </div>
       </div>
 
       <div className="receipt-shell">
@@ -339,10 +336,41 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
             )}
           </div>
         </div>
+
+        {/* Actions moved to the bottom: horizontally centered on larger screens,
+            wrap/stack on smaller screens to avoid overflow or cramping. */}
+        <div className="receipt-actions-bottom">
+          {canIssue && (
+            <button className="btn btn-main btn-sm" onClick={handleIssue}>
+              Issue Invoice
+            </button>
+          )}
+          {canCancel && (
+            <button
+              className="btn btn-outline-danger btn-sm"
+              onClick={handleCancel}
+            >
+              Cancel Invoice
+            </button>
+          )}
+          {canRecordPayment && (
+            <button
+              className="btn btn-main btn-sm"
+              onClick={() => setShowPaymentForm(true)}
+            >
+              Record Payment
+            </button>
+          )}
+          <button
+            className="btn btn-outline-primary btn-sm"
+            onClick={handlePrint}
+          >
+            <i className="bi bi-printer me-2"></i> Print Invoice
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
 export default InvoiceDetail;
-

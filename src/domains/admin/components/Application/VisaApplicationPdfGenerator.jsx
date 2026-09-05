@@ -65,6 +65,7 @@ const REQUIRED_FIELDS = [
     get: (p) => p.passport?.issuing_country,
   },
   { label: "Visa Number", get: (p) => p.visa?.visa_number },
+  { label: "Visa Reference Number", get: (p) => p.visa?.reference_number },
   // { label: "Reference Number", get: (p) => p.visa?.visa_reference_number },
   { label: "Sponsor Name", get: (p) => p.contracts[0]?.employer_name },
 ];
@@ -92,6 +93,7 @@ const REQUIRED_FIELD_TO_FORM_FIELD = {
     field: "passport_issuing_country",
   },
   "Visa Number": { section: "visa", field: "visa_number" },
+  "Visa Reference Number": { section: "visa", field: "visa_reference_number" },
   "Sponsor Name": { section: "contract", field: "employer" },
 };
 

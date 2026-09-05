@@ -2515,7 +2515,10 @@ function WorkerForm() {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        <label>Reference Number</label>
+        {renderPlainLabel(
+          "Reference Number",
+          isFieldFlaggedMissing("visa", "visa_reference_number"),
+        )}
         <input
           type="text"
           name="visa_reference_number"

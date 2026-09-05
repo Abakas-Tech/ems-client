@@ -188,7 +188,7 @@ const openAndPrint = (html) => {
     setTimeout(() => {
       try {
         win.print();
-      } catch (e) {
+      } catch {
         cleanup();
       }
     }, 150);
