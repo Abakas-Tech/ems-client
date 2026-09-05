@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { FiCheckCircle, FiPlus, FiTrash2 } from "react-icons/fi";
 import {
   createWorker,
   updateWorker,
@@ -47,65 +48,6 @@ const renderPlainLabel = (text, missing = false) => (
     {text}
     {missing && <span className="text-danger fw-bold ms-1">!</span>}
   </label>
-);
-
-// Small check-circle icon used by the tree nav to mark a completed module.
-// Plain inline SVG (no new icon-library dependency) so it's positioned
-// freely and colored via CSS, matching the rest of the tree nav's styling.
-const CompletionCheckIcon = () => (
-  <svg
-    className="tree-node-check-icon"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.25"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-label="Completed"
-  >
-    <circle cx="12" cy="12" r="10" />
-    <path d="M8 12.5l2.5 2.5L16 9.5" />
-  </svg>
-);
-
-// Plain inline SVG icons for the Experience add/remove controls — kept
-// dependency-free, matching CompletionCheckIcon's approach above.
-const PlusIcon = () => (
-  <svg
-    width="15"
-    height="15"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M12 5v14M5 12h14" />
-  </svg>
-);
-
-const TrashIcon = () => (
-  <svg
-    width="15"
-    height="15"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M3 6h18" />
-    <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-    <path d="M19 6l-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6" />
-    <path d="M10 11v6" />
-    <path d="M14 11v6" />
-  </svg>
 );
 
 // section definitions, in the order they appear on the page / in the nav
@@ -163,6 +105,28 @@ const SKILL_OPTIONS = [
   "driving",
   "other",
 ];
+
+// Fixed dropdown options for the Experience module's Country and Years
+// fields. Values are stored/sent exactly as before (plain strings on the
+// row) — only the input control changed from free text to a select.
+const MIDDLE_EAST_COUNTRIES = [
+  "Bahrain",
+  "Iraq",
+  "Israel",
+  "Jordan",
+  "Kuwait",
+  "Lebanon",
+  "Oman",
+  "Palestine",
+  "Qatar",
+  "Saudi Arabia",
+  "Syria",
+  "Turkey",
+  "United Arab Emirates",
+  "Yemen",
+];
+
+const EXPERIENCE_YEARS_OPTIONS = [1, 2, 3, 4, 5];
 
 // One blank experience row. Each row carries a client-only `localId` used
 // purely as a React key / for add-remove bookkeeping — it is stripped out
@@ -277,6 +241,32 @@ const educationRegex = /^[A-Za-z\s.]+$/;
 const guarantorPhoneRegex = /^(?:\+251[79]\d{8}|09\d{8})$/;
 const workerPhoneRegex = /^(?:\+251[79]\d{8}|09\d{8}|07\d{8})$/;
 const allowedImageTypes = ["image/jpeg", "image/png", "image/jpg"];
+
+// ---------------------------------------------------------------------
+// Shared validation helpers — these mirror validateWorker.middleware.js
+// on the backend exactly (isProvided / dateOrder), so a request that
+// would fail Joi on the server fails the same way here first. This is a
+// UX/safety-net layer only; the backend remains the real source of truth
+// and re-validates everything independently — bypassing this frontend
+// check (e.g. calling the API directly) is still caught server-side.
+// ---------------------------------------------------------------------
+const isProvided = (v) => v !== undefined && v !== null && v !== "";
+
+const dateOrderError = (startValue, endValue, endLabel) => {
+  const hasStart = isProvided(startValue);
+  const hasEnd = isProvided(endValue);
+
+  if (hasEnd && !hasStart) return `${endLabel} needs a start date`;
+
+  if (hasStart && hasEnd) {
+    const start = new Date(startValue);
+    const end = new Date(endValue);
+    if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end <= start) {
+      return `${endLabel} must be after the start date`;
+    }
+  }
+  return null;
+};
 
 const fallback = (value) => (value === "" || value == null ? "—" : value);
 
@@ -813,7 +803,7 @@ function WorkerForm() {
         passport_issuing_country:
           profileData.passport.issuing_country || "Ethiopia",
       });
-      setExistingPassportScanUrl(profileData.passport.scan?.url || null);
+      setExistingPassportScanUrl(profileData.passport?.scan?.url || null);
     }
 
     if (profileData.coc) {
@@ -1099,10 +1089,7 @@ function WorkerForm() {
   // rules, etc. for actual submission).
   const isPassportFilled = () => Boolean(passport.passport_number?.trim());
   const isCocFilled = () =>
-    Boolean(coc.coc_assessment_center?.trim()) &&
-    Boolean(coc.coc_assessment_date) &&
-    Boolean(coc.coc_issue_date) &&
-    Boolean(coc.coc_expiry_date);
+    Object.values(coc).some((v) => v !== "" && v != null);
   const isMedicalFilled = () => Boolean(medical.medical_status);
   const isGuarantorFilled = () =>
     Boolean(guarantor.guarantor_name?.trim()) &&
@@ -1113,7 +1100,9 @@ function WorkerForm() {
     Object.values(visa).some((v) => v !== "" && v != null);
   const isTravelFilled = () => Boolean(travel.ticket_number?.trim());
   const isContractFilled = () =>
-    Boolean(contract.employer?.trim()) && Boolean(contract.monthly_salary);
+    Boolean(contract.employer?.trim()) &&
+    Boolean(contract.monthly_salary) &&
+    Boolean(contract.partner_id);
   const isLanguagesFilled = () => languages.length > 0;
   const isSkillsFilled = () => skills.length > 0;
   const isExperienceFilled = () =>
@@ -1252,23 +1241,31 @@ function WorkerForm() {
     );
   };
 
+  // ---------------------------------------------------------------------
+  // Section validators — mirror validateWorker.middleware.js on the
+  // backend rule-for-rule (same required/optional fields, same date-pair
+  // logic via dateOrderError, same short messages), so a request that
+  // would be rejected by the server is caught here first for instant
+  // feedback. The backend remains the actual source of truth and
+  // re-validates independently regardless of what happens here.
+  // ---------------------------------------------------------------------
+
   const validateBasic = () => {
     if (
       !basic.full_name ||
       basic.full_name.trim().length < 3 ||
       basic.full_name.length > 100
     )
-      return "Full name must be 3-100 characters";
+      return "Full name is too short";
     if (!workerPhoneRegex.test(basic.phone_number))
-      return "Phone number must be a valid Ethiopian number";
+      return "Enter a valid phone number";
     if (basic.email && !emailRegex.test(basic.email))
       return "Enter a valid email address";
     return null;
   };
 
   const validatePersonal = () => {
-    if (!["Male", "Female"].includes(personal.sex))
-      return "Sex must be Male or Female";
+    if (!["Male", "Female"].includes(personal.sex)) return "Sex is required";
     if (!isEditMode && !personal.region) return "Region is required";
 
     if (
@@ -1315,7 +1312,7 @@ function WorkerForm() {
         personal.marital_status,
       )
     )
-      return "Marital status must be Single, Married, Divorced, or Widowed";
+      return "Invalid marital status";
     if (personal.nationality && !isOnlyAlphabetsAndSpaces(personal.nationality))
       return "Nationality must contain only letters and spaces";
     if (personal.address && personal.address.length > 500)
@@ -1366,28 +1363,30 @@ function WorkerForm() {
 
   const validatePassport = () => {
     if (!sectionsEnabled.passport) return null;
+
     const passportNumber = passport.passport_number?.trim();
     if (!passportNumber) return "Passport number is required";
     if (passportNumber.length < 5 || passportNumber.length > 50)
-      return "Passport number must be 5-50 characters";
+      return "Passport number is too short";
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     if (passport.passport_issue_date) {
       const issue = new Date(passport.passport_issue_date);
-      if (isNaN(issue.getTime())) return "Invalid issue date";
-      if (issue > today) return "Issue date cannot be in future";
+      if (isNaN(issue.getTime())) return "Issue date must be valid";
+      if (issue > today) return "Issue date cannot be in the future";
     }
     if (passport.passport_expiry_date) {
       const expiry = new Date(passport.passport_expiry_date);
-      if (isNaN(expiry.getTime())) return "Invalid expiry date";
-      if (
-        passport.passport_issue_date &&
-        expiry <= new Date(passport.passport_issue_date)
-      )
-        return "Expiry must be after issue date";
+      if (isNaN(expiry.getTime())) return "Expiry date must be valid";
     }
+    const dateOrderErr = dateOrderError(
+      passport.passport_issue_date,
+      passport.passport_expiry_date,
+      "Expiry date",
+    );
+    if (dateOrderErr) return dateOrderErr;
 
     const hasExistingScan = isEditMode && existingPassportScanUrl;
     if (!hasExistingScan && !passportScan) return "Passport scan is required";
@@ -1399,8 +1398,7 @@ function WorkerForm() {
 
   const validateCoc = () => {
     if (!sectionsEnabled.coc) return null;
-    const center = coc.coc_assessment_center?.trim();
-    if (!center) return "Assessment center is required";
+
     if (
       coc.coc_number &&
       (coc.coc_number.length < 3 || coc.coc_number.length > 50)
@@ -1410,28 +1408,32 @@ function WorkerForm() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    if (!coc.coc_assessment_date) return "Assessment date is required";
-    const assessmentDate = new Date(coc.coc_assessment_date);
-    if (isNaN(assessmentDate.getTime())) return "Invalid assessment date";
-    if (assessmentDate > today) return "Assessment date cannot be in future";
+    if (coc.coc_assessment_date) {
+      const assessment = new Date(coc.coc_assessment_date);
+      if (isNaN(assessment.getTime())) return "Assessment date must be valid";
+      if (assessment > today) return "Assessment date cannot be in the future";
+    }
+    if (coc.coc_issue_date) {
+      const issue = new Date(coc.coc_issue_date);
+      if (isNaN(issue.getTime())) return "Issue date must be valid";
+      if (issue > today) return "Issue date cannot be in the future";
+    }
+    if (coc.coc_expiry_date && isNaN(new Date(coc.coc_expiry_date).getTime()))
+      return "Expiry date must be valid";
 
-    if (!coc.coc_issue_date) return "Issue date is required";
-    const issueDate = new Date(coc.coc_issue_date);
-    if (isNaN(issueDate.getTime())) return "Invalid issue date";
-    if (issueDate > today) return "Issue date cannot be in future";
-
-    if (!coc.coc_expiry_date) return "Expiry date is required";
-    const expiryDate = new Date(coc.coc_expiry_date);
-    if (isNaN(expiryDate.getTime())) return "Invalid expiry date";
-    if (expiryDate <= issueDate) return "Expiry must be after issue date";
+    const dateOrderErr = dateOrderError(
+      coc.coc_issue_date,
+      coc.coc_expiry_date,
+      "Expiry date",
+    );
+    if (dateOrderErr) return dateOrderErr;
 
     return null;
   };
-
   const validateMedical = () => {
     if (!sectionsEnabled.medical) return null;
     if (!["fit", "unfit", "pending"].includes(medical.medical_status))
-      return "Medical status must be fit, unfit, or pending";
+      return "Medical status is required";
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -1441,17 +1443,18 @@ function WorkerForm() {
       if (isNaN(issue.getTime())) return "Issue date must be valid";
       if (issue > today) return "Issue date cannot be in the future";
     }
-    if (medical.medical_expiry_date) {
-      const expiry = new Date(medical.medical_expiry_date);
-      if (isNaN(expiry.getTime())) return "Expiry date must be valid";
-    }
-    if (medical.medical_issue_date && medical.medical_expiry_date) {
-      if (
-        new Date(medical.medical_expiry_date) <=
-        new Date(medical.medical_issue_date)
-      )
-        return "Expiry date must be after issue date";
-    }
+    if (
+      medical.medical_expiry_date &&
+      isNaN(new Date(medical.medical_expiry_date).getTime())
+    )
+      return "Expiry date must be valid";
+
+    const dateOrderErr = dateOrderError(
+      medical.medical_issue_date,
+      medical.medical_expiry_date,
+      "Expiry date",
+    );
+    if (dateOrderErr) return dateOrderErr;
 
     return null;
   };
@@ -1465,15 +1468,13 @@ function WorkerForm() {
     if (guarantor.relation && guarantor.relation.length > 200)
       return "Relation cannot exceed 200 characters";
     if (!guarantorPhoneRegex.test(guarantor.guarantor_phone_number))
-      return "Phone must be a valid format";
+      return "Enter a valid phone number";
     return null;
   };
 
-  // Agent Information validation — mirrors validateGuarantor's shape and
-  // enforces the same NOT NULL / length constraints as the
-  // workers_agent_information table (agent_name VARCHAR(150), agent_phone
-  // VARCHAR(50)). Applies whether the agent came from a suggestion pick or
-  // was typed manually — either way `agent` must be valid.
+  // Agent Information isn't covered by the backend Joi worker schema (it
+  // goes through its own /worker-agent endpoint), so this stays a
+  // frontend-only check — unchanged.
   const validateAgent = () => {
     if (!sectionsEnabled.agent) return null;
     const name = agent.agent_name?.trim();
@@ -1482,7 +1483,7 @@ function WorkerForm() {
     if (!agent.agent_phone || !agent.agent_phone.trim())
       return "Agent phone is required";
     if (!guarantorPhoneRegex.test(agent.agent_phone))
-      return "Agent phone must be a valid format";
+      return "Enter a valid phone number";
     if (agent.agent_phone.length > 50)
       return "Agent phone cannot exceed 50 characters";
     return null;
@@ -1498,12 +1499,27 @@ function WorkerForm() {
       return "Issuance number cannot exceed 100 characters";
     if (visa.sponsor_id && visa.sponsor_id.length > 100)
       return "Sponsor ID cannot exceed 100 characters";
-    if (visa.visa_expiry_date && !visa.visa_issue_date)
-      return "Visa issue date must be provided if expiry date exists";
-    if (visa.visa_issue_date && visa.visa_expiry_date) {
-      if (new Date(visa.visa_expiry_date) <= new Date(visa.visa_issue_date))
-        return "Visa expiry date must be greater than issue date";
+
+    if (visa.visa_issue_date) {
+      const issue = new Date(visa.visa_issue_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (isNaN(issue.getTime())) return "Issue date must be valid";
+      if (issue > today) return "Issue date cannot be in the future";
     }
+    if (
+      visa.visa_expiry_date &&
+      isNaN(new Date(visa.visa_expiry_date).getTime())
+    )
+      return "Expiry date must be valid";
+
+    const dateOrderErr = dateOrderError(
+      visa.visa_issue_date,
+      visa.visa_expiry_date,
+      "Expiry date",
+    );
+    if (dateOrderErr) return dateOrderErr;
+
     return null;
   };
 
@@ -1516,79 +1532,73 @@ function WorkerForm() {
 
     const now = new Date();
     now.setHours(0, 0, 0, 0);
-    const departureDate = travel.departure_date
-      ? new Date(travel.departure_date)
-      : null;
-    const arrivalDate = travel.arrival_date
-      ? new Date(travel.arrival_date)
-      : null;
 
-    if (!departureDate && arrivalDate)
-      return "Departure date must be provided if arrival date is set";
-    if (departureDate) {
-      if (isNaN(departureDate.getTime()))
-        return "Departure date must be a valid date";
+    if (travel.departure_date) {
+      const departureDate = new Date(travel.departure_date);
+      if (isNaN(departureDate.getTime())) return "Departure date must be valid";
       departureDate.setHours(0, 0, 0, 0);
       if (departureDate < now) return "Departure date cannot be in the past";
     }
-    if (arrivalDate && isNaN(arrivalDate.getTime()))
-      return "Arrival date must be a valid date";
+    if (travel.arrival_date && isNaN(new Date(travel.arrival_date).getTime()))
+      return "Arrival date must be valid";
+
+    const dateOrderErr = dateOrderError(
+      travel.departure_date,
+      travel.arrival_date,
+      "Arrival date",
+    );
+    if (dateOrderErr) return dateOrderErr;
 
     return null;
   };
 
   const validateContract = () => {
     if (!sectionsEnabled.contract) return null;
-    if (!contract.employer || !contract.employer.trim())
-      return "Employer name is required";
-    if (contract.partner_id) {
-      if (
-        !Number.isInteger(Number(contract.partner_id)) ||
-        Number(contract.partner_id) <= 0
-      )
-        return "Partner must be a positive integer or empty";
-    }
+
+    // Employer stays optional. Partner is now required.
+    if (!contract.partner_id) return "Partner is required";
+    if (
+      !Number.isInteger(Number(contract.partner_id)) ||
+      Number(contract.partner_id) <= 0
+    )
+      return "Invalid partner selected";
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const startDate = contract.contract_start_date
-      ? new Date(contract.contract_start_date)
-      : null;
-    const endDate = contract.contract_end_date
-      ? new Date(contract.contract_end_date)
-      : null;
 
-    if (!startDate && endDate)
-      return "Contract start date must be provided if end date exists";
-    if (startDate) {
-      if (isNaN(startDate.getTime()))
-        return "Contract start date must be a valid date";
+    if (contract.contract_start_date) {
+      const startDate = new Date(contract.contract_start_date);
+      if (isNaN(startDate.getTime())) return "Start date must be valid";
       startDate.setHours(0, 0, 0, 0);
-      if (startDate < today) return "Contract start date cannot be in the past";
+      if (startDate < today) return "Start date cannot be in the past";
     }
-    if (endDate) {
-      if (isNaN(endDate.getTime()))
-        return "Contract end date must be a valid date";
-      endDate.setHours(0, 0, 0, 0);
-      if (endDate <= startDate)
-        return "Contract end date must be after start date";
-    }
+    if (
+      contract.contract_end_date &&
+      isNaN(new Date(contract.contract_end_date).getTime())
+    )
+      return "End date must be valid";
+
+    const dateOrderErr = dateOrderError(
+      contract.contract_start_date,
+      contract.contract_end_date,
+      "End date",
+    );
+    if (dateOrderErr) return dateOrderErr;
 
     if (!contract.monthly_salary) return "Monthly salary is required";
     const salary = Number(contract.monthly_salary);
     if (isNaN(salary) || salary <= 0)
-      return "Monthly salary must be a positive number";
+      return "Monthly salary must be greater than 0";
     const decimalParts = contract.monthly_salary.toString().split(".");
     if (decimalParts[1]?.length > 2)
-      return "Monthly salary cannot have more than 2 decimal places";
+      return "Monthly salary allows at most 2 decimal places";
 
     const validStatuses = ["pending", "approved", "rejected", "terminated"];
     if (!contract.status || !validStatuses.includes(contract.status))
-      return `Status must be one of: ${validStatuses.join(", ")}`;
+      return "Invalid contract status";
 
     return null;
   };
-
   // Languages / Skills are constrained to the hardcoded checkbox options,
   // so there's nothing further to validate beyond "Include is on" (which
   // the auto-toggle keeps in sync with "is anything checked").
@@ -1609,7 +1619,7 @@ function WorkerForm() {
   const validateExperience = () => {
     if (!sectionsEnabled.experience) return null;
     for (const row of experiences) {
-      if (!row.country?.trim()) return "Experience country is required";
+      if (!row.country?.trim()) return "Country is required";
       const years = Number(row.years_of_experience);
       if (
         row.years_of_experience === "" ||
@@ -1619,7 +1629,7 @@ function WorkerForm() {
         years < 0 ||
         years > 99
       )
-        return "Years of experience must be a whole number between 0 and 99";
+        return "Years of experience is required";
     }
     return null;
   };
@@ -1688,14 +1698,54 @@ function WorkerForm() {
       // exactly as it was.
       if (sectionsEnabled.passport)
         dataToSend.append("passport", JSON.stringify(passport));
-      if (sectionsEnabled.coc) dataToSend.append("coc", JSON.stringify(coc));
+      // COC: Issue Date, Assessment Date, and Expiry Date are no longer
+      // rendered on the form — they are always sent as null.
+      if (sectionsEnabled.coc)
+        dataToSend.append(
+          "coc",
+          JSON.stringify({
+            ...coc,
+            coc_issue_date: null,
+            coc_assessment_date: null,
+            coc_expiry_date: null,
+          }),
+        );
+      // Medical: Issue Date, Expiry Date, and Medical Report Number are no
+      // longer rendered on the form — they are always sent as null.
       if (sectionsEnabled.medical)
-        dataToSend.append("medical", JSON.stringify(medical));
+        dataToSend.append(
+          "medical",
+          JSON.stringify({
+            ...medical,
+            medical_issue_date: null,
+            medical_expiry_date: null,
+            medical_report_number: null,
+          }),
+        );
       if (sectionsEnabled.guarantor)
         dataToSend.append("guarantor", JSON.stringify(guarantor));
-      if (sectionsEnabled.visa) dataToSend.append("visa", JSON.stringify(visa));
+      // Visa: Issue Date, Expiry Date, and Reference Date are no longer
+      // rendered on the form — they are always sent as null.
+      if (sectionsEnabled.visa)
+        dataToSend.append(
+          "visa",
+          JSON.stringify({
+            ...visa,
+            visa_issue_date: null,
+            visa_expiry_date: null,
+            visa_reference_date: null,
+          }),
+        );
+      // Travel: Departure Location is no longer rendered on the form — it
+      // is always sent as null.
       if (sectionsEnabled.travel)
-        dataToSend.append("travel", JSON.stringify(travel));
+        dataToSend.append(
+          "travel",
+          JSON.stringify({
+            ...travel,
+            departure_location: null,
+          }),
+        );
       if (sectionsEnabled.contract)
         dataToSend.append("contract", JSON.stringify(contract));
 
@@ -1795,12 +1845,12 @@ function WorkerForm() {
 
   /* section field content (no wrapper/title — the card wrapper handles that) */
   /* Input classes below intentionally mirror the Create User Form exactly
-     (`row` + `form-group col-md-6` + `form-control`) so both forms
+     (`row` + `form-group col-md-6 mb-3` + `form-control`) so both forms
      share the same input look and feel. */
 
   const renderBasicFields = () => (
-    <>
-      <div className="form-group col-md-6">
+    <div className="row">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel(
           "Full Name",
           true,
@@ -1815,7 +1865,7 @@ function WorkerForm() {
           required
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Phone Number", true)}
         <input
           type="text"
@@ -1826,12 +1876,12 @@ function WorkerForm() {
           required
         />
       </div>
-    </>
+    </div>
   );
 
   const renderPersonalFields = () => (
-    <>
-      <div className="form-group col-md-6">
+    <div className="row">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Sex", true, isFieldFlaggedMissing("basic", "sex"))}
         <select
           name="sex"
@@ -1846,7 +1896,7 @@ function WorkerForm() {
         </select>
       </div>
 
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Region", !isEditMode)}
         <input
           type="text"
@@ -1857,7 +1907,7 @@ function WorkerForm() {
           required={!isEditMode}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Woreda</label>
         <input
           type="text"
@@ -1867,7 +1917,7 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>City</label>
         <input
           type="text"
@@ -1877,7 +1927,7 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Sub-City</label>
         <input
           type="text"
@@ -1887,7 +1937,7 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderPlainLabel(
           "Date of Birth",
           isFieldFlaggedMissing("basic", "date_of_birth"),
@@ -1900,7 +1950,7 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderPlainLabel(
           "Place of Birth",
           isFieldFlaggedMissing("basic", "place_of_birth"),
@@ -1913,7 +1963,7 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Religion</label>
         <input
           type="text"
@@ -1923,7 +1973,7 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderPlainLabel(
           "Marital Status",
           isFieldFlaggedMissing("basic", "marital_status"),
@@ -1941,7 +1991,7 @@ function WorkerForm() {
           <option value="Widowed">Widowed</option>
         </select>
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderPlainLabel(
           "Nationality",
           isFieldFlaggedMissing("basic", "nationality"),
@@ -1954,7 +2004,7 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Address</label>
         <input
           type="text"
@@ -1964,7 +2014,7 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Education</label>
         <input
           type="text"
@@ -1974,7 +2024,7 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Number of Children</label>
         <input
           type="number"
@@ -1985,7 +2035,7 @@ function WorkerForm() {
           min="0"
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Height (cm)</label>
         <input
           type="number"
@@ -1996,7 +2046,7 @@ function WorkerForm() {
           step="0.01"
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Weight (kg)</label>
         <input
           type="number"
@@ -2007,7 +2057,7 @@ function WorkerForm() {
           step="0.01"
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Photo 3x4", !isEditMode)}
         <input
           type="file"
@@ -2030,7 +2080,7 @@ function WorkerForm() {
           </small>
         )}
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Photo Standing", !isEditMode)}
         <input
           type="file"
@@ -2053,7 +2103,7 @@ function WorkerForm() {
           </small>
         )}
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>National ID Number</label>
         <input
           type="text"
@@ -2063,7 +2113,7 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Fingerprint Number</label>
         <input
           type="text"
@@ -2093,7 +2143,7 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
-    </>
+    </div>
   );
 
   // Status module content. On create there's no worker yet, so it keeps the
@@ -2106,7 +2156,7 @@ function WorkerForm() {
     if (!isEditMode) {
       return (
         <div className="row">
-          <div className="form-group col-md-6">
+          <div className="form-group col-md-6 mb-3">
             {renderLabel("Status", true)}
             {statuses.length === 0 ? (
               <div className="form-control text-muted">Loading statuses...</div>
@@ -2166,7 +2216,7 @@ function WorkerForm() {
   const renderPassportFields = () => (
     <div className="row">
       {/* Right side — scan button only, mirrors + Status button */}
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel(
           "Passport Number",
           true,
@@ -2181,7 +2231,7 @@ function WorkerForm() {
           required
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderPlainLabel(
           "Issuing Country",
           isFieldFlaggedMissing("passport", "passport_issuing_country"),
@@ -2194,7 +2244,7 @@ function WorkerForm() {
           onChange={handlePassportChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderPlainLabel(
           "Issue Date",
           isFieldFlaggedMissing("passport", "passport_issue_date"),
@@ -2207,7 +2257,7 @@ function WorkerForm() {
           onChange={handlePassportChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderPlainLabel(
           "Expiry Date",
           isFieldFlaggedMissing("passport", "passport_expiry_date"),
@@ -2225,7 +2275,7 @@ function WorkerForm() {
 
   const renderCocFields = () => (
     <div className="row">
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>COC Number</label>
         <input
           type="text"
@@ -2235,56 +2285,21 @@ function WorkerForm() {
           onChange={handleCocChange}
         />
       </div>
-      <div className="form-group col-md-6">
-        {renderLabel("Assessment Center", true)}
+      <div className="form-group col-md-6 mb-3">
+        <label>Assessment Center</label>
         <input
           type="text"
           name="coc_assessment_center"
           className="form-control"
           value={coc.coc_assessment_center}
           onChange={handleCocChange}
-          required
-        />
-      </div>
-      <div className="form-group col-md-6">
-        {renderLabel("Assessment Date", true)}
-        <input
-          type="date"
-          name="coc_assessment_date"
-          className="form-control"
-          value={coc.coc_assessment_date}
-          onChange={handleCocChange}
-          required
-        />
-      </div>
-      <div className="form-group col-md-6">
-        {renderLabel("Issue Date", true)}
-        <input
-          type="date"
-          name="coc_issue_date"
-          className="form-control"
-          value={coc.coc_issue_date}
-          onChange={handleCocChange}
-          required
-        />
-      </div>
-      <div className="form-group col-md-6">
-        {renderLabel("Expiry Date", true)}
-        <input
-          type="date"
-          name="coc_expiry_date"
-          className="form-control"
-          value={coc.coc_expiry_date}
-          onChange={handleCocChange}
-          required
         />
       </div>
     </div>
   );
-
   const renderMedicalFields = () => (
     <div className="row">
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Medical Status", true)}
         <select
           name="medical_status"
@@ -2299,7 +2314,7 @@ function WorkerForm() {
           <option value="pending">Pending</option>
         </select>
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Medical Center</label>
         <input
           type="text"
@@ -2309,42 +2324,12 @@ function WorkerForm() {
           onChange={handleMedicalChange}
         />
       </div>
-      <div className="form-group col-md-6">
-        <label>Medical Report Number</label>
-        <input
-          type="text"
-          name="medical_report_number"
-          className="form-control"
-          value={medical.medical_report_number}
-          onChange={handleMedicalChange}
-        />
-      </div>
-      <div className="form-group col-md-6">
-        <label>Issue Date</label>
-        <input
-          type="date"
-          name="medical_issue_date"
-          className="form-control"
-          value={medical.medical_issue_date}
-          onChange={handleMedicalChange}
-        />
-      </div>
-      <div className="form-group col-md-6">
-        <label>Expiry Date</label>
-        <input
-          type="date"
-          name="medical_expiry_date"
-          className="form-control"
-          value={medical.medical_expiry_date}
-          onChange={handleMedicalChange}
-        />
-      </div>
     </div>
   );
 
   const renderGuarantorFields = () => (
     <div className="row">
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Name", true)}
         <input
           type="text"
@@ -2355,7 +2340,7 @@ function WorkerForm() {
           required
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Relation</label>
         <input
           type="text"
@@ -2365,7 +2350,7 @@ function WorkerForm() {
           onChange={handleGuarantorChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Phone Number", true)}
         <input
           type="text"
@@ -2376,7 +2361,7 @@ function WorkerForm() {
           required
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Address</label>
         <input
           type="text"
@@ -2419,7 +2404,7 @@ function WorkerForm() {
 
   const renderAgentFields = () => (
     <div className="row">
-      <div className="form-group col-md-6 position-relative">
+      <div className="form-group col-md-6 mb-3 position-relative">
         {renderLabel("Agent Name", true)}
         <input
           type="text"
@@ -2460,7 +2445,7 @@ function WorkerForm() {
           </ul>
         )}
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Agent Phone", true)}
         <input
           type="text"
@@ -2476,7 +2461,7 @@ function WorkerForm() {
 
   const renderVisaFields = () => (
     <div className="row">
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderPlainLabel(
           "Visa Number",
           isFieldFlaggedMissing("visa", "visa_number"),
@@ -2486,26 +2471,6 @@ function WorkerForm() {
           name="visa_number"
           className="form-control"
           value={visa.visa_number}
-          onChange={handleVisaChange}
-        />
-      </div>
-      <div className="form-group col-md-6">
-        <label>Issue Date</label>
-        <input
-          type="date"
-          name="visa_issue_date"
-          className="form-control"
-          value={visa.visa_issue_date}
-          onChange={handleVisaChange}
-        />
-      </div>
-      <div className="form-group col-md-6">
-        <label>Expiry Date</label>
-        <input
-          type="date"
-          name="visa_expiry_date"
-          className="form-control"
-          value={visa.visa_expiry_date}
           onChange={handleVisaChange}
         />
       </div>
@@ -2522,17 +2487,7 @@ function WorkerForm() {
           onChange={handleVisaChange}
         />
       </div>
-      <div className="form-group col-md-6">
-        <label>Reference Date</label>
-        <input
-          type="date"
-          name="visa_reference_date"
-          className="form-control"
-          value={visa.visa_reference_date}
-          onChange={handleVisaChange}
-        />
-      </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Issuance Number</label>
         <input
           type="text"
@@ -2542,7 +2497,7 @@ function WorkerForm() {
           onChange={handleVisaChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Sponsor ID</label>
         <input
           type="text"
@@ -2557,7 +2512,7 @@ function WorkerForm() {
 
   const renderTravelFields = () => (
     <div className="row">
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Ticket Number", true)}
         <input
           type="text"
@@ -2568,7 +2523,7 @@ function WorkerForm() {
           required
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Departure Date</label>
         <input
           type="date"
@@ -2578,7 +2533,7 @@ function WorkerForm() {
           onChange={handleTravelChange}
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Arrival Date</label>
         <input
           type="date"
@@ -2588,17 +2543,7 @@ function WorkerForm() {
           onChange={handleTravelChange}
         />
       </div>
-      <div className="form-group col-md-6">
-        <label>Departure Location</label>
-        <input
-          type="text"
-          name="departure_location"
-          className="form-control"
-          value={travel.departure_location}
-          onChange={handleTravelChange}
-        />
-      </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         <label>Arrival Location</label>
         <input
           type="text"
@@ -2613,7 +2558,7 @@ function WorkerForm() {
 
   const renderContractFields = () => (
     <div className="row">
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel(
           "Employer",
           true,
@@ -2628,13 +2573,14 @@ function WorkerForm() {
           required
         />
       </div>
-      <div className="form-group col-md-6">
-        <label>Partner</label>
+      <div className="form-group col-md-6 mb-3">
+        {renderLabel("Partner", true)}
         <select
           name="partner_id"
           className="form-control"
           value={contract.partner_id}
           onChange={handleContractChange}
+          required
         >
           <option value="">Select Partner</option>
           {partners.map((partner) => (
@@ -2644,27 +2590,7 @@ function WorkerForm() {
           ))}
         </select>
       </div>
-      <div className="form-group col-md-6">
-        <label>Start Date</label>
-        <input
-          type="date"
-          name="contract_start_date"
-          className="form-control"
-          value={contract.contract_start_date}
-          onChange={handleContractChange}
-        />
-      </div>
-      <div className="form-group col-md-6">
-        <label>End Date</label>
-        <input
-          type="date"
-          name="contract_end_date"
-          className="form-control"
-          value={contract.contract_end_date}
-          onChange={handleContractChange}
-        />
-      </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Monthly Salary", true)}
         <input
           type="number"
@@ -2676,7 +2602,7 @@ function WorkerForm() {
           required
         />
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Status", true)}
         <select
           name="status"
@@ -2698,7 +2624,7 @@ function WorkerForm() {
   const renderLanguagesFields = () => (
     <div className="row">
       {LANGUAGE_OPTIONS.map((option) => (
-        <div className="form-group col-md-4" key={option}>
+        <div className="form-group col-md-4 mb-3" key={option}>
           <div className="form-check">
             <input
               type="checkbox"
@@ -2720,7 +2646,7 @@ function WorkerForm() {
   const renderSkillsFields = () => (
     <div className="row">
       {SKILL_OPTIONS.map((option) => (
-        <div className="form-group col-md-4" key={option}>
+        <div className="form-group col-md-4 mb-3" key={option}>
           <div className="form-check">
             <input
               type="checkbox"
@@ -2742,8 +2668,10 @@ function WorkerForm() {
   );
 
   // Experience — repeatable Country + Years of Experience rows, with an
-  // "Add experience" button and a per-row remove control. Icon-only
-  // controls (inline SVG, no new dependency) keep each row compact.
+  // "Add experience" button and a per-row remove control. Country and
+  // Years are fixed dropdowns (Middle Eastern countries / 1-5 years);
+  // the row's data shape (country, years_of_experience) and everything
+  // downstream (handleExperienceChange, submit payload) is unchanged.
   const renderExperienceFields = () => (
     <div>
       {experiences.length === 0 && (
@@ -2754,25 +2682,27 @@ function WorkerForm() {
       {experiences.map((row, idx) => (
         <div className="experience-row" key={row.localId}>
           <div className="row align-items-end g-2">
-            <div className="form-group col-md-5">
+            <div className="form-group col-md-5 mb-2">
               <label>Country</label>
-              <input
-                type="text"
+              <select
                 className="form-control"
                 value={row.country}
                 onChange={(e) =>
                   handleExperienceChange(row.localId, "country", e.target.value)
                 }
-                placeholder="e.g. Saudi Arabia"
-              />
+              >
+                <option value="">Select country</option>
+                {MIDDLE_EAST_COUNTRIES.map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
             </div>
-            <div className="form-group col-md-5">
+            <div className="form-group col-md-5 mb-2">
               <label>Years of Experience</label>
-              <input
-                type="number"
+              <select
                 className="form-control"
-                min="0"
-                max="99"
                 value={row.years_of_experience}
                 onChange={(e) =>
                   handleExperienceChange(
@@ -2781,9 +2711,16 @@ function WorkerForm() {
                     e.target.value,
                   )
                 }
-              />
+              >
+                <option value="">Select years</option>
+                {EXPERIENCE_YEARS_OPTIONS.map((years) => (
+                  <option key={years} value={years}>
+                    {years}
+                  </option>
+                ))}
+              </select>
             </div>
-            <div className="form-group col-md-2 d-flex justify-content-end gap-2">
+            <div className="form-group col-md-2 mb-2 d-flex justify-content-end gap-2">
               <button
                 type="button"
                 className="experience-icon-btn experience-icon-btn-danger"
@@ -2791,7 +2728,7 @@ function WorkerForm() {
                 title="Remove this row"
                 aria-label="Remove experience row"
               >
-                <TrashIcon />
+                <FiTrash2 size={15} />
               </button>
               {idx === experiences.length - 1 && (
                 <button
@@ -2801,7 +2738,7 @@ function WorkerForm() {
                   title="Add another row"
                   aria-label="Add experience row"
                 >
-                  <PlusIcon />
+                  <FiPlus size={15} />
                 </button>
               )}
             </div>
@@ -2814,7 +2751,7 @@ function WorkerForm() {
           className="experience-add-btn"
           onClick={handleAddExperience}
         >
-          <PlusIcon /> Add experience
+          <FiPlus size={15} /> Add experience
         </button>
       )}
     </div>
@@ -2822,10 +2759,10 @@ function WorkerForm() {
 
   const SECTION_FIELD_RENDERERS = {
     basic: () => (
-      <div className="row">
+      <>
         {renderBasicFields()}
         {renderPersonalFields()}
-      </div>
+      </>
     ),
     status: renderStatusFields,
     passport: renderPassportFields,
@@ -2913,7 +2850,9 @@ function WorkerForm() {
           role="button"
           onClick={() => scrollToSection(targetKey)}
         >
-          {isComplete && <CompletionCheckIcon />}
+          {isComplete && (
+            <FiCheckCircle className="tree-node-check-icon" size={16} />
+          )}
           <span className="tree-node-dot">{nodeNumber}</span>
           <span className="tree-node-label">
             {section.label}
@@ -2932,7 +2871,9 @@ function WorkerForm() {
         role="button"
         onClick={() => scrollToSection(targetKey)}
       >
-        {isComplete && <CompletionCheckIcon />}
+        {isComplete && (
+          <FiCheckCircle className="tree-node-check-icon" size={16} />
+        )}
         <span className="tree-node-dot">{nodeNumber}</span>
         <span className="tree-node-label-wrap">
           <span className="tree-node-label">
@@ -3100,7 +3041,6 @@ function WorkerForm() {
       </div>
     </div>
   );
-
   const currentStatusBadges = () => {
     if (isEditMode) {
       if (workerStatuses.length === 0)
@@ -3250,9 +3190,6 @@ function WorkerForm() {
           <>
             {previewRow("COC Number", coc.coc_number)}
             {previewRow("Assessment Center", coc.coc_assessment_center)}
-            {previewRow("Assessment Date", coc.coc_assessment_date)}
-            {previewRow("Issue Date", coc.coc_issue_date)}
-            {previewRow("Expiry Date", coc.coc_expiry_date)}
           </>,
           !sectionsEnabled.coc,
         )}
@@ -3263,9 +3200,6 @@ function WorkerForm() {
           <>
             {previewRow("Medical Status", medical.medical_status)}
             {previewRow("Medical Center", medical.medical_center)}
-            {previewRow("Medical Report Number", medical.medical_report_number)}
-            {previewRow("Issue Date", medical.medical_issue_date)}
-            {previewRow("Expiry Date", medical.medical_expiry_date)}
           </>,
           !sectionsEnabled.medical,
         )}
@@ -3287,10 +3221,7 @@ function WorkerForm() {
           "visa",
           <>
             {previewRow("Visa Number", visa.visa_number)}
-            {previewRow("Issue Date", visa.visa_issue_date)}
-            {previewRow("Expiry Date", visa.visa_expiry_date)}
             {previewRow("Reference Number", visa.visa_reference_number)}
-            {previewRow("Reference Date", visa.visa_reference_date)}
             {previewRow("Issuance Number", visa.issuance_id)}
             {previewRow("Sponsor ID", visa.sponsor_id)}
           </>,
@@ -3314,7 +3245,6 @@ function WorkerForm() {
             {previewRow("Ticket Number", travel.ticket_number)}
             {previewRow("Departure Date", travel.departure_date)}
             {previewRow("Arrival Date", travel.arrival_date)}
-            {previewRow("Departure Location", travel.departure_location)}
             {previewRow("Arrival Location", travel.arrival_location)}
           </>,
           !sectionsEnabled.travel,
@@ -3331,8 +3261,6 @@ function WorkerForm() {
                 (p) => Number(p.partner_id) === Number(contract.partner_id),
               )?.full_name || contract.partner_id,
             )}
-            {previewRow("Start Date", contract.contract_start_date)}
-            {previewRow("End Date", contract.contract_end_date)}
             {previewRow("Monthly Salary", contract.monthly_salary)}
             {previewRow("Status", contract.status)}
           </>,
