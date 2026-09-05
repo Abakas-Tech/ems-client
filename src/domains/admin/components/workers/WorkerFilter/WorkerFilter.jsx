@@ -4,9 +4,13 @@ import { getUsersLookup } from "../../../api/user.api";
 import useloader from "../../../../../context/Loader/useLoader";
 
 import styles from "./WorkerFilter.module.css";
+import useProfile from "../../../../../context/Profile/useProfile";
 
 const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
   const { showLoader, hideLoader } = useloader();
+  const { profile } = useProfile();
+  const role = profile?.role_id;
+  const isPartner = role === 3; // Assuming role_id 3 is for partners
 
   const [statuses, setStatuses] = useState([]);
   const [partners, setPartners] = useState([]);
@@ -19,7 +23,7 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
       try {
         const [statusResponse, partnerResponse] = await Promise.all([
           getWorkerStatuses(),
-          getUsersLookup({ role_id: 3 }),
+          !isPartner ? getUsersLookup({ role_id: 3 }) : Promise.resolve(null),
         ]);
 
         if (!mounted) return;
@@ -57,7 +61,9 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
               labour_id, and passport_number all in one field, so a
               separate input for each is redundant. Widened this column
               and updated the placeholder to reflect the wider match. */}
-          <div className="col-12 col-sm-6 col-lg-4">
+          <div
+            className={` ${isPartner ? "col-lg-5 " : "col-12 col-sm-6 col-lg-4"}`}
+          >
             <input
               type="text"
               name="search"
@@ -69,7 +75,9 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
           </div>
 
           {/* Status */}
-          <div className="col-6 col-sm-3 col-lg-2">
+          <div
+            className={` ${isPartner ? "col-lg-3" : "col-6 col-sm-3 col-lg-2"}`}
+          >
             <select
               name="status_id"
               className={`form-select ${styles.input}`}
@@ -88,38 +96,44 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
           {/* Partner — filtering to a partner shows only workers under
               contract with them (see ActiveWorkers' fetchWorkers, which
               pairs this with has_contract: "true"). */}
-          <div className="col-6 col-sm-3 col-lg-2">
-            <select
-              name="partner_id"
-              className={`form-select ${styles.input}`}
-              value={filters.partner_id || ""}
-              onChange={handleChange}
-            >
-              <option value="">All Partners</option>
-              {partners.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.full_name}
-                </option>
-              ))}
-            </select>
-          </div>
+          {!isPartner && (
+            <div className="col-6 col-sm-3 col-lg-2">
+              <select
+                name="partner_id"
+                className={`form-select ${styles.input}`}
+                value={filters.partner_id || ""}
+                onChange={handleChange}
+              >
+                <option value="">All Partners</option>
+                {partners.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.full_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Active / Inactive — doubles as the Active/Archived toggle now
               that the archived page has been folded into this list. */}
-          <div className="col-6 col-sm-3 col-lg-2">
-            <select
-              name="is_active"
-              className={`form-select ${styles.input}`}
-              value={filters.is_active || ""}
-              onChange={handleChange}
-            >
-              <option value="true">Active</option>
-              <option value="false">Archived</option>
-            </select>
-          </div>
+          {!isPartner && (
+            <div className="col-6 col-sm-3 col-lg-2">
+              <select
+                name="is_active"
+                className={`form-select ${styles.input}`}
+                value={filters.is_active || ""}
+                onChange={handleChange}
+              >
+                <option value="true">Active</option>
+                <option value="false">Archived</option>
+              </select>
+            </div>
+          )}
 
           {/* Clear */}
-          <div className="col-12 col-sm-4 col-lg-2 d-grid">
+          <div
+            className={` ${isPartner ? "col-lg-3" : "col-12 col-sm-4 col-lg-2"} d-grid`}
+          >
             <button
               className={`btn btn-outline-secondary ${styles["clear-btn"]}`}
               onClick={onClear}

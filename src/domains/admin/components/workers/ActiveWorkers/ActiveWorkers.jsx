@@ -17,7 +17,6 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
-import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import useProfile from "../../../../../context/Profile/useProfile";
 import { generateVisaApplicationPdf } from "../../Application/VisaApplicationPdfGenerator";
 import VisaApplicationTemplate from "../../Application/VisaApplicationTemplate";
@@ -69,10 +68,19 @@ const ActiveWorkers = () => {
   const [partners, setPartners] = useState([]);
 
   useEffect(() => {
-    getUsersLookup({ role_id: 3 })
-      .then((res) => setPartners(res?.data || []))
-      .catch(() => setPartners([]));
-  }, []);
+    const fetchPartners = async () => {
+      if (!isPartner) {
+        try {
+          const res = await getUsersLookup({ role_id: 3 });
+          setPartners(res?.data || []);
+        } catch {
+          setPartners([]);
+        }
+      }
+    };
+
+    fetchPartners();
+  }, [role]);
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -634,13 +642,15 @@ const ActiveWorkers = () => {
                   <i className="bi bi-printer me-2"></i> Print Report
                 </button>
               )}
-              <button
-                type="button"
-                className="btn btn-main text-nowrap"
-                onClick={() => navigate("/admin/employees/add")}
-              >
-                Add Employee
-              </button>
+              {role !== 3 && (
+                <button
+                  type="button"
+                  className="btn btn-main text-nowrap"
+                  onClick={() => navigate("/admin/employees/add")}
+                >
+                  Add Employee
+                </button>
+              )}
             </div>
           )}
         </div>
