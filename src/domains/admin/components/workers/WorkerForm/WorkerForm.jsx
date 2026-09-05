@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useId } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { FiCheckCircle, FiPlus, FiTrash2 } from "react-icons/fi";
 import {
@@ -128,6 +128,29 @@ const MIDDLE_EAST_COUNTRIES = [
 
 const EXPERIENCE_YEARS_OPTIONS = [1, 2, 3, 4, 5];
 
+// Predefined destination-city suggestions for Travel > Arrival Location.
+// The field stays a free-text input (these are just selectable
+// suggestions via a native <datalist>, the same searchable/custom-input
+// pattern already used elsewhere in this codebase) — any custom
+// destination the staff types is still accepted and saved exactly as
+// typed. Nothing on the backend restricts it to this list.
+const TRAVEL_DESTINATION_OPTIONS = ["Amman", "Jeddah", "Riyadh", "Dammam"];
+
+// New-candidate default skill selections, keyed by Sex (see the
+// sex-driven auto-select effect further down). Values must match
+// SKILL_OPTIONS exactly (lowercase, as stored/sent).
+const MALE_DEFAULT_SKILLS = ["computers", "driving", "sewing"];
+const FEMALE_EXCLUDED_DEFAULT_SKILLS = [
+  "arabic cooking",
+  "tutoring",
+  "computers",
+  "driving",
+  "sewing",
+];
+const FEMALE_DEFAULT_SKILLS = SKILL_OPTIONS.filter(
+  (skill) => !FEMALE_EXCLUDED_DEFAULT_SKILLS.includes(skill),
+);
+
 // One blank experience row. Each row carries a client-only `localId` used
 // purely as a React key / for add-remove bookkeeping — it is stripped out
 // before the row is sent to the API.
@@ -145,23 +168,28 @@ const defaultBasic = () => ({
   is_active: true,
 });
 
-const defaultPersonal = () => ({
-  region: "",
-  wereda: "",
-  city: "",
-  subcity: "",
+// `isCreate` gates the new-candidate defaults (Task: Candidate Form —
+// Default Values). Editing an existing candidate always passes false here
+// (see the `personal` state initializer below), so these never leak into
+// real saved data — applyProfileToForm() fully overwrites this state with
+// the worker's actual values regardless of what it started as.
+const defaultPersonal = (isCreate = false) => ({
+  region: isCreate ? "Addis Ababa" : "",
+  wereda: isCreate ? "Woreda 04" : "",
+  city: isCreate ? "Addis Ababa" : "",
+  subcity: isCreate ? "Kolfe Keranio" : "",
   status_id: "",
   sex: "",
   date_of_birth: "",
   place_of_birth: "",
   religion: "",
-  marital_status: "",
+  marital_status: "Single",
   nationality: "Ethiopian",
-  address: "",
-  education: "",
+  address: isCreate ? "Addis Ababa" : "",
+  education: isCreate ? "Secondary" : "",
   number_of_children: 0,
-  height_cm: "",
-  weight_kg: "",
+  height_cm: isCreate ? 165 : "",
+  weight_kg: isCreate ? 55 : "",
   national_id_number: "",
   fingerprint_number: "",
   labour_id: "",
@@ -223,12 +251,18 @@ const defaultTravel = () => ({
   arrival_location: "",
 });
 
-const defaultContract = () => ({
+// `isCreate` gates the new-candidate default (Monthly Salary = 1500) the
+// same way defaultPersonal does above. Gated on `isCreate` rather than
+// left unconditional because applyProfileToForm() only calls
+// setContract(...) when a saved contract record actually exists — an
+// existing candidate with no contract yet would otherwise keep whatever
+// default this factory produced.
+const defaultContract = (isCreate = false) => ({
   employer: "",
   partner_id: "",
   contract_start_date: "",
   contract_end_date: "",
-  monthly_salary: "",
+  monthly_salary: isCreate ? 1500 : "",
   status: "pending",
 });
 
@@ -307,6 +341,11 @@ function WorkerForm() {
   const passportInputRef = useRef(null);
   const [scanLoading, setScanLoading] = useState(false);
 
+  // Native <input list> id for the Travel > Arrival Location destination
+  // combobox (predefined suggestions + free text) — see
+  // TRAVEL_DESTINATION_OPTIONS above.
+  const travelDestinationListId = useId();
+
   const [loadingProfile, setLoadingProfile] = useState(isEditMode);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [activeSection, setActiveSection] = useState(
@@ -331,7 +370,11 @@ function WorkerForm() {
   const canDeleteStatus = [1, 2].includes(profile?.role_id);
 
   const [basic, setBasic] = useState(defaultBasic());
-  const [personal, setPersonal] = useState(defaultPersonal());
+  // Defaults (region/wereda/city/subcity/address/height/weight) only
+  // apply when creating a brand-new candidate (!isEditMode) — editing an
+  // existing candidate starts blank here and is immediately overwritten
+  // by applyProfileToForm()'s real saved values below.
+  const [personal, setPersonal] = useState(() => defaultPersonal(!isEditMode));
   const [passport, setPassport] = useState(defaultPassport());
   const [coc, setCoc] = useState(defaultCoc());
   const [medical, setMedical] = useState(defaultMedical());
@@ -339,7 +382,9 @@ function WorkerForm() {
   const [agent, setAgent] = useState(defaultAgent());
   const [visa, setVisa] = useState(defaultVisa());
   const [travel, setTravel] = useState(defaultTravel());
-  const [contract, setContract] = useState(defaultContract());
+  // Monthly Salary defaults to 1500 only for a brand-new candidate — see
+  // defaultContract()'s comment above.
+  const [contract, setContract] = useState(() => defaultContract(!isEditMode));
 
   // ---- Application Generator integration: missing required fields ----
   // When opened via the Application Generator's missing-field redirect,
@@ -387,8 +432,21 @@ function WorkerForm() {
   // Experience defaults to a single blank row so the module never opens
   // empty — the user can still remove it down to zero via the row's
   // remove control.
-  const [languages, setLanguages] = useState([]);
+  // New candidates start with Amharic pre-selected (Task: Candidate Form
+  // — Default Values); editing an existing candidate starts empty and is
+  // immediately overwritten by applyProfileToForm()'s real saved
+  // languages, same guard pattern as `personal`/`contract` above.
+  const [languages, setLanguages] = useState(() =>
+    !isEditMode ? ["Amharic"] : [],
+  );
   const [skills, setSkills] = useState([]);
+  // Tracks whether the staff has manually touched the Skills module
+  // themselves (set by handleSkillToggle below). Until they do, the
+  // sex-driven default-skills effect further down is free to keep
+  // re-applying the Male/Female defaults whenever Sex changes; once they
+  // touch it, their selection is left alone for good. Only meaningful for
+  // new candidates — the effect never runs at all in edit mode.
+  const [skillsUserModified, setSkillsUserModified] = useState(false);
   const [experiences, setExperiences] = useState(() => [makeExperienceRow()]);
 
   // Tracks whether a worker-agent record already exists for this worker
@@ -886,6 +944,11 @@ function WorkerForm() {
       : [];
     setLanguages(loadedLanguages);
     setSkills(loadedSkills);
+    // The candidate already has real saved skills loaded — treat this
+    // exactly like a manual edit so the sex-driven default-skills effect
+    // (which only runs in create mode anyway) never has any reason to
+    // touch them.
+    setSkillsUserModified(true);
 
     // Experiences come back with a read-only `id` — kept around only for
     // reference, never sent back on update (see handleSubmit). When the
@@ -1027,13 +1090,37 @@ function WorkerForm() {
     );
   };
 
+  // Marks the Skills module as manually touched (see skillsUserModified's
+  // declaration above) — from this point on, the sex-driven default-skills
+  // effect below permanently leaves this candidate's selection alone.
   const handleSkillToggle = (option) => {
+    setSkillsUserModified(true);
     setSkills((prev) =>
       prev.includes(option)
         ? prev.filter((v) => v !== option)
         : [...prev, option],
     );
   };
+
+  // New-candidate default skills, driven by Sex (Task: Candidate Form —
+  // Default Values). Re-applies the Male/Female default list every time
+  // Sex changes, but ONLY until the staff manually touches a skill
+  // checkbox themselves (skillsUserModified, set by handleSkillToggle
+  // above) — after that this effect backs off permanently, so changing
+  // Sex again can never clobber a manual selection. Never runs in edit
+  // mode: an existing candidate's saved skills are loaded once by
+  // applyProfileToForm() (which also marks skillsUserModified as true)
+  // and are never touched by later Sex edits.
+  useEffect(() => {
+    if (isEditMode) return;
+    if (skillsUserModified) return;
+    if (personal.sex === "Male") {
+      setSkills(MALE_DEFAULT_SKILLS);
+    } else if (personal.sex === "Female") {
+      setSkills(FEMALE_DEFAULT_SKILLS);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [personal.sex, isEditMode, skillsUserModified]);
 
   // Experience — repeatable row group. Adding appends a blank row; removing
   // drops a row by its client-only localId; changing updates one field on
@@ -2547,11 +2634,19 @@ function WorkerForm() {
         <label>Arrival Location</label>
         <input
           type="text"
+          list={travelDestinationListId}
           name="arrival_location"
           className="form-control"
           value={travel.arrival_location}
           onChange={handleTravelChange}
+          placeholder="e.g. Riyadh"
+          autoComplete="off"
         />
+        <datalist id={travelDestinationListId}>
+          {TRAVEL_DESTINATION_OPTIONS.map((city) => (
+            <option key={city} value={city} />
+          ))}
+        </datalist>
       </div>
     </div>
   );

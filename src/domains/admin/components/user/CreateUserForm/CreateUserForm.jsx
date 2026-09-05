@@ -478,23 +478,6 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                 </div>
               )}
 
-              {role === "3" && (
-                <div className="form-group col-md-6 mb-3">
-                  <label>
-                    Street Address{" "}
-                    {requiredFields.address && (
-                      <span className="text-danger">*</span>
-                    )}
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={address}
-                    required={requiredFields.address}
-                    onChange={(e) => setAddress(e.target.value)}
-                  />
-                </div>
-              )}
 
               {/* Partner CV Header */}
               {role === "3" && (
