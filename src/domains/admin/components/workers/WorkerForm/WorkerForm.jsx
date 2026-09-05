@@ -177,6 +177,7 @@ const makeExperienceRow = (country = "", years_of_experience = "") => ({
 const defaultBasic = () => ({
   full_name: "",
   phone_number: "",
+  email: "",
   is_active: true,
 });
 
@@ -199,6 +200,7 @@ const defaultPersonal = () => ({
   weight_kg: "",
   national_id_number: "",
   fingerprint_number: "",
+  labour_id: "",
 });
 
 const defaultPassport = () => ({
@@ -277,6 +279,8 @@ const workerPhoneRegex = /^(?:\+251[79]\d{8}|09\d{8}|07\d{8})$/;
 const allowedImageTypes = ["image/jpeg", "image/png", "image/jpg"];
 
 const fallback = (value) => (value === "" || value == null ? "—" : value);
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Utility to get a consistent color for a status badge based on its name
 // (mirrors WorkerProfile's getConsistentColor so badges look identical
@@ -770,6 +774,7 @@ function WorkerForm() {
     setBasic({
       full_name: profileData.full_name || "",
       phone_number: profileData.phone_number || "",
+      email: profileData.email || "",
       is_active: !!profileData.is_active,
     });
 
@@ -795,6 +800,7 @@ function WorkerForm() {
       weight_kg: pi.weight_kg || "",
       national_id_number: pi.national_id_number || "",
       fingerprint_number: pi.fingerprint_number || "",
+      labour_id: pi.labour_id || "",
     });
     setExistingPhoto3x4Url(pi.photo_3x4?.url || null);
     setExistingPhotoStandingUrl(pi.photo_standing?.url || null);
@@ -1255,6 +1261,8 @@ function WorkerForm() {
       return "Full name must be 3-100 characters";
     if (!workerPhoneRegex.test(basic.phone_number))
       return "Phone number must be a valid Ethiopian number";
+    if (basic.email && !emailRegex.test(basic.email))
+      return "Enter a valid email address";
     return null;
   };
 
@@ -1657,6 +1665,7 @@ function WorkerForm() {
 
       dataToSend.append("full_name", basic.full_name);
       dataToSend.append("phone_number", basic.phone_number);
+      dataToSend.append("email", basic.email);
       dataToSend.append("is_active", basic.is_active);
       // status is only sent on create — edit mode manages status separately
       // through the assign/revoke flow, never through this form submission
@@ -2061,6 +2070,26 @@ function WorkerForm() {
           name="fingerprint_number"
           className="form-control"
           value={personal.fingerprint_number}
+          onChange={handlePersonalChange}
+        />
+      </div>
+      <div className="form-group col-md-6 mb-3">
+        <label>Email</label>
+        <input
+          type="email"
+          name="email"
+          className="form-control"
+          value={basic.email}
+          onChange={handleBasicChange}
+        />
+      </div>
+      <div className="form-group col-md-6 mb-3">
+        <label>Labour ID</label>
+        <input
+          type="text"
+          name="labour_id"
+          className="form-control"
+          value={personal.labour_id}
           onChange={handlePersonalChange}
         />
       </div>
