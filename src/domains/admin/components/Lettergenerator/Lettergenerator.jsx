@@ -16,7 +16,7 @@ import { REPORT_META } from "../../../../shared/components/Report/Data";
 const TO_OPTIONS = [
   "የኢፌድሪ ስራና ክህሎት ሚኒስቴር ለሲስተም ክፍል አዲስ አበባ",
   "ኢትዮጵያ ንግድ ባንክ ኮልፌ ዲስትሪክት ዳይሬክተር አዲስ አበባ",
-  "ለስራና ክህሎት ሚኒስቴር ለሲስተም ክፍል አዲስ አበባ",
+  "ለስራና ክህሎት ሚኒስቴር ሲስተም ክፍል አዲስ አበባ",
 ];
 
 const SUBJECT_OPTIONS = [
