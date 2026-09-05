@@ -319,6 +319,18 @@ const ActiveWorkers = () => {
     });
   };
 
+  // ADDED — "Create Letter" bulk action. Only makes sense for exactly one
+  // worker (the letter generator is built around a single worker's
+  // details), so it's gated the same way the button's visibility is:
+  // both check selectedWorkerIds.length === 1 independently.
+  const handleCreateLetter = () => {
+    if (selectedWorkerIds.length !== 1) return;
+
+    navigate("/admin/letter-generator", {
+      state: { workerId: selectedWorkerIds[0] },
+    });
+  };
+
   // Filter handlers
   const handleFilterChange = (f) => {
     setFilters((prev) => ({ ...prev, ...f }));
@@ -758,9 +770,24 @@ const ActiveWorkers = () => {
                 Print Insurance
               </button>
 
+              {/* ADDED — Create Letter is only meaningful for a single
+                  worker, so unlike the other bulk buttons it doesn't just
+                  disable at 0 selected — it's hidden entirely unless
+                  exactly one worker is selected. */}
+              {selectedWorkerIds.length === 1 && (
+                <button
+                  type="button"
+                  className="btn btn-outline-dark btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-4 "
+                  onClick={handleCreateLetter}
+                  style={{ fontSize: "16px" }}
+                >
+                  Create Letter
+                </button>
+              )}
+
               <button
                 type="button"
-                className="btn btn-outline-danger btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-4 "
+                className="btn btn-outline-danger btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-5 "
                 onClick={handleExitSelection}
                 style={{ fontSize: "16px" }}
               >

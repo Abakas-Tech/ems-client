@@ -1,8 +1,8 @@
 import logoAsset from "../../../assets/img/logo/aletisalat-about.png";
 
 export const REPORT_META = {
-  orgName: "Al_Itisalat Agency",
-  orgSub: "Official Records & Reporting Portal",
+  orgName: "Al_Etisalat Agency",
+  orgSub: "አል-ኢቲሳላት ኤጀንሲ ",
   logoPath: logoAsset,
   logoInitials: "EMS",
   logoColor: "#1a3c6e",
