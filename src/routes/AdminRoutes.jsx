@@ -8,7 +8,7 @@ import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWo
 import WorkerAutoFill from "../domains/admin/pages/workers/WorkerAutoFill/WorkerAutoFill.jsx";
 import Tickets from "../domains/admin/pages/TicketsPage/TicketsPage.jsx";
 import ArchivedWorkers from "../domains/admin/pages/workers/ArchivedWorkers/ArchivedWorkers.jsx";
-import ModulesList from "../domains/admin/pages/workers/ModulesList/ModulesList.jsx";
+
 
 import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import NotFound from "../shared/components/NotFound/NotFound.jsx";
@@ -17,20 +17,20 @@ import Profile from "../domains/admin/pages/Profile/Profile.jsx";
 import CreateUser from "./../domains/admin/pages/user/CreateUser/CreateUser";
 import ListUser from "./../domains/admin/pages/user/ListUser/ListUser";
 import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
-import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
-import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
+// import MetaDataDashboard from "../domains/admin/pages/meta/MetaDataDashboard/MetaDataDashboard.jsx";
+// import WorkerModuleManagement from "../domains/admin/pages/workers/WorkerModuleManagement/WorkerModuleManagement.jsx";
 // import Passport from "../domains/admin/pages/workers/modules/Passport/Passport.jsx";
 // import Coc from "../domains/admin/pages/workers/modules/Coc/Coc.jsx";
 // import Medical from "../domains/admin/pages/workers/modules/Medical/Medical.jsx";
 
-import SkillPage from "../domains/admin/pages/meta/SkillPage/SkillPage.jsx";
-import CountryPage from "../domains/admin/pages/meta/CountryPage/CountryPage.jsx";
-import JobPostionPage from "../domains/admin/pages/meta/JobPostionPage/JobPostionPage.jsx";
-import RegionPage from "../domains/admin/pages/meta/RegionPage/RegionPage.jsx";
-import LanguagePage from "../domains/admin/pages/meta/LanguagePage/LanguagePage.jsx";
+// import SkillPage from "../domains/admin/pages/meta/SkillPage/SkillPage.jsx";
+// import CountryPage from "../domains/admin/pages/meta/CountryPage/CountryPage.jsx";
+// import JobPostionPage from "../domains/admin/pages/meta/JobPostionPage/JobPostionPage.jsx";
+// import RegionPage from "../domains/admin/pages/meta/RegionPage/RegionPage.jsx";
+// import LanguagePage from "../domains/admin/pages/meta/LanguagePage/LanguagePage.jsx";
 import WorkerStatusPage from "../domains/admin/pages/meta/WorkerStatusPage/WorkerStatusPage.jsx";
-import CityPage from "../domains/admin/pages/meta/CityPage/CityPage.jsx";
-import WorkerMetaPage from "../domains/admin/pages/WorkerMetaPage/WorkerMetaPage.jsx";
+// import CityPage from "../domains/admin/pages/meta/CityPage/CityPage.jsx";
+// import WorkerMetaPage from "../domains/admin/pages/WorkerMetaPage/WorkerMetaPage.jsx";
 // import WorkerProfile from "../domains/admin/pages/workers/WorkerProfile/WorkerProfile.jsx";
 import SocialMediaPage from "../domains/admin/pages/content/SocialMedia/SocialMedia.jsx";
 import GalleryListPage from "./../domains/admin/pages/content/Gallery/Gallery/Gallery";
@@ -44,8 +44,8 @@ import ContentDashboard from "../domains/admin/components/content/Dashboard/Dash
 // import Visa from "../domains/admin/pages/workers/modules/Visa/Visa.jsx";
 import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx";
 // import UserManual from "../domains/admin/pages/UserManual/UserManual.jsx";
-import WeredaPage from "../domains/admin/pages/meta/WeredaPage/WeredaPage.jsx";
-import SubCityPage from "../domains/admin/pages/meta/SubCityPage/SubCityPage.jsx";
+// import WeredaPage from "../domains/admin/pages/meta/WeredaPage/WeredaPage.jsx";
+// import SubCityPage from "../domains/admin/pages/meta/SubCityPage/SubCityPage.jsx";
 import ExternalLinks from "../domains/admin/pages/ExternalLinks/ExternalLinks.jsx";
 import ListComplaint from "../domains/admin/pages/complaints/ListComplaint/ListComplaint.jsx";
 import CreateComplaint from "../domains/admin/pages/complaints/CreateComplaint/CreateComplaint.jsx";
@@ -100,18 +100,18 @@ const AdminRoutes = () => {
             or via Active Workers' "Create Letter" bulk action, which
             passes { workerId } through navigate(...) state. */}
         <Route path="/letter-generator" element={<LetterGenerator />} />
-        <Route path="/meta-data/country" element={<CountryPage />} />
+        {/* <Route path="/meta-data/country" element={<CountryPage />} />
         <Route path="/meta-data/region" element={<RegionPage />} />
         <Route path="/meta-data/wereda" element={<WeredaPage />} />
         <Route path="/meta-data/skill" element={<SkillPage />} />
         <Route path="/meta-data/job-position" element={<JobPostionPage />} />
-        <Route path="/meta-data/language" element={<LanguagePage />} />
+        <Route path="/meta-data/language" element={<LanguagePage />} /> */}
         <Route
           path="/meta-data/employee-status"
           element={<WorkerStatusPage />}
         />
-        <Route path="/meta-data/city" element={<CityPage />} />
-        <Route path="/meta-data/sub-city" element={<SubCityPage />} />
+        {/* <Route path="/meta-data/city" element={<CityPage />} />
+        <Route path="/meta-data/sub-city" element={<SubCityPage />} /> */}
         {/* <Route
           path="employee/modules/:worker_id/attributes"
           element={<WorkerMetaPage />}
@@ -137,7 +137,7 @@ const AdminRoutes = () => {
         {/* 
         // <Route path="employee/modules/:id/visa" element={<Visa />} /> */}
 
-        <Route path="/meta-data" element={<MetaDataDashboard />} />
+        {/* <Route path="/meta-data" element={<MetaDataDashboard />} /> */}
 
         {/* <Route path="user-manual" element={<UserManual />} /> */}
         <Route path="employees/:id/cv" element={<CV />} />

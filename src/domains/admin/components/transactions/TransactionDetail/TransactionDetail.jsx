@@ -552,7 +552,7 @@ const TransactionDetail = ({
       `}</style>
 
       {/* Page header action — Back only. */}
-      <div className="mb-3 d-print-none">
+      <div className="mb-3 d-print-none mb-4">
         <BackButton onClick={onBack} />
       </div>
 
