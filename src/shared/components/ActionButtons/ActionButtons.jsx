@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaFolderPlus,
   FaChevronLeft,
@@ -8,12 +8,57 @@ import {
 } from "react-icons/fa";
 import { AiOutlineFolderView } from "react-icons/ai";
 import ACTION_ROLE_CONFIG from "../../../config/btn.config";
+import { getPermission } from "../../../domains/admin/api/permission.api";
 import useProfile from "../../../context/Profile/useProfile";
 import styles from "./ActionButtons.module.css";
+
+let permissionsRequest = null;
+
+const fetchOwnPermissions = (userId) => {
+  if (!userId) return Promise.resolve(null);
+  if (permissionsRequest?.userId === userId) {
+    return permissionsRequest.promise;
+  }
+  const promise = getPermission(userId)
+    .then((res) => (Array.isArray(res?.data) ? res.data[0] || null : null))
+    .catch((err) => {
+      console.error("Failed to fetch logged-in user's permissions:", err);
+      return null;
+    });
+  permissionsRequest = { userId, promise };
+  return promise;
+};
+
+// Action types that additionally require a specific permission on the
+// logged-in user's own permissions record, on top of the role check below.
+// Currently only "transaction" is gated this way — always against
+// manage_finance — with no need for callers to pass anything extra.
+const ACTION_PERMISSION_CONFIG = {
+  transaction: "manage_finance",
+};
 
 const ActionButtons = ({ actions = [], row }) => {
   const { profile } = useProfile();
   const role = profile?.role_id;
+
+  // Flat permissions record for the logged-in user (e.g.
+  // { manage_finance: 0, manage_users: 1, ... }) — only fetched when at
+  // least one action in this instance actually declares a `permission`.
+  const [permissions, setPermissions] = useState(null);
+  const needsPermissionCheck = actions.some(
+    (a) => ACTION_PERMISSION_CONFIG[a.type],
+  );
+
+  useEffect(() => {
+    if (!needsPermissionCheck || !profile?.id) return;
+    let cancelled = false;
+    fetchOwnPermissions(profile.id).then((data) => {
+      if (!cancelled) setPermissions(data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [needsPermissionCheck, profile?.id]);
 
   if (!role) return null;
 
@@ -106,19 +151,31 @@ const ActionButtons = ({ actions = [], row }) => {
     },
   };
 
-  // Filter actions by role only (ignore showOn)
+  // Filter actions by role (ignore showOn) and, for action types listed in
+  // ACTION_PERMISSION_CONFIG (currently just "transaction"), additionally
+  // require the logged-in user to hold the mapped permission before the
+  // button renders — same idea as the role gate above, just keyed off a
+  // fixed action-type -> permission map instead of a per-call-site field.
   const allowedActions = actions.filter((actionObj) => {
-    // Custom render type doesn't need role check
+    // Custom render type doesn't need role or permission checks
     if (actionObj.type === "custom" && actionObj.render) {
       return true;
     }
 
-    return (
+    const hasRoleAccess =
       actionObj.type &&
       ACTION_CONFIG[actionObj.type] &&
       (ACTION_ROLE_CONFIG[actionObj.type]?.includes(role) ||
-        actionObj.bypassRole === true)
-    );
+        actionObj.bypassRole === true);
+
+    if (!hasRoleAccess) return false;
+
+    const requiredPermission = ACTION_PERMISSION_CONFIG[actionObj.type];
+    if (requiredPermission) {
+      return Number(permissions?.[requiredPermission]) === 1;
+    }
+
+    return true;
   });
 
   return (
