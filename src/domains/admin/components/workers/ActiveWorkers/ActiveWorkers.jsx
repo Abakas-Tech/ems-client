@@ -17,7 +17,6 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
-import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import useProfile from "../../../../../context/Profile/useProfile";
 import { generateVisaApplicationPdf } from "../../Application/VisaApplicationPdfGenerator";
 import VisaApplicationTemplate from "../../Application/VisaApplicationTemplate";
@@ -634,13 +633,15 @@ const ActiveWorkers = () => {
                   <i className="bi bi-printer me-2"></i> Print Report
                 </button>
               )}
-              <button
-                type="button"
-                className="btn btn-main text-nowrap"
-                onClick={() => navigate("/admin/employees/add")}
-              >
-                Add Employee
-              </button>
+              {role !== 3 && (
+                <button
+                  type="button"
+                  className="btn btn-main text-nowrap"
+                  onClick={() => navigate("/admin/employees/add")}
+                >
+                  Add Employee
+                </button>
+              )}
             </div>
           )}
         </div>
