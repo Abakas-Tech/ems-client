@@ -2721,15 +2721,6 @@ function WorkerForm() {
               </select>
             </div>
             <div className="form-group col-md-2 mb-2 d-flex justify-content-end gap-2">
-              <button
-                type="button"
-                className="experience-icon-btn experience-icon-btn-danger"
-                onClick={() => handleRemoveExperience(row.localId)}
-                title="Remove this row"
-                aria-label="Remove experience row"
-              >
-                <FiTrash2 size={15} />
-              </button>
               {idx === experiences.length - 1 && (
                 <button
                   type="button"
@@ -2741,6 +2732,16 @@ function WorkerForm() {
                   <FiPlus size={15} />
                 </button>
               )}
+
+              <button
+                type="button"
+                className="experience-icon-btn experience-icon-btn-danger"
+                onClick={() => handleRemoveExperience(row.localId)}
+                title="Remove this row"
+                aria-label="Remove experience row"
+              >
+                <FiTrash2 size={15} />
+              </button>
             </div>
           </div>
         </div>
