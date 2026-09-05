@@ -864,6 +864,10 @@ const ActiveWorkers = () => {
               accessor: "passport_number",
             },
             {
+              header: "Labour ID",
+              accessor: "labour_id",
+            },
+            {
               header: "Current Status",
               accessor: "status",
             },

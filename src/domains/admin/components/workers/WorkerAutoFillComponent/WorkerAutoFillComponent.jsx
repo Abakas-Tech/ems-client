@@ -413,15 +413,15 @@ function mapWorkerToAutofillCandidate(worker) {
   ]);
 
   const cityName = pick(worker, [
+    "personal_information.city",
+    "city",
     "personal_information.city.name",
-    "city.name",
-    "city_name",
     "city",
   ]);
 
   const woredaName = pick(worker, [
+    "personal_information.wereda",
     "personal_information.wereda.name",
-    "personal_information.woreda.name",
     "wereda.name",
     "woreda.name",
     "wereda_name",
@@ -429,7 +429,7 @@ function mapWorkerToAutofillCandidate(worker) {
   ]);
 
   const subCityName = pick(worker, [
-    "personal_information.subcity.name",
+    "personal_information.subcity",
     "personal_information.subCity.name",
     "subcity.name",
     "subCity.name",
