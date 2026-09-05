@@ -127,7 +127,7 @@ const Footer = () => {
                   href="https://abakastech.com/"
                   className="brand-link fw-bold"
                 >
-                  Abakas Technologies
+                  Abakas Technologies{" "}
                 </a>
                 | All Rights Reserved.
               </p>

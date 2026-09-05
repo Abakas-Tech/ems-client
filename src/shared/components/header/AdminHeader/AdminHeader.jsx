@@ -1,13 +1,12 @@
 import React, { useEffect } from "react";
 import useProfile from "../../../../context/Profile/useProfile";
 import { FaBars } from "react-icons/fa";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ProfileCell from "../../ProfileCell/ProfileCell";
 
 const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   const { fetchProfile, profile } = useProfile();
   const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProfile();
@@ -105,7 +104,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
       {/* Desktop Header */}
       {isDesktop && (
         <header
-          className="sticky-top d-flex justify-content-between align-items-center bg-white border-bottom px-4"
+          className="sticky-top d-flex justify-content-between align-items-center bg-white border-bottom px-4 py-2"
           style={{ zIndex: 10 }}
         >
           <div className="d-flex align-items-center">
