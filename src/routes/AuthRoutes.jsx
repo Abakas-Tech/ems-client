@@ -5,6 +5,7 @@ import Login from "./../domains/account/pages/Login/Login";
 import ForgotPassword from "./../domains/account/pages/ForgotPassword/ForgotPassword";
 import PasswordReset from "./../domains/account/pages/PasswordReset/PasswordReset";
 
+
 function PublicRoutes() {
   return (
     <Routes>
