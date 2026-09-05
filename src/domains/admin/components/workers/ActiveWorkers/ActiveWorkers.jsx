@@ -68,19 +68,10 @@ const ActiveWorkers = () => {
   const [partners, setPartners] = useState([]);
 
   useEffect(() => {
-    const fetchPartners = async () => {
-      if (!isPartner) {
-        try {
-          const res = await getUsersLookup({ role_id: 3 });
-          setPartners(res?.data || []);
-        } catch {
-          setPartners([]);
-        }
-      }
-    };
-
-    fetchPartners();
-  }, [role]);
+    getUsersLookup({ role_id: 3 })
+      .then((res) => setPartners(res?.data || []))
+      .catch(() => setPartners([]));
+  }, []);
 
   // Pagination
   const [page, setPage] = useState(1);
