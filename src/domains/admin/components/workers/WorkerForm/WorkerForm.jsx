@@ -2480,16 +2480,11 @@ function WorkerForm() {
           onChange={handleVisaChange}
         />
       </div>
-<<<<<<< HEAD
       <div className="form-group col-md-6 mb-3">
         {renderPlainLabel(
           "Reference Number",
           isFieldFlaggedMissing("visa", "visa_reference_number"),
         )}
-=======
-      <div className="form-group col-md-6">
-        <label>Reference Number</label>
->>>>>>> c8c15d747ed66c0a238eff3661199dfa672066bb
         <input
           type="text"
           name="visa_reference_number"
