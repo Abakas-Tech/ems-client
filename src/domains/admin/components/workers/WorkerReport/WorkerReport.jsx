@@ -46,16 +46,25 @@ const buildFooter = (pageLabel) => `
     <span>${pageLabel}</span>
   </div>`;
 
-// A worker "has" a category (Medical/COC/Contract/Foreign/LMIS QR) if
-// their status history contains any entry whose status name matches it.
+// A worker "has" the Foreign category if their status history contains
+// any entry whose status name matches it. Medical, COC, Contract, and
+// LMIS QR no longer use this — they're read directly from the worker's
+// own yes/no fields (see buildWorkerRows) since status history isn't a
+// reliable signal for those anymore.
 const hasStatus = (worker, keyword) =>
   (worker.status_history || []).some((entry) =>
     (entry.status_name || "").toLowerCase().includes(keyword),
   );
 
+// Medical/COC/Contract/LMIS QR arrive as the strings "yes"/"no" from the
+// worker list query; Foreign still arrives as a boolean from hasStatus().
+// This normalizes either into the boolean yesNoCell expects.
+const isYes = (value) =>
+  typeof value === "string" ? value.toLowerCase() === "yes" : !!value;
+
 const yesNoCell = (value) => {
-  const isYes = !!value;
-  return `<td style="text-align:center;font-weight:700;color:${isYes ? "#15803d" : "#b91c1c"};">${isYes ? "Yes" : "No"}</td>`;
+  const isYesValue = isYes(value);
+  return `<td style="text-align:center;font-weight:700;color:${isYesValue ? "#15803d" : "#b91c1c"};">${isYesValue ? "Yes" : "No"}</td>`;
 };
 
 const buildWorkerRows = (workers) =>
@@ -64,11 +73,11 @@ const buildWorkerRows = (workers) =>
       const bg = i % 2 === 0 ? "#fff" : "#f5f8ff";
       return `<tr style="background:${bg};">
         <td style="font-weight:600;">${worker.full_name}</td>
-        ${yesNoCell(hasStatus(worker, "medical"))}
-        ${yesNoCell(hasStatus(worker, "coc"))}
-        ${yesNoCell(hasStatus(worker, "contract"))}
+        ${yesNoCell(worker.medical)}
+        ${yesNoCell(worker.coc)}
+        ${yesNoCell(worker.contract)}
         ${yesNoCell(hasStatus(worker, "foreign"))}
-        ${yesNoCell(hasStatus(worker, "lmis"))}
+        ${yesNoCell(worker.lmis_qr)}
         <td>${fmtDate(worker.ticket_date)}</td>
       </tr>`;
     })
