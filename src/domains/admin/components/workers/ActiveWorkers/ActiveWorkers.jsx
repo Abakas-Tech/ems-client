@@ -737,12 +737,12 @@ const ActiveWorkers = () => {
             </div>
 
             <div
-              className="d-flex flex-row flex-wrap gap-2 w-100 w-md-auto justify-content-md-end align-items-center"
+              className="d-flex flex-row flex-wrap flex-md-nowrap gap-2 w-100 w-md-auto justify-content-md-end align-items-center"
               style={{ fontSize: "13px" }}
             >
               <button
                 type="button"
-                className="btn btn-outline-primary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-1 "
+                className="btn btn-outline-primary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-1"
                 disabled={selectedWorkerIds.length === 0}
                 onClick={handleCreateInvoiceForSelected}
                 style={{ fontSize: "16px" }}
@@ -752,7 +752,7 @@ const ActiveWorkers = () => {
 
               <button
                 type="button"
-                className="btn btn-outline-success btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-2 "
+                className="btn btn-outline-success btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-2"
                 disabled={selectedWorkerIds.length === 0}
                 onClick={handleAutofillSelected}
                 style={{ fontSize: "16px" }}
@@ -762,7 +762,7 @@ const ActiveWorkers = () => {
 
               <button
                 type="button"
-                className="btn btn-outline-secondary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-3 "
+                className="btn btn-outline-secondary btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-3"
                 disabled={selectedWorkerIds.length === 0}
                 onClick={handlePrintInsurance}
                 style={{ fontSize: "16px" }}
@@ -770,14 +770,10 @@ const ActiveWorkers = () => {
                 Print Insurance
               </button>
 
-              {/* ADDED — Create Letter is only meaningful for a single
-                  worker, so unlike the other bulk buttons it doesn't just
-                  disable at 0 selected — it's hidden entirely unless
-                  exactly one worker is selected. */}
               {selectedWorkerIds.length === 1 && (
                 <button
                   type="button"
-                  className="btn btn-outline-dark btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-4 "
+                  className="btn btn-outline-dark btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-4"
                   onClick={handleCreateLetter}
                   style={{ fontSize: "16px" }}
                 >
@@ -787,7 +783,7 @@ const ActiveWorkers = () => {
 
               <button
                 type="button"
-                className="btn btn-outline-danger btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-5 "
+                className="btn btn-outline-danger btn-sm rounded-pill px-4 py-3 fw-bold text-nowrap order-5"
                 onClick={handleExitSelection}
                 style={{ fontSize: "16px" }}
               >

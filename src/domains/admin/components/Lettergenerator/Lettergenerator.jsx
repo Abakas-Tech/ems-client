@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getWorkerProfile } from "../../api/worker.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
-import BackButton from "../../../../shared/components/BackButton/BackButton";
 // TODO: point this at the exact module the Finance/period report imports
 // REPORT_META from, so the letter header is guaranteed to be the same
 // logo/company name/confidentiality line as every other printed report.
@@ -384,11 +383,11 @@ const LetterToolkit = ({
         { label: "Passport No.", value: worker.passport?.passport_number },
         {
           label: "Labour ID",
-          value: worker.labour_id || worker.contracts?.[0]?.labour_id,
+          value: worker.personal_information?.labour_id || worker.contracts?.[0]?.labour_id,
         },
         {
           label: "Ticket Date",
-          value: worker.ticket_date || worker.contracts?.[0]?.ticket_date,
+          value: worker.travel_records?.[0]?.departure_date,
         },
       ]
     : [];
@@ -539,13 +538,9 @@ const LetterGenerator = () => {
     getWorkerProfile(workerId)
       .then((res) => {
         if (cancelled) return;
-        const profile = res?.data || res;
+        const profile = res?.data;
         // TODO: confirm the real field name for the passport scan image.
-        const passportScanUrl =
-          profile?.passport?.scan_url ||
-          profile?.passport?.passport_scan?.url ||
-          profile?.personal_information?.passport_scan?.url ||
-          null;
+        const passportScanUrl = profile?.passport?.scan.url || null;
         setWorker({ ...profile, passportScanUrl });
       })
       .catch((err) => {
@@ -629,7 +624,6 @@ const LetterGenerator = () => {
               : "No worker selected — fill the letter in manually."}
           </p>
         </div>
-        <BackButton onClick={() => navigate(-1)} />
       </div>
 
       {/* Input layout: every field paired 2-up on larger screens
