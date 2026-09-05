@@ -345,4 +345,3 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
 };
 
 export default InvoiceDetail;
-
