@@ -14,18 +14,18 @@
 
 export const SITE_URL = "https://aletisalatjobs.com";
 
-export const SITE_NAME = "ALETISALAT";
+export const SITE_NAME = "Aletisalat";
 
 export const DEFAULT_TITLE =
   "ALETISALAT | Work Abroad Without the Guesswork — Licensed Ethiopian Overseas Employment Agency";
 
 export const DEFAULT_DESCRIPTION =
-  "ALETISALAT places skilled Ethiopians in verified jobs across Saudi Arabia, Jordan, and the Gulf. Every contract checked, every step explained before you sign.";
+  "Aletisalat places skilled Ethiopians in verified jobs across Saudi Arabia, Jordan, and the Gulf. Every contract checked, every step explained before you sign.";
 
 export const DEFAULT_OG_IMAGE = "/og-image.jpg";
 
 export const DEFAULT_KEYWORDS =
-  "Ethiopia overseas employment, work abroad Ethiopia, house maid Saudi Arabia, jobs Jordan Ethiopian, licensed employment agency Addis Ababa, domestic worker Gulf, ALETISALAT";
+  "Ethiopia overseas employment, work abroad Ethiopia, house maid Saudi Arabia, jobs Jordan Ethiopian, licensed employment agency Addis Ababa, domestic worker Gulf, Aletisalat";
 
 /* Organization structured data (EmploymentAgency type). Add social
    profile URLs into sameAs when the accounts exist — they feed

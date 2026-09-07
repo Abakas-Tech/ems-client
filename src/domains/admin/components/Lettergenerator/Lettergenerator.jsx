@@ -9,9 +9,7 @@ import useResponse from "../../../../context/Response/useResponse";
 // logo/company name/confidentiality line as every other printed report.
 import { REPORT_META } from "../../../../shared/components/Report/Data";
 
-
 // Predefined options (ለ / ጉዳዩ / default incident text)
-
 
 const TO_OPTIONS = [
   "የኢፌድሪ ስራና ክህሎት ሚኒስቴር ለሲስተም ክፍል አዲስ አበባ",
@@ -46,15 +44,12 @@ const fmtDate = (val) =>
     year: "numeric",
   });
 
-
 // Shared muted input styling — a light fill only, no border/shadow chrome
 // of its own beyond the standard form-control outline.
-
 
 const FIELD_STYLE = {
   backgroundColor: "#f5f7fa",
 };
-
 
 // Print / HTML builder — mirrors the Finance period report's
 // buildHeader/buildFooter/openAndPrint pattern class-for-class, so every
@@ -78,7 +73,10 @@ const buildLetterHeader = (title, subtitle) => {
         <div class="report-title">${title}</div>
         <div class="report-sub">${subtitle || ""}</div>
       </div>
-      <div class="meta-r"></div>
+    <div class="meta-r contact-block">
+  <div>${REPORT_META.contactEmail || "contact@aletisalatjobs.com"}</div>
+  <div>${REPORT_META.contactPhone || "0911833704 / 0911218293"}</div>
+</div>
     </div>`;
 };
 
@@ -113,6 +111,8 @@ const LETTER_STYLES = `
     body{background:#fff;padding:0;gap:0;}
     .page{box-shadow:none;width:auto;padding:0 0 26px;}
   }
+    .meta-r{min-width:190px;}
+.contact-block{text-align:right;font-size:7.5pt;color:#5a6a85;line-height:1.5;}
   .pb{page-break-after:always;}
   .ph{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #1a3c6e;padding-bottom:8px;margin-bottom:18px;}
   .logo-block{display:flex;align-items:center;gap:9px;min-width:190px;}
@@ -271,12 +271,10 @@ const toDataUri = async (url) => {
   }
 };
 
-
 // SelectableField — ONE input that both picks a predefined option and
 // stays freely editable: a native <datalist> attached to a plain text
 // input, so the same field is what you pick from AND what you type/edit
 // in — nothing renders into a second field.
-
 
 const SelectableField = ({ label, options, value, onChange, placeholder }) => {
   const listId = useId();
@@ -303,13 +301,11 @@ const SelectableField = ({ label, options, value, onChange, placeholder }) => {
   );
 };
 
-
 // CopyField — a single toolkit row: clicking it copies the value and,
 // like the copy button in the Claude console, swaps its own icon/text to
 // a "Copied" confirmation for a moment instead of firing a global toast.
 // Left-aligned via an explicit inline style so it can never fall back to
 // a button's default centered text.
-
 
 const CopyField = ({ label, value }) => {
   const [status, setStatus] = useState(null); // null | "copied" | "failed"
@@ -364,7 +360,6 @@ const CopyField = ({ label, value }) => {
 // field copy rows, passport scan + print side by side, screenshot
 // manager. Everything explicitly left-aligned.
 
-
 const LetterToolkit = ({
   worker,
   passportAttached,
@@ -381,7 +376,9 @@ const LetterToolkit = ({
         { label: "Passport No.", value: worker.passport?.passport_number },
         {
           label: "Labour ID",
-          value: worker.personal_information?.labour_id || worker.contracts?.[0]?.labour_id,
+          value:
+            worker.personal_information?.labour_id ||
+            worker.contracts?.[0]?.labour_id,
         },
         {
           label: "Ticket Date",
@@ -495,9 +492,7 @@ const LetterToolkit = ({
   );
 };
 
-
 // Main component
-
 
 const LetterGenerator = () => {
   const location = useLocation();
