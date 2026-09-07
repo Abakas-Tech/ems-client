@@ -113,6 +113,15 @@ function AboutSnippet() {
     <section id="about" className={styles.aboutSection}>
       {/* INTRO */}
       <div className="container">
+        {/* Header */}
+        <div>
+          <SubHeading
+            eyebrow="About"
+            title="Vision Recruitment Agency"
+            subtitle=" discover how we connect Ethiopian workers with international employers through ethical and professional recruitment services."
+            center
+          />
+        </div>
         <div className={`row align-items-center ${styles.introRow}`}>
           <div className="col-lg-6">
             <div className={styles.imageWrapper}>
@@ -139,6 +148,13 @@ function AboutSnippet() {
                 foreign employment and workforce placement agency committed to
                 connecting qualified Ethiopian workers with legitimate
                 employment opportunities abroad.
+              </p>
+              <p className={styles.description}>
+                <strong>Vision Recruitment Agency</strong> is a professional
+                foreign employment and workforce placement agency committed to
+                connecting qualified Ethiopian workers with legitimate
+                employment opportunities abroad.
+            
               </p>
               <p className={styles.description}>
                 We believe that employment is more than simply finding a job. It

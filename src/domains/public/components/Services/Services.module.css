@@ -47,7 +47,13 @@
   margin: 0;
   text-align: center;
 }
-
+.description {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--sv-muted);
+  margin-top: 16px;
+  text-align: center;
+}
 .lead {
   color: var(--sv-muted);
   font-size: 1rem;

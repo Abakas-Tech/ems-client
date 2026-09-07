@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import getSocialMedias from "../../../domains/public/api/socialMedia.api";
 import { getLocation } from "../../../domains/admin/api/location.api";
-import styles from "./Footer.module.css";
 
 const Footer = () => {
   const [agencyData, setAgencyData] = useState({
-    agency_name: "Vision Recruitment Agency",
+    agency_name: "ALETISALAT Private Foreign Employment Agency",
     agency_email: "",
     agency_phone: "",
     address: "Addis Ababa, Ethiopia",
@@ -96,57 +96,50 @@ const Footer = () => {
   };
 
   return (
-    <footer className={styles.footer}>
+    <footer className="dark-footer skin-dark-footer">
       <div className="container">
-        <div className={styles.topRow}>
-          <div className={styles.brand}>
-            <span className={styles.brandName}>{agencyData.agency_name}</span>
-            <span className={styles.brandTagline}>
-              Connecting Ethiopian talent to trusted opportunities abroad.
-            </span>
+        {/* <div className="row my-0"> */}
+        <div className="col-12">
+          <div className="footer-content pb-0">
+            <div className="footer-links">
+              <a href="#how">Process</a>
+              <a href="#services">Services</a>
+              <a href="#about">About</a>
+              <a href="#gallery">Gallary</a>
+              <a href="#testimonials">Testimonials</a>
+              <a href="#contact">Contact</a>
+            </div>
           </div>
-
-          <nav className={styles.links}>
-            <a href="#how">Process</a>
-            <a href="#services">Services</a>
-            <a href="#about">About</a>
-            <a href="#gallery">Gallery</a>
-            <a href="#testimonials">Testimonials</a>
-            <a href="#contact">Contact</a>
-          </nav>
         </div>
+        {/* </div> */}
       </div>
 
-      <div className={styles.divider} />
-
       {/* Footer Bottom */}
-      <div className={styles.bottom}>
+      <div className="footer-bottom">
         <div className="container">
           <div className="row align-items-center">
             {/* Left side */}
             <div className="col-lg-8 col-md-8 text-center text-md-start mb-2 mb-md-0">
-              <p className={styles.copyright}>
-                © {new Date().getFullYear()} Vision Recruitment Agency |
-                Developed by{" "}
-                <a href="https://abakastech.com/" className={styles.brandLink}>
-                  Abakas Technologies
-                </a>{" "}
+              <p className="mb-0">
+                © {new Date().getFullYear()} ALETISALAT Private Foreign
+                Employment Agency | Developed by{" "}
+                <a
+                  href="https://abakastech.com/"
+                  className="brand-link fw-bold"
+                >
+                  Abakas Technologies{" "}
+                </a>
                 | All Rights Reserved.
               </p>
             </div>
 
             {/* Social icons */}
             <div className="col-lg-4 col-md-4 text-center text-md-end">
-              <ul className={`d-inline-flex d-md-flex justify-content-center justify-content-md-end mb-0 me-4 ${styles.socialList}`}>
+              <ul className="d-inline-flex d-md-flex justify-content-center justify-content-md-end  mb-0 me-4">
                 {Object.entries(socialLinks).map(([platform, url]) =>
                   url ? (
                     <li key={platform} className="me-3 mb-2 mb-md-0">
-                      <a
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.socialLink}
-                      >
+                      <a href={url} target="_blank" rel="noopener noreferrer">
                         <i className={`fa-brands ${socialIcons[platform]}`}></i>
                       </a>
                     </li>
