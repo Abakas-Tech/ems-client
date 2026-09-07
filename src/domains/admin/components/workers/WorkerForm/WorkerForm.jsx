@@ -1624,7 +1624,8 @@ function WorkerForm() {
       const departureDate = new Date(travel.departure_date);
       if (isNaN(departureDate.getTime())) return "Departure date must be valid";
       departureDate.setHours(0, 0, 0, 0);
-      if (departureDate < now) return "Departure date cannot be in the past";
+      if (departureDate < now && !isEditMode)
+        return "Departure date cannot be in the past";
     }
     if (travel.arrival_date && isNaN(new Date(travel.arrival_date).getTime()))
       return "Arrival date must be valid";
