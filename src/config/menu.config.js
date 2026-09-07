@@ -79,7 +79,12 @@ const MENU_CONFIG = [
     icon: "bi bi-database-add",
     roles: [ROLES.ADMIN],
   },
-
+  {
+    label: "Notifications",
+    path: "/admin/notifications",
+    icon: "bi bi-bell",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  },
   {
     label: "External Links",
     path: "/admin/external-links",
@@ -112,6 +117,13 @@ const MENU_CONFIG = [
     label: "Active Employees",
     path: "/partner/active-employees",
     icon: "bi bi-people",
+    roles: [ROLES.PARTNER],
+  },
+  
+  {
+    label: "Notifications",
+    path: "/partner/notifications",
+    icon: "bi bi-bell",
     roles: [ROLES.PARTNER],
   },
 

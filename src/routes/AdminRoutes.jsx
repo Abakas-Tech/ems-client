@@ -53,6 +53,7 @@ import ViewComplaint from "../domains/admin/pages/complaints/ViewComplaint/ViewC
 import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx";
 // ADDED — Flexible Letter Generator page
 import LetterGenerator from "../domains/admin/pages/Lettergenerator/Lettergenerator.jsx";
+import NotificationPage from "../domains/admin/pages/NotificationPage/NotificationPage.jsx";
 
 const AdminRoutes = () => {
   return (
@@ -79,6 +80,7 @@ const AdminRoutes = () => {
             </>
           }
         />
+         <Route path="notifications" element={<NotificationPage />} />
         <Route
           path="invoices"
           element={

@@ -17,7 +17,7 @@ function App() {
   return (
     <>
       {profile && <PrefetchStarter />}
-        <Install />
+      <Install />
       <AppRouter />
     </>
   );
