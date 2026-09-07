@@ -1,90 +1,342 @@
-/* HEADER */
-.section-heading h2 {
-  font-weight: 700;
-  margin-bottom: 10px;
-}
+/*
+  Shared brand palette (light wood + gold), repeated per-module since each
+  component is CSS-Modules scoped:
+  wood-50  #faf3ea  page tint background
+  wood-100 #f3e3c8  light surface / secondary background
+  wood-200 #e7cda0  borders / soft accents
+  wood-600 #9c6b3e  mid wood, icon tint on light bg
+  wood-800 #6b4423  deep wood, dark contrast panels
+  wood-900 #4a2f18  darkest wood, headings / darkest panel
+  gold-500 #c9a227
+  gold-300 #e7c96b
+  cream    #fbf5ea  text on dark wood
+  muted    #8a7360  muted body text
+*/
 
-.section-heading p {
-  color: #6c757d;
-}
+.section {
+  --hiw-wood-900: #4a2f18;
+  --hiw-wood-800: #6b4423;
+  --hiw-wood-600: #9c6b3e;
+  --hiw-gold: #c9a227;
+  --hiw-gold-light: #e7c96b;
+  --hiw-cream: #fbf5ea;
+  --hiw-muted: #8a7360;
+  --hiw-border: #e8d9c2;
 
-/* STEP WRAPPER */
-.step-item {
   position: relative;
+  padding: 100px 0;
+  background: linear-gradient(180deg, #faf3ea 0%, #f3e6cf 100%);
+  overflow: hidden;
+}
+
+.section::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  right: -120px;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(201, 162, 39, 0.16),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.head {
+  position: relative;
+  max-width: 620px;
+  margin: 0 auto 64px;
   text-align: center;
 }
 
-/* ICON */
-.icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.icon svg {
-  font-size: 48px;
-  line-height: 1;
-  color: #105491;
-}
-
-/* OPTIONAL CONTENT TWEAKS */
-.step-content h4 {
-  margin-top: 15px;
-  font-weight: 600;
-}
-
-@media (min-width: 992px) {
-  .step-item {
-    position: relative;
-  }
-
-  .step-item::after {
-    content: "→";
-    position: absolute;
-    top: 50%;
-
-    right: -18px;
-    transform: translateY(-50%);
-    font-size: 2rem;
-    font-weight: 700;
-    color: #105491;
-    z-index: 5;
-    pointer-events: none;
-  }
-
-  /* remove last arrow */
-  .last::after {
-    display: none;
-  }
-}
-
-@media (max-width: 991.98px) {
-  .step-item::after {
-    display: none;
-  }
-}
-
-/* Numbering  */
-
-.number {
-  position: absolute;
-  top: 10px;
-  left: 30px;
-
-  width: 32px;
-  height: 32px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 14px;
+.kicker {
+  display: inline-block;
+  font-size: 0.78rem;
   font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--hiw-gold);
+  margin-bottom: 10px;
+}
 
-  color: #105491;
-  background: #f1f6ff;
+.title {
+  font-size: clamp(1.9rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: var(--hiw-wood-900);
+  margin-bottom: 14px;
+}
+
+.subtitle {
+  color: var(--hiw-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 0 auto;
+}
+
+/* ---------- Horizontal tree ---------- */
+.tree {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.root {
+  position: relative;
+  flex: 0 0 230px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 40px 24px;
+  border-radius: 20px;
+  background: linear-gradient(160deg, var(--hiw-wood-800), var(--hiw-wood-900));
+  color: var(--hiw-cream);
+  box-shadow: 0 20px 44px rgba(74, 47, 24, 0.28);
+}
+
+.root::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -56px;
+  width: 56px;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--hiw-gold),
+    rgba(201, 162, 39, 0.3)
+  );
+  transform: translateY(-50%);
+}
+
+.rootIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
+  margin-bottom: 6px;
+  background: linear-gradient(135deg, var(--hiw-gold-light), var(--hiw-gold));
+  color: var(--hiw-wood-900);
+  font-size: 1.4rem;
+}
 
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+.rootTitle {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--hiw-cream);
+}
+
+.rootCaption {
+  font-size: 0.82rem;
+  color: rgba(251, 245, 234, 0.7);
+  margin: 0;
+}
+
+.branches {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding-left: 44px;
+}
+
+.branches::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 34px;
+  bottom: 34px;
+  width: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(201, 162, 39, 0.55) 0,
+    rgba(201, 162, 39, 0.55) 6px,
+    transparent 6px,
+    transparent 14px
+  );
+}
+
+.branch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.branch::before {
+  content: "";
+  position: absolute;
+  left: -44px;
+  top: 50%;
+  width: 44px;
+  height: 2px;
+  background: rgba(201, 162, 39, 0.55);
+  transform: translateY(-50%);
+}
+
+.branchDot {
+  position: absolute;
+  left: -48px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--hiw-gold);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 4px #faf3ea;
+}
+
+.branchIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(156, 107, 62, 0.14);
+  color: var(--hiw-wood-800);
+  font-size: 1.35rem;
+}
+
+.branchCard {
+  position: relative;
+  flex: 1;
+  padding: 18px 22px;
+  border-radius: 14px;
+  background: rgba(255, 253, 247, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 10px 26px rgba(74, 47, 24, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.branch:hover .branchCard {
+  transform: translateY(-3px);
+  border-color: rgba(201, 162, 39, 0.45);
+  box-shadow: 0 16px 34px rgba(74, 47, 24, 0.12);
+}
+
+.branch:hover .branchIcon {
+  background: rgba(201, 162, 39, 0.2);
+  color: var(--hiw-wood-900);
+}
+
+.branchNumber {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--hiw-wood-800);
+  opacity: 0.25;
+}
+
+.branchTitle {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--hiw-wood-900);
+  margin-bottom: 4px;
+  padding-right: 30px;
+}
+
+.branchDesc {
+  font-size: 0.87rem;
+  line-height: 1.6;
+  color: var(--hiw-muted);
+  margin: 0;
+}
+
+/* ---------- Responsive: vertical tree ---------- */
+@media (max-width: 991.98px) {
+  .tree {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .root {
+    flex: none;
+    width: 100%;
+    margin-bottom: 44px;
+  }
+
+  .root::after {
+    top: 100%;
+    right: 50%;
+    left: auto;
+    width: 2px;
+    height: 44px;
+    transform: translateX(50%);
+    background: linear-gradient(
+      to bottom,
+      var(--hiw-gold),
+      rgba(201, 162, 39, 0.3)
+    );
+  }
+
+  .branches {
+    padding-left: 32px;
+  }
+
+  .branches::before {
+    top: 0;
+    bottom: 0;
+  }
+
+  .branch::before {
+    left: -32px;
+    width: 32px;
+  }
+
+  .branchDot {
+    left: -36px;
+  }
+}
+
+@media (max-width: 560px) {
+  .section {
+    padding: 72px 0;
+  }
+
+  .root {
+    padding: 32px 20px;
+    margin-bottom: 36px;
+  }
+
+  .branches {
+    gap: 18px;
+  }
+
+  .branch {
+    flex-wrap: wrap;
+  }
+
+  .branchIcon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.15rem;
+  }
+
+  .branchCard {
+    padding: 16px 18px;
+  }
 }

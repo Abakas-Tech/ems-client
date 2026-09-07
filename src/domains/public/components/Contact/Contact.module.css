@@ -1,0 +1,282 @@
+.section {
+  --ct-bg: #54351b;
+  --ct-bg-deep: #432a15;
+  --ct-gold: #c9a227;
+  --ct-gold-light: #e7c96b;
+  --ct-cream: #ffffff;
+  --ct-muted: #ffffff;
+  --ct-border: rgba(245, 234, 217, 0.16);
+
+  position: relative;
+  padding: 100px 0;
+  background: var(--ct-bg);
+  color: var(--ct-cream);
+}
+
+/* Centered main section header, sitting above the two-column layout */
+.sectionHead {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.mainTitle {
+  font-size: clamp(1.9rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: var(--ct-cream);
+  margin: 0;
+  text-align: center;
+}
+
+/* 70 / 30 split between the info column (details + map) and the form */
+.wrapper {
+  display: grid;
+  grid-template-columns: 7fr 3fr;
+  gap: 56px;
+  align-items: start;
+}
+
+/* ---------- Left: info ---------- */
+.infoCol {
+  text-align: left;
+}
+
+.kicker {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ct-gold-light);
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: clamp(1.9rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: var(--ct-cream);
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.subtitle {
+  color: var(--ct-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 0 0 36px;
+  max-width: 60ch;
+  text-align: left;
+}
+
+/* Details list + map: side by side on larger screens, stacked on smaller */
+.infoRow {
+  display: flex;
+  align-items: stretch;
+  gap: 32px;
+}
+
+.detailsList {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.detailCard div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detailCard strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ct-cream);
+}
+
+.detailCard span {
+  font-size: 0.88rem;
+  color: var(--ct-muted);
+}
+
+.detailIcon {
+  flex-shrink: 0;
+  margin-top: 3px;
+  font-size: 1.05rem;
+  color: var(--ct-gold);
+}
+
+a.detailCard:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(201, 162, 39, 0.4);
+}
+
+/* ---------- Map (nested inside the info column) ---------- */
+.mapCol {
+  flex: 1 1 0;
+  display: flex;
+}
+
+.mapWrapper {
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mapLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--ct-muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* ---------- Right: form ---------- */
+.formCol {
+  text-align: left;
+}
+
+.formTitle {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--ct-cream);
+  margin-bottom: 6px;
+  text-align: left;
+}
+
+.formSubtitle {
+  color: var(--ct-muted);
+  font-size: 0.9rem;
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 4px;
+  text-align: left;
+}
+
+.fieldGroup label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ct-muted);
+}
+
+.required {
+  color: var(--ct-gold-light);
+}
+
+.fieldGroup input,
+.fieldGroup textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--ct-border);
+  padding: 8px 2px;
+  font-size: 0.95rem;
+  color: var(--ct-cream);
+  font-family: inherit;
+  resize: none;
+  transition: border-color 0.2s ease;
+}
+
+.fieldGroup input::placeholder,
+.fieldGroup textarea::placeholder {
+  color: rgba(245, 234, 217, 0.35);
+}
+
+.fieldGroup input:focus,
+.fieldGroup textarea:focus {
+  outline: none;
+  border-color: var(--ct-gold);
+}
+
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--ct-gold-light), var(--ct-gold));
+  color: var(--ct-bg-deep);
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.submitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+}
+
+/* ---------- Responsive ---------- */
+
+/* Below this, the details list and map stack vertically instead of
+   side by side (still nested inside the info column). */
+@media (max-width: 767.98px) {
+  .infoRow {
+    flex-direction: column;
+  }
+
+  .mapWrapper {
+    height: 240px;
+    min-height: 0;
+  }
+}
+
+/* Below this, the info column and the form stack: info (title,
+   description, details, map) above, form below. */
+@media (max-width: 991.98px) {
+  .wrapper {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .subtitle {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .section {
+    padding: 72px 0;
+  }
+
+  .sectionHead {
+    margin-bottom: 40px;
+  }
+
+  .mapWrapper {
+    height: 200px;
+  }
+}

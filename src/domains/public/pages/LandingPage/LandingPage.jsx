@@ -11,7 +11,7 @@ import SEO from "../../../../shared/components/SEO/SEO";
 function LandingPage() {
   return (
     <>
-      <SEO title="ALETISALAT | Work Abroad Without the Guesswork" />
+      <SEO title="Vision Recruitment Agency | Work Abroad Without the Guesswork" />
       <Hero />
       <HowItWorks />
       <Services />

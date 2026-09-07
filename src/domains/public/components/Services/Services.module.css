@@ -1,0 +1,214 @@
+.section {
+  --sv-wood: #4a2f18;
+  --sv-wood-dark: #6b4423;
+  --sv-gold: #c9a227;
+  --sv-gold-light: #e7c96b;
+  --sv-muted: #8a7360;
+
+  position: relative;
+  padding: 100px 0;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.section::before {
+  content: "";
+  position: absolute;
+  bottom: -100px;
+  left: -100px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201, 162, 39, 0.14), transparent 70%);
+  pointer-events: none;
+}
+
+/* Main section heading — centered independently from the card grid */
+.headRow {
+  max-width: 640px;
+  margin: 0 auto 56px;
+  text-align: center;
+}
+
+.kicker {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--sv-gold);
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: clamp(1.9rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: var(--sv-wood);
+  margin: 0;
+  text-align: center;
+}
+
+.lead {
+  color: var(--sv-muted);
+  font-size: 1rem;
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* ---------- Bento grid ---------- */
+.grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 22px;
+}
+
+.card {
+  position: relative;
+  padding: 32px 28px;
+  border-radius: 18px;
+  background-color: #ffffff;
+  box-shadow: 0 10px 30px rgba(74, 47, 24, 0.08);
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  background-color: var(--sv-gold);
+  background-image: none;
+  box-shadow: 0 20px 45px rgba(201, 162, 39, 0.35);
+}
+
+.card:hover .cardTitle,
+.card:hover .cardDesc {
+  color: #ffffff;
+}
+
+.card:hover .iconWrap {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* Decorative ring at the top-right corner, framing the index number */
+.card::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(201, 162, 39, 0.35);
+  transition: border-color 0.3s ease;
+  pointer-events: none;
+}
+
+.card:hover::after {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.cardFeatured {
+  grid-row: span 2;
+  background: linear-gradient(160deg, var(--sv-wood-dark), var(--sv-wood));
+  color: #fbf5ea;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cardFeatured .cardTitle,
+.cardFeatured .cardDesc {
+  color: #fbf5ea;
+}
+
+.cardFeatured .cardIndex {
+  color: var(--sv-gold-light);
+}
+
+.cardFeatured .iconWrap {
+  background: rgba(231, 201, 107, 0.16);
+  color: var(--sv-gold-light);
+}
+
+.cardIndex {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--sv-gold);
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+.card:hover .cardIndex {
+  color: #ffffff;
+}
+
+.iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: rgba(201, 162, 39, 0.12);
+  color: var(--sv-gold);
+  font-size: 1.5rem;
+  margin-bottom: 18px;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.cardTitle {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--sv-wood);
+  margin-bottom: 10px;
+  transition: color 0.3s ease;
+}
+
+.cardDesc {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--sv-muted);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 991.98px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cardFeatured {
+    grid-row: span 1;
+  }
+}
+
+@media (max-width: 576px) {
+  .section {
+    padding: 72px 0;
+  }
+
+  .headRow {
+    margin-bottom: 40px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

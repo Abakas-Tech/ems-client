@@ -1,3 +1,15 @@
+:root {
+  --ab-wood-900: #4a2f18;
+  --ab-wood-800: #6b4423;
+  --ab-wood-600: #9c6b3e;
+  --ab-gold: #c9a227;
+  --ab-gold-light: #e7c96b;
+  --ab-cream: #fbf5ea;
+  --ab-muted: #8a7360;
+  --ab-border: #e8d9c2;
+  --ab-tint: #f3e8d6;
+}
+
 .gallery-card {
   cursor: pointer;
   overflow: hidden;
@@ -146,4 +158,39 @@
   .nav-button {
     top: 50%;
   }
+}
+
+/* ---------- Sub-section heading ---------- */
+.subHead {
+  margin-bottom: 40px;
+  max-width: 640px;
+}
+
+.subHeadCenter {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.subEyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ab-gold);
+  margin-bottom: 8px;
+}
+
+.subTitle {
+  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+  font-weight: 800;
+  color: var(--ab-wood-900);
+  margin-bottom: 6px;
+}
+
+.subSubtitle {
+  color: var(--ab-muted);
+  font-size: 0.95rem;
+  margin: 0;
 }

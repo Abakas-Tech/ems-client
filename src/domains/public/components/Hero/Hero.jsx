@@ -1,107 +1,40 @@
+import { FaShieldAlt, FaMapMarkerAlt } from "react-icons/fa";
 import styles from "./Hero.module.css";
 
-// The company's verified primary tagline, in both languages. Deliberately
-// static rather than translated per-headline — the client's company profile
-// only provides an approved Amharic version of this one core tagline, so
-// making up a translation for anything else risks shipping wording the
-// client never signed off on.
+
 const TAGLINE_EN =
   "Connecting People. Creating Opportunities. Building Better Futures.";
 const TAGLINE_AM = "ሰዎችን እናገናኛለን። ዕድሎችን እንፈጥራለን። የተሻለ ወደፊት እንገነባለን።";
 
-const STATS = [
+const SIDE_STATS = [
   { value: "12,000+", label: "Ethiopians placed abroad" },
-  { value: "3", label: "destination countries" },
   { value: "100%", label: "licensed and contract-checked" },
 ];
 
-// Destination nodes for the route illustration, positioned by hand in the
-// artwork's 560x700 coordinate space. Origin is Addis Ababa.
-const ORIGIN = { x: 96, y: 566, label: "Addis Ababa" };
-const ROUTES = [
-  {
-    id: "amman",
-    label: "Amman",
-    node: { x: 268, y: 196 },
-    control: { x: 176, y: 322 },
-  },
-  {
-    id: "riyadh",
-    label: "Riyadh",
-    node: { x: 334, y: 372 },
-    control: { x: 220, y: 418 },
-  },
-  {
-    id: "kuwait",
-    label: "Kuwait City",
-    node: { x: 384, y: 292 },
-    control: { x: 252, y: 372 },
-  },
-  {
-    id: "dubai",
-    label: "Dubai",
-    node: { x: 432, y: 456 },
-    control: { x: 300, y: 520 },
-  },
+const DESTINATIONS = [
+  { id: "addis", label: "Addis Ababa", x: 345, y: 255, isOrigin: true },
+  { id: "amman", label: "Amman", x: 410, y: 208 },
+  { id: "riyadh", label: "Riyadh", x: 415, y: 255 },
+  { id: "dubai", label: "Dubai", x: 435, y: 265 },
 ];
-
-// The plane loops along one continuous journey — Addis Ababa -> Amman ->
-// Riyadh -> Kuwait City -> Dubai -> back to Addis Ababa — so it visits
-// every destination instead of only the Amman leg. The first leg reuses
-// its hand-tuned control point from ROUTES; the legs between destinations
-// get a gentle perpendicular bow so the whole trip reads as one smooth
-// flight, and the return leg arcs south of all routes so the loop closes
-// seamlessly (the plane flies home instead of teleporting back to start).
-const buildFlightPath = () => {
-  const segments = [`M${ORIGIN.x},${ORIGIN.y}`];
-
-  ROUTES.forEach((route, index) => {
-    const from = index === 0 ? ORIGIN : ROUTES[index - 1].node;
-    const to = route.node;
-    let control;
-
-    if (index === 0) {
-      control = route.control;
-    } else {
-      const dx = to.x - from.x;
-      const dy = to.y - from.y;
-      const length = Math.hypot(dx, dy) || 1;
-      const bow = length * 0.22;
-      control = {
-        x: +((from.x + to.x) / 2 + (-dy / length) * bow).toFixed(1),
-        y: +((from.y + to.y) / 2 + (dx / length) * bow).toFixed(1),
-      };
-    }
-
-    segments.push(`Q${control.x},${control.y} ${to.x},${to.y}`);
-  });
-
-  // Return leg home (Dubai -> Addis Ababa), arcing below all routes.
-  segments.push(`Q300,640 ${ORIGIN.x},${ORIGIN.y}`);
-
-  return segments.join(" ");
-};
-
-const FLIGHT_PATH = buildFlightPath();
 
 function Hero() {
   return (
     <section className={styles.hero} id="home">
-      <div className={styles.grain} aria-hidden="true" />
-
-      <div className={styles.inner}>
+      <div className={styles.container}>
         <div className={styles.content}>
-          <p className={styles.eyebrow}>Ethiopia to the Gulf, done right</p>
+          <span className={styles.eyebrow}>
+            Ethiopia to the Gulf, done right
+          </span>
 
           <h1 className={styles.heading}>
-            <span className={styles.line}>Work abroad,</span>
-            <span className={styles.line}>without the guesswork.</span>
+            Work abroad, without the guesswork.
           </h1>
 
           <p className={styles.sub}>
-            ALETISALAT places skilled Ethiopians in verified jobs across Saudi
-            Arabia, Jordan, and the Gulf — every contract checked, every step
-            explained before you sign.
+            Vision Recruitment Agency places skilled Ethiopians in verified jobs
+            across Saudi Arabia, Jordan, and the Gulf — every contract checked,
+            every step explained before you sign.
           </p>
 
           {/* Static bilingual tagline — same on every view; see note above the constants. */}
@@ -126,196 +59,228 @@ function Hero() {
               About us
             </a>
           </div>
-        </div>
 
-        <div className={styles.artwork} aria-hidden="true">
-          <FlightRoutes />
-
-          {/* Playful trust badge — a tilted "stamp", like a visa approval mark */}
-          <div className={styles.stamp}>
-            <span className={styles.stampRing} />
-            <span className={styles.stampText}>
-              Licensed
-              <br />
-              Agency
-            </span>
+          <div className={styles.statsRow}>
+            {SIDE_STATS.map((stat, i) => (
+              <span className={styles.statItem} key={stat.label}>
+                {i > 0 && (
+                  <span className={styles.statDivider} aria-hidden="true" />
+                )}
+                <span className={styles.statValue}>{stat.value}</span>
+                <span className={styles.statLabel}>{stat.label}</span>
+              </span>
+            ))}
           </div>
         </div>
-      </div>
 
-      <div className={styles.stats}>
-        {STATS.map((stat) => (
-          <div className={styles.stat} key={stat.label}>
-            <span className={styles.statValue}>{stat.value}</span>
-            <span className={styles.statLabel}>{stat.label}</span>
+        <div className={styles.globeSide}>
+          <div className={styles.globeWrap}>
+            <WorldGlobe />
+
+            {/* Trust badge — now a pill, not a circular stamp, per the
+                "no decorative circles" requirement. */}
+            <div className={styles.licenseBadge}>
+              <FaShieldAlt />
+              <span>Licensed Agency</span>
+            </div>
+
+            <div className={styles.destinationChip}>
+              <FaMapMarkerAlt />
+              <span>3 destination countries</span>
+            </div>
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function FlightRoutes() {
+// A clean, realistic world-globe illustration centered on the Horn of
+// Africa / Arabian Peninsula — the exact recruitment corridor this agency
+// operates in. Real continent silhouettes (simplified but geographically
+// shaped), lit like a sphere (light-blue atmosphere, gold-lit land, black
+// limb-darkening at the edges), with animated gold destination pins. No
+// orbit rings, no decorative circles, no abstract network — the globe
+// itself is the only "circle" on screen, and it exists because a globe is
+// a sphere.
+function WorldGlobe() {
+  const cx = 280;
+  const cy = 280;
+  const r = 200;
+
   return (
     <svg
-      viewBox="0 0 560 700"
-      className={styles.routeSvg}
+      viewBox="0 0 560 560"
+      className={styles.globeSvg}
       role="img"
-      aria-label="Animated map of flight routes from Addis Ababa looping through Amman, Riyadh, Kuwait City, and Dubai, flown by a plane"
+      aria-label="World globe centered on East Africa and the Arabian Peninsula, with animated pins marking Addis Ababa, Amman, Riyadh, and Dubai"
     >
       <defs>
-        <linearGradient id="routeGold" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#C9A227" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#E7C96B" stopOpacity="0.95" />
-        </linearGradient>
-        <radialGradient id="originGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#E7C96B" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#E7C96B" stopOpacity="0" />
+        {/* Sphere shading: lit upper-left, deep near-black at the limb */}
+        <radialGradient id="oceanShade" cx="35%" cy="28%" r="80%">
+          <stop offset="0%" stopColor="#d9f0fa" />
+          <stop offset="35%" stopColor="#7ec2e3" />
+          <stop offset="70%" stopColor="#2c6f92" />
+          <stop offset="100%" stopColor="#05080d" />
         </radialGradient>
+
+        {/* Land: gold-lit, matching the brand accent instead of generic green */}
+        <linearGradient id="landShade" x1="15%" y1="10%" x2="90%" y2="95%">
+          <stop offset="0%" stopColor="#f2d488" />
+          <stop offset="45%" stopColor="#c9a227" />
+          <stop offset="100%" stopColor="#5c4419" />
+        </linearGradient>
+
+        {/* Uniform limb-darkening applied over everything, sphere-clipped */}
+        <radialGradient id="limbShade" cx="50%" cy="50%" r="52%">
+          <stop offset="0%" stopColor="#000000" stopOpacity="0" />
+          <stop offset="72%" stopColor="#000000" stopOpacity="0" />
+          <stop offset="100%" stopColor="#000000" stopOpacity="0.55" />
+        </radialGradient>
+
+        {/* Soft glossy sunlight glint, upper-left */}
+        <radialGradient id="specular" cx="30%" cy="20%" r="26%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Atmosphere halo, well outside the sphere edge — a real glow,
+            not a stroked ring */}
+        <radialGradient id="atmosphere" cx="50%" cy="50%" r="50%">
+          <stop offset="78%" stopColor="#8fd3f0" stopOpacity="0" />
+          <stop offset="92%" stopColor="#8fd3f0" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#8fd3f0" stopOpacity="0" />
+        </radialGradient>
+
+        <clipPath id="sphereClip">
+          <circle cx={cx} cy={cy} r={r} />
+        </clipPath>
       </defs>
 
-      {/* Faint radar-style arcs centered on the origin */}
-      {[150, 250, 350, 450].map((r) => (
-        <circle
-          key={r}
-          cx={ORIGIN.x}
-          cy={ORIGIN.y}
-          r={r}
-          className={styles.ring}
-        />
-      ))}
+      {/* Atmosphere glow behind the sphere */}
+      <circle cx={cx} cy={cy} r={r * 1.16} fill="url(#atmosphere)" />
 
-      <circle
-        cx={ORIGIN.x}
-        cy={ORIGIN.y}
-        r="60"
-        fill="url(#originGlow)"
-        className={styles.originPulse}
-      />
+      {/* The sphere itself */}
+      <g clipPath="url(#sphereClip)">
+        <circle cx={cx} cy={cy} r={r} fill="url(#oceanShade)" />
 
-      {ROUTES.map((route) => {
-        const d = `M${ORIGIN.x},${ORIGIN.y} Q${route.control.x},${route.control.y} ${route.node.x},${route.node.y}`;
-        return <path key={route.id} d={d} className={styles.route} />;
-      })}
-
-      {/* The full journey the plane flies, drawn over the solid legs as a
-          dotted golden bead-line - so the looping route itself becomes part
-          of the artwork. Reuses the .route class for the gradient stroke. */}
-      <path
-        d={FLIGHT_PATH}
-        className={styles.route}
-        style={{ strokeDasharray: "1 9", strokeWidth: 2.5, opacity: 0.9 }}
-        strokeLinecap="round"
-        fill="none"
-      />
-
-      {/* A handful of twinkling waypoint dots scattered along the sky for texture */}
-      {[
-        { x: 210, y: 260 },
-        { x: 150, y: 460 },
-        { x: 320, y: 250 },
-        { x: 400, y: 380 },
-        { x: 460, y: 340 },
-        { x: 230, y: 420 },
-      ].map((p, i) => (
-        <circle
-          key={i}
-          cx={p.x}
-          cy={p.y}
-          r="1.6"
-          className={styles.twinkle}
-          style={{ animationDelay: `${i * 0.7}s` }}
-        />
-      ))}
-
-      {/* Destination nodes, each with an expanding radar pulse ring
-          (staggered per city). Uses SMIL <animate> so no CSS changes are
-          needed for the effect. */}
-      {ROUTES.map((route, index) => (
-        <g key={`${route.id}-node`}>
-          <circle
-            cx={route.node.x}
-            cy={route.node.y}
-            r="5"
-            fill="none"
-            stroke="#E7C96B"
-            strokeWidth="1.5"
-            opacity="0"
-          >
-            <animate
-              attributeName="r"
-              values="5;16"
-              dur="2.8s"
-              begin={`${index * 0.7}s`}
-              repeatCount="indefinite"
-            />
-            <animate
-              attributeName="opacity"
-              values="0.7;0"
-              dur="2.8s"
-              begin={`${index * 0.7}s`}
-              repeatCount="indefinite"
-            />
-          </circle>
-          <circle
-            cx={route.node.x}
-            cy={route.node.y}
-            r="5"
-            className={styles.node}
-          />
-          <text
-            x={route.node.x + 12}
-            y={route.node.y + 4}
-            className={styles.nodeLabel}
-          >
-            {route.label}
-          </text>
-        </g>
-      ))}
-
-      {/* Origin node */}
-      <circle cx={ORIGIN.x} cy={ORIGIN.y} r="7" className={styles.originNode} />
-      <text x={ORIGIN.x} y={ORIGIN.y + 30} className={styles.originLabel}>
-        {ORIGIN.label}
-      </text>
-
-      {/* Looping plane, flown along the full journey Addis Ababa -> Amman ->
-          Riyadh -> Kuwait City -> Dubai -> home to Addis Ababa. Drawn as a
-          real airplane silhouette (nose pointing along +x, the direction
-          offset-rotate: auto faces) with a soft golden glow that travels
-          with it and a fading contrail trailing behind its tail. */}
-      <g
-        className={styles.plane}
-        style={{
-          offsetPath: `path("${FLIGHT_PATH}")`,
-        }}
-      >
-        {/* One dial for the whole plane's size - scales the silhouette,
-            its glow and its contrail together. 1 = original size. */}
-        <g transform="scale(1.35)">
-          {/* soft golden glow travelling with the plane */}
-          <circle r="11" fill="url(#originGlow)" opacity="0.7" />
-
-          {/* contrail: one main trail plus two short vapor streaks */}
+        {/* Continents — simplified but recognizable silhouettes */}
+        <g fill="url(#landShade)" stroke="#3d2e10" strokeWidth="0.6">
+          {/* Africa */}
           <path
-            d="M-10 0h-4M-10 -2.4h-2.5M-10 2.4h-2.5"
-            stroke="#F5F1E6"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-            opacity="0.55"
-            fill="none"
+            d="M200,160
+               C230,145 270,140 300,150
+               C320,165 315,185 310,200
+               C330,215 355,230 365,255
+               C358,275 340,290 325,310
+               C315,335 305,360 290,385
+               C280,405 265,425 245,435
+               C225,420 215,395 210,370
+               C195,345 175,325 165,300
+               C160,275 170,250 180,225
+               C185,205 190,180 200,160 Z"
+          />
+          {/* Madagascar */}
+          <path
+            d="M345,345 C352,350 355,365 350,380
+               C346,392 336,388 333,372
+               C331,358 338,342 345,345 Z"
+          />
+          {/* Arabian Peninsula */}
+          <path
+            d="M385,225
+               C400,215 420,215 435,225
+               C448,235 452,255 445,275
+               C438,292 420,300 405,295
+               C392,290 385,275 383,258
+               C381,242 378,232 385,225 Z"
+          />
+          {/* Levant / western Asia sliver */}
+          <path
+            d="M378,205
+               C395,195 420,192 440,198
+               C455,205 460,215 452,222
+               C438,228 415,222 398,220
+               C386,218 375,215 378,205 Z"
+          />
+          {/* Southern Europe hint */}
+          <path
+            d="M245,110
+               C265,102 290,102 305,112
+               C312,122 305,132 288,133
+               C268,134 250,128 245,118 Z"
+          />
+          {/* South Asia hint */}
+          <path
+            d="M460,175
+               C472,168 480,178 478,195
+               C476,212 465,222 452,215
+               C443,208 445,190 452,180
+               C455,177 458,176 460,175 Z"
+          />
+        </g>
+
+        {/* Sphere curvature shading + gloss, on top of the land/ocean */}
+        <circle cx={cx} cy={cy} r={r} fill="url(#limbShade)" />
+        <circle cx={cx} cy={cy} r={r} fill="url(#specular)" />
+      </g>
+
+      {/* Sphere edge — a single thin line so it reads as a globe silhouette,
+          not a drawn "border ring" */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        stroke="rgba(5,8,13,0.4)"
+        strokeWidth="1"
+      />
+
+      {/* Destination pins, each with a gentle fade-in, a soft location
+          pulse, and a small legible label */}
+      {DESTINATIONS.map((dest, index) => (
+        <g
+          key={dest.id}
+          className={styles.pinGroup}
+          style={{ animationDelay: `${index * 0.25}s` }}
+        >
+          {/* Pulse ring at the pin's ground point */}
+          <circle
+            cx={dest.x}
+            cy={dest.y}
+            r="4"
+            className={styles.pinPulse}
+            style={{ animationDelay: `${index * 0.5}s` }}
           />
 
-          {/* airplane silhouette: the 24-unit "flight" icon, recentered on
-              (0,0) and rotated 90deg so its nose points along the path */}
-          <g transform="rotate(90) scale(0.85) translate(-12 -12)">
+          {/* Pin marker */}
+          <g transform={`translate(${dest.x}, ${dest.y}) scale(0.55)`}>
             <path
-              d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
-              fill="#F5F1E6"
+              d="M0,0 C-8,-14 -14,-22 -14,-30 C-14,-41 -6,-48 0,-48
+                 C6,-48 14,-41 14,-30 C14,-22 8,-14 0,0 Z"
+              fill={dest.isOrigin ? "#e7c96b" : "#c9a227"}
+              stroke="#3d2e10"
+              strokeWidth="1.2"
             />
+            <circle cx="0" cy="-30" r="5.5" fill="#1a1206" />
+          </g>
+
+          {/* Label chip, offset above the pin */}
+          <g transform={`translate(${dest.x}, ${dest.y - 44})`}>
+            <rect
+              x={-(dest.label.length * 3.6 + 8)}
+              y="-11"
+              width={dest.label.length * 7.2 + 16}
+              height="20"
+              rx="10"
+              className={styles.pinLabelBg}
+            />
+            <text textAnchor="middle" y="3" className={styles.pinLabel}>
+              {dest.label}
+            </text>
           </g>
         </g>
-      </g>
+      ))}
     </svg>
   );
 }
