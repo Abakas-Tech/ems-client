@@ -212,6 +212,57 @@ const setPartnerCvAccess = async (id, payload) => {
   }
 };
 
+// Upload one document scan (COC, Visa, etc.) for a worker. `formData` must
+// include a `file` field plus `category` and optional `description`.
+// Matches: router.post("/:workerId", ...) in workerDocument.route.js,
+// mounted at "/workers/documents" in the main index route file.
+const uploadWorkerDocument = async (workerId, formData) => {
+  try {
+    const response = await axiosInstance.post(
+      `/workers/documents/${workerId}`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to upload document",
+    );
+  }
+};
+
+// List every document currently attached to a worker.
+const listWorkerDocuments = async (workerId) => {
+  try {
+    const response = await axiosInstance.get(`/workers/documents/${workerId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to load worker documents",
+    );
+  }
+};
+
+// Delete one worker document.
+const deleteWorkerDocument = async (workerId, documentId) => {
+  try {
+    const response = await axiosInstance.delete(
+      `/workers/documents/${workerId}/${documentId}`,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to delete document",
+    );
+  }
+};
+
 export {
   createWorker,
   updateWorker,
@@ -227,4 +278,7 @@ export {
   deleteWorker,
   listSharedCvsForPartner,
   setPartnerCvAccess,
+  uploadWorkerDocument,
+  listWorkerDocuments,
+  deleteWorkerDocument,
 };
