@@ -1,12 +1,17 @@
 import React, { useEffect } from "react";
 import useProfile from "../../../../context/Profile/useProfile";
+import useNotification from "../../../../context/Notification/useNotification";
 import { FaBars } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ProfileCell from "../../ProfileCell/ProfileCell";
-import NotificationBell from "../../NotificationBell/NotificationBell";
+// Admin-only: real-time login-activity/audit-log counter (socket-driven,
+// backed by /admin-notifications, which is admin-only on the backend too).
+import RealtimeAdminNotificationBell from "../../NotificationBell/NotificationBell";
 
 const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   const { fetchProfile, profile } = useProfile();
+  const { unreadCount } = useNotification();
+  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
@@ -25,6 +30,52 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   const roleBase = [1, 2].includes(roleId)
     ? "admin"
     : rolePathMap[roleId] || "admin";
+
+  const isAdmin = profile?.role === "admin";
+
+  // Staff/partner: the original, simpler notification bell (general
+  // push notifications, not the admin audit/login activity feed).
+  const notificationPath = `/${roleBase}/notifications`;
+  const StaffNotificationBell = () => (
+    <button
+      className="btn p-0 position-relative d-flex align-items-center justify-content-center"
+      onClick={() => navigate(notificationPath)}
+      style={{
+        border: "none",
+        background: "transparent",
+        transition: "transform 0.2s ease",
+      }}
+      onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+      onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+    >
+      <i
+        className={unreadCount > 0 ? "bi bi-bell-fill" : "bi bi-bell"}
+        style={{
+          fontSize: "1.6rem",
+          color: "var(--maincolor)",
+          display: "block",
+          fontWeight: unreadCount === 0 ? "bold" : "normal",
+        }}
+      ></i>
+
+      {unreadCount > 0 && (
+        <span
+          className="position-absolute badge rounded-pill bg-danger"
+          style={{
+            top: "7px",
+            right: "-8px",
+            fontSize: "0.65rem",
+            padding: "0.2rem 0.4rem",
+            minWidth: "18px",
+            fontWeight: "bold",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          }}
+        >
+          {unreadCount > 9 ? "9+" : unreadCount}
+        </span>
+      )}
+    </button>
+  );
 
   const roleMap = {
     1: "Admin",
@@ -72,7 +123,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
           <h5 className="mb-0 fw-semibold text-dark">{activePage}</h5>
 
           <div className="d-flex align-items-center gap-3">
-            {profile?.role === "admin" && <NotificationBell />}
+            {isAdmin ? <RealtimeAdminNotificationBell /> : <StaffNotificationBell />}
             <ProfileCell
               profile={{
                 firstName: profile?.full_name,
@@ -132,7 +183,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
           </div>
 
           <div className="d-flex align-items-center gap-3">
-            {profile?.role === "admin" && <NotificationBell />}
+            {isAdmin ? <RealtimeAdminNotificationBell /> : <StaffNotificationBell />}
 
             <ProfileCell
               profile={{
