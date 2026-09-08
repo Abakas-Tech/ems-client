@@ -55,6 +55,8 @@ import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx
 import LetterGenerator from "../domains/admin/pages/Lettergenerator/Lettergenerator.jsx";
 import NotificationPage from "../domains/admin/pages/NotificationPage/NotificationPage.jsx";
 
+import Dashboard from "../domains/admin/pages/Dashboard/Dashboard.jsx";
+
 const AdminRoutes = () => {
   return (
     <Routes>
@@ -69,7 +71,7 @@ const AdminRoutes = () => {
         <Route path="users/create-user" element={<CreateUser />} />
         <Route path="my-profile" element={<Profile />} />
         <Route path="users" element={<ListUser />} />
-        <Route path="dashboard" element={<Analytics />} />
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="autofill" element={<WorkerAutoFill />} />
         <Route path="tickets" element={<Tickets />} />
         <Route
