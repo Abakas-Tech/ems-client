@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaBell } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import useNotifications from "../../../context/Notification/useNotifications";
+import useAdminNotifications from "../../../context/AdminNotification/useAdminNotifications";
 
 const timeAgo = (dateStr) => {
   const diffMs = Date.now() - new Date(dateStr).getTime();
@@ -27,7 +27,7 @@ const NotificationBell = () => {
     fetchNotifications,
     markAsRead,
     markAllAsRead,
-  } = useNotifications();
+  } = useAdminNotifications();
 
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);

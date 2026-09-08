@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { io } from "socket.io-client";
-import NotificationContext from "./NotificationContext";
+import AdminNotificationContext from "./AdminNotificationContext";
 import {
   getNotifications,
   getUnreadCount,
@@ -9,7 +9,7 @@ import {
   markAllNotificationsAsRead,
   deleteNotification as deleteNotificationApi,
   clearAllNotifications,
-} from "../../domains/admin/api/notification.api";
+} from "../../domains/admin/api/adminNotification.api";
 import { getAccessToken } from "../../utils/axios";
 import useProfile from "../Profile/useProfile";
 import useResponse from "../Response/useResponse";
@@ -193,7 +193,7 @@ const AdminNotificationProvider = ({ children }) => {
   }, [isAdmin]);
 
   return (
-    <NotificationContext.Provider
+    <AdminNotificationContext.Provider
       value={{
         notifications,
         pagination,
@@ -209,7 +209,7 @@ const AdminNotificationProvider = ({ children }) => {
       }}
     >
       {children}
-    </NotificationContext.Provider>
+    </AdminNotificationContext.Provider>
   );
 };
 
