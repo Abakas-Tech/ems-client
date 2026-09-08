@@ -17,7 +17,7 @@ import useResponse from "../../../../../context/Response/useResponse";
 import ActivityFilter from "../ActivityFilter/ActivityFilter";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import { useDelete } from "../../../../../context/Delete/useDelete";
-import useNotifications from "../../../../../context/Notification/useNotifications";
+import useAdminNotifications from "../../../../../context/AdminNotification/useAdminNotifications";
 
 const TABS = [
   { key: "login", label: "Login Activity" },
@@ -83,7 +83,7 @@ function TabSwitcher({ active, onChange, options }) {
 const ListActivities = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
-  const { refreshUnreadCount } = useNotifications();
+  const { refreshUnreadCount } = useAdminNotifications();
   const navigate = useNavigate();
 
   // Tab / filters / page all live in the URL now instead of local state.

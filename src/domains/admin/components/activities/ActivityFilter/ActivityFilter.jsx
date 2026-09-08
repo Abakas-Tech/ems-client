@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../../candidates/CandidateFilter/CandidateFilter.module.css";
+import styles from "../../workers/WorkerFilter/WorkerFilter.module.css";
 
 const LOGIN_STATUSES = [
   { value: "", label: "All Statuses" },

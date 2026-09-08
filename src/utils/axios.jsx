@@ -11,6 +11,14 @@ const axiosInstance = axios.create({
 let access_token = null;
 let isRefreshing = false;
 let failedQueue = [];
+let onAuthFailure = null;
+const setAuthFailureHandler = (handler) => {
+  onAuthFailure = handler;
+};
+let isLoggingOut = false;
+const setLoggingOut = (value) => {
+  isLoggingOut = value;
+};
 
 // Process queued requests after refresh
 const processQueue = (error, token = null) => {
@@ -25,6 +33,10 @@ const processQueue = (error, token = null) => {
 const setAccessToken = (token) => {
   access_token = token;
 };
+
+// Read in-memory access token (needed by the Socket.IO client, which can't
+// use the axios interceptor since it authenticates via a handshake, not headers)
+const getAccessToken = () => access_token;
 
 // REQUEST INTERCEPTOR
 axiosInstance.interceptors.request.use(
@@ -48,6 +60,9 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
 
     const isPublic = originalRequest?.publicApi === true;
+    if (error.response?.status === 401 && isLoggingOut) {
+      return Promise.reject(error);
+    }
 
     // Only refresh for protected requests
     if (
@@ -86,7 +101,13 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         setAccessToken(null);
-        window.location.href = "/";
+
+        if (onAuthFailure) {
+          onAuthFailure();
+        } else {
+          window.location.href = "/";
+        }
+
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -113,4 +134,12 @@ const initAuth = async () => {
   return false;
 };
 
-export { axiosInstance, setAccessToken, hasAccessToken, initAuth };
+export {
+  axiosInstance,
+  setAccessToken,
+  hasAccessToken,
+  initAuth,
+  setAuthFailureHandler,
+  setLoggingOut,
+  getAccessToken,
+};

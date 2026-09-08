@@ -3,14 +3,14 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ViewActivityDetailComponent from "../../components/activities/ViewActivityDetail/ViewActivityDetail";
 import { getLoginActivityById, getAuditLogById } from "../../api/activity.api";
 import useResponse from "../../../../context/Response/useResponse";
-import useNotifications from "../../../../context/Notification/useNotifications";
+import useAdminNotifications from "../../../../context/AdminNotification/useAdminNotifications";
 
 function ViewActivityDetail() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { type, id } = useParams();
   const { addMessage } = useResponse();
-  const { markAsReadByReference } = useNotifications();
+  const { markAsReadByReference } = useAdminNotifications();
 
   const [activity, setActivity] = useState(state?.activity || null);
   const [loading, setLoading] = useState(!state?.activity);

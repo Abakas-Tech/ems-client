@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import { listLoginActivity } from "../../../api/activity.api";
-import { getAllStatuses } from "../../../api/status.api";
+import { getWorkerStatuses } from "../../../api/meta.api";
 
 const formatDateTime = (value) => {
   if (!value) return "—";
@@ -151,7 +151,7 @@ const ViewActivityDetail = ({ activity, type }) => {
 
     const fetchStatuses = async () => {
       try {
-        const response = await getAllStatuses({ limit: 1000 });
+        const response = await getWorkerStatuses({ limit: 1000 });
         const map = {};
         (response?.data || []).forEach((s) => {
           map[s.id] = s.name || s.title || s.status_name || s.label;
