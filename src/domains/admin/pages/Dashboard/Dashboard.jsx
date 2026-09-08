@@ -20,16 +20,50 @@ import useResponse from "../../../../context/Response/useResponse";
 import StatCard from "../../components/dashboard/StatCard/StatCard.jsx";
 import PipelineFlow from "../../components/dashboard/PipelineFlow/PipelineFlow";
 import styles from "./Dashboard.module.css";
-import {
-  KPI_MOCK,
-  PIPELINE_MOCK,
-  REGISTRATION_TREND_MOCK,
-  OFFICE_DISTRIBUTION_MOCK,
-  TOP_AGENTS_MOCK,
-  RECENT_ACTIVITY_MOCK,
-} from "../../components/dashboard/dashboard.mock.js";
+import { fetchDashboardOverview } from "../../api/analytics.api.js";
 
 const DONUT_COLORS = ["#06b6d4", "#8b5cf6", "#ec4899", "#3b82f6"];
+
+// Static display metadata for each KPI — the live value/delta/sparkline
+// come from the API and are merged in by key.
+const KPI_META = [
+  {
+    key: "total_registered",
+    label: "Total Registered",
+    icon: "bi-person-plus",
+    gradient: "cyan",
+  },
+  {
+    key: "active_workers",
+    label: "Active Workers",
+    icon: "bi-person-check",
+    gradient: "purple",
+  },
+  {
+    key: "tickets_issued",
+    label: "Tickets Issued",
+    icon: "bi-ticket-perforated",
+    gradient: "pink",
+  },
+  {
+    key: "departed_30d",
+    label: "Departed (30d)",
+    icon: "bi-airplane",
+    gradient: "blue",
+  },
+];
+
+const timeAgo = (dateStr) => {
+  if (!dateStr) return "";
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const minutes = Math.floor(diffMs / 60000);
+  if (minutes < 1) return "just now";
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hr${hours === 1 ? "" : "s"} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} day${days === 1 ? "" : "s"} ago`;
+};
 
 const Dashboard = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -46,13 +80,27 @@ const Dashboard = () => {
     showLoader();
 
     try {
-      // TODO: swap back to getDashboardSummary() API call when ready
-      setKpis(KPI_MOCK);
-      setPipeline(PIPELINE_MOCK);
-      setTrend(REGISTRATION_TREND_MOCK);
-      setOffices(OFFICE_DISTRIBUTION_MOCK);
-      setAgents(TOP_AGENTS_MOCK);
-      setActivity(RECENT_ACTIVITY_MOCK);
+      const response = await fetchDashboardOverview();
+      const data = response?.data || {};
+
+      setKpis(
+        KPI_META.map((meta) => ({
+          ...meta,
+          value: data.kpis?.[meta.key]?.value || 0,
+          delta: data.kpis?.[meta.key]?.delta || 0,
+          sparkline: data.kpis?.[meta.key]?.sparkline || [],
+        })),
+      );
+      setPipeline(data.pipeline || []);
+      setTrend(data.registration_trend || []);
+      setOffices(data.office_distribution || []);
+      setAgents(data.top_agents || []);
+      setActivity(
+        (data.recent_activity || []).map((item) => ({
+          ...item,
+          time: timeAgo(item.time),
+        })),
+      );
     } catch (err) {
       console.error("Failed to load dashboard", err);
       addMessage(false, err.message);
@@ -93,7 +141,13 @@ const Dashboard = () => {
             <h6 className="fw-bold text-dark mb-0">Candidate Pipeline</h6>
             <span className={styles.badgeMuted}>Live conversion by stage</span>
           </div>
-          <PipelineFlow stages={pipeline} />
+          {pipeline.length > 0 ? (
+            <PipelineFlow stages={pipeline} />
+          ) : (
+            <p className="text-muted mb-0">
+              No worker statuses configured yet.
+            </p>
+          )}
         </div>
       </div>
 
@@ -264,21 +318,25 @@ const Dashboard = () => {
           >
             <div className="card-body">
               <h6 className="fw-bold text-dark mb-3">Recent Activity</h6>
-              <ul className={styles.activityList}>
-                {activity.map((item) => (
-                  <li className={styles.activityItem} key={item.id}>
-                    <span className={styles.activityIcon}>
-                      <i className={`bi ${item.icon}`} />
-                    </span>
-                    <div>
-                      <div className={styles.activityMessage}>
-                        {item.message}
+              {activity.length > 0 ? (
+                <ul className={styles.activityList}>
+                  {activity.map((item) => (
+                    <li className={styles.activityItem} key={item.id}>
+                      <span className={styles.activityIcon}>
+                        <i className={`bi ${item.icon}`} />
+                      </span>
+                      <div>
+                        <div className={styles.activityMessage}>
+                          {item.message}
+                        </div>
+                        <div className={styles.activityTime}>{item.time}</div>
                       </div>
-                      <div className={styles.activityTime}>{item.time}</div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-muted mb-0">No recent activity yet.</p>
+              )}
             </div>
           </div>
         </div>
