@@ -119,12 +119,19 @@ const MENU_CONFIG = [
     icon: "bi bi-people",
     roles: [ROLES.PARTNER],
   },
-  
+
   {
     label: "Notifications",
     path: "/partner/notifications",
     icon: "bi bi-bell",
     roles: [ROLES.PARTNER],
+  },
+
+  {
+    label: "Activities",
+    path: "/admin/activities",
+    icon: "bi bi-journal-text",
+    roles: ["admin"],
   },
 
   {
