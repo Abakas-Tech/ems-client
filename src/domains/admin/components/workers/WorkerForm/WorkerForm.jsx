@@ -835,7 +835,7 @@ function WorkerForm() {
         }
       },
       {
-        title: `Delete "${document.file_name}"? This cannot be undone.`,
+        title: `Are you sure you want to delete ${document.file_name}?`,
         confirmText: "Delete",
       },
     );
@@ -2991,58 +2991,6 @@ function WorkerForm() {
 
   const renderDocumentsFields = () => (
     <div>
-      {isEditMode && (
-        <div className="mb-4">
-          <h6 className="fw-bold text-dark mb-2">Uploaded documents</h6>
-          {documentsLoading ? (
-            <p className="text-muted small mb-0">Loading documents…</p>
-          ) : documents.length === 0 ? (
-            <p className="text-muted small mb-0">
-              No documents uploaded for this worker yet.
-            </p>
-          ) : (
-            <div className="row g-2">
-              {documents.map((document) => (
-                <div className="col-md-6 col-lg-4" key={document.id}>
-                  <div className="d-flex align-items-center justify-content-between border rounded p-2">
-                    <div className="d-flex align-items-center gap-2 text-truncate">
-                      <i className="fa-solid fa-file text-muted"></i>
-                      <div className="text-truncate">
-                        <div className="small fw-bold text-truncate">
-                          {document.file_name}
-                        </div>
-                        <div className="text-muted" style={{ fontSize: 11 }}>
-                          {document.category}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-center gap-2 ms-2">
-                      <a
-                        href={document.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="View"
-                        className="text-info"
-                      >
-                        <i className="fa-solid fa-eye"></i>
-                      </a>
-                      <button
-                        type="button"
-                        className="btn btn-link text-danger p-0"
-                        title="Delete"
-                        onClick={() => handleDeleteExistingDocument(document)}
-                      >
-                        <FiTrash2 size={15} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
       <h6 className="fw-bold text-dark mb-2">Add a document</h6>
       <div className="row align-items-end g-2 mb-3">
         <div className="form-group col-md-3">
@@ -3091,7 +3039,7 @@ function WorkerForm() {
       </div>
 
       {pendingDocuments.length > 0 && (
-        <div>
+        <div className="mb-4">
           <h6 className="fw-bold text-dark mb-2">
             Ready to upload (saved with the worker)
           </h6>
@@ -3119,6 +3067,58 @@ function WorkerForm() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {isEditMode && (
+        <div>
+          <h6 className="fw-bold text-dark mb-2">Uploaded documents</h6>
+          {documentsLoading ? (
+            <p className="text-muted small mb-0">Loading documents…</p>
+          ) : documents.length === 0 ? (
+            <p className="text-muted small mb-0">
+              No documents uploaded for this worker yet.
+            </p>
+          ) : (
+            <div className="row g-2">
+              {documents.map((document) => (
+                <div className="col-md-6 col-lg-4" key={document.id}>
+                  <div className="d-flex align-items-center justify-content-between border rounded p-2">
+                    <div className="d-flex align-items-center gap-2 text-truncate">
+                      <i className="fa-solid fa-file text-muted"></i>
+                      <div className="text-truncate">
+                        <div className="small fw-bold text-truncate">
+                          {document.file_name}
+                        </div>
+                        <div className="text-muted" style={{ fontSize: 11 }}>
+                          {document.category}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="d-flex align-items-center gap-2 ms-2">
+                      <a
+                        href={document.file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="View"
+                        className="text-info"
+                      >
+                        <i className="fa-solid fa-eye"></i>
+                      </a>
+                      <button
+                        type="button"
+                        className="btn btn-link text-danger p-0"
+                        title="Delete"
+                        onClick={() => handleDeleteExistingDocument(document)}
+                      >
+                        <FiTrash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
