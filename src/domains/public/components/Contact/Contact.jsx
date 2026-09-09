@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelopeOpen } from "react-icons/fa";
+import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelopeOpen, FaPaperPlane } from "react-icons/fa";
 import sendContactEmail from "../../api/contact.api";
 import getLocation from "../../api/location.api";
 import getSocialMedias from "../../api/socialMedia.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import styles from "./Contact.module.css";
 
 const Contact = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -23,7 +24,7 @@ const Contact = () => {
     latitude: 7.0559381,
     longitude: 38.4902358,
     address: "Addis Ababa, Ethiopia",
-    name: "a Office",
+    name: "Office",
   });
 
   const [socialMedia, setSocialMedia] = useState({
@@ -129,137 +130,157 @@ const Contact = () => {
   };
 
   return (
-    <section
-      className="container px-3 px-lg-0"
-      id="contact"
-      style={{ padding: "100px 0" }}
-    >
-      <div>
-        <div className="text-center">
-          <h2 className="pb-4 fw-bold">Contact Us Anytime</h2>
+    <section className={styles.section} id="contact">
+      <div className="container">
+        <div className={styles.sectionHead}>
+          <span className={styles.kicker}>Get in touch</span>
+          <h2 className={styles.mainTitle}>Contact Us</h2>
         </div>
-        <div className="row g-4 gy-5">
-          {/* Contact Info */}
-          <div className="col-lg-4 col-md-6m">
-            <h3 className="mt-0 fw-bold">Get In Touch</h3>
-            <p className="mb-4">
-              Have a question or need assistance? We are here to help! Reach out
-              to us for any inquiries, and we will get back to you promptly.
+
+        <div className={styles.wrapper}>
+          {/* Left: info (title/description full width, details + map side by side) */}
+          <div className={styles.infoCol}>
+            <h2 className={styles.title}>Let's Start Your Journey Abroad</h2>
+            <p className={styles.subtitle}>
+              Have a question or need assistance? We are here to help! Reach
+              out to us for any inquiries, and we will get back to you
+              promptly.
             </p>
 
-            <ContactItem
-              icon={FaMapMarkerAlt}
-              title={location.name}
-              content={location.address}
-            />
-            <ContactItem
-              icon={FaPhoneAlt}
-              title="Mobile"
-              content={
-                <a href={`tel:${socialMedia.phone}`}>{socialMedia.phone}</a>
-              }
-            />
-            <ContactItem
-              icon={FaEnvelopeOpen}
-              title="Email"
-              content={
-                <a href={`mailto:${socialMedia.email}`}>{socialMedia.email}</a>
-              }
-            />
+            <div className={styles.infoRow}>
+              <div className={styles.detailsList}>
+                <div className={styles.detailCard}>
+                  <FaMapMarkerAlt className={styles.detailIcon} />
+                  <div>
+                    <strong>{location.name}</strong>
+                    <span>{location.address}</span>
+                  </div>
+                </div>
+
+                <a
+                  className={styles.detailCard}
+                  href={`tel:${socialMedia.phone}`}
+                >
+                  <FaPhoneAlt className={styles.detailIcon} />
+                  <div>
+                    <strong>Mobile</strong>
+                    <span>{socialMedia.phone || "Contact us"}</span>
+                  </div>
+                </a>
+
+                <a
+                  className={styles.detailCard}
+                  href={`mailto:${socialMedia.email}`}
+                >
+                  <FaEnvelopeOpen className={styles.detailIcon} />
+                  <div>
+                    <strong>Email</strong>
+                    <span>{socialMedia.email || "Contact us"}</span>
+                  </div>
+                </a>
+              </div>
+
+              <div className={styles.mapCol}>
+                <div className={styles.mapWrapper}>
+                  {!isLoaded ? (
+                    <p className={styles.mapLoading}>Loading map...</p>
+                  ) : (
+                    <GoogleMap
+                      mapContainerStyle={{ width: "100%", height: "100%" }}
+                      center={{
+                        lat: parseFloat(location.latitude),
+                        lng: parseFloat(location.longitude),
+                      }}
+                      zoom={14}
+                      options={{
+                        disableDefaultUI: true,
+                        zoomControl: false,
+                        styles: [
+                          { elementType: "geometry", stylers: [{ color: "#3d2712" }] },
+                          { elementType: "labels.text.fill", stylers: [{ color: "#cbb593" }] },
+                          { elementType: "labels.text.stroke", stylers: [{ color: "#2a1a0c" }] },
+                          { featureType: "road", elementType: "geometry", stylers: [{ color: "#54351b" }] },
+                          { featureType: "water", elementType: "geometry", stylers: [{ color: "#2a1a0c" }] },
+                          { featureType: "poi", stylers: [{ visibility: "off" }] },
+                          { featureType: "transit", stylers: [{ visibility: "off" }] },
+                        ],
+                      }}
+                    >
+                      <Marker
+                        position={{
+                          lat: parseFloat(location.latitude),
+                          lng: parseFloat(location.longitude),
+                        }}
+                      />
+                    </GoogleMap>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Google Map */}
-          <div className="col-lg-4 col-md-6 " style={{ minHeight: "300px" }}>
-            {!isLoaded ? (
-              <p>Loading map...</p>
-            ) : (
-              <GoogleMap
-                mapContainerStyle={{ width: "100%", height: "97%" }}
-                center={{
-                  lat: parseFloat(location.latitude),
-                  lng: parseFloat(location.longitude),
-                }}
-                zoom={15}
-              >
-                <Marker
-                  position={{
-                    lat: parseFloat(location.latitude),
-                    lng: parseFloat(location.longitude),
-                  }}
-                />
-              </GoogleMap>
-            )}
-          </div>
-
-          {/* Form */}
-          <div className="col-lg-4 col-md-12">
-            <form onSubmit={handleSubmit}>
+          {/* Right: form */}
+          <div className={styles.formCol}>
+            <form onSubmit={handleSubmit} className={styles.form}>
               <div className="row g-3">
                 <div className="col-md-6">
-                  <div className="form-floating">
+                  <div className={styles.fieldGroup}>
+                    <label htmlFor="name">Your Name</label>
                     <input
                       type="text"
-                      className="form-control"
                       id="name"
                       placeholder="Your Name"
                       value={formData.name}
                       onChange={handleChange}
                     />
-                    <label htmlFor="name">Your Name</label>
                   </div>
                 </div>
                 <div className="col-md-6">
-                  <div className="form-floating">
+                  <div className={styles.fieldGroup}>
+                    <label htmlFor="email">Your Email</label>
                     <input
                       type="email"
-                      className="form-control"
                       id="email"
                       placeholder="Your Email"
                       value={formData.email}
                       onChange={handleChange}
                     />
-                    <label htmlFor="email">Your Email</label>
                   </div>
                 </div>
                 <div className="col-12">
-                  <div className="form-floating">
+                  <div className={styles.fieldGroup}>
+                    <label htmlFor="phone">
+                      Phone <span className={styles.required}>*</span>
+                    </label>
                     <input
                       type="text"
-                      className="form-control"
                       id="phone"
                       placeholder="Phone"
                       value={formData.phone}
                       onChange={handleChange}
                       required
                     />
-                    <label htmlFor="phone">
-                      Phone <span className="text-danger">*</span>
-                    </label>
                   </div>
                 </div>
                 <div className="col-12">
-                  <div className="form-floating">
+                  <div className={styles.fieldGroup}>
+                    <label htmlFor="message">
+                      Message <span className={styles.required}>*</span>
+                    </label>
                     <textarea
-                      className="form-control"
                       placeholder="Leave a message here"
                       id="message"
-                      style={{ height: "200px" }}
+                      style={{ height: "140px" }}
                       value={formData.message}
                       onChange={handleChange}
                       required
                     />
-                    <label htmlFor="message">
-                      Message <span className="text-danger">*</span>
-                    </label>
                   </div>
                 </div>
                 <div className="col-12 w-100">
-                  <button
-                    type="submit"
-                    className="btn text-white w-100 d-flex fw-bold"
-                    style={{ backgroundColor: "#0B1F3A" }}
-                  >
-                    Submit
+                  <button type="submit" className={styles.submitBtn}>
+                    <span>Send Message</span>
+                    <FaPaperPlane />
                   </button>
                 </div>
               </div>
@@ -270,20 +291,5 @@ const Contact = () => {
     </section>
   );
 };
-// eslint-disable-next-line no-unused-vars
-const ContactItem = ({ icon: Icon, title, content }) => (
-  <div className="d-flex align-items-center mb-3 mt-4">
-    <div
-      className="d-flex align-items-center justify-content-center flex-shrink-0"
-      style={{ width: "50px", height: "50px", backgroundColor: "#0B1F3A" }}
-    >
-      <Icon className="text-white" size={24} />
-    </div>
-    <div className="ms-3">
-      <h5 style={{ color: "#0B1F3A" }}>{title}</h5>
-      <p className="mb-0">{content}</p>
-    </div>
-  </div>
-);
 
 export default Contact;

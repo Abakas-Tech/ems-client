@@ -27,6 +27,7 @@ const Gallery = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+
   useEffect(() => {
     const updateVisibleCount = () => {
       setVisibleCount(window.innerWidth < 768 ? 3 : 6);
@@ -63,29 +64,28 @@ const Gallery = () => {
 
   const selectedItem =
     selectedIndex !== null ? galleryItems[selectedIndex] : null;
-
+  function SubHeading({ eyebrow, title, subtitle, center }) {
+    return (
+      <div
+        className={`${styles.subHead} ${center ? styles.subHeadCenter : ""}`}
+      >
+        {eyebrow && <span className={styles.subEyebrow}>{eyebrow}</span>}
+        <h3 className={styles.subTitle}>{title}</h3>
+        {subtitle && <p className={styles.subSubtitle}>{subtitle}</p>}
+      </div>
+    );
+  }
   return (
-    <section
-      id="gallery"
-      style={{ padding: "90px 0" }}
-      className="pb-0"
-      aria-labelledby="gallery-title"
-    >
+    <section id="gallery" className="pb-5 mb-5" aria-labelledby="gallery-title">
       <div className="container">
         {/* Header */}
-        <div className="row mb-5 justify-content-center">
-          <div className="col-lg-7 col-md-10 text-center">
-            <div className="sec-heading-center">
-              <h2 id="gallery-title" className="fw-bold">
-                Capturing Memorable Moments
-              </h2>
-              <p>
-                Explore our gallery of professional photographs capturing
-                Ethiopian employees, events, and milestones—preserving memories of
-                every special occasion.
-              </p>
-            </div>
-          </div>
+        <div>
+          <SubHeading
+            eyebrow="Gallery"
+            title="Our Work in Action"
+            subtitle=" transparent services that benefit both workers and employers."
+            center
+          />
         </div>
 
         {/* Gallery Grid */}
