@@ -43,7 +43,8 @@ const Services = () => {
             <span className={styles.kicker}>What we do</span>
             <h2 className={styles.title}>Our Services</h2>
             <p className={styles.description}>
-              We provide a wide range of services to support foreign employment opportunities for Ethiopian workers and international employers.
+              We provide a wide range of services to support foreign employment
+              opportunities for Ethiopian workers and international employers.
             </p>
           </div>
         </div>
@@ -52,7 +53,11 @@ const Services = () => {
           {services.map((service, index) => (
             <div
               key={service.title}
-              className={`${styles.card} ${index === 0 ? styles.cardFeatured : ""}`}
+              className={`${styles.card} ${
+                index === 0
+                  ? `${styles.cardFeatured} ${styles.cardNoHover}`
+                  : ""
+              }`}
             >
               <span className={styles.cardIndex}>0{index + 1}</span>
               <div className={styles.iconWrap}>

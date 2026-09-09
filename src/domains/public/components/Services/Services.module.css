@@ -194,6 +194,50 @@
   transition: color 0.3s ease;
 }
 
+/* ---------- Disable hover effect on a specific card ---------- */
+.cardNoHover:hover {
+  transform: none;
+  background-color: #ffffff;
+  box-shadow: 0 10px 30px rgba(74, 47, 24, 0.08);
+}
+
+.cardNoHover.cardFeatured:hover {
+  background: linear-gradient(160deg, var(--sv-wood-dark), var(--sv-wood));
+  box-shadow: none;
+}
+
+.cardNoHover:hover .cardTitle,
+.cardNoHover:hover .cardDesc {
+  color: inherit;
+}
+
+.cardNoHover.cardFeatured:hover .cardTitle,
+.cardNoHover.cardFeatured:hover .cardDesc {
+  color: #fbf5ea;
+}
+
+.cardNoHover:hover .iconWrap {
+  background: rgba(201, 162, 39, 0.12);
+  color: var(--sv-gold);
+}
+
+.cardNoHover.cardFeatured:hover .iconWrap {
+  background: rgba(231, 201, 107, 0.16);
+  color: var(--sv-gold-light);
+}
+
+.cardNoHover:hover::after {
+  border-color: rgba(201, 162, 39, 0.35);
+}
+
+.cardNoHover:hover .cardIndex {
+  color: var(--sv-gold);
+}
+
+.cardNoHover.cardFeatured:hover .cardIndex {
+  color: var(--sv-gold-light);
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 991.98px) {
   .grid {
