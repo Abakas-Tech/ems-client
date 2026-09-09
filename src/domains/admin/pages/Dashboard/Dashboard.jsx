@@ -217,7 +217,7 @@ const Dashboard = () => {
             className={`card border-0 shadow-sm rounded-4 h-100 ${styles.chartCard}`}
           >
             <div className="card-body">
-              <h6 className="fw-bold text-dark mb-3">By Office</h6>
+              <h6 className="fw-bold text-dark mb-3">By Partner</h6>
               <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
                   <Pie
