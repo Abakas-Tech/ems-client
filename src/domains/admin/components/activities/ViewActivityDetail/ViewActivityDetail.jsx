@@ -100,7 +100,6 @@ const ACTION_COLOR = {
   update: "cyan",
   delete: "red",
   status_change: "gray",
-  logout: "yellow",
 };
 
 // On create, only these fields are shown by default — everything else
