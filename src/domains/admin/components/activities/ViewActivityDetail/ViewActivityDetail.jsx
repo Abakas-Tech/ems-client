@@ -17,21 +17,58 @@ const formatDateTime = (value) => {
   });
 };
 
-const diffValues = (oldVal, newVal) => {
-  const parse = (v) => {
-    if (!v) return {};
-    if (typeof v === "string") {
-      try {
-        return JSON.parse(v);
-      } catch {
-        return {};
-      }
+const parseValue = (v) => {
+  if (!v) return {};
+  if (typeof v === "string") {
+    try {
+      return JSON.parse(v);
+    } catch {
+      return {};
     }
-    return v;
-  };
+  }
+  return v;
+};
 
-  const oldObj = parse(oldVal);
-  const newObj = parse(newVal);
+// Audit diffs can contain nested objects (e.g. a worker's create/update
+// payload has a whole "personal_information" object inside it). Flatten
+// those into dotted leaf paths ("personal_information.sex") so every row
+// shown to the user is a single, real value — never "[object Object]".
+// Arrays of primitives are joined into a readable comma list; arrays of
+// objects (rare) fall back to a compact JSON string per item.
+const flattenValue = (obj, path = []) => {
+  const result = {};
+  if (obj === null || obj === undefined || typeof obj !== "object") {
+    return result;
+  }
+
+  Object.entries(obj).forEach(([key, value]) => {
+    const nextPath = [...path, key];
+
+    if (value !== null && typeof value === "object" && !Array.isArray(value)) {
+      Object.assign(result, flattenValue(value, nextPath));
+      return;
+    }
+
+    const flatKey = nextPath.join(".");
+    if (Array.isArray(value)) {
+      result[flatKey] = value
+        .map((item) =>
+          item !== null && typeof item === "object"
+            ? JSON.stringify(item)
+            : item,
+        )
+        .join(", ");
+    } else {
+      result[flatKey] = value;
+    }
+  });
+
+  return result;
+};
+
+const diffValues = (oldVal, newVal) => {
+  const oldObj = flattenValue(parseValue(oldVal));
+  const newObj = flattenValue(parseValue(newVal));
   const keys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
 
   const changes = [];
@@ -46,23 +83,18 @@ const diffValues = (oldVal, newVal) => {
   return changes;
 };
 
-const parseValue = (v) => {
-  if (!v) return {};
-  if (typeof v === "string") {
-    try {
-      return JSON.parse(v);
-    } catch {
-      return {};
-    }
-  }
-  return v;
-};
-
+// Formats a (possibly dotted, e.g. "personal_information.sex") field path
+// into a readable label, e.g. "Personal Information → Sex".
 const formatFieldLabel = (key) =>
   key
-    .replace(/_id$/i, "")
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+    .split(".")
+    .map((segment) =>
+      segment
+        .replace(/_id$/i, "")
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase()),
+    )
+    .join(" → ");
 
 // Any diff field ending in "_status_id" (embassy_status_id, lmis_status_id, etc.)
 // is resolved through the shared /statuses lookup table instead of showing
@@ -75,6 +107,10 @@ const isStatusIdField = (field) => /_status_id$/i.test(field);
 const formatDiffValue = (value) => {
   if (value === null || value === undefined || value === "" || value === "—") {
     return "—";
+  }
+
+  if (typeof value === "boolean") {
+    return value ? "Yes" : "No";
   }
 
   const str = String(value);
@@ -122,7 +158,7 @@ const ViewActivityDetail = ({ activity, type }) => {
       : [];
   const createdFields =
     activity && !isLogin && isCreate
-      ? Object.entries(parseValue(activity.new_value)).map(
+      ? Object.entries(flattenValue(parseValue(activity.new_value))).map(
           ([field, value]) => ({ field, value }),
         )
       : [];
