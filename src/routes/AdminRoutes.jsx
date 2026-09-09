@@ -9,7 +9,6 @@ import WorkerAutoFill from "../domains/admin/pages/workers/WorkerAutoFill/Worker
 import Tickets from "../domains/admin/pages/TicketsPage/TicketsPage.jsx";
 import ArchivedWorkers from "../domains/admin/pages/workers/ArchivedWorkers/ArchivedWorkers.jsx";
 
-
 import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import NotFound from "../shared/components/NotFound/NotFound.jsx";
 import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePassword.jsx";
@@ -55,6 +54,11 @@ import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx
 import LetterGenerator from "../domains/admin/pages/Lettergenerator/Lettergenerator.jsx";
 import NotificationPage from "../domains/admin/pages/NotificationPage/NotificationPage.jsx";
 
+import ListActivities from "../domains/admin/pages/ListActivities/ListActivities.jsx";
+import ViewActivityDetail from "../domains/admin/pages/ViewActivityDetail/ViewActivityDetail.jsx";
+
+import Dashboard from "../domains/admin/pages/Dashboard/Dashboard.jsx";
+
 const AdminRoutes = () => {
   return (
     <Routes>
@@ -69,7 +73,7 @@ const AdminRoutes = () => {
         <Route path="users/create-user" element={<CreateUser />} />
         <Route path="my-profile" element={<Profile />} />
         <Route path="users" element={<ListUser />} />
-        <Route path="dashboard" element={<Analytics />} />
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="autofill" element={<WorkerAutoFill />} />
         <Route path="tickets" element={<Tickets />} />
         <Route
@@ -80,7 +84,7 @@ const AdminRoutes = () => {
             </>
           }
         />
-         <Route path="notifications" element={<NotificationPage />} />
+        <Route path="notifications" element={<NotificationPage />} />
         <Route
           path="invoices"
           element={
@@ -162,6 +166,9 @@ const AdminRoutes = () => {
           path="/content/gallery/edit/:id"
           element={<GalleryUplaodPage />}
         />
+
+        <Route path="/activities" element={<ListActivities />} />
+        <Route path="/activities/:type/:id" element={<ViewActivityDetail />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>

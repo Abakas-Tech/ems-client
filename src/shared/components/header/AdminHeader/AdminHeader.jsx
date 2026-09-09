@@ -4,6 +4,9 @@ import useNotification from "../../../../context/Notification/useNotification";
 import { FaBars } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProfileCell from "../../ProfileCell/ProfileCell";
+// Admin-only: real-time login-activity/audit-log counter (socket-driven,
+// backed by /admin-notifications, which is admin-only on the backend too).
+import RealtimeAdminNotificationBell from "../../NotificationBell/NotificationBell";
 
 const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   const { fetchProfile, profile } = useProfile();
@@ -28,8 +31,12 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
     ? "admin"
     : rolePathMap[roleId] || "admin";
 
+  const isAdmin = profile?.role === "admin";
+
+  // Staff/partner: the original, simpler notification bell (general
+  // push notifications, not the admin audit/login activity feed).
   const notificationPath = `/${roleBase}/notifications`;
-  const NotificationBell = () => (
+  const StaffNotificationBell = () => (
     <button
       className="btn p-0 position-relative d-flex align-items-center justify-content-center"
       onClick={() => navigate(notificationPath)}
@@ -116,7 +123,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
           <h5 className="mb-0 fw-semibold text-dark">{activePage}</h5>
 
           <div className="d-flex align-items-center gap-3">
-            <NotificationBell />
+            {isAdmin ? <RealtimeAdminNotificationBell /> : <StaffNotificationBell />}
             <ProfileCell
               profile={{
                 firstName: profile?.full_name,
@@ -176,7 +183,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
           </div>
 
           <div className="d-flex align-items-center gap-3">
-            <NotificationBell />
+            {isAdmin ? <RealtimeAdminNotificationBell /> : <StaffNotificationBell />}
 
             <ProfileCell
               profile={{
