@@ -1,0 +1,104 @@
+.flow {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  padding: 1.5rem 0.5rem 1rem;
+  scrollbar-width: thin;
+}
+
+.stageWrap {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 110px;
+  text-align: center;
+  animation: nodeIn 0.5s ease both;
+}
+
+.nodeIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: #fff;
+  background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.25);
+  margin-bottom: 8px;
+}
+
+.nodeCount {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #1f2937;
+}
+
+.nodeLabel {
+  font-size: 0.78rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.connector {
+  position: relative;
+  width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.connectorLine {
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+  background-size: 200% 100%;
+  animation: shimmer 2.4s linear infinite;
+}
+
+.conversionBadge {
+  position: absolute;
+  top: -18px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #8b5cf6;
+  background: #f5f3ff;
+  padding: 1px 6px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+@keyframes nodeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .node,
+  .connectorLine {
+    animation: none;
+  }
+}

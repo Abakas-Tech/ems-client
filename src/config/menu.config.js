@@ -79,6 +79,7 @@ const MENU_CONFIG = [
     icon: "bi bi-database-add",
     roles: [ROLES.ADMIN],
   },
+
   {
     label: "Notifications",
     path: "/admin/notifications",
@@ -104,6 +105,14 @@ const MENU_CONFIG = [
     icon: "bi bi-layout-text-sidebar-reverse",
     roles: [ROLES.ADMIN],
   },
+
+  {
+    label: "Activities",
+    path: "/admin/activities",
+    icon: "bi bi-journal-text",
+    roles: [ROLES.ADMIN],
+  },
+
   {
     label: "Settings",
     path: "/admin/settings",
@@ -119,7 +128,7 @@ const MENU_CONFIG = [
     icon: "bi bi-people",
     roles: [ROLES.PARTNER],
   },
-  
+
   {
     label: "Notifications",
     path: "/partner/notifications",

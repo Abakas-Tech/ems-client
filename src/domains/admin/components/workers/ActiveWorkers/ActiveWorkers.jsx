@@ -11,6 +11,7 @@ import { getUsersLookup } from "../../../api/user.api";
 
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 import { printWorkerReport } from "../WorkerReport/WorkerReport";
+import WorkerDocumentsModal from "../WorkerDocumentsModal/WorkerDocumentsModal";
 
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -62,6 +63,10 @@ const ActiveWorkers = () => {
 
   // Visa Application Preview State
   const [visaPreview, setVisaPreview] = useState(null);
+
+  // Worker whose documents gallery is currently open (folder icon action).
+  // Holds the row so the modal has full_name for its header; null = closed.
+  const [documentsWorker, setDocumentsWorker] = useState(null);
 
   // ADDED — partner options for the filter dropdown, and to resolve the
   // selected partner's name when printing the worker report.
@@ -142,6 +147,12 @@ const ActiveWorkers = () => {
   // Edit Handler
   const handleEdit = (row) => {
     navigate(`/admin/employees/edit/${row.id}`, { state: row });
+  };
+
+  // Documents gallery handler — admin/employee only (matches the "files"
+  // action's role gate in btn.config.js and the backend's role check).
+  const handleViewDocuments = (row) => {
+    setDocumentsWorker(row);
   };
 
   const handleViewCv = (row) => {
@@ -580,6 +591,7 @@ const ActiveWorkers = () => {
       : [
           { type: "view", onClick: (row) => handleView(row.id) },
           { type: "viewCV", onClick: (row) => handleViewCv(row) },
+          { type: "files", onClick: (row) => handleViewDocuments(row) },
           { type: "edit", onClick: (row) => handleEdit(row) },
           {
             type: "transaction",
@@ -890,6 +902,12 @@ const ActiveWorkers = () => {
           onPageChange={setPage}
         />
       )}
+
+      <WorkerDocumentsModal
+        show={!!documentsWorker}
+        worker={documentsWorker}
+        onClose={() => setDocumentsWorker(null)}
+      />
     </div>
   );
 };

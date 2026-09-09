@@ -1,0 +1,81 @@
+.statCard {
+  border-radius: 16px;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+  animation: cardIn 0.4s ease both;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--color-shadow-elevated, 0 12px 28px rgba(0, 0, 0, 0.08));
+}
+
+.iconBadge {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.25rem;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25);
+}
+
+.deltaBadge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.deltaUp {
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+}
+
+.deltaDown {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.value {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.1;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 2px;
+  margin-bottom: 10px;
+}
+
+.sparkline {
+  height: 40px;
+  margin-top: auto;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statCard,
+  .statCard:hover {
+    animation: none;
+    transform: none;
+  }
+}
