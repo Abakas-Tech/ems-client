@@ -61,8 +61,7 @@ const Services = () => {
               data-wow-delay="0.5s"
             >
               <h2 className="fw-bold">Our Services</h2>
-              <img src="assets/images/heading-line-dec.png" alt="" />
-              <p className="mt-3">
+              <p>
                 ALETISALAT Private Foreign Employment Agency delivers ethical,
                 transparent, and professional foreign employment services —
                 connecting qualified Ethiopian workers with legitimate

@@ -17,7 +17,7 @@ export const SITE_URL = "https://aletisalatjobs.com";
 export const SITE_NAME = "Aletisalat";
 
 export const DEFAULT_TITLE =
-  "ALETISALAT | Work Abroad Without the Guesswork — Licensed Ethiopian Overseas Employment Agency";
+  "Aletisalat | Work Abroad Without the Guesswork — Licensed Ethiopian Overseas Employment Agency";
 
 export const DEFAULT_DESCRIPTION =
   "Aletisalat places skilled Ethiopians in verified jobs across Saudi Arabia, Jordan, and the Gulf. Every contract checked, every step explained before you sign.";

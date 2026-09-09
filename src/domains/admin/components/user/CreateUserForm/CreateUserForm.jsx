@@ -54,6 +54,24 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
+  // row) — only the input control changed from free text to a select.
+  const MIDDLE_EAST_COUNTRIES = [
+    "Saudi Arabia",
+    "Jordan",
+    "Kuwait",
+    "Bahrain",
+    "Iraq",
+    "Israel",
+    "Lebanon",
+    "Oman",
+    "Palestine",
+    "Qatar",
+    "Syria",
+    "Turkey",
+    "United Arab Emirates",
+    "Yemen",
+  ];
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -471,13 +489,14 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                     required={requiredFields.country}
                     onChange={(e) => setCountry(e.target.value)}
                   >
-                    <option value="">Select Country</option>
-                    <option value="Saudi Arabia">Saudi Arabia</option>
-                    <option value="Jordan">Jordan</option>
+                    {MIDDLE_EAST_COUNTRIES.map((country) => (
+                      <option key={country} value={country}>
+                        {country}
+                      </option>
+                    ))}
                   </select>
                 </div>
               )}
-
 
               {/* Partner CV Header */}
               {role === "3" && (

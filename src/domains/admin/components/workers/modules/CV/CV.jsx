@@ -971,7 +971,21 @@ const CVThree = ({ templateSwitcher }) => {
   /* ---------------------------------------------------------------- */
   const ref = generateReferenceNumber(worker);
   const category = worker.primary_positions?.[0] ?? "House Maid";
-  const salary = worker.monthly_salary ? `${worker.monthly_salary} S.R` : "";
+
+  // Make the sufix based on partner country, if available, otherwise default to "S.R" (Saudi Riyal).
+  const salarySufix =
+    selectedPartner?.country?.toLowerCase() === "jordan"
+      ? "Dollar"
+      : selectedPartner?.country?.toLowerCase() === "kuwait"
+        ? "Dinars"
+        : selectedPartner?.country?.toLowerCase() === "qatar"
+          ? "Q.R"
+          : "S.R";
+
+  const salary = worker.monthly_salary
+    ? `${worker.monthly_salary} ${salarySufix}`
+    : "";
+
   const contract =
     worker.contract_start_date && worker.contract_end_date
       ? subtractDate(worker.contract_end_date, worker.contract_start_date)
@@ -997,7 +1011,7 @@ const CVThree = ({ templateSwitcher }) => {
   const weight = worker.weight_kg ? `${worker.weight_kg} kg` : "";
   // Hard-coded per your request - not read from worker data.
   const complexion = "Brown";
-  const nearestRelative = "Father";
+  const nearestRelative = worker?.guarantor_relation;
 
   const education = (worker.education ?? "").toUpperCase();
 

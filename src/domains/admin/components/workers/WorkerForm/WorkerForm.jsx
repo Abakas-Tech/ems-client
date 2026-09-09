@@ -5,6 +5,9 @@ import {
   createWorker,
   updateWorker,
   getWorkerProfile,
+  uploadWorkerDocument,
+  listWorkerDocuments,
+  deleteWorkerDocument,
 } from "../../../api/worker.api";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import {
@@ -65,6 +68,13 @@ const SECTIONS = [
   { key: "languages", label: "Languages", optional: true },
   { key: "skills", label: "Skills", optional: true },
   { key: "experience", label: "Experience", optional: true },
+  // optional: false here means "no Include toggle, always visible" - the
+  // generic optional-section wrapper (renderSectionCard) renders an
+  // Include switch for any section with optional: true, but "include this
+  // worker's documents in the save" isn't a meaningful toggle the way it
+  // is for e.g. Passport/COC - documents are just added or not, there's
+  // nothing to gate.
+  { key: "documents", label: "Documents", optional: false },
 ];
 
 // Nav tree only — groups Skills + Experience under a single tree entry
@@ -514,6 +524,19 @@ function WorkerForm() {
     useState(null);
   const [existingPassportScanUrl, setExistingPassportScanUrl] = useState(null);
 
+  // Documents section — "existing" documents are only fetched in edit mode
+  // (a brand-new worker has none yet) and each is deleted immediately via
+  // its own endpoint, unlike photo3x4/passportScan above. "pending"
+  // documents are files picked here but not yet uploaded - like the photo
+  // fields, worker_id doesn't exist yet on create, so these upload only
+  // after the main worker save succeeds (see handleSubmit).
+  const [documents, setDocuments] = useState([]);
+  const [documentsLoading, setDocumentsLoading] = useState(false);
+  const [pendingDocuments, setPendingDocuments] = useState([]);
+  const [documentCategory, setDocumentCategory] = useState("Other");
+  const [documentDescription, setDocumentDescription] = useState("");
+  const [documentFile, setDocumentFile] = useState(null);
+
   // refs for scroll-to-section navigation. Only one of Form Mode / Preview
   // Mode is mounted at a time, so the same key ("basic", "status", ...) can
   // safely point at either the form card or the preview module.
@@ -747,6 +770,76 @@ function WorkerForm() {
     loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // Load this worker's already-uploaded documents (edit mode only - a
+  // brand-new worker has none yet since it has no id).
+  useEffect(() => {
+    if (!isEditMode) return;
+    const loadDocuments = async () => {
+      setDocumentsLoading(true);
+      try {
+        const res = await listWorkerDocuments(id);
+        setDocuments(res?.data || []);
+      } catch (err) {
+        addMessage(false, err.message || "Failed to load documents");
+      } finally {
+        setDocumentsLoading(false);
+      }
+    };
+    loadDocuments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isEditMode]);
+
+  // Queue a picked file for upload - actual upload happens in handleSubmit,
+  // after a worker_id definitely exists (see the comment on state above).
+  const handleAddPendingDocument = () => {
+    if (!documentFile) {
+      addMessage(false, "Choose a file to add first");
+      return;
+    }
+
+    setPendingDocuments((prev) => [
+      ...prev,
+      {
+        tempId: `${Date.now()}-${Math.random()}`,
+        category: documentCategory,
+        description: documentDescription,
+        file: documentFile,
+      },
+    ]);
+    setDocumentCategory("Other");
+    setDocumentDescription("");
+    setDocumentFile(null);
+    // Native file inputs are uncontrolled - clear it directly so the same
+    // filename can be picked again if the user removes and re-adds it.
+    const input = document.getElementById("worker-document-file-input");
+    if (input) input.value = "";
+  };
+
+  const handleRemovePendingDocument = (tempId) => {
+    setPendingDocuments((prev) => prev.filter((doc) => doc.tempId !== tempId));
+  };
+
+  // Existing (already-saved) documents delete immediately through their
+  // own endpoint, unlike pending ones above - there's no "unsaved" state
+  // to defer to, the document already exists on the server.
+  const handleDeleteExistingDocument = (document) => {
+    openModal(
+      async () => {
+        try {
+          await deleteWorkerDocument(id, document.id);
+          setDocuments((prev) => prev.filter((doc) => doc.id !== document.id));
+          addMessage(true, "Document deleted successfully");
+        } catch (err) {
+          addMessage(false, err.message || "Failed to delete document");
+        }
+      },
+      {
+        title: `Are you sure you want to delete ${document.file_name}?`,
+        confirmText: "Delete",
+      },
+    );
+  };
 
   // Passport scan handler
   const handlePassportScan = async (e) => {
@@ -1914,6 +2007,38 @@ function WorkerForm() {
         }
       }
 
+      // Upload any documents queued in the Documents section - same
+      // workerId resolution as Agent Information above (worker just
+      // created, or the one already being edited). A failed document
+      // upload is reported but never blocks the worker save that already
+      // succeeded - the worker record and its other data are safely saved
+      // either way.
+      if (pendingDocuments.length > 0 && workerId) {
+        const failedUploads = [];
+
+        for (const pending of pendingDocuments) {
+          try {
+            const documentPayload = new FormData();
+            documentPayload.append("file", pending.file);
+            documentPayload.append("category", pending.category);
+            if (pending.description) {
+              documentPayload.append("description", pending.description);
+            }
+            await uploadWorkerDocument(workerId, documentPayload);
+          } catch (docErr) {
+            failedUploads.push(pending.file.name);
+            console.error("Failed to upload document:", docErr);
+          }
+        }
+
+        if (failedUploads.length > 0) {
+          addMessage(
+            false,
+            `Worker saved, but ${failedUploads.length} document(s) failed to upload: ${failedUploads.join(", ")}`,
+          );
+        }
+      }
+
       addMessage(
         response?.success,
         response?.message ||
@@ -2854,6 +2979,151 @@ function WorkerForm() {
     </div>
   );
 
+  const DOCUMENT_CATEGORIES = [
+    "Passport",
+    "COC",
+    "Visa",
+    "Medical",
+    "Contract",
+    "Photo",
+    "Other",
+  ];
+
+  const renderDocumentsFields = () => (
+    <div>
+      <h6 className="fw-bold text-dark mb-2">Add a document</h6>
+      <div className="row align-items-end g-2 mb-3">
+        <div className="form-group col-md-3">
+          {renderPlainLabel("Category")}
+          <select
+            className="form-control"
+            value={documentCategory}
+            onChange={(e) => setDocumentCategory(e.target.value)}
+          >
+            {DOCUMENT_CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group col-md-4">
+          {renderPlainLabel("Description (optional)")}
+          <input
+            type="text"
+            className="form-control"
+            value={documentDescription}
+            onChange={(e) => setDocumentDescription(e.target.value)}
+            placeholder="e.g. COC certificate, page 1"
+          />
+        </div>
+        <div className="form-group col-md-3">
+          {renderPlainLabel("File")}
+          <input
+            id="worker-document-file-input"
+            type="file"
+            className="form-control"
+            accept="image/jpeg,image/png,image/gif,image/webp,application/pdf,application/msword,.docx"
+            onChange={(e) => setDocumentFile(e.target.files?.[0] || null)}
+          />
+        </div>
+        <div className="form-group col-md-2">
+          <button
+            type="button"
+            className="btn btn-outline-main w-100"
+            onClick={handleAddPendingDocument}
+          >
+            <FiPlus size={15} /> Add
+          </button>
+        </div>
+      </div>
+
+      {pendingDocuments.length > 0 && (
+        <div className="mb-4">
+          <h6 className="fw-bold text-dark mb-2">
+            Ready to upload (saved with the worker)
+          </h6>
+          <div className="row g-2">
+            {pendingDocuments.map((pending) => (
+              <div className="col-md-6 col-lg-4" key={pending.tempId}>
+                <div className="d-flex align-items-center justify-content-between border rounded p-2">
+                  <div className="text-truncate">
+                    <div className="small fw-bold text-truncate">
+                      {pending.file.name}
+                    </div>
+                    <div className="text-muted" style={{ fontSize: 11 }}>
+                      {pending.category}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-link text-danger p-0"
+                    title="Remove"
+                    onClick={() => handleRemovePendingDocument(pending.tempId)}
+                  >
+                    <FiTrash2 size={15} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isEditMode && (
+        <div>
+          <h6 className="fw-bold text-dark mb-2">Uploaded documents</h6>
+          {documentsLoading ? (
+            <p className="text-muted small mb-0">Loading documents…</p>
+          ) : documents.length === 0 ? (
+            <p className="text-muted small mb-0">
+              No documents uploaded for this worker yet.
+            </p>
+          ) : (
+            <div className="row g-2">
+              {documents.map((document) => (
+                <div className="col-md-6 col-lg-4" key={document.id}>
+                  <div className="d-flex align-items-center justify-content-between border rounded p-2">
+                    <div className="d-flex align-items-center gap-2 text-truncate">
+                      <i className="fa-solid fa-file text-muted"></i>
+                      <div className="text-truncate">
+                        <div className="small fw-bold text-truncate">
+                          {document.file_name}
+                        </div>
+                        <div className="text-muted" style={{ fontSize: 11 }}>
+                          {document.category}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="d-flex align-items-center gap-2 ms-2">
+                      <a
+                        href={document.file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="View"
+                        className="text-info"
+                      >
+                        <i className="fa-solid fa-eye"></i>
+                      </a>
+                      <button
+                        type="button"
+                        className="btn btn-link text-danger p-0"
+                        title="Delete"
+                        onClick={() => handleDeleteExistingDocument(document)}
+                      >
+                        <FiTrash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   const SECTION_FIELD_RENDERERS = {
     basic: () => (
       <>
@@ -2873,6 +3143,7 @@ function WorkerForm() {
     languages: renderLanguagesFields,
     skills: renderSkillsFields,
     experience: renderExperienceFields,
+    documents: renderDocumentsFields,
   };
 
   const SECTION_SUBTITLES = {
@@ -2893,6 +3164,8 @@ function WorkerForm() {
     skills: "Optional — check any skills this worker has.",
     experience:
       "Optional — add this worker's prior work experience by country.",
+    documents:
+      "Attach scans — COC, Visa, or any other supporting document — for this worker.",
   };
 
   /* section navigation (shared data + markup for the tree nav) */
