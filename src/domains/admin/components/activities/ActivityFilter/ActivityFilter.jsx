@@ -13,7 +13,6 @@ const AUDIT_ACTIONS = [
   { value: "update", label: "Update" },
   { value: "delete", label: "Delete" },
   { value: "status_change", label: "Status Change" },
-  { value: "logout", label: "Logout" },
 ];
 
 const ActivityFilter = ({ type, filters, users, onFilterChange, onClear }) => {
