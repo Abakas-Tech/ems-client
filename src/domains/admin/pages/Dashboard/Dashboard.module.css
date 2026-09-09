@@ -1,0 +1,88 @@
+/* pages/Dashboard/Dashboard.module.css */
+.chartCard {
+  transition: box-shadow 0.25s ease;
+}
+
+.chartCard:hover {
+  box-shadow: var(--color-shadow-elevated, 0 12px 28px rgba(0, 0, 0, 0.08));
+}
+
+.badgeMuted {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  background: #f9fafb;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.legendList {
+  margin-top: 0.5rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 0.85rem;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legendLabel {
+  color: #374151;
+  flex: 1;
+}
+
+.legendValue {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.activityList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.activityItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.activityItem:last-child {
+  border-bottom: none;
+}
+
+.activityIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.activityMessage {
+  font-size: 0.88rem;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.activityTime {
+  font-size: 0.76rem;
+  color: #9ca3af;
+  margin-top: 2px;
+}

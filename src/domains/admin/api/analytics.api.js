@@ -46,6 +46,21 @@ const fetchWeeklyReport = async (params = {}) => {
   }
 };
 
-export { fetchWeeklyReport };
+// Admin landing page overview — always-live totals (KPIs, pipeline,
+// registration trend, office distribution, top agents, recent activity).
+// Separate from fetchDashboardData above, which is the period-filtered
+// Analytics report page.
+const fetchDashboardOverview = async () => {
+  try {
+    const response = await axiosInstance.get("/analytics/dashboard-overview");
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Fetch dashboard overview error",
+    );
+  }
+};
+
+export { fetchWeeklyReport, fetchDashboardOverview };
 
 export default fetchDashboardData;
