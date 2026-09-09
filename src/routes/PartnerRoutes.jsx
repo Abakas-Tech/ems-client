@@ -6,9 +6,9 @@ import AdminLayout from "../shared/layout/AdminLayout/AdminLayout.jsx";
 import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePassword.jsx";
-// import WorkerProfile from "../domains/admin/pages/workers/WorkerProfile/WorkerProfile.jsx";
 import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx";
 import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx"
+import NotificationPage from "../domains/admin/pages/NotificationPage/NotificationPage.jsx";
 
 function PartnerRoutes() {
   return (
@@ -24,6 +24,7 @@ function PartnerRoutes() {
         <Route path="active-employees/:id" element={<WorkerForm />} />
         <Route path="employees/:id/cv" element={<CV />} />
         <Route path="my-profile" element={<MyProfile />} />
+         <Route path="notifications" element={<NotificationPage />} />
         <Route path="settings" element={<ChangePasswordPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
