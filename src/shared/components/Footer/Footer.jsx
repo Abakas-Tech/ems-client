@@ -5,7 +5,7 @@ import { getLocation } from "../../../domains/admin/api/location.api";
 
 const Footer = () => {
   const [agencyData, setAgencyData] = useState({
-    agency_name: "ALETISALAT Private Foreign Employment Agency",
+    agency_name: "VISION RECRUITMENT AGENCY",
     agency_email: "",
     agency_phone: "",
     address: "Addis Ababa, Ethiopia",
@@ -96,7 +96,10 @@ const Footer = () => {
   };
 
   return (
-    <footer className="dark-footer skin-dark-footer">
+    <footer
+      className="dark-footer skin-dark-footer"
+      style={{ backgroundColor: "#351f0d" }}
+    >
       <div className="container">
         {/* <div className="row my-0"> */}
         <div className="col-12">
@@ -115,13 +118,13 @@ const Footer = () => {
       </div>
 
       {/* Footer Bottom */}
-      <div className="footer-bottom">
+      <div className="footer-bottom" style={{ backgroundColor: "#351f0d" }}>
         <div className="container">
           <div className="row align-items-center">
             {/* Left side */}
             <div className="col-lg-8 col-md-8 text-center text-md-start mb-2 mb-md-0">
               <p className="mb-0">
-                © {new Date().getFullYear()} ALETISALAT Private Foreign
+                © {new Date().getFullYear()} Vision Recruitment Private Foreign
                 Employment Agency | Developed by{" "}
                 <a
                   href="https://abakastech.com/"

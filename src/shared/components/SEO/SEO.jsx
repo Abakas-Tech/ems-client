@@ -24,7 +24,7 @@ import {
    Notes
    - On SPA navigation the tags update instantly; the fallbacks in
      public/index.html are what crawlers see first.
-   - Titles render as "About us | ALETISALAT" unless the title already
+   - Titles render as "About us | VISION RECRUITMENT" unless the title already
      contains the site name.
    - noindex pages (admin/auth dashboards) still get their title - they
      just tell crawlers to stay out.

@@ -1,8 +1,8 @@
-import logoAsset from "../../../assets/img/logo/aletisalat-about.png";
+import logoAsset from "../../../assets/img/logo/header-logo.png";
 
 export const REPORT_META = {
-  orgName: "AlEtisalat Agency",
-  orgSub: "አል-ኢቲሳላት ኤጀንሲ ",
+  orgName: "Vision Recruitment Agency",
+  orgSub: "ቪዥን ሪክሩትመንት ኤጀንሲ",
   logoPath: logoAsset,
   logoInitials: "EMS",
   logoColor: "#1a3c6e",

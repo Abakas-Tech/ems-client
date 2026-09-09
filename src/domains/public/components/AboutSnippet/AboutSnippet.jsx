@@ -9,7 +9,7 @@ import {
   FaAward,
   FaCheckCircle,
 } from "react-icons/fa";
-import about from "../../../../assets/img/logo/aletisalat-about.png";
+import about from "../../../../assets/img/logo/nejibat.png";
 import styles from "./AboutSnippet.module.css";
 
 const CORE_VALUES = [
@@ -123,7 +123,7 @@ function AboutSnippet() {
           />
         </div>
         <div className={`row align-items-center ${styles.introRow}`}>
-          <div className="col-lg-6">
+          <div className="col-lg-4">
             <div className={styles.imageWrapper}>
               <div className={styles.floatingBadge}>
                 <span className={styles.dot}></span>
@@ -138,7 +138,7 @@ function AboutSnippet() {
             </div>
           </div>
 
-          <div className="col-lg-6">
+          <div className="col-lg-8">
             <div className={styles.contentInner}>
               <span className={styles.tag}>
                 About Vision Recruitment Agency

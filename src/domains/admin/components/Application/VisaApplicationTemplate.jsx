@@ -74,7 +74,7 @@ const VisaApplicationTemplate = forwardRef(({ data, logoSrc }, ref) => {
           <div className={styles.consularAr}>القسم القنصلي</div>
           <div className={styles.consularEn}>CONSULAR SECTION</div>
           <div className={styles.agentName}>
-            ALETISALAT FOREIGN EMPLOYMENT AGENT
+            VISION RECRUITMENT AGENT
           </div>
         </div>
       </div>

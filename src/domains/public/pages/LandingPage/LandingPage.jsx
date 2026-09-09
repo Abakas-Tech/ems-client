@@ -12,8 +12,8 @@ import WhatsAppButton from "../../components/WhatsAppButton/WhatsAppButton";
 function LandingPage() {
   return (
     <>
-      <SEO title="Aletisalat | Work Abroad Without the Guesswork" />
-      <WhatsAppButton />
+      <SEO title="Vision Recruitment | Work Abroad Without the Guesswork" />
+      {/* <WhatsAppButton /> */}
       <Hero />
       <HowItWorks />
       <Services />

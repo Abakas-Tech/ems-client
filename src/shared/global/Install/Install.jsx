@@ -119,7 +119,7 @@ export default function Install() {
           </div>
 
           <div className={styles.headerText}>
-            <p className={styles.appTitle}>Install Aletisalat</p>
+            <p className={styles.appTitle}>Install Vision Recruitment</p>
             <p className={styles.appSubtitle}>
               Get quick access from your home screen
             </p>

@@ -40,8 +40,8 @@ const AGENCY_DEFAULTS = {
   homeAddress: "RIYADH",
   purposeOfTravel: "Work",
   placeOfIssue: "Ethiopia",
-  agentEmail: "contact@aletisalatjobs.com",
-  agentWebsite: "https://aletisalatjobs.com",
+  agentEmail: "contact@visionrecruitment.com",
+  agentWebsite: "https://visionrecruitment.com",
 };
 // These are the fields the embassy form requires.
 const REQUIRED_FIELDS = [
