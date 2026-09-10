@@ -135,6 +135,10 @@ const Contact = () => {
         <div className={styles.sectionHead}>
           <span className={styles.kicker}>Get in touch</span>
           <h2 className={styles.mainTitle}>Contact Us</h2>
+          <p className={styles.mainSubtitle}>
+            Reach out with any questions, we are here to help you start your
+            journey abroad for a better future.
+          </p>
         </div>
 
         <div className={styles.wrapper}>

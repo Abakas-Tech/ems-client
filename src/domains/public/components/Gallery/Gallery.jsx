@@ -83,7 +83,7 @@ const Gallery = () => {
           <SubHeading
             eyebrow="Gallery"
             title="Our Work in Action"
-            subtitle=" transparent services that benefit both workers and employers."
+            subtitle="A look at our transparent recruitment work that benefits both workers and employers with confidence."
             center
           />
         </div>

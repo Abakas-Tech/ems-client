@@ -40,9 +40,8 @@ function HowItWorks() {
           <span className={styles.kicker}>How it works</span>
           <h2 className={styles.title}>Your Journey With Us</h2>
           <p className={styles.subtitle}>
-            Our streamlined process ensures a smooth and efficient journey
-            for overseas employment, guiding you through every step from
-            registration to deployment.
+            A streamlined process that guides you from registration through
+            training to deployment step by step.
           </p>
         </div>
 

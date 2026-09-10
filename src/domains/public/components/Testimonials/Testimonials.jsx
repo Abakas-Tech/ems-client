@@ -54,8 +54,8 @@ const Testimonials = () => {
           <span className={styles.kicker}>Client stories</span>
           <h2 className={styles.title}>Discover What Our Clients Say</h2>
           <p className={styles.subtitle}>
-            Trust and success are our greatest pride. Here's what candidates
-            we've placed abroad have to say about working with us.
+            Real stories from candidates we have placed abroad about working
+            with our team from start to finish.
           </p>
 
           <div className={styles.trustRow}>

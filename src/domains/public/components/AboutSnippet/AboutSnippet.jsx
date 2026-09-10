@@ -118,7 +118,7 @@ function AboutSnippet() {
           <SubHeading
             eyebrow="About"
             title="Vision Recruitment Agency"
-            subtitle=" discover how we connect Ethiopian workers with international employers through ethical and professional recruitment services."
+            subtitle="Discover how we connect Ethiopian workers with employers abroad through ethical recruitment for you."
             center
           />
         </div>
@@ -177,7 +177,12 @@ function AboutSnippet() {
       {/* VISION & MISSION */}
       <div className={styles.tintBlock}>
         <div className="container">
-          <SubHeading eyebrow="Who We Are" title="Vision & Mission" center />
+          <SubHeading
+            eyebrow="Who We Are"
+            title="Vision & Mission"
+            subtitle="The vision and mission driving every placement we make for workers and employers through every step."
+            center
+          />
           <div className="row g-4">
             <div className="col-md-6">
               <div className={styles.pillarCard}>
@@ -214,7 +219,7 @@ function AboutSnippet() {
         <SubHeading
           eyebrow="What We Stand For"
           title="Our Core Values"
-          subtitle="The principles that guide every placement we make."
+          subtitle="The principles that guide every decision, placement, and relationship we build from start to finish."
           center
         />
         <div className={styles.valuesGrid}>
@@ -236,7 +241,7 @@ function AboutSnippet() {
         <SubHeading
           eyebrow="Why Choose Us"
           title="We Are Trusted By Workers & Employers"
-          subtitle="We are companies that benefit both workers and employers."
+          subtitle="Trusted by workers and employers for honest, professional, and reliable recruitment services always."
           center
         />
         <div className="container">

@@ -27,6 +27,15 @@
   text-align: center;
 }
 
+.mainSubtitle {
+  color: var(--ct-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  max-width: 640px;
+  margin: 14px auto 0;
+  text-align: center;
+}
+
 /* 70 / 30 split between the info column (details + map) and the form */
 .wrapper {
   display: grid;

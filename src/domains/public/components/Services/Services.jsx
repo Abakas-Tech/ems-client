@@ -43,8 +43,8 @@ const Services = () => {
             <span className={styles.kicker}>What we do</span>
             <h2 className={styles.title}>Our Services</h2>
             <p className={styles.description}>
-              We provide a wide range of services to support foreign employment
-              opportunities for Ethiopian workers and international employers.
+              A wide range of recruitment services built for Ethiopian
+              workers and international employers always.
             </p>
           </div>
         </div>
