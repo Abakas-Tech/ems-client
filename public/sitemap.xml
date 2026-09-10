@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ALETISALAT sitemap. Public pages only.
+  Vision Recruitment Agency sitemap. Public pages only.
   - Keep URLs in sync with the app's PublicRoutes.
   - Remove entries for pages that don't exist yet, add new ones as they ship.
   - lastmod: update when a page's content meaningfully changes.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://aletisalatjobs.com/</loc>
+    <loc>https://visionrecruitment.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://aletisalatjobs.com/about</loc>
+    <loc>https://visionrecruitment.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aletisalatjobs.com/services</loc>
+    <loc>https://visionrecruitment.com/services</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aletisalatjobs.com/contact</loc>
+    <loc>https://visionrecruitment.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://aletisalatjobs.com/gallery</loc>
+    <loc>https://visionrecruitment.com/gallery</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

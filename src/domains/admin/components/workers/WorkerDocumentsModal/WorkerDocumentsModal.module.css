@@ -1,0 +1,144 @@
+/* BackButton's own CSS only sets `right`, not `top`, so its absolute
+   position resolves against its static position - it needs a positioned
+   (relative) ancestor with room above it (padding-top covering its
+   negative margin-top) to stay visually inside the modal instead of
+   escaping upward into the title area. */
+.headerRow {
+  position: relative;
+  margin-right: -2rem;
+}
+
+.emptyState {
+  padding: 3rem 1rem;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.thumb {
+  width: 100%;
+  height: 90px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 2rem;
+  color: #6c757d;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardBadge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(13, 110, 253, 0.12);
+  color: #0d6efd;
+}
+
+.cardName {
+  font-size: 12px;
+  width: 100%;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detailBody {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.detailImage {
+  width: 260px;
+  height: 220px;
+  max-width: 100%;
+  border-radius: 8px;
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.detailFileIcon {
+  width: 260px;
+  max-width: 100%;
+  height: 220px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: #6c757d;
+}
+
+.detailInfo {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detailRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+}
+
+.detailLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+}
+
+.badge {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(13, 110, 253, 0.12);
+  color: #0d6efd;
+}
+
+.detailActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}

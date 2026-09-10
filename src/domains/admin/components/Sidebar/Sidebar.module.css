@@ -65,7 +65,16 @@
 .mobileDrawer {
   padding: 1rem 1rem;
   height: 100%;
+  display: flex;
+  flex-direction: column;
   z-index: 10000;
+}
+
+.drawerBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin-top: 0.75rem;
 }
 
 .drawerClose {

@@ -1,4 +1,4 @@
-# ALETISALAT — robots.txt
+# Vision Recruitment Agency — robots.txt
 # Public marketing pages: crawlable. The admin system: private.
 
 User-agent: *
@@ -16,4 +16,4 @@ Disallow: /reset-password
 User-agent: GPTBot
 Allow: /
 
-Sitemap: https://aletisalatjobs.com/sitemap.xml
+Sitemap: https:/visionrecuritment.com/sitemap.xml

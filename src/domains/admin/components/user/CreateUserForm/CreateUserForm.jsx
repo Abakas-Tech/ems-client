@@ -54,6 +54,24 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
 
+  // row) — only the input control changed from free text to a select.
+  const MIDDLE_EAST_COUNTRIES = [
+    "Saudi Arabia",
+    "Jordan",
+    "Kuwait",
+    "Bahrain",
+    "Iraq",
+    "Israel",
+    "Lebanon",
+    "Oman",
+    "Palestine",
+    "Qatar",
+    "Syria",
+    "Turkey",
+    "United Arab Emirates",
+    "Yemen",
+  ];
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -158,9 +176,8 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       );
       return false;
     }
-    const phoneRegex =
-      /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
-
+ const phoneRegex =
+   /^(?:\+?(20|90|961|962|963|964|965|966|967|968|970|971|972|973|974|975)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
     // Phone number: digits only, length 7–15
     if (phoneNumber && !phoneRegex.test(phoneNumber)) {
       addMessage(false, "Phone number is invalid.");
@@ -471,13 +488,14 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                     required={requiredFields.country}
                     onChange={(e) => setCountry(e.target.value)}
                   >
-                    <option value="">Select Country</option>
-                    <option value="Saudi Arabia">Saudi Arabia</option>
-                    <option value="Jordan">Jordan</option>
+                    {MIDDLE_EAST_COUNTRIES.map((country) => (
+                      <option key={country} value={country}>
+                        {country}
+                      </option>
+                    ))}
                   </select>
                 </div>
               )}
-
 
               {/* Partner CV Header */}
               {role === "3" && (

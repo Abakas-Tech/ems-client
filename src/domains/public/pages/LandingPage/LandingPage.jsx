@@ -7,11 +7,13 @@ import Gallery from "./../../components/Gallery/Gallery";
 import AboutSnippet from "../../components/AboutSnippet/AboutSnippet";
 import Services from "../../components/Services/Services";
 import SEO from "../../../../shared/components/SEO/SEO";
+import WhatsAppButton from "../../components/WhatsAppButton/WhatsAppButton";
 
 function LandingPage() {
   return (
     <>
-      <SEO title="ALETISALAT | Work Abroad Without the Guesswork" />
+      <SEO title="Vision Recruitment | Work Abroad Without the Guesswork" />
+      {/* <WhatsAppButton /> */}
       <Hero />
       <HowItWorks />
       <Services />

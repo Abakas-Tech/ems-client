@@ -2,23 +2,23 @@ import React from "react";
 import { Helmet } from "react-helmet";
 
 const SEOHelmet = ({
-  title = "Aletisalat Private Foreign Employment Agency | Overseas Jobs for Ethiopians | Verified Recruitment Agency",
-  description = "Aletisalat Private Foreign Employment Agency connects Ethiopian workers with verified international job opportunities. We provide full visa processing, contract verification, LMIS/work permits, and safe deployment to Middle Eastern countries.",
-  keywords = "overseas jobs Ethiopia, jobs in Middle East for Ethiopians, recruitment agency Ethiopia, work abroad Ethiopia, Middle East jobs Ethiopia, visa processing Ethiopia, LMIS Ethiopia, overseas employment Ethiopia, legal recruitment Ethiopia, Aletisalat Private Foreign Employment Agency",
-  canonical = "https://aletisalatjobs.com/",
-  ogTitle = "Verified Overseas Jobs for Ethiopians | Aletisalat Private Foreign Employment Agency",
+  title = "Vision Recruitment Agency Private Foreign Employment Agency | Overseas Jobs for Ethiopians | Verified Recruitment Agency",
+  description = "Vision Recruitment Agency connects Ethiopian workers with verified international job opportunities. We provide full visa processing, contract verification, LMIS/work permits, and safe deployment to Middle Eastern countries.",
+  keywords = "overseas jobs Ethiopia, jobs in Middle East for Ethiopians, recruitment agency Ethiopia, work abroad Ethiopia, Middle East jobs Ethiopia, visa processing Ethiopia, LMIS Ethiopia, overseas employment Ethiopia, legal recruitment Ethiopia, Vision Recruitment Agency",
+  canonical = "https://visionrecruitment.com/",
+  ogTitle = "Verified Overseas Jobs for Ethiopians | Vision Recruitment Agency",
   ogDescription = "Apply for safe and verified overseas jobs with full support: job matching, visa processing, contract verification, and travel coordination.",
-  ogUrl = "https://aletisalatjobs.com/",
-  ogImage = "https://aletisalatjobs.com/image.jpg", 
+  ogUrl = "https://visionrecruitment.com/",
+  ogImage = "https://visionrecruitment.com/image.jpg",
   structuredData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    name: "Aletisalat Private Foreign Employment Agency",
-    url: "https://aletisalatjobs.com",
-    logo: "https://aletisalatjobs.com/logo.jpg",
+    name: "Vision Recruitment Agency",
+    url: "https://visionrecruitment.com",
+    logo: "https://visionrecruitment.com/logo.jpg",
     description:
       "Licensed recruitment agency connecting Ethiopian workers with verified international job opportunities, especially in the Middle East.",
-    email: "aletesalat.eth.agency@gmail.com",
+    email: "visionrecruitment@gmail.com",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Addis Ababa",
@@ -55,7 +55,7 @@ const SEOHelmet = ({
     <meta property="og:image" content={ogImage} />
     <meta
       property="og:site_name"
-      content="Aletisalat Private Foreign Employment Agency"
+      content="Vision Recruitment Agency"
     />
 
     {/* Twitter Meta */}

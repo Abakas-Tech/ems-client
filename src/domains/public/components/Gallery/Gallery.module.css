@@ -1,3 +1,15 @@
+:root {
+  --ab-wood-900: #111111;
+  --ab-wood-800: #0054B8;
+  --ab-wood-600: #0070E8;
+  --ab-gold: #E00030;
+  --ab-gold-light: #FF4010;
+  --ab-cream: #FFFFFF;
+  --ab-muted: #545B66;
+  --ab-border: #D7E6F7;
+  --ab-tint: #F2F8FF;
+}
+
 .gallery-card {
   cursor: pointer;
   overflow: hidden;
@@ -146,4 +158,39 @@
   .nav-button {
     top: 50%;
   }
+}
+
+/* ---------- Sub-section heading ---------- */
+.subHead {
+  margin-bottom: 40px;
+  max-width: 640px;
+}
+
+.subHeadCenter {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.subEyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ab-gold);
+  margin-bottom: 8px;
+}
+
+.subTitle {
+  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+  font-weight: 800;
+  color: var(--ab-wood-900);
+  margin-bottom: 6px;
+}
+
+.subSubtitle {
+  color: var(--ab-muted);
+  font-size: 0.95rem;
+  margin: 0;
 }

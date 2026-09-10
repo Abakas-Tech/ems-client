@@ -1,6 +1,7 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
+import { FaQuoteLeft, FaStar } from "react-icons/fa";
 
 // Import Swiper styles
 import "swiper/css";
@@ -11,6 +12,8 @@ import person1 from "../../../../assets/img/testimonials/image-1.png";
 import person2 from "../../../../assets/img/testimonials/image-2.png";
 import person3 from "../../../../assets/img/testimonials/image-3.png";
 import person4 from "../../../../assets/img/testimonials/image-1.png";
+
+import styles from "./Testimonials.module.css";
 
 const testimonialData = [
   {
@@ -45,96 +48,74 @@ const testimonialData = [
 
 const Testimonials = () => {
   return (
-    <section id="testimonials" className="testimonials section pb-0">
-      {/* Section Title */}
-      <div className="container text-center mb-5" data-aos="fade-up">
-        <h2>Testimonials</h2>
-        <p>
-          Hear from our successful candidates who achieved their overseas career
-          goals through our agency.
-        </p>
-      </div>
+    <section id="testimonials" className={styles.section}>
+      <div className="container">
+        <div className={styles.head}>
+          <span className={styles.kicker}>Client stories</span>
+          <h2 className={styles.title}>Discover What Our Clients Say</h2>
+          <p className={styles.subtitle}>
+            Real stories from candidates we have placed abroad about working
+            with our team from start to finish.
+          </p>
 
-      <div className="container" data-aos="fade-up" data-aos-delay="100">
-        <div className="row">
-          {/* Left Sidebar */}
-          <div className="col-lg-4" data-aos="fade-right" data-aos-delay="150">
-            <div className="testimonials-sidebar">
-              <div className="avatar-stack">
-                <img src={person1} alt="Happy Client" className="avatar" />
-                <img src={person2} alt="Happy Client" className="avatar" />
-                <img src={person3} alt="Happy Client" className="avatar" />
-                <img src={person4} alt="Happy Client" className="avatar" />
-                <span className="avatar-count">+2.5k</span>
-              </div>
-              <div className="sidebar-content">
-                <span className="satisfied-badge">
-                  <i className="bi bi-heart-fill"></i> Satisfied Clients
-                </span>
-                <h3>Discover What Our Clients Say About Us</h3>
-                <p>
-                  Trust and success are our greatest pride. Read the experiences
-                  of those we've helped.
-                </p>
-              </div>
-            </div>
+          <div className={styles.trustRow}>
+            <span className={styles.trustStars}>
+              {[...Array(5)].map((_, i) => (
+                <FaStar key={i} />
+              ))}
+            </span>
+            <span className={styles.trustText}>
+              Rated by over 2,500 candidates
+            </span>
           </div>
+        </div>
 
-          {/* Right Testimonials Slider */}
-          <div className="col-lg-8" data-aos="fade-left" data-aos-delay="200">
-            <Swiper
-              modules={[Autoplay, Pagination]}
-              loop={true}
-              speed={700}
-              autoplay={{
-                delay: 5000,
-                disableOnInteraction: false, // CRITICAL: Keeps it moving after you click/touch
-                pauseOnMouseEnter: true, // Optional: Pause when mouse is over
-              }}
-              spaceBetween={24}
-              pagination={{
-                clickable: true,
-                el: ".swiper-pagination",
-              }}
-              breakpoints={{
-                0: { slidesPerView: 1 },
-                768: { slidesPerView: 2 },
-              }}
-              className="testimonials-carousel"
-            >
-              {testimonialData.map((item, index) => (
-                <SwiperSlide key={index}>
-                  <div className="testimonial-card">
-                    <div className="card-top">
-                      <div className="stars">
-                        {[...Array(5)].map((_, i) => (
-                          <i key={i} className="bi bi-star-fill"></i>
-                        ))}
-                      </div>
-                      <span className="quote-mark">
-                        <i className="bi bi-quote"></i>
+        <div className={styles.carouselWrap}>
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            loop={true}
+            speed={700}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
+            spaceBetween={24}
+            pagination={{
+              clickable: true,
+              el: `.${styles.swiperPagination}`,
+            }}
+            breakpoints={{
+              0: { slidesPerView: 1 },
+              768: { slidesPerView: 2 },
+              1200: { slidesPerView: 3 },
+            }}
+            className={styles.carousel}
+          >
+            {testimonialData.map((item, index) => (
+              <SwiperSlide key={index} className={styles.slide}>
+                <div className={styles.card}>
+                  <FaQuoteLeft className={styles.quoteMark} />
+                  <p className={styles.text}>{item.quote}</p>
+                  <div className={styles.author}>
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className={styles.authorImg}
+                      loading="lazy"
+                    />
+                    <div>
+                      <h5 className={styles.authorName}>{item.name}</h5>
+                      <span className={styles.authorRole}>
+                        {item.position}
                       </span>
                     </div>
-                    <p className="testimonial-text">{item.quote}</p>
-                    <div className="author-info">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="author-img"
-                        loading="lazy"
-                      />
-                      <div className="author-details">
-                        <h5>{item.name}</h5>
-                        <span>{item.position}</span>
-                      </div>
-                    </div>
                   </div>
-                </SwiperSlide>
-              ))}
-              {/* Pagination element must be inside or linked to the Swiper */}
-              <div className="swiper-pagination"></div>
-            </Swiper>
-          </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          <div className={styles.swiperPagination}></div>
         </div>
       </div>
     </section>

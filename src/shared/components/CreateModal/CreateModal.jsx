@@ -22,6 +22,21 @@ const CreateModal = ({
   title = "",
   btnLabel = "Create",
   renderCustomField,
+  // When `children` is passed, the modal renders the shared shell (overlay,
+  // shake-on-outside-click, slide-in animation, title) around arbitrary
+  // content instead of the fields-driven form + Cancel/Create footer below -
+  // the caller owns its own actions/close handling in that case. Existing
+  // callers never pass this, so their form behavior is unchanged.
+  children,
+  // Optional override for the modal's max-width (default comes from
+  // CreateModal.module.css's .modal class, sized for short field forms).
+  maxWidth,
+  // Optional override for the overlay's z-index, applied inline (highest
+  // possible CSS priority, so it's never in doubt against the class-based
+  // default). Needed when this modal can be open AT THE SAME TIME as
+  // another portal-rendered modal (e.g. ConfirmDeleteModal, triggered via
+  // useDelete while this is open) that must stack above it.
+  overlayZIndex,
 }) => {
   const modalRef = useRef(null);
   const [shake, setShake] = useState("idle");
@@ -110,6 +125,14 @@ const CreateModal = ({
       onRequestClose={() => {}}
       className={styles.modal}
       overlayClassName={styles.overlay}
+      style={
+        maxWidth || overlayZIndex
+          ? {
+              ...(maxWidth ? { content: { maxWidth } } : {}),
+              ...(overlayZIndex ? { overlay: { zIndex: overlayZIndex } } : {}),
+            }
+          : undefined
+      }
       closeTimeoutMS={200}
     >
       <motion.div
@@ -119,75 +142,82 @@ const CreateModal = ({
         initial="idle"
         className={styles.modalInner}
       >
-        <form onSubmit={handleSubmit} className="submit-section">
-          <h3 className={styles.modalTitle}>{title}</h3>
+        {children ? (
+          <>
+            {title && <h3 className={styles.modalTitle}>{title}</h3>}
+            {children}
+          </>
+        ) : (
+          <form onSubmit={handleSubmit} className="submit-section">
+            <h3 className={styles.modalTitle}>{title}</h3>
 
-          {fields.map((field) => (
-            <div
-              key={field.name}
-              className="form-group"
-              style={{ marginBottom: "1rem" }}
-            >
-              <h6>
-                {field.label} <span className="text-danger">*</span>
-              </h6>
-              {field.type === "custom" && renderCustomField ? (
-                renderCustomField(field, inputValues, handleChange)
-              ) : field.type === "select" ? (
-                <select
-                  className="form-control"
-                  value={inputValues[field.name] || ""}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  required
-                  disabled={!!field.disabled}
-                  style={{
-                    backgroundColor: field.disabled ? "#f0f0f0" : "#EDF1FB",
-                    cursor: field.disabled ? "not-allowed" : "default",
-                  }}
-                >
-                  <option value="">Select {field.label}</option>
-                  {field.options?.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              ) : field.type === "textarea" ? (
-                <textarea
-                  className="form-control"
-                  rows="4"
-                  value={inputValues[field.name]}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  required
-                  disabled={!!field.disabled}
-                  style={{ backgroundColor: "#EDF1FB" }}
-                />
-              ) : (
-                <input
-                  type={field.type || "text"}
-                  className="form-control"
-                  value={inputValues[field.name]}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  required
-                  style={{ backgroundColor: "#EDF1FB" }}
-                />
-              )}
+            {fields.map((field) => (
+              <div
+                key={field.name}
+                className="form-group"
+                style={{ marginBottom: "1rem" }}
+              >
+                <h6>
+                  {field.label} <span className="text-danger">*</span>
+                </h6>
+                {field.type === "custom" && renderCustomField ? (
+                  renderCustomField(field, inputValues, handleChange)
+                ) : field.type === "select" ? (
+                  <select
+                    className="form-control"
+                    value={inputValues[field.name] || ""}
+                    onChange={(e) => handleChange(field.name, e.target.value)}
+                    required
+                    disabled={!!field.disabled}
+                    style={{
+                      backgroundColor: field.disabled ? "#f0f0f0" : "#EDF1FB",
+                      cursor: field.disabled ? "not-allowed" : "default",
+                    }}
+                  >
+                    <option value="">Select {field.label}</option>
+                    {field.options?.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : field.type === "textarea" ? (
+                  <textarea
+                    className="form-control"
+                    rows="4"
+                    value={inputValues[field.name]}
+                    onChange={(e) => handleChange(field.name, e.target.value)}
+                    required
+                    disabled={!!field.disabled}
+                    style={{ backgroundColor: "#EDF1FB" }}
+                  />
+                ) : (
+                  <input
+                    type={field.type || "text"}
+                    className="form-control"
+                    value={inputValues[field.name]}
+                    onChange={(e) => handleChange(field.name, e.target.value)}
+                    required
+                    style={{ backgroundColor: "#EDF1FB" }}
+                  />
+                )}
+              </div>
+            ))}
+
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.cancelButton}
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button type="submit" className={styles.createButton}>
+                {btnLabel}
+              </button>
             </div>
-          ))}
-
-          <div className={styles.modalActions}>
-            <button
-              type="button"
-              className={styles.cancelButton}
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button type="submit" className={styles.createButton}>
-              {btnLabel}
-            </button>
-          </div>
-        </form>
+          </form>
+        )}
       </motion.div>
     </Modal>
   );

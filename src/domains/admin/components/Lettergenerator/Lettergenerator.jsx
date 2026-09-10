@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import { getWorkerProfile } from "../../api/worker.api";
 import useLoader from "../../../../context/Loader/useLoader";
@@ -26,11 +26,11 @@ const SUBJECT_OPTIONS = [
 // Always the starting value of the (unlabeled) incident/content textarea.
 // The user keeps typing after it — never reset or cleared automatically.
 const DEFAULT_INCIDENT_TEXT =
-  "ድርጅታችን አል-ኢቲሳላት በዉጭ ሀገር ሰራተኛ አገናኝ እውቅና በኢፌድሪ ስራና ክህሎት ሚኒስቴር በቁጥር PEA/948/2021 ህጋዊ ፍቃድ የተሰጠው መሆኑ ይታወቃል";
+  "ድርጅታችን ቪዥን ሪክሩትመንት ኤጀንሲ በዉጭ ሀገር ሰራተኛ አገናኝ እውቅና በኢፌድሪ ስራና ክህሎት ሚኒስቴር በቁጥር PEA/***/*** ህጋዊ ፍቃድ የተሰጠው መሆኑ ይታወቃል";
 
 // Default value for the "ቁጥር" field when the page first loads. Remains
 // fully editable — this only seeds the input, it does not lock it.
-const DEFAULT_REFERENCE_NUMBER = "ALA/A170/26";
+const DEFAULT_REFERENCE_NUMBER = "VRA/A170/26";
 
 // "ቁጥር" may only contain letters (Latin or Ethiopic), digits, slashes,
 // spaces and dashes — e.g. "PEA/948/2021".
@@ -74,7 +74,7 @@ const buildLetterHeader = (title, subtitle) => {
         <div class="report-sub">${subtitle || ""}</div>
       </div>
     <div class="meta-r contact-block">
-  <div>${REPORT_META.contactEmail || "contact@aletisalatjobs.com"}</div>
+  <div>${REPORT_META.contactEmail || "contact@visionrecruitment.com"}</div>
   <div>${REPORT_META.contactPhone || "0911833704 / 0911218293"}</div>
 </div>
     </div>`;
@@ -496,7 +496,6 @@ const LetterToolkit = ({
 
 const LetterGenerator = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 

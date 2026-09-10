@@ -1,7 +1,7 @@
 {
-  "name": "Aletisalat Private Foreign Employment Agency",
-  "short_name": "Aletisalat",
-  "description": "Apply for verified overseas jobs with Aletisalat Private Foreign Employment Agency. Safe and legal job opportunities for Ethiopians with full visa processing and full support.",
+  "name": "Vision Recruitment Agency Private Foreign Employment Agency",
+  "short_name": "Vision Recruitment Agency",
+  "description": "Apply for verified overseas jobs with Vision Recruitment Agency. Safe and legal job opportunities for Ethiopians with full visa processing and full support.",
   "id": "/?source=pwa&utm_campaign=app_install",
   "lang": "en",
   "dir": "ltr",
@@ -10,7 +10,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#0B1B37",
+  "theme_color": "#5c0928",
   "categories": ["business", "jobs", "employment"],
   "icons": [
     {
