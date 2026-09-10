@@ -55,6 +55,12 @@ import ExternalLinks from "../domains/admin/pages/ExternalLinks/ExternalLinks.js
 import ListComplaint from "../domains/admin/pages/complaints/ListComplaint/ListComplaint.jsx";
 import CreateComplaint from "../domains/admin/pages/complaints/CreateComplaint/CreateComplaint.jsx";
 import ViewComplaint from "../domains/admin/pages/complaints/ViewComplaint/ViewComplaint.jsx";
+import StockDashboard from "../domains/admin/pages/Stock/Dashboard/StockDashboard.jsx";
+import StockOrders from "../domains/admin/pages/Stock/Orders/StockOrders.jsx";
+import StockInventory from "../domains/admin/pages/Stock/Inventory/StockInventory.jsx";
+import StockSalesDelivery from "../domains/admin/pages/Stock/SalesDelivery/StockSalesDelivery.jsx";
+import StockCashCredit from "../domains/admin/pages/Stock/CashCredit/StockCashCredit.jsx";
+import StockReports from "../domains/admin/pages/Stock/Reports/StockReports.jsx";
 
 const AdminRoutes = () => {
   const { profile } = useProfile();
@@ -149,6 +155,13 @@ const AdminRoutes = () => {
         />
         <Route path="complaints/edit/:id" element={<CreateComplaint />} />
         <Route path="complaints/view/:id" element={<ViewComplaint />} />
+
+        <Route path="stock/dashboard" element={<StockDashboard />} />
+        <Route path="stock/orders" element={<StockOrders />} />
+        <Route path="stock/inventory" element={<StockInventory />} />
+        <Route path="stock/sales" element={<StockSalesDelivery />} />
+        <Route path="stock/cash-credit" element={<StockCashCredit />} />
+        <Route path="stock/reports" element={<StockReports />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>
