@@ -63,10 +63,12 @@
   color: var(--modal-text-color);
   padding: 2rem;
   border-radius: 12px;
-  max-width: 450px;
+  max-width: 520px;
   width: 90%;
   outline: none;
   animation: fadeSlideDown 0.3s ease-out;
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
 .modalTitle {

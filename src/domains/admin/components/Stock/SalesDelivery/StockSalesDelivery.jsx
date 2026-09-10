@@ -170,8 +170,6 @@ const StockSalesDelivery = () => {
               label: `${b.medicine_name} (${b.batch_number}) — ${b.quantity} left`,
             })),
           },
-          { name: "quantity", label: "Quantity", type: "number" },
-          { name: "amount", label: "Amount (ETB)", type: "number" },
           {
             name: "payment_status",
             label: "Payment",
@@ -192,6 +190,13 @@ const StockSalesDelivery = () => {
                 },
               ]
             : []),
+          { name: "quantity", label: "Quantity", type: "number", half: true },
+          {
+            name: "amount",
+            label: "Amount (ETB)",
+            type: "number",
+            half: true,
+          },
         ]}
       />
     </div>

@@ -13,6 +13,30 @@ const MENU_CONFIG = [
     icon: "bi bi-diagram-3",
     roles: [ROLES.ADMIN],
   },
+  // Reachable only via the Directory cards, not shown in the sidebar -
+  // still need an entry here or ProtectedRoute treats them as undefined
+  // routes and bounces back to the dashboard.
+  {
+    label: "Suppliers",
+    path: "/admin/stock/suppliers",
+    icon: "bi bi-building",
+    roles: [ROLES.ADMIN],
+    isHidden: true,
+  },
+  {
+    label: "Pharmacies",
+    path: "/admin/stock/pharmacies",
+    icon: "bi bi-hospital",
+    roles: [ROLES.ADMIN],
+    isHidden: true,
+  },
+  {
+    label: "Sales Team",
+    path: "/admin/stock/sales-reps",
+    icon: "bi bi-person-badge",
+    roles: [ROLES.ADMIN],
+    isHidden: true,
+  },
   {
     label: "Import Orders",
     path: "/admin/stock/orders",

@@ -103,6 +103,69 @@ const CreateModal = ({
     onClose();
   };
 
+  // Group consecutive fields flagged `half: true` into pairs so they can
+  // render side-by-side in one row; every other field keeps its own
+  // full-width row exactly as before (fully backward compatible).
+  const fieldRows = [];
+  for (let i = 0; i < fields.length; i++) {
+    const field = fields[i];
+    if (field.half && fields[i + 1]?.half) {
+      fieldRows.push([field, fields[i + 1]]);
+      i++;
+    } else {
+      fieldRows.push([field]);
+    }
+  }
+
+  const renderField = (field) => (
+    <>
+      <h6>
+        {field.label} <span className="text-danger">*</span>
+      </h6>
+      {field.type === "custom" && renderCustomField ? (
+        renderCustomField(field, inputValues, handleChange)
+      ) : field.type === "select" ? (
+        <select
+          className="form-control"
+          value={inputValues[field.name] || ""}
+          onChange={(e) => handleChange(field.name, e.target.value)}
+          required
+          disabled={!!field.disabled}
+          style={{
+            backgroundColor: field.disabled ? "#f0f0f0" : "#EDF1FB",
+            cursor: field.disabled ? "not-allowed" : "default",
+          }}
+        >
+          <option value="">Select {field.label}</option>
+          {field.options?.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      ) : field.type === "textarea" ? (
+        <textarea
+          className="form-control"
+          rows="4"
+          value={inputValues[field.name]}
+          onChange={(e) => handleChange(field.name, e.target.value)}
+          required
+          disabled={!!field.disabled}
+          style={{ backgroundColor: "#EDF1FB" }}
+        />
+      ) : (
+        <input
+          type={field.type || "text"}
+          className="form-control"
+          value={inputValues[field.name]}
+          onChange={(e) => handleChange(field.name, e.target.value)}
+          required
+          style={{ backgroundColor: "#EDF1FB" }}
+        />
+      )}
+    </>
+  );
+
   return (
     <Modal
       isOpen={show}
@@ -122,58 +185,33 @@ const CreateModal = ({
         <form onSubmit={handleSubmit} className="submit-section">
           <h3 className={styles.modalTitle}>{title}</h3>
 
-          {fields.map((field) => (
-            <div
-              key={field.name}
-              className="form-group"
-              style={{ marginBottom: "1rem" }}
-            >
-              <h6>
-                {field.label} <span className="text-danger">*</span>
-              </h6>
-              {field.type === "custom" && renderCustomField ? (
-                renderCustomField(field, inputValues, handleChange)
-              ) : field.type === "select" ? (
-                <select
-                  className="form-control"
-                  value={inputValues[field.name] || ""}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  required
-                  disabled={!!field.disabled}
-                  style={{
-                    backgroundColor: field.disabled ? "#f0f0f0" : "#EDF1FB",
-                    cursor: field.disabled ? "not-allowed" : "default",
-                  }}
-                >
-                  <option value="">Select {field.label}</option>
-                  {field.options?.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              ) : field.type === "textarea" ? (
-                <textarea
-                  className="form-control"
-                  rows="4"
-                  value={inputValues[field.name]}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  required
-                  disabled={!!field.disabled}
-                  style={{ backgroundColor: "#EDF1FB" }}
-                />
-              ) : (
-                <input
-                  type={field.type || "text"}
-                  className="form-control"
-                  value={inputValues[field.name]}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  required
-                  style={{ backgroundColor: "#EDF1FB" }}
-                />
-              )}
-            </div>
-          ))}
+          {fieldRows.map((row, rowIndex) =>
+            row.length > 1 ? (
+              <div
+                key={rowIndex}
+                className="d-flex"
+                style={{ gap: "1rem", marginBottom: "1rem" }}
+              >
+                {row.map((field) => (
+                  <div
+                    key={field.name}
+                    className="form-group"
+                    style={{ flex: 1, minWidth: 0 }}
+                  >
+                    {renderField(field)}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div
+                key={row[0].name}
+                className="form-group"
+                style={{ marginBottom: "1rem" }}
+              >
+                {renderField(row[0])}
+              </div>
+            ),
+          )}
 
           <div className={styles.modalActions}>
             <button
