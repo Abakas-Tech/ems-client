@@ -5,6 +5,8 @@ import ListingComponent from "../../../../../shared/components/ListingComponent/
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import { createOrder, listOrders, updateOrder } from "../../../api/stockOrder.api";
+import { listSuppliers } from "../../../api/stockSupplier.api";
+import ETHIOPIAN_BANKS from "../../../../../config/bank.config";
 import "../stock-theme.css";
 
 const STATUS_OPTIONS = [
@@ -23,6 +25,7 @@ const STATUS_COLOR = {
 
 const StockOrders = () => {
   const [orders, setOrders] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -39,15 +42,25 @@ const StockOrders = () => {
     }
   };
 
+  const fetchSuppliers = async () => {
+    try {
+      const response = await listSuppliers();
+      setSuppliers(response?.data || []);
+    } catch (err) {
+      addMessage(false, err.message);
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
+    fetchSuppliers();
     // eslint-disable-next-line
   }, []);
 
   const handleCreate = async (values) => {
     try {
       const response = await createOrder({
-        supplier_name: values.supplier_name,
+        supplier_id: values.supplier_id,
         medicine_name: values.medicine_name,
         amount: parseFloat(values.amount),
       });
@@ -79,7 +92,7 @@ const StockOrders = () => {
     }
   };
 
-  const handleBankBlur = async (order, value) => {
+  const handleBankChange = async (order, value) => {
     if ((order.bank_name || "") === value) return;
     try {
       await updateOrder(order.id, { bank_name: value });
@@ -116,13 +129,18 @@ const StockOrders = () => {
       header: "Bank",
       accessor: "bank_name",
       render: (row) => (
-        <input
-          type="text"
-          className="form-control form-control-sm"
-          defaultValue={row.bank_name || ""}
-          placeholder="Bank name"
-          onBlur={(e) => handleBankBlur(row, e.target.value)}
-        />
+        <select
+          className="form-select form-select-sm"
+          value={row.bank_name || ""}
+          onChange={(e) => handleBankChange(row, e.target.value)}
+        >
+          <option value="">Select bank</option>
+          {ETHIOPIAN_BANKS.map((bank) => (
+            <option key={bank} value={bank}>
+              {bank}
+            </option>
+          ))}
+        </select>
       ),
     },
     {
@@ -188,7 +206,15 @@ const StockOrders = () => {
         title="New Import Order"
         btnLabel="Create Order"
         fields={[
-          { name: "supplier_name", label: "Supplier Name", type: "text" },
+          {
+            name: "supplier_id",
+            label: "Supplier",
+            type: "select",
+            options: suppliers.map((s) => ({
+              value: s.id,
+              label: s.supplier_name,
+            })),
+          },
           { name: "medicine_name", label: "Medicine Name", type: "text" },
           { name: "amount", label: "Amount (USD)", type: "number" },
         ]}

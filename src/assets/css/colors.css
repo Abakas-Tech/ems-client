@@ -14,15 +14,23 @@
   --btn-success-color: #fff;
   --btn-danger-bg: #f44336;
   --btn-danger-color: #fff;
-  --color-surface-sidebar: #ffffff;
-  --color-border-subtle: #e2e8f0;
+
+  /* Seid Stock Management brand palette */
+  --maincolor: #0f6e6a;
+  --color-surface-sidebar: #0b3d3a;
+  --color-border-subtle: #1c5551;
   --color-text-primary: #0f172a;
   --color-text-secondary: #64748b;
   --color-text-inverse: #ffffff;
   --color-surface-hover: #f1f5f9;
   --color-surface-active: #efffeb;
-  --color-shadow-elevated: 0 10px 30px -12px rgba(0, 0, 0, 0.08);
+  --color-shadow-elevated: 0 10px 30px -12px rgba(0, 0, 0, 0.35);
   --transition-default: 0.3s ease;
   --radius-default: 10px;
 
+  /* Sidebar-only tokens (dark teal surface, keeps the rest of the app light) */
+  --color-sidebar-text: #d7e9e7;
+  --color-sidebar-hover: #124f4b;
+  --color-sidebar-active-bg: #157069;
+  --color-sidebar-active-text: #ffffff;
 }
