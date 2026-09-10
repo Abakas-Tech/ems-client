@@ -4,10 +4,6 @@ import useResponse from "../../../../context/Response/useResponse";
 import useProfile from "../../../../context/Profile/useProfile";
 import { useDelete } from "../../../../context/Delete/useDelete";
 import { updateProfile } from "../../api/profile.api";
-import {
-  uploadProfilePhoto,
-  deleteProfilePhoto,
-} from "../../api/profilePhoto.api";
 
 const MyProfile = () => {
   const { profile, fetchProfile } = useProfile();

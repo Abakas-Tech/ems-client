@@ -15,26 +15,23 @@ import ResponseProvider from "./context/Response/ResponseProvider.jsx";
 import ConfirmDeleteProvider from "./context/Delete/DeleteProvider";
 import ProfileProvider from "./context/Profile/ProfileProvider.jsx";
 import DemoInfoProvider from "./context/Demo/DemoInfoProvider";
-import NotificationProvider from "./context/Notification/NotificationProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
-    <BrowserRouter>
-      <DemoInfoProvider>
-        <ResponseProvider>
-          <ProfileProvider>
-            <LogoutProvider>
-              <LoaderProvider>
-                <ConfirmDeleteProvider>
-                  <NotificationProvider>
-                    <App />
-                  </NotificationProvider>
-                </ConfirmDeleteProvider>
-              </LoaderProvider>
-            </LogoutProvider>
-          </ProfileProvider>
-        </ResponseProvider>
-      </DemoInfoProvider>
-    </BrowserRouter>
+  <BrowserRouter>
+    <DemoInfoProvider>
+      <ResponseProvider>
+        <ProfileProvider>
+          <LogoutProvider>
+            <LoaderProvider>
+              <ConfirmDeleteProvider>
+                <App />
+              </ConfirmDeleteProvider>
+            </LoaderProvider>
+          </LogoutProvider>
+        </ProfileProvider>
+      </ResponseProvider>
+    </DemoInfoProvider>
+  </BrowserRouter>,
   // </StrictMode>,
 );
