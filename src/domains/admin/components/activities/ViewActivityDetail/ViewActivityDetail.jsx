@@ -102,8 +102,12 @@ const diffValues = (oldVal, newVal) => {
   keys.forEach((key) => {
     const from = oldObj[key];
     const to = newObj[key];
-    if (normalizeForCompare(from) !== normalizeForCompare(to)) {
-      changes.push({ field: key, from: from ?? "—", to: to ?? "—" });
+    const normalizedFrom = normalizeForCompare(from);
+    // Only surface a field that actually had a prior value — a field
+    // being set for the first time (from empty/null/undefined) isn't a
+    // "change" to show here, it's new data.
+    if (normalizedFrom !== "" && normalizedFrom !== normalizeForCompare(to)) {
+      changes.push({ field: key, from, to: to ?? "—" });
     }
   });
 
