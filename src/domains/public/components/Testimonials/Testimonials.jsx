@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
 import { FaQuoteLeft, FaStar } from "react-icons/fa";
 
 // Import Swiper styles
@@ -14,6 +13,8 @@ import person3 from "../../../../assets/img/testimonials/image-3.png";
 import person4 from "../../../../assets/img/testimonials/image-1.png";
 
 import styles from "./Testimonials.module.css";
+
+const AUTOPLAY_DELAY = 4000;
 
 const testimonialData = [
   {
@@ -47,6 +48,37 @@ const testimonialData = [
 ];
 
 const Testimonials = () => {
+  const swiperRef = useRef(null);
+  const intervalRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Manual, self-driving autoplay loop. This bypasses Swiper's built-in
+  // Autoplay module entirely — with only 4 slides and up to 3 visible per
+  // view, that module's internal "last slide" bookkeeping was stalling
+  // instead of continuing past the wrap-around. slideNext() + loop={true}
+  // always wraps back to the first slide on its own, and a plain interval
+  // never enters a "stopped" state the way Autoplay's internal state can.
+  const startAutoplay = useCallback(() => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      swiperRef.current?.slideNext();
+    }, AUTOPLAY_DELAY);
+  }, []);
+
+  useEffect(() => {
+    startAutoplay();
+    return () => clearInterval(intervalRef.current);
+  }, [startAutoplay]);
+
+  // Jump to a specific testimonial and restart the timer from zero, so the
+  // next automatic tick doesn't land right on top of a manual click.
+  const goToSlide = (index) => {
+    const swiper = swiperRef.current;
+    if (!swiper) return;
+    swiper.slideToLoop(index);
+    startAutoplay();
+  };
+
   return (
     <section id="testimonials" className={styles.section}>
       <div className="container">
@@ -72,19 +104,14 @@ const Testimonials = () => {
 
         <div className={styles.carouselWrap}>
           <Swiper
-            modules={[Autoplay, Pagination]}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+            }}
+            onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
             loop={true}
+            loopAdditionalSlides={testimonialData.length * 3}
             speed={700}
-            autoplay={{
-              delay: 5000,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-            }}
             spaceBetween={24}
-            pagination={{
-              clickable: true,
-              el: `.${styles.swiperPagination}`,
-            }}
             breakpoints={{
               0: { slidesPerView: 1 },
               768: { slidesPerView: 2 },
@@ -106,16 +133,31 @@ const Testimonials = () => {
                     />
                     <div>
                       <h5 className={styles.authorName}>{item.name}</h5>
-                      <span className={styles.authorRole}>
-                        {item.position}
-                      </span>
+                      <span className={styles.authorRole}>{item.position}</span>
                     </div>
                   </div>
                 </div>
               </SwiperSlide>
             ))}
           </Swiper>
-          <div className={styles.swiperPagination}></div>
+
+          <div className={styles.swiperPagination}>
+            {testimonialData.map((item, index) => (
+              <button
+                key={item.name}
+                type="button"
+                style={{ border: "none", padding: 0, cursor: "pointer" }}
+                className={`swiper-pagination-bullet${
+                  activeIndex === index
+                    ? " swiper-pagination-bullet-active"
+                    : ""
+                }`}
+                onClick={() => goToSlide(index)}
+                aria-label={`Go to testimonial ${index + 1}`}
+                aria-current={activeIndex === index}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

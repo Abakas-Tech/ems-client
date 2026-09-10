@@ -58,6 +58,7 @@ import ListActivities from "../domains/admin/pages/ListActivities/ListActivities
 import ViewActivityDetail from "../domains/admin/pages/ViewActivityDetail/ViewActivityDetail.jsx";
 
 import Dashboard from "../domains/admin/pages/Dashboard/Dashboard.jsx";
+import LocalAgentPage from "../domains/admin/pages/meta/LocalAgent/LocalAgent.jsx";
 
 const AdminRoutes = () => {
   return (
@@ -116,6 +117,7 @@ const AdminRoutes = () => {
           path="/meta-data/employee-status"
           element={<WorkerStatusPage />}
         />
+        <Route path="/meta-data/local-agents" element={<LocalAgentPage />} />
         {/* <Route path="/meta-data/city" element={<CityPage />} />
         <Route path="/meta-data/sub-city" element={<SubCityPage />} /> */}
         {/* <Route

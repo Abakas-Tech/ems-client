@@ -154,12 +154,18 @@ function AboutSnippet() {
                 foreign employment and workforce placement agency committed to
                 connecting qualified Ethiopian workers with legitimate
                 employment opportunities abroad.
-            
               </p>
               <p className={styles.description}>
-                We believe that employment is more than simply finding a job. It
-                is about creating opportunities that improve lives, strengthen
-                families, develop skills, and contribute to a better future.
+                We connect talented individuals with trusted employers, creating
+                pathways that support personal growth, strengthen families,
+                build valuable skills, and open doors to brighter opportunities.
+              </p>
+
+              <p className={styles.description}>
+                Our mission is to make the employment journey easier and more
+                reliable, helping candidates discover suitable opportunities
+                while connecting employers with skilled and dedicated
+                professionals.
               </p>
               <p className={styles.description}>
                 Our agency works to build a trusted bridge between Ethiopian job

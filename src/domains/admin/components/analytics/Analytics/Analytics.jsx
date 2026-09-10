@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import AnalyticsFilter from "../AnalyticsFilter/AnalyticsFilter";
 import StatCard from "../StatCard/StatCard";
 import WeeklyReport from "../WeeklyReport/WeeklyReport";
-import fetchDashboardData from "../../../api/analytics.api";
+import fetchDashboardData, {
+  fetchDashboardOverview,
+} from "../../../api/analytics.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import {
   getCurrentMonthWeek,
@@ -12,6 +14,7 @@ import {
 const Analytics = () => {
   const { showLoader, hideLoader } = useloader();
   const [data, setData] = useState(null);
+  const [topAgents, setTopAgents] = useState([]);
   const [filters, setFilters] = useState({
     period: "yearly",
     year: new Date().getFullYear(),
@@ -42,6 +45,11 @@ const Analytics = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
+  useEffect(() => {
+    loadTopAgents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Fetch dashboard data
   const loadDashboard = async () => {
     showLoader();
@@ -52,6 +60,16 @@ const Analytics = () => {
       console.error("Failed to fetch dashboard data");
     } finally {
       hideLoader();
+    }
+  };
+
+  // Fetch Top Agents
+  const loadTopAgents = async () => {
+    try {
+      const result = await fetchDashboardOverview();
+      setTopAgents(result?.data?.top_agents || []);
+    } catch {
+      console.error("Failed to fetch top agents");
     }
   };
 
@@ -198,6 +216,25 @@ const Analytics = () => {
           colorClass="widget-1"
         />
       </div>
+
+      {topAgents.length > 0 && (
+        <div className="row mt-2">
+          <div className="col-12">
+            <h6 className="fw-bold text-muted text-uppercase mb-3">
+              Top Agents
+            </h6>
+          </div>
+          {topAgents.map((agent, index) => (
+            <StatCard
+              key={`${agent.name}-${index}`}
+              title={agent.name}
+              value={agent.placements}
+              icon="bi bi-person-badge"
+              colorClass={`widget-${(index % 7) + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
