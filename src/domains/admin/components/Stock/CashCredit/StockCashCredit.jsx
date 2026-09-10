@@ -12,6 +12,7 @@ const StockCashCredit = () => {
   const [cashByRep, setCashByRep] = useState([]);
   const [ledger, setLedger] = useState([]);
   const [paymentTarget, setPaymentTarget] = useState(null);
+  const [activeTab, setActiveTab] = useState("cash");
 
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -127,22 +128,41 @@ const StockCashCredit = () => {
         </div>
       </div>
 
-      <div className="stock-card p-3 mb-4">
-        <h5 className="fw-semibold mb-3">Cash by Rep</h5>
-        <ListingComponent
-          data={cashByRep}
-          columns={cashColumns}
-          emptyState={{ title: "No cash collected today yet" }}
-        />
-      </div>
-
       <div className="stock-card p-3">
-        <h5 className="fw-semibold mb-3">Pharmacy Credit Ledger</h5>
-        <ListingComponent
-          data={ledger}
-          columns={ledgerColumns}
-          emptyState={{ title: "No pharmacies yet" }}
-        />
+        <div className="btn-group mb-3" role="group">
+          <button
+            type="button"
+            className={`btn btn-sm ${
+              activeTab === "cash" ? "btn-primary" : "btn-outline-primary"
+            }`}
+            onClick={() => setActiveTab("cash")}
+          >
+            Cash by Rep
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm ${
+              activeTab === "credit" ? "btn-primary" : "btn-outline-primary"
+            }`}
+            onClick={() => setActiveTab("credit")}
+          >
+            Pharmacy Credit Ledger
+          </button>
+        </div>
+
+        {activeTab === "cash" ? (
+          <ListingComponent
+            data={cashByRep}
+            columns={cashColumns}
+            emptyState={{ title: "No cash collected today yet" }}
+          />
+        ) : (
+          <ListingComponent
+            data={ledger}
+            columns={ledgerColumns}
+            emptyState={{ title: "No pharmacies yet" }}
+          />
+        )}
       </div>
 
       <CreateModal

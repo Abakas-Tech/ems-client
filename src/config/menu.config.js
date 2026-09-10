@@ -8,6 +8,12 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN],
   },
   {
+    label: "Suppliers",
+    path: "/admin/stock/suppliers",
+    icon: "bi bi-building",
+    roles: [ROLES.ADMIN],
+  },
+  {
     label: "Import Orders",
     path: "/admin/stock/orders",
     icon: "bi bi-box-seam",
@@ -17,6 +23,12 @@ const MENU_CONFIG = [
     label: "Inventory",
     path: "/admin/stock/inventory",
     icon: "bi bi-boxes",
+    roles: [ROLES.ADMIN],
+  },
+  {
+    label: "Pharmacies",
+    path: "/admin/stock/pharmacies",
+    icon: "bi bi-hospital",
     roles: [ROLES.ADMIN],
   },
   {
@@ -32,27 +44,9 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN],
   },
   {
-    label: "Stock Reports",
-    path: "/admin/stock/reports",
-    icon: "bi bi-bar-chart-line",
-    roles: [ROLES.ADMIN],
-  },
-  {
-    label: "Users",
-    path: "/admin/users",
-    icon: "bi bi-people",
-    roles: [ROLES.ADMIN],
-  },
-  {
-    label: "My Profile",
-    path: "/admin/my-profile",
-    icon: "bi bi-person-bounding-box",
-    roles: [ROLES.ADMIN, ROLES.SALES_REP],
-  },
-  {
-    label: "Settings",
-    path: "/admin/settings",
-    icon: "bi-gear",
+    label: "Account",
+    path: "/admin/account",
+    icon: "bi bi-person-circle",
     roles: [ROLES.ADMIN, ROLES.SALES_REP],
   },
 

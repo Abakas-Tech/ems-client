@@ -3,10 +3,9 @@ import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import useProfile from "../../../../../context/Profile/useProfile";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
-import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import { listBatches } from "../../../api/stockInventory.api";
-import { createCustomer, listCustomers } from "../../../api/stockCustomer.api";
+import { listCustomers } from "../../../api/stockCustomer.api";
 import { createSale, listSales } from "../../../api/stockSale.api";
 import ROLES from "../../../../../config/role.config";
 import "../stock-theme.css";
@@ -18,7 +17,6 @@ const StockSalesDelivery = () => {
   const [batches, setBatches] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [sales, setSales] = useState([]);
-  const [showPharmacyModal, setShowPharmacyModal] = useState(false);
 
   const [form, setForm] = useState({
     customer_id: "",
@@ -57,16 +55,6 @@ const StockSalesDelivery = () => {
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleAddPharmacy = async (values) => {
-    try {
-      const response = await createCustomer(values);
-      addMessage(response?.success, response?.message || "Pharmacy added");
-      loadAll();
-    } catch (err) {
-      addMessage(false, err.message);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -169,13 +157,6 @@ const StockSalesDelivery = () => {
                 </option>
               ))}
             </select>
-            <button
-              type="button"
-              className="btn btn-link btn-sm px-0 mt-1"
-              onClick={() => setShowPharmacyModal(true)}
-            >
-              + Add new pharmacy
-            </button>
           </div>
 
           <div className="col-md-3">
@@ -271,19 +252,6 @@ const StockSalesDelivery = () => {
           }}
         />
       </div>
-
-      <CreateModal
-        show={showPharmacyModal}
-        onClose={() => setShowPharmacyModal(false)}
-        onCreate={handleAddPharmacy}
-        title="Add Pharmacy"
-        btnLabel="Add Pharmacy"
-        fields={[
-          { name: "pharmacy_name", label: "Pharmacy Name", type: "text" },
-          { name: "phone_number", label: "Phone Number", type: "text" },
-          { name: "address", label: "Address", type: "text" },
-        ]}
-      />
     </div>
   );
 };
