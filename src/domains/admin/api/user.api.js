@@ -1,30 +1,12 @@
 import { axiosInstance } from "../../../utils/axios";
 
-// GET ALL USERS
+// GET USERS (optionally filtered, e.g. { role_id })
 const getUsers = async (params = {}) => {
   try {
-    const response = await axiosInstance.get("/users", {
-      params,
-    });
-
+    const response = await axiosInstance.get("/users", { params });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Users fetch error");
-  }
-};
-
-// GET USERS LOOKUP (id + name only, no manage_users permission required)
-const getUsersLookup = async (params = {}) => {
-  try {
-    const response = await axiosInstance.get("/users/lookup", {
-      params,
-    });
-
-    return response.data;
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message || "Users lookup fetch error",
-    );
   }
 };
 
@@ -38,7 +20,7 @@ const getUserById = async (id) => {
   }
 };
 
-// CREATE USER
+// CREATE USER (e.g. registering a sales rep)
 const createUser = async (payload) => {
   try {
     const response = await axiosInstance.post("/users", payload);
@@ -58,32 +40,7 @@ const updateUser = async (id, payload) => {
   }
 };
 
-// UPLOAD PARTNER CV HEADER
-const uploadPartnerCvHeader = async (userId, file) => {
-  try {
-    const formData = new FormData();
-
-    // Use the same field name expected by imageValidator.
-    formData.append("photo", file);
-
-    const response = await axiosInstance.post(
-      `/users/${userId}/partner-cv-header`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
-    );
-
-    return response.data;
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message || "Partner CV header upload failed",
-    );
-  }
-};
-// DELETE USER (ADMIN)
+// DELETE USER
 const deleteUser = async (id) => {
   try {
     const response = await axiosInstance.delete(`/users/${id}`);
@@ -93,12 +50,4 @@ const deleteUser = async (id) => {
   }
 };
 
-export {
-  getUsers,
-  getUsersLookup,
-  getUserById,
-  createUser,
-  updateUser,
-  uploadPartnerCvHeader,
-  deleteUser,
-};
+export { getUsers, getUserById, createUser, updateUser, deleteUser };

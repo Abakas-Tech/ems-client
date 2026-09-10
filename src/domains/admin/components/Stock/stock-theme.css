@@ -107,3 +107,19 @@
 .stock-app .stock-stat.is-warning .stock-stat-value {
   color: var(--bs-warning);
 }
+
+.stock-app .stock-directory-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.stock-app .stock-directory-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px -12px rgba(11, 61, 58, 0.25);
+  border-color: var(--bs-primary);
+}
+
+.stock-app .stock-directory-icon {
+  font-size: 2.25rem;
+  color: var(--bs-primary);
+}

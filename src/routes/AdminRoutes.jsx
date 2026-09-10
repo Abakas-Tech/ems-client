@@ -8,10 +8,12 @@ import AdminLayout from "./../shared/layout/AdminLayout/AdminLayout";
 import Account from "../domains/admin/pages/Account/Account.jsx";
 
 import StockDashboard from "../domains/admin/pages/Stock/Dashboard/StockDashboard.jsx";
+import StockDirectory from "../domains/admin/pages/Stock/Directory/StockDirectory.jsx";
 import StockSuppliers from "../domains/admin/pages/Stock/Suppliers/StockSuppliers.jsx";
 import StockOrders from "../domains/admin/pages/Stock/Orders/StockOrders.jsx";
 import StockInventory from "../domains/admin/pages/Stock/Inventory/StockInventory.jsx";
 import StockPharmacies from "../domains/admin/pages/Stock/Pharmacies/StockPharmacies.jsx";
+import StockSalesReps from "../domains/admin/pages/Stock/SalesReps/StockSalesReps.jsx";
 import StockSalesDelivery from "../domains/admin/pages/Stock/SalesDelivery/StockSalesDelivery.jsx";
 import StockCashCredit from "../domains/admin/pages/Stock/CashCredit/StockCashCredit.jsx";
 
@@ -30,10 +32,12 @@ const AdminRoutes = () => {
         <Route path="account" element={<Account />} />
 
         <Route path="stock/dashboard" element={<StockDashboard />} />
+        <Route path="stock/directory" element={<StockDirectory />} />
         <Route path="stock/suppliers" element={<StockSuppliers />} />
         <Route path="stock/orders" element={<StockOrders />} />
         <Route path="stock/inventory" element={<StockInventory />} />
         <Route path="stock/pharmacies" element={<StockPharmacies />} />
+        <Route path="stock/sales-reps" element={<StockSalesReps />} />
         <Route path="stock/sales" element={<StockSalesDelivery />} />
         <Route path="stock/cash-credit" element={<StockCashCredit />} />
 

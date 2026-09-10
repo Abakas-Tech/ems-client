@@ -8,9 +8,9 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN],
   },
   {
-    label: "Suppliers",
-    path: "/admin/stock/suppliers",
-    icon: "bi bi-building",
+    label: "Directory",
+    path: "/admin/stock/directory",
+    icon: "bi bi-diagram-3",
     roles: [ROLES.ADMIN],
   },
   {
@@ -23,12 +23,6 @@ const MENU_CONFIG = [
     label: "Inventory",
     path: "/admin/stock/inventory",
     icon: "bi bi-boxes",
-    roles: [ROLES.ADMIN],
-  },
-  {
-    label: "Pharmacies",
-    path: "/admin/stock/pharmacies",
-    icon: "bi bi-hospital",
     roles: [ROLES.ADMIN],
   },
   {

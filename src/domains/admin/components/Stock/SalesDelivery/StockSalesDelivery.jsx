@@ -3,12 +3,19 @@ import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import useProfile from "../../../../../context/Profile/useProfile";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
+import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import { listBatches } from "../../../api/stockInventory.api";
 import { listCustomers } from "../../../api/stockCustomer.api";
 import { createSale, listSales } from "../../../api/stockSale.api";
+import { getUsers } from "../../../api/user.api";
 import ROLES from "../../../../../config/role.config";
 import "../stock-theme.css";
+
+const PAYMENT_OPTIONS = [
+  { value: "paid", label: "Paid" },
+  { value: "credit", label: "Credit" },
+];
 
 const StockSalesDelivery = () => {
   const { profile } = useProfile();
@@ -17,14 +24,8 @@ const StockSalesDelivery = () => {
   const [batches, setBatches] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [sales, setSales] = useState([]);
-
-  const [form, setForm] = useState({
-    customer_id: "",
-    batch_id: "",
-    quantity: "",
-    amount: "",
-    payment_status: "paid",
-  });
+  const [reps, setReps] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -32,14 +33,18 @@ const StockSalesDelivery = () => {
   const loadAll = async () => {
     showLoader();
     try {
-      const [batchRes, customerRes, saleRes] = await Promise.all([
+      const [batchRes, customerRes, saleRes, repRes] = await Promise.all([
         listBatches(),
         listCustomers(),
         listSales(),
+        isAdmin
+          ? getUsers({ role_id: ROLES.SALES_REP })
+          : Promise.resolve(null),
       ]);
       setBatches(batchRes?.data || []);
       setCustomers(customerRes?.data || []);
       setSales(saleRes?.data || []);
+      setReps(repRes?.data || []);
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -52,43 +57,22 @@ const StockSalesDelivery = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (
-      !form.customer_id ||
-      !form.batch_id ||
-      !form.quantity ||
-      !form.amount
-    ) {
-      addMessage(
-        false,
-        "Please fill in pharmacy, medicine, quantity and amount",
-      );
-      return;
-    }
-
+  const handleCreate = async (values) => {
     try {
-      const response = await createSale({
-        customer_id: form.customer_id,
-        batch_id: form.batch_id,
-        quantity: parseInt(form.quantity, 10),
-        amount: parseFloat(form.amount),
-        payment_status: form.payment_status,
-      });
+      const payload = {
+        customer_id: values.customer_id,
+        batch_id: values.batch_id,
+        quantity: parseInt(values.quantity, 10),
+        amount: parseFloat(values.amount),
+        payment_status: values.payment_status,
+      };
+
+      if (isAdmin && values.rep_user_id) {
+        payload.rep_user_id = values.rep_user_id;
+      }
+
+      const response = await createSale(payload);
       addMessage(response?.success, response?.message || "Delivery logged");
-      setForm({
-        customer_id: "",
-        batch_id: "",
-        quantity: "",
-        amount: "",
-        payment_status: "paid",
-      });
       loadAll();
     } catch (err) {
       addMessage(false, err.message);
@@ -134,112 +118,20 @@ const StockSalesDelivery = () => {
 
   return (
     <div className="stock-app">
-      <h2 className="fw-bold mb-1">Sales &amp; Delivery</h2>
-      <p className="text-muted mb-4">
-        Log every delivery the moment it happens — it updates inventory and
-        notifies the team on Telegram automatically.
-      </p>
-
-      <div className="stock-card p-3 mb-4">
-        <form onSubmit={handleSubmit} className="row g-3 align-items-end">
-          <div className="col-md-3">
-            <label className="form-label">Pharmacy</label>
-            <select
-              className="form-select"
-              name="customer_id"
-              value={form.customer_id}
-              onChange={handleFormChange}
-            >
-              <option value="">Select pharmacy</option>
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.pharmacy_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="col-md-3">
-            <label className="form-label">Medicine / Batch</label>
-            <select
-              className="form-select"
-              name="batch_id"
-              value={form.batch_id}
-              onChange={handleFormChange}
-            >
-              <option value="">Select batch</option>
-              {batches.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.medicine_name} ({b.batch_number}) — {b.quantity} left
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="col-md-2">
-            <label className="form-label">Quantity</label>
-            <input
-              type="number"
-              min="1"
-              className="form-control"
-              name="quantity"
-              value={form.quantity}
-              onChange={handleFormChange}
-            />
-          </div>
-
-          <div className="col-md-2">
-            <label className="form-label">Amount (ETB)</label>
-            <input
-              type="number"
-              min="0"
-              className="form-control"
-              name="amount"
-              value={form.amount}
-              onChange={handleFormChange}
-            />
-          </div>
-
-          <div className="col-md-2">
-            <label className="form-label d-block">Payment</label>
-            <div className="btn-group w-100" role="group">
-              <input
-                type="radio"
-                className="btn-check"
-                name="payment_status"
-                id="payment-paid"
-                value="paid"
-                checked={form.payment_status === "paid"}
-                onChange={handleFormChange}
-              />
-              <label className="btn btn-outline-success" htmlFor="payment-paid">
-                Paid
-              </label>
-
-              <input
-                type="radio"
-                className="btn-check"
-                name="payment_status"
-                id="payment-credit"
-                value="credit"
-                checked={form.payment_status === "credit"}
-                onChange={handleFormChange}
-              />
-              <label
-                className="btn btn-outline-warning"
-                htmlFor="payment-credit"
-              >
-                Credit
-              </label>
-            </div>
-          </div>
-
-          <div className="col-12">
-            <button type="submit" className="btn btn-primary">
-              Log Delivery
-            </button>
-          </div>
-        </form>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h2 className="fw-bold mb-1">Sales &amp; Delivery</h2>
+          <p className="text-muted mb-0">
+            Log every delivery the moment it happens — it updates inventory
+            and notifies the team on Telegram automatically.
+          </p>
+        </div>
+        <button
+          className="btn btn-primary"
+          onClick={() => setShowModal(true)}
+        >
+          + New Sale
+        </button>
       </div>
 
       <div className="stock-card p-3">
@@ -248,10 +140,60 @@ const StockSalesDelivery = () => {
           columns={columns}
           emptyState={{
             title: "No deliveries logged yet",
-            subtitle: "Use the form above to log your first delivery.",
+            subtitle: "Use the New Sale button to log your first delivery.",
           }}
         />
       </div>
+
+      <CreateModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onCreate={handleCreate}
+        title="New Sale"
+        btnLabel="Log Delivery"
+        fields={[
+          {
+            name: "customer_id",
+            label: "Pharmacy",
+            type: "select",
+            options: customers.map((c) => ({
+              value: c.id,
+              label: c.pharmacy_name,
+            })),
+          },
+          {
+            name: "batch_id",
+            label: "Medicine / Batch",
+            type: "select",
+            options: batches.map((b) => ({
+              value: b.id,
+              label: `${b.medicine_name} (${b.batch_number}) — ${b.quantity} left`,
+            })),
+          },
+          { name: "quantity", label: "Quantity", type: "number" },
+          { name: "amount", label: "Amount (ETB)", type: "number" },
+          {
+            name: "payment_status",
+            label: "Payment",
+            type: "select",
+            options: PAYMENT_OPTIONS,
+            initialValue: "paid",
+          },
+          ...(isAdmin
+            ? [
+                {
+                  name: "rep_user_id",
+                  label: "Sales Rep",
+                  type: "select",
+                  options: reps.map((r) => ({
+                    value: r.id,
+                    label: r.full_name,
+                  })),
+                },
+              ]
+            : []),
+        ]}
+      />
     </div>
   );
 };
