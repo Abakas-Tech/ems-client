@@ -16,19 +16,13 @@ const ProtectedRoute = ({ children }) => {
   const location = useLocation();
 
   const fallbackMap = {
-    1: "/admin/dashboard",
-    2: "/admin/my-profile",
-    3: "/partner/my-profile",
-    4: "/employee/my-profile",
-    5: "/employer/my-profile",
+    1: "/admin/stock/dashboard",
+    2: "/admin/stock/sales",
   };
 
   const baseRouteMap = {
     1: "/admin",
     2: "/admin",
-    3: "/partner",
-    4: "/employee",
-    5: "/employer",
   };
 
   useEffect(() => {
@@ -117,7 +111,7 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to={fallbackMap[userRoleId]} replace />;
   }
 
-  // Step 5: Permission check (role 2 = employee)
+  // Step 5: Permission check (kept for forward-compatibility; no menu item currently declares .permission)
   if (userRoleId === 2 && mainMenu.permission) {
     const permValue = Number(userPermissions[mainMenu.permission]);
     if (!permValue) {
