@@ -63,16 +63,30 @@ const Analytics = () => {
     }
   };
 
-  // Fetch Top Agents
+  // Fetch Top Agents. `placements` is explicitly coerced with Number(...)
+  // here — same pattern already used for every finance figure below
+  // (Number(data.finance.period_income) etc.) — so however the value
+  // arrives over JSON (string, number, null/undefined), StatCard always
+  // receives a real JS number instead of relying on its own internal
+  // parseInt to sort it out.
   const loadTopAgents = async () => {
     try {
       const result = await fetchDashboardOverview();
-      setTopAgents(result?.data?.top_agents || []);
+      const rows = result?.data?.top_agents || [];
+      setTopAgents(
+        rows.map((agent) => ({
+          name: agent.name,
+          placements: Number(agent.placements) || 0,
+        })),
+      );
     } catch {
       console.error("Failed to fetch top agents");
     }
   };
-
+useEffect(() => {
+  console.log("TOP AGENTS EFFECT FIRED");
+  loadTopAgents();
+}, []);
   //  Handle filter change
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
