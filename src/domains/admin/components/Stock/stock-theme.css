@@ -1,0 +1,109 @@
+/*
+  Scoped theme for Seid's Stock Management module.
+  Every rule is nested under .stock-app so it only affects Stock module
+  screens - it overrides Bootstrap's own CSS variables locally, which
+  automatically restyles the shared components (buttons, badges, tables)
+  used inside this subtree without touching their source files or any
+  other part of the EMS admin panel.
+*/
+
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap");
+
+.stock-app {
+  --bs-primary: #0f6e6a;
+  --bs-primary-rgb: 15, 110, 106;
+  --bs-success: #2f8f5b;
+  --bs-success-rgb: 47, 143, 91;
+  --bs-warning: #c77d18;
+  --bs-warning-rgb: 199, 125, 24;
+  --bs-danger: #b3261e;
+  --bs-danger-rgb: 179, 38, 30;
+  --bs-info: #3d7a99;
+  --bs-secondary: #6b6459;
+  --bs-body-font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --bs-body-bg: #fbf9f4;
+  --bs-body-color: #1f2a28;
+  --bs-border-color: #e4dfd3;
+  --bs-link-color: #0f6e6a;
+  --bs-link-hover-color: #0b4f4c;
+
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  font-family: var(--bs-body-font-family);
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.stock-app h2,
+.stock-app h3,
+.stock-app h4,
+.stock-app h5 {
+  font-family: "Sora", "Inter", sans-serif;
+  font-weight: 700;
+  color: #0b3d3a;
+}
+
+.stock-app .btn-primary {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.stock-app .btn-primary:hover,
+.stock-app .btn-primary:focus {
+  background-color: #0b4f4c;
+  border-color: #0b4f4c;
+}
+
+.stock-app .btn-outline-primary {
+  color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.stock-app .btn-outline-primary:hover {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.stock-app .table-light {
+  --bs-table-bg: #f1ecdf;
+  --bs-table-color: #3a362d;
+}
+
+.stock-app .stock-card {
+  background: #ffffff;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 14px;
+}
+
+.stock-app .stock-stat {
+  background: #ffffff;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  height: 100%;
+}
+
+.stock-app .stock-stat-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b6459;
+  font-weight: 600;
+}
+
+.stock-app .stock-stat-value {
+  font-family: "Sora", sans-serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #0b3d3a;
+  font-variant-numeric: tabular-nums;
+  margin-top: 0.25rem;
+}
+
+.stock-app .stock-stat.is-danger .stock-stat-value {
+  color: var(--bs-danger);
+}
+
+.stock-app .stock-stat.is-warning .stock-stat-value {
+  color: var(--bs-warning);
+}
