@@ -147,6 +147,7 @@ const Account = () => {
               value={oldPassword}
               onChange={setOldPassword}
               required
+              variant="standard"
             />
           </div>
           <div className="col-md-4">
@@ -156,6 +157,7 @@ const Account = () => {
               value={newPassword}
               onChange={setNewPassword}
               required
+              variant="standard"
             />
           </div>
           <div className="col-md-4">
@@ -165,6 +167,7 @@ const Account = () => {
               value={confirmPassword}
               onChange={setConfirmPassword}
               required
+              variant="standard"
             />
           </div>
           <div className="col-12">
