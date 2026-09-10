@@ -102,6 +102,46 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
     permission: PERMISSIONS.MANAGE_COMPLAINT,
   },
+
+  // Stock Management Menus (Seid - pharma import & distribution)
+
+  {
+    label: "Stock Dashboard",
+    path: "/admin/stock/dashboard",
+    icon: "bi bi-clipboard2-pulse",
+    roles: [ROLES.ADMIN],
+  },
+  {
+    label: "Import Orders",
+    path: "/admin/stock/orders",
+    icon: "bi bi-box-seam",
+    roles: [ROLES.ADMIN],
+  },
+  {
+    label: "Inventory",
+    path: "/admin/stock/inventory",
+    icon: "bi bi-boxes",
+    roles: [ROLES.ADMIN],
+  },
+  {
+    label: "Sales & Delivery",
+    path: "/admin/stock/sales",
+    icon: "bi bi-truck",
+    roles: [ROLES.ADMIN, ROLES.SALES_REP],
+  },
+  {
+    label: "Cash & Credit",
+    path: "/admin/stock/cash-credit",
+    icon: "bi bi-cash-coin",
+    roles: [ROLES.ADMIN],
+  },
+  {
+    label: "Stock Reports",
+    path: "/admin/stock/reports",
+    icon: "bi bi-bar-chart-line",
+    roles: [ROLES.ADMIN],
+  },
+
   {
     label: "Settings",
     path: "/admin/settings",
@@ -210,6 +250,7 @@ const MENU_CONFIG = [
       ROLES.PARTNER,
       ROLES.WORKER,
       ROLES.EMPLOYER,
+      ROLES.SALES_REP,
     ],
   },
 ];
