@@ -5,6 +5,10 @@ import {
   createUser,
   uploadPartnerCvHeader,
 } from "../../../api/user.api";
+import {
+  grantPermissions,
+  revokePermissions,
+} from "../../../api/permission.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import { useNavigate } from "react-router-dom";
 import BackButton from "./../../../../../shared/components/BackButton/BackButton";

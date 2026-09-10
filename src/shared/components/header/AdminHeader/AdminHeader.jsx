@@ -1,13 +1,11 @@
 import React, { useEffect } from "react";
 import useProfile from "../../../../context/Profile/useProfile";
-import useNotification from "../../../../context/Notification/useNotification";
 import { FaBars } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProfileCell from "../../ProfileCell/ProfileCell";
 
 const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   const { fetchProfile, profile } = useProfile();
-  const { unreadCount } = useNotification();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -44,32 +42,6 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
       onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
       onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
     >
-      <i
-        className={unreadCount > 0 ? "bi bi-bell-fill" : "bi bi-bell"}
-        style={{
-          fontSize: "1.6rem",
-          color: "var(--maincolor)",
-          display: "block",
-          fontWeight: unreadCount === 0 ? "bold" : "normal",
-        }}
-      ></i>
-
-      {unreadCount > 0 && (
-        <span
-          className="position-absolute badge rounded-pill bg-danger"
-          style={{
-            top: "7px",
-            right: "-8px",
-            fontSize: "0.65rem",
-            padding: "0.2rem 0.4rem",
-            minWidth: "18px",
-            fontWeight: "bold",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          }}
-        >
-          {unreadCount > 9 ? "9+" : unreadCount}
-        </span>
-      )}
     </button>
   );
 

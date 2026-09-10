@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import { getUsers, deleteUser, updateUser } from "../../../api/user.api";
+import { getPermission } from "../../../api/permission.api.js";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
