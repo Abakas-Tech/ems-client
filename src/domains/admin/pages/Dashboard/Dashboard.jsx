@@ -300,7 +300,7 @@ const Dashboard = () => {
                     }}
                   />
                   <Bar
-                    dataKey="placements"
+                    dataKey="workers"
                     fill="#8b5cf6"
                     radius={[0, 6, 6, 0]}
                     barSize={16}
