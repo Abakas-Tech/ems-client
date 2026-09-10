@@ -53,10 +53,12 @@
   width: 100%;
   cursor: pointer;
   border-bottom: var(--color-border-subtle) solid 2px;
-  color: var(--color-sidebar-text);
+  color: var(--color-sidebar-active-text);
   border-radius: var(--radius-default);
   padding: 0.65rem 0.5rem;
-  transition: background var(--transition-default), color var(--transition-default);
+  transition:
+    background var(--transition-default),
+    color var(--transition-default);
 }
 
 .navLink:hover {

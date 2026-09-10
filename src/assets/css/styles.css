@@ -8571,7 +8571,6 @@ h3.pa-name {
   font-size: 14px;
   display: flex;
   font-weight: 400;
-  color: var(--navcolor);
   padding: 15px 15px;
   border-bottom: 1px solid var(--formborder);
   font-family: var(--primaryfont);
