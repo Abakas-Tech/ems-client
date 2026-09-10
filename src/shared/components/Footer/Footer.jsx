@@ -98,7 +98,7 @@ const Footer = () => {
   return (
     <footer
       className="dark-footer skin-dark-footer"
-      style={{ backgroundColor: "#351f0d" }}
+      style={{ backgroundColor: "#5c0928" }}
     >
       <div className="container">
         {/* <div className="row my-0"> */}
@@ -118,7 +118,7 @@ const Footer = () => {
       </div>
 
       {/* Footer Bottom */}
-      <div className="footer-bottom" style={{ backgroundColor: "#351f0d" }}>
+      <div className="footer-bottom" style={{ backgroundColor: "#5c0928" }}>
         <div className="container">
           <div className="row align-items-center">
             {/* Left side */}

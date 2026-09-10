@@ -1,11 +1,11 @@
 .section {
-  --ct-bg: #54351b;
-  --ct-bg-deep: #432a15;
-  --ct-gold: #c9a227;
-  --ct-gold-light: #23221e;
-  --ct-cream: #1a1414;
-  --ct-muted: #060202;
-  --ct-border: rgba(10, 5, 1, 0.16);
+  --ct-bg: #0054B8;
+  --ct-bg-deep: #003876;
+  --ct-gold: #E00030;
+  --ct-gold-light: #FF4010;
+  --ct-cream: #111111;
+  --ct-muted: #545B66;
+  --ct-border: rgba(0, 84, 184, 0.15);
 
   position: relative;
   padding: 100px 0;
@@ -46,7 +46,7 @@
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #c9a227;
+  color: #E00030;
   margin-bottom: 12px;
 }
 
@@ -87,8 +87,8 @@
   gap: 14px;
   padding: 18px 20px;
   border-radius: 12px;
-  background: rgba(163, 100, 11, 0.06);
-  border: 1px solid rgba(171, 137, 15, 0.12);
+  background: rgba(0, 84, 184, 0.06);
+  border: 1px solid rgba(0, 84, 184, 0.14);
   text-align: left;
   text-decoration: none;
   color: inherit;
@@ -124,8 +124,8 @@
 
 a.detailCard:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(201, 162, 39, 0.4);
+  background: rgba(0, 84, 184, 0.08);
+  border-color: rgba(224, 0, 48, 0.35);
 }
 
 /* ---------- Map (nested inside the info column) ---------- */
@@ -207,7 +207,7 @@ a.detailCard:hover {
 
 .fieldGroup input::placeholder,
 .fieldGroup textarea::placeholder {
-  color: #54351B;
+  color: rgba(17, 17, 17, 0.35);
 }
 
 .fieldGroup input:focus,
@@ -226,7 +226,7 @@ a.detailCard:hover {
   padding: 14px 24px;
   border: none;
   border-radius: 6px;
-  background:#54351B;
+  background: linear-gradient(90deg, #A00045 0%, #E00030 45%, #FF4010 100%);
   color: #fff;
   font-weight: 700;
   font-size: 0.95rem;
@@ -237,7 +237,7 @@ a.detailCard:hover {
 
 .submitBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 14px 28px rgba(224, 0, 48, 0.35);
 }
 
 /* ---------- Responsive ---------- */

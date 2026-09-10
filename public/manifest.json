@@ -10,7 +10,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#0B1B37",
+  "theme_color": "#5c0928",
   "categories": ["business", "jobs", "employment"],
   "icons": [
     {

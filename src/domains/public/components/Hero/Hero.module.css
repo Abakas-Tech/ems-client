@@ -33,9 +33,9 @@
   inset: 0;
   background: linear-gradient(
     125deg,
-    rgba(5, 5, 20, 0.82) 0%,
-    rgba(10, 10, 40, 0.65) 60%,
-    rgba(20, 5, 50, 0.45) 100%
+    rgba(4, 12, 28, 0.84) 0%,
+    rgba(0, 40, 90, 0.62) 60%,
+    rgba(0, 84, 184, 0.38) 100%
   );
 }
 
@@ -54,7 +54,7 @@
   font-size: clamp(0.7rem, 1.2vw, 0.85rem);
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgba(160, 220, 255, 0.75);
+  color: rgba(0, 176, 255, 0.9);
   margin: 0 0 1.2rem;
 }
 
@@ -83,7 +83,7 @@
   font-size: clamp(0.95rem, 1.6vw, 1.15rem);
   font-weight: 300;
   line-height: 1.75;
-  color: rgba(220, 230, 255, 0.75);
+  color: rgba(235, 243, 255, 0.85);
   max-width: 520px;
   margin: 0 0 2.8rem;
 }
@@ -104,19 +104,19 @@
   border-radius: 3px;
   border: none;
   cursor: pointer;
-  background: #ffffff;
-  color: #08082a;
+  background: linear-gradient(90deg, #A00045 0%, #E00030 45%, #FF4010 100%);
+  color: #ffffff;
   transition:
     background 0.25s,
     transform 0.2s,
     box-shadow 0.25s;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 24px rgba(160, 0, 69, 0.4);
 }
 
 .btn-primary:hover {
-  background: #dce8ff;
+  background: linear-gradient(90deg, #8a0039 0%, #cc002a 45%, #e6390e 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(100, 160, 255, 0.35);
+  box-shadow: 0 8px 32px rgba(224, 0, 48, 0.45);
 }
 
 .btn-primary:active {
@@ -197,7 +197,7 @@
 
 .progress-fill {
   height: 100%;
-  background: rgba(160, 210, 255, 0.7);
+  background: rgba(0, 128, 255, 0.8);
   animation: progress-run 5.5s linear forwards;
   transform-origin: left;
 }

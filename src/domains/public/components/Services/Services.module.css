@@ -1,9 +1,9 @@
 .section {
-  --sv-wood: #4a2f18;
-  --sv-wood-dark: #6b4423;
-  --sv-gold: #c9a227;
-  --sv-gold-light: #e7c96b;
-  --sv-muted: #8a7360;
+  --sv-wood: #111111;
+  --sv-wood-dark: #0054B8;
+  --sv-gold: #E00030;
+  --sv-gold-light: #FF4010;
+  --sv-muted: #545B66;
 
   position: relative;
   padding: 100px 0;
@@ -19,7 +19,7 @@
   width: 320px;
   height: 320px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(201, 162, 39, 0.14), transparent 70%);
+  background: radial-gradient(circle, rgba(0, 128, 255, 0.10), transparent 70%);
   pointer-events: none;
 }
 
@@ -75,7 +75,7 @@
   padding: 32px 28px;
   border-radius: 18px;
   background-color: #ffffff;
-  box-shadow: 0 10px 30px rgba(74, 47, 24, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 40, 90, 0.08);
   overflow: hidden;
   transition:
     transform 0.3s ease,
@@ -87,7 +87,7 @@
   transform: translateY(-6px);
   background-color: var(--sv-gold);
   background-image: none;
-  box-shadow: 0 20px 45px rgba(201, 162, 39, 0.35);
+  box-shadow: 0 20px 45px rgba(224, 0, 48, 0.35);
 }
 
 .card:hover .cardTitle,
@@ -109,7 +109,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1.5px solid rgba(201, 162, 39, 0.35);
+  border: 1.5px solid rgba(224, 0, 48, 0.35);
   transition: border-color 0.3s ease;
   pointer-events: none;
 }
@@ -120,8 +120,8 @@
 
 .cardFeatured {
   grid-row: span 2;
-  background: linear-gradient(160deg, var(--sv-wood-dark), var(--sv-wood));
-  color: #fbf5ea;
+  background: linear-gradient(150deg, #0054B8 0%, #0070E8 100%);
+  color: #FFFFFF;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -129,7 +129,7 @@
 
 .cardFeatured .cardTitle,
 .cardFeatured .cardDesc {
-  color: #fbf5ea;
+  color: #FFFFFF;
 }
 
 .cardFeatured .cardIndex {
@@ -137,7 +137,7 @@
 }
 
 .cardFeatured .iconWrap {
-  background: rgba(231, 201, 107, 0.16);
+  background: rgba(255, 64, 16, 0.18);
   color: var(--sv-gold-light);
 }
 
@@ -169,7 +169,7 @@
   width: 54px;
   height: 54px;
   border-radius: 14px;
-  background: rgba(201, 162, 39, 0.12);
+  background: rgba(0, 84, 184, 0.10);
   color: var(--sv-gold);
   font-size: 1.5rem;
   margin-bottom: 18px;
@@ -198,11 +198,11 @@
 .cardNoHover:hover {
   transform: none;
   background-color: #ffffff;
-  box-shadow: 0 10px 30px rgba(74, 47, 24, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 40, 90, 0.08);
 }
 
 .cardNoHover.cardFeatured:hover {
-  background: linear-gradient(160deg, var(--sv-wood-dark), var(--sv-wood));
+  background: linear-gradient(150deg, #0054B8 0%, #0070E8 100%);
   box-shadow: none;
 }
 
@@ -213,21 +213,21 @@
 
 .cardNoHover.cardFeatured:hover .cardTitle,
 .cardNoHover.cardFeatured:hover .cardDesc {
-  color: #fbf5ea;
+  color: #FFFFFF;
 }
 
 .cardNoHover:hover .iconWrap {
-  background: rgba(201, 162, 39, 0.12);
+  background: rgba(0, 84, 184, 0.10);
   color: var(--sv-gold);
 }
 
 .cardNoHover.cardFeatured:hover .iconWrap {
-  background: rgba(231, 201, 107, 0.16);
+  background: rgba(255, 64, 16, 0.18);
   color: var(--sv-gold-light);
 }
 
 .cardNoHover:hover::after {
-  border-color: rgba(201, 162, 39, 0.35);
+  border-color: rgba(224, 0, 48, 0.35);
 }
 
 .cardNoHover:hover .cardIndex {

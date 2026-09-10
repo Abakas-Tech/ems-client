@@ -176,9 +176,8 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       );
       return false;
     }
-    const phoneRegex =
-      /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
-
+ const phoneRegex =
+   /^(?:\+?(20|90|961|962|963|964|965|966|967|968|970|971|972|973|974|975)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
     // Phone number: digits only, length 7–15
     if (phoneNumber && !phoneRegex.test(phoneNumber)) {
       addMessage(false, "Phone number is invalid.");
