@@ -66,6 +66,33 @@ const flattenValue = (obj, path = []) => {
   return result;
 };
 
+// The backend and the update payload don't always agree on type for the
+// same value (is_active as DB tinyint 1 vs payload boolean true, a
+// decimal column returned as the string "165.00" vs the payload's
+// number 165). Comparing raw values, or even raw strings, flags these
+// as "changed" even though nothing actually did. Normalizing both
+// sides to the same representation before comparing avoids that.
+const normalizeForCompare = (value) => {
+  if (value === null || value === undefined || value === "" || value === "—") {
+    return "";
+  }
+  if (typeof value === "boolean") return value ? "1" : "0";
+  if (typeof value === "number") return String(value);
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    // Only coerce decimal-looking strings (e.g. a DECIMAL column like
+    // "165.00" coming back from the DB vs the payload's plain number
+    // 165) — never plain integer strings, since a leading zero there is
+    // often meaningful (phone numbers, national IDs) rather than
+    // something to normalize away.
+    if (/^-?\d+\.\d+$/.test(trimmed)) {
+      return String(Number(trimmed));
+    }
+    return trimmed;
+  }
+  return String(value);
+};
+
 const diffValues = (oldVal, newVal) => {
   const oldObj = flattenValue(parseValue(oldVal));
   const newObj = flattenValue(parseValue(newVal));
@@ -75,7 +102,7 @@ const diffValues = (oldVal, newVal) => {
   keys.forEach((key) => {
     const from = oldObj[key];
     const to = newObj[key];
-    if (String(from ?? "") !== String(to ?? "")) {
+    if (normalizeForCompare(from) !== normalizeForCompare(to)) {
       changes.push({ field: key, from: from ?? "—", to: to ?? "—" });
     }
   });
