@@ -299,7 +299,7 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
           </div>
           <div className="text-end">
             <div className="receipt-amount">
-              {formatAmount(invoice.total_amount)} Birr
+              {formatAmount(invoice.total_amount)} USD
             </div>
             <div className="text-muted small">
               Paid {formatAmount(invoice.paid_amount)} · Balance{" "}

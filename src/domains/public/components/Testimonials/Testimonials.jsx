@@ -16,6 +16,18 @@ import styles from "./Testimonials.module.css";
 
 const AUTOPLAY_DELAY = 4000;
 
+const BREAKPOINTS = [
+  { minWidth: 1200, slidesPerView: 3 },
+  { minWidth: 768, slidesPerView: 2 },
+  { minWidth: 0, slidesPerView: 1 },
+];
+
+const getSlidesPerView = () => {
+  if (typeof window === "undefined") return 1;
+  const width = window.innerWidth;
+  return BREAKPOINTS.find((bp) => width >= bp.minWidth)?.slidesPerView || 1;
+};
+
 const testimonialData = [
   {
     name: "Sophia Anderson",
@@ -51,13 +63,19 @@ const Testimonials = () => {
   const swiperRef = useRef(null);
   const intervalRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  // How many slides are visible at once right now — recalculated on
+  // resize so the dot count/behavior stays correct across breakpoints.
+  const [slidesPerView, setSlidesPerView] = useState(getSlidesPerView);
 
-  // Manual, self-driving autoplay loop. This bypasses Swiper's built-in
-  // Autoplay module entirely — with only 4 slides and up to 3 visible per
-  // view, that module's internal "last slide" bookkeeping was stalling
-  // instead of continuing past the wrap-around. slideNext() + loop={true}
-  // always wraps back to the first slide on its own, and a plain interval
-  // never enters a "stopped" state the way Autoplay's internal state can.
+  useEffect(() => {
+    const handleResize = () => setSlidesPerView(getSlidesPerView());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const maxIndex = Math.max(0, testimonialData.length - slidesPerView);
+  const dotCount = maxIndex + 1;
+
   const startAutoplay = useCallback(() => {
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
@@ -69,13 +87,10 @@ const Testimonials = () => {
     startAutoplay();
     return () => clearInterval(intervalRef.current);
   }, [startAutoplay]);
-
-  // Jump to a specific testimonial and restart the timer from zero, so the
-  // next automatic tick doesn't land right on top of a manual click.
   const goToSlide = (index) => {
     const swiper = swiperRef.current;
     if (!swiper) return;
-    swiper.slideToLoop(index);
+    swiper.slideTo(Math.min(index, maxIndex));
     startAutoplay();
   };
 
@@ -107,9 +122,8 @@ const Testimonials = () => {
             onSwiper={(swiper) => {
               swiperRef.current = swiper;
             }}
-            onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-            loop={true}
-            loopAdditionalSlides={testimonialData.length * 3}
+            onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+            rewind={true}
             speed={700}
             spaceBetween={24}
             breakpoints={{
@@ -142,19 +156,19 @@ const Testimonials = () => {
           </Swiper>
 
           <div className={styles.swiperPagination}>
-            {testimonialData.map((item, index) => (
+            {Array.from({ length: dotCount }, (_, index) => (
               <button
-                key={item.name}
+                key={index}
                 type="button"
                 style={{ border: "none", padding: 0, cursor: "pointer" }}
                 className={`swiper-pagination-bullet${
-                  activeIndex === index
+                  Math.min(activeIndex, maxIndex) === index
                     ? " swiper-pagination-bullet-active"
                     : ""
                 }`}
                 onClick={() => goToSlide(index)}
-                aria-label={`Go to testimonial ${index + 1}`}
-                aria-current={activeIndex === index}
+                aria-label={`Go to testimonial group ${index + 1}`}
+                aria-current={Math.min(activeIndex, maxIndex) === index}
               />
             ))}
           </div>

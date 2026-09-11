@@ -12,7 +12,8 @@ import { listWorkers } from "../../../api/worker.api";
 import {
   createWorkerAgent,
   updateWorkerAgent,
-  getWorkerAgents,
+  deleteWorkerAgent,
+  getAgents,
 } from "../../../api/workerAgent.api.js";
 
 import useloader from "../../../../../context/Loader/useLoader";
@@ -29,13 +30,6 @@ const formatAmount = (value) =>
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-
-// Same phone format Worker Form's Agent Information module validates
-// against (validateAgent in WorkerForm.jsx) — kept identical here so an
-// agent's phone number is judged the same way in both places.
-const guarantorPhoneRegex = /^(?:\+251[79]\d{8}|09\d{8})$/;
-
-const emptyAgent = { agent_name: "", agent_phone: "" };
 
 // Each employee on an invoice can have a different amount — experience
 // and deployed country are the kind of thing that changes what a given
@@ -85,51 +79,36 @@ const InvoiceForm = ({
   const [workerAmounts, setWorkerAmounts] = useState({});
 
   // ---- Agent Information (per selected worker) ----------------------
-  // This mirrors Worker Form's Agent Information module exactly (see
-  // WorkerForm.jsx: `agent`, `agentExists`, `allAgents`,
-  // `currentAssignedAgentId`, handleAgentNameInputChange,
-  // handleAgentOptionSelect, renderAgentFields, and the create/update
-  // branch in handleSubmit) — just keyed per worker instead of there
-  // being only one worker in the form. Assigning an agent is optional
-  // per worker: leaving both fields blank for a worker simply means no
-  // agent gets attached to them.
+  // Mirrors Worker Form's Agent Information module (see WorkerForm.jsx):
+  // agent selection is a dropdown of every agent already on file — no
+  // free-text name/phone entry, no creating a new agent from here.
+  // Assigning/removing the assignment itself is handled from this row's
+  // Action buttons rather than an inline "save" control, since the
+  // dropdown here only stages *which* agent is picked; the actual
+  // create/update/remove happens when the corresponding action is
+  // clicked.
   //
-  // { [workerId]: { agent_name, agent_phone } } — editable fields, live
-  // as the person types.
-  const [workerAgents, setWorkerAgents] = useState({});
-  // { [workerId]: { agent_name, agent_phone } } — the last-saved value
-  // for that worker's agent (what's actually persisted right now: the
-  // value loaded from the worker record, or whatever a prior click of
-  // that row's Create/Update Agent button last saved). Comparing
-  // `workerAgents[id]` against this is how a single row's change is
-  // detected independently of every other row, and independently of the
-  // rest of the invoice form.
-  const [workerAgentBaseline, setWorkerAgentBaseline] = useState({});
+  // { [workerId]: agentId|"" } — the agent currently selected in that
+  // row's dropdown. Not yet persisted until the Assign action is clicked.
+  const [selectedAgentId, setSelectedAgentId] = useState({});
   // { [workerId]: boolean } — whether a workers_agent_information record
   // already exists for that worker (from listWorkers' agent_id), which
-  // decides createWorkerAgent vs updateWorkerAgent per row, exactly like
-  // WorkerForm's `agentExists` decides POST vs PUT.
+  // decides createWorkerAgent vs updateWorkerAgent when Assign is
+  // clicked, exactly like WorkerForm's `agentExists` decides POST vs PUT.
   const [workerAgentExists, setWorkerAgentExists] = useState({});
-  // { [workerId]: agentId|null } — mirrors WorkerForm's
-  // `currentAssignedAgentId`, used only to highlight that worker's
-  // currently-assigned agent as "Current Agent" in the suggestion list.
+  // { [workerId]: agentId|null } — the agent actually persisted for that
+  // worker right now (what's really assigned, as opposed to whatever the
+  // dropdown is currently showing) — this is what the Assign/Remove
+  // buttons compare the dropdown's selection against.
   const [workerCurrentAgentId, setWorkerCurrentAgentId] = useState({});
-  // All agents on file, fetched once — same as WorkerForm's `allAgents`,
-  // used to power every worker's Agent Name search/select suggestions.
+  // All agents on file, fetched once — sourced directly from the shared
+  // agents table (not derived from worker assignments), so an agent with
+  // no workers assigned yet still shows up here.
   const [allAgents, setAllAgents] = useState([]);
-  // workerId currently mid-save via its row's Create/Update Agent
-  // button, so that one row's button can show a spinner and be disabled
-  // without affecting any other row or the invoice submit button.
+  // workerId currently mid Assign/Remove action, so that one row's
+  // buttons can show a spinner and be disabled without affecting any
+  // other row or the invoice submit button.
   const [savingAgentWorkerId, setSavingAgentWorkerId] = useState(null);
-  // Which worker's Agent Name suggestion dropdown is open, plus the
-  // on-screen position to portal it to (see the hover-popover comment
-  // below for why this is portaled rather than positioned inline).
-  const [agentDropdown, setAgentDropdown] = useState({
-    workerId: null,
-    top: 0,
-    left: 0,
-    width: 0,
-  });
 
   // Which selected-worker row is currently hovered, so the Employee
   // column can reveal that worker's experience/deployed country. The
@@ -158,11 +137,12 @@ const InvoiceForm = ({
       .catch(() => setCustomers([]));
   }, []);
 
-  // Same as WorkerForm's "load all agents on file" effect — independent
-  // of edit/create mode, fetched once to power every worker's Agent Name
-  // suggestions.
+  // Load every agent on file (from the shared agents master table) to
+  // power every worker's Agent dropdown — independent of edit/create
+  // mode, fetched once. limit is set high since this powers a dropdown
+  // that should show the full list, not one page of it.
   useEffect(() => {
-    getWorkerAgents()
+    getAgents({ page: 1, limit: 1000 })
       .then((res) => setAllAgents(res?.data || []))
       .catch((err) => {
         console.error("Failed to load agent list:", err);
@@ -198,8 +178,7 @@ const InvoiceForm = ({
         if (!idsToResolve || idsToResolve.length === 0) {
           setSelectedWorkers([]);
           setWorkerAmounts({});
-          setWorkerAgents({});
-          setWorkerAgentBaseline({});
+          setSelectedAgentId({});
           setWorkerAgentExists({});
           setWorkerCurrentAgentId({});
           return;
@@ -238,44 +217,12 @@ const InvoiceForm = ({
           return next;
         });
 
-        // Agent fields, existence, and current-agent id all seed from
-        // listWorkers' agent_name/agent_phone/agent_id — same starting
-        // values WorkerForm would get from getWorkerAgent(id), just
-        // already included on the worker record here. Anything already
-        // typed in for a worker (prev state) is preserved, same as
-        // workerAmounts above.
-        setWorkerAgents((prev) => {
-          const next = {};
-          workers.forEach((w) => {
-            next[w.id] =
-              prev[w.id] !== undefined
-                ? prev[w.id]
-                : {
-                    agent_name: w.agent_name || "",
-                    agent_phone: w.agent_phone || "",
-                  };
-          });
-          return next;
-        });
-
-        // Baseline tracks the last-*saved* agent value for each worker
-        // (what change detection compares against) — seeded from the
-        // worker record once, then only ever moved forward by a
-        // successful per-row Create/Update Agent save, never by typing.
-        setWorkerAgentBaseline((prev) => {
-          const next = {};
-          workers.forEach((w) => {
-            next[w.id] =
-              prev[w.id] !== undefined
-                ? prev[w.id]
-                : {
-                    agent_name: w.agent_name || "",
-                    agent_phone: w.agent_phone || "",
-                  };
-          });
-          return next;
-        });
-
+        // Agent existence and current-agent id seed from listWorkers'
+        // agent_id — same starting values WorkerForm would get from
+        // getWorkerAgent(id), just already included on the worker record
+        // here. The dropdown's selection defaults to whatever is
+        // currently assigned; anything already selected (prev state) is
+        // preserved, same as workerAmounts above.
         setWorkerAgentExists((prev) => {
           const next = {};
           workers.forEach((w) => {
@@ -290,6 +237,19 @@ const InvoiceForm = ({
           workers.forEach((w) => {
             next[w.id] =
               prev[w.id] !== undefined ? prev[w.id] : (w.agent_id ?? null);
+          });
+          return next;
+        });
+
+        setSelectedAgentId((prev) => {
+          const next = {};
+          workers.forEach((w) => {
+            next[w.id] =
+              prev[w.id] !== undefined
+                ? prev[w.id]
+                : w.agent_id != null
+                  ? String(w.agent_id)
+                  : "";
           });
           return next;
         });
@@ -308,185 +268,62 @@ const InvoiceForm = ({
     setWorkerAmounts((prev) => ({ ...prev, [workerId]: value }));
   };
 
-  // ---- Agent handlers — same shape as WorkerForm's, parameterized by
-  // worker instead of operating on a single form-wide `agent` state. ----
+  // ---- Agent handlers --------------------------------------------------
 
-  const uniqueAgentOptions = React.useMemo(() => {
-    const seen = new Set();
-    const result = [];
-    for (const a of allAgents) {
-      const key = `${a.agent_name}||${a.agent_phone}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        result.push(a);
-      }
-    }
-    return result;
-  }, [allAgents]);
-
-  const getFilteredAgentOptions = (workerId) => {
-    const query =
-      workerAgents[workerId]?.agent_name?.trim().toLowerCase() || "";
-    if (!query) return uniqueAgentOptions;
-    return uniqueAgentOptions.filter((a) =>
-      a.agent_name?.toLowerCase().includes(query),
-    );
+  // Dropdown selection — just stages which agent this row should be
+  // assigned to. Doesn't persist anything by itself; Assign/Remove in
+  // the Actions column do the actual save.
+  const handleAgentSelect = (workerId, agentId) => {
+    setSelectedAgentId((prev) => ({ ...prev, [workerId]: agentId }));
   };
 
-  const openAgentDropdownFor = (worker, target) => {
-    const rect = target.getBoundingClientRect();
-    setAgentDropdown({
-      workerId: worker.id,
-      top: rect.bottom + 4,
-      left: rect.left,
-      width: rect.width,
-    });
+  // Whether the dropdown's current selection for this worker already
+  // matches what's actually assigned — if so, there's nothing to Assign.
+  const isSelectionAlreadyAssigned = (workerId) => {
+    const selected = selectedAgentId[workerId];
+    const current = workerCurrentAgentId[workerId];
+    if (!selected) return false;
+    return String(selected) === String(current ?? "");
   };
 
-  const closeAgentDropdownFor = (workerId) => {
-    setAgentDropdown((prev) =>
-      prev.workerId === workerId
-        ? { workerId: null, top: 0, left: 0, width: 0 }
-        : prev,
-    );
-  };
+  // Assign action shows whenever a real selection is made that differs
+  // from what's currently assigned — covers both "assign for the first
+  // time" and "reassign to a different agent".
+  const canAssignAgent = (workerId) =>
+    Boolean(selectedAgentId[workerId]) && !isSelectionAlreadyAssigned(workerId);
 
-  // Agent Name — same as WorkerForm's handleAgentNameInputChange: typing
-  // just updates agent_name and opens the suggestion list; it never
-  // touches agent_phone, so a manually-typed name doesn't clobber a
-  // manually-typed phone.
-  const handleAgentNameInputChange = (worker, value, e) => {
-    setWorkerAgents((prev) => ({
-      ...prev,
-      [worker.id]: {
-        ...(prev[worker.id] || emptyAgent),
-        agent_name: value,
-      },
-    }));
-    openAgentDropdownFor(worker, e.target);
-  };
+  // Remove action shows whenever this worker currently has an assignment
+  // at all, regardless of what the dropdown is showing.
+  const canRemoveAgent = (workerId) => Boolean(workerAgentExists[workerId]);
 
-  // Agent Phone — plain controlled input, same pattern as WorkerForm's
-  // handleAgentChange.
-  const handleAgentPhoneChange = (workerId, value) => {
-    setWorkerAgents((prev) => ({
-      ...prev,
-      [workerId]: {
-        ...(prev[workerId] || emptyAgent),
-        agent_phone: value,
-      },
-    }));
-  };
+  // Assign (or reassign) the selected agent to this worker. This never
+  // creates a new agent — the payload is built from an agent already in
+  // `allAgents`, so the backend's phone-based lookup always reuses that
+  // existing agent rather than creating a duplicate.
+  const handleAssignAgent = async (worker) => {
+    const agentId = selectedAgentId[worker.id];
+    if (!agentId || savingAgentWorkerId) return;
 
-  // Picking a suggestion autofills both fields from that agent's record
-  // — same as WorkerForm's handleAgentOptionSelect.
-  const handleAgentOptionSelect = (workerId, option) => {
-    setWorkerAgents((prev) => ({
-      ...prev,
-      [workerId]: {
-        agent_name: option.agent_name || "",
-        agent_phone: option.agent_phone || "",
-      },
-    }));
-    closeAgentDropdownFor(workerId);
-  };
+    const agent = allAgents.find((a) => String(a.id) === String(agentId));
+    if (!agent) return;
 
-  // ---- Agent change detection + the per-row save action --------------
-  //
-  // A row's agent fields count as "changed" the moment either field
-  // differs from that worker's baseline (their last-saved agent value).
-  // This is deliberately independent per worker: editing one row's
-  // Agent Name/Phone never affects any other row's button.
-  const isAgentRowChanged = (workerId) => {
-    const current = workerAgents[workerId] || emptyAgent;
-    const baseline = workerAgentBaseline[workerId] || emptyAgent;
-    return (
-      (current.agent_name?.trim() || "") !==
-        (baseline.agent_name?.trim() || "") ||
-      (current.agent_phone?.trim() || "") !==
-        (baseline.agent_phone?.trim() || "")
-    );
-  };
-
-  // Returns "create" / "update" when that row's Create/Update Agent
-  // button should be shown, or null when it should be hidden — no
-  // change from baseline, or the fields aren't yet a valid, complete
-  // agent (only one of name/phone filled in, or an invalid phone).
-  const getAgentActionState = (workerId) => {
-    const current = workerAgents[workerId] || emptyAgent;
-    const name = current.agent_name?.trim();
-    const phone = current.agent_phone?.trim();
-
-    if (!name || !phone) return null;
-    if (!guarantorPhoneRegex.test(phone)) return null;
-    if (!isAgentRowChanged(workerId)) return null;
-
-    return workerAgentExists[workerId] ? "update" : "create";
-  };
-
-  // Fires only from that row's action button — creates or updates the
-  // agent for that single worker right away. This never touches the
-  // invoice itself and never waits for (or triggers) the invoice's own
-  // save/submit.
-  const handleSaveAgent = async (worker) => {
-    const state = getAgentActionState(worker.id);
-    if (!state || savingAgentWorkerId) return;
-
-    const current = workerAgents[worker.id] || emptyAgent;
     const agentPayload = {
-      agent_name: current.agent_name.trim(),
-      agent_phone: current.agent_phone.trim(),
+      agent_name: agent.agent_name,
+      agent_phone: agent.agent_phone,
     };
 
     setSavingAgentWorkerId(worker.id);
     try {
-      const response =
-        state === "update"
-          ? await updateWorkerAgent(worker.id, agentPayload)
-          : await createWorkerAgent(worker.id, agentPayload);
+      const response = workerAgentExists[worker.id]
+        ? await updateWorkerAgent(worker.id, agentPayload)
+        : await createWorkerAgent(worker.id, agentPayload);
 
-      if (state === "create") {
-        setWorkerAgentExists((prev) => ({ ...prev, [worker.id]: true }));
-      }
-
-      // Baseline now matches what's persisted, so this row's button
-      // disappears again until the fields are changed once more.
-      setWorkerAgentBaseline((prev) => ({
-        ...prev,
-        [worker.id]: { ...agentPayload },
-      }));
-
-      const savedAgentId = response?.data?.id ?? response?.data?.agent_id;
-      if (savedAgentId) {
-        setWorkerCurrentAgentId((prev) => ({
-          ...prev,
-          [worker.id]: savedAgentId,
-        }));
-      }
-
-      // Keep the shared suggestion list in sync so this newly
-      // created/updated agent shows up for other workers immediately.
-      setAllAgents((prev) => {
-        if (savedAgentId) {
-          const exists = prev.some(
-            (a) => String(a.id) === String(savedAgentId),
-          );
-          if (exists) {
-            return prev.map((a) =>
-              String(a.id) === String(savedAgentId)
-                ? { ...a, ...agentPayload }
-                : a,
-            );
-          }
-          return [...prev, { id: savedAgentId, ...agentPayload }];
-        }
-        return prev;
-      });
+      setWorkerAgentExists((prev) => ({ ...prev, [worker.id]: true }));
+      setWorkerCurrentAgentId((prev) => ({ ...prev, [worker.id]: agent.id }));
 
       addMessage(
         response?.success !== false,
-        response?.message ||
-          `${state === "create" ? "Agent created" : "Agent updated"} for ${worker.full_name}`,
+        response?.message || `Agent assigned for ${worker.full_name}`,
       );
     } catch (err) {
       const statusCode = err?.response?.status || err?.status;
@@ -498,15 +335,43 @@ const InvoiceForm = ({
       } else if (statusCode === 404) {
         addMessage(
           false,
-          `Worker not found while saving agent information for ${worker.full_name}.`,
+          `Worker not found while assigning agent for ${worker.full_name}.`,
         );
       } else {
         addMessage(
           false,
-          err.message ||
-            `Failed to save agent information for ${worker.full_name}`,
+          err.message || `Failed to assign agent for ${worker.full_name}`,
         );
       }
+    } finally {
+      setSavingAgentWorkerId(null);
+    }
+  };
+
+  // Remove this worker's current agent assignment. Only the assignment
+  // is removed — the agent record itself is untouched, since the same
+  // agent may still be assigned to other workers.
+  const handleRemoveAgent = async (worker) => {
+    if (savingAgentWorkerId) return;
+
+    setSavingAgentWorkerId(worker.id);
+    try {
+      const response = await deleteWorkerAgent(worker.id);
+
+      setWorkerAgentExists((prev) => ({ ...prev, [worker.id]: false }));
+      setWorkerCurrentAgentId((prev) => ({ ...prev, [worker.id]: null }));
+      setSelectedAgentId((prev) => ({ ...prev, [worker.id]: "" }));
+
+      addMessage(
+        response?.success !== false,
+        response?.message || `Agent assignment removed for ${worker.full_name}`,
+      );
+    } catch (err) {
+      addMessage(
+        false,
+        err.message ||
+          `Failed to remove agent assignment for ${worker.full_name}`,
+      );
     } finally {
       setSavingAgentWorkerId(null);
     }
@@ -519,12 +384,7 @@ const InvoiceForm = ({
       delete next[worker.id];
       return next;
     });
-    setWorkerAgents((prev) => {
-      const next = { ...prev };
-      delete next[worker.id];
-      return next;
-    });
-    setWorkerAgentBaseline((prev) => {
+    setSelectedAgentId((prev) => {
       const next = { ...prev };
       delete next[worker.id];
       return next;
@@ -539,7 +399,6 @@ const InvoiceForm = ({
       delete next[worker.id];
       return next;
     });
-    closeAgentDropdownFor(worker.id);
   };
 
   // Jump to Active Employees with the current selection pre-checked so
@@ -596,9 +455,10 @@ const InvoiceForm = ({
     0,
   );
 
-  // Agent creation/updating is handled entirely by handleSaveAgent,
-  // fired independently from each row's action button — invoice submit
-  // never creates, updates, or otherwise touches agent records.
+  // Agent assigning/removing is handled entirely by handleAssignAgent /
+  // handleRemoveAgent, fired independently from each row's Action
+  // buttons — invoice submit never creates, updates, or otherwise
+  // touches agent assignments.
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -724,9 +584,8 @@ const InvoiceForm = ({
   // Employee column only tracks hover (worker + on-screen position) —
   // it never renders the popover itself inline, since anything drawn
   // inside the table can be clipped by the table's own scroll wrapper
-  // or buried by cell stacking contexts. The popover (and the Agent Name
-  // suggestion dropdown, further down) are rendered once, through a
-  // portal, outside the table. Either way this never reaches into
+  // or buried by cell stacking contexts. The popover is rendered once,
+  // through a portal, outside the table. This never reaches into
   // ListingComponent's own markup or state, so ListingComponent's
   // existing behavior (rename-in-place, zebra rows, selection mode,
   // etc.) is untouched.
@@ -771,56 +630,28 @@ const InvoiceForm = ({
       ),
     },
     {
-      // Agent Name doubles as search-existing / type-new, exactly like
-      // Worker Form's Agent Name field — typing filters the suggestion
-      // list (rendered via portal below), picking a suggestion autofills
-      // Agent Phone too, and a name matching nothing is just treated as
-      // a brand-new agent once both fields are filled. Any edit here is
-      // what the Actions column's change-detection watches for this row.
-      header: "Agent Name",
-      accessor: "agent_name",
+      // Agent — a single dropdown listing every agent on file as
+      // "Name — Phone", same pattern as Worker Form's Agent field.
+      // Selecting an option only stages the choice; committing it
+      // (create/update the assignment) or removing the current one
+      // happens via this row's Action buttons below.
+      header: "Agent",
+      accessor: "agent",
       render: (worker) => (
-        <input
-          type="text"
+        <select
           className="form-control form-control-sm"
-          style={{ minWidth: 170 }}
-          autoComplete="off"
-          value={workerAgents[worker.id]?.agent_name ?? ""}
-          onChange={(e) =>
-            handleAgentNameInputChange(worker, e.target.value, e)
-          }
-          onFocus={(e) => openAgentDropdownFor(worker, e.target)}
-          onBlur={() => setTimeout(() => closeAgentDropdownFor(worker.id), 150)}
-          placeholder="Search or type a new agent"
-        />
+          style={{ minWidth: 200 }}
+          value={selectedAgentId[worker.id] ?? ""}
+          onChange={(e) => handleAgentSelect(worker.id, e.target.value)}
+        >
+          <option value="">Select an agent</option>
+          {allAgents.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.agent_name} — {a.agent_phone}
+            </option>
+          ))}
+        </select>
       ),
-    },
-    {
-      header: "Agent Phone",
-      accessor: "agent_phone",
-      render: (worker) => {
-        const phone = workerAgents[worker.id]?.agent_phone ?? "";
-        const showInvalidHint =
-          phone.trim() && !guarantorPhoneRegex.test(phone.trim());
-        return (
-          <div style={{ width: 150 }}>
-            <input
-              type="text"
-              className={`form-control form-control-sm${showInvalidHint ? " is-invalid" : ""}`}
-              value={phone}
-              onChange={(e) =>
-                handleAgentPhoneChange(worker.id, e.target.value)
-              }
-              placeholder="09xxxxxxxx"
-            />
-            {showInvalidHint && (
-              <div className="invalid-feedback d-block small mb-0">
-                Invalid phone format
-              </div>
-            )}
-          </div>
-        );
-      },
     },
     {
       // Current Status — same column definition ActiveWorkers.jsx uses
@@ -840,13 +671,13 @@ const InvoiceForm = ({
   // record. bypassRole: true so it always renders here regardless of
   // which role's ACTION_ROLE_CONFIG entry "delete" normally checks.
   //
-  // The agent action reuses ActionButtons' existing "custom" render slot
-  // (the same extension point ApplicantReportGenerator uses) instead of
-  // introducing a parallel agent-management UI: for each row it asks
-  // getAgentActionState(worker.id) and renders nothing unless that row's
-  // agent fields have actually changed into a valid, complete agent.
-  // Icon-only, same visual language as the built-in "delete" action —
-  // no visible label, just an icon plus a title/aria-label tooltip.
+  // Assign/Remove Agent reuse ActionButtons' existing "custom" render
+  // slot (the same extension point ApplicantReportGenerator uses)
+  // instead of introducing a parallel agent-management UI. Each renders
+  // nothing unless that row is actually in the state the action applies
+  // to (a real, unsaved dropdown selection for Assign; an existing
+  // assignment for Remove) — so a row can show either, both, or neither
+  // depending on what's selected vs. what's actually assigned.
   const selectedWorkerActions = [
     {
       type: "delete",
@@ -856,20 +687,16 @@ const InvoiceForm = ({
     {
       type: "custom",
       render: (worker) => {
-        const state = getAgentActionState(worker.id);
-        if (!state) return null;
-
+        if (!canAssignAgent(worker.id)) return null;
         const isSaving = savingAgentWorkerId === worker.id;
-        const label = state === "create" ? "Create Agent" : "Update Agent";
-
         return (
           <button
             type="button"
-            className={`btn btn-sm ${state === "create" ? "btn-outline-success" : "btn-outline-primary"}`}
-            onClick={() => handleSaveAgent(worker)}
+            className="btn btn-sm btn-outline-success"
+            onClick={() => handleAssignAgent(worker)}
             disabled={isSaving}
-            title={label}
-            aria-label={label}
+            title="Assign Agent"
+            aria-label="Assign Agent"
           >
             {isSaving ? (
               <span
@@ -878,19 +705,40 @@ const InvoiceForm = ({
                 aria-hidden="true"
               ></span>
             ) : (
-              <i
-                className={`fa-solid ${state === "create" ? "fa-user-plus" : "fa-user-pen"}`}
-              ></i>
+              <i className="fa-solid fa-user-check"></i>
+            )}
+          </button>
+        );
+      },
+    },
+    {
+      type: "custom",
+      render: (worker) => {
+        if (!canRemoveAgent(worker.id)) return null;
+        const isSaving = savingAgentWorkerId === worker.id;
+        return (
+          <button
+            type="button"
+            className="btn btn-sm btn-outline-danger"
+            onClick={() => handleRemoveAgent(worker)}
+            disabled={isSaving}
+            title="Remove Agent"
+            aria-label="Remove Agent"
+          >
+            {isSaving ? (
+              <span
+                className="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span>
+            ) : (
+              <i className="fa-solid fa-user-minus"></i>
             )}
           </button>
         );
       },
     },
   ];
-
-  const agentDropdownOptions = agentDropdown.workerId
-    ? getFilteredAgentOptions(agentDropdown.workerId)
-    : [];
 
   return (
     <section className="dashboard-wraper">
@@ -906,15 +754,6 @@ const InvoiceForm = ({
           padding: 10px 12px;
           box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
           pointer-events: none;
-        }
-        .agent-dropdown-portal {
-          position: fixed;
-          z-index: 2000;
-          max-height: 220px;
-          overflow-y: auto;
-          margin: 0;
-          padding: 0;
-          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
         }
       `}</style>
 
@@ -952,49 +791,6 @@ const InvoiceForm = ({
               )}
             </div>
           </div>,
-          document.body,
-        )}
-
-      {/* Agent Name suggestion dropdown — same content/behavior as Worker
-          Form's own suggestion list (current agent highlighted, pick to
-          autofill both fields), portaled for the same clipping reasons
-          as the hover popover above. onMouseDown (not onClick) so the
-          selection registers before the input's onBlur closes it. */}
-      {agentDropdown.workerId &&
-        agentDropdownOptions.length > 0 &&
-        createPortal(
-          <ul
-            className="list-group agent-dropdown-portal shadow-sm"
-            style={{
-              top: agentDropdown.top,
-              left: agentDropdown.left,
-              width: agentDropdown.width,
-            }}
-          >
-            {agentDropdownOptions.map((a) => {
-              const currentAgentId =
-                workerCurrentAgentId[agentDropdown.workerId];
-              const isCurrent =
-                currentAgentId != null &&
-                String(a.id) === String(currentAgentId);
-              return (
-                <li
-                  key={a.id}
-                  className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                  style={isCurrent ? { backgroundColor: "#e7f1ff" } : undefined}
-                  role="button"
-                  onMouseDown={() =>
-                    handleAgentOptionSelect(agentDropdown.workerId, a)
-                  }
-                >
-                  <span>
-                    {a.agent_name}{" "}
-                    <small className="text-muted">— {a.agent_phone}</small>
-                  </span>
-                </li>
-              );
-            })}
-          </ul>,
           document.body,
         )}
 
