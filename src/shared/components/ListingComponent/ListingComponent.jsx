@@ -73,16 +73,16 @@ const ListingComponent = ({
 
   const renderTable = () => (
     <table
-      className="table border-bottom mb-0"
+      className={`table border-bottom mb-0 ${styles.table}`}
       style={{ tableLayout: "auto", whiteSpace: "nowrap" }}
     >
-      <thead className="table-light">
-        <tr>
+      <thead>
+        <tr className={styles.headRow}>
           {isSelectionMode && (
             <th className="ps-3" style={{ width: "50px" }}>
               <input
                 type="checkbox"
-                className="form-check-input"
+                className={styles.checkbox}
                 checked={data.length > 0 && selectedIds.length === data.length}
                 onChange={(e) => onSelectAll(e.target.checked)}
               />
@@ -108,14 +108,16 @@ const ListingComponent = ({
             <tr
               key={row.id}
               onDoubleClick={() => onRowDoubleClick?.(row)}
-              className={`${isSelected ? "table-primary-light" : ""} ${rowIndex % 2 === 0 ? styles.zebraEven : styles.zebraOdd}`}
+              className={`${styles.row} ${
+                rowIndex % 2 === 0 ? styles.zebraEven : styles.zebraOdd
+              } ${isSelected ? styles.rowSelected : ""}`}
               style={{ cursor: "pointer" }}
             >
               {isSelectionMode && (
                 <td className="ps-3 align-middle">
                   <input
                     type="checkbox"
-                    className="form-check-input"
+                    className={styles.checkbox}
                     checked={isSelected}
                     onChange={() => onSelectRow(row.id)}
                   />
@@ -144,14 +146,8 @@ const ListingComponent = ({
                   >
                     {isEditing ? (
                       <input
-                        className="form-control form-control-sm"
+                        className={`form-control form-control-sm ${styles.renameInput}`}
                         autoFocus
-                        style={{
-                          height: "100%",
-                          padding: "0 0.5rem",
-                          fontSize: "1rem",
-                          boxSizing: "border-box",
-                        }}
                         value={tempValue}
                         onChange={(e) => setTempValue(e.target.value)}
                         onBlur={() => saveRename(row, col.accessor)}
@@ -216,29 +212,22 @@ const ListingComponent = ({
       {filtersComponent}
 
       {data.length === 0 ? (
-        <div className="text-center mt-5">
-          <p className="text-muted">
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIcon}>
+            <i className="bi bi-inbox" />
+          </div>
+          <p className={styles.emptyTitle}>
             {emptyState?.title || "No records found"}
           </p>
           {emptyState?.subtitle && (
-            <p className="text-muted small">{emptyState.subtitle}</p>
+            <p className={styles.emptySubtitle}>{emptyState.subtitle}</p>
           )}
         </div>
       ) : (
         <div className="mt-4">
           {/* Count display */}
           {showCount && pagination && pagination.total > 0 && (
-            <span
-              className="badge rounded-pill mb-2  d-inline-block"
-              style={{
-                backgroundColor: "#ddd6fe",
-                color: "#7c3aed",
-                fontWeight: "700",
-                fontSize: "0.8rem",
-                padding: "6px 14px",
-                letterSpacing: "0.03em",
-              }}
-            >
+            <span className={`${styles.countBadge} d-inline-block`}>
               {(pagination.page - 1) * pagination.limit + 1}–
               {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
               of {pagination.total}
