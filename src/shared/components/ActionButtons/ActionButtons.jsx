@@ -131,7 +131,7 @@ const ActionButtons = ({ actions = [], row }) => {
     },
     deleteBadge: {
       className: "btn p-0 d-flex align-items-center justify-content-center",
-      icon: <span className={styles["delete-button"]}>&times;</span>,
+      icon: <>&times;</>,
       title: "Delete",
     },
     viewCV: {
@@ -197,7 +197,8 @@ const ActionButtons = ({ actions = [], row }) => {
         return (
           <button
             key={type}
-            className={`btn btn-sm ${config.className}`}
+            className={`btn btn-sm ${styles.actionBtn} ${config.className}`}
+            data-type={type}
             onClick={() => onClick?.(row)}
             title={config.title}
             aria-label={config.title}
