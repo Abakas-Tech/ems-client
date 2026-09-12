@@ -19,7 +19,8 @@ import {
   getWorkerAgent,
   createWorkerAgent,
   updateWorkerAgent,
-  getWorkerAgents,
+  deleteWorkerAgent,
+  getAgents,
 } from "../../../api/workerAgent.api.js";
 import { getUsers } from "../../../api/user.api";
 import { extractPassport } from "../../../api/passport.api";
@@ -203,6 +204,7 @@ const defaultPersonal = (isCreate = false) => ({
   national_id_number: "",
   fingerprint_number: "",
   labour_id: "",
+  monthly_salary: isCreate ? 1500 : "",
 });
 
 const defaultPassport = () => ({
@@ -261,18 +263,11 @@ const defaultTravel = () => ({
   arrival_location: "",
 });
 
-// `isCreate` gates the new-candidate default (Monthly Salary = 1500) the
-// same way defaultPersonal does above. Gated on `isCreate` rather than
-// left unconditional because applyProfileToForm() only calls
-// setContract(...) when a saved contract record actually exists — an
-// existing candidate with no contract yet would otherwise keep whatever
-// default this factory produced.
-const defaultContract = (isCreate = false) => ({
+const defaultContract = () => ({
   employer: "",
   partner_id: "",
   contract_start_date: "",
   contract_end_date: "",
-  monthly_salary: isCreate ? 1500 : "",
   status: "pending",
 });
 
@@ -392,8 +387,6 @@ function WorkerForm() {
   const [agent, setAgent] = useState(defaultAgent());
   const [visa, setVisa] = useState(defaultVisa());
   const [travel, setTravel] = useState(defaultTravel());
-  // Monthly Salary defaults to 1500 only for a brand-new candidate — see
-  // defaultContract()'s comment above.
   const [contract, setContract] = useState(() => defaultContract(!isEditMode));
 
   // ---- Application Generator integration: missing required fields ----
@@ -466,17 +459,14 @@ function WorkerForm() {
   const [agentExists, setAgentExists] = useState(false);
 
   // All agents on file (fetched once), used to power the Agent Name
-  // search/select suggestions.
+  // dropdown.
   const [allAgents, setAllAgents] = useState([]);
 
-  // Whether the Agent Name suggestion dropdown is open.
-  const [agentDropdownOpen, setAgentDropdownOpen] = useState(false);
-
-  // The id of the agent currently assigned to THIS worker (edit mode only,
-  // set once from getWorkerAgent on load). Used only to visually highlight
-  // that agent in the Agent Name suggestion list as "Current Agent" — it is
-  // not re-derived from whatever is selected/typed afterwards.
-  const [currentAssignedAgentId, setCurrentAssignedAgentId] = useState(null);
+  // The id of the agent currently selected/assigned in the dropdown. This
+  // is the agent's own id (agent_id), not the worker-agent assignment id —
+  // used both to drive the <select> and, in edit mode, to know whether the
+  // dropdown still reflects the worker's saved assignment.
+  const [selectedAgentId, setSelectedAgentId] = useState("");
 
   // Optional modules default to Include = OFF until their required fields
   // are filled (see the auto-toggle effect below). In edit mode this is
@@ -683,13 +673,14 @@ function WorkerForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // load all agents on file, to power the Agent Name search/select
-  // suggestions. Independent of edit/create mode — the list is useful
-  // either way.
+  // load all agents on file, to power the Agent Name dropdown. Independent
+  // of edit/create mode — the list is useful either way. Deduped by
+  // agent_id since the underlying data can include one row per worker
+  // assignment, and the same agent may be assigned to multiple workers.
   useEffect(() => {
     const loadAllAgents = async () => {
       try {
-        const res = await getWorkerAgents();
+        const res = await getAgents({ page: 1, limit: 1000 });
         setAllAgents(res?.data || []);
       } catch (err) {
         console.error("Failed to load agent list:", err);
@@ -697,7 +688,6 @@ function WorkerForm() {
     };
     loadAllAgents();
   }, []);
-
   // load the worker's currently assigned statuses (edit mode only — a
   // worker must exist before statuses can be assigned/revoked), the same
   // source WorkerProfile uses.
@@ -718,9 +708,9 @@ function WorkerForm() {
   // /worker-agent/:userId endpoint, the same way workerStatuses is loaded
   // separately from the aggregated profile above. A 404 here just means no
   // agent record exists yet for this worker — not an error the user needs
-  // to see. Also seeds sectionsEnabled.agent and currentAssignedAgentId so
-  // the saved state and the "Current Agent" highlight are correct from the
-  // start.
+  // to see. Also seeds sectionsEnabled.agent and selectedAgentId (using the
+  // assigned agent's own agent_id) so the dropdown reflects the current
+  // assignment from the start.
   useEffect(() => {
     if (!isEditMode || !id) return;
     const loadAgent = async () => {
@@ -732,8 +722,8 @@ function WorkerForm() {
             agent_phone: res.data.agent_phone || "",
           });
           setAgentExists(true);
-          setCurrentAssignedAgentId(
-            res.data.id != null ? String(res.data.id) : null,
+          setSelectedAgentId(
+            res.data.agent_id != null ? String(res.data.agent_id) : "",
           );
           setSectionsEnabled((prev) => ({ ...prev, agent: true }));
         }
@@ -741,7 +731,7 @@ function WorkerForm() {
         const statusCode = err?.response?.status || err?.status;
         if (statusCode === 404) {
           setAgentExists(false);
-          setCurrentAssignedAgentId(null);
+          setSelectedAgentId("");
           setSectionsEnabled((prev) => ({ ...prev, agent: false }));
         } else {
           console.error("Failed to fetch worker agent information:", err);
@@ -942,6 +932,8 @@ function WorkerForm() {
       national_id_number: pi.national_id_number || "",
       fingerprint_number: pi.fingerprint_number || "",
       labour_id: pi.labour_id || "",
+      monthly_salary:
+        pi.monthly_salary ?? profileData.contracts?.[0]?.monthly_salary ?? "",
     });
     setExistingPhoto3x4Url(pi.photo_3x4?.url || null);
     setExistingPhotoStandingUrl(pi.photo_standing?.url || null);
@@ -1017,7 +1009,6 @@ function WorkerForm() {
         partner_id: contractRecord.partner_id || "",
         contract_start_date: contractRecord.contract_start_date || "",
         contract_end_date: contractRecord.contract_end_date || "",
-        monthly_salary: contractRecord.monthly_salary || "",
         status: contractRecord.status || "pending",
       });
     }
@@ -1102,6 +1093,7 @@ function WorkerForm() {
       "number_of_children",
       "height_cm",
       "weight_kg",
+      "monthly_salary",
     ];
     const val = numericFields.includes(name)
       ? value
@@ -1131,30 +1123,53 @@ function WorkerForm() {
     setGuarantor((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Agent Phone — plain controlled input, same pattern as every other
-  // module's change handler.
-  const handleAgentChange = (e) => {
-    const { name, value } = e.target;
-    setAgent((prev) => ({ ...prev, [name]: value }));
-  };
+  // Agent — a single dropdown listing every agent on file (name + phone).
+  // Selecting one assigns that agent: it fills agent_name/agent_phone
+  // (sent on submit exactly as before) and records which agent is
+  // selected so the dropdown itself stays in sync.
+  const handleAgentSelect = (e) => {
+    const selectedId = e.target.value;
+    setSelectedAgentId(selectedId);
 
-  // Agent Name — the same input doubles as "search existing" and "type new".
-  // Typing just updates agent_name and opens the suggestion list; it never
-  // touches agent_phone, so a manually-typed name doesn't clobber a
-  // manually-typed phone.
-  const handleAgentNameInputChange = (e) => {
-    const value = e.target.value;
-    setAgent((prev) => ({ ...prev, agent_name: value }));
-    setAgentDropdownOpen(true);
-  };
+    if (!selectedId) {
+      setAgent(defaultAgent());
+      return;
+    }
 
-  // Picking a suggestion autofills both fields from that agent's record.
-  const handleAgentOptionSelect = (option) => {
+    const found = allAgents.find((a) => String(a.id) === selectedId);
     setAgent({
-      agent_name: option.agent_name || "",
-      agent_phone: option.agent_phone || "",
+      agent_name: found?.agent_name || "",
+      agent_phone: found?.agent_phone || "",
     });
-    setAgentDropdownOpen(false);
+  };
+
+  // Revokes the worker's current agent assignment (edit mode only).
+  // Removes the assignment via the dedicated endpoint — the agent's own
+  // record is untouched, since the same agent may still be assigned to
+  // other workers.
+  const handleRevokeAgent = () => {
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          await deleteWorkerAgent(id);
+          setAgent(defaultAgent());
+          setSelectedAgentId("");
+          setAgentExists(false);
+          setSectionsEnabled((prev) => ({ ...prev, agent: false }));
+          addMessage(true, "Agent assignment removed successfully");
+        } catch (err) {
+          addMessage(false, err.message || "Failed to remove agent");
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title:
+          "Are you sure you want to remove this worker's agent assignment?",
+        confirmText: "Remove",
+      },
+    );
   };
 
   const handleVisaChange = (e) => {
@@ -1212,7 +1227,6 @@ function WorkerForm() {
     } else if (personal.sex === "Female") {
       setSkills(FEMALE_DEFAULT_SKILLS);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [personal.sex, isEditMode, skillsUserModified]);
 
   // Experience — repeatable row group. Adding appends a blank row; removing
@@ -1280,9 +1294,7 @@ function WorkerForm() {
     Object.values(visa).some((v) => v !== "" && v != null);
   const isTravelFilled = () => Boolean(travel.ticket_number?.trim());
   const isContractFilled = () =>
-    Boolean(contract.employer?.trim()) &&
-    Boolean(contract.monthly_salary) &&
-    Boolean(contract.partner_id);
+    Boolean(contract.employer?.trim()) && Boolean(contract.partner_id);
   const isLanguagesFilled = () => languages.length > 0;
   const isSkillsFilled = () => skills.length > 0;
   const isExperienceFilled = () =>
@@ -1520,6 +1532,16 @@ function WorkerForm() {
     )
       return "Weight must be between 30 and 200 kg";
 
+    if (!personal.monthly_salary) return "Monthly salary is required";
+    const monthlySalary = Number(personal.monthly_salary);
+    if (isNaN(monthlySalary) || monthlySalary <= 0)
+      return "Monthly salary must be greater than 0";
+    const monthlySalaryDecimalParts = personal.monthly_salary
+      .toString()
+      .split(".");
+    if (monthlySalaryDecimalParts[1]?.length > 2)
+      return "Monthly salary allows at most 2 decimal places";
+
     if (!isEditMode) {
       if (!photo3x4) return "Photo 3x4 is required";
       if (!photoStanding) return "Photo Standing is required";
@@ -1658,12 +1680,12 @@ function WorkerForm() {
   const validateAgent = () => {
     if (!sectionsEnabled.agent) return null;
     const name = agent.agent_name?.trim();
-    if (!name) return "Agent name is required";
+    if (!name) return "Please select an agent";
     if (name.length > 150) return "Agent name cannot exceed 150 characters";
     if (!agent.agent_phone || !agent.agent_phone.trim())
-      return "Agent phone is required";
+      return "Please select an agent";
     if (!guarantorPhoneRegex.test(agent.agent_phone))
-      return "Enter a valid phone number";
+      return "Selected agent has an invalid phone number";
     if (agent.agent_phone.length > 50)
       return "Agent phone cannot exceed 50 characters";
     return null;
@@ -1765,14 +1787,6 @@ function WorkerForm() {
       "End date",
     );
     if (dateOrderErr) return dateOrderErr;
-
-    if (!contract.monthly_salary) return "Monthly salary is required";
-    const salary = Number(contract.monthly_salary);
-    if (isNaN(salary) || salary <= 0)
-      return "Monthly salary must be greater than 0";
-    const decimalParts = contract.monthly_salary.toString().split(".");
-    if (decimalParts[1]?.length > 2)
-      return "Monthly salary allows at most 2 decimal places";
 
     const validStatuses = ["pending", "approved", "rejected", "terminated"];
     if (!contract.status || !validStatuses.includes(contract.status))
@@ -1968,11 +1982,10 @@ function WorkerForm() {
       //   comes from that response instead.
       // Whether to POST or PUT is decided by `agentExists`, which was set
       // by the getWorkerAgent load effect (edit mode) and stays false for
-      // brand-new workers, since there is nothing to update yet. This is
-      // unaffected by whether the agent's name/phone came from a
-      // suggestion pick or manual typing — in both cases `agent` holds the
-      // values sent here, and the worker-agent link created/updated is
-      // always specific to this one worker (never a second record).
+      // brand-new workers, since there is nothing to update yet. `agent`
+      // holds whichever agent was picked from the dropdown, and the
+      // worker-agent link created/updated is always specific to this one
+      // worker (never a second record).
       const workerId = isEditMode ? id : response?.data?.id;
 
       if (sectionsEnabled.agent && workerId) {
@@ -2356,6 +2369,18 @@ function WorkerForm() {
           onChange={handlePersonalChange}
         />
       </div>
+      <div className="form-group col-md-6 mb-3">
+        {renderLabel("Monthly Salary", true)}
+        <input
+          type="number"
+          step="0.01"
+          name="monthly_salary"
+          className="form-control"
+          value={personal.monthly_salary}
+          onChange={handlePersonalChange}
+          required
+        />
+      </div>
     </div>
   );
 
@@ -2587,87 +2612,29 @@ function WorkerForm() {
     </div>
   );
 
-  // Agent Information fields — exactly two visible inputs. Agent Name
-  // doubles as a search/select-or-create field: typing filters a
-  // suggestion list drawn from every agent on file; picking a suggestion
-  // autofills Agent Phone; typing a name that matches nothing is simply
-  // treated as a brand-new agent once both fields are filled. The worker's
-  // currently assigned agent (edit mode) is visually called out in the
-  // suggestion list with a distinct background and a "Current Agent" badge.
-  const uniqueAgentOptions = React.useMemo(() => {
-    const seen = new Set();
-    const result = [];
-    for (const a of allAgents) {
-      const key = `${a.agent_name}||${a.agent_phone}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        result.push(a);
-      }
-    }
-    return result;
-  }, [allAgents]);
-
-  const filteredAgentOptions = React.useMemo(() => {
-    const query = agent.agent_name?.trim().toLowerCase() || "";
-    if (!query) return uniqueAgentOptions;
-    return uniqueAgentOptions.filter((a) =>
-      a.agent_name?.toLowerCase().includes(query),
-    );
-  }, [agent.agent_name, uniqueAgentOptions]);
-
+  // Agent Information field — a single dropdown listing every agent on
+  // file as "Name — Phone". Selecting an option assigns that agent
+  // (autofills agent_name/agent_phone via handleAgentSelect); in edit mode
+  // the dropdown opens already set to the worker's currently assigned
+  // agent (selectedAgentId, seeded from getWorkerAgent's agent_id).
   const renderAgentFields = () => (
     <div className="row">
-      <div className="form-group col-md-6 mb-3 position-relative">
-        {renderLabel("Agent Name", true)}
-        <input
-          type="text"
-          name="agent_name"
-          className="form-control"
-          autoComplete="off"
-          value={agent.agent_name}
-          onChange={handleAgentNameInputChange}
-          onFocus={() => setAgentDropdownOpen(true)}
-          onBlur={() => setTimeout(() => setAgentDropdownOpen(false), 150)}
-          placeholder="Search an existing agent or type a new one"
-          required
-        />
-        {agentDropdownOpen && filteredAgentOptions.length > 0 && (
-          <ul
-            className="list-group position-absolute w-100 shadow-sm"
-            style={{ zIndex: 2000, maxHeight: 220, overflowY: "auto" }}
-          >
-            {filteredAgentOptions.map((a) => {
-              const isCurrent =
-                currentAssignedAgentId != null &&
-                String(a.id) === String(currentAssignedAgentId);
-              return (
-                <li
-                  key={a.id}
-                  className="list-group-item list-group-item-action d-flex justify-content-between align-items-center "
-                  style={isCurrent ? { backgroundColor: "#e7f1ff" } : undefined}
-                  role="button"
-                  onMouseDown={() => handleAgentOptionSelect(a)}
-                >
-                  <span>
-                    {a.agent_name}{" "}
-                    <small className="text-muted">— {a.agent_phone}</small>
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
       <div className="form-group col-md-6 mb-3">
-        {renderLabel("Agent Phone", true)}
-        <input
-          type="text"
-          name="agent_phone"
+        {renderLabel("Agent", true)}
+        <select
+          name="agent_id"
           className="form-control"
-          value={agent.agent_phone}
-          onChange={handleAgentChange}
+          value={selectedAgentId}
+          onChange={handleAgentSelect}
           required
-        />
+        >
+          <option value="">Select an agent</option>
+          {allAgents.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.agent_name} — {a.agent_phone}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   );
@@ -2810,18 +2777,6 @@ function WorkerForm() {
             </option>
           ))}
         </select>
-      </div>
-      <div className="form-group col-md-6 mb-3">
-        {renderLabel("Monthly Salary", true)}
-        <input
-          type="number"
-          step="0.01"
-          name="monthly_salary"
-          className="form-control"
-          value={contract.monthly_salary}
-          onChange={handleContractChange}
-          required
-        />
       </div>
       <div className="form-group col-md-6 mb-3">
         {renderLabel("Status", true)}
@@ -3156,7 +3111,7 @@ function WorkerForm() {
     coc: "Optional — add if the worker has a COC assessment on record.",
     medical: "Optional — add if a medical fitness result is on record.",
     guarantor: "Optional — add a guarantor or emergency contact.",
-    agent: "Optional — add if the worker has an assigned agent.",
+    agent: "Optional — select the agent assigned to this worker.",
     visa: "Optional — add if visa details are available.",
     travel: "Optional — add if a travel ticket has been booked.",
     contract: "Optional — add if an employer contract has been agreed.",
@@ -3250,7 +3205,7 @@ function WorkerForm() {
             {section.label}
             {isMissing && <span className="tree-node-missing-flag">!</span>}
           </span>
-          {section.optional && (
+          {(section.optional || section.key === "documents") && (
             <span className="tree-node-badge">Optional</span>
           )}
         </span>
@@ -3260,7 +3215,9 @@ function WorkerForm() {
 
   // The single primary action button — reused for the fixed desktop tree,
   // the mobile top nav, and (compact) the Preview header once the tree is
-  // hidden there. Label/behavior only depends on mode + loading state.
+  // hidden there. Label only depends on create/edit mode; while a save is
+  // in flight the button is simply disabled (the existing loader already
+  // communicates the loading state), so the label never changes mid-save.
   // Kept compact (btn-sm) everywhere so it never dominates the tree nav.
   const renderActionButton = () => (
     <button
@@ -3269,11 +3226,7 @@ function WorkerForm() {
       onClick={handleSubmit}
       disabled={submitLoading}
     >
-      {submitLoading
-        ? "Saving..."
-        : isEditMode
-          ? "Save Changes"
-          : "Create Worker"}
+      {isEditMode ? "Save Changes" : "Create Worker"}
     </button>
   );
 
@@ -3523,6 +3476,7 @@ function WorkerForm() {
             {previewRowCol("Weight (kg)", personal.weight_kg)}
             {previewRowCol("National ID", personal.national_id_number)}
             {previewRowCol("Fingerprint Number", personal.fingerprint_number)}
+            {previewRowCol("Monthly Salary", personal.monthly_salary)}
             {previewFileRowCol("Photo 3x4", photo3x4, existingPhoto3x4Url)}
             {previewFileRowCol(
               "Photo Standing",
@@ -3598,15 +3552,42 @@ function WorkerForm() {
           !sectionsEnabled.visa,
         )}
 
-        {renderPreviewModule(
-          "Agent Information",
-          "agent",
-          <>
-            {previewRow("Agent Name", agent.agent_name)}
-            {previewRow("Agent Phone", agent.agent_phone)}
-          </>,
-          !sectionsEnabled.agent,
-        )}
+        {/* Agent Information — its own custom card (like Status above)
+            instead of the generic renderPreviewModule helper, so it can
+            carry an extra "delete" action alongside "edit": revoking the
+            assignment is only offered once a real assignment exists
+            (edit mode with agentExists true). */}
+        <div className="col-12 col-md-6">
+          <div
+            className="h-100"
+            style={{
+              background: "#fff",
+              border: "1.5px solid #ced4e0",
+              borderRadius: 16,
+              boxShadow: "0 6px 18px rgba(15, 23, 42, 0.08)",
+              padding: "1.25rem 1.25rem 1rem",
+            }}
+          >
+            <div className="d-flex justify-content-between align-items-center pb-2  mb-2">
+              <h6 className="fw-bold text-info mb-0">Agent Information</h6>
+              <ActionButtons
+                actions={[
+                  {
+                    type: sectionsEnabled.agent ? "edit" : "addModule",
+                    onClick: () => jumpToStep("agent"),
+                  },
+                  ...(isEditMode && agentExists
+                    ? [{ type: "delete", onClick: handleRevokeAgent }]
+                    : []),
+                ]}
+              />
+            </div>
+            <div>
+              {previewRow("Agent Name", agent.agent_name)}
+              {previewRow("Agent Phone", agent.agent_phone)}
+            </div>
+          </div>
+        </div>
 
         {renderPreviewModule(
           "Travel",
@@ -3631,7 +3612,6 @@ function WorkerForm() {
                 (p) => Number(p.partner_id) === Number(contract.partner_id),
               )?.full_name || contract.partner_id,
             )}
-            {previewRow("Monthly Salary", contract.monthly_salary)}
             {previewRow("Status", contract.status)}
           </>,
           !sectionsEnabled.contract,

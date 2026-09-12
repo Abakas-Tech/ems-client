@@ -30,13 +30,15 @@ const PERMISSION_LABELS = {
   manage_complaint: "Manage Complaints",
 };
 
+const DEFAULT_PARTNER_COUNTRY = "Saudi Arabia";
+
 const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("1"); // Active = 1, Inactive = 0
-  const [country, setCountry] = useState("");
+  const [country, setCountry] = useState(DEFAULT_PARTNER_COUNTRY);
   const [address, setAddress] = useState("");
 
   const [originalPermissions, setOriginalPermissions] = useState([]);
@@ -86,7 +88,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       setStatus(
         userData.is_active !== undefined ? String(userData.is_active) : "1",
       );
-      setCountry(userData.country || "");
+      setCountry(userData.country || DEFAULT_PARTNER_COUNTRY);
       setAddress(userData.address || "");
 
       setExistingPartnerCvHeader(userData.cv_header_url || null);
@@ -104,13 +106,21 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
     }
   }, [isEditMode, userData]);
 
+  // Ensure a country is always selected whenever the role is Partner,
+  // so the value can never be blank when the payload is built.
+  useEffect(() => {
+    if (role === "3" && !country) {
+      setCountry(DEFAULT_PARTNER_COUNTRY);
+    }
+  }, [role, country]);
+
   const resetForm = () => {
     setFullName("");
     setEmail("");
     setPhoneNumber("");
     setRole("");
     setStatus("1");
-    setCountry("");
+    setCountry(DEFAULT_PARTNER_COUNTRY);
 
     setPartnerCvHeader(null);
     setExistingPartnerCvHeader(null);
@@ -177,8 +187,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       return false;
     }
     const phoneRegex =
-      /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
-
+      /^(?:\+?(20|90|961|962|963|964|965|966|967|968|970|971|972|973|974|975)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
     // Phone number: digits only, length 7–15
     if (phoneNumber && !phoneRegex.test(phoneNumber)) {
       addMessage(false, "Phone number is invalid.");
@@ -284,7 +293,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
         phone_number: phoneNumber,
         role: Number(role),
         is_active: Number(status),
-        country: role === "3" ? country : undefined,
+        country: role === "3" ? country || DEFAULT_PARTNER_COUNTRY : undefined,
         address: role === "3" ? address : undefined,
       });
 
@@ -485,7 +494,7 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
                   </label>
                   <select
                     className="form-control"
-                    value={country}
+                    value={country || DEFAULT_PARTNER_COUNTRY}
                     required={requiredFields.country}
                     onChange={(e) => setCountry(e.target.value)}
                   >

@@ -3,12 +3,10 @@ import { Route, Routes } from "react-router-dom";
 import Finances from "../domains/admin/pages/FinancePage/FinancePage.jsx";
 import InvoicesPage from "../domains/admin/pages/Invoices/Invoice.jsx";
 import Analytics from "../domains/admin/pages/AnalyticsPage/AnalyticsPage.jsx";
-import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/WorkerDashboard.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import WorkerAutoFill from "../domains/admin/pages/workers/WorkerAutoFill/WorkerAutoFill.jsx";
 import Tickets from "../domains/admin/pages/TicketsPage/TicketsPage.jsx";
 import ArchivedWorkers from "../domains/admin/pages/workers/ArchivedWorkers/ArchivedWorkers.jsx";
-
 
 import ProtectedRoute from "../utils/ProtectedRoute.jsx";
 import NotFound from "../shared/components/NotFound/NotFound.jsx";
@@ -53,6 +51,7 @@ import ViewComplaint from "../domains/admin/pages/complaints/ViewComplaint/ViewC
 import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx";
 // ADDED — Flexible Letter Generator page
 import LetterGenerator from "../domains/admin/pages/Lettergenerator/Lettergenerator.jsx";
+import LocalAgentPage from "../domains/admin/pages/meta/LocalAgent/LocalAgent.jsx";
 
 const AdminRoutes = () => {
   return (
@@ -110,6 +109,7 @@ const AdminRoutes = () => {
           path="/meta-data/employee-status"
           element={<WorkerStatusPage />}
         />
+        <Route path="/meta-data/local-agents" element={<LocalAgentPage />} />
         {/* <Route path="/meta-data/city" element={<CityPage />} />
         <Route path="/meta-data/sub-city" element={<SubCityPage />} /> */}
         {/* <Route
@@ -160,7 +160,6 @@ const AdminRoutes = () => {
           path="/content/gallery/edit/:id"
           element={<GalleryUplaodPage />}
         />
-
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

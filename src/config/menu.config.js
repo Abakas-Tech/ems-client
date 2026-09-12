@@ -79,7 +79,13 @@ const MENU_CONFIG = [
     icon: "bi bi-database-add",
     roles: [ROLES.ADMIN],
   },
-
+  {
+    label: "Local Agents",
+    path: "/admin/meta-data/local-agents",
+    icon: "bi bi-person-badge",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_WORKERS,
+  },
   {
     label: "External Links",
     path: "/admin/external-links",
@@ -114,7 +120,6 @@ const MENU_CONFIG = [
     icon: "bi bi-people",
     roles: [ROLES.PARTNER],
   },
-
   {
     label: "Settings",
     path: "/partner/settings",
