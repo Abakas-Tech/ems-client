@@ -186,14 +186,17 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       );
       return false;
     }
-    const phoneRegex =
-      /^(?:\+?(20|90|961|962|963|964|965|966|967|968|970|971|972|973|974|975)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
-    // Phone number: digits only, length 7–15
+    // Phone number: any country code, with optional leading + and
+    // spaces/dashes/parentheses between groups (matches what
+    // handlePhoneChange already lets through while typing) — only the
+    // actual digit count is validated, per E.164 (7-15 digits).
+    const phoneRegex = /^\+?[\d\s().-]+$/;
+    const phoneDigits = phoneNumber.replace(/\D/g, "");
     if (phoneNumber && !phoneRegex.test(phoneNumber)) {
       addMessage(false, "Phone number is invalid.");
       return false;
     }
-    if (phoneNumber && (phoneNumber.length < 7 || phoneNumber.length > 15)) {
+    if (phoneNumber && (phoneDigits.length < 7 || phoneDigits.length > 15)) {
       addMessage(false, "Phone number must be between 7 and 15 digits.");
       return false;
     }
