@@ -1,10 +1,8 @@
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import ActionButtons from "../ActionButtons/ActionButtons";
 import BottomPagination from "../BottomPagination/BottomPagination";
 import ProfileCell from "../ProfileCell/ProfileCell";
 import styles from "./ListingComponent.module.css";
-
-const CLICK_DEBOUNCE_MS = 230;
 
 const ListingComponent = ({
   data = [],
@@ -21,55 +19,11 @@ const ListingComponent = ({
   onSelectRow,
   onSelectAll,
   onRowDoubleClick,
-  onRowClick,
-  resetSelectionSignal,
   showCount = true,
-  selectionRevealed: selectionRevealedProp,
-  onSelectionRevealedChange,
 }) => {
   const [editing, setEditing] = useState({ rowId: null, accessor: null });
   const [tempValue, setTempValue] = useState("");
   const [pendingRenameHandler, setPendingRenameHandler] = useState(null);
-
-  const isRevealControlled = selectionRevealedProp !== undefined;
-  const [internalSelectionRevealed, setInternalSelectionRevealed] =
-    useState(false);
-  const selectionRevealed = isRevealControlled
-    ? selectionRevealedProp
-    : internalSelectionRevealed;
-
-  const setSelectionRevealed = (value) => {
-    onSelectionRevealedChange?.(value);
-    if (!isRevealControlled) setInternalSelectionRevealed(value);
-  };
-
-  const showSelectionColumn = isSelectionMode && selectionRevealed;
-
-  useEffect(() => {
-    if (!isSelectionMode) setSelectionRevealed(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSelectionMode]);
-
-  const isFirstResetSignalRender = useRef(true);
-  useEffect(() => {
-    if (isFirstResetSignalRender.current) {
-      isFirstResetSignalRender.current = false;
-      return;
-    }
-    setSelectionRevealed(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetSelectionSignal]);
-
-  const clickTimeoutRef = useRef(null);
-
-  useEffect(() => {
-    return () => {
-      if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current);
-        clickTimeoutRef.current = null;
-      }
-    };
-  }, []);
 
   const startRename = (row, accessor, actionHandler) => {
     setEditing({ rowId: row.id, accessor });
@@ -117,49 +71,24 @@ const ListingComponent = ({
     return String(val);
   };
 
-  const handleRowDoubleClick = (row) => {
-    if (clickTimeoutRef.current) {
-      clearTimeout(clickTimeoutRef.current);
-      clickTimeoutRef.current = null;
-    }
-
-    if (onSelectRow) {
-      setSelectionRevealed(true);
-      if (isSelectionMode) {
-        onSelectRow(row.id);
-      }
-    }
-    onRowDoubleClick?.(row);
-  };
-
-  const handleRowClick = (row) => {
-    if (clickTimeoutRef.current) {
-      clearTimeout(clickTimeoutRef.current);
-    }
-    clickTimeoutRef.current = setTimeout(() => {
-      clickTimeoutRef.current = null;
-      onRowClick?.(row);
-    }, CLICK_DEBOUNCE_MS);
-  };
-
   const renderTable = () => (
     <table
-      className={`table border-bottom mb-0 ${styles.table}`}
+      className="table border-bottom mb-0"
       style={{ tableLayout: "auto", whiteSpace: "nowrap" }}
     >
-      <thead>
-        <tr className={styles.headRow}>
+      <thead className="table-light">
+        <tr>
           {isSelectionMode && (
             <th className="ps-3" style={{ width: "50px" }}>
               <input
                 type="checkbox"
-                className={styles.checkbox}
+                className="form-check-input"
                 checked={data.length > 0 && selectedIds.length === data.length}
                 onChange={(e) => onSelectAll(e.target.checked)}
               />
             </th>
           )}
-          {showAvater && <th className="p-0" />}
+          {showAvater && <th className="p-0 " />}
           {columns.map((col) => (
             <th key={col.header} className={fewColumns ? "px-5" : ""}>
               {col.header}
@@ -178,33 +107,27 @@ const ListingComponent = ({
           return (
             <tr
               key={row.id}
-              onClick={() => handleRowClick(row)}
-              onDoubleClick={() => handleRowDoubleClick(row)}
-              className={`${isSelected ? "table-primary-light" : ""} ${
-                rowIndex % 2 === 0 ? styles.zebraEven : styles.zebraOdd
-              }`}
+              onDoubleClick={() => onRowDoubleClick?.(row)}
+              className={`${isSelected ? "table-primary-light" : ""} ${rowIndex % 2 === 0 ? styles.zebraEven : styles.zebraOdd}`}
               style={{ cursor: "pointer" }}
             >
-              {showSelectionColumn && (
-                <td
-                  className="ps-3 align-middle"
-                  onClick={(e) => e.stopPropagation()}
-                >
+              {isSelectionMode && (
+                <td className="ps-3 align-middle">
                   <input
                     type="checkbox"
-                    className={styles.checkbox}
+                    className="form-check-input"
                     checked={isSelected}
                     onChange={() => onSelectRow(row.id)}
                   />
                 </td>
               )}
               {showAvater && (
-                <td className="p-0 align-middle">
+                <td className="align-middle w-1">
                   <ProfileCell
                     profile={{
                       firstName:
                         row.full_name || row.candidate_name || row.name || "?",
-                      image: row.profile_photo_url || "",
+                      image: row.photo_3x4_url || row.profile_photo_url || "",
                     }}
                   />
                 </td>
@@ -218,12 +141,17 @@ const ListingComponent = ({
                     key={index}
                     className={`align-middle ${fewColumns ? "px-5" : ""}`}
                     style={{ whiteSpace: "nowrap" }}
-                    onClick={isEditing ? (e) => e.stopPropagation() : undefined}
                   >
                     {isEditing ? (
                       <input
-                        className={`form-control form-control-sm ${styles.renameInput}`}
+                        className="form-control form-control-sm"
                         autoFocus
+                        style={{
+                          height: "100%",
+                          padding: "0 0.5rem",
+                          fontSize: "1rem",
+                          boxSizing: "border-box",
+                        }}
                         value={tempValue}
                         onChange={(e) => setTempValue(e.target.value)}
                         onBlur={() => saveRename(row, col.accessor)}
@@ -245,7 +173,6 @@ const ListingComponent = ({
                 <td
                   className={`align-middle ${fewColumns ? "px-5" : ""}`}
                   style={{ whiteSpace: "nowrap" }}
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <ActionButtons
                     actions={actions
@@ -289,22 +216,29 @@ const ListingComponent = ({
       {filtersComponent}
 
       {data.length === 0 ? (
-        <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}>
-            <i className="bi bi-inbox" />
-          </div>
-          <p className={styles.emptyTitle}>
+        <div className="text-center mt-5">
+          <p className="text-muted">
             {emptyState?.title || "No records found"}
           </p>
           {emptyState?.subtitle && (
-            <p className={styles.emptySubtitle}>{emptyState.subtitle}</p>
+            <p className="text-muted small">{emptyState.subtitle}</p>
           )}
         </div>
       ) : (
         <div className="mt-4">
           {/* Count display */}
           {showCount && pagination && pagination.total > 0 && (
-            <span className={`${styles.countBadge} d-inline-block`}>
+            <span
+              className="badge rounded-pill mb-2  d-inline-block"
+              style={{
+                backgroundColor: "#ddd6fe",
+                color: "#7c3aed",
+                fontWeight: "700",
+                fontSize: "0.8rem",
+                padding: "6px 14px",
+                letterSpacing: "0.03em",
+              }}
+            >
               {(pagination.page - 1) * pagination.limit + 1}–
               {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
               of {pagination.total}
