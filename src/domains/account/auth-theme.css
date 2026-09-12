@@ -1,0 +1,122 @@
+/*
+  Shared branded shell for the public auth pages (Login, Forgot Password,
+  Reset Password) - same teal/cream palette as the Stock module so the
+  very first screen already looks like Seid's system, not EMS.
+*/
+
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap");
+
+.auth-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: radial-gradient(
+    circle at top left,
+    #123f3c 0%,
+    #0b3d3a 45%,
+    #082b29 100%
+  );
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.auth-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.75rem;
+  text-align: center;
+}
+
+.auth-brand-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #0f6e6a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Sora", sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.auth-brand-title {
+  font-family: "Sora", sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #ffffff;
+  margin-bottom: 0.15rem;
+}
+
+.auth-brand-subtitle {
+  color: #b9d4d1;
+  font-size: 0.85rem;
+  max-width: 320px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 25px 60px -20px rgba(0, 0, 0, 0.45);
+}
+
+.auth-card h2 {
+  font-family: "Sora", sans-serif;
+  font-weight: 700;
+  color: #0b3d3a;
+}
+
+.auth-card .form-control,
+.auth-card .form-select {
+  border-radius: 10px;
+}
+
+.auth-card .form-control:focus {
+  border-color: #0f6e6a;
+  box-shadow: 0 0 0 0.2rem rgba(15, 110, 106, 0.15);
+}
+
+.auth-card .btn-auth-primary {
+  background-color: #0f6e6a;
+  border-color: #0f6e6a;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.auth-card .btn-auth-primary:hover,
+.auth-card .btn-auth-primary:focus {
+  background-color: #0b4f4c;
+  border-color: #0b4f4c;
+  color: #ffffff;
+}
+
+.auth-card .link-primary {
+  color: #0f6e6a !important;
+}
+
+.auth-footer-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #d7e9e7;
+  font-size: 0.9rem;
+}
+
+.auth-footer-link a {
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+}

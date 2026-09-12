@@ -3,14 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { passwordResetRequest } from "../../api/auth.api";
 import useloader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
-// import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
-  // const { openModal } = useDemoInfo();
 
   const validateEmail = () => {
     if (!email) {
@@ -32,45 +30,42 @@ const ForgotPasswordForm = () => {
     try {
       const response = await passwordResetRequest({ email });
       addMessage(response.success, response.message);
-      navigate("/auth/reset-password", { state: { email } });
+      // NOTE: the actual route is "/reset-password" (mounted at the auth
+      // root) - it used to navigate to "/auth/reset-password", which
+      // doesn't exist, so this silently dead-ended after requesting an OTP.
+      navigate("/reset-password", { state: { email } });
     } catch (error) {
       addMessage(false, error.message);
     } finally {
       hideLoader();
     }
-    // openModal("resetPassword");
   };
 
   return (
-    <div className="container">
-      <div className="row justify-content-center">
-        <div className="login-container p-5 rounded shadow-lg col-12 col-sm-10 col-md-6 col-lg-5">
-          <h2 className="text-center mb-3 fw-bold pt-0">Forgot Password</h2>
+    <div className="auth-card">
+      <h2 className="text-center mb-4">Forgot Password</h2>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-floating mb-3">
-              <input
-                type="email"
-                className="form-control"
-                id="email"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-              />
-              <label htmlFor="email">Email address</label>
-            </div>
-            <button
-              type="submit"
-              className="btn text-white fw-medium w-100 rounded-2"
-              style={{ backgroundColor: "#1163A8" }}
-            >
-              Submit
-            </button>
-          </form>
+      <form onSubmit={handleSubmit}>
+        <div className="form-floating mb-3">
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            placeholder="name@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+          <label htmlFor="email">Email address</label>
         </div>
-      </div>
+        <button
+          type="submit"
+          className="btn btn-auth-primary text-white fw-medium w-100"
+        >
+          Submit
+        </button>
+      </form>
     </div>
   );
 };

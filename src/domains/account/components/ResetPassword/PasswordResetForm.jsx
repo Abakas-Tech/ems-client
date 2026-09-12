@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useloader from "../../../../context/Loader/useLoader";
-// import { useDemoInfo } from "../../../../context/Demo/useDemoInfo";
 import PasswordInput from "../../../../shared/components/PasswordInput/PasswordInput";
 import useResponse from "../../../../context/Response/useResponse";
 import { passwordResetConfirm } from "../../api/auth.api";
@@ -14,7 +13,6 @@ const PasswordResetForm = ({ email }) => {
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const navigate = useNavigate();
-  // const { openModal } = useDemoInfo();
 
   // Frontend validation
   const validateForm = () => {
@@ -100,69 +98,64 @@ const PasswordResetForm = ({ email }) => {
   };
 
   return (
-    <div className="container">
-      <div className="row justify-content-center">
-        <div className="login-container p-5 rounded shadow-lg col-12 col-sm-10 col-md-6 col-lg-5">
-          <h2 className="text-center mb-3 fw-bold pt-0">Reset Password</h2>
+    <div className="auth-card">
+      <h2 className="text-center mb-4">Reset Password</h2>
 
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4 text-center">
-              <label className="form-label fw-medium d-block mb-2">
-                Enter OTP
-              </label>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4 text-center">
+          <label className="form-label fw-medium d-block mb-2">
+            Enter OTP
+          </label>
 
-              <div className="d-flex justify-content-center gap-2">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    className="form-control text-center fw-bold d-inline-block px-2 py-2 fs-4"
-                    value={otp[index] || ""}
-                    onChange={(e) => handleOtpChange(e, index)}
-                    onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="form-floating mb-3">
-              <PasswordInput
-                id="password"
-                label="New Password"
-                icon_input={true}
-                value={password}
-                onChange={setPassword}
-                required
-                align="right"
-                variant="floating"
+          <div className="d-flex justify-content-center gap-2">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <input
+                key={index}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                className="form-control text-center fw-bold d-inline-block px-2 py-2 fs-4"
+                value={otp[index] || ""}
+                onChange={(e) => handleOtpChange(e, index)}
+                onKeyDown={(e) => handleOtpKeyDown(e, index)}
               />
-            </div>
-
-            <div className="form-floating mb-3">
-              <PasswordInput
-                id="confirmPassword"
-                label="Confirm Password"
-                icon_input={true}
-                value={confirmPassword}
-                onChange={setConfirmPassword}
-                required
-                align="right"
-                variant="floating"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="btn text-white fw-medium w-100 rounded-2"
-              style={{ backgroundColor: "#1163A8" }}
-            >
-              Reset Password
-            </button>
-          </form>
+            ))}
+          </div>
         </div>
-      </div>
+
+        <div className="form-floating mb-3">
+          <PasswordInput
+            id="password"
+            label="New Password"
+            icon_input={true}
+            value={password}
+            onChange={setPassword}
+            required
+            align="right"
+            variant="floating"
+          />
+        </div>
+
+        <div className="form-floating mb-3">
+          <PasswordInput
+            id="confirmPassword"
+            label="Confirm Password"
+            icon_input={true}
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            required
+            align="right"
+            variant="floating"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="btn btn-auth-primary text-white fw-medium w-100"
+        >
+          Reset Password
+        </button>
+      </form>
     </div>
   );
 };
