@@ -23,6 +23,19 @@ const validateWorkerStatusName = (name) => {
   return null;
 };
 
+// ADDED — these five statuses are the ones the Worker Report's status
+// history logic (Application / Tasheer / Embassy / LMIS QR / LMIS Issued
+// columns) matches against by keyword. Surfacing them as one-click
+// suggestions here keeps the names consistent with what the report
+// expects, instead of relying on everyone typing them the same way.
+const SUGGESTED_STATUSES = [
+  "Application",
+  "Tasheer",
+  "Embassy",
+  "LMIS QR",
+  "LMIS Issued",
+];
+
 const WorkerStatus = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -35,6 +48,9 @@ const WorkerStatus = () => {
     total: 0,
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
+  // ADDED — tracks which suggested statuses are mid-create so the chip can
+  // show a disabled/loading state without blocking the other chips.
+  const [creatingSuggestion, setCreatingSuggestion] = useState(null);
   // Go back to previous page
   const fetchWorkerStatuses = async (page = 1, limit = 10) => {
     showLoader();
@@ -144,6 +160,35 @@ const WorkerStatus = () => {
     }
   };
 
+  // ADDED — one-click create for a suggested status, bypassing the modal
+  // since the name is already known and pre-validated by construction.
+  // Reuses createWorkerStatus directly (rather than handleCreate) so the
+  // per-chip loading state only covers this one request.
+  const handleCreateSuggested = async (name) => {
+    setCreatingSuggestion(name);
+    showLoader();
+    try {
+      const response = await createWorkerStatus({ name });
+      addMessage(response?.success, response?.message);
+      fetchWorkerStatuses();
+    } catch (err) {
+      addMessage(false, err.message);
+    } finally {
+      hideLoader();
+      setCreatingSuggestion(null);
+    }
+  };
+
+  // ADDED — hide a suggestion once a status with that name already exists
+  // (case-insensitive) on the currently loaded page, so admins aren't
+  // offered to recreate one that's already set up.
+  const existingNames = new Set(
+    workerStatuses.map((s) => (s.name || "").trim().toLowerCase()),
+  );
+  const pendingSuggestions = SUGGESTED_STATUSES.filter(
+    (name) => !existingNames.has(name.toLowerCase()),
+  );
+
   const columns = [
     {
       header: "Employee Status Name",
@@ -184,6 +229,30 @@ const WorkerStatus = () => {
               + Status
             </button>
           </div>
+
+          {/* ADDED — suggested statuses used by the Worker Report's
+              status-history columns (Application, Tasheer, Embassy,
+              LMIS QR, LMIS Issued). Only shows the ones not yet created. */}
+          {pendingSuggestions.length > 0 && (
+            <div className="mb-4">
+              <p className="text-muted mb-2" style={{ fontSize: "0.85rem" }}>
+                Suggested (used by the Worker Report):
+              </p>
+              <div className="d-flex flex-wrap gap-2">
+                {pendingSuggestions.map((name) => (
+                  <button
+                    key={name}
+                    type="button"
+                    className="btn btn-outline-primary btn-sm rounded-pill"
+                    disabled={creatingSuggestion === name}
+                    onClick={() => handleCreateSuggested(name)}
+                  >
+                    {creatingSuggestion === name ? "Adding…" : `+ ${name}`}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <ListingComponent
             data={workerStatuses}

@@ -145,7 +145,16 @@ const EXPERIENCE_YEARS_OPTIONS = [1, 2, 3, 4, 5];
 // pattern already used elsewhere in this codebase) — any custom
 // destination the staff types is still accepted and saved exactly as
 // typed. Nothing on the backend restricts it to this list.
-const TRAVEL_DESTINATION_OPTIONS = ["Jordan", "Saudi Arabia", "Qatar", "UAE", "Oman", "Kuwait", "Bahrain","Yemen"];
+const TRAVEL_DESTINATION_OPTIONS = [
+  "Jordan",
+  "Saudi Arabia",
+  "Qatar",
+  "UAE",
+  "Oman",
+  "Kuwait",
+  "Bahrain",
+  "Yemen",
+];
 
 // New-candidate default skill selections, keyed by Sex (see the
 // sex-driven auto-select effect further down). Values must match

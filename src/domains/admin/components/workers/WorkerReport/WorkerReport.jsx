@@ -46,19 +46,18 @@ const buildFooter = (pageLabel) => `
     <span>${pageLabel}</span>
   </div>`;
 
-// A worker "has" the Foreign category if their status history contains
-// any entry whose status name matches it. Medical, COC, Contract, and
-// LMIS QR no longer use this — they're read directly from the worker's
-// own yes/no fields (see buildWorkerRows) since status history isn't a
-// reliable signal for those anymore.
+// A worker "has" a given status if their status history contains any
+// entry whose status name matches the keyword. Used for the columns that
+// are derived from status history rather than the worker's own flat
+// fields: Application, Tasheer, Embassy, LMIS QR, LMIS Issued.
 const hasStatus = (worker, keyword) =>
   (worker.status_history || []).some((entry) =>
     (entry.status_name || "").toLowerCase().includes(keyword),
   );
 
-// Medical/COC/Contract/LMIS QR arrive as the strings "yes"/"no" from the
-// worker list query; Foreign still arrives as a boolean from hasStatus().
-// This normalizes either into the boolean yesNoCell expects.
+// Medical/COC arrive as the strings "yes"/"no" from the worker list
+// query. This normalizes either a boolean (from hasStatus) or a
+// "yes"/"no" string into the boolean yesNoCell expects.
 const isYes = (value) =>
   typeof value === "string" ? value.toLowerCase() === "yes" : !!value;
 
@@ -75,10 +74,13 @@ const buildWorkerRows = (workers) =>
         <td style="font-weight:600;">${worker.full_name}</td>
         ${yesNoCell(worker.medical)}
         ${yesNoCell(worker.coc)}
-        ${yesNoCell(worker.contract)}
-        ${yesNoCell(hasStatus(worker, "foreign"))}
-        ${yesNoCell(worker.lmis_qr)}
+        ${yesNoCell(hasStatus(worker, "application"))}
+        ${yesNoCell(hasStatus(worker, "tasheer"))}
+        ${yesNoCell(hasStatus(worker, "embassy"))}
+        ${yesNoCell(hasStatus(worker, "lmis qr"))}
         <td>${fmtDate(worker.ticket_date)}</td>
+        <td>${worker.status || "—"}</td>
+        ${yesNoCell(hasStatus(worker, "lmis issued"))}
       </tr>`;
     })
     .join("");
@@ -116,10 +118,13 @@ const buildPages = (partnerName, workers) => {
       <th>Name</th>
       <th style="text-align:center;">Medical</th>
       <th style="text-align:center;">COC</th>
-      <th style="text-align:center;">Contract</th>
-      <th style="text-align:center;">Foreign</th>
+      <th style="text-align:center;">Application</th>
+      <th style="text-align:center;">Tasheer</th>
+      <th style="text-align:center;">Embassy</th>
       <th style="text-align:center;">LMIS QR</th>
-      <th>Ticket Date</th>
+      <th>Ticket</th>
+      <th>Status</th>
+      <th style="text-align:center;">LMIS Issued</th>
     </tr></thead>`;
 
   return Array.from({ length: totalPages }, (_, p) => {
@@ -129,7 +134,7 @@ const buildPages = (partnerName, workers) => {
       ${buildHeader(partnerName, workers.length)}
       <table>${thead}<tbody>${
         rows ||
-        `<tr><td colspan="7" style="text-align:center;color:#8a97b0;padding:14px;">No employees found</td></tr>`
+        `<tr><td colspan="10" style="text-align:center;color:#8a97b0;padding:14px;">No employees found</td></tr>`
       }</tbody></table>
       ${buildFooter(`Page ${p + 1} of ${totalPages}`)}
     </div>`;
