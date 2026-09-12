@@ -50,15 +50,15 @@
   object-fit: cover;
   flex-shrink: 0;
   box-shadow:
-    0 0 0 3px rgba(139, 92, 246, 0.12),
-    0 6px 16px -6px rgba(124, 58, 237, 0.45);
+    0 0 0 3px rgba(224, 0, 48, 0.1),
+    0 6px 16px -6px rgba(160, 0, 69, 0.45);
 }
 
 .brandName {
   font-size: 1.05rem;
   font-weight: 800;
   letter-spacing: 0.01em;
-  background: linear-gradient(120deg, #7c3aed, #06b6d4);
+  background: linear-gradient(90deg, #a00045 0%, #e00030 45%, #ff4010 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -129,9 +129,9 @@
 
 /* ===== Active state ===== */
 .active > .navLink {
-  background: linear-gradient(120deg, #7c3aed, #6d28d9 55%, #06b6d4);
+  background: linear-gradient(90deg, #a00045 0%, #e00030 45%, #ff4010 100%);
   color: #ffffff;
-  box-shadow: 0 8px 20px -8px rgba(124, 58, 237, 0.55);
+  box-shadow: 0 8px 20px -8px rgba(224, 0, 48, 0.5);
 }
 
 .active > .navLink:hover {
