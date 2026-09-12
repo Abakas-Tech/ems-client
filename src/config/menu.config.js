@@ -84,6 +84,7 @@ const MENU_CONFIG = [
     path: "/admin/meta-data/local-agents",
     icon: "bi bi-person-badge",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+    permission: PERMISSIONS.MANAGE_WORKERS,
   },
 
   {

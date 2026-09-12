@@ -204,6 +204,7 @@ const defaultPersonal = (isCreate = false) => ({
   national_id_number: "",
   fingerprint_number: "",
   labour_id: "",
+  monthly_salary: isCreate ? 1500 : "",
 });
 
 const defaultPassport = () => ({
@@ -262,18 +263,11 @@ const defaultTravel = () => ({
   arrival_location: "",
 });
 
-// `isCreate` gates the new-candidate default (Monthly Salary = 1500) the
-// same way defaultPersonal does above. Gated on `isCreate` rather than
-// left unconditional because applyProfileToForm() only calls
-// setContract(...) when a saved contract record actually exists — an
-// existing candidate with no contract yet would otherwise keep whatever
-// default this factory produced.
-const defaultContract = (isCreate = false) => ({
+const defaultContract = () => ({
   employer: "",
   partner_id: "",
   contract_start_date: "",
   contract_end_date: "",
-  monthly_salary: isCreate ? 1500 : "",
   status: "pending",
 });
 
@@ -393,8 +387,6 @@ function WorkerForm() {
   const [agent, setAgent] = useState(defaultAgent());
   const [visa, setVisa] = useState(defaultVisa());
   const [travel, setTravel] = useState(defaultTravel());
-  // Monthly Salary defaults to 1500 only for a brand-new candidate — see
-  // defaultContract()'s comment above.
   const [contract, setContract] = useState(() => defaultContract(!isEditMode));
 
   // ---- Application Generator integration: missing required fields ----
@@ -685,17 +677,17 @@ function WorkerForm() {
   // of edit/create mode — the list is useful either way. Deduped by
   // agent_id since the underlying data can include one row per worker
   // assignment, and the same agent may be assigned to multiple workers.
-useEffect(() => {
-  const loadAllAgents = async () => {
-    try {
-      const res = await getAgents({ page: 1, limit: 1000 });
-      setAllAgents(res?.data || []);
-    } catch (err) {
-      console.error("Failed to load agent list:", err);
-    }
-  };
-  loadAllAgents();
-}, []);
+  useEffect(() => {
+    const loadAllAgents = async () => {
+      try {
+        const res = await getAgents({ page: 1, limit: 1000 });
+        setAllAgents(res?.data || []);
+      } catch (err) {
+        console.error("Failed to load agent list:", err);
+      }
+    };
+    loadAllAgents();
+  }, []);
   // load the worker's currently assigned statuses (edit mode only — a
   // worker must exist before statuses can be assigned/revoked), the same
   // source WorkerProfile uses.
@@ -940,6 +932,8 @@ useEffect(() => {
       national_id_number: pi.national_id_number || "",
       fingerprint_number: pi.fingerprint_number || "",
       labour_id: pi.labour_id || "",
+      monthly_salary:
+        pi.monthly_salary ?? profileData.contracts?.[0]?.monthly_salary ?? "",
     });
     setExistingPhoto3x4Url(pi.photo_3x4?.url || null);
     setExistingPhotoStandingUrl(pi.photo_standing?.url || null);
@@ -1015,7 +1009,6 @@ useEffect(() => {
         partner_id: contractRecord.partner_id || "",
         contract_start_date: contractRecord.contract_start_date || "",
         contract_end_date: contractRecord.contract_end_date || "",
-        monthly_salary: contractRecord.monthly_salary || "",
         status: contractRecord.status || "pending",
       });
     }
@@ -1100,6 +1093,7 @@ useEffect(() => {
       "number_of_children",
       "height_cm",
       "weight_kg",
+      "monthly_salary",
     ];
     const val = numericFields.includes(name)
       ? value
@@ -1171,7 +1165,8 @@ useEffect(() => {
         }
       },
       {
-        title: "Are you sure you want to remove this worker's agent assignment?",
+        title:
+          "Are you sure you want to remove this worker's agent assignment?",
         confirmText: "Remove",
       },
     );
@@ -1299,9 +1294,7 @@ useEffect(() => {
     Object.values(visa).some((v) => v !== "" && v != null);
   const isTravelFilled = () => Boolean(travel.ticket_number?.trim());
   const isContractFilled = () =>
-    Boolean(contract.employer?.trim()) &&
-    Boolean(contract.monthly_salary) &&
-    Boolean(contract.partner_id);
+    Boolean(contract.employer?.trim()) && Boolean(contract.partner_id);
   const isLanguagesFilled = () => languages.length > 0;
   const isSkillsFilled = () => skills.length > 0;
   const isExperienceFilled = () =>
@@ -1538,6 +1531,16 @@ useEffect(() => {
       (personal.weight_kg < 30 || personal.weight_kg > 200)
     )
       return "Weight must be between 30 and 200 kg";
+
+    if (!personal.monthly_salary) return "Monthly salary is required";
+    const monthlySalary = Number(personal.monthly_salary);
+    if (isNaN(monthlySalary) || monthlySalary <= 0)
+      return "Monthly salary must be greater than 0";
+    const monthlySalaryDecimalParts = personal.monthly_salary
+      .toString()
+      .split(".");
+    if (monthlySalaryDecimalParts[1]?.length > 2)
+      return "Monthly salary allows at most 2 decimal places";
 
     if (!isEditMode) {
       if (!photo3x4) return "Photo 3x4 is required";
@@ -1784,14 +1787,6 @@ useEffect(() => {
       "End date",
     );
     if (dateOrderErr) return dateOrderErr;
-
-    if (!contract.monthly_salary) return "Monthly salary is required";
-    const salary = Number(contract.monthly_salary);
-    if (isNaN(salary) || salary <= 0)
-      return "Monthly salary must be greater than 0";
-    const decimalParts = contract.monthly_salary.toString().split(".");
-    if (decimalParts[1]?.length > 2)
-      return "Monthly salary allows at most 2 decimal places";
 
     const validStatuses = ["pending", "approved", "rejected", "terminated"];
     if (!contract.status || !validStatuses.includes(contract.status))
@@ -2374,6 +2369,18 @@ useEffect(() => {
           onChange={handlePersonalChange}
         />
       </div>
+      <div className="form-group col-md-6 mb-3">
+        {renderLabel("Monthly Salary", true)}
+        <input
+          type="number"
+          step="0.01"
+          name="monthly_salary"
+          className="form-control"
+          value={personal.monthly_salary}
+          onChange={handlePersonalChange}
+          required
+        />
+      </div>
     </div>
   );
 
@@ -2770,18 +2777,6 @@ useEffect(() => {
             </option>
           ))}
         </select>
-      </div>
-      <div className="form-group col-md-6 mb-3">
-        {renderLabel("Monthly Salary", true)}
-        <input
-          type="number"
-          step="0.01"
-          name="monthly_salary"
-          className="form-control"
-          value={contract.monthly_salary}
-          onChange={handleContractChange}
-          required
-        />
       </div>
       <div className="form-group col-md-6 mb-3">
         {renderLabel("Status", true)}
@@ -3210,7 +3205,7 @@ useEffect(() => {
             {section.label}
             {isMissing && <span className="tree-node-missing-flag">!</span>}
           </span>
-          {section.optional && (
+          {(section.optional || section.key === "documents") && (
             <span className="tree-node-badge">Optional</span>
           )}
         </span>
@@ -3220,7 +3215,9 @@ useEffect(() => {
 
   // The single primary action button — reused for the fixed desktop tree,
   // the mobile top nav, and (compact) the Preview header once the tree is
-  // hidden there. Label/behavior only depends on mode + loading state.
+  // hidden there. Label only depends on create/edit mode; while a save is
+  // in flight the button is simply disabled (the existing loader already
+  // communicates the loading state), so the label never changes mid-save.
   // Kept compact (btn-sm) everywhere so it never dominates the tree nav.
   const renderActionButton = () => (
     <button
@@ -3229,11 +3226,7 @@ useEffect(() => {
       onClick={handleSubmit}
       disabled={submitLoading}
     >
-      {submitLoading
-        ? "Saving..."
-        : isEditMode
-          ? "Save Changes"
-          : "Create Worker"}
+      {isEditMode ? "Save Changes" : "Create Worker"}
     </button>
   );
 
@@ -3483,6 +3476,7 @@ useEffect(() => {
             {previewRowCol("Weight (kg)", personal.weight_kg)}
             {previewRowCol("National ID", personal.national_id_number)}
             {previewRowCol("Fingerprint Number", personal.fingerprint_number)}
+            {previewRowCol("Monthly Salary", personal.monthly_salary)}
             {previewFileRowCol("Photo 3x4", photo3x4, existingPhoto3x4Url)}
             {previewFileRowCol(
               "Photo Standing",
@@ -3618,7 +3612,6 @@ useEffect(() => {
                 (p) => Number(p.partner_id) === Number(contract.partner_id),
               )?.full_name || contract.partner_id,
             )}
-            {previewRow("Monthly Salary", contract.monthly_salary)}
             {previewRow("Status", contract.status)}
           </>,
           !sectionsEnabled.contract,
