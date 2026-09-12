@@ -13,6 +13,10 @@ const fmtDate = (val) =>
 // the left, document title centered, meta on the right — with the
 // partner's name as the report's main header, since this report is
 // generated for that partner.
+//
+// ADDED — a "Generated" date line, so anyone looking at a printed/saved
+// copy later can tell when it was pulled. Computed fresh each time this
+// runs (i.e. print time), not stored on the workers themselves.
 const buildHeader = (partnerName, workerCount) => {
   const { orgName, orgSub, logoPath, logoInitials, logoColor } = REPORT_META;
   const logoHtml = logoPath
@@ -34,6 +38,7 @@ const buildHeader = (partnerName, workerCount) => {
       <div class="meta-r">
         <div><b>Partner:</b> ${partnerName}</div>
         <div><b>Employees:</b> ${workerCount}</div>
+        <div><b>Generated:</b> ${fmtDate(new Date())}</div>
       </div>
     </div>`;
 };
@@ -49,14 +54,14 @@ const buildFooter = (pageLabel) => `
 // A worker "has" a given status if their status history contains any
 // entry whose status name matches the keyword. Used for the columns that
 // are derived from status history rather than the worker's own flat
-// fields: Application, Tasheer, Embassy, LMIS QR, LMIS Issued.
+// fields: Foreign, Application, Tasheer, Embassy, LMIS QR, LMIS Issued.
 const hasStatus = (worker, keyword) =>
   (worker.status_history || []).some((entry) =>
     (entry.status_name || "").toLowerCase().includes(keyword),
   );
 
-// Medical/COC arrive as the strings "yes"/"no" from the worker list
-// query. This normalizes either a boolean (from hasStatus) or a
+// Medical/COC/Contract arrive as the strings "yes"/"no" from the worker
+// list query. This normalizes either a boolean (from hasStatus) or a
 // "yes"/"no" string into the boolean yesNoCell expects.
 const isYes = (value) =>
   typeof value === "string" ? value.toLowerCase() === "yes" : !!value;
@@ -74,11 +79,13 @@ const buildWorkerRows = (workers) =>
         <td style="font-weight:600;">${worker.full_name}</td>
         ${yesNoCell(worker.medical)}
         ${yesNoCell(worker.coc)}
+        ${yesNoCell(worker.contract)}
+        ${yesNoCell(hasStatus(worker, "foreign"))}
         ${yesNoCell(hasStatus(worker, "application"))}
         ${yesNoCell(hasStatus(worker, "tasheer"))}
         ${yesNoCell(hasStatus(worker, "embassy"))}
         ${yesNoCell(hasStatus(worker, "lmis qr"))}
-        <td>${fmtDate(worker.ticket_date)}</td>
+        ${yesNoCell(!!worker.ticket_date)}
         <td>${worker.status || "—"}</td>
         ${yesNoCell(hasStatus(worker, "lmis issued"))}
       </tr>`;
@@ -118,11 +125,13 @@ const buildPages = (partnerName, workers) => {
       <th>Name</th>
       <th style="text-align:center;">Medical</th>
       <th style="text-align:center;">COC</th>
+      <th style="text-align:center;">Contract</th>
+      <th style="text-align:center;">Foreign</th>
       <th style="text-align:center;">Application</th>
       <th style="text-align:center;">Tasheer</th>
       <th style="text-align:center;">Embassy</th>
       <th style="text-align:center;">LMIS QR</th>
-      <th>Ticket</th>
+      <th style="text-align:center;">Ticket</th>
       <th>Status</th>
       <th style="text-align:center;">LMIS Issued</th>
     </tr></thead>`;
@@ -134,7 +143,7 @@ const buildPages = (partnerName, workers) => {
       ${buildHeader(partnerName, workers.length)}
       <table>${thead}<tbody>${
         rows ||
-        `<tr><td colspan="10" style="text-align:center;color:#8a97b0;padding:14px;">No employees found</td></tr>`
+        `<tr><td colspan="12" style="text-align:center;color:#8a97b0;padding:14px;">No employees found</td></tr>`
       }</tbody></table>
       ${buildFooter(`Page ${p + 1} of ${totalPages}`)}
     </div>`;
