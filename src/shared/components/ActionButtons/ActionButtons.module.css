@@ -1,8 +1,111 @@
-.delete-button {
-  border: none;
-  background: transparent;
-  font-size: 0.8rem;
-  line-height: 1;
-  padding: 0;
-  cursor: pointer;
+.actionBtn {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px !important;
+  border-width: 1.5px !important;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
+  font-size: 0.85rem;
+}
+
+.actionBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px -4px var(--action-glow, rgba(139, 92, 246, 0.35));
+}
+
+.actionBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.actionBtn:disabled {
+  opacity: 0.4;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Per-type accent on hover — background becomes a soft gradient wash,
+   icon/border pick up the matching brand color. Bootstrap's outline-*
+   classes still apply at rest; this only kicks in on hover. */
+.actionBtn[data-type="view"]:hover:not(:disabled),
+.actionBtn[data-type="viewModule"]:hover:not(:disabled),
+.actionBtn[data-type="viewCV"]:hover:not(:disabled),
+.actionBtn[data-type="download"]:hover:not(:disabled),
+.actionBtn[data-type="addModule"]:hover:not(:disabled),
+.actionBtn[data-type="leftArrow"]:hover:not(:disabled),
+.actionBtn[data-type="rightArrow"]:hover:not(:disabled),
+.actionBtn[data-type="AssignDate"]:hover:not(:disabled),
+.actionBtn[data-type="send"]:hover:not(:disabled) {
+  --action-glow: rgba(6, 182, 212, 0.35);
+  background: linear-gradient(135deg, #06b6d4, #3b82f6) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+.actionBtn[data-type="edit"]:hover:not(:disabled),
+.actionBtn[data-type="assign"]:hover:not(:disabled) {
+  --action-glow: rgba(139, 92, 246, 0.35);
+  background: linear-gradient(135deg, #8b5cf6, #6366f1) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+.actionBtn[data-type="delete"]:hover:not(:disabled),
+.actionBtn[data-type="deleteBadge"]:hover:not(:disabled),
+.actionBtn[data-type="removeStatus"]:hover:not(:disabled) {
+  --action-glow: rgba(236, 72, 153, 0.35);
+  background: linear-gradient(135deg, #ec4899, #dc2626) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+.actionBtn[data-type="archive"]:hover:not(:disabled),
+.actionBtn[data-type="updateStatus"]:hover:not(:disabled) {
+  --action-glow: rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, #f59e0b, #ea580c) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+.actionBtn[data-type="restore"]:hover:not(:disabled) {
+  --action-glow: rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+.actionBtn[data-type="rename"]:hover:not(:disabled) {
+  --action-glow: rgba(107, 114, 128, 0.25);
+  background: linear-gradient(135deg, #9ca3af, #6b7280) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+/* deleteBadge is a tiny "x" button, not an outlined icon button — keep it distinct */
+.actionBtn[data-type="deleteBadge"] {
+  width: 20px;
+  height: 20px;
+  border-radius: 50% !important;
+  border: none !important;
+}
+
+.actionBtn[data-type="deleteBadge"]:hover:not(:disabled) {
+  transform: scale(1.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actionBtn,
+  .actionBtn:hover,
+  .actionBtn[data-type="deleteBadge"]:hover {
+    transition: none;
+    transform: none;
+  }
 }
