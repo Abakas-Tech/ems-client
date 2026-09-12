@@ -60,10 +60,74 @@ const deleteWorkerAgent = async (userId) => {
   }
 };
 
+// CREATE AGENT
+const createAgent = async (data) => {
+  try {
+    const response = await axiosInstance.post("/workers/agent/agents", data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Create agent error");
+  }
+};
+
+// GET ALL AGENTS
+const getAgents = async (params) => {
+  try {
+    const response = await axiosInstance.get("/workers/agent/agents", {
+      params,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Fetch agents error");
+  }
+};
+
+// GET AGENT BY ID
+const getAgent = async (agentId) => {
+  try {
+    const response = await axiosInstance.get(
+      `/workers/agent/agents/${agentId}`,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Fetch agent error");
+  }
+};
+
+// UPDATE AGENT
+const updateAgent = async (agentId, data) => {
+  try {
+    const response = await axiosInstance.put(
+      `/workers/agent/agents/${agentId}`,
+      data,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Update agent error");
+  }
+};
+
+// DELETE AGENT
+const deleteAgent = async (agentId) => {
+  try {
+    const response = await axiosInstance.delete(
+      `/workers/agent/agents/${agentId}`,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Delete agent error");
+  }
+};
+
 export {
   createWorkerAgent,
   getWorkerAgents,
   getWorkerAgent,
   updateWorkerAgent,
   deleteWorkerAgent,
+  createAgent,
+  getAgents,
+  getAgent,
+  updateAgent,
+  deleteAgent,
 };

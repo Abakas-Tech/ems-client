@@ -51,7 +51,7 @@ import ViewComplaint from "../domains/admin/pages/complaints/ViewComplaint/ViewC
 import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx";
 // ADDED — Flexible Letter Generator page
 import LetterGenerator from "../domains/admin/pages/Lettergenerator/Lettergenerator.jsx";
-import LocalAgentPage from "../domains/admin/pages/meta/LocalAgent/LocalAgent.jsx";
+import LocalAgentPage from "../domains/admin/pages/meta/LocalAgents/LocalAgents.jsx";
 
 const AdminRoutes = () => {
   return (
