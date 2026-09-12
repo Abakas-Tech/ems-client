@@ -58,9 +58,10 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
         <div className="row g-3 align-items-center">
           {/* Search — REMOVED: passport_number and labour_id inputs below.
               The query layer now matches search against name, phone,
-              labour_id, and passport_number all in one field, so a
-              separate input for each is redundant. Widened this column
-              and updated the placeholder to reflect the wider match. */}
+              labour_id, passport_number, and assigned agent name all in
+              one field, so a separate input for each is redundant.
+              Widened this column and updated the placeholder to reflect
+              the wider match. */}
           <div
             className={` ${isPartner ? "col-lg-5 " : "col-12 col-sm-6 col-lg-4"}`}
           >
@@ -68,7 +69,7 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
               type="text"
               name="search"
               className={`form-control ${styles.input}`}
-              placeholder="Search by name, phone, passport, or labour ID"
+              placeholder="Search by name, phone, passport, labour ID, or agent"
               value={filters.search || ""}
               onChange={handleChange}
             />
