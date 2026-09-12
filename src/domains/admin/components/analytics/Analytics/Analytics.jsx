@@ -63,7 +63,7 @@ const Analytics = () => {
     }
   };
 
-  // Fetch Top Agents. `placements` is explicitly coerced with Number(...)
+  // Fetch Top Agents. `workers` is explicitly coerced with Number(...)
   // here — same pattern already used for every finance figure below
   // (Number(data.finance.period_income) etc.) — so however the value
   // arrives over JSON (string, number, null/undefined), StatCard always
@@ -76,7 +76,7 @@ const Analytics = () => {
       setTopAgents(
         rows.map((agent) => ({
           name: agent.name,
-          placements: Number(agent.placements) || 0,
+          workers: Number(agent.workers) || 0,
         })),
       );
     } catch {
@@ -84,7 +84,6 @@ const Analytics = () => {
     }
   };
 useEffect(() => {
-  console.log("TOP AGENTS EFFECT FIRED");
   loadTopAgents();
 }, []);
   //  Handle filter change
@@ -242,7 +241,7 @@ useEffect(() => {
             <StatCard
               key={`${agent.name}-${index}`}
               title={agent.name}
-              value={agent.placements}
+              value={agent.workers}
               icon="bi bi-person-badge"
               colorClass={`widget-${(index % 7) + 1}`}
             />
