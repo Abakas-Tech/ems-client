@@ -77,6 +77,14 @@
 .heading-line:last-child {
   color: transparent;
   -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.6);
+  /* No real 900-weight face is loaded, so browsers fake the bold by
+     drawing the glyph twice with a slight offset. With a transparent
+     fill that faux-bold duplicate stays visible as a second, offset
+     outline — most obvious on letters with crossing strokes (t, h, g,
+     y), where it looks like the strokes tangle with themselves.
+     font-synthesis: none stops that duplicate render; the browser just
+     uses its normal weight instead of faking 900. */
+  font-synthesis: none;
 }
 
 .hero-sub {
