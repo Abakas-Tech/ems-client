@@ -9,7 +9,7 @@
   flex-direction: column;
   justify-content: center;
   overflow: hidden;
-  font-family: "DM Sans", sans-serif;
+  /* font-family: "DM Sans", sans-serif; */
 }
 
 /* ---- Background Image (swap url() for your asset) ---- */
