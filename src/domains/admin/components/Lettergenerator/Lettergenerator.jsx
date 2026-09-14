@@ -88,7 +88,7 @@ const toEthiopianDate = (date) => {
 
 const fmtDate = (val) => {
   const { day, monthName, year } = toEthiopianDate(new Date(val));
-  return `${String(day).padStart(2, "0")} ${monthName} ${year} ዓ.ም.`;
+  return `${String(day).padStart(2, "0")} ${monthName} ${year}`;
 };
 
 // Parses a "YYYY-MM-DD" value (what a native <input type="date"> gives
