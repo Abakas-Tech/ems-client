@@ -91,6 +91,20 @@ const fmtDate = (val) => {
   return `${String(day).padStart(2, "0")} ${monthName} ${year} ዓ.ም.`;
 };
 
+// Parses a "YYYY-MM-DD" value (what a native <input type="date"> gives
+// and expects) as a local-time Date — new Date("YYYY-MM-DD") parses as
+// UTC midnight instead, which can land on the wrong day once converted
+// to Ethiopian depending on the browser's timezone.
+const parseIsoDateLocal = (value) => {
+  const [y, m, d] = value.split("-").map(Number);
+  return new Date(y, m - 1, d);
+};
+
+const toIsoDateLocal = (date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate(),
+  ).padStart(2, "0")}`;
+
 // Shared muted input styling — a light fill only, no border/shadow chrome
 // of its own beyond the standard form-control outline.
 
@@ -578,7 +592,13 @@ const LetterGenerator = () => {
   const [passportAttached, setPassportAttached] = useState(false);
   const [passportDataUri, setPassportDataUri] = useState(null);
 
-  const today = useMemo(() => fmtDate(new Date()), []);
+  // Defaults to today but is a normal controlled input the user can
+  // change — the native date input's own value format ("YYYY-MM-DD").
+  const [dateInput, setDateInput] = useState(() => toIsoDateLocal(new Date()));
+  const formattedDate = useMemo(
+    () => (dateInput ? fmtDate(parseIsoDateLocal(dateInput)) : ""),
+    [dateInput],
+  );
 
   useEffect(() => {
     if (!workerId) return;
@@ -638,7 +658,7 @@ const LetterGenerator = () => {
     () =>
       buildLetterHtml({
         to,
-        date: today,
+        date: formattedDate,
         referenceNumber,
         subject,
         incidentText,
@@ -647,7 +667,7 @@ const LetterGenerator = () => {
       }),
     [
       to,
-      today,
+      formattedDate,
       referenceNumber,
       subject,
       incidentText,
@@ -697,11 +717,17 @@ const LetterGenerator = () => {
           <div className="form-group col-md-6">
             <label className="fw-semibold small mb-1 d-block">ቀን</label>
             <input
+              type="date"
               className="form-control"
               style={FIELD_STYLE}
-              value={today}
-              disabled
+              value={dateInput}
+              onChange={(e) => setDateInput(e.target.value)}
             />
+            {dateInput && (
+              <small className="text-muted d-block mt-1">
+                {formattedDate}
+              </small>
+            )}
           </div>
         </div>
 
