@@ -139,7 +139,7 @@ const Dashboard = () => {
         <div className="card-body">
           <div className="d-flex align-items-center justify-content-between mb-1">
             <h6 className="fw-bold text-dark mb-0">Candidate Pipeline</h6>
-            <span className={styles.badgeMuted}>Live conversion by stage</span>
+            <span className={styles.badgeMuted}>Live headcount by stage</span>
           </div>
           {pipeline.length > 0 ? (
             <PipelineFlow stages={pipeline} />

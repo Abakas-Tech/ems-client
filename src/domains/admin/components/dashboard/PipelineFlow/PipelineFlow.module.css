@@ -64,18 +64,6 @@
   animation: shimmer 2.4s linear infinite;
 }
 
-.conversionBadge {
-  position: absolute;
-  top: -18px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #8b5cf6;
-  background: #f5f3ff;
-  padding: 1px 6px;
-  border-radius: 10px;
-  white-space: nowrap;
-}
-
 @keyframes nodeIn {
   from {
     opacity: 0;
