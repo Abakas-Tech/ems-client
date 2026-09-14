@@ -2,7 +2,6 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Finances from "../domains/admin/pages/FinancePage/FinancePage.jsx";
 import InvoicesPage from "../domains/admin/pages/Invoices/Invoice.jsx";
-import Analytics from "../domains/admin/pages/AnalyticsPage/AnalyticsPage.jsx";
 import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/WorkerDashboard.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import WorkerAutoFill from "../domains/admin/pages/workers/WorkerAutoFill/WorkerAutoFill.jsx";
