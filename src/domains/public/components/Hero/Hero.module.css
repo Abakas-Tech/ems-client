@@ -76,6 +76,9 @@
 
 .heading-line:last-child {
   color: transparent;
+  /* Safari honors -webkit-text-fill-color over `color` for the glyph
+     fill, so set both to keep the outline transparent everywhere. */
+  -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.6);
   /* No real 900-weight face is loaded, so browsers fake the bold by
      drawing the glyph twice with a slight offset. With a transparent
