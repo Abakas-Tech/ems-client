@@ -5,9 +5,10 @@ const PipelineFlow = ({ stages = [] }) => {
     <div className={styles.flow}>
       {stages.map((stage, index) => {
         const prev = stages[index - 1];
-        const conversion = prev
-          ? Math.round((stage.count / prev.count) * 100)
-          : null;
+        const conversion =
+          prev && prev.count > 0
+            ? Math.round((stage.count / prev.count) * 100)
+            : null;
 
         return (
           <div className={styles.stageWrap} key={stage.key}>
