@@ -5,17 +5,17 @@ const SEOHelmet = ({
   title = "Vision Recruitment Agency Private Foreign Employment Agency | Overseas Jobs for Ethiopians | Verified Recruitment Agency",
   description = "Vision Recruitment Agency connects Ethiopian workers with verified international job opportunities. We provide full visa processing, contract verification, LMIS/work permits, and safe deployment to Middle Eastern countries.",
   keywords = "overseas jobs Ethiopia, jobs in Middle East for Ethiopians, recruitment agency Ethiopia, work abroad Ethiopia, Middle East jobs Ethiopia, visa processing Ethiopia, LMIS Ethiopia, overseas employment Ethiopia, legal recruitment Ethiopia, Vision Recruitment Agency",
-  canonical = "https://visionrecruitment.com/",
+  canonical = "https://visionrecruitmentagency.com",
   ogTitle = "Verified Overseas Jobs for Ethiopians | Vision Recruitment Agency",
   ogDescription = "Apply for safe and verified overseas jobs with full support: job matching, visa processing, contract verification, and travel coordination.",
-  ogUrl = "https://visionrecruitment.com/",
-  ogImage = "https://visionrecruitment.com/image.jpg",
+  ogUrl = "https://visionrecruitmentagency.com",
+  ogImage = "https://visionrecruitmentagency.comimage.jpg",
   structuredData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: "Vision Recruitment Agency",
     url: "https://visionrecruitment.com",
-    logo: "https://visionrecruitment.com/logo.jpg",
+    logo: "https://visionrecruitmentagency.comlogo.jpg",
     description:
       "Licensed recruitment agency connecting Ethiopian workers with verified international job opportunities, especially in the Middle East.",
     email: "visionrecruitment@gmail.com",
@@ -53,10 +53,7 @@ const SEOHelmet = ({
     <meta property="og:type" content="website" />
     <meta property="og:url" content={ogUrl} />
     <meta property="og:image" content={ogImage} />
-    <meta
-      property="og:site_name"
-      content="Vision Recruitment Agency"
-    />
+    <meta property="og:site_name" content="Vision Recruitment Agency" />
 
     {/* Twitter Meta */}
     <meta name="twitter:card" content="summary_large_image" />
