@@ -82,7 +82,7 @@ const MENU_CONFIG = [
   {
     label: "Local Agents",
     path: "/admin/meta-data/local-agents",
-    icon: "bi bi-person-badge",
+    icon: "bi bi-person-video",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
     permission: PERMISSIONS.MANAGE_WORKERS,
   },
