@@ -37,12 +37,59 @@ const DEFAULT_REFERENCE_NUMBER = "ALA/A170/26";
 const sanitizeReferenceNumber = (value) =>
   (value || "").replace(/[^A-Za-z0-9/\u1200-\u137F\s-]/g, "");
 
-const fmtDate = (val) =>
-  new Date(val).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+// Gregorian -> Ethiopian calendar conversion. Ethiopian New Year (1
+// Meskerem) falls on 11 September, or 12 September in the Gregorian year
+// preceding a Gregorian leap year — from that anchor, everything else
+// (including the Pagume leap day) falls out of simple day arithmetic.
+const ETHIOPIAN_MONTHS = [
+  "መስከረም",
+  "ጥቅምት",
+  "ኅዳር",
+  "ታኅሳስ",
+  "ጥር",
+  "የካቲት",
+  "መጋቢት",
+  "ሚያዝያ",
+  "ግንቦት",
+  "ሰኔ",
+  "ሐምሌ",
+  "ነሐሴ",
+  "ጳጉሜ",
+];
+
+const isGregorianLeapYear = (y) =>
+  (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+
+const toEthiopianDate = (date) => {
+  const gYear = date.getFullYear();
+  const newYearDayThisGYear = isGregorianLeapYear(gYear + 1) ? 12 : 11;
+  const newYearThisGYear = new Date(gYear, 8, newYearDayThisGYear);
+
+  let ethYear;
+  let ethNewYear;
+  if (date >= newYearThisGYear) {
+    ethYear = gYear - 7;
+    ethNewYear = newYearThisGYear;
+  } else {
+    ethYear = gYear - 8;
+    ethNewYear = new Date(
+      gYear - 1,
+      8,
+      isGregorianLeapYear(gYear) ? 12 : 11,
+    );
+  }
+
+  const diffDays = Math.round((date - ethNewYear) / 86400000);
+  const monthIndex = Math.floor(diffDays / 30);
+  const day = (diffDays % 30) + 1;
+
+  return { year: ethYear, day, monthName: ETHIOPIAN_MONTHS[monthIndex] };
+};
+
+const fmtDate = (val) => {
+  const { day, monthName, year } = toEthiopianDate(new Date(val));
+  return `${String(day).padStart(2, "0")} ${monthName} ${year} ዓ.ም.`;
+};
 
 // Shared muted input styling — a light fill only, no border/shadow chrome
 // of its own beyond the standard form-control outline.
@@ -54,6 +101,17 @@ const FIELD_STYLE = {
 // Print / HTML builder — mirrors the Finance period report's
 // buildHeader/buildFooter/openAndPrint pattern class-for-class, so every
 // printed page in the system shares one visual header.
+
+// Puts "አዲስ አበባ" on its own line wherever it appears in a recipient
+// string (all of TO_OPTIONS end with it) — the rest of the text is left
+// exactly as typed/selected.
+const ADDIS_ABABA = "አዲስ አበባ";
+const formatRecipientText = (text) => {
+  if (!text) return "";
+  const idx = text.indexOf(ADDIS_ABABA);
+  if (idx <= 0) return text;
+  return `${text.slice(0, idx).trimEnd()}<br/>${text.slice(idx)}`;
+};
 
 const buildLetterHeader = (title, subtitle) => {
   const { orgName, orgSub, logoPath, logoInitials, logoColor } = REPORT_META;
@@ -75,7 +133,7 @@ const buildLetterHeader = (title, subtitle) => {
       </div>
     <div class="meta-r contact-block">
   <div>${REPORT_META.contactEmail || "contact@aletisalatjobs.com"}</div>
-  <div>${REPORT_META.contactPhone || "0911833704 / 0911218293"}</div>
+  <div>${REPORT_META.contactPhone || "+251 97 300 9003 / +251 97 603 2303"}</div>
 </div>
     </div>`;
 };
@@ -162,7 +220,7 @@ const buildLetterHtml = ({
   const letterPage = `<div class="page${totalPages > 1 ? " pb" : ""}">
     ${buildLetterHeader("Official Letter", "ደብዳቤ")}
     <div class="letter-info-row">
-      <div class="letter-to">ለ: ${to || ""}</div>
+      <div class="letter-to">ለ: ${formatRecipientText(to)}</div>
       <div class="letter-meta-col">
         <div><b>ቀን:</b> ${date}</div>
         <div><b>ቁጥር:</b> ${referenceNumber || ""}</div>
