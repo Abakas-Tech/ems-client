@@ -17,7 +17,7 @@ const fmtAmount = (val) =>
 
 // Fixed, non-editable, always-printed value — not part of the bank-info
 // form, not part of the toggle, never sourced from the invoice/API.
-const WORK_RECEIVER_NAME = "ALETESALAT FOREIGN EMPLOYMENT AGENCY";
+const WORK_RECEIVER_NAME = "VISION Recruitment AGENCY";
 
 // ---- Amount-in-words helper (for the Total Payment line) -----------
 const ONES = [

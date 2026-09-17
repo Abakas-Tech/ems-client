@@ -12,7 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useLoader from "../../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../../context/Response/useResponse";
 import useProfile from "../../../../../../context/Profile/useProfile";
-import cvFooterLogo from "../../../../../../assets/img/cv/cv-footer.png";
+import cvFooterLogo from "../../../../../../assets/img/cv/cv-footer.jpg";
 import CVToolbox from "./CVToolbox";
 
 const safeDate = (date) => (date ? date.slice(0, 10) : "");
@@ -1633,11 +1633,11 @@ const CVThree = ({ templateSwitcher }) => {
                           fontSize: 13,
                         }}
                       >
-                        aletesalat.eth.agency@gmail.com
+                        contact@visionrecruitmentagency.com
                       </span>
                     </div>
 
-                    {/* CV footer - the agency's ALETESALAT logo strip, imported as a
+                    {/* CV footer - the agency's vision logo strip, imported as a
                         static asset (not per-worker/per-partner data). Same border
                         treatment as the passport box above, sitting flush against
                         the spacer row. */}
