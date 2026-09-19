@@ -16,6 +16,7 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete.jsx";
 import ListingComponent from "../../../../../shared/components/ListingComponent/ListingComponent";
 import Badge from "../../../../../shared/components/Badge/Badge.jsx";
+import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
 
 const formatAmount = (value) =>
   Number(value || 0).toLocaleString(undefined, {
@@ -59,6 +60,12 @@ const Invoices = () => {
     if (view === "list") loadInvoices();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, view]);
+
+  // Live refresh — invoices created/updated/issued/cancelled by another
+  // staff member should show up here without a manual reload.
+  useLiveUpdate("invoices", () => {
+    if (view === "list") loadInvoices();
+  });
 
   // Arriving here from Active Employees carries at most one of:
   //  - invoiceId + workerIds: returning mid-edit with an updated worker

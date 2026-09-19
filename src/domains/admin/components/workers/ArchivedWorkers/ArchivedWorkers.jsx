@@ -13,6 +13,7 @@ import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
 
 const ArchivedWorkers = () => {
   const navigate = useNavigate();
@@ -52,6 +53,10 @@ const ArchivedWorkers = () => {
   useEffect(() => {
     fetchWorkers();
   }, [fetchWorkers]);
+
+  // Live refresh — a worker archived/restored/deleted by another staff
+  // member should show up here without a manual reload.
+  useLiveUpdate("workers", fetchWorkers);
 
   // Filter handlers
   const handleFilterChange = (f) => {
