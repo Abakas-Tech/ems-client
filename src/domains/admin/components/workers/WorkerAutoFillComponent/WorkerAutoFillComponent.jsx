@@ -590,7 +590,7 @@ function mapWorkerToAutofillCandidate(worker) {
       "emergencyContactAddress",
     ]),
 
-    branch: "4b234e19-cd02-4873-a892-a362b01cc24a",
+    branch: "8fc2b9aa-dbc6-4639-853f-d9789f24d7c0",
     effectiveDate: pick(worker, ["effectiveDate", "effective_date"]),
     confirmCheck: pick(worker, ["confirmCheck", "confirm_check"], true),
   };
