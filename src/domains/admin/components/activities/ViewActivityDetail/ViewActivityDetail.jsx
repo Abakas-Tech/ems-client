@@ -107,11 +107,13 @@ const diffValues = (oldVal, newVal) => {
   keys.forEach((key) => {
     const from = oldObj[key];
     const to = newObj[key];
-    const normalizedFrom = normalizeForCompare(from);
-    // Only surface a field that actually had a prior value — a field
-    // being set for the first time (from empty/null/undefined) isn't a
-    // "change" to show here, it's new data.
-    if (normalizedFrom !== "" && normalizedFrom !== normalizeForCompare(to)) {
+    // Show the field whenever the values actually differ — including a
+    // field being set for the first time (old side empty/absent), e.g. a
+    // worker's COC or medical section being filled in for the first
+    // time. That's still a real, staff-made change and should be
+    // visible here as "— -> value", not silently dropped just because
+    // there was nothing to compare it against before.
+    if (normalizeForCompare(from) !== normalizeForCompare(to)) {
       changes.push({ field: key, from, to: to ?? "—" });
     }
   });
