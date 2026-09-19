@@ -14,8 +14,8 @@ const TicketFilter = ({
   const airports = [
     { value: "JED", label: "Jeddah (JED)" },
     { value: "RUH", label: "Riyadh (RUH)" },
-    { value: "DMM", label: "Dammam (DMM)" },
-    { value: "AMM", label: "Amman (AMM)" },
+    { value: "KWI", label: "Kuwait City (KWI)" },
+    { value: "DXB", label: "Dubai (DXB)" },
   ];
 
   return (
