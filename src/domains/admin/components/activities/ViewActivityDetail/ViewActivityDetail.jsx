@@ -127,10 +127,11 @@ const formatFieldLabel = (key) =>
     )
     .join(" → ");
 
-// Any diff field ending in "_status_id" (embassy_status_id, lmis_status_id, etc.)
-// is resolved through the shared /statuses lookup table instead of showing
-// the raw numeric id.
-const isStatusIdField = (field) => /_status_id$/i.test(field);
+// Any diff field ending in "status_id" — the bare "status_id" used for a
+// worker's own status changes, or a prefixed one like "embassy_status_id",
+// "lmis_status_id", etc. — is resolved through the shared /statuses lookup
+// table instead of showing the raw numeric id.
+const isStatusIdField = (field) => /status_id$/i.test(field);
 
 // Detects ISO date ("2026-06-13") or datetime ("2026-06-13T07:33:00.000Z")
 // strings inside audit diffs and renders them in the same readable,
