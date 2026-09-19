@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { io } from "socket.io-client";
 import AdminNotificationContext from "./AdminNotificationContext";
 import {
   getNotifications,
@@ -10,24 +9,19 @@ import {
   deleteNotification as deleteNotificationApi,
   clearAllNotifications,
 } from "../../domains/admin/api/adminNotification.api";
-import { getAccessToken } from "../../utils/axios";
 import useProfile from "../Profile/useProfile";
 import useResponse from "../Response/useResponse";
-
-// Socket.IO connects to the server origin directly, not the REST /api path
-const backend_server_url = import.meta.env.VITE_AXIOS_INSTANCE_BASE_URL;
-const socketBaseUrl = backend_server_url.replace(/\/api\/?$/, "");
+import useSocket from "../Socket/useSocket";
 
 const AdminNotificationProvider = ({ children }) => {
   const { profile } = useProfile();
   const { addMessage } = useResponse();
+  const socket = useSocket();
 
   const [notifications, setNotifications] = useState([]);
   const [pagination, setPagination] = useState({});
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-
-  const socketRef = useRef(null);
 
   // General version counter for `unreadCount`. Every mutation that touches
   // unreadCount — not just refreshUnreadCount() — bumps this. A GET request
@@ -156,41 +150,28 @@ const AdminNotificationProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmin]);
 
-  // Socket connection lifecycle — admin only
+  // Notification listeners on the shared socket (from SocketProvider) —
+  // admin only. The connection itself is owned/lifecycle-managed by
+  // SocketProvider so every role shares one socket per tab.
   useEffect(() => {
-    if (!isAdmin) {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-      return;
-    }
+    if (!isAdmin || !socket) return;
 
-    const socket = io(socketBaseUrl, {
-      // auth as a function is re-evaluated on every (re)connection attempt,
-      // so a token that rotated via the axios refresh flow is always current
-      auth: (cb) => cb({ token: getAccessToken() }),
-      withCredentials: true,
-    });
-
-    socket.on("notification:new", (notification) => {
+    const handleNewNotification = (notification) => {
       unreadVersionRef.current += 1; // invalidate any in-flight refresh
       setNotifications((prev) => [notification, ...prev]);
       setUnreadCount((prev) => prev + 1);
-    });
+    };
+    const handleConnect = () => refreshUnreadCount();
 
-    socket.on("connect", () => {
-      refreshUnreadCount();
-    });
-
-    socketRef.current = socket;
+    socket.on("notification:new", handleNewNotification);
+    socket.on("connect", handleConnect);
 
     return () => {
-      socket.disconnect();
-      socketRef.current = null;
+      socket.off("notification:new", handleNewNotification);
+      socket.off("connect", handleConnect);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAdmin]);
+  }, [isAdmin, socket]);
 
   return (
     <AdminNotificationContext.Provider

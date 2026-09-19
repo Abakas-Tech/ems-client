@@ -11,6 +11,7 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
 
 // Validation for agent name
 const validateAgentName = (name) => {
@@ -67,6 +68,10 @@ const LocalAgent = () => {
     fetchAgents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
+
+  // Live refresh — an agent created/updated/deleted by another staff
+  // member should show up here without a manual reload.
+  useLiveUpdate("worker_agent", () => fetchAgents(pagination.page, pagination.limit));
 
   // Handle renaming an agent field (name or phone)
   const handleRename = async (row, newValue, field = "agent_name") => {

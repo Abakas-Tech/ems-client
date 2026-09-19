@@ -8,6 +8,7 @@ import ListingComponent from "../../../../../shared/components/ListingComponent/
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
 
 const WorkerModuleManagement = () => {
   const navigate = useNavigate();
@@ -46,6 +47,10 @@ const WorkerModuleManagement = () => {
   useEffect(() => {
     fetchWorkers();
   }, [fetchWorkers]);
+
+  // Live refresh — a worker's data changing elsewhere should show up here
+  // without a manual reload.
+  useLiveUpdate("workers", fetchWorkers);
 
   // Filter handlers
   const handleFilterChange = (f) => {

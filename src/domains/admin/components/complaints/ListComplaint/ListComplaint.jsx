@@ -13,6 +13,7 @@ import { useDelete } from "../../../../../context/Delete/useDelete";
 import FilterComplaint from "../FilterComplaint/FilterComplaint";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
+import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
 
 const STATUS_MAP = {
   open: "Open",
@@ -73,6 +74,10 @@ const ListComplaint = () => {
     fetchComplaints(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
+
+  // Live refresh — a complaint created/updated by another staff member
+  // should show up here without a manual reload.
+  useLiveUpdate("complaints", () => fetchComplaints(pagination.page));
 
   const handlePageChange = (newPage) => {
     fetchComplaints(newPage);
