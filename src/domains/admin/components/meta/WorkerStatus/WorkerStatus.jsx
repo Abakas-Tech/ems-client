@@ -11,6 +11,7 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
 // Validation for worker status name
 const validateWorkerStatusName = (name) => {
   if (!name || !name.trim()) return "Employee status name is required";
@@ -61,6 +62,12 @@ const WorkerStatus = () => {
     fetchWorkerStatuses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
+
+  // Live refresh — a worker status created/updated/deleted by another
+  // staff member should show up here without a manual reload.
+  useLiveUpdate("worker_status", () =>
+    fetchWorkerStatuses(pagination.page, pagination.limit),
+  );
 
   // Handle renaming a worker status
   const handleRename = async (row, newName) => {

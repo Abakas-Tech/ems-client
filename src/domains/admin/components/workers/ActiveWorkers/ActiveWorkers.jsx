@@ -22,6 +22,7 @@ import useProfile from "../../../../../context/Profile/useProfile";
 import { generateVisaApplicationPdf } from "../../Application/VisaApplicationPdfGenerator";
 import VisaApplicationTemplate from "../../Application/VisaApplicationTemplate";
 import { printInsuranceParticulars } from "../../Insurance/InsuranceReport";
+import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
 
 const ActiveWorkers = () => {
   const navigate = useNavigate();
@@ -132,6 +133,10 @@ const ActiveWorkers = () => {
   useEffect(() => {
     fetchWorkers();
   }, [fetchWorkers]);
+
+  // Live refresh — a worker created/updated/archived/status-changed by
+  // another staff member should show up here without a manual reload.
+  useLiveUpdate(["workers", "worker_agent", "worker_status"], fetchWorkers);
 
   // Record Transaction Handler
   const handleRecordTransaction = (row) => {

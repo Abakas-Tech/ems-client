@@ -23,6 +23,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useProfile from "../../../../../context/Profile/useProfile.jsx";
 import ClosePeriodModal from "../../../../../shared/components/ClosePeriodModal/ClosePeriodModal.jsx";
 import { generatePeriodReport } from "../../../../../shared/components/Report/PeriodReport.jsx";
+import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
 
 const formatDate = (value, withTime = false) => {
   if (!value) return "—";
@@ -100,6 +101,20 @@ const FinancePage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.category, filters.date_from, filters.date_to]);
+
+  // Live refresh — a transaction or period recorded/edited/closed by
+  // another staff member should show up here without a manual reload.
+  useLiveUpdate("finance", () => {
+    if (view === "list") loadTransactions();
+    if (view === "list" || view === "periods") loadCurrentPeriod();
+    if (view === "periods") {
+      if (selectedPeriod) {
+        loadPeriodTransactions(selectedPeriod, filters.page);
+      } else {
+        loadPeriods();
+      }
+    }
+  });
 
   const loadTransactions = async () => {
     showLoader();

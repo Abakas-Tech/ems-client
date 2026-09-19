@@ -17,6 +17,7 @@ import ProfileProvider from "./context/Profile/ProfileProvider.jsx";
 import DemoInfoProvider from "./context/Demo/DemoInfoProvider";
 import NotificationProvider from "./context/Notification/NotificationProvider.jsx";
 import AdminNotificationProvider from "./context/AdminNotification/AdminNotificationProvider.jsx";
+import SocketProvider from "./context/Socket/SocketProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
@@ -27,11 +28,13 @@ createRoot(document.getElementById("root")).render(
           <LogoutProvider>
             <LoaderProvider>
               <ConfirmDeleteProvider>
-                <NotificationProvider>
-                  <AdminNotificationProvider>
-                    <App />
-                  </AdminNotificationProvider>
-                </NotificationProvider>
+                <SocketProvider>
+                  <NotificationProvider>
+                    <AdminNotificationProvider>
+                      <App />
+                    </AdminNotificationProvider>
+                  </NotificationProvider>
+                </SocketProvider>
               </ConfirmDeleteProvider>
             </LoaderProvider>
           </LogoutProvider>

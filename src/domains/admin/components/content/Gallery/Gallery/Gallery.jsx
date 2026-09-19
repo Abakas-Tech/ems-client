@@ -12,6 +12,7 @@ import {
 import ActionButtons from "../../../../../../shared/components/ActionButtons/ActionButtons";
 import BackButton from "../../../../../../shared/components/BackButton/BackButton";
 import { useNavigate } from "react-router-dom";
+import useLiveUpdate from "../../../../../../context/Socket/useLiveUpdate";
 
 import "keen-slider/keen-slider.min.css";
 
@@ -49,6 +50,11 @@ const Gallery = () => {
     fetchGalleryItems();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Live refresh — a gallery item added/edited/deleted by another staff
+  // member should show up here without a manual reload.
+  useLiveUpdate("gallery", fetchGalleryItems);
+
   const goBack = () => navigate(-1);
 
   const handleAddNew = () => navigate("/admin/content/gallery/create");
