@@ -12,15 +12,15 @@ import { REPORT_META } from "../../../../shared/components/Report/Data";
 // Predefined options (ለ / ጉዳዩ / default incident text)
 
 const TO_OPTIONS = [
-  "የኢፌድሪ ስራና ክህሎት ሚኒስቴር ለሲስተም ክፍል አዲስ አበባ",
-  "ኢትዮጵያ ንግድ ባንክ ኮልፌ ዲስትሪክት ዳይሬክተር አዲስ አበባ",
-  "ለስራና ክህሎት ሚኒስቴር ሲስተም ክፍል አዲስ አበባ",
+  "ለ፡ የኢፌድሪ ስራና ክህሎት ሚኒስቴር ለሲስተም ክፍል አዲስ አበባ",
+  "ለ፡ ኢትዮጵያ ንግድ ባንክ ኮልፌ ዲስትሪክት ዳይሬክተር አዲስ አበባ",
+  "ለ፡ ስራና ክህሎት ሚኒስቴር ሲስተም ክፍል አዲስ አበባ",
 ];
 
 const SUBJECT_OPTIONS = [
-  "ከሲስተም ላይ እንዲለቀቅልን ስለመጠየቅ",
-  "የውጭ ምንዛሪ ተመንዝሮ ገቢ እንዲሆን ስለመጠየቅ",
-  "-የስም ስህተት እንዲስተካከልልን ስለመጠየቅ",
+  "ጉዳዩ፡ ከሲስተም ላይ እንዲለቀቅልን ስለመጠየቅ",
+  "ጉዳዩ፡ የውጭ ምንዛሪ ተመንዝሮ ገቢ እንዲሆን ስለመጠየቅ",
+  "ጉዳዩ፡ የስም ስህተት እንዲስተካከልልን ስለመጠየቅ",
 ];
 
 // Always the starting value of the (unlabeled) incident/content textarea.
@@ -37,12 +37,68 @@ const DEFAULT_REFERENCE_NUMBER = "VRA/A170/26";
 const sanitizeReferenceNumber = (value) =>
   (value || "").replace(/[^A-Za-z0-9/\u1200-\u137F\s-]/g, "");
 
-const fmtDate = (val) =>
-  new Date(val).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+// --- Ethiopian calendar conversion -------------------------------------
+// The ቀን: line is shown in the Ethiopian calendar rather than Gregorian.
+// Conversion is done via Julian Day Number (JDN), the standard way to
+// go between the two calendars — 1723856 is the JDN of Ethiopian New
+// Year 1 (the "Amete Mihret" epoch), the constant used throughout
+// published Ethiopian-calendar conversion algorithms.
+const ETHIOPIAN_MONTHS = [
+  "መስከረም",
+  "ጥቅምት",
+  "ኅዳር",
+  "ታኅሳስ",
+  "ጥር",
+  "የካቲት",
+  "መጋቢት",
+  "ሚያዝያ",
+  "ግንቦት",
+  "ሰኔ",
+  "ሐምሌ",
+  "ነሐሴ",
+  "ጳጉሜ",
+];
+
+const JD_EPOCH_OFFSET_AMETE_MIHRET = 1723856;
+
+const gregorianToJDN = (year, month, day) => {
+  const a = Math.floor((14 - month) / 12);
+  const y = year + 4800 - a;
+  const m = month + 12 * a - 3;
+  return (
+    day +
+    Math.floor((153 * m + 2) / 5) +
+    365 * y +
+    Math.floor(y / 4) -
+    Math.floor(y / 100) +
+    Math.floor(y / 400) -
+    32045
+  );
+};
+
+const jdnToEthiopian = (jdn) => {
+  const offsetDays = jdn - JD_EPOCH_OFFSET_AMETE_MIHRET;
+  const r = ((offsetDays % 1461) + 1461) % 1461;
+  const n = (r % 365) + 365 * Math.floor(r / 1460);
+  const year =
+    4 * Math.floor(offsetDays / 1461) +
+    Math.floor(r / 365) -
+    Math.floor(r / 1460);
+  const month = Math.floor(n / 30) + 1;
+  const day = (n % 30) + 1;
+  return { year, month, day };
+};
+
+const gregorianToEthiopian = (date) =>
+  jdnToEthiopian(
+    gregorianToJDN(date.getFullYear(), date.getMonth() + 1, date.getDate()),
+  );
+
+const fmtDate = (val) => {
+  const { year, month, day } = gregorianToEthiopian(new Date(val));
+  const monthName = ETHIOPIAN_MONTHS[month - 1] || "";
+  return `${day} ${monthName} ${year}`;
+};
 
 const LETTER_CACHE_KEY = "letterGenerator:cachedLetter";
 
@@ -99,7 +155,7 @@ const buildLetterHeader = (title, subtitle) => {
       </div>
     <div class="meta-r contact-block">
   <div>${REPORT_META.contactEmail || "contact@visionrecruitment.com"}</div>
-  <div>${REPORT_META.contactPhone || "0911833704 / 0911218293"}</div>
+  <div>${REPORT_META.contactPhone || "+251 938 037 703"}</div>
 </div>
     </div>`;
 };
@@ -187,7 +243,6 @@ const LETTER_STYLES = `
   .image-page img{max-width:100%;max-height:100%;object-fit:contain;border:1px solid #dde5f5;}
   .image-caption{margin-top:10px;font-size:8.5pt;color:#5a6a85;}
 `;
-
 
 const TO_LABEL = "ለ:";
 const SUBJECT_LABEL = "ጉዳዩ:";
@@ -330,7 +385,6 @@ const toDataUri = async (url) => {
     return url;
   }
 };
-
 
 const CopyField = ({ label, value }) => {
   const [status, setStatus] = useState(null); // null | "copied" | "failed"
@@ -955,7 +1009,7 @@ const LetterGenerator = () => {
           range.deleteContents();
           const br = doc.createElement("br");
           range.insertNode(br);
-    
+
           if (!br.nextSibling) {
             const filler = doc.createElement("br");
             br.parentNode.insertBefore(filler, br.nextSibling);
@@ -1083,13 +1137,13 @@ const LetterGenerator = () => {
     <div className="dashboard-wraper">
       <div className="d-flex justify-content-between align-items-center mb-1">
         <div>
-          <h2 className="fw-bold text-dark mb-0">Letter Generator</h2>
+          <h2 className="fw-bold text-dark mb-0">Letter</h2>
         </div>
       </div>
       <div className="row g-4">
         <div className="col-lg-9 order-2 order-lg-1">
           <p className="text-muted  mb-3">
-            write your letter in the box below.
+            write your letter in the console below.
           </p>
 
           <div
