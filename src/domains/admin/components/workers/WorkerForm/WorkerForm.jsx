@@ -467,6 +467,14 @@ function WorkerForm() {
   // itself (createWorker vs updateWorker).
   const [agentExists, setAgentExists] = useState(false);
 
+  // Snapshot of the agent assignment as loaded from the server (edit mode
+  // only), so submit can tell whether the user actually changed the agent
+  // selection. Without this, saving the worker form re-sends the PUT to
+  // /worker-agent/:userId on every save — even when the Agent Information
+  // section was never touched — which used to create a spurious "updated
+  // agent information" audit log entry for a no-op update.
+  const initialAgentRef = useRef(null);
+
   // All agents on file (fetched once), used to power the Agent Name
   // dropdown.
   const [allAgents, setAllAgents] = useState([]);
@@ -726,10 +734,12 @@ function WorkerForm() {
       try {
         const res = await getWorkerAgent(id);
         if (res?.data) {
-          setAgent({
+          const loadedAgent = {
             agent_name: res.data.agent_name || "",
             agent_phone: res.data.agent_phone || "",
-          });
+          };
+          setAgent(loadedAgent);
+          initialAgentRef.current = loadedAgent;
           setAgentExists(true);
           setSelectedAgentId(
             res.data.agent_id != null ? String(res.data.agent_id) : "",
@@ -1997,7 +2007,12 @@ function WorkerForm() {
       // worker (never a second record).
       const workerId = isEditMode ? id : response?.data?.id;
 
-      if (sectionsEnabled.agent && workerId) {
+      const agentUnchanged =
+        agentExists &&
+        initialAgentRef.current?.agent_name === agent.agent_name &&
+        initialAgentRef.current?.agent_phone === agent.agent_phone;
+
+      if (sectionsEnabled.agent && workerId && !agentUnchanged) {
         const agentPayload = {
           agent_name: agent.agent_name,
           agent_phone: agent.agent_phone,
