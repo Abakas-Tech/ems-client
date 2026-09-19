@@ -105,7 +105,7 @@ const AdminRoutes = () => {
         {/* ADDED — Flexible Letter Generator, arrived at either directly
             or via Active Workers' "Create Letter" bulk action, which
             passes { workerId } through navigate(...) state. */}
-        <Route path="/letter-generator" element={<LetterGenerator />} />
+        <Route path="/letter" element={<LetterGenerator />} />
         {/* <Route path="/meta-data/country" element={<CountryPage />} />
         <Route path="/meta-data/region" element={<RegionPage />} />
         <Route path="/meta-data/wereda" element={<WeredaPage />} />
