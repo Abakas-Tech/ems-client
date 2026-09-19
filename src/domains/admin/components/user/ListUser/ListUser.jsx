@@ -10,6 +10,7 @@ import FilterUser from "./../../../components/user/FilterUser/FilterUser";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 import useProfile from "../../../../../context/Profile/useProfile";
+import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
 
 const ROLE_MAP = { 2: "Staff", 3: "Partner" };
 const ROLE_COLOR = {
@@ -72,6 +73,10 @@ const ListUser = () => {
     fetchUsers(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
+
+  // Live refresh — another staff member creating/updating/deleting a user
+  // or their permissions should show up here without a manual reload.
+  useLiveUpdate(["users", "permissions"], () => fetchUsers(pagination.page));
 
   // Triggered by first double-click
   const handleRowDoubleClick = (row) => {

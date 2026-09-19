@@ -80,6 +80,11 @@ const normalizeForCompare = (value) => {
   if (typeof value === "number") return String(value);
   if (typeof value === "string") {
     const trimmed = value.trim();
+    // is_active is submitted via FormData, which stringifies the form's
+    // boolean to the literal text "true"/"false" — normalize the same as
+    // an actual boolean so it lines up with the DB's tinyint 1/0.
+    if (trimmed.toLowerCase() === "true") return "1";
+    if (trimmed.toLowerCase() === "false") return "0";
     // Only coerce decimal-looking strings (e.g. a DECIMAL column like
     // "165.00" coming back from the DB vs the payload's plain number
     // 165) — never plain integer strings, since a leading zero there is
@@ -127,10 +132,11 @@ const formatFieldLabel = (key) =>
     )
     .join(" → ");
 
-// Any diff field ending in "_status_id" (embassy_status_id, lmis_status_id, etc.)
-// is resolved through the shared /statuses lookup table instead of showing
-// the raw numeric id.
-const isStatusIdField = (field) => /_status_id$/i.test(field);
+// Any diff field ending in "status_id" — the bare "status_id" used for a
+// worker's own status changes, or a prefixed one like "embassy_status_id",
+// "lmis_status_id", etc. — is resolved through the shared /statuses lookup
+// table instead of showing the raw numeric id.
+const isStatusIdField = (field) => /status_id$/i.test(field);
 
 // Detects ISO date ("2026-06-13") or datetime ("2026-06-13T07:33:00.000Z")
 // strings inside audit diffs and renders them in the same readable,

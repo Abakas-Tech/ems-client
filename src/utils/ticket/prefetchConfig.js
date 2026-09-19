@@ -1,8 +1,8 @@
 const DEFAULT_ROUTES = [
   { code: "JED", label: "Jeddah" },
   { code: "RUH", label: "Riyadh" },
-  { code: "DMM", label: "Dammam" },
-  { code: "AMM", label: "Amman" },
+  { code: "KWI", label: "Kuwait" },
+  { code: "DXB", label: "Dubai" },
 ];
 
 export function getPrefetchRoutes() {

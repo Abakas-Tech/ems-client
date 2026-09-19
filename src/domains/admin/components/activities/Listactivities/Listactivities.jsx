@@ -18,6 +18,7 @@ import ActivityFilter from "../ActivityFilter/ActivityFilter";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import useAdminNotifications from "../../../../../context/AdminNotification/useAdminNotifications";
+import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
 
 const TABS = [
   { key: "login", label: "Login Activity" },
@@ -318,6 +319,11 @@ const ListActivities = () => {
     fetchActivities();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, filtersKey, page, limit]);
+
+  // Live refresh — this page shows every action taken across the system,
+  // so any broadcasted change (login attempts, audit-logged mutations, or
+  // an activity record being deleted elsewhere) should refresh it live.
+  useLiveUpdate("*", fetchActivities);
 
   // Selected ids only make sense for the current tab/filter/page combo —
   // clear them and exit selection mode whenever any of those change so
