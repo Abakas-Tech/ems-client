@@ -80,6 +80,11 @@ const normalizeForCompare = (value) => {
   if (typeof value === "number") return String(value);
   if (typeof value === "string") {
     const trimmed = value.trim();
+    // is_active is submitted via FormData, which stringifies the form's
+    // boolean to the literal text "true"/"false" — normalize the same as
+    // an actual boolean so it lines up with the DB's tinyint 1/0.
+    if (trimmed.toLowerCase() === "true") return "1";
+    if (trimmed.toLowerCase() === "false") return "0";
     // Only coerce decimal-looking strings (e.g. a DECIMAL column like
     // "165.00" coming back from the DB vs the payload's plain number
     // 165) — never plain integer strings, since a leading zero there is
