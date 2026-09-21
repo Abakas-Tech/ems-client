@@ -384,6 +384,7 @@ const defaultMedical = () => ({
 const defaultGuarantor = () => ({
   guarantor_name: "",
   relation: "",
+  guarantor_gender: "",
   guarantor_address: "",
   guarantor_phone_number: "",
 });
@@ -1173,6 +1174,7 @@ function WorkerForm() {
       newGuarantor = {
         guarantor_name: profileData.emergency.guarantor_name || "",
         relation: profileData.emergency.relation || "",
+        guarantor_gender: profileData.emergency.guarantor_gender || "",
         guarantor_address: profileData.emergency.guarantor_address || "",
         guarantor_phone_number:
           profileData.emergency.guarantor_phone_number || "",
@@ -2885,6 +2887,19 @@ function WorkerForm() {
         </select>
       </div>
       <div className="form-group col-md-6 mb-3">
+        <label>Gender</label>
+        <select
+          name="guarantor_gender"
+          className="form-control"
+          value={guarantor.guarantor_gender}
+          onChange={handleGuarantorChange}
+        >
+          <option value="">Select gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Phone Number", true)}
         <input
           type="text"
@@ -3996,6 +4011,7 @@ function WorkerForm() {
           <>
             {previewRow("Name", guarantor.guarantor_name)}
             {previewRow("Relation", guarantor.relation)}
+            {previewRow("Gender", guarantor.guarantor_gender)}
             {previewRow("Phone", guarantor.guarantor_phone_number)}
             {previewRow("Address", guarantor.guarantor_address)}
           </>,
