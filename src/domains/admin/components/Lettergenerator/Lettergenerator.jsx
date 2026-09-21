@@ -1,5 +1,5 @@
-import { useEffect, useId, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 import { getWorkerProfile } from "../../api/worker.api";
 import useLoader from "../../../../context/Loader/useLoader";
@@ -12,15 +12,15 @@ import { REPORT_META } from "../../../../shared/components/Report/Data";
 // Predefined options (ለ / ጉዳዩ / default incident text)
 
 const TO_OPTIONS = [
-  "የኢፌድሪ ስራና ክህሎት ሚኒስቴር ለሲስተም ክፍል አዲስ አበባ",
-  "ኢትዮጵያ ንግድ ባንክ ኮልፌ ዲስትሪክት ዳይሬክተር አዲስ አበባ",
-  "ለስራና ክህሎት ሚኒስቴር ሲስተም ክፍል አዲስ አበባ",
+  "ለ፡ የኢፌድሪ ስራና ክህሎት ሚኒስቴር ለሲስተም ክፍል አዲስ አበባ",
+  "ለ፡ ኢትዮጵያ ንግድ ባንክ ኮልፌ ዲስትሪክት ዳይሬክተር አዲስ አበባ",
+  "ለ፡ ስራና ክህሎት ሚኒስቴር ሲስተም ክፍል አዲስ አበባ",
 ];
 
 const SUBJECT_OPTIONS = [
-  "ከሲስተም ላይ እንዲለቀቅልን ስለመጠየቅ",
-  "የውጭ ምንዛሪ ተመንዝሮ ገቢ እንዲሆን ስለመጠየቅ",
-  "-የስም ስህተት እንዲስተካከልልን ስለመጠየቅ",
+  "ጉዳዩ፡ ከሲስተም ላይ እንዲለቀቅልን ስለመጠየቅ",
+  "ጉዳዩ፡ የውጭ ምንዛሪ ተመንዝሮ ገቢ እንዲሆን ስለመጠየቅ",
+  "ጉዳዩ፡ የስም ስህተት እንዲስተካከልልን ስለመጠየቅ",
 ];
 
 // Always the starting value of the (unlabeled) incident/content textarea.
@@ -37,10 +37,12 @@ const DEFAULT_REFERENCE_NUMBER = "ALA/A170/26";
 const sanitizeReferenceNumber = (value) =>
   (value || "").replace(/[^A-Za-z0-9/\u1200-\u137F\s-]/g, "");
 
-// Gregorian -> Ethiopian calendar conversion. Ethiopian New Year (1
-// Meskerem) falls on 11 September, or 12 September in the Gregorian year
-// preceding a Gregorian leap year — from that anchor, everything else
-// (including the Pagume leap day) falls out of simple day arithmetic.
+// --- Ethiopian calendar conversion -------------------------------------
+// The ቀን: line is shown in the Ethiopian calendar rather than Gregorian.
+// Conversion is done via Julian Day Number (JDN), the standard way to
+// go between the two calendars — 1723856 is the JDN of Ethiopian New
+// Year 1 (the "Amete Mihret" epoch), the constant used throughout
+// published Ethiopian-calendar conversion algorithms.
 const ETHIOPIAN_MONTHS = [
   "መስከረም",
   "ጥቅምት",
@@ -57,74 +59,80 @@ const ETHIOPIAN_MONTHS = [
   "ጳጉሜ",
 ];
 
-const isGregorianLeapYear = (y) =>
-  (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+const JD_EPOCH_OFFSET_AMETE_MIHRET = 1723856;
 
-const toEthiopianDate = (date) => {
-  const gYear = date.getFullYear();
-  const newYearDayThisGYear = isGregorianLeapYear(gYear + 1) ? 12 : 11;
-  const newYearThisGYear = new Date(gYear, 8, newYearDayThisGYear);
-
-  let ethYear;
-  let ethNewYear;
-  if (date >= newYearThisGYear) {
-    ethYear = gYear - 7;
-    ethNewYear = newYearThisGYear;
-  } else {
-    ethYear = gYear - 8;
-    ethNewYear = new Date(
-      gYear - 1,
-      8,
-      isGregorianLeapYear(gYear) ? 12 : 11,
-    );
-  }
-
-  const diffDays = Math.round((date - ethNewYear) / 86400000);
-  const monthIndex = Math.floor(diffDays / 30);
-  const day = (diffDays % 30) + 1;
-
-  return { year: ethYear, day, monthName: ETHIOPIAN_MONTHS[monthIndex] };
+const gregorianToJDN = (year, month, day) => {
+  const a = Math.floor((14 - month) / 12);
+  const y = year + 4800 - a;
+  const m = month + 12 * a - 3;
+  return (
+    day +
+    Math.floor((153 * m + 2) / 5) +
+    365 * y +
+    Math.floor(y / 4) -
+    Math.floor(y / 100) +
+    Math.floor(y / 400) -
+    32045
+  );
 };
+
+const jdnToEthiopian = (jdn) => {
+  const offsetDays = jdn - JD_EPOCH_OFFSET_AMETE_MIHRET;
+  const r = ((offsetDays % 1461) + 1461) % 1461;
+  const n = (r % 365) + 365 * Math.floor(r / 1460);
+  const year =
+    4 * Math.floor(offsetDays / 1461) +
+    Math.floor(r / 365) -
+    Math.floor(r / 1460);
+  const month = Math.floor(n / 30) + 1;
+  const day = (n % 30) + 1;
+  return { year, month, day };
+};
+
+const gregorianToEthiopian = (date) =>
+  jdnToEthiopian(
+    gregorianToJDN(date.getFullYear(), date.getMonth() + 1, date.getDate()),
+  );
 
 const fmtDate = (val) => {
-  const { day, monthName, year } = toEthiopianDate(new Date(val));
-  return `${String(day).padStart(2, "0")} ${monthName} ${year}`;
+  const { year, month, day } = gregorianToEthiopian(new Date(val));
+  const monthName = ETHIOPIAN_MONTHS[month - 1] || "";
+  return `${day} ${monthName} ${year}`;
 };
 
-// Parses a "YYYY-MM-DD" value (what a native <input type="date"> gives
-// and expects) as a local-time Date — new Date("YYYY-MM-DD") parses as
-// UTC midnight instead, which can land on the wrong day once converted
-// to Ethiopian depending on the browser's timezone.
-const parseIsoDateLocal = (value) => {
-  const [y, m, d] = value.split("-").map(Number);
-  return new Date(y, m - 1, d);
+const LETTER_CACHE_KEY = "letterGenerator:cachedLetter";
+
+const readCachedLetter = () => {
+  try {
+    const raw = localStorage.getItem(LETTER_CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 };
 
-const toIsoDateLocal = (date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
-    date.getDate(),
-  ).padStart(2, "0")}`;
+const writeCachedLetter = (data) => {
+  try {
+    localStorage.setItem(LETTER_CACHE_KEY, JSON.stringify(data));
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const clearCachedLetter = () => {
+  try {
+    localStorage.removeItem(LETTER_CACHE_KEY);
+  } catch {
+    /* best-effort — nothing to do if storage isn't available */
+  }
+};
 
 // Shared muted input styling — a light fill only, no border/shadow chrome
 // of its own beyond the standard form-control outline.
 
 const FIELD_STYLE = {
   backgroundColor: "#f5f7fa",
-};
-
-// Print / HTML builder — mirrors the Finance period report's
-// buildHeader/buildFooter/openAndPrint pattern class-for-class, so every
-// printed page in the system shares one visual header.
-
-// Puts "አዲስ አበባ" on its own line wherever it appears in a recipient
-// string (all of TO_OPTIONS end with it) — the rest of the text is left
-// exactly as typed/selected.
-const ADDIS_ABABA = "አዲስ አበባ";
-const formatRecipientText = (text) => {
-  if (!text) return "";
-  const idx = text.indexOf(ADDIS_ABABA);
-  if (idx <= 0) return text;
-  return `${text.slice(0, idx).trimEnd()}<br/>${text.slice(idx)}`;
 };
 
 const buildLetterHeader = (title, subtitle) => {
@@ -154,37 +162,46 @@ const buildLetterHeader = (title, subtitle) => {
 
 const buildLetterFooter = (pageLabel) => `
   <div class="pf">
-    <span>${REPORT_META.orgName} — ${REPORT_META.confidentiality}</span>
+    <span >${REPORT_META.orgName} — ${REPORT_META.confidentiality}</span>
     <span>Powered by Abakas Technologies</span>
     <span>${pageLabel}</span>
   </div>`;
 
-// On screen (not print) each .page is rendered as its own floating white
-// sheet on a neutral backdrop — the usual "print preview" look — and the
-// document's own scrollbar is hidden (scroll still works, the bar itself
-// just isn't drawn) so the preview edge stays clean. None of this affects
-// the actual printed output: the @media print block strips it back to
-// plain pages exactly as @page already governs.
 const LETTER_STYLES = `
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   @page{size:A4 portrait;margin:15mm 16mm;}
   html{scrollbar-width:none;}
   html::-webkit-scrollbar{width:0;height:0;}
+  /* On a narrow screen the iframe's own rendered box is narrower than
+     the fixed-width .page below, so the page overflows it — this makes
+     that overflow explicitly scrollable (smoothly, on touch too) rather
+     than relying on default/implicit overflow handling, which some
+     mobile browsers otherwise skip. The scrollbar itself stays hidden
+     per the rules above; scrolling still works. */
+  html,body{overflow:auto;-webkit-overflow-scrolling:touch;}
   body{
     font-family:"Nyala","Segoe UI",Tahoma,sans-serif;font-size:11pt;color:#1a2640;
-    background:#e9edf3;print-color-adjust:exact;-webkit-print-color-adjust:exact;
-    display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px 0;
+    background:#fff;print-color-adjust:exact;-webkit-print-color-adjust:exact;
+    display:block;padding:0;
   }
+  /* Centering an overflowing child with flex's align-items:center leaves
+     its left-side overflow unreachable (scrollLeft can't go negative).
+     margin:0 auto still centers .page whenever it fits, but gracefully
+     collapses to flush-left once it's wider than the viewport, so the
+     whole page becomes reachable by scrolling right instead of some of
+     it being permanently stuck off-screen to the left. */
   .page{
-    position:relative;padding:15mm 16mm 26px;min-height:257mm;width:210mm;max-width:100%;
-    background:#fff;box-shadow:0 2px 12px rgba(26,60,110,0.14);
+    position:relative;padding:5px 10px;min-height:200mm;width:210mm;max-width:100%;
+    min-width:210mm;margin:0 auto 20px;
+    background:#fff;;
   }
+  .page:last-child{margin-bottom:0;}
   @media print{
-    body{background:#fff;padding:0;gap:0;}
-    .page{box-shadow:none;width:auto;padding:0 0 26px;}
+    body{background:#fff;padding:0;}
+    .page{box-shadow:none;width:auto;min-width:0;margin:0;padding:0 0 26px;}
   }
     .meta-r{min-width:190px;}
-.contact-block{text-align:right;font-size:7.5pt;color:#5a6a85;line-height:1.5;}
+.contact-block{text-align:right;font-size:9.5pt;font-weight:700;color:#3a4a65;line-height:1.6;}
   .pb{page-break-after:always;}
   .ph{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #1a3c6e;padding-bottom:8px;margin-bottom:18px;}
   .logo-block{display:flex;align-items:center;gap:9px;min-width:190px;}
@@ -194,8 +211,7 @@ const LETTER_STYLES = `
   .report-title{font-size:12pt;font-weight:700;color:#1a3c6e;text-transform:uppercase;letter-spacing:1px;}
   .report-sub{font-size:7.5pt;color:#5a6a85;margin-top:3px;}
   .meta-r{min-width:190px;}
-  .pf{position:absolute;bottom:0;left:0;right:0;padding-top:5px;border-top:1.5px solid #c8d8f0;display:flex;justify-content:space-between;font-size:7pt;color:#8a97b0;background:#fff;}
-
+   .pf{position:absolute;bottom:0;left:0;right:0;padding-top:5px;border-top:1.5px solid #c8d8f0;display:flex;justify-content:space-between;font-size:9pt;font-weight:700;color:#5a6a85;background:#fff;}
   /* ለ on the left, ቀን/ቁጥር stacked on the right — same horizontal band,
      never side by side with each other. Preview/Print only; has no
      bearing on the input form above. */
@@ -205,21 +221,33 @@ const LETTER_STYLES = `
   .letter-meta-col b{color:#1a3c6e;}
 
   .letter-subject{text-align:center;font-weight:700;font-size:11.5pt;margin-bottom:16px;text-decoration:underline;}
-  .letter-body{text-align:left;font-size:11pt;line-height:1.9;white-space:pre-wrap;}
+  .letter-body{text-align:left;font-size:11pt;line-height:1.9;white-space:pre-wrap;min-height:40mm;}
+
+  /* The whole letter-content area (everything below the letterhead and
+     above the footer) becomes ONE seamless writing surface at runtime
+     (see handleIframeLoad) — a single contenteditable root with no
+     inner sub-regions, so there are no dead zones: every gap, margin,
+     and space between the generated ለ/ቁጥር/ጉዳዩ/body content is part of
+     the same editable flow. Purely a visual affordance; stripped for
+     print. */
+  .letter-canvas{cursor:text;outline:none;border-radius:4px;min-height:190mm;padding:14px 16px;}
+  .letter-canvas:hover{background:rgba(26,60,110,0.04);}
+  .letter-canvas:focus{background:rgba(26,60,110,0.06);box-shadow:0 0 0 2px rgba(26,60,110,0.2);}
+  .letter-body:empty::before{content:"Click anywhere to start writing…";color:#9aa5b8;}
+  @media print{
+    .letter-canvas{background:none !important;box-shadow:none !important;}
+  }
 
   .image-page{display:flex;flex-direction:column;align-items:center;justify-content:center;height:220mm;}
   .image-page img{max-width:100%;max-height:100%;object-fit:contain;border:1px solid #dde5f5;}
   .image-caption{margin-top:10px;font-size:8.5pt;color:#5a6a85;}
 `;
 
-// Builds the full printable/previewable HTML document: page 1 is the
-// letter body, followed by one full page per uploaded screenshot,
-// followed by the passport scan page (if attached). This is the single
-// source of truth used for BOTH the live preview iframe and the actual
-// browser-print output. Reads directly from the same to/date/
-// referenceNumber/subject/incidentText values the input fields above
-// hold — the fields themselves are untouched, only how these values are
-// arranged on the printed page changes here.
+const TO_LABEL = "ለ:";
+const SUBJECT_LABEL = "ጉዳዩ:";
+
+const textToBrHtml = (text) => (text || "").split("\n").join("<br/>");
+
 const buildLetterHtml = ({
   to,
   date,
@@ -228,20 +256,28 @@ const buildLetterHtml = ({
   incidentText,
   screenshots = [],
   passportScan,
+
+  canvasHtmlOverride,
 }) => {
   const totalPages = 1 + screenshots.length + (passportScan ? 1 : 0);
 
+  const canvasHtml =
+    canvasHtmlOverride ??
+    `<div class="letter-canvas" data-canvas="true">
+      <div class="letter-info-row">
+        <div class="letter-to"><span data-field="to">${to ? textToBrHtml(to) : TO_LABEL}</span></div>
+        <div class="letter-meta-col">
+          <div><b>ቀን:</b> ${date}</div>
+          <div><b>ቁጥር:</b> <span data-field="reference">${referenceNumber || ""}</span></div>
+        </div>
+      </div>
+      <div class="letter-subject"><span data-field="subject">${subject ? textToBrHtml(subject) : SUBJECT_LABEL}</span></div>
+      <div class="letter-body" data-field="body">${incidentText || ""}</div>
+    </div>`;
+
   const letterPage = `<div class="page${totalPages > 1 ? " pb" : ""}">
     ${buildLetterHeader("Official Letter", "ደብዳቤ")}
-    <div class="letter-info-row">
-      <div class="letter-to">ለ: ${formatRecipientText(to)}</div>
-      <div class="letter-meta-col">
-        <div><b>ቀን:</b> ${date}</div>
-        <div><b>ቁጥር:</b> ${referenceNumber || ""}</div>
-      </div>
-    </div>
-    <div class="letter-subject">ጉዳዩ: ${subject || ""}</div>
-    <div class="letter-body">${incidentText || ""}</div>
+    ${canvasHtml}
     ${buildLetterFooter(`Page 1 of ${totalPages}`)}
   </div>`;
 
@@ -322,10 +358,16 @@ const printLetter = (html, printTitle = "Letter") => {
   document.body.appendChild(iframe);
 };
 
-// Inlines a remote image (e.g. the worker's passport scan) as a data URI
-// — same trick VisaApplicationPdfGenerator.jsx uses — so it prints
-// reliably even if the URL needs auth/CORS the print iframe can't
-// satisfy. Falls back to the original URL on failure.
+const elementToText = (el) => {
+  const clone = el.cloneNode(true);
+  clone.querySelectorAll("br").forEach((br) => br.replaceWith("\n"));
+  clone.querySelectorAll("div, p").forEach((block) => {
+    block.insertAdjacentText("beforebegin", "\n");
+    block.replaceWith(...block.childNodes);
+  });
+  return clone.textContent.replace(/^\n+/, "").trimEnd();
+};
+
 const toDataUri = async (url) => {
   if (!url) return null;
   try {
@@ -342,42 +384,6 @@ const toDataUri = async (url) => {
     return url;
   }
 };
-
-// SelectableField — ONE input that both picks a predefined option and
-// stays freely editable: a native <datalist> attached to a plain text
-// input, so the same field is what you pick from AND what you type/edit
-// in — nothing renders into a second field.
-
-const SelectableField = ({ label, options, value, onChange, placeholder }) => {
-  const listId = useId();
-
-  return (
-    <div className="form-group">
-      {label && (
-        <label className="fw-semibold small mb-1 d-block">{label}</label>
-      )}
-      <input
-        className="form-control"
-        style={FIELD_STYLE}
-        list={listId}
-        value={value}
-        placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-      />
-      <datalist id={listId}>
-        {options.map((opt) => (
-          <option key={opt} value={opt} />
-        ))}
-      </datalist>
-    </div>
-  );
-};
-
-// CopyField — a single toolkit row: clicking it copies the value and,
-// like the copy button in the Claude console, swaps its own icon/text to
-// a "Copied" confirmation for a moment instead of firing a global toast.
-// Left-aligned via an explicit inline style so it can never fall back to
-// a button's default centered text.
 
 const CopyField = ({ label, value }) => {
   const [status, setStatus] = useState(null); // null | "copied" | "failed"
@@ -440,6 +446,8 @@ const LetterToolkit = ({
   onAddScreenshots,
   onRemoveScreenshot,
   onPrint,
+  isCached,
+  onToggleCache,
 }) => {
   // TODO: confirm these field paths against the real worker profile shape.
   const workerFields = worker
@@ -491,6 +499,38 @@ const LetterToolkit = ({
       >
         Toolkit
       </h6>
+
+      <div className="mb-3">
+        <label className="small mb-1 d-block" style={{ textAlign: "left" }}>
+          Cache
+        </label>
+        <div className="d-flex align-items-center gap-2">
+          <button
+            type="button"
+            className={`btn btn-sm flex-fill ${
+              isCached ? "btn-outline-danger" : "btn-outline-success"
+            }`}
+            onClick={onToggleCache}
+          >
+            <i className={`bi ${isCached ? "bi-trash" : "bi-save"} me-1`}></i>
+            {isCached ? "Remove from Cache" : "Save to Cache"}
+          </button>
+        </div>
+        <p
+          className="small mb-0 mt-1"
+          style={{
+            textAlign: "left",
+            color: isCached ? "#1a7f4b" : "#8a97b0",
+          }}
+        >
+          <i
+            className={`bi ${
+              isCached ? "bi-check-circle-fill" : "bi-circle"
+            } me-1`}
+          ></i>
+          {isCached ? "Saved in cache" : "Not saved"}
+        </p>
+      </div>
 
       {worker ? (
         <div className="d-flex flex-column gap-1 mb-3">
@@ -568,7 +608,6 @@ const LetterToolkit = ({
 
 const LetterGenerator = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
@@ -579,26 +618,118 @@ const LetterGenerator = () => {
 
   const [worker, setWorker] = useState(null);
 
-  const [to, setTo] = useState("");
+  // Restored once, on mount, from the persistent local cache (if the
+  // user has one) — a refresh never loses a saved letter.
+  const initialCache = useMemo(() => readCachedLetter(), []);
+
+  const [to, setTo] = useState(() => initialCache?.to ?? "");
   // Seeded with DEFAULT_REFERENCE_NUMBER so ቁጥር is never blank on load,
   // but the field stays a normal controlled input the user can edit.
   const [referenceNumber, setReferenceNumber] = useState(
-    DEFAULT_REFERENCE_NUMBER,
+    () => initialCache?.referenceNumber ?? DEFAULT_REFERENCE_NUMBER,
   );
-  const [subject, setSubject] = useState("");
-  const [incidentText, setIncidentText] = useState(DEFAULT_INCIDENT_TEXT);
+  const [subject, setSubject] = useState(() => initialCache?.subject ?? "");
+  const [incidentText, setIncidentText] = useState(
+    () => initialCache?.incidentText ?? DEFAULT_INCIDENT_TEXT,
+  );
+
+  // Whether the letter currently has a saved copy sitting in the local
+  // cache. Once true, further edits keep that saved copy up to date
+  // automatically (see the autosave effect below); "Remove from Cache"
+  // turns this back off.
+  const [isCached, setIsCached] = useState(() => initialCache !== null);
 
   const [screenshots, setScreenshots] = useState([]);
   const [passportAttached, setPassportAttached] = useState(false);
   const [passportDataUri, setPassportDataUri] = useState(null);
 
-  // Defaults to today but is a normal controlled input the user can
-  // change — the native date input's own value format ("YYYY-MM-DD").
-  const [dateInput, setDateInput] = useState(() => toIsoDateLocal(new Date()));
-  const formattedDate = useMemo(
-    () => (dateInput ? fmtDate(parseIsoDateLocal(dateInput)) : ""),
-    [dateInput],
-  );
+  // Purely visual: highlights the console's own border/shadow while the
+  // user is actively writing in it, so switching into "writing mode"
+  // reads as a clear, natural transition rather than a static box.
+  const [isConsoleFocused, setIsConsoleFocused] = useState(false);
+
+  const today = useMemo(() => fmtDate(new Date()), []);
+
+  // Keeps a saved letter's cache entry fresh as the user keeps editing,
+  // so "Save to Cache" doesn't have to be clicked again after every
+  // change. Does nothing until the letter has been saved at least once.
+  useEffect(() => {
+    if (!isCached) return;
+    writeCachedLetter({
+      to,
+      subject,
+      referenceNumber,
+      incidentText,
+      savedAt: Date.now(),
+    });
+  }, [isCached, to, subject, referenceNumber, incidentText]);
+
+  // A ref (not just a function) so the always-current save logic can be
+  // called from event listeners that were attached once — the global
+  // Ctrl+S handler below and the one attached inside the iframe on load
+  // — without either of them closing over stale field values.
+  const saveToCacheRef = useRef(() => {});
+  useEffect(() => {
+    saveToCacheRef.current = () => {
+      writeCachedLetter({
+        to,
+        subject,
+        referenceNumber,
+        incidentText,
+        savedAt: Date.now(),
+      });
+      setIsCached(true);
+      addMessage(true, "Letter saved to cache.");
+    };
+  }, [to, subject, referenceNumber, incidentText, addMessage]);
+
+  // Ctrl+S / Cmd+S saves the letter instead of triggering the browser's
+  // own "Save Page" dialog. Covers focus anywhere outside the iframe;
+  // the matching in-console case is wired up in handleIframeLoad below.
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const isSaveShortcut =
+        (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s";
+      if (!isSaveShortcut) return;
+      e.preventDefault();
+      saveToCacheRef.current();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const handleToggleCache = () => {
+    if (isCached) {
+      clearCachedLetter();
+      setIsCached(false);
+    } else {
+      saveToCacheRef.current();
+    }
+  };
+
+  const handleRemoveFromCache = () => {
+    clearCachedLetter();
+    setIsCached(false);
+  };
+
+  // Contextual, autocomplete-style suggestions — nothing is permanently
+  // rendered; this holds the dropdown's current contents/position, or
+  // null when hidden. Recomputed on every cursor move inside the
+  // console (see the selectionchange handler in handleIframeLoad).
+  const [suggestionState, setSuggestionState] = useState(null);
+  // Mirrors suggestionState for the iframe's own keydown listener
+  // (attached once per load) to read without going stale.
+  const suggestionRef = useRef(null);
+  useEffect(() => {
+    suggestionRef.current = suggestionState;
+  }, [suggestionState]);
+
+  const commitSuggestion = (field, value) => {
+    pendingFocusFieldRef.current = field;
+    if (field === "to") setTo(value);
+    else if (field === "subject") setSubject(value);
+    setSuggestionState(null);
+  };
 
   useEffect(() => {
     if (!workerId) return;
@@ -652,13 +783,306 @@ const LetterGenerator = () => {
     setScreenshots((prev) => prev.filter((s) => s.id !== id));
   };
 
+  const iframeRef = useRef(null);
+  // The bordered wrapper around the iframe and the floating suggestion
+  // dropdown — used only to tell "clicked inside the console/dropdown"
+  // apart from "clicked elsewhere on the page" below.
+  const consoleWrapperRef = useRef(null);
+  const suggestionDropdownRef = useRef(null);
+  // Set right before a suggestion commits its value; consumed on the
+  // next iframe load to land the caret at the end of that field so
+  // typing can continue immediately, instead of leaving focus nowhere.
+  const pendingFocusFieldRef = useRef(null);
+  // Mirrors the canvas's actual live HTML — including any bold/underline
+  // formatting applied via Ctrl+B/Ctrl+U, and any line breaks in ለ/ጉዳዩ
+  // or the body — so Print always has the true displayed content to
+  // work from. Kept fresh on every edit and, as a safety margin,
+  // refreshed first thing on blur (see handleIframeLoad) before the
+  // plain-text state sync there would otherwise regenerate the canvas
+  // and lose that formatting.
+  const lastCanvasHtmlRef = useRef(null);
+
+  // Belt-and-braces close: clicks inside the iframe are handled by the
+  // selectionchange/blur logic below (a different document, so they
+  // never reach this listener), but a click on some other part of the
+  // outer page — with focus never actually leaving the console — needs
+  // its own check.
+  useEffect(() => {
+    if (!suggestionState) return undefined;
+    const handleOutsideClick = (e) => {
+      if (suggestionDropdownRef.current?.contains(e.target)) return;
+      if (consoleWrapperRef.current?.contains(e.target)) return;
+      setSuggestionState(null);
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [suggestionState]);
+
+  // Turns the whole letter-content area into ONE seamless writing
+  // surface: click anywhere in it — before the salutation, between the
+  // subject and the body, past the last line, wherever — and start
+  // typing right there, same as an ordinary document editor. There are
+  // no inner sub-fields to bump into; it's a single contenteditable
+  // root, so every gap between the generated ለ/ቁጥር/ጉዳዩ/body content is
+  // just as writable as the content itself. Re-run every time the
+  // iframe (re)loads, since a fresh srcDoc means fresh DOM.
+  const handleIframeLoad = () => {
+    const doc = iframeRef.current?.contentDocument;
+    if (!doc) return;
+
+    const canvas = doc.querySelector('[data-canvas="true"]');
+    if (!canvas) return;
+
+    canvas.setAttribute("contenteditable", "true");
+    canvas.spellcheck = false;
+
+    // A suggestion was just picked from the floating dropdown — land the
+    // caret at the end of that field so the user can keep typing right
+    // away.
+    if (pendingFocusFieldRef.current) {
+      const target = canvas.querySelector(
+        `[data-field="${pendingFocusFieldRef.current}"]`,
+      );
+      pendingFocusFieldRef.current = null;
+      if (target) {
+        const range = doc.createRange();
+        range.selectNodeContents(target);
+        range.collapse(false);
+        const sel = doc.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        canvas.focus();
+      }
+    }
+
+    canvas.addEventListener("focus", () => setIsConsoleFocused(true));
+
+    // Keeps a live snapshot of the canvas's actual HTML — formatting
+    // and line breaks included — independent of the plain-text state
+    // sync below, so Print always has the true displayed content
+    // regardless of when (or whether) a blur has happened relative to
+    // clicking Print.
+    const captureCanvasSnapshot = () => {
+      const clone = canvas.cloneNode(true);
+      clone.removeAttribute("contenteditable");
+      lastCanvasHtmlRef.current = clone.outerHTML;
+    };
+    captureCanvasSnapshot();
+    canvas.addEventListener("input", captureCanvasSnapshot);
+
+    // Resolves which data-field (if any) the current caret sits inside.
+    // Shared by the suggestion trigger and the Enter-key handler, so
+    // both agree on "am I in the ለ/ጉዳዩ line" the same way.
+    const resolveCurrentField = () => {
+      const sel = doc.getSelection();
+      if (!sel || sel.rangeCount === 0) return null;
+      const node = sel.anchorNode;
+      return node?.nodeType === 3
+        ? node.parentElement?.closest("[data-field]") || null
+        : node?.closest?.("[data-field]") || null;
+    };
+
+    const updateSuggestionsFromCursor = () => {
+      const sel = doc.getSelection();
+      if (!sel || sel.rangeCount === 0 || doc.activeElement !== canvas) {
+        setSuggestionState(null);
+        return;
+      }
+
+      const fieldEl = resolveCurrentField();
+      const field = fieldEl?.getAttribute("data-field");
+
+      if (field !== "to" && field !== "subject") {
+        setSuggestionState(null);
+        return;
+      }
+
+      const defaultLabel = field === "to" ? TO_LABEL : SUBJECT_LABEL;
+      const content = fieldEl.textContent.trim();
+      const isEmptyOrDefault = content === "" || content === defaultLabel;
+
+      if (!isEmptyOrDefault) {
+        setSuggestionState(null);
+        return;
+      }
+
+      const options = field === "to" ? TO_OPTIONS : SUBJECT_OPTIONS;
+
+      let caretRect;
+      try {
+        const range = sel.getRangeAt(0).cloneRange();
+        range.collapse(true);
+        caretRect = range.getClientRects()[0] || range.getBoundingClientRect();
+      } catch {
+        caretRect = null;
+      }
+      const fallbackRect = fieldEl.getBoundingClientRect();
+      const rect =
+        caretRect && (caretRect.width || caretRect.height)
+          ? caretRect
+          : fallbackRect;
+
+      const iframeRect = iframeRef.current?.getBoundingClientRect();
+      if (!iframeRect || !rect) {
+        setSuggestionState(null);
+        return;
+      }
+
+      setSuggestionState({
+        field,
+        options,
+        activeIndex: 0,
+        top: iframeRect.top + rect.bottom + 6,
+        left: iframeRect.left + rect.left,
+      });
+    };
+    doc.addEventListener("selectionchange", updateSuggestionsFromCursor);
+    canvas.addEventListener("input", updateSuggestionsFromCursor);
+
+    // Keydown inside the iframe's own document never reaches the outer
+    // window, so both Ctrl+S/Cmd+S and the suggestion dropdown's
+    // keyboard navigation need their own listener here.
+    doc.addEventListener("keydown", (e) => {
+      const isSaveShortcut =
+        (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s";
+      if (isSaveShortcut) {
+        e.preventDefault();
+        saveToCacheRef.current();
+        return;
+      }
+
+      const suggestion = suggestionRef.current;
+      if (suggestion) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          setSuggestionState(null);
+          return;
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          setSuggestionState({
+            ...suggestion,
+            activeIndex:
+              (suggestion.activeIndex + 1) % suggestion.options.length,
+          });
+          return;
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setSuggestionState({
+            ...suggestion,
+            activeIndex:
+              (suggestion.activeIndex - 1 + suggestion.options.length) %
+              suggestion.options.length,
+          });
+          return;
+        }
+        if (e.key === "Enter") {
+          e.preventDefault();
+          commitSuggestion(
+            suggestion.field,
+            suggestion.options[suggestion.activeIndex],
+          );
+          return;
+        }
+      }
+
+      // Preserve line breaks typed inside the ለ/ጉዳዩ fields, instead of
+      // letting them escape the field. Previously Enter here was
+      // redirected to a brand-new line *after* the whole info-row /
+      // subject section — which visually detached the break from ለ/ጉዳዩ
+      // and let it drift back into whatever content followed once the
+      // canvas next resynced. Now a <br> is inserted right at the
+      // caret, staying inside the same data-field span, so the break
+      // renders exactly where it was typed — both live and, since Print
+      // reads this same DOM via lastCanvasHtmlRef, in the printed
+      // output too.
+      if (e.key === "Enter") {
+        const fieldEl = resolveCurrentField();
+        const field = fieldEl?.getAttribute("data-field");
+        if (field === "to" || field === "subject") {
+          e.preventDefault();
+          const sel = doc.getSelection();
+          if (!sel || !sel.rangeCount) return;
+          const range = sel.getRangeAt(0);
+          range.deleteContents();
+          const br = doc.createElement("br");
+          range.insertNode(br);
+
+          if (!br.nextSibling) {
+            const filler = doc.createElement("br");
+            br.parentNode.insertBefore(filler, br.nextSibling);
+          }
+          range.setStartAfter(br);
+          range.setEndAfter(br);
+          sel.removeAllRanges();
+          sel.addRange(range);
+          captureCanvasSnapshot();
+        }
+      }
+    });
+
+    canvas.addEventListener("paste", (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || doc.defaultView.clipboardData).getData(
+        "text/plain",
+      );
+      const sel = doc.getSelection();
+      if (!sel || !sel.rangeCount) return;
+
+      sel.deleteFromDocument();
+      const range = sel.getRangeAt(0);
+
+      const lines = text.split(/\r\n|\r|\n/);
+      const frag = doc.createDocumentFragment();
+      lines.forEach((line, i) => {
+        frag.appendChild(doc.createTextNode(line));
+        if (i < lines.length - 1) frag.appendChild(doc.createElement("br"));
+      });
+      const lastNode = frag.lastChild;
+      range.insertNode(frag);
+      if (lastNode) {
+        range.setStartAfter(lastNode);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    });
+
+    // silently dropped.
+    canvas.addEventListener("blur", () => {
+      captureCanvasSnapshot();
+
+      const toEl = canvas.querySelector('[data-field="to"]');
+      const refEl = canvas.querySelector('[data-field="reference"]');
+      const subjEl = canvas.querySelector('[data-field="subject"]');
+      const bodyEl = canvas.querySelector('[data-field="body"]');
+
+      if (toEl) {
+        const rawTo = elementToText(toEl).trim();
+        setTo(rawTo === TO_LABEL ? "" : rawTo);
+      }
+      if (refEl) {
+        setReferenceNumber(sanitizeReferenceNumber(refEl.textContent.trim()));
+      }
+      if (subjEl) {
+        const rawSubject = elementToText(subjEl).trim();
+        setSubject(rawSubject === SUBJECT_LABEL ? "" : rawSubject);
+      }
+      if (bodyEl) setIncidentText(elementToText(bodyEl));
+
+      setIsConsoleFocused(false);
+      setSuggestionState(null);
+    });
+  };
+
   // Single source of truth for both the live preview iframe and the
   // printed output — what's on screen is exactly what gets printed.
   const letterHtml = useMemo(
     () =>
       buildLetterHtml({
         to,
-        date: formattedDate,
+        date: today,
         referenceNumber,
         subject,
         incidentText,
@@ -667,7 +1091,7 @@ const LetterGenerator = () => {
       }),
     [
       to,
-      formattedDate,
+      today,
       referenceNumber,
       subject,
       incidentText,
@@ -681,110 +1105,76 @@ const LetterGenerator = () => {
     const fileTitle = worker?.full_name
       ? `Letter - ${worker.full_name}`
       : "Letter";
-    printLetter(letterHtml, fileTitle);
+
+    let canvasHtmlOverride = lastCanvasHtmlRef.current;
+    if (!canvasHtmlOverride) {
+      const liveCanvas = iframeRef.current?.contentDocument?.querySelector(
+        '[data-canvas="true"]',
+      );
+      if (liveCanvas) {
+        const clone = liveCanvas.cloneNode(true);
+        clone.removeAttribute("contenteditable");
+        canvasHtmlOverride = clone.outerHTML;
+      }
+    }
+
+    const printHtml = buildLetterHtml({
+      to,
+      date: today,
+      referenceNumber,
+      subject,
+      incidentText,
+      screenshots,
+      passportScan: passportAttached ? passportDataUri : null,
+      canvasHtmlOverride,
+    });
+
+    printLetter(printHtml, fileTitle);
   };
 
   return (
     <div className="dashboard-wraper">
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center mb-1">
         <div>
-          <h2 className="fw-bold text-dark mb-1">Letter Generator</h2>
-          <p className="text-muted mb-0 small">
-            {worker
-              ? `Preparing a letter for ${worker.full_name}`
-              : "No worker selected — fill the letter in manually."}
-          </p>
+          <h2 className="fw-bold text-dark mb-0">Letter</h2>
         </div>
       </div>
-
-      {/* Input layout: every field paired 2-up on larger screens
-          (collapsing to one column on small screens), no card/border/
-          shadow wrapper — plain sections like Record Transaction.
-          Unchanged from before — only the Preview/Print HTML below
-          rearranges how these same values are laid out on the page. */}
-      <div className="submit-section mb-4">
-        <div className="row">
-          {/* ለ and ቀን share a row */}
-          <div className="form-group col-md-6">
-            <SelectableField
-              label="ለ"
-              options={TO_OPTIONS}
-              value={to}
-              onChange={setTo}
-              placeholder="Type recipient…"
-            />
-          </div>
-          <div className="form-group col-md-6">
-            <label className="fw-semibold small mb-1 d-block">ቀን</label>
-            <input
-              type="date"
-              className="form-control"
-              style={FIELD_STYLE}
-              value={dateInput}
-              onChange={(e) => setDateInput(e.target.value)}
-            />
-            {dateInput && (
-              <small className="text-muted d-block mt-1">
-                {formattedDate}
-              </small>
-            )}
-          </div>
-        </div>
-
-        <div className="row">
-          {/* ቁጥር and ጉዳዩ share their own separate row — never on the
-              same row as ቀን — kept aligned the same way as the row above. */}
-          <div className="form-group col-md-6">
-            <label className="fw-semibold small mb-1 d-block">ቁጥር</label>
-            <input
-              className="form-control"
-              style={FIELD_STYLE}
-              value={referenceNumber}
-              placeholder="e.g. PEA/948/2021"
-              onChange={(e) =>
-                setReferenceNumber(sanitizeReferenceNumber(e.target.value))
-              }
-            />
-          </div>
-          <div className="form-group col-md-6">
-            <SelectableField
-              label="ጉዳዩ"
-              options={SUBJECT_OPTIONS}
-              value={subject}
-              onChange={setSubject}
-              placeholder="Type subject…"
-            />
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="form-group col-md-12">
-            <label className="fw-semibold small mb-1 d-block">
-              Letter Content
-            </label>
-            <textarea
-              className="form-control"
-              style={{ ...FIELD_STYLE, textAlign: "left" }}
-              rows={7}
-              value={incidentText}
-              onChange={(e) => setIncidentText(e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Preview (left, wide) + compact toolkit (right, narrow) — plain,
-          no card/border/shadow, just the dashboard's own background. */}
       <div className="row g-4">
-        <div className="col-lg-9">
-          <iframe
-            title="Letter Preview"
-            srcDoc={letterHtml}
-            style={{ width: "100%", height: "850px", border: "none" }}
-          />
+        <div className="col-lg-9 order-2 order-lg-1">
+          <p className="text-muted  mb-3">
+            write your letter in the console below.
+          </p>
+
+          <div
+            ref={consoleWrapperRef}
+            style={{
+              border: `1px solid ${isConsoleFocused ? "#1a3c6e" : "#dde5f5"}`,
+              borderRadius: "12px",
+              padding: "10px",
+              background: "#fff",
+              boxShadow: isConsoleFocused
+                ? "0 0 0 3px rgba(26,60,110,0.12)"
+                : "0 1px 4px rgba(26,60,110,0.06)",
+              transition: "border-color .18s ease, box-shadow .18s ease",
+            }}
+          >
+            <iframe
+              ref={iframeRef}
+              title="Letter Writing Console"
+              srcDoc={letterHtml}
+              onLoad={handleIframeLoad}
+              style={{
+                width: "100%",
+                height: "850px",
+                border: "none",
+                display: "block",
+                borderRadius: "8px",
+              }}
+            />
+          </div>
         </div>
 
-        <div className="col-lg-3">
+        <div className="col-lg-3 order-1 order-lg-2">
           <LetterToolkit
             worker={worker}
             passportAttached={passportAttached}
@@ -793,9 +1183,66 @@ const LetterGenerator = () => {
             onAddScreenshots={handleAddScreenshots}
             onRemoveScreenshot={handleRemoveScreenshot}
             onPrint={handlePrint}
+            isCached={isCached}
+            onToggleCache={handleToggleCache}
+            onRemoveFromCache={handleRemoveFromCache}
           />
         </div>
       </div>
+
+      {/* Contextual, autocomplete-style suggestion dropdown — rendered
+          only while relevant, positioned right next to the caret. Never
+          part of the console itself, so it never restricts where the
+          user can click or type. */}
+      {suggestionState && (
+        <div
+          ref={suggestionDropdownRef}
+          role="listbox"
+          style={{
+            position: "fixed",
+            top: suggestionState.top,
+            left: suggestionState.left,
+            zIndex: 2000,
+            background: "#fff",
+            border: "1px solid #dde5f5",
+            borderRadius: "8px",
+            boxShadow: "0 4px 16px rgba(26,60,110,0.18)",
+            minWidth: "220px",
+            maxWidth: "380px",
+            maxHeight: "220px",
+            overflowY: "auto",
+            padding: "4px",
+          }}
+        >
+          {suggestionState.options.map((opt, idx) => (
+            <div
+              key={opt}
+              role="option"
+              aria-selected={idx === suggestionState.activeIndex}
+              onMouseDown={(e) => e.preventDefault()}
+              onMouseEnter={() =>
+                setSuggestionState((prev) =>
+                  prev ? { ...prev, activeIndex: idx } : prev,
+                )
+              }
+              onClick={() => commitSuggestion(suggestionState.field, opt)}
+              style={{
+                padding: "6px 10px",
+                borderRadius: "6px",
+                fontSize: "0.82rem",
+                color: "#1a2640",
+                cursor: "pointer",
+                background:
+                  idx === suggestionState.activeIndex
+                    ? "#eef3fb"
+                    : "transparent",
+              }}
+            >
+              {opt}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
