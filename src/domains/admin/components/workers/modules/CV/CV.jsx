@@ -1516,42 +1516,6 @@ const CVThree = () => {
                 action cluster always had. */}
             {showActionCluster &&
               renderActionCluster("mobile", "d-lg-none w-100")}
-            {/* CV preview column - only this column (via cvRef / passportRef)
-                is ever captured for the PDF. The toolbox next to it is UI
-                only and is never captured. */}
-            <div
-              style={{
-                // flex-grow: 0 - the column hugs the CV's actual (fixed)
-                // width instead of stretching to fill all remaining row
-                // space, which was pushing the toolbox far to the right
-                // and leaving a large empty gap between them on desktop.
-                // flex-shrink: 1 (with minWidth: 0) still lets it shrink
-                // and scroll horizontally on narrower viewports.
-                flex: "0 1 auto",
-                minWidth: 0,
-                overflowX: "auto",
-                WebkitOverflowScrolling: "touch",
-              }}
-            >
-              {/* Action cluster lives directly above the CV instead of in
-                  the page header, so it never stretches the header row and
-                  leaves a large empty gap above the preview. When it is
-                  hidden the CV simply sits at the normal position. */}
-              {showActionCluster && (
-                // Right-aligned on desktop (unchanged). On small screens -
-                // same responsive approach ListUser uses for its action
-                // buttons (align-items-start by default, align-items-*-end
-                // only from the md breakpoint up) - the cluster instead
-                // sits on the left, with a small left margin so it doesn't
-                // sit flush against the edge.
-                <div className="d-flex flex-column align-items-start align-items-md-end gap-2 mb-2 ms-2 ms-md-0">
-                  <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
-                      onClick={handleDownloadClick}
-                    >
-                      Download CV
-                    </button>
 
             {/* Toolbox column - UI only, never captured for the PDF.
                 order-2 on mobile (below the action buttons, above the CV
