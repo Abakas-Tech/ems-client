@@ -38,6 +38,42 @@ const generateReferenceNumber = (worker) => {
   return `${REFERENCE_PREFIX}-${String(workerId).padStart(6, "0")}`;
 };
 
+/**
+ * Builds the download file name from the worker's full name and their
+ * `code` field (the single source of truth for agent info — no separate
+ * agent name/phone lookups). `code` comes in one of these shapes:
+ *   "AgentFirstName/EXPxxxx"  - agent assigned, has experience
+ *   "AgentFirstName/xxxx"     - agent assigned, no experience
+ *   "EXPxxxx"                 - no agent, has experience
+ *   "xxxx"                    - no agent, no experience
+ *
+ * Produces:
+ *   "(AgentFirstName) Worker Full Name (EXP xxxx)"
+ *   "(AgentFirstName) Worker Full Name (xxxx)"
+ *   "Worker Full Name (EXP xxxx)"
+ *   "Worker Full Name (xxxx)"
+ */
+const buildDownloadFileName = (fullName, code) => {
+  const safeName = (fullName ?? "").trim();
+  const rawCode = (code ?? "").trim();
+
+  let agentFirstName = "";
+  let phonePart = rawCode;
+
+  if (rawCode.includes("/")) {
+    const [agent, rest] = rawCode.split("/");
+    agentFirstName = agent ?? "";
+    phonePart = rest ?? "";
+  }
+
+  const hasExperience = phonePart.toUpperCase().startsWith("EXP");
+  const last4 = hasExperience ? phonePart.slice(3) : phonePart;
+  const bracketContent = hasExperience ? `EXP ${last4}` : last4;
+
+  return agentFirstName
+    ? `(${agentFirstName}) ${safeName} (${bracketContent})`
+    : `${safeName} (${bracketContent})`;
+};
 const subtractDate = (firstDate, secondDate) => {
   const date1 = new Date(firstDate);
   const date2 = new Date(secondDate);
@@ -643,6 +679,7 @@ const CVThree = ({ templateSwitcher }) => {
         workerId,
         selectedPartnerId || undefined,
       );
+      console.log("Fetched CV data:", response.data);
       setWorker(response.data);
     } catch (error) {
       console.error("fetch error:", error);
@@ -872,10 +909,10 @@ const CVThree = ({ templateSwitcher }) => {
         addCanvasToPages(pdf, passportCanvas, margin);
       }
 
-      const name = `${worker.full_name.replace(/\s+/g, "_")}_CV`;
+     const name = buildDownloadFileName(worker.full_name, worker.code);
 
-      // Trigger an actual browser download of the PDF we just built.
-      pdf.save(`${name}.pdf`);
+     // Trigger an actual browser download of the PDF we just built.
+     pdf.save(`${name}.pdf`);
 
       addMessage(true, "CV downloaded!");
     } catch (error) {
@@ -972,6 +1009,7 @@ const CVThree = ({ templateSwitcher }) => {
   const ref = generateReferenceNumber(worker);
   const category = worker.primary_positions?.[0] ?? "House Maid";
 
+
   // Make the sufix based on partner country, if available, otherwise default to "S.R" (Saudi Riyal).
   const salarySufix =
     selectedPartner?.country?.toLowerCase() === "jordan"
@@ -991,6 +1029,7 @@ const CVThree = ({ templateSwitcher }) => {
       ? subtractDate(worker.contract_end_date, worker.contract_start_date)
       : (worker.contract_period ?? "2 Years");
   // "CODE" row was removed from the template - no longer read from worker.
+  const applicationCode = worker.code ?? "";
   const applicationDate = formatShortDate(new Date());
 
   const phone = worker.phone_number ?? "";
@@ -1226,6 +1265,7 @@ const CVThree = ({ templateSwitcher }) => {
                   value={contract}
                   arLabel="مدة العقد"
                 />
+                <Row3 label="Code" value={applicationCode} boldValue />
                 <Row3 label="Date" value={applicationDate} last />
 
                 <SectionBar en="PASSPORT DETAILS" ar="تفاصيل جواز السفر" />
@@ -1395,11 +1435,17 @@ const CVThree = ({ templateSwitcher }) => {
                 // width instead of stretching to fill all remaining row
                 // space, which was pushing the toolbox far to the right
                 // and leaving a large empty gap between them on desktop.
-                // flex-shrink: 1 (with minWidth: 0) still lets it shrink
-                // and scroll horizontally on narrower viewports.
+                // flex-shrink: 1 (with minWidth: 0) still lets the FLEX
+                // ITEM shrink to the available viewport width - the CV
+                // content inside (fixed at CV_WIDTH) never shrinks, so it
+                // overflows this box and the box scrolls horizontally
+                // instead of compressing or rearranging the CV.
                 flex: "0 1 auto",
+                width: "100%",
                 minWidth: 0,
+                maxWidth: "100%",
                 overflowX: "auto",
+                overflowY: "hidden",
                 WebkitOverflowScrolling: "touch",
               }}
             >
