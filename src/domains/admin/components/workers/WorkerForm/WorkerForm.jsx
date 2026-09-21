@@ -3359,16 +3359,6 @@ function WorkerForm() {
     const moduleFlag = RESET_MODULE_FLAGS[section.key];
     if (!moduleFlag) return;
 
-    // Visa and Travel share a single backend module, so the confirmation
-    // always names both, regardless of which of the two the user clicked
-    // Reset on, since resetting either one clears both. "basic" only
-    // resets the Personal Information half of the section (name/phone/
-    // email are untouched), so the confirmation names that half, not the
-    // full "Basic & Personal Information" section label.
-    let resetLabel = section.label;
-    if (moduleFlag === "visa_travel") resetLabel = "Visa & Travel";
-    else if (section.key === "basic") resetLabel = "Personal Information";
-
     openModal(
       async () => {
         try {
@@ -3480,7 +3470,7 @@ function WorkerForm() {
         }
       },
       {
-        title: `This will clear this worker's ${resetLabel} data. Are you sure you want to continue?`,
+        title: "Are you sure you want to reset this module?",
         confirmText: "Reset",
       },
     );

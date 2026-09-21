@@ -1408,7 +1408,13 @@ const CVThree = ({ templateSwitcher }) => {
                   leaves a large empty gap above the preview. When it is
                   hidden the CV simply sits at the normal position. */}
               {showActionCluster && (
-                <div className="d-flex flex-column align-items-end gap-2 mb-2">
+                // Right-aligned on desktop (unchanged). On small screens -
+                // same responsive approach ListUser uses for its action
+                // buttons (align-items-start by default, align-items-*-end
+                // only from the md breakpoint up) - the cluster instead
+                // sits on the left, with a small left margin so it doesn't
+                // sit flush against the edge.
+                <div className="d-flex flex-column align-items-start align-items-md-end gap-2 mb-2 ms-2 ms-md-0">
                   <div className="d-flex gap-2">
                     <button
                       className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
