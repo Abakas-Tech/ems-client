@@ -68,7 +68,7 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
               type="text"
               name="search"
               className={`form-control ${styles.input}`}
-              placeholder="Search by name, phone, passport, or labour ID"
+              placeholder="Search by name, phone, passport, labour ID or agent"
               value={filters.search || ""}
               onChange={handleChange}
             />
