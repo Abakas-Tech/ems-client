@@ -83,9 +83,13 @@ const SECTIONS = [
 // PATCH /workers/:id/reset endpoint expects (see WORKER_RESET_MODULES in
 // database/queries/worker.query.js). Visa and Travel are two separate
 // sections here but share a single backend module ("visa_travel"), so
-// resetting either one clears both. Sections with no entry here (Languages,
-// Skills) have no backend reset module and never render a Reset button.
+// resetting either one clears both. "basic" (Basic & Personal Information)
+// maps to "personal_information" even though it's not an optional/Include
+// section — it still gets its own Reset control. Sections with no entry
+// here (Languages, Skills) have no backend reset module and never render
+// a Reset button.
 const RESET_MODULE_FLAGS = {
+  basic: "personal_information",
   passport: "passport",
   coc: "coc",
   medical: "medical",
@@ -95,6 +99,39 @@ const RESET_MODULE_FLAGS = {
   travel: "visa_travel",
   contract: "contract",
   experience: "experience",
+};
+
+// Fields on the raw personal_information record that resetWorkerPersonalInfo
+// (worker.query.js) actually nulls out — used to decide whether the Basic &
+// Personal Information module "has data" (and so should show a Reset
+// control). sex and monthly_salary are deliberately excluded: the backend
+// leaves them untouched since they're NOT NULL columns with no default.
+const PERSONAL_INFO_RESET_FIELDS = [
+  "region",
+  "wereda",
+  "city",
+  "subcity",
+  "date_of_birth",
+  "place_of_birth",
+  "religion",
+  "marital_status",
+  "nationality",
+  "address",
+  "education",
+  "number_of_children",
+  "height_cm",
+  "weight_kg",
+  "national_id_number",
+  "fingerprint_number",
+  "labour_id",
+];
+
+const hasPersonalInfoData = (pi) => {
+  if (!pi) return false;
+  if (PERSONAL_INFO_RESET_FIELDS.some((field) => Boolean(pi[field]))) {
+    return true;
+  }
+  return Boolean(pi.photo_3x4?.url) || Boolean(pi.photo_standing?.url);
 };
 
 // Nav tree only — groups Skills + Experience under a single tree entry
@@ -542,6 +579,7 @@ function WorkerForm() {
   // loaded profile (see applyProfileToForm/loadAgent) and cleared back to
   // false locally right after a successful reset.
   const [moduleHasData, setModuleHasData] = useState({
+    basic: false,
     passport: false,
     coc: false,
     medical: false,
@@ -1119,6 +1157,7 @@ function WorkerForm() {
     // separate loadAgent effect instead.
     setModuleHasData((prev) => ({
       ...prev,
+      basic: hasPersonalInfoData(pi),
       passport: Boolean(profileData.passport),
       coc: Boolean(profileData.coc),
       medical: Boolean(profileData.medical),
@@ -3322,9 +3361,13 @@ function WorkerForm() {
 
     // Visa and Travel share a single backend module, so the confirmation
     // always names both, regardless of which of the two the user clicked
-    // Reset on, since resetting either one clears both.
-    const resetLabel =
-      moduleFlag === "visa_travel" ? "Visa & Travel" : section.label;
+    // Reset on, since resetting either one clears both. "basic" only
+    // resets the Personal Information half of the section (name/phone/
+    // email are untouched), so the confirmation names that half, not the
+    // full "Basic & Personal Information" section label.
+    let resetLabel = section.label;
+    if (moduleFlag === "visa_travel") resetLabel = "Visa & Travel";
+    else if (section.key === "basic") resetLabel = "Personal Information";
 
     openModal(
       async () => {
@@ -3351,6 +3394,37 @@ function WorkerForm() {
             }));
           } else {
             switch (section.key) {
+              case "basic":
+                // Mirrors resetWorkerPersonalInfo exactly: clears the same
+                // columns it nulls, and — like the backend — leaves sex and
+                // monthly_salary untouched (they're NOT NULL columns with
+                // no default, so the backend can't clear them either).
+                setPersonal((prev) => ({
+                  ...prev,
+                  region: "",
+                  wereda: "",
+                  city: "",
+                  subcity: "",
+                  status_id: "",
+                  date_of_birth: "",
+                  place_of_birth: "",
+                  religion: "",
+                  marital_status: "",
+                  nationality: "",
+                  address: "",
+                  education: "",
+                  number_of_children: 0,
+                  height_cm: "",
+                  weight_kg: "",
+                  national_id_number: "",
+                  fingerprint_number: "",
+                  labour_id: "",
+                }));
+                setExistingPhoto3x4Url(null);
+                setExistingPhotoStandingUrl(null);
+                setPhoto3x4(null);
+                setPhotoStanding(null);
+                break;
               case "passport":
                 setPassport(defaultPassport());
                 setExistingPassportScanUrl(null);
@@ -3379,14 +3453,18 @@ function WorkerForm() {
               default:
                 break;
             }
-            setSectionsEnabled((prev) => ({
-              ...prev,
-              [section.key]: false,
-            }));
-            setManualOverride((prev) => ({
-              ...prev,
-              [section.key]: false,
-            }));
+            // "basic" (Basic & Personal Information) has no Include toggle,
+            // so it never had an entry in sectionsEnabled/manualOverride.
+            if (section.key !== "basic") {
+              setSectionsEnabled((prev) => ({
+                ...prev,
+                [section.key]: false,
+              }));
+              setManualOverride((prev) => ({
+                ...prev,
+                [section.key]: false,
+              }));
+            }
             setModuleHasData((prev) => ({
               ...prev,
               [section.key]: false,
@@ -3414,6 +3492,8 @@ function WorkerForm() {
   const renderSectionCard = (section) => {
     const isOptional = section.optional;
     const resetModuleFlag = RESET_MODULE_FLAGS[section.key];
+    const showReset =
+      isEditMode && resetModuleFlag && moduleHasData[section.key];
 
     return (
       <div
@@ -3422,12 +3502,12 @@ function WorkerForm() {
         ref={setSectionRef(section.key)}
         className="mb-4 pb-4 border-bottom section-scroll-anchor position-relative"
       >
-        {isOptional && (
+        {(isOptional || showReset) && (
           <div
             className="position-absolute top-0 end-0 m-3 d-flex align-items-center gap-3"
             style={{ zIndex: 2 }}
           >
-            {isEditMode && resetModuleFlag && moduleHasData[section.key] && (
+            {showReset && (
               <button
                 type="button"
                 className="btn btn-link d-flex align-items-center gap-2 p-0 text-decoration-none"
@@ -3437,22 +3517,24 @@ function WorkerForm() {
                 <span className="small text-muted">Reset</span>
               </button>
             )}
-            <div className="form-check form-switch d-flex align-items-center gap-2 ps-0 mb-0">
-              <input
-                type="checkbox"
-                role="switch"
-                className="form-check-input ms-0"
-                id={`toggle-${section.key}`}
-                checked={sectionsEnabled[section.key]}
-                onChange={() => toggleSection(section.key)}
-              />
-              <label
-                className="form-check-label small text-muted"
-                htmlFor={`toggle-${section.key}`}
-              >
-                Include
-              </label>
-            </div>
+            {isOptional && (
+              <div className="form-check form-switch d-flex align-items-center gap-2 ps-0 mb-0">
+                <input
+                  type="checkbox"
+                  role="switch"
+                  className="form-check-input ms-0"
+                  id={`toggle-${section.key}`}
+                  checked={sectionsEnabled[section.key]}
+                  onChange={() => toggleSection(section.key)}
+                />
+                <label
+                  className="form-check-label small text-muted"
+                  htmlFor={`toggle-${section.key}`}
+                >
+                  Include
+                </label>
+              </div>
+            )}
           </div>
         )}
 
