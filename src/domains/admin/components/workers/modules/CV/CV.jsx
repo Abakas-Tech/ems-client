@@ -1227,7 +1227,7 @@ const CVThree = () => {
     <div
       className={`d-flex flex-column align-items-end gap-2 mb-2 ${extraClassName}`.trim()}
     >
-      <div className="d-flex gap-2">
+      <div className="d-flex gap-2 ">
         <button
           className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
           onClick={handleDownloadClick}
