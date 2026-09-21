@@ -881,6 +881,10 @@ const ActiveWorkers = () => {
               accessor: "labour_id",
             },
             {
+              header: "Agent",
+              accessor: "agent_name",
+            },
+            {
               header: "Current Status",
               accessor: "status",
             },

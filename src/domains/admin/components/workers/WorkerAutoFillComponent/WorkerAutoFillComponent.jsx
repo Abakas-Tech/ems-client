@@ -922,7 +922,13 @@ function WorkerAutoFillComponent() {
     setSelectedSite(null);
 
     if (ok) {
-      window.open(site.url, "_blank", "noopener,noreferrer");
+      // Named target (instead of "_blank") so the browser reuses the
+      // existing tab for this site if one is already open, rather than
+      // spawning a new tab every time the same card is clicked.
+      // NOTE: "noopener"/"noreferrer" must NOT be passed here — either one
+      // forces the browser to always open a brand-new, isolated browsing
+      // context, which silently defeats the named-tab reuse above.
+      window.open(site.url, site.key);
     }
   };
 
