@@ -35,10 +35,10 @@ import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 
 // helper function
-const renderLabel = (text, required = false, missing = false) => {
+const renderLabel = (text,required = false, missing = false) => {
   return (
     <label>
-      {text} {required && <span className="text-danger">*</span>}
+      {text } {required && <span className="text-danger">*</span>}
       {missing && <span className="text-danger fw-bold ms-1">!</span>}
     </label>
   );
@@ -1582,7 +1582,9 @@ function WorkerForm() {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
+    if (!passport.passport_issue_date) {
+      return "Issue date is required";
+    }
     if (passport.passport_issue_date) {
       const issue = new Date(passport.passport_issue_date);
       if (isNaN(issue.getTime())) return "Issue date must be valid";
@@ -2492,16 +2494,14 @@ function WorkerForm() {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        {renderPlainLabel(
-          "Issue Date",
-          isFieldFlaggedMissing("passport", "passport_issue_date"),
-        )}
+        {renderLabel("Issue Date", true,   isFieldFlaggedMissing("passport", "passport_issue_date"),)}
         <input
           type="date"
           name="passport_issue_date"
           className="form-control"
           value={passport.passport_issue_date}
           onChange={handlePassportChange}
+          required
         />
       </div>
       <div className="form-group col-md-6 mb-3">
