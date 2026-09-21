@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useId } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { FiCheckCircle, FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiCheckCircle, FiPlus, FiTrash2, FiRotateCcw } from "react-icons/fi";
 import {
   createWorker,
   updateWorker,
@@ -534,6 +534,25 @@ function WorkerForm() {
     experience: false,
   });
 
+  // Tracks, per resettable module, whether the worker actually has saved
+  // data for it on the server — independent of sectionsEnabled (which the
+  // user can freely flip on/off and which also drives brand-new, unsaved
+  // modules). This is what the Reset control's visibility is based on: no
+  // point offering to reset a module that's already empty. Set from the
+  // loaded profile (see applyProfileToForm/loadAgent) and cleared back to
+  // false locally right after a successful reset.
+  const [moduleHasData, setModuleHasData] = useState({
+    passport: false,
+    coc: false,
+    medical: false,
+    guarantor: false,
+    agent: false,
+    visa: false,
+    travel: false,
+    contract: false,
+    experience: false,
+  });
+
   const [photo3x4, setPhoto3x4] = useState(null);
   const [photoStanding, setPhotoStanding] = useState(null);
   const [passportScan, setPassportScan] = useState(null);
@@ -755,6 +774,7 @@ function WorkerForm() {
             res.data.agent_id != null ? String(res.data.agent_id) : "",
           );
           setSectionsEnabled((prev) => ({ ...prev, agent: true }));
+          setModuleHasData((prev) => ({ ...prev, agent: true }));
         }
       } catch (err) {
         const statusCode = err?.response?.status || err?.status;
@@ -762,6 +782,7 @@ function WorkerForm() {
           setAgentExists(false);
           setSelectedAgentId("");
           setSectionsEnabled((prev) => ({ ...prev, agent: false }));
+          setModuleHasData((prev) => ({ ...prev, agent: false }));
         } else {
           console.error("Failed to fetch worker agent information:", err);
         }
@@ -1091,6 +1112,20 @@ function WorkerForm() {
       contract: Boolean(contractRecord),
       languages: loadedLanguages.length > 0,
       skills: loadedSkills.length > 0,
+      experience: loadedExperiences.length > 0,
+    }));
+    // Drives the Reset control's visibility (see moduleHasData above) —
+    // agent is intentionally left out here since it's tracked by the
+    // separate loadAgent effect instead.
+    setModuleHasData((prev) => ({
+      ...prev,
+      passport: Boolean(profileData.passport),
+      coc: Boolean(profileData.coc),
+      medical: Boolean(profileData.medical),
+      guarantor: Boolean(profileData.emergency),
+      visa: Boolean(profileData.visa),
+      travel: Boolean(travelRecord),
+      contract: Boolean(contractRecord),
       experience: loadedExperiences.length > 0,
     }));
     setManualOverride({
@@ -3309,6 +3344,11 @@ function WorkerForm() {
               visa: false,
               travel: false,
             }));
+            setModuleHasData((prev) => ({
+              ...prev,
+              visa: false,
+              travel: false,
+            }));
           } else {
             switch (section.key) {
               case "passport":
@@ -3344,6 +3384,10 @@ function WorkerForm() {
               [section.key]: false,
             }));
             setManualOverride((prev) => ({
+              ...prev,
+              [section.key]: false,
+            }));
+            setModuleHasData((prev) => ({
               ...prev,
               [section.key]: false,
             }));
@@ -3383,13 +3427,14 @@ function WorkerForm() {
             className="position-absolute top-0 end-0 m-3 d-flex align-items-center gap-3"
             style={{ zIndex: 2 }}
           >
-            {isEditMode && resetModuleFlag && (
+            {isEditMode && resetModuleFlag && moduleHasData[section.key] && (
               <button
                 type="button"
-                className="btn btn-link text-danger small p-0"
+                className="btn btn-link d-flex align-items-center gap-2 p-0 text-decoration-none"
                 onClick={() => handleResetModule(section)}
               >
-                Reset
+                <FiRotateCcw className="text-muted" size={14} />
+                <span className="small text-muted">Reset</span>
               </button>
             )}
             <div className="form-check form-switch d-flex align-items-center gap-2 ps-0 mb-0">
