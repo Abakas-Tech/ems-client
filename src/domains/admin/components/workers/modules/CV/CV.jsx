@@ -28,31 +28,6 @@ const formatShortDate = (date) => {
 
 const REFERENCE_PREFIX = "CV";
 
-const generateReferenceNumber = (worker) => {
-  const existing = worker?.reference_number ?? worker?.reference_no;
-  if (existing) return existing;
-
-  const workerId = worker?.id ?? worker?.worker_id;
-  if (!workerId) return "";
-
-  return `${REFERENCE_PREFIX}-${String(workerId).padStart(6, "0")}`;
-};
-
-/**
- * Builds the download file name from the worker's full name and their
- * `code` field (the single source of truth for agent info — no separate
- * agent name/phone lookups). `code` comes in one of these shapes:
- *   "AgentFirstName/EXPxxxx"  - agent assigned, has experience
- *   "AgentFirstName/xxxx"     - agent assigned, no experience
- *   "EXPxxxx"                 - no agent, has experience
- *   "xxxx"                    - no agent, no experience
- *
- * Produces:
- *   "(AgentFirstName) Worker Full Name (EXP xxxx)"
- *   "(AgentFirstName) Worker Full Name (xxxx)"
- *   "Worker Full Name (EXP xxxx)"
- *   "Worker Full Name (xxxx)"
- */
 const buildDownloadFileName = (fullName, code) => {
   const safeName = (fullName ?? "").trim();
   const rawCode = (code ?? "").trim();
@@ -633,7 +608,7 @@ const useMeasuredHeight = (deps) => {
   return [ref, height];
 };
 
-const CVThree = ({ templateSwitcher }) => {
+const CVThree = () => {
   const { id } = useParams();
   const cvRef = useRef(null);
   const passportRef = useRef(null);
@@ -687,6 +662,7 @@ const CVThree = ({ templateSwitcher }) => {
     } finally {
       hideLoader();
     }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, profile?.id, selectedPartnerId]);
 
   useEffect(() => {
@@ -754,6 +730,7 @@ const CVThree = ({ templateSwitcher }) => {
     if (profile) {
       fetchPartners();
     }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile]);
 
   const selectedPartner = partners.find(
@@ -1006,7 +983,6 @@ const CVThree = ({ templateSwitcher }) => {
   /* ---------------------------------------------------------------- */
   /*  Field mapping (worker -> template fields)                       */
   /* ---------------------------------------------------------------- */
-  const ref = generateReferenceNumber(worker);
   const category = worker.primary_positions?.[0] ?? "House Maid";
 
 
@@ -1595,7 +1571,7 @@ const CVThree = ({ templateSwitcher }) => {
                         en="LANGUAGES & EDUCATION"
                         ar="اللغات والتعليم"
                       />
-                      {languages.map((language, index) => (
+                      {languages.map((language) => (
                         <CheckRow
                           key={language.en}
                           en={language.en}
