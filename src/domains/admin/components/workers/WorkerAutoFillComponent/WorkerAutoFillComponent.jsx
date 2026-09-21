@@ -590,6 +590,35 @@ function mapWorkerToAutofillCandidate(worker) {
       "emergencyContactAddress",
     ]),
 
+    // Insurance "Add Beneficiary" fields — sourced from the same Emergency
+    // Contact (guarantor) info as the relativeContact* fields above, since
+    // that's the only beneficiary designation EMS currently collects per
+    // worker (mirrors the "row i" guarantor beneficiary already used by the
+    // printed Insurance Particulars report on the server).
+    beneficiaryFullName: pick(worker, [
+      "emergency.guarantor_name",
+      "relativeContactName",
+      "relative_name",
+      "relativeName",
+      "emergencyContactName",
+    ]),
+    beneficiaryRelationship: pick(worker, [
+      "emergency.relation",
+      "relativeContactKinship",
+      "relative_kinship",
+      "relativeKinship",
+      "kinship",
+    ]),
+    beneficiaryGender: normalizeGender(
+      pick(worker, ["emergency.guarantor_gender", "guarantor_gender"]),
+    ),
+    beneficiaryShare: pick(worker, [
+      "emergency.guarantor_name",
+      "relativeContactName",
+    ])
+      ? "100"
+      : "",
+
     branch: "8fc2b9aa-dbc6-4639-853f-d9789f24d7c0",
     effectiveDate: pick(worker, ["effectiveDate", "effective_date"]),
     confirmCheck: pick(worker, ["confirmCheck", "confirm_check"], true),
