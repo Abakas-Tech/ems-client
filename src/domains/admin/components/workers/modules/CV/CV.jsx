@@ -1223,59 +1223,74 @@ const CVThree = () => {
   // flex container. idSuffix keeps the two copies' element ids unique so
   // there is never a duplicate id in the DOM (only one copy is visible at
   // a time via d-none/d-lg-none, but both exist in markup).
-  const renderActionCluster = (idSuffix, extraClassName = "") => (
-    <div
-      className={`d-flex flex-column align-items-end gap-2 mb-2 ${extraClassName}`.trim()}
-    >
-      <div className="d-flex gap-2 ">
-        <button
-          className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
-          onClick={handleDownloadClick}
-        >
-          Download CV
-        </button>
+  // Small screens only: when Link Partner isn't shown (just the lone
+  // Download CV button), the cluster left-aligns instead of the default
+  // right alignment. When Link Partner IS shown, alignment stays exactly
+  // as it always was (right), just with extra top margin on small screens
+  // so it doesn't sit flush against whatever's above it. Both cases fall
+  // back to the original right-aligned, no-extra-margin layout from the lg
+  // breakpoint up - desktop is completely unaffected either way.
+  const renderActionCluster = (idSuffix, extraClassName = "") => {
+    const showLinkPartner = !isPartnerRole && !alreadySharedWithPartner;
 
-        {!isPartnerRole && !alreadySharedWithPartner && (
+    return (
+      <div
+        className={`d-flex flex-column gap-2 mb-2 ${
+          showLinkPartner
+            ? "align-items-end mt-3 mt-lg-0"
+            : "align-items-start align-items-lg-end"
+        } ${extraClassName}`.trim()}
+      >
+        <div className="d-flex gap-2">
           <button
-            className="btn btn-outline-main px-4 d-flex align-items-center justify-content-center"
-            onClick={handleLinkClick}
+            className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
+            onClick={handleDownloadClick}
           >
-            Link Partner
+            Download CV
           </button>
+
+          {showLinkPartner && (
+            <button
+              className="btn btn-outline-main px-4 d-flex align-items-center justify-content-center"
+              onClick={handleLinkClick}
+            >
+              Link Partner
+            </button>
+          )}
+        </div>
+
+        {!isPartnerRole && alreadySharedWithPartner && (
+          <>
+            {/* Only shown while the partner actually has access -
+                when access is revoked only the toggle below stays
+                visible so access can be restored. */}
+            {!isAccessRevoked && (
+              <span className="text-success small">
+                ✓ Already shared with this partner
+              </span>
+            )}
+
+            <div className="form-check form-switch mb-0">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                role="switch"
+                id={`cv-three-revoke-toggle-${idSuffix}`}
+                checked={!isAccessRevoked}
+                onChange={handleToggleAccess}
+              />
+              <label
+                className="form-check-label small"
+                htmlFor={`cv-three-revoke-toggle-${idSuffix}`}
+              >
+                {isAccessRevoked ? "Access revoked" : "Partner has access"}
+              </label>
+            </div>
+          </>
         )}
       </div>
-
-      {!isPartnerRole && alreadySharedWithPartner && (
-        <>
-          {/* Only shown while the partner actually has access -
-              when access is revoked only the toggle below stays
-              visible so access can be restored. */}
-          {!isAccessRevoked && (
-            <span className="text-success small">
-              ✓ Already shared with this partner
-            </span>
-          )}
-
-          <div className="form-check form-switch mb-0">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              role="switch"
-              id={`cv-three-revoke-toggle-${idSuffix}`}
-              checked={!isAccessRevoked}
-              onChange={handleToggleAccess}
-            />
-            <label
-              className="form-check-label small"
-              htmlFor={`cv-three-revoke-toggle-${idSuffix}`}
-            >
-              {isAccessRevoked ? "Access revoked" : "Partner has access"}
-            </label>
-          </div>
-        </>
-      )}
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="dashboard-wraper">
