@@ -2776,13 +2776,20 @@ function WorkerForm() {
       </div>
       <div className="form-group col-md-6 mb-3">
         <label>Relation</label>
-        <input
-          type="text"
+        <select
           name="relation"
           className="form-control"
           value={guarantor.relation}
           onChange={handleGuarantorChange}
-        />
+        >
+          <option value="">Select relation</option>
+          <option value="Child">Child</option>
+          <option value="Father">Father</option>
+          <option value="Mother">Mother</option>
+          <option value="Spouse">Spouse</option>
+          <option value="Brother">Brother</option>
+          <option value="Sister">Sister</option>
+        </select>
       </div>
       <div className="form-group col-md-6 mb-3">
         {renderLabel("Phone Number", true)}
