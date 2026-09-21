@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useId } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { FiCheckCircle, FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiCheckCircle, FiPlus, FiTrash2, FiRotateCcw } from "react-icons/fi";
 import {
   createWorker,
   updateWorker,
@@ -8,6 +8,7 @@ import {
   uploadWorkerDocument,
   listWorkerDocuments,
   deleteWorkerDocument,
+  resetWorkerModule,
 } from "../../../api/worker.api";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import {
@@ -77,6 +78,61 @@ const SECTIONS = [
   // nothing to gate.
   { key: "documents", label: "Documents", optional: false },
 ];
+
+// Maps a section key to the module flag the backend's flexible
+// PATCH /workers/:id/reset endpoint expects (see WORKER_RESET_MODULES in
+// database/queries/worker.query.js). Visa and Travel are two separate
+// sections here but share a single backend module ("visa_travel"), so
+// resetting either one clears both. "basic" (Basic & Personal Information)
+// maps to "personal_information" even though it's not an optional/Include
+// section — it still gets its own Reset control. Sections with no entry
+// here (Languages, Skills) have no backend reset module and never render
+// a Reset button.
+const RESET_MODULE_FLAGS = {
+  basic: "personal_information",
+  passport: "passport",
+  coc: "coc",
+  medical: "medical",
+  guarantor: "emergency_contact",
+  agent: "agent_information",
+  visa: "visa_travel",
+  travel: "visa_travel",
+  contract: "contract",
+  experience: "experience",
+};
+
+// Fields on the raw personal_information record that resetWorkerPersonalInfo
+// (worker.query.js) actually nulls out — used to decide whether the Basic &
+// Personal Information module "has data" (and so should show a Reset
+// control). sex and monthly_salary are deliberately excluded: the backend
+// leaves them untouched since they're NOT NULL columns with no default.
+const PERSONAL_INFO_RESET_FIELDS = [
+  "region",
+  "wereda",
+  "city",
+  "subcity",
+  "date_of_birth",
+  "place_of_birth",
+  "religion",
+  "marital_status",
+  "nationality",
+  "address",
+  "education",
+  "number_of_children",
+  "height_cm",
+  "weight_kg",
+  "national_id_number",
+  "fingerprint_number",
+  "labour_id",
+];
+
+const hasPersonalInfoData = (pi) => {
+  if (!pi) return false;
+  if (PERSONAL_INFO_RESET_FIELDS.some((field) => Boolean(pi[field]))) {
+    return true;
+  }
+  return Boolean(pi.photo_3x4?.url) || Boolean(pi.photo_standing?.url);
+};
 
 // Nav tree only — groups Skills + Experience under a single tree entry
 // while SECTIONS above (and every module/validation/preview keyed off it)
@@ -515,6 +571,26 @@ function WorkerForm() {
     experience: false,
   });
 
+  // Tracks, per resettable module, whether the worker actually has saved
+  // data for it on the server — independent of sectionsEnabled (which the
+  // user can freely flip on/off and which also drives brand-new, unsaved
+  // modules). This is what the Reset control's visibility is based on: no
+  // point offering to reset a module that's already empty. Set from the
+  // loaded profile (see applyProfileToForm/loadAgent) and cleared back to
+  // false locally right after a successful reset.
+  const [moduleHasData, setModuleHasData] = useState({
+    basic: false,
+    passport: false,
+    coc: false,
+    medical: false,
+    guarantor: false,
+    agent: false,
+    visa: false,
+    travel: false,
+    contract: false,
+    experience: false,
+  });
+
   const [photo3x4, setPhoto3x4] = useState(null);
   const [photoStanding, setPhotoStanding] = useState(null);
   const [passportScan, setPassportScan] = useState(null);
@@ -736,6 +812,7 @@ function WorkerForm() {
             res.data.agent_id != null ? String(res.data.agent_id) : "",
           );
           setSectionsEnabled((prev) => ({ ...prev, agent: true }));
+          setModuleHasData((prev) => ({ ...prev, agent: true }));
         }
       } catch (err) {
         const statusCode = err?.response?.status || err?.status;
@@ -743,6 +820,7 @@ function WorkerForm() {
           setAgentExists(false);
           setSelectedAgentId("");
           setSectionsEnabled((prev) => ({ ...prev, agent: false }));
+          setModuleHasData((prev) => ({ ...prev, agent: false }));
         } else {
           console.error("Failed to fetch worker agent information:", err);
         }
@@ -1072,6 +1150,21 @@ function WorkerForm() {
       contract: Boolean(contractRecord),
       languages: loadedLanguages.length > 0,
       skills: loadedSkills.length > 0,
+      experience: loadedExperiences.length > 0,
+    }));
+    // Drives the Reset control's visibility (see moduleHasData above) —
+    // agent is intentionally left out here since it's tracked by the
+    // separate loadAgent effect instead.
+    setModuleHasData((prev) => ({
+      ...prev,
+      basic: hasPersonalInfoData(pi),
+      passport: Boolean(profileData.passport),
+      coc: Boolean(profileData.coc),
+      medical: Boolean(profileData.medical),
+      guarantor: Boolean(profileData.emergency),
+      visa: Boolean(profileData.visa),
+      travel: Boolean(travelRecord),
+      contract: Boolean(contractRecord),
       experience: loadedExperiences.length > 0,
     }));
     setManualOverride({
@@ -3256,11 +3349,141 @@ function WorkerForm() {
 
   /*  section card wrapper*/
 
+  // Resets a single module for the currently edited worker via the
+  // backend's flexible reset endpoint, after the user confirms through the
+  // same shared confirmation modal used for deletes. Only meaningful in
+  // edit mode (a brand-new, unsaved worker has nothing on the server to
+  // reset). Visa/Travel share one backend module, so resetting either
+  // clears both locally, mirroring what the server just did.
+  const handleResetModule = (section) => {
+    const moduleFlag = RESET_MODULE_FLAGS[section.key];
+    if (!moduleFlag) return;
+
+    openModal(
+      async () => {
+        try {
+          const response = await resetWorkerModule(id, moduleFlag);
+
+          if (section.key === "visa" || section.key === "travel") {
+            setVisa(defaultVisa());
+            setTravel(defaultTravel());
+            setSectionsEnabled((prev) => ({
+              ...prev,
+              visa: false,
+              travel: false,
+            }));
+            setManualOverride((prev) => ({
+              ...prev,
+              visa: false,
+              travel: false,
+            }));
+            setModuleHasData((prev) => ({
+              ...prev,
+              visa: false,
+              travel: false,
+            }));
+          } else {
+            switch (section.key) {
+              case "basic":
+                // Mirrors resetWorkerPersonalInfo exactly: clears the same
+                // columns it nulls, and — like the backend — leaves sex and
+                // monthly_salary untouched (they're NOT NULL columns with
+                // no default, so the backend can't clear them either).
+                setPersonal((prev) => ({
+                  ...prev,
+                  region: "",
+                  wereda: "",
+                  city: "",
+                  subcity: "",
+                  status_id: "",
+                  date_of_birth: "",
+                  place_of_birth: "",
+                  religion: "",
+                  marital_status: "",
+                  nationality: "",
+                  address: "",
+                  education: "",
+                  number_of_children: 0,
+                  height_cm: "",
+                  weight_kg: "",
+                  national_id_number: "",
+                  fingerprint_number: "",
+                  labour_id: "",
+                }));
+                setExistingPhoto3x4Url(null);
+                setExistingPhotoStandingUrl(null);
+                setPhoto3x4(null);
+                setPhotoStanding(null);
+                break;
+              case "passport":
+                setPassport(defaultPassport());
+                setExistingPassportScanUrl(null);
+                setPassportScan(null);
+                break;
+              case "coc":
+                setCoc(defaultCoc());
+                break;
+              case "medical":
+                setMedical(defaultMedical());
+                break;
+              case "guarantor":
+                setGuarantor(defaultGuarantor());
+                break;
+              case "agent":
+                setAgent(defaultAgent());
+                setAgentExists(false);
+                setSelectedAgentId("");
+                break;
+              case "contract":
+                setContract(defaultContract());
+                break;
+              case "experience":
+                setExperiences([makeExperienceRow()]);
+                break;
+              default:
+                break;
+            }
+            // "basic" (Basic & Personal Information) has no Include toggle,
+            // so it never had an entry in sectionsEnabled/manualOverride.
+            if (section.key !== "basic") {
+              setSectionsEnabled((prev) => ({
+                ...prev,
+                [section.key]: false,
+              }));
+              setManualOverride((prev) => ({
+                ...prev,
+                [section.key]: false,
+              }));
+            }
+            setModuleHasData((prev) => ({
+              ...prev,
+              [section.key]: false,
+            }));
+          }
+
+          addMessage(
+            true,
+            response?.message || "Worker module reset successfully",
+          );
+        } catch (err) {
+          addMessage(false, err.message || "Failed to reset worker module");
+        }
+      },
+      {
+        title: "Are you sure you want to reset this module?",
+        confirmText: "Reset",
+      },
+    );
+  };
+
   // Optional modules are always rendered and editable — the "Include"
   // switch only controls whether the module's data is attached to the
   // request payload in handleSubmit, never whether the module is visible.
   const renderSectionCard = (section) => {
     const isOptional = section.optional;
+    const resetModuleFlag = RESET_MODULE_FLAGS[section.key];
+    const showReset =
+      isEditMode && resetModuleFlag && moduleHasData[section.key];
 
     return (
       <div
@@ -3269,27 +3492,39 @@ function WorkerForm() {
         ref={setSectionRef(section.key)}
         className="mb-4 pb-4 border-bottom section-scroll-anchor position-relative"
       >
-        {isOptional && (
+        {(isOptional || showReset) && (
           <div
-            className="position-absolute top-0 end-0 m-3"
+            className="section-header-actions position-absolute top-0 end-0 m-3 d-flex align-items-center gap-3"
             style={{ zIndex: 2 }}
           >
-            <div className="form-check form-switch d-flex align-items-center gap-2 ps-0 mb-0">
-              <input
-                type="checkbox"
-                role="switch"
-                className="form-check-input ms-0"
-                id={`toggle-${section.key}`}
-                checked={sectionsEnabled[section.key]}
-                onChange={() => toggleSection(section.key)}
-              />
-              <label
-                className="form-check-label small text-muted"
-                htmlFor={`toggle-${section.key}`}
+            {showReset && (
+              <button
+                type="button"
+                className="btn btn-link d-flex align-items-center gap-2 p-0 text-decoration-none"
+                onClick={() => handleResetModule(section)}
               >
-                Include
-              </label>
-            </div>
+                <FiRotateCcw className="text-muted" size={14} />
+                <span className="small text-muted">Reset</span>
+              </button>
+            )}
+            {isOptional && (
+              <div className="form-check form-switch d-flex align-items-center gap-2 ps-0 mb-0">
+                <input
+                  type="checkbox"
+                  role="switch"
+                  className="form-check-input ms-0"
+                  id={`toggle-${section.key}`}
+                  checked={sectionsEnabled[section.key]}
+                  onChange={() => toggleSection(section.key)}
+                />
+                <label
+                  className="form-check-label small text-muted"
+                  htmlFor={`toggle-${section.key}`}
+                >
+                  Include
+                </label>
+              </div>
+            )}
           </div>
         )}
 
@@ -3904,6 +4139,20 @@ function WorkerForm() {
         /* keeps sections from hiding under the sticky header when jumped to */
         .section-scroll-anchor {
           scroll-margin-top: 100px;
+        }
+
+        /* Include/Reset controls: pinned top-right on desktop (see the
+           position-absolute/top-0/end-0/m-3 utility classes on the element
+           itself). Below the same lg breakpoint the rest of this form
+           already treats as "mobile" (see the d-lg-none tree nav above),
+           re-anchor the same absolutely-positioned box to the bottom-right
+           instead — same grouping, same alignment, same styling, just a
+           different corner of the section card. Desktop is untouched. */
+        @media (max-width: 991.98px) {
+          .section-header-actions {
+            top: auto;
+            bottom: 0;
+          }
         }
 
         .dashboard-wraper input.form-control,

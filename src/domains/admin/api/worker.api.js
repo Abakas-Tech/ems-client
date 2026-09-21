@@ -84,6 +84,22 @@ const restoreWorker = async (id) => {
   }
 };
 
+// Reset a single worker module (module flag decides what gets cleared)
+const resetWorkerModule = async (id, moduleFlag) => {
+  try {
+    const response = await axiosInstance.patch(`/workers/${id}/reset`, {
+      module: moduleFlag,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to reset worker module",
+    );
+  }
+};
+
 // Get single active worker profile (full aggregated profile, used to prefill the edit form)
 const getWorkerProfile = async (id) => {
   try {
@@ -276,6 +292,7 @@ export {
   getArchivedWorkerProfile,
   restoreWorker,
   deleteWorker,
+  resetWorkerModule,
   listSharedCvsForPartner,
   setPartnerCvAccess,
   uploadWorkerDocument,
