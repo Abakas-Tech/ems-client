@@ -191,7 +191,7 @@ const LETTER_STYLES = `
      whole page becomes reachable by scrolling right instead of some of
      it being permanently stuck off-screen to the left. */
   .page{
-    position:relative;padding:5px 0;min-height:200mm;width:210mm;max-width:100%;
+    position:relative;padding:5px 0;min-height:260mm;width:210mm;max-width:100%;
     min-width:210mm;margin:0 auto 20px;
     background:#fff;;
   }
