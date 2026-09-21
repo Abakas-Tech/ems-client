@@ -450,6 +450,7 @@ const WorkerProfile = () => {
   const emergencyInfo = {
     relation: fallback(emergencyObj.relation),
     name: fallback(emergencyObj.guarantor_name),
+    gender: fallback(emergencyObj.guarantor_gender),
     phone: fallback(emergencyObj.guarantor_phone_number),
     address: fallback(emergencyObj.guarantor_address),
     idScanUrl: emergencyObj.id_scan?.url || null,
@@ -932,6 +933,11 @@ const WorkerProfile = () => {
                   <small className="text-muted">Name</small>
                   <br />
                   {emergencyInfo.name}
+                </p>
+                <p>
+                  <small className="text-muted">Gender</small>
+                  <br />
+                  {emergencyInfo.gender}
                 </p>
                 <p>
                   <small className="text-muted">Phone</small>
