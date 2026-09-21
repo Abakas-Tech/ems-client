@@ -8,6 +8,7 @@ import {
   uploadWorkerDocument,
   listWorkerDocuments,
   deleteWorkerDocument,
+  resetWorkerModule,
 } from "../../../api/worker.api";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import {
@@ -77,6 +78,24 @@ const SECTIONS = [
   // nothing to gate.
   { key: "documents", label: "Documents", optional: false },
 ];
+
+// Maps a section key to the module flag the backend's flexible
+// PATCH /workers/:id/reset endpoint expects (see WORKER_RESET_MODULES in
+// database/queries/worker.query.js). Visa and Travel are two separate
+// sections here but share a single backend module ("visa_travel"), so
+// resetting either one clears both. Sections with no entry here (Languages,
+// Skills) have no backend reset module and never render a Reset button.
+const RESET_MODULE_FLAGS = {
+  passport: "passport",
+  coc: "coc",
+  medical: "medical",
+  guarantor: "emergency_contact",
+  agent: "agent_information",
+  visa: "visa_travel",
+  travel: "visa_travel",
+  contract: "contract",
+  experience: "experience",
+};
 
 // Nav tree only — groups Skills + Experience under a single tree entry
 // while SECTIONS above (and every module/validation/preview keyed off it)
@@ -3256,11 +3275,101 @@ function WorkerForm() {
 
   /*  section card wrapper*/
 
+  // Resets a single module for the currently edited worker via the
+  // backend's flexible reset endpoint, after the user confirms through the
+  // same shared confirmation modal used for deletes. Only meaningful in
+  // edit mode (a brand-new, unsaved worker has nothing on the server to
+  // reset). Visa/Travel share one backend module, so resetting either
+  // clears both locally, mirroring what the server just did.
+  const handleResetModule = (section) => {
+    const moduleFlag = RESET_MODULE_FLAGS[section.key];
+    if (!moduleFlag) return;
+
+    // Visa and Travel share a single backend module, so the confirmation
+    // always names both, regardless of which of the two the user clicked
+    // Reset on, since resetting either one clears both.
+    const resetLabel =
+      moduleFlag === "visa_travel" ? "Visa & Travel" : section.label;
+
+    openModal(
+      async () => {
+        try {
+          const response = await resetWorkerModule(id, moduleFlag);
+
+          if (section.key === "visa" || section.key === "travel") {
+            setVisa(defaultVisa());
+            setTravel(defaultTravel());
+            setSectionsEnabled((prev) => ({
+              ...prev,
+              visa: false,
+              travel: false,
+            }));
+            setManualOverride((prev) => ({
+              ...prev,
+              visa: false,
+              travel: false,
+            }));
+          } else {
+            switch (section.key) {
+              case "passport":
+                setPassport(defaultPassport());
+                setExistingPassportScanUrl(null);
+                setPassportScan(null);
+                break;
+              case "coc":
+                setCoc(defaultCoc());
+                break;
+              case "medical":
+                setMedical(defaultMedical());
+                break;
+              case "guarantor":
+                setGuarantor(defaultGuarantor());
+                break;
+              case "agent":
+                setAgent(defaultAgent());
+                setAgentExists(false);
+                setSelectedAgentId("");
+                break;
+              case "contract":
+                setContract(defaultContract());
+                break;
+              case "experience":
+                setExperiences([makeExperienceRow()]);
+                break;
+              default:
+                break;
+            }
+            setSectionsEnabled((prev) => ({
+              ...prev,
+              [section.key]: false,
+            }));
+            setManualOverride((prev) => ({
+              ...prev,
+              [section.key]: false,
+            }));
+          }
+
+          addMessage(
+            true,
+            response?.message || "Worker module reset successfully",
+          );
+        } catch (err) {
+          addMessage(false, err.message || "Failed to reset worker module");
+        }
+      },
+      {
+        title: `This will clear this worker's ${resetLabel} data. Are you sure you want to continue?`,
+        confirmText: "Reset",
+      },
+    );
+  };
+
   // Optional modules are always rendered and editable — the "Include"
   // switch only controls whether the module's data is attached to the
   // request payload in handleSubmit, never whether the module is visible.
   const renderSectionCard = (section) => {
     const isOptional = section.optional;
+    const resetModuleFlag = RESET_MODULE_FLAGS[section.key];
 
     return (
       <div
@@ -3271,9 +3380,18 @@ function WorkerForm() {
       >
         {isOptional && (
           <div
-            className="position-absolute top-0 end-0 m-3"
+            className="position-absolute top-0 end-0 m-3 d-flex align-items-center gap-3"
             style={{ zIndex: 2 }}
           >
+            {isEditMode && resetModuleFlag && (
+              <button
+                type="button"
+                className="btn btn-link text-danger small p-0"
+                onClick={() => handleResetModule(section)}
+              >
+                Reset
+              </button>
+            )}
             <div className="form-check form-switch d-flex align-items-center gap-2 ps-0 mb-0">
               <input
                 type="checkbox"
