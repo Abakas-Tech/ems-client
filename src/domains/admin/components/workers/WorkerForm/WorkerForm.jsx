@@ -3504,7 +3504,7 @@ function WorkerForm() {
       >
         {(isOptional || showReset) && (
           <div
-            className="position-absolute top-0 end-0 m-3 d-flex align-items-center gap-3"
+            className="section-header-actions position-absolute top-0 end-0 m-3 d-flex align-items-center gap-3"
             style={{ zIndex: 2 }}
           >
             {showReset && (
@@ -4149,6 +4149,20 @@ function WorkerForm() {
         /* keeps sections from hiding under the sticky header when jumped to */
         .section-scroll-anchor {
           scroll-margin-top: 100px;
+        }
+
+        /* Include/Reset controls: pinned top-right on desktop (see the
+           position-absolute/top-0/end-0/m-3 utility classes on the element
+           itself). Below the same lg breakpoint the rest of this form
+           already treats as "mobile" (see the d-lg-none tree nav above),
+           re-anchor the same absolutely-positioned box to the bottom-right
+           instead — same grouping, same alignment, same styling, just a
+           different corner of the section card. Desktop is untouched. */
+        @media (max-width: 991.98px) {
+          .section-header-actions {
+            top: auto;
+            bottom: 0;
+          }
         }
 
         .dashboard-wraper input.form-control,
