@@ -79,6 +79,42 @@ const AGENCY_CONTACT = {
   addressAr: "طريق الملك عبدالعزيز، المروج، الرياض 4368، الرياض 12282",
 };
 
+/* Same "hidden but functional scrollbar" pattern used by the Letter
+   Generator's print console. Only takes effect on small screens (via
+   the media query) — on desktop (992px and up) NEITHER class below
+   applies any style at all, so the CV column keeps its original
+   shrink-to-fit sizing (auto width, sized to its 760px content) and the
+   original tight gap/alignment with the toolbox is fully restored.
+   Below 992px (where the layout switches to flex-column via
+   flex-lg-row), .cv-preview-column is forced to the full row width
+   (needed since align-items-start collapses column children to their
+   content's shrink-to-fit width otherwise, which is what let the CV
+   push past the viewport edge), and .cv-preview-scroll-wrap becomes a
+   horizontally-scrollable, scrollbar-hidden viewport for the CV pages
+   themselves — so the fixed-width CV is never compressed/distorted, it
+   just scrolls within a container that itself never exceeds the
+   screen width. */
+const CV_PREVIEW_RESPONSIVE_STYLES = `
+  .cv-preview-scroll-wrap{width:100%;}
+  @media (max-width: 991px){
+    .cv-preview-column{
+      width:100%;
+      max-width:100%;
+    }
+    .cv-preview-scroll-wrap{
+      max-width:100%;
+      overflow-x:auto;
+      overflow-y:hidden;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    .cv-preview-scroll-wrap::-webkit-scrollbar{
+      width:0;
+      height:0;
+    }
+  }
+`;
+
 const css = {
   titleBar: {
     background: "var(--cv-theme-color)",
@@ -1165,8 +1201,91 @@ const CVThree = ({ templateSwitcher }) => {
     "--cv-theme-color": themeColor,
   };
 
+  // Rendered twice below: once for mobile (order-1, top of the stack) and
+  // once for desktop (nested above the CV, exactly as originally). Both
+  // calls return a SINGLE div (no extra wrapping div around it), so
+  // margins/gaps are never doubled — className lets each call site add its
+  // own display/order/width utilities without introducing another nested
+  // flex container. idSuffix keeps the two copies' element ids unique so
+  // there is never a duplicate id in the DOM (only one copy is visible at
+  // a time via d-none/d-lg-none, but both exist in markup).
+  // Small screens only: when Link Partner isn't shown (just the lone
+  // Download CV button), the cluster left-aligns instead of the default
+  // right alignment. When Link Partner IS shown, alignment stays exactly
+  // as it always was (right), just with extra top margin on small screens
+  // so it doesn't sit flush against whatever's above it. Both cases fall
+  // back to the original right-aligned, no-extra-margin layout from the lg
+  // breakpoint up - desktop is completely unaffected either way.
+  const renderActionCluster = (idSuffix, extraClassName = "") => {
+    const showLinkPartner = !isPartnerRole && !alreadySharedWithPartner;
+
+    return (
+      <div
+        className={`d-flex flex-column gap-2 mb-2 ${
+          showLinkPartner
+            ? "align-items-end mt-3 mt-lg-0"
+            : "align-items-start align-items-lg-end"
+        } ${extraClassName}`.trim()}
+      >
+        <div className="d-flex gap-2 mt-5 mt-lg-0">
+          <button
+            className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
+            onClick={handleDownloadClick}
+          >
+            Download CV
+          </button>
+
+          {showLinkPartner && (
+            <button
+              className="btn btn-outline-main px-4 d-flex align-items-center justify-content-center"
+              onClick={handleLinkClick}
+            >
+              Link Partner
+            </button>
+          )}
+        </div>
+
+        {!isPartnerRole && alreadySharedWithPartner && (
+          <>
+            {/* Only shown while the partner actually has access -
+                when access is revoked only the toggle below stays
+                visible so access can be restored. */}
+            {!isAccessRevoked && (
+              <span className="text-success small">
+                ✓ Already shared with this partner
+              </span>
+            )}
+
+            <div className="form-check form-switch mb-0">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                role="switch"
+                id={`cv-three-revoke-toggle-${idSuffix}`}
+                checked={!isAccessRevoked}
+                onChange={handleToggleAccess}
+              />
+              <label
+                className="form-check-label small"
+                htmlFor={`cv-three-revoke-toggle-${idSuffix}`}
+              >
+                {isAccessRevoked ? "Access revoked" : "Partner has access"}
+              </label>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="dashboard-wraper">
+      {/* Same hidden-but-functional-scrollbar pattern as the Letter
+          Generator's print console; only active below the breakpoint
+          defined in CV_PREVIEW_RESPONSIVE_STYLES. Desktop is completely
+          unaffected by any rule in here. */}
+      <style>{CV_PREVIEW_RESPONSIVE_STYLES}</style>
+
       {/* Toolbar */}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
         <div className="mt-0">
@@ -1386,83 +1505,95 @@ const CVThree = ({ templateSwitcher }) => {
             className="d-flex flex-column flex-lg-row align-items-start gap-3"
             style={{ ...(selectedPartner && { marginTop: -30 }) }}
           >
+            {/* MOBILE-ONLY action cluster: a separate top-level flex item so
+                it can be reordered above the toolbox with plain flexbox
+                `order` (order only reorders direct siblings). Hidden
+                entirely from lg upward (d-lg-none), where the nested
+                desktop copy inside the CV column takes over instead - so
+                desktop is completely unaffected. order-1 puts it first on
+                mobile. This is a SINGLE div (no extra wrapper), so it adds
+                no extra margin/gap of its own beyond what the original
+                action cluster always had. */}
+            {showActionCluster &&
+              renderActionCluster("mobile", "d-lg-none w-100")}
+
+            {/* Toolbox column - UI only, never captured for the PDF.
+                order-2 on mobile (below the action buttons, above the CV
+                preview) — matching the Letter Generator's mobile layout
+                (toolkit near the top). order-lg-2 restores it to the
+                second/right position on desktop, exactly as before - same
+                classes/style as the original, unaffected by any of the
+                mobile-only changes. Hidden entirely for partners - they
+                can still view/download their CV, but partner selection,
+                color choice and the passport toggle are admin/employee-only
+                controls. */}
+            {!isPartnerRole && (
+              <div
+                className="w-100 order-2 order-lg-2"
+                style={{ flex: "0 0 260px", maxWidth: 320 }}
+              >
+                <CVToolbox
+                  isPartnerRole={isPartnerRole}
+                  partners={partners}
+                  selectedPartnerId={selectedPartnerId}
+                  onPartnerChange={handlePartnerChange}
+                  getPartnerOptionLabel={getPartnerOptionLabel}
+                  colorOptions={COLOR_OPTIONS}
+                  selectedColor={themeColor}
+                  onColorChange={setSelectedCvColor}
+                  includePassport={includePassport}
+                  onTogglePassport={setIncludePassport}
+                />
+              </div>
+            )}
+
             {/* CV preview column - only this column (via cvRef / passportRef)
-                is ever captured for the PDF. The toolbox next to it is UI
-                only and is never captured. */}
+                is ever captured for the PDF.
+                order-3 on mobile (last, below both the buttons and the
+                toolbox); order-lg-1 restores it to the first/left position
+                on desktop, exactly as before.
+                No inline width is forced here anymore (back to the
+                original flex:"0 1 auto", minWidth:0 — shrink-to-fit sized
+                to the CV's own content, exactly like before, which is what
+                keeps the desktop gap/alignment with the toolbox tight and
+                unchanged). The "cv-preview-column" class only forces
+                width:100% below the lg breakpoint (see
+                CV_PREVIEW_RESPONSIVE_STYLES), which is what stops the
+                fixed-width CV from pushing the whole page wider than the
+                viewport on small screens, without touching desktop at all. */}
             <div
+              className="order-3 order-lg-1 cv-preview-column"
               style={{
                 // flex-grow: 0 - the column hugs the CV's actual (fixed)
                 // width instead of stretching to fill all remaining row
-                // space, which was pushing the toolbox far to the right
-                // and leaving a large empty gap between them on desktop.
-                // flex-shrink: 1 (with minWidth: 0) still lets it shrink
-                // and scroll horizontally on narrower viewports.
+                // space on desktop, which is what keeps it tight next to
+                // the toolbox exactly as originally.
                 flex: "0 1 auto",
                 minWidth: 0,
-                overflowX: "auto",
-                WebkitOverflowScrolling: "touch",
               }}
             >
-              {/* Action cluster lives directly above the CV instead of in
-                  the page header, so it never stretches the header row and
-                  leaves a large empty gap above the preview. When it is
-                  hidden the CV simply sits at the normal position. */}
-              {showActionCluster && (
-                <div className="d-flex flex-column align-items-end gap-2 mb-2">
-                  <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-main text-white px-4 d-flex align-items-center justify-content-center"
-                      onClick={handleDownloadClick}
-                    >
-                      Download CV
-                    </button>
+              {/* DESKTOP-ONLY copy of the action cluster: nested above the
+                  CV exactly as originally (same single div, same classes),
+                  so it stays right-aligned to the CV's own width on desktop
+                  with the original tight spacing. Hidden below lg (d-none
+                  d-lg-flex) since the mobile copy above takes over there. */}
+              {showActionCluster &&
+                renderActionCluster("desktop", "d-none d-lg-flex")}
 
-                    {!isPartnerRole && !alreadySharedWithPartner && (
-                      <button
-                        className="btn btn-outline-main px-4 d-flex align-items-center justify-content-center"
-                        onClick={handleLinkClick}
-                      >
-                        Link Partner
-                      </button>
-                    )}
-                  </div>
-
-                  {!isPartnerRole && alreadySharedWithPartner && (
-                    <>
-                      {/* Only shown while the partner actually has access -
-                          when access is revoked only the toggle below stays
-                          visible so access can be restored. */}
-                      {!isAccessRevoked && (
-                        <span className="text-success small">
-                          ✓ Already shared with this partner
-                        </span>
-                      )}
-
-                      <div className="form-check form-switch mb-0">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="cv-three-revoke-toggle"
-                          checked={!isAccessRevoked}
-                          onChange={handleToggleAccess}
-                        />
-                        <label
-                          className="form-check-label small"
-                          htmlFor="cv-three-revoke-toggle"
-                        >
-                          {isAccessRevoked
-                            ? "Access revoked"
-                            : "Partner has access"}
-                        </label>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-
-              {includePassport ? (
-                <>
+              {/* Horizontally-scrollable wrapper around ONLY the CV preview
+                  content itself — mirrors the Letter Generator console's
+                  hidden-but-functional scrollbar, and only activates below
+                  the CV_PREVIEW_RESPONSIVE_STYLES breakpoint. On desktop
+                  this class applies no styles at all, so nothing about the
+                  existing desktop layout changes. The fixed-width CV
+                  (CV_WIDTH) inside is never compressed or rearranged — it
+                  simply scrolls left/right when the viewport is narrower,
+                  and the scrollbar itself is hidden (still fully
+                  functional via touch/trackpad/keyboard) via the CSS in
+                  CV_PREVIEW_RESPONSIVE_STYLES. */}
+              <div className="cv-preview-scroll-wrap">
+                {includePassport ? (
+                  <>
                   {/* Page 1: application, passport, personal data, skills, summary */}
                   <div ref={cvRef} data-cv-capture style={cvStyle}>
                     <HeaderBanner
@@ -1715,35 +1846,10 @@ const CVThree = ({ templateSwitcher }) => {
                 </div>
               )}
             </div>
-
-            {/* Toolbox column - UI only, never captured for the PDF. Stacks
-                below the preview on narrow screens instead of shrinking the
-                CV's own A4 proportions. Hidden entirely for partners - they
-                can still view/download their CV, but partner selection,
-                color choice and the passport toggle are admin/employee-only
-                controls. */}
-            {!isPartnerRole && (
-              <div
-                className="w-100"
-                style={{ flex: "0 0 260px", maxWidth: 320 }}
-              >
-                <CVToolbox
-                  isPartnerRole={isPartnerRole}
-                  partners={partners}
-                  selectedPartnerId={selectedPartnerId}
-                  onPartnerChange={handlePartnerChange}
-                  getPartnerOptionLabel={getPartnerOptionLabel}
-                  colorOptions={COLOR_OPTIONS}
-                  selectedColor={themeColor}
-                  onColorChange={setSelectedCvColor}
-                  includePassport={includePassport}
-                  onTogglePassport={setIncludePassport}
-                />
-              </div>
-            )}
           </div>
-        );
-      })()}
+        </div>
+      );
+    })()}
     </div>
   );
 };
