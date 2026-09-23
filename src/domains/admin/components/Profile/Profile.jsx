@@ -139,13 +139,17 @@ const Profile = () => {
 
     if (!phone) return addMessage(false, "Phone number is required.");
 
-    const phoneRegex =
-      /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
+    // Accepts any country code (no longer limited to a fixed list) and
+    // allows spaces between digit groups (e.g. "+966 50 123 4567") - only
+    // an optional leading "+" plus digits/spaces is enforced structurally.
+    const phoneRegex = /^\+?[0-9\s]+$/;
 
     if (!phoneRegex.test(phone))
       return addMessage(false, "Phone number is invalid.");
 
-    if (phone.length < 8 || phone.length > 15)
+    const phoneDigits = phone.replace(/[\s+]/g, "");
+
+    if (phoneDigits.length < 7 || phoneDigits.length > 15)
       return addMessage(false, "Phone number must be between 7 and 15 digits.");
 
     return true;
