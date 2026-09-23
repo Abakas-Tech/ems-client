@@ -248,11 +248,10 @@ const Contact = () => {
                         display: "flex",
                         alignItems: "center",
                         gap: 8,
-                        background: MAP_LABEL_COLOR,
-                        color: "#fff",
-                        padding: "6px 10px",
+                        color: "#2b0751",
+                        padding: "5px 10px",
                         borderRadius: 8,
-                        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.25)",
+                    
                         fontWeight: 600,
                         fontSize: 13,
                         lineHeight: 1.2,
@@ -260,7 +259,7 @@ const Contact = () => {
                       }}
                     >
                       <span>{mapLabel}</span>
-                      <button
+                      {/* <button
                         type="button"
                         onClick={() => setShowMapLabel(false)}
                         aria-label="Close"
@@ -272,28 +271,16 @@ const Contact = () => {
                           border: "none",
                           padding: 0,
                           margin: 0,
-                          color: "#fff",
+                          color: "#243ab9",
                           cursor: "pointer",
                           lineHeight: 0,
                         }}
                       >
                         <FiX size={14} />
-                      </button>
+                      </button> */}
                       {/* Small pointer connecting the label to the marker
                           beneath it, matching the label's own color. */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          bottom: -6,
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                          width: 0,
-                          height: 0,
-                          borderLeft: "6px solid transparent",
-                          borderRight: "6px solid transparent",
-                          borderTop: `6px solid ${MAP_LABEL_COLOR}`,
-                        }}
-                      />
+                     
                     </div>
                   </OverlayView>
                 )}
