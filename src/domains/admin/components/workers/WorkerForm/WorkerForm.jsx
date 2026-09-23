@@ -3658,11 +3658,56 @@ function WorkerForm() {
   // Optional modules are always rendered and editable — the "Include"
   // switch only controls whether the module's data is attached to the
   // request payload in handleSubmit, never whether the module is visible.
+  //
+  // The Reset/Include controls render TWICE: once pinned top-right for
+  // desktop (unchanged, position-absolute, hidden below lg), and once in
+  // normal document flow after the module's fields, visible only below lg.
+  // Absolute positioning can only ever pin the controls to a corner of the
+  // card — on narrow screens where the card is much taller than its
+  // content-free corners, that meant the controls could sit on top of
+  // whatever field happened to be there. Rendering an in-flow copy after
+  // the fields instead means it just occupies its own space at the bottom
+  // of the section, like any other element, so it can never overlap or be
+  // covered by a field. Only one copy is ever visible at a time.
   const renderSectionCard = (section) => {
     const isOptional = section.optional;
     const resetModuleFlag = RESET_MODULE_FLAGS[section.key];
     const showReset =
       isEditMode && resetModuleFlag && moduleHasData[section.key];
+    const showActions = isOptional || showReset;
+
+    const renderModuleActions = () => (
+      <>
+        {showReset && (
+          <button
+            type="button"
+            className="btn btn-link d-flex align-items-center gap-2 p-0 text-decoration-none"
+            onClick={() => handleResetModule(section)}
+          >
+            <FiRotateCcw className="text-muted" size={14} />
+            <span className="small text-muted">Reset</span>
+          </button>
+        )}
+        {isOptional && (
+          <div className="form-check form-switch d-flex align-items-center gap-2 ps-0 mb-0">
+            <input
+              type="checkbox"
+              role="switch"
+              className="form-check-input ms-0"
+              id={`toggle-${section.key}`}
+              checked={sectionsEnabled[section.key]}
+              onChange={() => toggleSection(section.key)}
+            />
+            <label
+              className="form-check-label small text-muted"
+              htmlFor={`toggle-${section.key}`}
+            >
+              Include
+            </label>
+          </div>
+        )}
+      </>
+    );
 
     return (
       <div
@@ -3671,39 +3716,12 @@ function WorkerForm() {
         ref={setSectionRef(section.key)}
         className="mb-4 pb-4 border-bottom section-scroll-anchor position-relative"
       >
-        {(isOptional || showReset) && (
+        {showActions && (
           <div
-            className="section-header-actions position-absolute top-0 end-0 m-3 d-flex align-items-center gap-3"
+            className="d-none d-lg-flex position-absolute top-0 end-0 m-3 align-items-center gap-3"
             style={{ zIndex: 2 }}
           >
-            {showReset && (
-              <button
-                type="button"
-                className="btn btn-link d-flex align-items-center gap-2 p-0 text-decoration-none"
-                onClick={() => handleResetModule(section)}
-              >
-                <FiRotateCcw className="text-muted" size={14} />
-                <span className="small text-muted">Reset</span>
-              </button>
-            )}
-            {isOptional && (
-              <div className="form-check form-switch d-flex align-items-center gap-2 ps-0 mb-0">
-                <input
-                  type="checkbox"
-                  role="switch"
-                  className="form-check-input ms-0"
-                  id={`toggle-${section.key}`}
-                  checked={sectionsEnabled[section.key]}
-                  onChange={() => toggleSection(section.key)}
-                />
-                <label
-                  className="form-check-label small text-muted"
-                  htmlFor={`toggle-${section.key}`}
-                >
-                  Include
-                </label>
-              </div>
-            )}
+            {renderModuleActions()}
           </div>
         )}
 
@@ -3721,6 +3739,12 @@ function WorkerForm() {
             {SECTION_FIELD_RENDERERS[section.key]()}
           </div>
         </div>
+
+        {showActions && (
+          <div className="d-flex d-lg-none align-items-center gap-3 mt-3">
+            {renderModuleActions()}
+          </div>
+        )}
       </div>
     );
   };
@@ -4317,20 +4341,6 @@ function WorkerForm() {
         /* keeps sections from hiding under the sticky header when jumped to */
         .section-scroll-anchor {
           scroll-margin-top: 100px;
-        }
-
-        /* Include/Reset controls: pinned top-right on desktop (see the
-           position-absolute/top-0/end-0/m-3 utility classes on the element
-           itself). Below the same lg breakpoint the rest of this form
-           already treats as "mobile" (see the d-lg-none tree nav above),
-           re-anchor the same absolutely-positioned box to the bottom-right
-           instead — same grouping, same alignment, same styling, just a
-           different corner of the section card. Desktop is untouched. */
-        @media (max-width: 991.98px) {
-          .section-header-actions {
-            top: auto;
-            bottom: 0;
-          }
         }
 
         .dashboard-wraper input.form-control,
