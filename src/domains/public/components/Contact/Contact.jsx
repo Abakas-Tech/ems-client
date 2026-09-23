@@ -5,7 +5,12 @@ import getLocation from "../../api/location.api";
 import getSocialMedias from "../../api/socialMedia.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
-import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  Marker,
+  InfoWindow,
+  useJsApiLoader,
+} from "@react-google-maps/api";
 
 const Contact = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -186,7 +191,27 @@ const Contact = () => {
                     lat: parseFloat(location.latitude),
                     lng: parseFloat(location.longitude),
                   }}
+                  title={location.name}
                 />
+                {/* Google Maps itself always shows a place's name next to
+                    its pin - a bare Marker has no visible label, so an
+                    InfoWindow anchored to the same coordinates displays the
+                    business name the same way, right where the marker
+                    points. */}
+                <InfoWindow
+                  position={{
+                    lat: parseFloat(location.latitude),
+                    lng: parseFloat(location.longitude),
+                  }}
+                  options={{
+                    pixelOffset: new window.google.maps.Size(0, -38),
+                    disableAutoPan: true,
+                  }}
+                >
+                  <span style={{ fontWeight: 600, fontSize: 13 }}>
+                    {location.name}
+                  </span>
+                </InfoWindow>
               </GoogleMap>
             )}
           </div>
