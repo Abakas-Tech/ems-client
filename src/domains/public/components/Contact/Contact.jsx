@@ -1,38 +1,11 @@
 import { useState, useEffect } from "react";
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelopeOpen } from "react-icons/fa";
-import { FiX } from "react-icons/fi";
 import sendContactEmail from "../../api/contact.api";
 import getLocation from "../../api/location.api";
 import getSocialMedias from "../../api/socialMedia.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
-import {
-  GoogleMap,
-  Marker,
-  OverlayView,
-  useJsApiLoader,
-} from "@react-google-maps/api";
-
-// The Office field's raw value can be entered as e.g. "(Head Office)
-// Addis Ababa" - the bracketed part is the short label used for the map,
-// the rest is the office's own display text. Falls back to the full
-// value untouched when no bracket is present (e.g. data saved before
-// this convention existed), so nothing breaks for those records.
-const extractOfficeLabel = (officeField) => {
-  const match = (officeField || "").match(/\(([^)]+)\)/);
-  return match ? match[1].trim() : (officeField || "").trim();
-};
-
-// The same raw value with the bracketed part removed - used everywhere
-// the Office field is shown OUTSIDE the map label, so the "(...)"
-// syntax itself never leaks into the UI. Falls back to the original
-// value if stripping it would leave nothing to show.
-const stripOfficeLabel = (officeField) => {
-  const stripped = (officeField || "").replace(/\([^)]*\)\s*/, "").trim();
-  return stripped || (officeField || "").trim();
-};
-
-const MAP_LABEL_COLOR = "#6f42c1";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
 const Contact = () => {
   const { showLoader, hideLoader } = useLoader();
@@ -58,17 +31,10 @@ const Contact = () => {
     phone: "",
   });
 
-  // The map label's own close (x) button hides it; it's shown by default
-  // whenever the location loads.
-  const [showMapLabel, setShowMapLabel] = useState(true);
-
   //  Google Maps loader for Vite
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
-
-  const mapLabel = extractOfficeLabel(location.name);
-  const officeDisplayName = stripOfficeLabel(location.name);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -183,7 +149,7 @@ const Contact = () => {
 
             <ContactItem
               icon={FaMapMarkerAlt}
-              title={officeDisplayName}
+              title={location.name}
               content={location.address}
             />
             <ContactItem
@@ -220,83 +186,7 @@ const Contact = () => {
                     lat: parseFloat(location.latitude),
                     lng: parseFloat(location.longitude),
                   }}
-                  title={mapLabel}
                 />
-                {/* Google Maps itself always shows a place's name next to
-                    its pin - a bare Marker has no visible label, so a fully
-                    custom label anchored to the same coordinates displays
-                    the office name the same way, right where the marker
-                    points. Built with OverlayView (plain positioned HTML)
-                    rather than the built-in InfoWindow so the close icon can
-                    sit inline with the label text in one flex row, styled
-                    entirely by us instead of Google's default chrome. */}
-                {showMapLabel && (
-                  <OverlayView
-                    position={{
-                      lat: parseFloat(location.latitude),
-                      lng: parseFloat(location.longitude),
-                    }}
-                    mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-                    getPixelPositionOffset={(width, height) => ({
-                      x: -(width / 2),
-                      y: -(height + 40),
-                    })}
-                  >
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 8,
-                        background: MAP_LABEL_COLOR,
-                        color: "#fff",
-                        padding: "6px 10px",
-                        borderRadius: 8,
-                        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.25)",
-                        fontWeight: 600,
-                        fontSize: 13,
-                        lineHeight: 1.2,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      <span>{mapLabel}</span>
-                      <button
-                        type="button"
-                        onClick={() => setShowMapLabel(false)}
-                        aria-label="Close"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          background: "transparent",
-                          border: "none",
-                          padding: 0,
-                          margin: 0,
-                          color: "#fff",
-                          cursor: "pointer",
-                          lineHeight: 0,
-                        }}
-                      >
-                        <FiX size={14} />
-                      </button>
-                      {/* Small pointer connecting the label to the marker
-                          beneath it, matching the label's own color. */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          bottom: -6,
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                          width: 0,
-                          height: 0,
-                          borderLeft: "6px solid transparent",
-                          borderRight: "6px solid transparent",
-                          borderTop: `6px solid ${MAP_LABEL_COLOR}`,
-                        }}
-                      />
-                    </div>
-                  </OverlayView>
-                )}
               </GoogleMap>
             )}
           </div>
