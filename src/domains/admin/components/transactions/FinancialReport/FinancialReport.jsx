@@ -85,14 +85,16 @@ const FinanceReportSummary = ({ filters, onBack }) => {
               amount={report.total_expense}
               color="danger"
             />
+            {/* VAT and Commission are deductions from income, so they're
+                shown with the sign they carry in the net (negated). */}
             <SummaryCard
               title="Total VAT"
-              amount={report.total_vat}
+              amount={-Number(report.total_vat || 0)}
               color="warning"
             />
             <SummaryCard
               title="Total Commission"
-              amount={report.total_commission}
+              amount={-Number(report.total_commission || 0)}
               color="info"
             />
           </div>

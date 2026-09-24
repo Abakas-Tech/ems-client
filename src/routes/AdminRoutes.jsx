@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Finances from "../domains/admin/pages/FinancePage/FinancePage.jsx";
 import InvoicesPage from "../domains/admin/pages/Invoices/Invoice.jsx";
 import Analytics from "../domains/admin/pages/AnalyticsPage/AnalyticsPage.jsx";
@@ -53,9 +53,27 @@ import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx
 import LetterGenerator from "../domains/admin/pages/Lettergenerator/Lettergenerator.jsx";
 import LocalAgentPage from "../domains/admin/pages/meta/LocalAgents/LocalAgents.jsx";
 
+// The letter page lives at /admin/letter. Old /admin/letter-generator
+// links/bookmarks are forwarded there, keeping any navigate() state (e.g.
+// the selected workerId from Active Workers' "Create Letter" action).
+const LegacyLetterRedirect = () => {
+  const location = useLocation();
+  return (
+    <Navigate
+      to={`/admin/letter${location.search}`}
+      replace
+      state={location.state}
+    />
+  );
+};
+
 const AdminRoutes = () => {
   return (
     <Routes>
+      {/* Outside ProtectedRoute on purpose: it only redirects, and the
+          target (/admin/letter) goes through the normal auth/permission
+          checks. */}
+      <Route path="/letter-generator" element={<LegacyLetterRedirect />} />
       <Route
         element={
           <ProtectedRoute>
@@ -98,7 +116,7 @@ const AdminRoutes = () => {
         {/* ADDED — Flexible Letter Generator, arrived at either directly
             or via Active Workers' "Create Letter" bulk action, which
             passes { workerId } through navigate(...) state. */}
-        <Route path="/letter-generator" element={<LetterGenerator />} />
+        <Route path="/letter" element={<LetterGenerator />} />
         {/* <Route path="/meta-data/country" element={<CountryPage />} />
         <Route path="/meta-data/region" element={<RegionPage />} />
         <Route path="/meta-data/wereda" element={<WeredaPage />} />

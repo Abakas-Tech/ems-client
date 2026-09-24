@@ -15,6 +15,11 @@ import BackButton from "./../../../../../shared/components/BackButton/BackButton
 import useResponse from "../../../../../context/Response/useResponse";
 import useProfile from "../../../../../context/Profile/useProfile";
 
+// Longest phone number accepted on the Create User form (checked on the
+// frontend so an over-long value never reaches the backend).
+const PHONE_MAX_LENGTH = 14;
+const PHONE_MAX_LENGTH_MESSAGE = `Phone number cannot exceed ${PHONE_MAX_LENGTH} characters.`;
+
 const PERMISSIONS = [
   "manage_users",
   "manage_workers",
@@ -132,6 +137,14 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
 
   const handlePhoneChange = (value) => {
     const cleanedValue = value.replace(/[^\d+\-\s()]/g, "");
+    // Flag an over-long number the moment it crosses the limit (once, not
+    // on every keystroke) so it never has to wait for the backend.
+    if (
+      cleanedValue.length > PHONE_MAX_LENGTH &&
+      phoneNumber.length <= PHONE_MAX_LENGTH
+    ) {
+      addMessage(false, PHONE_MAX_LENGTH_MESSAGE);
+    }
     setPhoneNumber(cleanedValue);
   };
   const togglePermission = (permission) => {
@@ -169,6 +182,11 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
   };
 
   const validateFields = () => {
+    if (phoneNumber && phoneNumber.length > PHONE_MAX_LENGTH) {
+      addMessage(false, PHONE_MAX_LENGTH_MESSAGE);
+      return false;
+    }
+
     // Full Name: letters only, min 2, max 50
     if (fullName && !/^[A-Za-z\s]+$/.test(fullName)) {
       addMessage(false, "Full name can contain letters only.");

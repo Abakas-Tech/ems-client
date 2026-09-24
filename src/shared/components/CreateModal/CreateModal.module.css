@@ -44,6 +44,9 @@
 }
 .modalInner {
   width: 100%;
+  /* containing block for absolutely positioned header controls passed in
+     as children (e.g. WorkerDocumentsModal's Back button on small screens) */
+  position: relative;
 }
 
 /* Slide down + fade for the modal container */

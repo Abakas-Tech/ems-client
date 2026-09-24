@@ -56,9 +56,22 @@ const computeSummaryTotals = (period, transactions) => {
     .filter((t) => t.category === "expense")
     .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-  const commission = period.total_commission ?? period.commission ?? null;
-  const vat = period.total_vat ?? period.vat ?? null;
+  // FIXED — an open period has no stored commission/VAT totals yet, so
+  // these used to come back null and were silently left out of the net.
+  // They now fall back to the transaction set like income/expense do.
+  const computedCommission = list
+    .filter((t) => t.category === "commission")
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+  const computedVat = list
+    .filter((t) => t.category === "vat")
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
+  const commission =
+    period.total_commission ?? period.commission ?? computedCommission;
+  const vat = period.total_vat ?? period.vat ?? computedVat;
+
+  // Only income adds to the net; expenses, commission and VAT are
+  // deductions, subtracted with their actual sign (never forced positive).
   const computedNet =
     computedIncome -
     computedExpense -
@@ -74,6 +87,16 @@ const computeSummaryTotals = (period, transactions) => {
     transactionCount: period.transaction_count ?? list.length,
   };
 };
+
+// Commission and VAT are deductions from income: shown with their real
+// sign as it affects the net (a recorded amount of 500 shows as "- 500",
+// a negative/credit amount shows as "+"), never forced into a positive.
+const formatDeduction = (value) => {
+  const signed = -Number(value || 0);
+  return `${signed < 0 ? "-" : "+"} ${formatAmount(Math.abs(signed))}`;
+};
+const deductionColor = (value) =>
+  Number(value || 0) > 0 ? "var(--expense)" : "var(--income)";
 
 // Print-only company header — same org name/logo/confidentiality line as
 // the printed period and worker reports (REPORT_META, shared Data.js),
@@ -615,16 +638,22 @@ const TransactionDetail = ({
               {totals.commission !== null && (
                 <div className="stat-item">
                   <span className="stat-label">Total Commission</span>
-                  <span className="stat-value">
-                    {formatAmount(totals.commission)} Birr
+                  <span
+                    className="stat-value"
+                    style={{ color: deductionColor(totals.commission) }}
+                  >
+                    {formatDeduction(totals.commission)} Birr
                   </span>
                 </div>
               )}
               {totals.vat !== null && (
                 <div className="stat-item">
                   <span className="stat-label">Total VAT</span>
-                  <span className="stat-value">
-                    {formatAmount(totals.vat)} Birr
+                  <span
+                    className="stat-value"
+                    style={{ color: deductionColor(totals.vat) }}
+                  >
+                    {formatDeduction(totals.vat)} Birr
                   </span>
                 </div>
               )}

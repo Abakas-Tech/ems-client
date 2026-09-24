@@ -54,7 +54,7 @@ const MENU_CONFIG = [
   // directly or via Active Workers' "Create Letter" bulk action.
   {
     label: "Letter ",
-    path: "/admin/letter-generator",
+    path: "/admin/letter",
     icon: "bi bi-file-earmark-text",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
     permission: PERMISSIONS.MANAGE_WORKERS,

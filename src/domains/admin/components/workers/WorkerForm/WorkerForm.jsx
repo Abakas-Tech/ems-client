@@ -35,11 +35,14 @@ import Badge from "../../../../../shared/components/Badge/Badge";
 import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 
+// worker_documents.description is VARCHAR(255) in the database schema.
+const DOCUMENT_DESCRIPTION_MAX_LENGTH = 255;
+
 // helper function
-const renderLabel = (text,required = false, missing = false) => {
+const renderLabel = (text, required = false, missing = false) => {
   return (
     <label>
-      {text } {required && <span className="text-danger">*</span>}
+      {text} {required && <span className="text-danger">*</span>}
       {missing && <span className="text-danger fw-bold ms-1">!</span>}
     </label>
   );
@@ -647,8 +650,23 @@ function WorkerForm() {
 
     window.addEventListener("resize", updateTreeNavRect);
 
+    // The nav is position:fixed, so it must be re-measured whenever its
+    // column changes size/position — not only on window resize. Toggling
+    // the admin sidebar (animated margin) or scrollbars appearing resize
+    // the column without a window resize event, which used to leave the
+    // nav with a stale left/width that overlapped the form on the left.
+    let resizeObserver = null;
+    if (typeof ResizeObserver !== "undefined" && treeNavSpacerRef.current) {
+      resizeObserver = new ResizeObserver(updateTreeNavRect);
+      resizeObserver.observe(treeNavSpacerRef.current);
+      if (treeNavSpacerRef.current.parentElement) {
+        resizeObserver.observe(treeNavSpacerRef.current.parentElement);
+      }
+    }
+
     return () => {
       window.removeEventListener("resize", updateTreeNavRect);
+      resizeObserver?.disconnect();
     };
   }, [previewMode, loadingProfile]);
   const goBack = () => navigate(-1);
@@ -873,6 +891,13 @@ function WorkerForm() {
   const handleAddPendingDocument = () => {
     if (!documentFile) {
       addMessage(false, "Choose a file to add first");
+      return;
+    }
+    if (documentDescription.length > DOCUMENT_DESCRIPTION_MAX_LENGTH) {
+      addMessage(
+        false,
+        `Description must be at most ${DOCUMENT_DESCRIPTION_MAX_LENGTH} characters`,
+      );
       return;
     }
 
@@ -2592,7 +2617,11 @@ function WorkerForm() {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
-        {renderLabel("Issue Date", true,   isFieldFlaggedMissing("passport", "passport_issue_date"),)}
+        {renderLabel(
+          "Issue Date",
+          true,
+          isFieldFlaggedMissing("passport", "passport_issue_date"),
+        )}
         <input
           type="date"
           name="passport_issue_date"
@@ -3068,6 +3097,8 @@ function WorkerForm() {
     "Medical",
     "Contract",
     "Photo",
+    "Yellow Card",
+    "Tasheer",
     "Other",
   ];
 
@@ -3098,6 +3129,12 @@ function WorkerForm() {
             onChange={(e) => setDocumentDescription(e.target.value)}
             placeholder="e.g. COC certificate, page 1"
           />
+          {documentDescription.length > DOCUMENT_DESCRIPTION_MAX_LENGTH && (
+            <small className="text-danger">
+              Max {DOCUMENT_DESCRIPTION_MAX_LENGTH} characters (
+              {documentDescription.length})
+            </small>
+          )}
         </div>
         <div className="form-group col-md-3">
           {renderPlainLabel("File")}
@@ -3340,16 +3377,15 @@ function WorkerForm() {
     );
   };
 
-  // The single primary action button — reused for the fixed desktop tree,
-  // the mobile top nav, and (compact) the Preview header once the tree is
-  // hidden there. Label only depends on create/edit mode; while a save is
-  // in flight the button is simply disabled (the existing loader already
+  // The single primary action button, rendered on the right of the Upload
+  // Passport row (same size as the Upload Passport button beside it) for
+  // every screen size. Label only depends on create/edit mode; while a save
+  // is in flight the button is simply disabled (the existing loader already
   // communicates the loading state), so the label never changes mid-save.
-  // Kept compact (btn-sm) everywhere so it never dominates the tree nav.
   const renderActionButton = () => (
     <button
       type="button"
-      className="btn btn-main btn-sm rounded px-3 w-100"
+      className="btn btn-main text-white rounded px-3"
       onClick={handleSubmit}
       disabled={submitLoading}
     >
@@ -4001,6 +4037,9 @@ function WorkerForm() {
           justify-content: space-between;
           height: calc(100vh - 130px);
           max-height: calc(100vh - 130px);
+          box-sizing: border-box;
+          min-width: 0;
+          overflow: hidden;
         }
         .tree-nav-scroll {
           overflow: hidden;
@@ -4170,6 +4209,24 @@ function WorkerForm() {
           padding: 0 0.75rem 0.75rem;
         }
 
+        /* Primary Create/Save button, on the right of the Upload Passport
+           row. Fixed width on small screens so it never stretches or
+           squeezes the row; natural width on larger screens. */
+        .worker-form-action {
+          flex: 0 0 auto;
+          margin-left: auto;
+        }
+        .worker-form-action .btn {
+          min-width: 150px;
+          white-space: nowrap;
+        }
+        @media (max-width: 575.98px) {
+          .worker-form-action .btn {
+            width: 130px;
+            min-width: 130px;
+          }
+        }
+
         /* keeps sections from hiding under the sticky header when jumped to */
         .section-scroll-anchor {
           scroll-margin-top: 100px;
@@ -4261,59 +4318,62 @@ function WorkerForm() {
               style={{ display: "none" }}
               onChange={handlePassportScan}
             />
-            <div className="d-flex gap-2 mt-3">
-              <button
-                type="button"
-                className="btn btn-main text-white d-flex align-items-center justify-content-center"
-                onClick={() => passportInputRef.current?.click()}
-                style={{ whiteSpace: "nowrap" }}
-              >
-                Upload Passport
-              </button>
-
-              {(basic.full_name || passport.passport_number) && (
+            {/* Same column width as the form below, so on large screens the
+                action button lines up with the form's right edge instead of
+                running under the fixed section nav. */}
+            <div className="row">
+              <div className="col-12 col-lg-9 d-flex flex-wrap align-items-center gap-2 mt-3">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
-                  onClick={() => {
-                    setPassport({
-                      passport_number: " ",
-                      passport_issue_date: "",
-                      passport_expiry_date: "",
-                      passport_issuing_country: "Ethiopia",
-                    });
-                    setBasic({
-                      full_name: "",
-                    });
-                    setPersonal({
-                      date_of_birth: "",
-                    });
-                  }}
+                  className="btn btn-main text-white d-flex align-items-center justify-content-center"
+                  onClick={() => passportInputRef.current?.click()}
                   style={{ whiteSpace: "nowrap" }}
-                  disabled={scanLoading}
                 >
-                  Reset
+                  Upload Passport
                 </button>
-              )}
+
+                {(basic.full_name || passport.passport_number) && (
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
+                    onClick={() => {
+                      setPassport({
+                        passport_number: " ",
+                        passport_issue_date: "",
+                        passport_expiry_date: "",
+                        passport_issuing_country: "Ethiopia",
+                      });
+                      setBasic({
+                        full_name: "",
+                      });
+                      setPersonal({
+                        date_of_birth: "",
+                      });
+                    }}
+                    style={{ whiteSpace: "nowrap" }}
+                    disabled={scanLoading}
+                  >
+                    Reset
+                  </button>
+                )}
+
+                <div className="worker-form-action">{renderActionButton()}</div>
+              </div>
             </div>
           </>
         )}
         {/* Right side — scan button only, mirrors + Status button */}
       </div>
 
-      {/* mobile / small-screen section nav: horizontal connected tree at top,
-          plus the primary action button right below it so it stays
-          reachable once the tree moves to the top of the page. Hidden while
-          reviewing the Preview — the Preview card carries its own action
-          button instead. Shared identically between Create and Edit. */}
+      {/* mobile / small-screen section nav: horizontal connected tree at top.
+          Hidden while reviewing the Preview. The primary action button
+          lives in the Upload Passport row above. Shared identically between
+          Create and Edit. */}
       {!previewMode && (
         <div className="d-lg-none mb-3">
           <div className="tree-nav-mobile-wrap shadow-sm rounded-4 bg-white">
             <div className="tree-nav-mobile">
               {navItems.map((s, idx) => renderNavItem(s, true, idx))}
-            </div>
-            <div className="tree-nav-mobile-action-wrap">
-              {renderActionButton()}
             </div>
           </div>
         </div>
@@ -4354,7 +4414,6 @@ function WorkerForm() {
                   {navItems.map((s, idx) => renderNavItem(s, false, idx))}
                 </ul>
               </div>
-              <div className="tree-nav-action-wrap">{renderActionButton()}</div>
             </div>
           </div>
         )}

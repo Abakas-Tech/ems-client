@@ -8,6 +8,30 @@
   margin-right: -2rem;
 }
 
+/* Small screens only: pin the Back button to the modal's top-right corner
+   (relative to CreateModal's inner wrapper) and reserve matching space on
+   both sides of the centered title so the button never covers the title or
+   the document content. Desktop keeps the original position above. */
+@media (max-width: 576px) {
+  .headerRow {
+    position: static;
+    margin-right: 0;
+  }
+
+  .headerRow .backButton {
+    top: -1.25rem;
+    right: -1.25rem;
+    margin: 0;
+    width: 36px;
+    height: 36px;
+  }
+
+  .title {
+    padding: 0 2.5rem;
+    word-break: break-word;
+  }
+}
+
 .emptyState {
   padding: 3rem 1rem;
   text-align: center;

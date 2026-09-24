@@ -336,7 +336,7 @@ const ActiveWorkers = () => {
   const handleCreateLetter = () => {
     if (selectedWorkerIds.length !== 1) return;
 
-    navigate("/admin/letter-generator", {
+    navigate("/admin/letter", {
       state: { workerId: selectedWorkerIds[0] },
     });
   };

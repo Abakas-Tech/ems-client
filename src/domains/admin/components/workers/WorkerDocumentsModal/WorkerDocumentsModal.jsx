@@ -115,12 +115,16 @@ const WorkerDocumentsModal = ({ show, onClose, worker }) => {
       title={`Documents${worker?.full_name ? ` — ${worker.full_name}` : ""}`}
       maxWidth="740px"
       overlayZIndex={OVERLAY_Z_INDEX}
+      titleClassName={styles.title}
     >
       {/* Single control: goes back to the grid while viewing one document's
           detail, or closes the whole modal from the grid itself - avoids
-          needing a second, separate close button alongside it. */}
+          needing a second, separate close button alongside it. On small
+          screens it moves to the modal's top-right corner (see
+          .backButton in the module CSS). */}
       <div className={styles.headerRow}>
         <BackButton
+          className={styles.backButton}
           onClick={() => (selected ? setSelected(null) : onClose())}
         />
       </div>
