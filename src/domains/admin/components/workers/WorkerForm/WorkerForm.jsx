@@ -2872,7 +2872,7 @@ function WorkerForm() {
     <div className="row">
       <div className="form-group col-md-6 mb-3">
         {renderLabel(
-          "Employer",
+          "Sponsor",
           true,
           isFieldFlaggedMissing("contract", "employer"),
         )}
