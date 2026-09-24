@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Finances from "../domains/admin/pages/FinancePage/FinancePage.jsx";
 import InvoicesPage from "../domains/admin/pages/Invoices/Invoice.jsx";
 import WorkerDashboard from "../domains/admin/pages/workers/WorkerDashboard/WorkerDashboard.jsx";
@@ -59,9 +59,27 @@ import ViewActivityDetail from "../domains/admin/pages/ViewActivityDetail/ViewAc
 import Dashboard from "../domains/admin/pages/Dashboard/Dashboard.jsx";
 import LocalAgentPage from "../domains/admin/pages/meta/LocalAgent/LocalAgent.jsx";
 
+// The letter page lives at /admin/letter. Old /admin/letter-generator
+// links/bookmarks are forwarded there, keeping any navigate() state (e.g.
+// the selected workerId from Active Workers' "Create Letter" action).
+const LegacyLetterRedirect = () => {
+  const location = useLocation();
+  return (
+    <Navigate
+      to={`/admin/letter${location.search}`}
+      replace
+      state={location.state}
+    />
+  );
+};
+
 const AdminRoutes = () => {
   return (
     <Routes>
+      {/* Outside ProtectedRoute on purpose: it only redirects, and the
+          target (/admin/letter) goes through the normal auth/permission
+          checks. */}
+      <Route path="/letter-generator" element={<LegacyLetterRedirect />} />
       <Route
         element={
           <ProtectedRoute>

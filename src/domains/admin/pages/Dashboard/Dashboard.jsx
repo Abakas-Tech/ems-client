@@ -17,6 +17,8 @@ import {
 
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
+import useProfile from "../../../../context/Profile/useProfile";
+import ROLES from "../../../../config/role.config";
 import StatCard from "../../components/dashboard/StatCard/StatCard.jsx";
 import PipelineFlow from "../../components/dashboard/PipelineFlow/PipelineFlow";
 import styles from "./Dashboard.module.css";
@@ -68,6 +70,11 @@ const timeAgo = (dateStr) => {
 const Dashboard = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
+  const { profile } = useProfile();
+
+  // Recent Activity is built from audit/login logs, which only admins can
+  // access — hide the card entirely for staff, even with manage_analytics.
+  const canViewRecentActivity = profile?.role_id === ROLES.ADMIN;
 
   const [kpis, setKpis] = useState([]);
   const [pipeline, setPipeline] = useState([]);
@@ -264,8 +271,8 @@ const Dashboard = () => {
       </div>
 
       <div className="row g-3 g-lg-4">
-        {/* Top agents */}
-        <div className="col-lg-6 col-12">
+        {/* Top agents — takes the full row when Recent Activity is hidden */}
+        <div className={canViewRecentActivity ? "col-lg-6 col-12" : "col-12"}>
           <div
             className={`card border-0 shadow-sm rounded-4 h-100 ${styles.chartCard}`}
           >
@@ -311,35 +318,37 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Recent activity */}
-        <div className="col-lg-6 col-12">
-          <div
-            className={`card border-0 shadow-sm rounded-4 h-100 ${styles.chartCard}`}
-          >
-            <div className="card-body">
-              <h6 className="fw-bold text-dark mb-3">Recent Activity</h6>
-              {activity.length > 0 ? (
-                <ul className={styles.activityList}>
-                  {activity.map((item) => (
-                    <li className={styles.activityItem} key={item.id}>
-                      <span className={styles.activityIcon}>
-                        <i className={`bi ${item.icon}`} />
-                      </span>
-                      <div>
-                        <div className={styles.activityMessage}>
-                          {item.message}
+        {/* Recent activity (admins only) */}
+        {canViewRecentActivity && (
+          <div className="col-lg-6 col-12">
+            <div
+              className={`card border-0 shadow-sm rounded-4 h-100 ${styles.chartCard}`}
+            >
+              <div className="card-body">
+                <h6 className="fw-bold text-dark mb-3">Recent Activity</h6>
+                {activity.length > 0 ? (
+                  <ul className={styles.activityList}>
+                    {activity.map((item) => (
+                      <li className={styles.activityItem} key={item.id}>
+                        <span className={styles.activityIcon}>
+                          <i className={`bi ${item.icon}`} />
+                        </span>
+                        <div>
+                          <div className={styles.activityMessage}>
+                            {item.message}
+                          </div>
+                          <div className={styles.activityTime}>{item.time}</div>
                         </div>
-                        <div className={styles.activityTime}>{item.time}</div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted mb-0">No recent activity yet.</p>
-              )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-muted mb-0">No recent activity yet.</p>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

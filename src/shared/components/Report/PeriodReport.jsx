@@ -61,9 +61,22 @@ const computeTotals = (period, transactions) => {
     .filter((t) => t.category === "expense")
     .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-  const commission = period.total_commission ?? period.commission ?? null;
-  const vat = period.total_vat ?? period.vat ?? null;
+  // FIXED — an open period has no stored commission/VAT totals yet, so
+  // these used to come back null and were silently left out of the net.
+  // They now fall back to the transaction set like income/expense do.
+  const computedCommission = transactions
+    .filter((t) => t.category === "commission")
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+  const computedVat = transactions
+    .filter((t) => t.category === "vat")
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
+  const commission =
+    period.total_commission ?? period.commission ?? computedCommission;
+  const vat = period.total_vat ?? period.vat ?? computedVat;
+
+  // Only income adds to the net; expenses, commission and VAT are
+  // deductions, subtracted with their actual sign (never forced positive).
   const computedNet =
     computedIncome -
     computedExpense -
@@ -79,6 +92,15 @@ const computeTotals = (period, transactions) => {
     transactionCount: period.transaction_count ?? transactions.length,
   };
 };
+
+// Commission and VAT are deductions from income: shown with their real
+// sign as it affects the net (a recorded amount of 500 shows as "- 500",
+// a negative/credit amount shows as "+"), never forced into a positive.
+const fmtDeduction = (val) => {
+  const signed = -Number(val || 0);
+  return `${signed < 0 ? "-" : "+"} ${fmtAmount(Math.abs(signed))} Birr`;
+};
+const deductionTone = (val) => (Number(val || 0) > 0 ? "expense" : "income");
 
 const buildHeader = (period, summaryOnly = false) => {
   const { orgName, orgSub, logoPath, logoInitials, logoColor } = REPORT_META;
@@ -211,13 +233,18 @@ const buildSummaryRows = (period, totals) => {
   if (totals.commission !== null) {
     rows.push([
       "Total Commission",
-      `${fmtAmount(totals.commission)} Birr`,
+      fmtDeduction(totals.commission),
       true,
-      "neutral",
+      deductionTone(totals.commission),
     ]);
   }
   if (totals.vat !== null) {
-    rows.push(["Total VAT", `${fmtAmount(totals.vat)} Birr`, true, "neutral"]);
+    rows.push([
+      "Total VAT",
+      fmtDeduction(totals.vat),
+      true,
+      deductionTone(totals.vat),
+    ]);
   }
 
   rows.push(["Total Transactions", totals.transactionCount, true, "neutral"]);

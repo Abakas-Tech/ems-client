@@ -819,6 +819,25 @@ function WorkerAutoFillComponent() {
 
   const goBack = () => navigate(-1);
 
+  // Ids of the employees currently in the autofill selection — the ids
+  // handed over from Active Employees' bulk action, or (sidebar flow) the
+  // ids carried on the saved extension queue.
+  const selectedIds = useMemo(() => {
+    if (workerIds.length) return workerIds;
+    return queue.map((item) => item?.workerId ?? item?.id).filter(Boolean);
+  }, [workerIds, queue]);
+
+  // Clicking the selected-count indicator returns to Active Employees in
+  // bulk-selection mode with the same employees pre-checked (the list's
+  // existing preSelectedWorkerIds hand-off), so the user can see who is
+  // selected, add/remove employees, and come back via Autofill again.
+  const handleEditSelection = () => {
+    if (!selectedIds.length) return;
+    navigate("/admin/employees/active", {
+      state: { preSelectedWorkerIds: selectedIds },
+    });
+  };
+
   const loadWorkers = useCallback(async () => {
     setIsQueueLoading(true);
     showLoader();
@@ -975,10 +994,20 @@ function WorkerAutoFillComponent() {
 
         <div className="mt-3 mt-md-5">
           <div className="d-flex align-items-center gap-2">
-            <span className="badge rounded-pill bg-light text-dark border px-3 py-2">
+            <button
+              type="button"
+              className="badge rounded-pill bg-light text-dark border px-3 py-2"
+              onClick={handleEditSelection}
+              disabled={!selectedIds.length}
+              title="View or change the selected employees"
+              style={{ cursor: selectedIds.length ? "pointer" : "default" }}
+            >
               {queue.length} {queue.length === 1 ? "employee" : "employees"}{" "}
               selected
-            </span>
+              {selectedIds.length > 0 && (
+                <i className="bi bi-pencil-square ms-2" aria-hidden="true" />
+              )}
+            </button>
             <button
               type="button"
               className="btn btn-outline-success btn-sm rounded-pill px-3 py-2 fw-bold text-nowrap"

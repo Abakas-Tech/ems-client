@@ -37,6 +37,9 @@ const CreateModal = ({
   // another portal-rendered modal (e.g. ConfirmDeleteModal, triggered via
   // useDelete while this is open) that must stack above it.
   overlayZIndex,
+  // Optional extra class for the title (children mode only), e.g. to
+  // reserve room for a header control positioned over the title row.
+  titleClassName,
 }) => {
   const modalRef = useRef(null);
   const [shake, setShake] = useState("idle");
@@ -144,7 +147,11 @@ const CreateModal = ({
       >
         {children ? (
           <>
-            {title && <h3 className={styles.modalTitle}>{title}</h3>}
+            {title && (
+              <h3 className={`${styles.modalTitle} ${titleClassName || ""}`}>
+                {title}
+              </h3>
+            )}
             {children}
           </>
         ) : (

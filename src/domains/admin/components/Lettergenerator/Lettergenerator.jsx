@@ -201,7 +201,7 @@ const LETTER_STYLES = `
     .page{box-shadow:none;width:auto;min-width:0;margin:0;padding:0 0 26px;}
   }
     .meta-r{min-width:190px;}
-.contact-block{text-align:right;font-size:7.5pt;color:#5a6a85;line-height:1.5;}
+.contact-block{text-align:right;font-size:8.5pt;font-weight:600;color:#5a6a85;line-height:1.5;}
   .pb{page-break-after:always;}
   .ph{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #1a3c6e;padding-bottom:8px;margin-bottom:18px;}
   .logo-block{display:flex;align-items:center;gap:9px;min-width:190px;}
@@ -211,7 +211,7 @@ const LETTER_STYLES = `
   .report-title{font-size:12pt;font-weight:700;color:#1a3c6e;text-transform:uppercase;letter-spacing:1px;}
   .report-sub{font-size:7.5pt;color:#5a6a85;margin-top:3px;}
   .meta-r{min-width:190px;}
-  .pf{position:absolute;bottom:0;left:0;right:0;padding-top:5px;border-top:1.5px solid #c8d8f0;display:flex;justify-content:space-between;font-size:7pt;color:#8a97b0;background:#fff;}
+  .pf{position:absolute;bottom:0;left:0;right:0;padding-top:5px;border-top:1.5px solid #c8d8f0;display:flex;justify-content:space-between;font-size:8pt;font-weight:600;color:#8a97b0;background:#fff;}
 
   /* ለ on the left, ቀን/ቁጥር stacked on the right — same horizontal band,
      never side by side with each other. Preview/Print only; has no
@@ -613,7 +613,7 @@ const LetterGenerator = () => {
   const { addMessage } = useResponse();
 
   // Passed in from Active Workers' "Create Letter" bulk action:
-  // navigate("/admin/letter-generator", { state: { workerId } }).
+  // navigate("/admin/letter", { state: { workerId } }).
   // Entirely optional — the page works with no worker at all.
   const workerId = location.state?.workerId || null;
 
