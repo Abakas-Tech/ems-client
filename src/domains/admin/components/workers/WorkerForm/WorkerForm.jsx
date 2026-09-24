@@ -1174,7 +1174,10 @@ function WorkerForm() {
       newGuarantor = {
         guarantor_name: profileData.emergency.guarantor_name || "",
         relation: profileData.emergency.relation || "",
-        guarantor_gender: profileData.emergency.guarantor_gender || "",
+        guarantor_gender: profileData.emergency.guarantor_gender
+          ? profileData.emergency.guarantor_gender.charAt(0).toUpperCase() +
+            profileData.emergency.guarantor_gender.slice(1).toLowerCase()
+          : "",
         guarantor_address: profileData.emergency.guarantor_address || "",
         guarantor_phone_number:
           profileData.emergency.guarantor_phone_number || "",
