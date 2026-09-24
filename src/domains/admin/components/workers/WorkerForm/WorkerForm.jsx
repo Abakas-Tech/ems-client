@@ -2874,7 +2874,7 @@ function WorkerForm() {
         {renderLabel(
           "Sponsor",
           true,
-          isFieldFlaggedMissing("contract", "employer"),
+          isFieldFlaggedMissing("contract", "sponsor"),
         )}
         <input
           type="text"
@@ -3896,7 +3896,7 @@ function WorkerForm() {
           "Contract",
           "contract",
           <>
-            {previewRow("Employer", contract.employer)}
+            {previewRow("Sponsor", contract.sponsor)}
             {previewRow(
               "Partner",
               partners.find(
