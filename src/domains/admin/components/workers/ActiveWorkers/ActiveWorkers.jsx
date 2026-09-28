@@ -580,11 +580,19 @@ const ActiveWorkers = () => {
   //   navigate(-1);
   // };
 
+  // Permanent delete is admin-only in the worker lists (staff can still
+  // archive/restore). Only these lists are affected — the global
+  // ACTION_ROLE_CONFIG.delete stays as it is for every other module — and
+  // the backend rejects a non-admin permanent delete as well.
+  const isAdmin = Number(role) === 1;
+
   const actions = isArchivedView
     ? [
         { type: "view", onClick: (row) => handleView(row.id) },
         { type: "restore", onClick: (row) => handleRestore(row.id) },
-        { type: "delete", onClick: (row) => handleDeleteArchived(row.id) },
+        ...(isAdmin
+          ? [{ type: "delete", onClick: (row) => handleDeleteArchived(row.id) }]
+          : []),
       ]
     : role === 3
       ? [{ type: "viewCV", onClick: (row) => handleViewCv(row) }]
@@ -602,7 +610,9 @@ const ActiveWorkers = () => {
             onClick: (row) => handleDownloadVisaApplication(row.id),
           },
           { type: "archive", onClick: (row) => handleArchive(row.id) },
-          { type: "delete", onClick: (row) => handleDelete(row.id) },
+          ...(isAdmin
+            ? [{ type: "delete", onClick: (row) => handleDelete(row.id) }]
+            : []),
         ];
 
   return (

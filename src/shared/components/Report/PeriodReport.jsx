@@ -1,4 +1,9 @@
 import { REPORT_META } from "./Data";
+import {
+  getCategoryLabel,
+  isIncomeCategory,
+  sumByBucket,
+} from "../../../config/financeCategory.config";
 
 // Same mapping TransactionDetail.jsx uses for target_user_role/creator_role.
 const ROLE_MAP = {
@@ -54,22 +59,18 @@ const getPeriodLabel = (period) =>
 // profit/loss accounts for commission and VAT as well, not just the raw
 // income vs. expense difference.
 const computeTotals = (period, transactions) => {
-  const computedIncome = transactions
-    .filter((t) => t.category === "income")
-    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
-  const computedExpense = transactions
-    .filter((t) => t.category === "expense")
-    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
-
+  // Buckets from financeCategory.config.js: income = income, office
+  // income, partner commission; expenses = expense, salary, office and
+  // ticket expenses; commission = agent commission; vat = VAT.
   // FIXED — an open period has no stored commission/VAT totals yet, so
   // these used to come back null and were silently left out of the net.
   // They now fall back to the transaction set like income/expense do.
-  const computedCommission = transactions
-    .filter((t) => t.category === "commission")
-    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
-  const computedVat = transactions
-    .filter((t) => t.category === "vat")
-    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+  const {
+    income: computedIncome,
+    expenses: computedExpense,
+    commission: computedCommission,
+    vat: computedVat,
+  } = sumByBucket(transactions);
 
   const commission =
     period.total_commission ?? period.commission ?? computedCommission;
@@ -88,7 +89,10 @@ const computeTotals = (period, transactions) => {
     expense: period.total_expense ?? computedExpense,
     commission,
     vat,
-    netProfit: period.net_profit ?? computedNet,
+    // Once split, the Final Profit is the Deposit (Government and Partner
+    // Splitting are paid out as generated expenses, already counted in
+    // the expense total from the transaction set).
+    netProfit: period.final_profit ?? period.net_profit ?? computedNet,
     transactionCount: period.transaction_count ?? transactions.length,
   };
 };
@@ -168,7 +172,7 @@ const buildTransactionRows = (transactions, startIdx) =>
   transactions
     .map((t, i) => {
       const bg = i % 2 === 0 ? "#fff" : "#f5f8ff";
-      const isIncome = t.category === "income";
+      const isIncome = isIncomeCategory(t.category);
       return `<tr>
         <td style="background:${bg};color:#9aa4b8;font-weight:600;text-align:center;">${
           startIdx + i + 1
@@ -179,8 +183,8 @@ const buildTransactionRows = (transactions, startIdx) =>
         <td style="background:${bg}">${t.reference || "—"}</td>
         <td style="background:${bg}"><span class="bp" style="background:${
           isIncome ? "#dcfce7" : "#fee2e2"
-        };color:${isIncome ? "#15803d" : "#b91c1c"}">${(
-          t.category || ""
+        };color:${isIncome ? "#15803d" : "#b91c1c"}">${getCategoryLabel(
+          t.category,
         ).toUpperCase()}</span></td>
         <td style="background:${bg}">${forColumnValue(t)}</td>
         <td style="background:${bg}">${t.creator_name || "System"}</td>
@@ -232,7 +236,7 @@ const buildSummaryRows = (period, totals) => {
 
   if (totals.commission !== null) {
     rows.push([
-      "Total Commission",
+      "Agent Commission",
       fmtDeduction(totals.commission),
       true,
       deductionTone(totals.commission),
@@ -290,7 +294,7 @@ const buildSummaryPage = (
       <tbody>${buildSummaryRows(period, totals)}</tbody>
       <tfoot>
         <tr class="totals-row">
-          <td>Net ${isProfit ? "Profit" : "Loss"}</td>
+          <td>${period.split_id ? "Final Profit" : `Net ${isProfit ? "Profit" : "Loss"}`}</td>
           <td style="text-align:right;">${isProfit ? "+" : "-"} ${fmtAmount(
             Math.abs(totals.netProfit),
           )} Birr</td>

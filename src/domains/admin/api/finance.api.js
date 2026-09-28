@@ -234,6 +234,66 @@ const deletePeriod = async (id) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────
+// CLOSED PERIOD — FINAL SUMMARY SPLIT
+// ─────────────────────────────────────────────────────────────
+// Routes: GET/POST/PUT/DELETE /finance/periods/:id/split
+// The split stores Deposit + Government (entered by the user) and Partner
+// Splitting, which the backend always computes as the remainder of the
+// period's final summary (net profit). Viewing is open to finance users;
+// create/update/delete are admin-only.
+
+// Errors keep the HTTP status (err.status) so a 404 ("no split yet") can
+// be told apart from a real failure.
+const splitError = (error, fallback) => {
+  const err = new Error(error.response?.data?.message || fallback);
+  err.status = error.response?.status;
+  return err;
+};
+
+const fetchPeriodSplit = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/finance/periods/${id}/split`);
+    return response.data;
+  } catch (error) {
+    throw splitError(error, "Failed to load period split");
+  }
+};
+
+const createPeriodSplit = async (id, data) => {
+  try {
+    const response = await axiosInstance.post(
+      `/finance/periods/${id}/split`,
+      data,
+    );
+    return response.data;
+  } catch (error) {
+    throw splitError(error, "Failed to save period split");
+  }
+};
+
+const updatePeriodSplit = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(
+      `/finance/periods/${id}/split`,
+      data,
+    );
+    return response.data;
+  } catch (error) {
+    throw splitError(error, "Failed to update period split");
+  }
+};
+
+const deletePeriodSplit = async (id) => {
+  try {
+    const response = await axiosInstance.delete(
+      `/finance/periods/${id}/split`,
+    );
+    return response.data;
+  } catch (error) {
+    throw splitError(error, "Failed to delete period split");
+  }
+};
 
 export {
   // Transactions
@@ -256,4 +316,10 @@ export {
   // Period actions
   closePeriod,
   deletePeriod,
+
+  // Closed period split
+  fetchPeriodSplit,
+  createPeriodSplit,
+  updatePeriodSplit,
+  deletePeriodSplit,
 };

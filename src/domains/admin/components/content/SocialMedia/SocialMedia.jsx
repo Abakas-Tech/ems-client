@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
+import { isValidPhone } from "../../../../../utils/phone.utils";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 
 import {
@@ -109,15 +110,15 @@ const SocialMedia = () => {
       twitter: /^[a-zA-Z0-9_]{2,100}$/,
     };
 
-    const phonePattern =
-      /^(?:\+?(251|254|974|966|971)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
+    // Phone numbers follow the shared rule (utils/phone.utils.js): any
+    // country code, spaces allowed.
 
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // added email regex
 
     const validateContactNumber = (value) => {
       const numbers = value.split("/");
       if (numbers.length > 2) return false;
-      return numbers.every((num) => phonePattern.test(num.trim()));
+      return numbers.every((num) => isValidPhone(num));
     };
 
     for (const [key, value] of Object.entries(trimmedData)) {
@@ -146,7 +147,7 @@ const SocialMedia = () => {
           return false;
         }
       } else if (key === "whatsapp_number") {
-        if (!phonePattern.test(value)) {
+        if (!isValidPhone(value)) {
           addMessage(false, `${friendlyKey} is invalid`);
           return false;
         }
