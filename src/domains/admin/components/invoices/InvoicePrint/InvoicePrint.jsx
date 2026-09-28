@@ -287,8 +287,8 @@ const REPORT_STYLES = `
      its white paper margins drawn around it — the page box itself is laid
      out exactly as printed. */
   @media screen{
-    body.doc-preview{background:#e9edf3;padding:13mm 15mm;}
-    body.doc-preview .page{background:#fff;margin:0 auto;box-shadow:0 0 0 12mm #fff,0 0 0 calc(12mm + 1px) #d5dbe5;}
+    body.doc-preview{background:#e9edf3;padding:7mm 0;}
+    body.doc-preview .page{background:#fff;margin:0 auto;box-shadow:0 0 0 5mm #fff,0 0 0 calc(5mm + 1px) #d5dbe5;}
   }
 `;
 

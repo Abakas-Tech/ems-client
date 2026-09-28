@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Finances from "../domains/admin/pages/FinancePage/FinancePage.jsx";
 import InvoicesPage from "../domains/admin/pages/Invoices/Invoice.jsx";
+import InvoicePrintPreviewPage from "../domains/admin/pages/Invoices/InvoicePrintPreview.jsx";
 import Analytics from "../domains/admin/pages/AnalyticsPage/AnalyticsPage.jsx";
 import ActiveWorkers from "../domains/admin/pages/workers/ActiveWorkers/ActiveWorkers.jsx";
 import WorkerAutoFill from "../domains/admin/pages/workers/WorkerAutoFill/WorkerAutoFill.jsx";
@@ -104,6 +105,8 @@ const AdminRoutes = () => {
             </>
           }
         />
+        {/* Invoice print preview + print options toolkit */}
+        <Route path="invoices/:id/print-invoice" element={<InvoicePrintPreviewPage />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/employees" element={<ActiveWorkers />} />
         <Route path="/employees/add" element={<WorkerForm />} />

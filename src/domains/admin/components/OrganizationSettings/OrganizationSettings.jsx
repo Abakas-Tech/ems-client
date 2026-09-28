@@ -12,16 +12,8 @@ const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024;
 
 const IMAGE_KINDS = [
-  {
-    kind: "stamp",
-    label: "Organization Stamp",
-    hint: "Attached to letters and invoices by an Admin. A PNG with a transparent background looks best.",
-  },
-  {
-    kind: "signature",
-    label: "Organization Signature",
-    hint: "Attached to letters and invoices by an Admin. A PNG with a transparent background looks best.",
-  },
+  { kind: "stamp", label: "Stamp" },
+  { kind: "signature", label: "Signature" },
 ];
 
 // Checkerboard so transparent PNGs are visible in the preview
@@ -33,59 +25,48 @@ const PREVIEW_BG = {
   backgroundPosition: "0 0,0 8px,8px -8px,-8px 0",
 };
 
-function OrganizationImageCard({ kind, label, hint, url, onChanged }) {
+// One image: preview, Upload / Replace (picking a file uploads it right
+// away) and Delete.
+function OrganizationImageCard({ kind, label, url, onChanged }) {
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
 
   const inputRef = useRef(null);
-  const [file, setFile] = useState(null);
   const [localPreview, setLocalPreview] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!file) {
-      setLocalPreview(null);
-      return undefined;
+  // Frees the object URL of the image being uploaded
+  useEffect(
+    () => () => localPreview && URL.revokeObjectURL(localPreview),
+    [localPreview],
+  );
+
+  const pickFile = () => inputRef.current?.click();
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    if (!ACCEPTED_TYPES.includes(file.type)) {
+      return addMessage(false, "Only PNG, JPEG and WEBP images are allowed");
     }
-    const objectUrl = URL.createObjectURL(file);
-    setLocalPreview(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [file]);
-
-  const resetInput = () => {
-    setFile(null);
-    if (inputRef.current) inputRef.current.value = "";
-  };
-
-  const handleFileChange = (e) => {
-    const picked = e.target.files?.[0];
-    if (!picked) return resetInput();
-
-    if (!ACCEPTED_TYPES.includes(picked.type)) {
-      addMessage(false, "Only PNG, JPEG and WEBP images are allowed");
-      return resetInput();
+    if (file.size > MAX_SIZE) {
+      return addMessage(false, "Image must be less than 5MB");
     }
-    if (picked.size > MAX_SIZE) {
-      addMessage(false, "Image must be less than 5MB");
-      return resetInput();
-    }
-    setFile(picked);
-  };
 
-  const handleUpload = async () => {
-    if (!file) return addMessage(false, `Choose a ${kind} image first`);
-
+    setLocalPreview(URL.createObjectURL(file));
     setSaving(true);
     showLoader();
     try {
       const response = await uploadOrganizationImage(kind, file);
       addMessage(response?.success, response?.message);
-      resetInput();
       onChanged(response?.data);
     } catch (err) {
       addMessage(false, err.message);
     } finally {
+      setLocalPreview(null);
       setSaving(false);
       hideLoader();
     }
@@ -115,78 +96,66 @@ function OrganizationImageCard({ kind, label, hint, url, onChanged }) {
   const previewSrc = localPreview || url;
 
   return (
-    <div className="col-md-6">
-      <div className="border rounded-3 p-3 h-100 d-flex flex-column">
-        <div className="d-flex justify-content-between align-items-start mb-2">
-          <div>
-            <h6 className="fw-bold mb-1">{label}</h6>
-            <small className="text-muted">{hint}</small>
-          </div>
-          {url && !localPreview && (
-            <span className="badge bg-success-subtle text-success">
-              Uploaded
-            </span>
-          )}
-          {localPreview && (
-            <span className="badge bg-warning-subtle text-warning">
-              Not saved
-            </span>
-          )}
-        </div>
+    <div className="col-sm-6">
+      <div className="border rounded-3 p-3 h-100">
+        <h6 className="fw-bold mb-2">{label}</h6>
 
-        <div
-          className="rounded-3 border d-flex align-items-center justify-content-center my-2"
-          style={{ ...PREVIEW_BG, height: 170 }}
+        <button
+          type="button"
+          className="w-100 rounded-3 border d-flex align-items-center justify-content-center p-0"
+          style={{ ...PREVIEW_BG, height: 160 }}
+          onClick={pickFile}
+          disabled={saving}
+          title={url ? `Replace ${kind}` : `Upload ${kind}`}
         >
           {previewSrc ? (
             <img
               src={previewSrc}
               alt={label}
-              style={{ maxHeight: 150, maxWidth: "90%", objectFit: "contain" }}
+              style={{
+                maxHeight: 140,
+                maxWidth: "90%",
+                objectFit: "contain",
+                opacity: saving ? 0.5 : 1,
+              }}
             />
           ) : (
-            <span className="text-muted small">No {kind} uploaded</span>
+            <span className="text-muted small">
+              <i className="bi bi-image d-block fs-3 mb-1"></i>
+              No {kind} yet
+            </span>
           )}
-        </div>
+        </button>
 
         <input
           ref={inputRef}
           type="file"
-          className="form-control mt-2"
+          className="d-none"
           accept={ACCEPTED_TYPES.join(",")}
           onChange={handleFileChange}
-          aria-label={`${label} file`}
+          aria-label={`${label} image`}
         />
 
-        <div className="d-flex flex-wrap gap-2 mt-3">
+        <div className="d-flex gap-2 mt-3">
           <button
             type="button"
-            className="btn btn-main btn-sm px-3"
-            onClick={handleUpload}
-            disabled={!file || saving}
+            className="btn btn-main btn-sm flex-fill"
+            onClick={pickFile}
+            disabled={saving}
           >
-            <i className="bi bi-cloud-arrow-up me-1"></i>
-            {url ? `Replace ${kind}` : `Upload ${kind}`}
+            <i className="bi bi-upload me-1"></i>
+            {saving ? "Uploading…" : url ? "Replace" : "Upload"}
           </button>
-          {localPreview && (
-            <button
-              type="button"
-              className="btn btn-outline-secondary btn-sm px-3"
-              onClick={resetInput}
-              disabled={saving}
-            >
-              Cancel
-            </button>
-          )}
           {url && (
             <button
               type="button"
-              className="btn btn-outline-danger btn-sm px-3"
+              className="btn btn-outline-danger btn-sm"
               onClick={handleDelete}
               disabled={saving}
+              title={`Delete ${kind}`}
+              aria-label={`Delete ${kind}`}
             >
-              <i className="bi bi-trash me-1"></i>
-              Delete {kind}
+              <i className="bi bi-trash"></i>
             </button>
           )}
         </div>
@@ -214,11 +183,7 @@ const OrganizationSettings = () => {
   return (
     <div className="dashboard-wraper mt-4">
       <div className="form-submit">
-        <h3 className="fw-bold text-dark mb-2">Organization Settings</h3>
-        <p className="text-muted">
-          Upload the organization stamp and signature once. Admins can then
-          attach them to letters and invoices without uploading again.
-        </p>
+        <h3 className="fw-bold text-dark mb-3">Organization Settings</h3>
 
         {settings === null ? (
           <p className="text-muted small mb-0">Loading…</p>
