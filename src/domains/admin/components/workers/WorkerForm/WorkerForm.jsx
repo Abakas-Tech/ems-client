@@ -38,6 +38,7 @@ import {
   isValidPhone,
   PHONE_ERROR_MESSAGE,
 } from "../../../../../utils/phone.utils";
+import { generatePhoto3x4FromStanding } from "../../../../../utils/faceCrop.utils";
 
 // worker_documents.description is VARCHAR(255) in the database schema.
 const DOCUMENT_DESCRIPTION_MAX_LENGTH = 255;
@@ -605,6 +606,19 @@ function WorkerForm() {
   const [existingPhoto3x4Url, setExistingPhoto3x4Url] = useState(null);
   const [existingPhotoStandingUrl, setExistingPhotoStandingUrl] =
     useState(null);
+
+  // Photo Standing → automatic Photo 3x4. Where the current Photo 3x4 came
+  // from: "auto" (cropped in the browser from the Standing Photo), "manual"
+  // (picked by the user — never overwritten by a new crop), "kept" (edit
+  // mode: the user chose to keep the saved photo) or null (none chosen).
+  const [photo3x4Source, setPhoto3x4Source] = useState(null);
+  const photo3x4SourceRef = useRef(null);
+  const [photo3x4Processing, setPhoto3x4Processing] = useState(false);
+  const [photo3x4Notice, setPhoto3x4Notice] = useState(null); // { type, text }
+  const [photo3x4PreviewUrl, setPhoto3x4PreviewUrl] = useState(null);
+  const photo3x4InputRef = useRef(null);
+  // Only the latest crop request may apply its result
+  const photo3x4CropRequestRef = useRef(0);
   const [existingPassportScanUrl, setExistingPassportScanUrl] = useState(null);
 
   // Documents section — "existing" documents are only fetched in edit mode
@@ -1393,13 +1407,138 @@ function WorkerForm() {
     );
   };
 
+  const updatePhoto3x4Source = (source) => {
+    photo3x4SourceRef.current = source;
+    setPhoto3x4Source(source);
+  };
+
+  // Shows the generated crop's file name in the Photo 3x4 input as well
+  // (display only; the file itself lives in state like a picked file).
+  const setPhoto3x4InputFile = (file) => {
+    const input = photo3x4InputRef.current;
+    if (!input) return;
+    try {
+      if (file) {
+        const transfer = new DataTransfer();
+        transfer.items.add(file);
+        input.files = transfer.files;
+      } else {
+        input.value = "";
+      }
+    } catch {
+      /* older browsers: the status line below still shows the photo */
+    }
+  };
+
+  // Standing Photo → detect the face in the browser → 3:4 crop → Photo 3x4.
+  // A failure never blocks the form: the Standing Photo is kept and the
+  // user is told to upload a Photo 3x4 themselves.
+  const autoGeneratePhoto3x4 = async (standingFile) => {
+    const requestId = ++photo3x4CropRequestRef.current;
+    setPhoto3x4Processing(true);
+    setPhoto3x4Notice(null);
+
+    const stillWanted = () =>
+      requestId === photo3x4CropRequestRef.current &&
+      photo3x4SourceRef.current !== "manual" &&
+      photo3x4SourceRef.current !== "kept";
+
+    try {
+      const result = await generatePhoto3x4FromStanding(standingFile);
+      if (!stillWanted()) return;
+
+      if (result.status === "ok") {
+        setPhoto3x4(result.file);
+        updatePhoto3x4Source("auto");
+        setPhoto3x4InputFile(result.file);
+        setPhoto3x4Notice({
+          type: "success",
+          text: "Generated automatically from the Standing Photo.",
+        });
+      } else if (result.status === "multiple_faces") {
+        setPhoto3x4Notice({
+          type: "warning",
+          text: "More than one person was found in the Standing Photo, so the 3x4 photo was not generated. Use a photo of one person, or upload the Photo 3x4 manually.",
+        });
+      } else {
+        setPhoto3x4Notice({
+          type: "warning",
+          text: "No face was found in the Standing Photo, so the 3x4 photo could not be generated automatically. Please upload the Photo 3x4 manually.",
+        });
+      }
+    } catch (error) {
+      console.error("Automatic 3x4 photo failed:", error);
+      if (!stillWanted()) return;
+      setPhoto3x4Notice({
+        type: "warning",
+        text: "The 3x4 photo could not be generated automatically. Please upload the Photo 3x4 manually.",
+      });
+    } finally {
+      if (requestId === photo3x4CropRequestRef.current) {
+        setPhoto3x4Processing(false);
+      }
+    }
+  };
+
+  // Manual pick — always wins over the automatic crop.
   const handlePhoto3x4Change = (e) => {
-    if (e.target.files?.[0]) setPhoto3x4(e.target.files[0]);
+    if (e.target.files?.[0]) {
+      setPhoto3x4(e.target.files[0]);
+      updatePhoto3x4Source("manual");
+      photo3x4CropRequestRef.current += 1; // drop any crop still running
+      setPhoto3x4Processing(false);
+      setPhoto3x4Notice(null);
+    }
   };
 
   const handlePhotoStandingChange = (e) => {
-    if (e.target.files?.[0]) setPhotoStanding(e.target.files[0]);
+    if (e.target.files?.[0]) {
+      const file = e.target.files[0];
+      setPhotoStanding(file);
+
+      const source = photo3x4SourceRef.current;
+      if (source === "manual" || source === "kept") return;
+
+      // The previous automatic crop belongs to the old Standing Photo
+      if (source === "auto") {
+        setPhoto3x4(null);
+        updatePhoto3x4Source(null);
+        setPhoto3x4InputFile(null);
+      }
+      if (file.type?.startsWith("image/")) autoGeneratePhoto3x4(file);
+    }
   };
+
+  // Removing the manually picked Photo 3x4 goes back to the automatic crop
+  // of the current Standing Photo (in edit mode, with no new Standing Photo
+  // picked, the saved Photo 3x4 simply stays as it is).
+  const handleRemoveManualPhoto3x4 = () => {
+    setPhoto3x4(null);
+    updatePhoto3x4Source(null);
+    setPhoto3x4InputFile(null);
+    setPhoto3x4Notice(null);
+    if (photoStanding) autoGeneratePhoto3x4(photoStanding);
+  };
+
+  // Edit mode: keep the saved Photo 3x4 instead of the automatic crop.
+  const handleKeepSavedPhoto3x4 = () => {
+    photo3x4CropRequestRef.current += 1;
+    setPhoto3x4(null);
+    updatePhoto3x4Source("kept");
+    setPhoto3x4InputFile(null);
+    setPhoto3x4Processing(false);
+    setPhoto3x4Notice(null);
+  };
+
+  useEffect(() => {
+    if (!photo3x4) {
+      setPhoto3x4PreviewUrl(null);
+      return undefined;
+    }
+    const url = URL.createObjectURL(photo3x4);
+    setPhoto3x4PreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photo3x4]);
 
   const handlePassportScanChange = (e) => {
     if (e.target.files?.[0]) setPassportScan(e.target.files[0]);
@@ -2434,6 +2573,7 @@ function WorkerForm() {
       <div className="form-group col-md-6 mb-3">
         {renderLabel("Photo 3x4", !isEditMode)}
         <input
+          ref={photo3x4InputRef}
           type="file"
           name="photo_3x4_url"
           accept="image/*"
@@ -2441,6 +2581,60 @@ function WorkerForm() {
           onChange={handlePhoto3x4Change}
           required={!isEditMode}
         />
+        {photo3x4Processing && (
+          <small className="text-muted d-block mt-1">
+            <span
+              className="spinner-border spinner-border-sm me-1"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            Generating the 3x4 photo from the Standing Photo…
+          </small>
+        )}
+        {photo3x4 && photo3x4PreviewUrl && (
+          <div className="d-flex align-items-center gap-2 mt-1">
+            <img
+              src={photo3x4PreviewUrl}
+              alt="Photo 3x4"
+              className="border rounded"
+              style={{ width: 45, height: 60, objectFit: "cover" }}
+            />
+            <small className="text-muted">
+              {photo3x4Source === "auto"
+                ? "Automatic crop from the Standing Photo"
+                : "Uploaded manually"}
+              {photo3x4Source === "manual" && (
+                <>
+                  {" · "}
+                  <button
+                    type="button"
+                    className="btn btn-link btn-sm p-0 align-baseline"
+                    onClick={handleRemoveManualPhoto3x4}
+                  >
+                    Remove
+                  </button>
+                </>
+              )}
+              {photo3x4Source === "auto" && isEditMode && existingPhoto3x4Url && (
+                <>
+                  {" · "}
+                  <button
+                    type="button"
+                    className="btn btn-link btn-sm p-0 align-baseline"
+                    onClick={handleKeepSavedPhoto3x4}
+                  >
+                    Keep current photo
+                  </button>
+                </>
+              )}
+            </small>
+          </div>
+        )}
+        {photo3x4Notice && photo3x4Notice.type !== "success" && (
+          <small className={`d-block mt-1 text-${photo3x4Notice.type}`}>
+            {photo3x4Notice.text}
+          </small>
+        )}
         {isEditMode && existingPhoto3x4Url && !photo3x4 && (
           <small className="text-muted">
             Current photo:{" "}
@@ -3486,6 +3680,11 @@ function WorkerForm() {
                 setExistingPhotoStandingUrl(null);
                 setPhoto3x4(null);
                 setPhotoStanding(null);
+                photo3x4CropRequestRef.current += 1;
+                updatePhoto3x4Source(null);
+                setPhoto3x4InputFile(null);
+                setPhoto3x4Processing(false);
+                setPhoto3x4Notice(null);
                 break;
               case "passport":
                 setPassport(defaultPassport());
