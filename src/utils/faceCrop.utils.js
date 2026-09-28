@@ -13,18 +13,21 @@ import noSimdLoaderPath from "@mediapipe/tasks-vision/vision_wasm_nosimd_interna
 import noSimdBinaryPath from "@mediapipe/tasks-vision/vision_wasm_nosimd_internal.wasm?url";
 import faceModelPath from "../assets/models/blaze_face_full_range.tflite?url";
 
-// Output: 600×800 JPEG (3:4 portrait).
-const OUTPUT_WIDTH = 600;
-const OUTPUT_HEIGHT = 800;
-const OUTPUT_QUALITY = 0.92;
+// Output: 3:4 portrait at the Standing Photo's own resolution — the crop is
+// copied pixel for pixel (never enlarged, which is what made it blurry),
+// in the same format as the original (PNG stays PNG, anything else is a
+// high-quality JPEG). Only very large crops are scaled down, to this
+// height, to keep the upload size reasonable.
+const MAX_OUTPUT_HEIGHT = 2400;
+const JPEG_QUALITY = 0.95;
 
-// Framing. The detector's box covers roughly brow-to-chin, so a box
-// height of ~35% of the photo gives a head (with hair) of a bit under half
-// the photo, with the shoulders/upper chest below — a passport-style
-// framing that also leaves room for hair on full-length photos. The face
-// center sits a little above the middle of the photo.
-const FACE_HEIGHT_RATIO = 0.35;
-const FACE_CENTER_Y = 0.45;
+// Framing with padding around the person. The detector's box covers
+// roughly brow-to-chin; at ~22% of the photo height the head (with hair)
+// is about a third of the photo, with space above the head and the
+// shoulders and upper body below — not a tight close-up of the face. The
+// face center sits at 32% from the top.
+const FACE_HEIGHT_RATIO = 0.22;
+const FACE_CENTER_Y = 0.32;
 
 const MIN_CONFIDENCE = 0.5;
 
@@ -134,15 +137,15 @@ const cropAroundFace = (box, imageWidth, imageHeight) => {
   };
 };
 
-const canvasToFile = (canvas, name) =>
+const canvasToFile = (canvas, name, type) =>
   new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) =>
         blob
-          ? resolve(new File([blob], name, { type: "image/jpeg" }))
+          ? resolve(new File([blob], name, { type }))
           : reject(new Error("The 3x4 photo could not be created")),
-      "image/jpeg",
-      OUTPUT_QUALITY,
+      type,
+      type === "image/jpeg" ? JPEG_QUALITY : undefined,
     );
   });
 
@@ -169,27 +172,43 @@ export const generatePhoto3x4FromStanding = async (standingFile) => {
 
   const crop = cropAroundFace(faces[0], img.naturalWidth, img.naturalHeight);
 
+  // Whole pixels, exact 3:4, never larger than the crop itself (no
+  // enlarging), so the proportions and sharpness match the original.
+  const cropX = Math.floor(crop.x);
+  const cropY = Math.floor(crop.y);
+  const cropWidth = Math.floor(crop.width / 3) * 3;
+  const cropHeight = (cropWidth / 3) * 4;
+  const scale = Math.min(1, MAX_OUTPUT_HEIGHT / cropHeight);
+  const outWidth = Math.floor((cropWidth * scale) / 3) * 3;
+  const outHeight = (outWidth / 3) * 4;
+
   const canvas = document.createElement("canvas");
-  canvas.width = OUTPUT_WIDTH;
-  canvas.height = OUTPUT_HEIGHT;
+  canvas.width = outWidth;
+  canvas.height = outHeight;
   const ctx = canvas.getContext("2d");
-  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingEnabled = scale < 1;
   ctx.imageSmoothingQuality = "high";
   ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, OUTPUT_WIDTH, OUTPUT_HEIGHT);
+  ctx.fillRect(0, 0, outWidth, outHeight);
   ctx.drawImage(
     img,
-    crop.x,
-    crop.y,
-    crop.width,
-    crop.height,
+    cropX,
+    cropY,
+    cropWidth,
+    cropHeight,
     0,
     0,
-    OUTPUT_WIDTH,
-    OUTPUT_HEIGHT,
+    outWidth,
+    outHeight,
   );
 
+  const isPng = standingFile.type === "image/png";
+  const type = isPng ? "image/png" : "image/jpeg";
   const baseName = (standingFile.name || "photo").replace(/\.[^.]+$/, "");
-  const file = await canvasToFile(canvas, `${baseName}_3x4.jpg`);
+  const file = await canvasToFile(
+    canvas,
+    `${baseName}_3x4.${isPng ? "png" : "jpg"}`,
+    type,
+  );
   return { status: "ok", file };
 };
