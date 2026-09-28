@@ -608,6 +608,39 @@ const FinancePage = () => {
                     {formatAmount(periodSplit.partner_splitting_amount)} partner
                     splitting
                   </p>
+
+                  {/* Split metadata — who split it and when, and the last
+                      change (same values as the Last saved line in the
+                      split modal). */}
+                  <div className="d-flex flex-column flex-md-row flex-wrap gap-1 gap-md-4 text-muted small mt-3">
+                    <span>
+                      Split by{" "}
+                      <span className="fw-semibold text-dark">
+                        {periodSplit.created_by_name || "—"}
+                      </span>
+                    </span>
+                    <span>
+                      Split at{" "}
+                      <span className="fw-semibold text-dark">
+                        {formatDate(periodSplit.created_at, true)}
+                      </span>
+                    </span>
+                    <span>
+                      Last updated{" "}
+                      <span className="fw-semibold text-dark">
+                        {formatDate(periodSplit.updated_at, true)}
+                      </span>
+                      {periodSplit.updated_by_name && (
+                        <>
+                          {" "}
+                          by{" "}
+                          <span className="fw-semibold text-dark">
+                            {periodSplit.updated_by_name}
+                          </span>
+                        </>
+                      )}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
