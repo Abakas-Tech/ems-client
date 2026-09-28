@@ -5,6 +5,7 @@ import getLocation from "../../api/location.api";
 import getSocialMedias from "../../api/socialMedia.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
+import { isValidPhone, PHONE_ERROR_MESSAGE } from "../../../../utils/phone.utils";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
 const Contact = () => {
@@ -96,8 +97,8 @@ const Contact = () => {
       addMessage(false, "Phone required");
       return false;
     }
-    if (formData.phone && formData.phone.length > 20) {
-      addMessage(false, "Phone must be less than 20 characters");
+    if (formData.phone && !isValidPhone(formData.phone)) {
+      addMessage(false, PHONE_ERROR_MESSAGE);
       return false;
     }
     return true;

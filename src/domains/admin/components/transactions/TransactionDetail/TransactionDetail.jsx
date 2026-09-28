@@ -6,6 +6,11 @@ import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import Badge from "../../../../../shared/components/Badge/Badge";
 import { REPORT_META } from "../../../../../shared/components/Report/Data";
+import {
+  getCategoryLabel,
+  isIncomeCategory,
+  sumByBucket,
+} from "../../../../../config/financeCategory.config";
 
 const ROLE_MAP = {
   1: "Admin",
@@ -49,22 +54,18 @@ const getPeriodLabel = (period) =>
 // commission and VAT too, not just the raw income vs. expense difference.
 const computeSummaryTotals = (period, transactions) => {
   const list = transactions || [];
-  const computedIncome = list
-    .filter((t) => t.category === "income")
-    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
-  const computedExpense = list
-    .filter((t) => t.category === "expense")
-    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
-
+  // Buckets from financeCategory.config.js: income = income, office
+  // income, partner commission; expenses = expense, salary, office and
+  // ticket expenses; commission = agent commission; vat = VAT.
   // FIXED — an open period has no stored commission/VAT totals yet, so
   // these used to come back null and were silently left out of the net.
   // They now fall back to the transaction set like income/expense do.
-  const computedCommission = list
-    .filter((t) => t.category === "commission")
-    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
-  const computedVat = list
-    .filter((t) => t.category === "vat")
-    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+  const {
+    income: computedIncome,
+    expenses: computedExpense,
+    commission: computedCommission,
+    vat: computedVat,
+  } = sumByBucket(list);
 
   const commission =
     period.total_commission ?? period.commission ?? computedCommission;
@@ -205,7 +206,7 @@ const TransactionDetail = ({
   if (!isSummaryMode && !transaction) return null;
 
   // ── Transaction-mode derived values ──
-  const isIncome = !isSummaryMode && transaction.category === "income";
+  const isIncome = !isSummaryMode && isIncomeCategory(transaction.category);
   const isCompany = !isSummaryMode && !transaction.user_id;
   const isPeriodClosed =
     !isSummaryMode && transaction.period_status === "closed";
@@ -637,7 +638,7 @@ const TransactionDetail = ({
               </div>
               {totals.commission !== null && (
                 <div className="stat-item">
-                  <span className="stat-label">Total Commission</span>
+                  <span className="stat-label">Agent Commission</span>
                   <span
                     className="stat-value"
                     style={{ color: deductionColor(totals.commission) }}
@@ -721,7 +722,7 @@ const TransactionDetail = ({
               <div>
                 <div className="d-flex gap-2 mb-3">
                   <Badge
-                    content={transaction.category?.toUpperCase()}
+                    content={getCategoryLabel(transaction.category).toUpperCase()}
                     color={isIncome ? "green" : "red"}
                   />
                   {transaction.period_title && (

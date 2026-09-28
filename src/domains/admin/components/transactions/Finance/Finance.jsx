@@ -10,6 +10,7 @@ import {
   fetchPeriodTransactions,
   closePeriod,
   deletePeriod,
+  deletePeriodSplit,
 } from "../../../api/finance.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -22,7 +23,12 @@ import FinanceReportSummary from "../FinancialReport/FinancialReport.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import useProfile from "../../../../../context/Profile/useProfile.jsx";
 import ClosePeriodModal from "../../../../../shared/components/ClosePeriodModal/ClosePeriodModal.jsx";
+import SplitPeriodModal from "../../../../../shared/components/SplitPeriodModal/SplitPeriodModal.jsx";
 import { generatePeriodReport } from "../../../../../shared/components/Report/PeriodReport.jsx";
+import {
+  getCategoryLabel,
+  isIncomeCategory,
+} from "../../../../../config/financeCategory.config.js";
 
 const formatDate = (value, withTime = false) => {
   if (!value) return "—";
@@ -72,6 +78,10 @@ const FinancePage = () => {
   // closing one only needs a closing note, collected via the shared
   // CreateModal instead of a bare inline form.
   const [showCloseModal, setShowCloseModal] = useState(false);
+
+  // Closed period whose final summary split (Deposit / Government /
+  // Partner Splitting) is open in SplitPeriodModal; null = closed.
+  const [splitPeriod, setSplitPeriod] = useState(null);
 
   // Data backing the on-screen period summary (view === "summary") — the
   // full transaction set for the period, fetched on demand so the totals
@@ -260,6 +270,29 @@ const FinancePage = () => {
       {
         title: `Delete ${period.label}? This permanently removes the period AND every transaction recorded in it. This cannot be undone.`,
         confirmText: "Delete Period",
+      },
+    );
+  };
+
+  // Split modal's Delete: close the split modal, then confirm through the
+  // same openModal flow used for every other delete on this page.
+  const handleDeleteSplit = (period) => {
+    setSplitPeriod(null);
+    openModal(
+      async () => {
+        showLoader();
+        try {
+          const res = await deletePeriodSplit(period.id);
+          addMessage(true, res?.message || "Period split deleted");
+        } catch (err) {
+          addMessage(false, err.message || "Failed to delete period split");
+        } finally {
+          hideLoader();
+        }
+      },
+      {
+        title: `Delete the final summary split for ${period.label}?`,
+        confirmText: "Delete",
       },
     );
   };
@@ -533,8 +566,8 @@ const FinancePage = () => {
                 header: "Category",
                 render: (row) => (
                   <Badge
-                    content={row.category.toUpperCase()}
-                    color={row.category === "income" ? "green" : "red"}
+                    content={getCategoryLabel(row.category).toUpperCase()}
+                    color={isIncomeCategory(row.category) ? "green" : "red"}
                   />
                 ),
               },
@@ -649,6 +682,15 @@ const FinancePage = () => {
           periodTitle={currentPeriod?.title}
         />
 
+        <SplitPeriodModal
+          show={!!splitPeriod}
+          period={splitPeriod}
+          canEdit={isAdmin}
+          onClose={() => setSplitPeriod(null)}
+          onDeleteRequest={handleDeleteSplit}
+          addMessage={addMessage}
+        />
+
         <ListingComponent
           data={periodsListData}
           columns={[
@@ -708,6 +750,11 @@ const FinancePage = () => {
             {
               type: "view",
               onClick: (row) => loadPeriodTransactions(row, 1),
+            },
+            {
+              type: "split",
+              onClick: (row) => setSplitPeriod(row),
+              showOn: (row) => row.status === "closed",
             },
             ...(isAdmin
               ? [
@@ -800,8 +847,8 @@ const FinancePage = () => {
             render: (row) => (
               <>
                 <Badge
-                  content={row.category.toUpperCase()}
-                  color={row.category === "income" ? "green" : "red"}
+                  content={getCategoryLabel(row.category).toUpperCase()}
+                  color={isIncomeCategory(row.category) ? "green" : "red"}
                 />
               </>
             ),

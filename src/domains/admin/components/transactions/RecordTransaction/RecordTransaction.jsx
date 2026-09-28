@@ -5,6 +5,9 @@ import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import Badge from "../../../../../shared/components/Badge/Badge";
+import FINANCE_CATEGORIES, {
+  getCategoryLabel,
+} from "../../../../../config/financeCategory.config";
 
 const RecordTransaction = ({
   isEditMode = false,
@@ -169,7 +172,7 @@ const RecordTransaction = ({
                 <input
                   type="text"
                   className="form-control text-capitalize"
-                  value={formData.category}
+                  value={getCategoryLabel(formData.category)}
                   disabled
                 />
               ) : (
@@ -181,10 +184,11 @@ const RecordTransaction = ({
                   required
                 >
                   <option value="">Select Category</option>
-                  <option value="income">Income</option>
-                  <option value="expense">Expense</option>
-                  <option value="commission">Commission</option>
-                  <option value="vat">VAT</option>
+                  {FINANCE_CATEGORIES.map((category) => (
+                    <option key={category.value} value={category.value}>
+                      {category.label}
+                    </option>
+                  ))}
                 </select>
               )}
             </div>

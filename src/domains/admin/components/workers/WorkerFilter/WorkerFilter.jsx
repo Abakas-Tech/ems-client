@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { getWorkerStatuses } from "../../../api/meta.api";
 import { getUsersLookup } from "../../../api/user.api";
+import { getAgents } from "../../../api/workerAgent.api";
 import useloader from "../../../../../context/Loader/useLoader";
 
 import styles from "./WorkerFilter.module.css";
 import useProfile from "../../../../../context/Profile/useProfile";
 
-const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
+// showAgentFilter: the Agent dropdown needs the list endpoint's agent_id
+// support (GET /workers); pages backed by another endpoint turn it off.
+const WorkerFilter = ({
+  filters,
+  onFilterChange,
+  onClear,
+  showAgentFilter = true,
+}) => {
   const { showLoader, hideLoader } = useloader();
   const { profile } = useProfile();
   const role = profile?.role_id;
@@ -14,6 +22,7 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
 
   const [statuses, setStatuses] = useState([]);
   const [partners, setPartners] = useState([]);
+  const [agents, setAgents] = useState([]);
 
   useEffect(() => {
     let mounted = true;
@@ -21,19 +30,26 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
     const fetchMeta = async () => {
       showLoader();
       try {
-        const [statusResponse, partnerResponse] = await Promise.all([
-          getWorkerStatuses(),
-          !isPartner ? getUsersLookup({ role_id: 3 }) : Promise.resolve(null),
-        ]);
+        const [statusResponse, partnerResponse, agentResponse] =
+          await Promise.all([
+            getWorkerStatuses(),
+            !isPartner ? getUsersLookup({ role_id: 3 }) : Promise.resolve(null),
+            // Same full agent list the Worker Form's Agent dropdown uses.
+            !isPartner && showAgentFilter
+              ? getAgents({ page: 1, limit: 1000 })
+              : Promise.resolve(null),
+          ]);
 
         if (!mounted) return;
 
         setStatuses(statusResponse?.data || []);
         setPartners(partnerResponse?.data || []);
+        setAgents(agentResponse?.data || []);
       } catch {
         console.error("Failed to fetch employee statuses or partners:");
         setStatuses([]);
         setPartners([]);
+        setAgents([]);
       } finally {
         hideLoader();
       }
@@ -62,7 +78,7 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
               separate input for each is redundant. Widened this column
               and updated the placeholder to reflect the wider match. */}
           <div
-            className={` ${isPartner ? "col-lg-5 " : "col-12 col-sm-6 col-lg-4"}`}
+            className={` ${isPartner ? "col-lg-5 " : `col-12 col-sm-6 ${showAgentFilter ? "col-lg-3" : "col-lg-4"}`}`}
           >
             <input
               type="text"
@@ -114,6 +130,26 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
             </div>
           )}
 
+          {/* Agent — only workers assigned to the selected agent. Sent as
+              agent_id alongside search/status/partner and pagination. */}
+          {!isPartner && showAgentFilter && (
+            <div className="col-6 col-sm-3 col-lg-2">
+              <select
+                name="agent_id"
+                className={`form-select ${styles.input}`}
+                value={filters.agent_id || ""}
+                onChange={handleChange}
+              >
+                <option value="">All Agents</option>
+                {agents.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.agent_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Active / Inactive — doubles as the Active/Archived toggle now
               that the archived page has been folded into this list. */}
           {!isPartner && (
@@ -132,7 +168,7 @@ const WorkerFilter = ({ filters, onFilterChange, onClear }) => {
 
           {/* Clear */}
           <div
-            className={` ${isPartner ? "col-lg-3" : "col-12 col-sm-4 col-lg-2"} d-grid`}
+            className={` ${isPartner ? "col-lg-3" : showAgentFilter ? "col-12 col-sm-3 col-lg-1" : "col-12 col-sm-4 col-lg-2"} d-grid`}
           >
             <button
               className={`btn btn-outline-secondary ${styles["clear-btn"]}`}

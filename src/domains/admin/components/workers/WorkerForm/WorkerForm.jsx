@@ -34,6 +34,10 @@ import ActionButtons from "../../../../../shared/components/ActionButtons/Action
 import Badge from "../../../../../shared/components/Badge/Badge";
 import RoleButton from "../../../../../shared/components/RoleButton/RoleButton";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
+import {
+  isValidPhone,
+  PHONE_ERROR_MESSAGE,
+} from "../../../../../utils/phone.utils";
 
 // worker_documents.description is VARCHAR(255) in the database schema.
 const DOCUMENT_DESCRIPTION_MAX_LENGTH = 255;
@@ -159,7 +163,7 @@ const NAV_ITEMS = SECTIONS.reduce((acc, section) => {
 
 // Hardcoded option lists for Languages and Skills — these are fixed,
 // backend-defined enums and are never fetched from the server (per spec).
-const LANGUAGE_OPTIONS = ["English", "Amharic", "Arabic"];
+const LANGUAGE_OPTIONS = ["English", "Amharic", "Arabic", "Afaan Oromo"];
 
 const SKILL_OPTIONS = [
   "baby sitting",
@@ -272,7 +276,7 @@ const defaultPersonal = (isCreate = false) => ({
   national_id_number: "",
   fingerprint_number: "",
   labour_id: "",
-  monthly_salary: isCreate ? 1500 : "",
+  monthly_salary: isCreate ? 1000 : "",
 });
 
 const defaultPassport = () => ({
@@ -312,6 +316,8 @@ const defaultGuarantor = () => ({
 const defaultAgent = () => ({
   agent_name: "",
   agent_phone: "",
+  // Worker-specific code (required) — shown as-is as the CV code.
+  agent_code: "",
 });
 
 const defaultVisa = () => ({
@@ -346,8 +352,6 @@ const isOnlyAlphabetsAndSpaces = (value) => {
 };
 
 const educationRegex = /^[A-Za-z\s.]+$/;
-const guarantorPhoneRegex = /^(?:\+251[79]\d{8}|09\d{8})$/;
-const workerPhoneRegex = /^(?:\+251[79]\d{8}|09\d{8}|07\d{8})$/;
 const allowedImageTypes = ["image/jpeg", "image/png", "image/jpg"];
 
 // ---------------------------------------------------------------------
@@ -824,6 +828,7 @@ function WorkerForm() {
           setAgent({
             agent_name: res.data.agent_name || "",
             agent_phone: res.data.agent_phone || "",
+            agent_code: res.data.agent_code || "",
           });
           setAgentExists(true);
           setSelectedAgentId(
@@ -1268,11 +1273,19 @@ function WorkerForm() {
       return;
     }
 
+    // The code belongs to this worker's assignment, not to the agent, so
+    // whatever was already typed is kept when switching agents.
     const found = allAgents.find((a) => String(a.id) === selectedId);
-    setAgent({
+    setAgent((prev) => ({
       agent_name: found?.agent_name || "",
       agent_phone: found?.agent_phone || "",
-    });
+      agent_code: prev.agent_code || "",
+    }));
+  };
+
+  const handleAgentCodeChange = (e) => {
+    const { value } = e.target;
+    setAgent((prev) => ({ ...prev, agent_code: value }));
   };
 
   // Revokes the worker's current agent assignment (edit mode only).
@@ -1581,8 +1594,7 @@ function WorkerForm() {
       basic.full_name.length > 100
     )
       return "Full name is too short";
-    if (!workerPhoneRegex.test(basic.phone_number))
-      return "Enter a valid phone number";
+    if (!isValidPhone(basic.phone_number)) return PHONE_ERROR_MESSAGE;
     if (basic.email && !emailRegex.test(basic.email))
       return "Enter a valid email address";
     return null;
@@ -1803,14 +1815,14 @@ function WorkerForm() {
       return "Name cannot exceed 150 characters";
     if (guarantor.relation && guarantor.relation.length > 200)
       return "Relation cannot exceed 200 characters";
-    if (!guarantorPhoneRegex.test(guarantor.guarantor_phone_number))
-      return "Enter a valid phone number";
+    if (!isValidPhone(guarantor.guarantor_phone_number))
+      return PHONE_ERROR_MESSAGE;
     return null;
   };
 
   // Agent Information isn't covered by the backend Joi worker schema (it
-  // goes through its own /worker-agent endpoint), so this stays a
-  // frontend-only check — unchanged.
+  // goes through its own /worker-agent endpoint, which re-validates the
+  // same rules, including the required agent code).
   const validateAgent = () => {
     if (!sectionsEnabled.agent) return null;
     const name = agent.agent_name?.trim();
@@ -1818,10 +1830,11 @@ function WorkerForm() {
     if (name.length > 150) return "Agent name cannot exceed 150 characters";
     if (!agent.agent_phone || !agent.agent_phone.trim())
       return "Please select an agent";
-    if (!guarantorPhoneRegex.test(agent.agent_phone))
-      return "Selected agent has an invalid phone number";
     if (agent.agent_phone.length > 50)
       return "Agent phone cannot exceed 50 characters";
+    const code = agent.agent_code?.trim();
+    if (!code) return "Agent code is required";
+    if (code.length > 50) return "Agent code cannot exceed 50 characters";
     return null;
   };
 
@@ -2126,6 +2139,7 @@ function WorkerForm() {
         const agentPayload = {
           agent_name: agent.agent_name,
           agent_phone: agent.agent_phone,
+          agent_code: agent.agent_code.trim(),
         };
         try {
           if (agentExists) {
@@ -2792,6 +2806,18 @@ function WorkerForm() {
           ))}
         </select>
       </div>
+      <div className="form-group col-md-6 mb-3">
+        {renderLabel("Code", true)}
+        <input
+          type="text"
+          name="agent_code"
+          className="form-control"
+          value={agent.agent_code}
+          onChange={handleAgentCodeChange}
+          maxLength={50}
+          required
+        />
+      </div>
     </div>
   );
 
@@ -2956,7 +2982,7 @@ function WorkerForm() {
   const renderLanguagesFields = () => (
     <div className="row">
       {LANGUAGE_OPTIONS.map((option) => (
-        <div className="form-group col-md-4 mb-3" key={option}>
+        <div className="form-group col-md-3 mb-3" key={option}>
           <div className="form-check">
             <input
               type="checkbox"
@@ -3915,6 +3941,7 @@ function WorkerForm() {
             <div>
               {previewRow("Agent Name", agent.agent_name)}
               {previewRow("Agent Phone", agent.agent_phone)}
+              {previewRow("Code", agent.agent_code)}
             </div>
           </div>
         </div>

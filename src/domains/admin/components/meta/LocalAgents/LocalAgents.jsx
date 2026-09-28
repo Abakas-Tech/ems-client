@@ -8,6 +8,7 @@ import {
 } from "../../../api/workerAgent.api";
 import useLoader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
+import { isValidPhone, PHONE_ERROR_MESSAGE } from "../../../../../utils/phone.utils";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
@@ -23,8 +24,7 @@ const validateAgentName = (name) => {
 // Validation for agent phone
 const validateAgentPhone = (phone) => {
   if (!phone || !phone.trim()) return "Agent phone is required";
-  if (phone.length < 7) return "Agent phone must be at least 7 characters";
-  if (phone.length > 50) return "Agent phone cannot exceed 50 characters";
+  if (!isValidPhone(phone)) return PHONE_ERROR_MESSAGE;
   return null;
 };
 
