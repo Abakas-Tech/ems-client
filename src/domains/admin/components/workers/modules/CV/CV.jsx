@@ -28,26 +28,45 @@ const formatShortDate = (date) => {
 
 const REFERENCE_PREFIX = "CV";
 
-const buildDownloadFileName = (fullName, code) => {
-  const safeName = (fullName ?? "").trim();
-  const rawCode = (code ?? "").trim();
+// Download filename: "[Agent First Name] Employee Name [Passport Number]",
+// e.g. "[Ahmed] Abebe Kebede [EP1234567]". A bracket is left out when that
+// value is missing (no agent assigned / no passport on file). Characters
+// that aren't allowed in file names are removed.
+const buildDownloadFileName = (agentFirstName, fullName, passportNumber) => {
+  const clean = (value) =>
+    String(value ?? "")
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\\/:*?"<>|\u0000-\u001f]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
 
-  let agentFirstName = "";
-  let phonePart = rawCode;
+  const agent = clean(agentFirstName);
+  const name = clean(fullName) || "CV";
+  const passport = clean(passportNumber);
 
-  if (rawCode.includes("/")) {
-    const [agent, rest] = rawCode.split("/");
-    agentFirstName = agent ?? "";
-    phonePart = rest ?? "";
-  }
+  return [agent && `[${agent}]`, name, passport && `[${passport}]`]
+    .filter(Boolean)
+    .join(" ");
+};
 
-  const hasExperience = phonePart.toUpperCase().startsWith("EXP");
-  const last4 = hasExperience ? phonePart.slice(3) : phonePart;
-  const bracketContent = hasExperience ? `EXP ${last4}` : last4;
-
-  return agentFirstName
-    ? `(${agentFirstName}) ${safeName} (${bracketContent})`
-    : `${safeName} (${bracketContent})`;
+// Opens the native "Save As" dialog (where the browser supports it) with
+// the generated filename pre-filled, so the user chooses where the CV is
+// saved. Must run straight from the click — before the slow PDF rendering —
+// while the browser still counts it as a user action. Resolves to null
+// when the browser has no such dialog; the caller then falls back to a
+// normal download with the same filename. Rejects with an AbortError if
+// the user cancels.
+const pickSaveLocation = async (fileName) => {
+  if (typeof window.showSaveFilePicker !== "function") return null;
+  return window.showSaveFilePicker({
+    suggestedName: fileName,
+    types: [
+      {
+        description: "PDF document",
+        accept: { "application/pdf": [".pdf"] },
+      },
+    ],
+  });
 };
 const subtractDate = (firstDate, secondDate) => {
   const date1 = new Date(firstDate);
@@ -895,6 +914,23 @@ const CVThree = () => {
   const handleDownloadCv = async () => {
     if (!cvRef.current || !worker) return;
 
+    const fileName = `${buildDownloadFileName(
+      worker.agent_first_name,
+      worker.full_name,
+      worker.passport_number,
+    )}.pdf`;
+
+    // Ask where to save first (see pickSaveLocation). Cancelling the dialog
+    // cancels the download; if the dialog can't be shown (unsupported or
+    // blocked), fall back to a normal download.
+    let fileHandle = null;
+    try {
+      fileHandle = await pickSaveLocation(fileName);
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+      console.warn("Save dialog unavailable, downloading instead:", error);
+    }
+
     showLoader();
 
     try {
@@ -922,10 +958,15 @@ const CVThree = () => {
         addCanvasToPages(pdf, passportCanvas, margin);
       }
 
-      const name = buildDownloadFileName(worker.full_name, worker.code);
-
-      // Trigger an actual browser download of the PDF we just built.
-      pdf.save(`${name}.pdf`);
+      if (fileHandle) {
+        // Write the PDF to the location picked in the Save As dialog.
+        const writable = await fileHandle.createWritable();
+        await writable.write(pdf.output("blob"));
+        await writable.close();
+      } else {
+        // Trigger an actual browser download of the PDF we just built.
+        pdf.save(fileName);
+      }
 
       addMessage(true, "CV downloaded!");
     } catch (error) {
@@ -1039,7 +1080,7 @@ const CVThree = () => {
     worker.contract_start_date && worker.contract_end_date
       ? subtractDate(worker.contract_end_date, worker.contract_start_date)
       : (worker.contract_period ?? "2 Years");
-  // "CODE" row was removed from the template - no longer read from worker.
+  // The Agent Code entered on the Worker Form, exactly as stored.
   const applicationCode = worker.code ?? "";
   const applicationDate = formatShortDate(new Date());
 
@@ -1131,11 +1172,12 @@ const CVThree = () => {
     checked: workerSkillNames.includes(skill.key),
   }));
 
-  /* Languages checklist - only these three are sent from the frontend. */
+  /* Languages checklist - the four languages offered on the Worker Form. */
   const LANGUAGE_DEFINITIONS = [
     { en: "English", ar: "الإنجليزية" },
     { en: "Arabic", ar: "عربى" },
     { en: "Amharic", ar: "أمهرية" },
+    { en: "Afaan Oromo", ar: "الأورومية" },
   ];
 
   const workerLanguageNames = Array.isArray(worker.languages)

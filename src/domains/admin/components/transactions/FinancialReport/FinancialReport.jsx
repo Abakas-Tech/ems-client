@@ -93,7 +93,7 @@ const FinanceReportSummary = ({ filters, onBack }) => {
               color="warning"
             />
             <SummaryCard
-              title="Total Commission"
+              title="Agent Commission"
               amount={-Number(report.total_commission || 0)}
               color="info"
             />

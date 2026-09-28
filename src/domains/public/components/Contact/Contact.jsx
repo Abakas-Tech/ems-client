@@ -1,13 +1,20 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelopeOpen } from "react-icons/fa";
 import sendContactEmail from "../../api/contact.api";
 import getLocation from "../../api/location.api";
 import getSocialMedias from "../../api/socialMedia.api";
 import useLoader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
+import {
+  isValidPhone,
+  PHONE_MIN_DIGITS,
+  PHONE_MAX_DIGITS,
+} from "../../../../utils/phone.utils";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
 const Contact = () => {
+  const { t } = useTranslation();
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
 
@@ -19,11 +26,13 @@ const Contact = () => {
     message: "",
   });
 
+  // address/name stay null until the API provides them; until then the
+  // translated defaults (contact.defaultAddress / defaultOfficeName) show.
   const [location, setLocation] = useState({
     latitude: 7.0559381,
     longitude: 38.4902358,
-    address: "Addis Ababa, Ethiopia",
-    name: "a Office",
+    address: null,
+    name: null,
   });
 
   const [socialMedia, setSocialMedia] = useState({
@@ -70,34 +79,40 @@ const Contact = () => {
 
   const validate = () => {
     if (!formData.message || formData.message.trim() === "") {
-      addMessage(false, "Message is required");
+      addMessage(false, t("contact.errors.messageRequired"));
       return false;
     }
     if (formData.message.length > 500) {
-      addMessage(false, "Message must be less than 500 characters");
+      addMessage(false, t("contact.errors.messageTooLong"));
       return false;
     }
     if (formData.name && formData.name.length > 50) {
-      addMessage(false, "Name must be less than 50 characters");
+      addMessage(false, t("contact.errors.nameTooLong"));
       return false;
     }
     if (formData.email) {
       const emailRegex = /^\S+@\S+\.\S+$/;
       if (!emailRegex.test(formData.email)) {
-        addMessage(false, "Invalid email format");
+        addMessage(false, t("contact.errors.emailInvalid"));
         return false;
       }
       if (formData.email.length > 150) {
-        addMessage(false, "Email must be less than 150 characters");
+        addMessage(false, t("contact.errors.emailTooLong"));
         return false;
       }
     }
     if (!formData.phone || !formData.phone.trim() === "") {
-      addMessage(false, "Phone required");
+      addMessage(false, t("contact.errors.phoneRequired"));
       return false;
     }
-    if (formData.phone && formData.phone.length > 20) {
-      addMessage(false, "Phone must be less than 20 characters");
+    if (formData.phone && !isValidPhone(formData.phone)) {
+      addMessage(
+        false,
+        t("contact.errors.phoneInvalid", {
+          min: PHONE_MIN_DIGITS,
+          max: PHONE_MAX_DIGITS,
+        }),
+      );
       return false;
     }
     return true;
@@ -116,13 +131,13 @@ const Contact = () => {
         message: formData.message,
       };
       const response = await sendContactEmail(payload);
-      addMessage(
-        response?.success ?? true,
-        response?.message || "Email sent successfully!",
-      );
+      // Shown in the visitor's language rather than the API's English text.
+      const success = response?.success ?? true;
+      addMessage(success, success ? t("contact.success") : t("contact.failed"));
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
     } catch (err) {
-      addMessage(false, err.message || "Failed to send email");
+      console.error(err);
+      addMessage(false, t("contact.failed"));
     } finally {
       hideLoader();
     }
@@ -136,34 +151,35 @@ const Contact = () => {
     >
       <div>
         <div className="text-center">
-          <h2 className="pb-4 fw-bold">Contact Us Anytime</h2>
+          <h2 className="pb-4 fw-bold">{t("contact.title")}</h2>
         </div>
         <div className="row g-4 gy-5">
           {/* Contact Info */}
           <div className="col-lg-4 col-md-6m">
-            <h3 className="mt-0 fw-bold">Get In Touch</h3>
-            <p className="mb-4">
-              Have a question or need assistance? We are here to help! Reach out
-              to us for any inquiries, and we will get back to you promptly.
-            </p>
+            <h3 className="mt-0 fw-bold">{t("contact.getInTouch")}</h3>
+            <p className="mb-4">{t("contact.intro")}</p>
 
             <ContactItem
               icon={FaMapMarkerAlt}
-              title={location.name}
-              content={location.address}
+              title={location.name || t("contact.defaultOfficeName")}
+              content={location.address || t("contact.defaultAddress")}
             />
             <ContactItem
               icon={FaPhoneAlt}
-              title="Mobile"
+              title={t("contact.mobile")}
               content={
-                <a href={`tel:${socialMedia.phone}`}>{socialMedia.phone}</a>
+                <a href={`tel:${socialMedia.phone}`} dir="ltr">
+                  {socialMedia.phone}
+                </a>
               }
             />
             <ContactItem
               icon={FaEnvelopeOpen}
-              title="Email"
+              title={t("contact.email")}
               content={
-                <a href={`mailto:${socialMedia.email}`}>{socialMedia.email}</a>
+                <a href={`mailto:${socialMedia.email}`} dir="ltr">
+                  {socialMedia.email}
+                </a>
               }
             />
           </div>
@@ -171,7 +187,7 @@ const Contact = () => {
           {/* Google Map */}
           <div className="col-lg-4 col-md-6 " style={{ minHeight: "300px" }}>
             {!isLoaded ? (
-              <p>Loading map...</p>
+              <p>{t("contact.loadingMap")}</p>
             ) : (
               <GoogleMap
                 mapContainerStyle={{ width: "100%", height: "97%" }}
@@ -201,11 +217,11 @@ const Contact = () => {
                       type="text"
                       className="form-control"
                       id="name"
-                      placeholder="Your Name"
+                      placeholder={t("contact.form.name")}
                       value={formData.name}
                       onChange={handleChange}
                     />
-                    <label htmlFor="name">Your Name</label>
+                    <label htmlFor="name">{t("contact.form.name")}</label>
                   </div>
                 </div>
                 <div className="col-md-6">
@@ -214,11 +230,11 @@ const Contact = () => {
                       type="email"
                       className="form-control"
                       id="email"
-                      placeholder="Your Email"
+                      placeholder={t("contact.form.email")}
                       value={formData.email}
                       onChange={handleChange}
                     />
-                    <label htmlFor="email">Your Email</label>
+                    <label htmlFor="email">{t("contact.form.email")}</label>
                   </div>
                 </div>
                 <div className="col-12">
@@ -227,13 +243,14 @@ const Contact = () => {
                       type="text"
                       className="form-control"
                       id="phone"
-                      placeholder="Phone"
+                      placeholder={t("contact.form.phone")}
                       value={formData.phone}
                       onChange={handleChange}
                       required
                     />
                     <label htmlFor="phone">
-                      Phone <span className="text-danger">*</span>
+                      {t("contact.form.phone")}{" "}
+                      <span className="text-danger">*</span>
                     </label>
                   </div>
                 </div>
@@ -241,7 +258,7 @@ const Contact = () => {
                   <div className="form-floating">
                     <textarea
                       className="form-control"
-                      placeholder="Leave a message here"
+                      placeholder={t("contact.form.messagePlaceholder")}
                       id="message"
                       style={{ height: "200px" }}
                       value={formData.message}
@@ -249,7 +266,8 @@ const Contact = () => {
                       required
                     />
                     <label htmlFor="message">
-                      Message <span className="text-danger">*</span>
+                      {t("contact.form.message")}{" "}
+                      <span className="text-danger">*</span>
                     </label>
                   </div>
                 </div>
@@ -259,7 +277,7 @@ const Contact = () => {
                     className="btn text-white w-100 d-flex fw-bold"
                     style={{ backgroundColor: "#0B1F3A" }}
                   >
-                    Submit
+                    {t("contact.form.submit")}
                   </button>
                 </div>
               </div>
@@ -279,7 +297,9 @@ const ContactItem = ({ icon: Icon, title, content }) => (
     >
       <Icon className="text-white" size={24} />
     </div>
-    <div className="ms-3">
+    {/* margin-inline-start = Bootstrap's ms-3 (1rem) in LTR, and the
+        mirrored side in RTL */}
+    <div style={{ marginInlineStart: "1rem" }}>
       <h5 style={{ color: "#0B1F3A" }}>{title}</h5>
       <p className="mb-0">{content}</p>
     </div>

@@ -5,9 +5,12 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./assets/css/styles.css";
 import "./assets/css/colors.css";
+import "./assets/css/rtl.css";
 import { BrowserRouter } from "react-router-dom";
 
 import "./index.css";
+// Public-website translations (English / Amharic / Arabic)
+import "./i18n/config";
 import App from "./App.jsx";
 import LoaderProvider from "./context/Loader/LoaderProvider";
 import LogoutProvider from "./context/Logout/LogoutProvider.jsx";

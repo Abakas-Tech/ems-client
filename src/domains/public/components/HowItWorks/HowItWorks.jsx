@@ -11,9 +11,12 @@ import { BsAward } from "react-icons/bs";
 import { LuUserCheck } from "react-icons/lu";
 import { BsPatchCheck } from "react-icons/bs";
 import { BsPersonVcard } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
 import styles from "./HowItWorks.module.css";
 
 function HowItWorks() {
+  const { t } = useTranslation();
+
   return (
     <section id="how" className={`${styles["how-section"]} pb-0`}>
       <div id="features" className="features section">
@@ -22,13 +25,9 @@ function HowItWorks() {
             <div className="col-lg-7 col-md-10 text-center">
               <div className="sec-heading center">
                 <h2 id="services-title" className="fw-bold">
-                  The Process
+                  {t("process.title")}
                 </h2>
-                <p>
-                  Our streamlined process ensures a smooth and efficient journey
-                  for overseas employment, guiding you through every step from
-                  registration to deployment.
-                </p>
+                <p>{t("process.description")}</p>
               </div>
             </div>
           </div>
@@ -46,13 +45,9 @@ function HowItWorks() {
                       <div className={styles["icon"]}>
                         <IoPersonAddOutline />
                       </div>
-                      <h4>Registration</h4>
+                      <h4>{t("process.steps.registration.title")}</h4>
                       <div className="line-dec"></div>
-                      <p>
-                        Register with the agency by submitting your personal
-                        details, identification documents, and creating your
-                        official overseas employment profile.
-                      </p>
+                      <p>{t("process.steps.registration.desc")}</p>
                     </div>
                   </div>
 
@@ -66,13 +61,9 @@ function HowItWorks() {
                       <div className={styles["icon"]}>
                         <BsPatchCheck />
                       </div>
-                      <h4>Qualification</h4>
+                      <h4>{t("process.steps.qualification.title")}</h4>
                       <div className="line-dec"></div>
-                      <p>
-                        Complete required training, competency assessment,
-                        medical examination, and pre-employment orientation to
-                        become eligible for overseas placement.
-                      </p>
+                      <p>{t("process.steps.qualification.desc")}</p>
                     </div>
                   </div>
 
@@ -86,13 +77,9 @@ function HowItWorks() {
                       <div className={styles["icon"]}>
                         <BsPersonVcard />
                       </div>
-                      <h4>Job Placement</h4>
+                      <h4>{t("process.steps.placement.title")}</h4>
                       <div className="line-dec"></div>
-                      <p>
-                        Get matched with a verified employer, complete
-                        interviews, sign your employment contract, and process
-                        your visa and work permit.
-                      </p>
+                      <p>{t("process.steps.placement.desc")}</p>
                     </div>
                   </div>
 
@@ -108,13 +95,9 @@ function HowItWorks() {
                       <div className={styles["icon"]}>
                         <PiAirplaneTilt />
                       </div>
-                      <h4>Deployment</h4>
+                      <h4>{t("process.steps.deployment.title")}</h4>
                       <div className="line-dec"></div>
-                      <p>
-                        Attend pre-departure orientation, finalize travel
-                        arrangements, receive exit clearance, and begin your
-                        overseas employment journey.
-                      </p>
+                      <p>{t("process.steps.deployment.desc")}</p>
                     </div>
                   </div>
                 </div>

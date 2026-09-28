@@ -14,147 +14,67 @@ import {
   FaCompass,
   FaBullseye,
 } from "react-icons/fa";
+import { useTranslation, Trans } from "react-i18next";
+import { useLanguage } from "../../../../i18n/useLanguage";
 import styles from "./AboutDetail.module.css";
 
-/* --- What We Do (6 services) --- */
+/* Section texts are translation keys (aboutDetail.* / services.items.*).
+   The Amharic lines under some English headings are the client-approved
+   Amharic wording; they're shown in English and Arabic views and hidden
+   in the Amharic view, where the main text is already that Amharic. */
+
+/* --- What We Do (6 services) --- same texts as the Services section */
 const services = [
-  {
-    icon: <FaGlobeAfrica />,
-    title: "Foreign Employment Recruitment",
-    desc: "We connect qualified Ethiopian workers with suitable employment opportunities in international markets.",
-  },
-  {
-    icon: <FaUsersCog />,
-    title: "Workforce Selection & Placement",
-    desc: "We identify, screen, assess, and place candidates according to employer requirements and applicable regulations.",
-  },
-  {
-    icon: <FaHandshake />,
-    title: "Employer Recruitment Services",
-    desc: "We support international employers in sourcing suitable, qualified, and dependable workers.",
-  },
-  {
-    icon: <FaUserCheck />,
-    title: "Candidate Support",
-    desc: "We guide candidates throughout the recruitment and placement process and provide the necessary information and assistance.",
-  },
-  {
-    icon: <FaFileSignature />,
-    title: "Documentation & Processing Support",
-    desc: "We assist with the necessary recruitment, employment, and travel documentation in accordance with applicable requirements.",
-  },
-  {
-    icon: <FaPlaneDeparture />,
-    title: "Pre-Departure Orientation",
-    desc: "We help selected workers understand their employment conditions, responsibilities, rights, and expectations before departure.",
-  },
+  { icon: <FaGlobeAfrica />, key: "recruitment" },
+  { icon: <FaUsersCog />, key: "placement" },
+  { icon: <FaHandshake />, key: "employer" },
+  { icon: <FaUserCheck />, key: "candidate" },
+  { icon: <FaFileSignature />, key: "documentation" },
+  { icon: <FaPlaneDeparture />, key: "orientation" },
 ];
 
 /* --- Core Values (6) --- */
 const coreValues = [
-  {
-    icon: <FaBalanceScale />,
-    title: "Integrity",
-    amharic: "ታማኝነት",
-    desc: "We conduct our business with honesty, fairness, accountability, and respect.",
-  },
-  {
-    icon: <FaHandshake />,
-    title: "Trust",
-    amharic: "እምነት",
-    desc: "We build lasting relationships through transparency, reliability, and responsible service.",
-  },
-  {
-    icon: <FaHeart />,
-    title: "People First",
-    amharic: "ሰው ቅድሚያ",
-    desc: "We put the dignity, safety, rights, and interests of people at the heart of our work.",
-  },
-  {
-    icon: <FaBriefcase />,
-    title: "Professionalism",
-    amharic: "ሙያዊነት",
-    desc: "We deliver our services with competence, efficiency, discipline, and professionalism.",
-  },
-  {
-    icon: <FaStar />,
-    title: "Opportunity",
-    amharic: "የዕድል ፈጠራ",
-    desc: "We connect people with opportunities that can improve their livelihoods and future.",
-  },
-  {
-    icon: <FaAward />,
-    title: "Excellence",
-    amharic: "የላቀ አገልግሎት",
-    desc: "We continuously improve our services to achieve the highest standards of quality and client satisfaction.",
-  },
+  { icon: <FaBalanceScale />, key: "integrity", amharic: "ታማኝነት" },
+  { icon: <FaHandshake />, key: "trust", amharic: "እምነት" },
+  { icon: <FaHeart />, key: "peopleFirst", amharic: "ሰው ቅድሚያ" },
+  { icon: <FaBriefcase />, key: "professionalism", amharic: "ሙያዊነት" },
+  { icon: <FaStar />, key: "opportunity", amharic: "የዕድል ፈጠራ" },
+  { icon: <FaAward />, key: "excellence", amharic: "የላቀ አገልግሎት" },
 ];
 
 /* --- Why Choose ALETISALAT (6) --- */
 const whyChoose = [
-  {
-    title: "Trusted",
-    desc: "We value honesty, transparency, and long-term relationships.",
-  },
-  {
-    title: "Professional",
-    desc: "We provide organized and professional recruitment and placement services.",
-  },
-  {
-    title: "People-Centered",
-    desc: "We respect the dignity, rights, safety, and interests of workers.",
-  },
-  {
-    title: "Employer-Focused",
-    desc: "We help employers find suitable and dependable human resources.",
-  },
-  {
-    title: "Opportunity-Driven",
-    desc: "We work to open new pathways for Ethiopian workers in the international employment market.",
-  },
-  {
-    title: "Responsible",
-    desc: "We are committed to responsible recruitment and compliance with applicable laws and regulations.",
-  },
+  "trusted",
+  "professional",
+  "peopleCentered",
+  "employerFocused",
+  "opportunityDriven",
+  "responsible",
 ];
 
 /* --- Our Promise (3) --- */
-const promises = [
-  {
-    title: "To Workers",
-    desc: "We strive to connect you with legitimate opportunities and provide professional guidance throughout your employment journey.",
-  },
-  {
-    title: "To Employers",
-    desc: "We strive to provide qualified, reliable, and suitable human resources according to your requirements.",
-  },
-  {
-    title: "To Our Partners",
-    desc: "We build relationships based on trust, professionalism, transparency, and mutual success.",
-  },
-];
+const promises = ["workers", "employers", "partners"];
 
 /* --- ALETISALAT at a Glance --- */
 const glance = [
-  {
-    label: "Company Name",
-    value: "ALETISALAT Private Foreign Employment Agency",
-  },
-  { label: "Industry", value: "Foreign Employment & Workforce Recruitment" },
-  {
-    label: "Core Service",
-    value: "International Recruitment & Employment Placement",
-  },
-  {
-    label: "Primary Market",
-    value: "Ethiopian Workforce & International Employers",
-  },
-  {
-    label: "Core Values",
-    value:
-      "Integrity • Trust • People First • Professionalism • Opportunity • Excellence",
-  },
+  "companyName",
+  "industry",
+  "coreService",
+  "primaryMarket",
+  "coreValues",
 ];
+
+/* Approved Amharic lines (unchanged) */
+const AMHARIC = {
+  kicker: "ለሌሎች የተሻለ ወደፊት እንጥራለን።",
+  tagline: "\"ሰዎችን እናገናኛለን። ዕድሎችን እንፈጥራለን። የተሻለ ወደፊት እንገነባለን።\"",
+  vision:
+    "\"ሰዎችን ከትርጉም ያለው የሥራ ዕድል በማገናኘት ለሌሎች የተሻለ ወደፊት ለመፍጠር እንጥራለን።\"",
+  mission:
+    "ብቁ የሆኑ ሰራተኞችን ከህጋዊና ተገቢ የውጭ ሀገር የሥራ ዕድሎች ጋር በማገናኘት፣ ለሰራተኞች፣ ለአሰሪዎች፣ ለቤተሰቦች እና ለማህበረሰቡ ዋጋ የሚፈጥር ሥነ-ምግባራዊ፣ ግልጽ፣ አስተማማኝና ፕሮፌሽናል የውጭ ሥራ ማገናኛ አገልግሎት መስጠት ተልዕኮአችን ነው።",
+  futureTagline: "ሰዎችን እናገናኛለን። ዕድሎችን እንፈጥራለን። የተሻለ ወደፊት እንገነባለን።",
+};
 
 /* Small reusable heading block used above every section */
 function SectionHeading({ eyebrow, title, subtitle, center }) {
@@ -170,55 +90,59 @@ function SectionHeading({ eyebrow, title, subtitle, center }) {
 }
 
 export default function AboutDetail() {
+  const { t } = useTranslation();
+  const { currentLanguage } = useLanguage();
+  // The approved Amharic secondary lines, unless the page is already Amharic.
+  const showAmharic = currentLanguage !== "am";
+
   return (
     <div className={styles.page}>
       <div className="container py-5">
         {/* HERO */}
         <div className={styles.hero}>
-          <h2 className={styles.heroTitle}>About ALETISALAT</h2>
+          <h2 className={styles.heroTitle}>{t("aboutDetail.title")}</h2>
           <p className={styles.heroKicker}>
-            Striving for a Better Future for Others.
-            <span>ለሌሎች የተሻለ ወደፊት እንጥራለን።</span>
+            {t("aboutDetail.kicker")}
+            {showAmharic && <span lang="am">{AMHARIC.kicker}</span>}
           </p>
 
           <p className={styles.heroLead}>
-            <strong>ALETISALAT Private Foreign Employment Agency</strong> is a
-            professional foreign employment and workforce placement agency
-            committed to connecting qualified Ethiopian workers with legitimate
-            employment opportunities abroad. We believe that employment is more
-            than simply finding a job. It is about creating opportunities that
-            improve lives, strengthen families, develop skills, and contribute
-            to a better future. Our agency works to build a trusted bridge
-            between Ethiopian job seekers and international employers by
-            providing responsible, transparent, professional, and efficient
-            recruitment services.
+            <Trans
+              i18nKey="aboutDetail.lead"
+              components={{ strong: <strong /> }}
+            />
           </p>
 
           <div className={styles.tagline}>
-            "Connecting People. Creating Opportunities. Building Better
-            Futures."
-            <span>"ሰዎችን እናገናኛለን። ዕድሎችን እንፈጥራለን። የተሻለ ወደፊት እንገነባለን።"</span>
+            {t("aboutDetail.tagline")}
+            {showAmharic && <span lang="am">{AMHARIC.tagline}</span>}
           </div>
         </div>
 
         <div className={styles.sections}>
           {/* VISION & MISSION */}
           <div>
-            <SectionHeading eyebrow="Who We Are" title="Vision & Mission" />
+            <SectionHeading
+              eyebrow={t("aboutDetail.visionMission.eyebrow")}
+              title={t("aboutDetail.visionMission.title")}
+            />
             <div className="row g-4">
               <div className="col-md-6">
                 <div className={styles.pillarCard}>
                   <div className={styles.pillarIcon}>
                     <FaCompass />
                   </div>
-                  <span className={styles.pillarLabel}>Our Vision</span>
+                  <span className={styles.pillarLabel}>
+                    {t("aboutDetail.visionMission.visionLabel")}
+                  </span>
                   <p className={styles.pillarQuote}>
-                    "We strive to create a better future for others by
-                    connecting people with meaningful opportunities."
+                    {t("aboutDetail.visionMission.vision")}
                   </p>
-                  <p className={styles.pillarAmharic}>
-                    "ሰዎችን ከትርጉም ያለው የሥራ ዕድል በማገናኘት ለሌሎች የተሻለ ወደፊት ለመፍጠር እንጥራለን።"
-                  </p>
+                  {showAmharic && (
+                    <p className={styles.pillarAmharic} lang="am">
+                      {AMHARIC.vision}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -227,19 +151,17 @@ export default function AboutDetail() {
                   <div className={styles.pillarIcon}>
                     <FaBullseye />
                   </div>
-                  <span className={styles.pillarLabel}>Our Mission</span>
+                  <span className={styles.pillarLabel}>
+                    {t("aboutDetail.visionMission.missionLabel")}
+                  </span>
                   <p className={styles.pillarQuote}>
-                    Our mission is to provide ethical, transparent, reliable,
-                    and professional foreign employment services by connecting
-                    qualified workers with legitimate international employment
-                    opportunities while creating value for workers, employers,
-                    families, and communities.
+                    {t("aboutDetail.visionMission.mission")}
                   </p>
-                  <p className={styles.pillarAmharic}>
-                    ብቁ የሆኑ ሰራተኞችን ከህጋዊና ተገቢ የውጭ ሀገር የሥራ ዕድሎች ጋር በማገናኘት፣ ለሰራተኞች፣
-                    ለአሰሪዎች፣ ለቤተሰቦች እና ለማህበረሰቡ ዋጋ የሚፈጥር ሥነ-ምግባራዊ፣ ግልጽ፣ አስተማማኝና
-                    ፕሮፌሽናል የውጭ ሥራ ማገናኛ አገልግሎት መስጠት ተልዕኮአችን ነው።
-                  </p>
+                  {showAmharic && (
+                    <p className={styles.pillarAmharic} lang="am">
+                      {AMHARIC.mission}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -248,9 +170,9 @@ export default function AboutDetail() {
           {/* CORE VALUES */}
           <div>
             <SectionHeading
-              eyebrow="What We Stand For"
-              title="Our Core Values"
-              subtitle="The principles that guide every placement we make."
+              eyebrow={t("aboutDetail.coreValues.eyebrow")}
+              title={t("aboutDetail.coreValues.title")}
+              subtitle={t("aboutDetail.coreValues.subtitle")}
             />
             <div className={styles.panel}>
               <div className="row g-4">
@@ -259,12 +181,16 @@ export default function AboutDetail() {
                     <div className={styles.valueCard}>
                       <div className={styles.valueIcon}>{item.icon}</div>
                       <h6 className={styles.valueTitle}>
-                        {item.title}
-                        <span className={styles.valueAmharic}>
-                          {item.amharic}
-                        </span>
+                        {t(`aboutDetail.coreValues.items.${item.key}.title`)}
+                        {showAmharic && (
+                          <span className={styles.valueAmharic} lang="am">
+                            {item.amharic}
+                          </span>
+                        )}
                       </h6>
-                      <p className={styles.valueDesc}>{item.desc}</p>
+                      <p className={styles.valueDesc}>
+                        {t(`aboutDetail.coreValues.items.${item.key}.desc`)}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -274,18 +200,25 @@ export default function AboutDetail() {
 
           {/* WHY CHOOSE ALETISALAT */}
           <div>
-            <SectionHeading eyebrow="Why Us" title="Why Choose ALETISALAT?" />
+            <SectionHeading
+              eyebrow={t("aboutDetail.whyChoose.eyebrow")}
+              title={t("aboutDetail.whyChoose.title")}
+            />
             <div className={styles.panel}>
               <div className="row g-3">
-                {whyChoose.map((item, idx) => (
-                  <div className="col-12 col-md-6" key={idx}>
+                {whyChoose.map((key) => (
+                  <div className="col-12 col-md-6" key={key}>
                     <div className={styles.whyItem}>
                       <span className={styles.whyIconWrap}>
                         <FaCheckCircle className={styles.whyIcon} size={16} />
                       </span>
                       <div>
-                        <h6 className={styles.whyTitle}>{item.title}</h6>
-                        <p className={styles.whyDesc}>{item.desc}</p>
+                        <h6 className={styles.whyTitle}>
+                          {t(`aboutDetail.whyChoose.items.${key}.title`)}
+                        </h6>
+                        <p className={styles.whyDesc}>
+                          {t(`aboutDetail.whyChoose.items.${key}.desc`)}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -297,16 +230,20 @@ export default function AboutDetail() {
           {/* OUR PROMISE */}
           <div>
             <SectionHeading
-              eyebrow="Our Commitment To You"
-              title="Our Promise"
+              eyebrow={t("aboutDetail.promise.eyebrow")}
+              title={t("aboutDetail.promise.title")}
             />
             <div className="row g-4">
-              {promises.map((item, idx) => (
-                <div className="col-md-4" key={idx}>
+              {promises.map((key, idx) => (
+                <div className="col-md-4" key={key}>
                   <div className={styles.promiseCard}>
                     <span className={styles.promiseNumber}>0{idx + 1}</span>
-                    <h6 className={styles.promiseTitle}>{item.title}</h6>
-                    <p className={styles.promiseDesc}>{item.desc}</p>
+                    <h6 className={styles.promiseTitle}>
+                      {t(`aboutDetail.promise.items.${key}.title`)}
+                    </h6>
+                    <p className={styles.promiseDesc}>
+                      {t(`aboutDetail.promise.items.${key}.desc`)}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -316,14 +253,18 @@ export default function AboutDetail() {
           {/* AT A GLANCE */}
           <div>
             <SectionHeading
-              eyebrow="Quick Facts"
-              title="ALETISALAT at a Glance"
+              eyebrow={t("aboutDetail.glance.eyebrow")}
+              title={t("aboutDetail.glance.title")}
             />
             <div className={styles.glanceGrid}>
-              {glance.map((item, idx) => (
-                <div className={styles.glanceRow} key={idx}>
-                  <span className={styles.glanceLabel}>{item.label}</span>
-                  <span className={styles.glanceValue}>{item.value}</span>
+              {glance.map((key) => (
+                <div className={styles.glanceRow} key={key}>
+                  <span className={styles.glanceLabel}>
+                    {t(`aboutDetail.glance.items.${key}.label`)}
+                  </span>
+                  <span className={styles.glanceValue}>
+                    {t(`aboutDetail.glance.items.${key}.value`)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -331,20 +272,17 @@ export default function AboutDetail() {
 
           {/* OUR FUTURE */}
           <div className={styles.futureSection}>
-            <SectionHeading eyebrow="Looking Ahead" title="Our Future" center />
-            <p className={styles.futureText}>
-              ALETISALAT aspires to become a trusted and recognized foreign
-              employment agency known for responsible recruitment, professional
-              service, strong international partnerships, and positive impact on
-              the lives of workers and their families. We envision a future
-              where Ethiopian workers can access legitimate international
-              employment opportunities through a trusted, transparent, and
-              professional pathway.
-            </p>
+            <SectionHeading
+              eyebrow={t("aboutDetail.future.eyebrow")}
+              title={t("aboutDetail.future.title")}
+              center
+            />
+            <p className={styles.futureText}>{t("aboutDetail.future.text")}</p>
             <div className={styles.futureTagline}>
-              ALETISALAT — Connecting People. Creating Opportunities. Building
-              Better Futures.
-              <span>ሰዎችን እናገናኛለን። ዕድሎችን እንፈጥራለን። የተሻለ ወደፊት እንገነባለን።</span>
+              {t("aboutDetail.future.tagline")}
+              {showAmharic && (
+                <span lang="am">{AMHARIC.futureTagline}</span>
+              )}
             </div>
           </div>
         </div>

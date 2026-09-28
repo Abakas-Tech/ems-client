@@ -149,6 +149,11 @@ const ActionButtons = ({ actions = [], row }) => {
       icon: <i className="fa-solid fa-folder-open"></i>,
       title: "View Files",
     },
+    split: {
+      className: "btn-outline-success",
+      icon: <i className="fa-solid fa-chart-pie"></i>,
+      title: "Split",
+    },
   };
 
   // Filter actions by role (ignore showOn) and, for action types listed in

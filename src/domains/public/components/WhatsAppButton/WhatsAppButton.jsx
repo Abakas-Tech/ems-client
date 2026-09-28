@@ -62,7 +62,7 @@ export default function WhatsAppButton() {
         className={`${styles.card} ${cardOpen ? styles.cardOpen : ""}`}
         role="dialog"
         aria-modal="true"
-        aria-label={t("whatsapp.cardTitle", "Contact us on WhatsApp")}
+        aria-label={t("whatsapp.cardAriaLabel", "Contact us on WhatsApp")}
         dir={isRTL ? "rtl" : "ltr"}
       >
         {/* Header */}

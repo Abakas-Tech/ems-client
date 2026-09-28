@@ -88,3 +88,18 @@
 
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
+
+/* RTL (Arabic): steps read right-to-left, so the arrows point left and
+   sit on the left of each step, and the step number moves to the right. */
+@media (min-width: 992px) {
+  :global([dir="rtl"]) .step-item::after {
+    content: "←";
+    right: auto;
+    left: -18px;
+  }
+}
+
+:global([dir="rtl"]) .number {
+  left: auto;
+  right: 30px;
+}

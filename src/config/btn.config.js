@@ -31,6 +31,9 @@ const ACTION_ROLE_CONFIG = {
   ],
   deleteBadge: [ROLES.ADMIN, ROLES.EMPLOYEE],
   files: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  // Closed period final-summary split. Anyone with finance access can
+  // open it (read-only); editing inside the modal is admin-only.
+  split: [ROLES.ADMIN, ROLES.EMPLOYEE],
 };
 
 export default ACTION_ROLE_CONFIG;

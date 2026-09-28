@@ -11,6 +11,7 @@ import { listWorkers, getWorkerProfile } from "../../../api/worker.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import BackButton from "./../../../../../shared/components/BackButton/BackButton";
 import useResponse from "../../../../../context/Response/useResponse";
+import { isValidPhone, PHONE_ERROR_MESSAGE } from "../../../../../utils/phone.utils";
 
 const RESOLUTION_METHODS = [
   { value: "phone", label: "Phone" },
@@ -304,6 +305,14 @@ const ComplaintForm = () => {
         false,
         "Each complainant needs at least a full name and phone number.",
       );
+      return false;
+    }
+    if (complainants.some((c) => !isValidPhone(c.phone_number))) {
+      addMessage(false, `Complainant phone: ${PHONE_ERROR_MESSAGE}`);
+      return false;
+    }
+    if (employerPhoneNumber?.trim() && !isValidPhone(employerPhoneNumber)) {
+      addMessage(false, `Employer phone: ${PHONE_ERROR_MESSAGE}`);
       return false;
     }
     if (

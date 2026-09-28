@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "../../workers/WorkerFilter/WorkerFilter.module.css"; 
+import FINANCE_CATEGORIES from "../../../../../config/financeCategory.config";
 
 const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
   return (
@@ -15,10 +16,11 @@ const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
               onChange={onFilterChange}
             >
               <option value="">All Categories</option>
-              <option value="income">Income</option>
-              <option value="expense">Expense</option>
-              <option value="commission">Commission</option>
-              <option value="vat">VAT</option>
+              {FINANCE_CATEGORIES.map((category) => (
+                <option key={category.value} value={category.value}>
+                  {category.label}
+                </option>
+              ))}
             </select>
           </div>
 

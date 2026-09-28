@@ -14,10 +14,15 @@ import { useNavigate } from "react-router-dom";
 import BackButton from "./../../../../../shared/components/BackButton/BackButton";
 import useResponse from "../../../../../context/Response/useResponse";
 import useProfile from "../../../../../context/Profile/useProfile";
+import {
+  isValidPhone,
+  PHONE_ERROR_MESSAGE,
+  PHONE_MAX_LENGTH,
+} from "../../../../../utils/phone.utils";
 
 // Longest phone number accepted on the Create User form (checked on the
-// frontend so an over-long value never reaches the backend).
-const PHONE_MAX_LENGTH = 14;
+// frontend so an over-long value never reaches the backend). Shared with
+// every other phone field — any country code, spaces allowed.
 const PHONE_MAX_LENGTH_MESSAGE = `Phone number cannot exceed ${PHONE_MAX_LENGTH} characters.`;
 
 const PERMISSIONS = [
@@ -204,15 +209,9 @@ const CreateUserForm = ({ isEditMode = false, userData = null }) => {
       );
       return false;
     }
-    const phoneRegex =
-      /^(?:\+?(20|90|961|962|963|964|965|966|967|968|970|971|972|973|974|975)[0-9]{7,12}|0[179][0-9]{8}|251[79][0-9]{8})$/;
-    // Phone number: digits only, length 7–15
-    if (phoneNumber && !phoneRegex.test(phoneNumber)) {
-      addMessage(false, "Phone number is invalid.");
-      return false;
-    }
-    if (phoneNumber && (phoneNumber.length < 7 || phoneNumber.length > 15)) {
-      addMessage(false, "Phone number must be between 7 and 15 digits.");
+    // Phone number: optional +country code, 7–15 digits, spaces allowed
+    if (phoneNumber && !isValidPhone(phoneNumber)) {
+      addMessage(false, PHONE_ERROR_MESSAGE);
       return false;
     }
 

@@ -1,51 +1,44 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
+// Service texts are translation keys (services.items.<key>.title/desc),
+// shared with the About page's "What We Do" list.
 const services = [
   {
-    title: "Foreign Employment Recruitment",
-    description:
-      "We connect qualified Ethiopian workers with suitable employment opportunities in international markets.",
+    key: "recruitment",
     iconClass: "first-service",
     icon: "bi bi-briefcase",
   },
   {
-    title: "Workforce Selection & Placement",
-    description:
-      "We identify, screen, assess, and place candidates according to employer requirements and applicable regulations.",
+    key: "placement",
     iconClass: "second-service",
     icon: "bi bi-person-check",
   },
   {
-    title: "Employer Recruitment Services",
-    description:
-      "We support international employers in sourcing suitable, qualified, and dependable workers.",
+    key: "employer",
     iconClass: "third-service",
     icon: "bi bi-building",
   },
   {
-    title: "Candidate Support",
-    description:
-      "We guide candidates throughout the recruitment and placement process and provide the necessary information and assistance.",
+    key: "candidate",
     iconClass: "fourth-service",
     icon: "bi bi-life-preserver",
   },
   {
-    title: "Documentation & Processing Support",
-    description:
-      "We assist with the necessary recruitment, employment, and travel documentation in accordance with applicable requirements.",
+    key: "documentation",
     iconClass: "first-service",
     icon: "bi bi-file-earmark-check",
   },
   {
-    title: "Pre-Departure Orientation",
-    description:
-      "We help selected workers understand their employment conditions, responsibilities, rights, and expectations before departure.",
+    key: "orientation",
     iconClass: "second-service",
     icon: "bi bi-airplane",
   },
 ];
 
 const Services = () => {
+  const { t } = useTranslation();
+
   return (
     <section
       id="services"
@@ -60,14 +53,8 @@ const Services = () => {
               data-wow-duration="1s"
               data-wow-delay="0.5s"
             >
-              <h2 className="fw-bold">Our Services</h2>
-              <p>
-                ALETISALAT Private Foreign Employment Agency delivers ethical,
-                transparent, and professional foreign employment services —
-                connecting qualified Ethiopian workers with legitimate
-                international opportunities while creating value for workers,
-                employers, families, and communities.
-              </p>
+              <h2 className="fw-bold">{t("services.title")}</h2>
+              <p>{t("services.description")}</p>
             </div>
           </div>
         </div>
@@ -91,9 +78,11 @@ const Services = () => {
                     }}
                   ></i>
                 </div>
-                <h4 className="fw-bold">{service.title}</h4>
+                <h4 className="fw-bold">
+                  {t(`services.items.${service.key}.title`)}
+                </h4>
                 {/* Fixed height/character count ensures consistent card rows */}
-                <p>{service.description}</p>
+                <p>{t(`services.items.${service.key}.desc`)}</p>
               </div>
             </div>
           ))}

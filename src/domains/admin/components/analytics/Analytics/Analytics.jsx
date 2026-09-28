@@ -155,7 +155,7 @@ const Analytics = () => {
           colorClass="widget-5"
         />
         <StatCard
-          title="Commissions"
+          title="Agent Commissions"
           value={data.finance.period_commission}
           icon="bi bi-cash-coin"
           colorClass="widget-6"
