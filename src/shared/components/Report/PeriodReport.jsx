@@ -89,7 +89,10 @@ const computeTotals = (period, transactions) => {
     expense: period.total_expense ?? computedExpense,
     commission,
     vat,
-    netProfit: period.net_profit ?? computedNet,
+    // Once split, the Final Profit is the Deposit (Government and Partner
+    // Splitting are paid out as generated expenses, already counted in
+    // the expense total from the transaction set).
+    netProfit: period.final_profit ?? period.net_profit ?? computedNet,
     transactionCount: period.transaction_count ?? transactions.length,
   };
 };
@@ -291,7 +294,7 @@ const buildSummaryPage = (
       <tbody>${buildSummaryRows(period, totals)}</tbody>
       <tfoot>
         <tr class="totals-row">
-          <td>Net ${isProfit ? "Profit" : "Loss"}</td>
+          <td>${period.split_id ? "Final Profit" : `Net ${isProfit ? "Profit" : "Loss"}`}</td>
           <td style="text-align:right;">${isProfit ? "+" : "-"} ${fmtAmount(
             Math.abs(totals.netProfit),
           )} Birr</td>

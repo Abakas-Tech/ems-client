@@ -84,7 +84,10 @@ const computeSummaryTotals = (period, transactions) => {
     expense: period.total_expense ?? computedExpense,
     commission,
     vat,
-    netProfit: period.net_profit ?? computedNet,
+    // Once split, the Final Profit is the Deposit (Government and Partner
+    // Splitting are paid out as generated expenses, already counted in
+    // the expense total from the transaction set).
+    netProfit: period.final_profit ?? period.net_profit ?? computedNet,
     transactionCount: period.transaction_count ?? list.length,
   };
 };
@@ -609,7 +612,9 @@ const TransactionDetail = ({
 
               <div className="receipt-amount-block">
                 <p className="receipt-eyebrow" style={{ textAlign: "right" }}>
-                  Net {isProfit ? "Profit" : "Loss"}
+                  {summaryPeriod.split_id
+                    ? "Final Profit"
+                    : `Net ${isProfit ? "Profit" : "Loss"}`}
                 </p>
                 <div className="receipt-amount">
                   {isProfit ? "+" : "-"}

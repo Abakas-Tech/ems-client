@@ -11,6 +11,7 @@ import {
   closePeriod,
   deletePeriod,
   deletePeriodSplit,
+  fetchPeriodSplit,
 } from "../../../api/finance.api";
 import useloader from "../../../../../context/Loader/useLoader";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -40,6 +41,24 @@ const formatDate = (value, withTime = false) => {
     ...(withTime && { hour: "2-digit", minute: "2-digit" }),
   });
 };
+
+const formatAmount = (value) =>
+  Number(value ?? 0).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+// Which share of a closed period's split a generated transaction carries.
+const SPLIT_PART_LABELS = {
+  government: "Government",
+  partner_splitting: "Partner Splitting",
+};
+
+// A closed period's Final Profit: the Deposit once it has been split
+// (Government and Partner Splitting are paid out as expenses), otherwise
+// its net profit as frozen at close.
+const periodFinalProfit = (period) =>
+  period?.final_profit ?? period?.net_profit ?? null;
 
 const FinancePage = () => {
   const { showLoader, hideLoader } = useloader();
@@ -83,6 +102,10 @@ const FinancePage = () => {
   // Partner Splitting) is open in SplitPeriodModal; null = closed.
   const [splitPeriod, setSplitPeriod] = useState(null);
 
+  // Split record (with its generated Government / Partner Splitting
+  // transactions) of the closed period currently opened; null = not split.
+  const [periodSplit, setPeriodSplit] = useState(null);
+
   // Data backing the on-screen period summary (view === "summary") — the
   // full transaction set for the period, fetched on demand so the totals
   // match the printed report exactly.
@@ -101,6 +124,28 @@ const FinancePage = () => {
   useEffect(() => {
     if (view === "periods" && !selectedPeriod) loadPeriods();
   }, [periodsFilters, view, selectedPeriod]);
+
+  useEffect(() => {
+    // Load the split record shown in a closed period's header card. A 404
+    // just means that period hasn't been split.
+    setPeriodSplit(null);
+    if (!selectedPeriod?.id || selectedPeriod.status !== "closed") return;
+
+    let cancelled = false;
+    fetchPeriodSplit(selectedPeriod.id)
+      .then((res) => {
+        if (!cancelled) setPeriodSplit(res?.data || null);
+      })
+      .catch((err) => {
+        if (!cancelled && err?.status !== 404) {
+          addMessage(false, err.message || "Failed to load period split");
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPeriod?.id, selectedPeriod?.status]);
 
   useEffect(() => {
     // Re-fetch the currently open period's transaction list whenever the
@@ -284,6 +329,8 @@ const FinancePage = () => {
         try {
           const res = await deletePeriodSplit(period.id);
           addMessage(true, res?.message || "Period split deleted");
+          // Final Profit and Total Deposits both depend on the split.
+          loadPeriods();
         } catch (err) {
           addMessage(false, err.message || "Failed to delete period split");
         } finally {
@@ -529,6 +576,84 @@ const FinancePage = () => {
                   <p className="mb-0">{selectedPeriod.closing_note}</p>
                 </div>
               )}
+
+              {/* Final summary split — how the closed period's final
+                  summary was divided, and the Expense transactions it
+                  generated for the Government and Partner Splitting parts. */}
+              {isClosed && periodSplit && (
+                <div className="mt-4 pt-4 border-top">
+                  <h6 className="text-uppercase text-muted small fw-bold mb-3">
+                    Final Summary Split
+                  </h6>
+                  <div className="row g-3">
+                    {[
+                      ["Final Summary", periodSplit.final_summary_amount, "text-dark"],
+                      ["Deposit (Final Profit)", periodSplit.deposit_amount, "text-success"],
+                      ["Government", periodSplit.government_amount, "text-danger"],
+                      ["Partner Splitting", periodSplit.partner_splitting_amount, "text-danger"],
+                      ["Remaining Balance", periodSplit.balance_amount, "text-muted"],
+                    ].map(([label, value, tone]) => (
+                      <div className="col-6 col-md" key={label}>
+                        <div className="small text-muted">{label}</div>
+                        <div className={`fs-5 fw-bold ${tone}`}>
+                          {formatAmount(value)} Birr
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-muted small mt-2 mb-0">
+                    {formatAmount(periodSplit.final_summary_amount)} ={" "}
+                    {formatAmount(periodSplit.deposit_amount)} deposit +{" "}
+                    {formatAmount(periodSplit.government_amount)} government +{" "}
+                    {formatAmount(periodSplit.partner_splitting_amount)} partner
+                    splitting
+                  </p>
+
+                  <h6 className="text-uppercase text-muted small fw-bold mt-4 mb-2">
+                    Generated Transactions
+                  </h6>
+                  {periodSplit.transactions?.length ? (
+                    <div className="table-responsive">
+                      <table className="table table-sm align-middle mb-0">
+                        <thead>
+                          <tr>
+                            <th>Split Part</th>
+                            <th>Category</th>
+                            <th>Reference</th>
+                            <th>Date</th>
+                            <th className="text-end">Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {periodSplit.transactions.map((t) => (
+                            <tr key={t.id}>
+                              <td className="fw-semibold">
+                                {SPLIT_PART_LABELS[t.split_part] || t.split_part}
+                              </td>
+                              <td>
+                                <Badge
+                                  content={getCategoryLabel(t.category).toUpperCase()}
+                                  color="red"
+                                />
+                              </td>
+                              <td>{t.reference || "—"}</td>
+                              <td>{formatDate(t.transaction_date)}</td>
+                              <td className="text-end fw-semibold text-danger">
+                                - {formatAmount(t.amount)} Birr
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="text-muted small mb-0">
+                      No Government or Partner Splitting amount, so no
+                      transactions were generated.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -565,10 +690,19 @@ const FinancePage = () => {
               {
                 header: "Category",
                 render: (row) => (
-                  <Badge
-                    content={getCategoryLabel(row.category).toUpperCase()}
-                    color={isIncomeCategory(row.category) ? "green" : "red"}
-                  />
+                  <div className="d-flex flex-wrap gap-1">
+                    <Badge
+                      content={getCategoryLabel(row.category).toUpperCase()}
+                      color={isIncomeCategory(row.category) ? "green" : "red"}
+                    />
+                    {/* Generated by the period's final summary split */}
+                    {row.split_part && (
+                      <Badge
+                        content={SPLIT_PART_LABELS[row.split_part]}
+                        color="gray"
+                      />
+                    )}
+                  </div>
                 ),
               },
               { header: "Amount", accessor: "amount" },
@@ -687,9 +821,30 @@ const FinancePage = () => {
           period={splitPeriod}
           canEdit={isAdmin}
           onClose={() => setSplitPeriod(null)}
+          // Final Profit and Total Deposits both depend on the split.
+          onSaved={() => loadPeriods()}
           onDeleteRequest={handleDeleteSplit}
           addMessage={addMessage}
         />
+
+        {/* Total Deposits — the Deposit of every closed period's split
+            (Government and Partner Splitting excluded), across all
+            periods, recalculated by the backend on every list load. */}
+        <div className="card border-0 rounded-4 shadow-sm mb-4">
+          <div className="card-body p-4 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+            <div>
+              <h6 className="text-uppercase text-muted small fw-bold mb-1">
+                Total Deposits
+              </h6>
+              <p className="text-muted small mb-0">
+                Sum of the Deposit amount from all closed periods.
+              </p>
+            </div>
+            <div className="fs-3 fw-bold text-success">
+              {formatAmount(periods.meta?.total_deposits)} Birr
+            </div>
+          </div>
+        </div>
 
         <ListingComponent
           data={periodsListData}
@@ -735,11 +890,11 @@ const FinancePage = () => {
                 ),
             },
             {
-              header: "Net Profit",
+              // Deposit once the period is split, otherwise the net
+              // profit frozen at close (see periodFinalProfit).
+              header: "Final Profit",
               render: (row) =>
-                row.net_profit !== null && row.net_profit !== undefined
-                  ? row.net_profit
-                  : "—",
+                periodFinalProfit(row) !== null ? periodFinalProfit(row) : "—",
             },
             {
               header: "Transactions",
