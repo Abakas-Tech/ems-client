@@ -4,12 +4,17 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import { FaBars } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 import logo from "../../../../assets/img/logo/aletisalat-header-logo.png";
 import useProfile from "../../../../context/Profile/useProfile";
 import { hasAccessToken } from "../../../../utils/axios";
+import LanguageSwitcher from "../../LanguageSwitcher/LanguageSwitcher";
+import { useLanguage } from "../../../../i18n/useLanguage";
 
 const MainHeader = () => {
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
   const { profile, checkingAuth } = useProfile();
   const isAuth = hasAccessToken() || profile;
 
@@ -59,11 +64,11 @@ const MainHeader = () => {
 
   // Determine dashboard link and text
   let dashboardLink = "/auth/login";
-  let dashboardText = "Sign In";
+  let dashboardText = t("nav.signIn");
 
   if (!checkingAuth && isAuth && profile) {
     dashboardLink = roleDashboardMap[profile.role_id] || "/admin/dashboard";
-    dashboardText = "Dashboard";
+    dashboardText = t("nav.dashboard");
   }
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -113,7 +118,7 @@ const MainHeader = () => {
           {/* Nav Header */}
           <div className="nav-header">
             <Link className="nav-brand text-logo exchange" to="/">
-              <img src={logo} alt="Logo" style={{ width: "80px" }} />
+              <img src={logo} alt={t("nav.logoAlt")} style={{ width: "80px" }} />
               {/* <h5 className="m-0">Resido</h5> */}
             </Link>
 
@@ -143,7 +148,7 @@ const MainHeader = () => {
                     style={{ cursor: "pointer" }}
                     className={location.pathname === "/" ? "active" : ""}
                   >
-                    Home
+                    {t("nav.home")}
                   </a>
                 </li>
                 <li>
@@ -151,7 +156,7 @@ const MainHeader = () => {
                     onClick={() => handleNavClick("how")}
                     style={{ cursor: "pointer" }}
                   >
-                    Process
+                    {t("nav.process")}
                   </a>
                 </li>
                 <li>
@@ -159,7 +164,7 @@ const MainHeader = () => {
                     onClick={() => handleNavClick("services")}
                     style={{ cursor: "pointer" }}
                   >
-                    Services
+                    {t("nav.services")}
                   </a>
                 </li>
                 <li>
@@ -167,7 +172,7 @@ const MainHeader = () => {
                     onClick={() => handleNavClick("about")}
                     style={{ cursor: "pointer" }}
                   >
-                    About
+                    {t("nav.about")}
                   </a>
                 </li>
                 <li>
@@ -175,7 +180,7 @@ const MainHeader = () => {
                     onClick={() => handleNavClick("gallery")}
                     style={{ cursor: "pointer" }}
                   >
-                    Gallery
+                    {t("nav.gallery")}
                   </a>
                 </li>
                 <li>
@@ -183,7 +188,7 @@ const MainHeader = () => {
                     onClick={() => handleNavClick("testimonials")}
                     style={{ cursor: "pointer" }}
                   >
-                    Testimonials
+                    {t("nav.testimonials")}
                   </a>
                 </li>
                 <li>
@@ -191,8 +196,14 @@ const MainHeader = () => {
                     onClick={() => handleNavClick("contact")}
                     style={{ cursor: "pointer" }}
                   >
-                    Contact
+                    {t("nav.contact")}
                   </a>
+                </li>
+
+                {/* vertical padding lines the button up with the menu links
+                    (13px padding + 18px text) */}
+                <li style={{ padding: "10px 10px" }}>
+                  <LanguageSwitcher />
                 </li>
 
                 <li className="nav-menu-social add-listing">
@@ -214,7 +225,7 @@ const MainHeader = () => {
             <Drawer
               open={isOpen}
               onClose={toggleMenu}
-              direction="left"
+              direction={isRTL ? "right" : "left"}
               size={settings.drawerSize}
               duration={settings.animationDuration}
               overlayColor={settings.overlayColor}
@@ -236,7 +247,7 @@ const MainHeader = () => {
                       onClick={() => handleNavClick("home")}
                       style={{ cursor: "pointer" }}
                     >
-                      Hero
+                      {t("nav.hero")}
                     </a>
                   </li>
                   <li>
@@ -244,7 +255,7 @@ const MainHeader = () => {
                       onClick={() => handleNavClick("how")}
                       style={{ cursor: "pointer" }}
                     >
-                      Process
+                      {t("nav.process")}
                     </a>
                   </li>
                   <li>
@@ -252,7 +263,7 @@ const MainHeader = () => {
                       onClick={() => handleNavClick("services")}
                       style={{ cursor: "pointer" }}
                     >
-                      Services
+                      {t("nav.services")}
                     </a>
                   </li>
                   <li>
@@ -260,7 +271,7 @@ const MainHeader = () => {
                       onClick={() => handleNavClick("about")}
                       style={{ cursor: "pointer" }}
                     >
-                      About
+                      {t("nav.about")}
                     </a>
                   </li>
                   <li>
@@ -268,7 +279,7 @@ const MainHeader = () => {
                       onClick={() => handleNavClick("gallery")}
                       style={{ cursor: "pointer" }}
                     >
-                      Gallery
+                      {t("nav.gallery")}
                     </a>
                   </li>
                   <li>
@@ -276,7 +287,7 @@ const MainHeader = () => {
                       onClick={() => handleNavClick("testimonials")}
                       style={{ cursor: "pointer" }}
                     >
-                      Testimonials
+                      {t("nav.testimonials")}
                     </a>
                   </li>
                   <li>
@@ -284,7 +295,7 @@ const MainHeader = () => {
                       onClick={() => handleNavClick("contact")}
                       style={{ cursor: "pointer" }}
                     >
-                      Contact
+                      {t("nav.contact")}
                     </a>
                   </li>
                   <li>
@@ -296,6 +307,9 @@ const MainHeader = () => {
                     >
                       {dashboardText}
                     </Link>
+                  </li>
+                  <li style={{ padding: "12px 20px" }}>
+                    <LanguageSwitcher inDrawer />
                   </li>
                 </ul>
               </div>

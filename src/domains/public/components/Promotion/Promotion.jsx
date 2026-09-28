@@ -1,14 +1,21 @@
 import { FaCheck } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
+
+// Highlight texts are translation keys (promotion.highlights.*).
+const HIGHLIGHT_KEYS = [
+  "connections",
+  "process",
+  "guidance",
+  "information",
+  "support",
+  "ethical",
+];
 
 function Promotion() {
-  const highlights = [
-    "Trusted international job connections",
-    "Clear and simple application process",
-    "Step-by-step guidance",
-    "Transparent and accurate information",
-    "Support throughout your journey",
-    "Safe and ethical recruitment",
-  ];
+  const { t } = useTranslation();
+  const highlights = HIGHLIGHT_KEYS.map((key) =>
+    t(`promotion.highlights.${key}`),
+  );
 
   return (
     <section style={{ padding: "30px 0 0" }}>
@@ -16,22 +23,14 @@ function Promotion() {
         <div className="row g-3 align-items-stretch">
           {/* Left Content */}
           <div className="col-lg-6 d-flex flex-column justify-content-center h-100">
-            <h2 className="mb-2 fw-bold">
-              Building Trust in Overseas Employment
-            </h2>
+            <h2 className="mb-2 fw-bold">{t("promotion.title")}</h2>
 
             <p className="mb-4" style={{ lineHeight: "1.7" }}>
-              We believe working abroad should bring confidence, not
-              uncertainty, so we make every step clear, guided, and accessible
-              for every applicant.
+              {t("promotion.p1")}
             </p>
 
             <p className="mb-4" style={{ lineHeight: "1.7" }}>
-              From the start of your application to your arrival with your
-              employer, we ensure you understand the process, know what to
-              expect, and feel supported throughout by simplifying complex
-              procedures into clear steps so you can move forward with
-              confidence.
+              {t("promotion.p2")}
             </p>
 
             <div className="row gy-2 gx-4 mb-4">
@@ -54,7 +53,7 @@ function Promotion() {
             <div className="ratio ratio-16x9 rounded-4 overflow-hidden shadow">
               <iframe
                 src="https://www.youtube.com/embed/ePLajxLpUNk?autoplay=1&mute=1&si=AP2KHZ1LSSED55bX"
-                title="YouTube video player"
+                title={t("promotion.videoTitle")}
                 allow="autoplay; encrypted-media"
                 allowFullScreen
               ></iframe>

@@ -1,0 +1,330 @@
+{
+  "language": {
+    "select": "Select language"
+  },
+  "seo": {
+    "landingTitle": "Aletisalat | Work Abroad Without the Guesswork"
+  },
+  "nav": {
+    "logoAlt": "Logo",
+    "home": "Home",
+    "hero": "Hero",
+    "process": "Process",
+    "services": "Services",
+    "about": "About",
+    "gallery": "Gallery",
+    "testimonials": "Testimonials",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "dashboard": "Dashboard"
+  },
+  "hero": {
+    "eyebrow": "Ethiopia to the Gulf, done right",
+    "headingLine1": "Work abroad,",
+    "headingLine2": "without the guesswork.",
+    "sub": "ALETISALAT places skilled Ethiopians in verified jobs across Saudi Arabia, Jordan, and the Gulf — every contract checked, every step explained before you sign.",
+    "taglineTitle": "Connecting People. Creating Opportunities. Building Better Futures.",
+    "applyNow": "Apply now",
+    "aboutUs": "About us",
+    "stampLine1": "Licensed",
+    "stampLine2": "Agency",
+    "stats": {
+      "placed": "Ethiopians placed abroad",
+      "countries": "destination countries",
+      "licensed": "licensed and contract-checked"
+    },
+    "mapLabel": "Animated map of flight routes from Addis Ababa looping through Amman, Riyadh, Kuwait City, and Dubai, flown by a plane",
+    "cities": {
+      "addisAbaba": "Addis Ababa",
+      "amman": "Amman",
+      "riyadh": "Riyadh",
+      "kuwait": "Kuwait City",
+      "dubai": "Dubai"
+    }
+  },
+  "process": {
+    "title": "The Process",
+    "description": "Our streamlined process ensures a smooth and efficient journey for overseas employment, guiding you through every step from registration to deployment.",
+    "steps": {
+      "registration": {
+        "title": "Registration",
+        "desc": "Register with the agency by submitting your personal details, identification documents, and creating your official overseas employment profile."
+      },
+      "qualification": {
+        "title": "Qualification",
+        "desc": "Complete required training, competency assessment, medical examination, and pre-employment orientation to become eligible for overseas placement."
+      },
+      "placement": {
+        "title": "Job Placement",
+        "desc": "Get matched with a verified employer, complete interviews, sign your employment contract, and process your visa and work permit."
+      },
+      "deployment": {
+        "title": "Deployment",
+        "desc": "Attend pre-departure orientation, finalize travel arrangements, receive exit clearance, and begin your overseas employment journey."
+      }
+    }
+  },
+  "services": {
+    "title": "Our Services",
+    "description": "ALETISALAT Private Foreign Employment Agency delivers ethical, transparent, and professional foreign employment services — connecting qualified Ethiopian workers with legitimate international opportunities while creating value for workers, employers, families, and communities.",
+    "items": {
+      "recruitment": {
+        "title": "Foreign Employment Recruitment",
+        "desc": "We connect qualified Ethiopian workers with suitable employment opportunities in international markets."
+      },
+      "placement": {
+        "title": "Workforce Selection & Placement",
+        "desc": "We identify, screen, assess, and place candidates according to employer requirements and applicable regulations."
+      },
+      "employer": {
+        "title": "Employer Recruitment Services",
+        "desc": "We support international employers in sourcing suitable, qualified, and dependable workers."
+      },
+      "candidate": {
+        "title": "Candidate Support",
+        "desc": "We guide candidates throughout the recruitment and placement process and provide the necessary information and assistance."
+      },
+      "documentation": {
+        "title": "Documentation & Processing Support",
+        "desc": "We assist with the necessary recruitment, employment, and travel documentation in accordance with applicable requirements."
+      },
+      "orientation": {
+        "title": "Pre-Departure Orientation",
+        "desc": "We help selected workers understand their employment conditions, responsibilities, rights, and expectations before departure."
+      }
+    }
+  },
+  "aboutSnippet": {
+    "badge": "Trusted Overseas Recruitment",
+    "imageAlt": "ALETISALAT Private Foreign Employment Agency",
+    "tag": "ABOUT ALETISALAT",
+    "p1": "<strong>ALETISALAT Private Foreign Employment Agency</strong> is a professional foreign employment and workforce placement agency committed to connecting qualified Ethiopian workers with legitimate employment opportunities abroad.",
+    "p2": "We believe that employment is more than simply finding a job. It is about creating opportunities that improve lives, strengthen families, develop skills, and contribute to a better future.",
+    "p3": "Our agency works to build a trusted bridge between Ethiopian job seekers and international employers by providing responsible, transparent, professional, and efficient recruitment services.",
+    "p4": "At <strong>ALETISALAT</strong>, we are committed to protecting the dignity and interests of workers while helping employers access reliable, qualified, and motivated human resources.",
+    "learnMore": "Learn More"
+  },
+  "gallery": {
+    "title": "Capturing Memorable Moments",
+    "description": "Explore our gallery of professional photographs capturing Ethiopian employees, events, and milestones—preserving memories of every special occasion.",
+    "itemLabel": "Gallery item: {{title}}",
+    "imageAlt": "Gallery Image",
+    "empty": "No gallery items available.",
+    "close": "Close gallery modal",
+    "previous": "Previous image",
+    "next": "Next image"
+  },
+  "testimonials": {
+    "title": "Testimonials",
+    "description": "Hear from our successful candidates who achieved their overseas career goals through our agency.",
+    "happyClient": "Happy Client",
+    "satisfiedClients": "Satisfied Clients",
+    "sidebarTitle": "Discover What Our Clients Say About Us",
+    "sidebarText": "Trust and success are our greatest pride. Read the experiences of those we've helped.",
+    "positions": {
+      "marketingDirector": "Marketing Director",
+      "techLead": "Tech Lead",
+      "startupFounder": "Startup Founder",
+      "productDesigner": "Product Designer"
+    }
+  },
+  "contact": {
+    "title": "Contact Us Anytime",
+    "getInTouch": "Get In Touch",
+    "intro": "Have a question or need assistance? We are here to help! Reach out to us for any inquiries, and we will get back to you promptly.",
+    "defaultOfficeName": "a Office",
+    "defaultAddress": "Addis Ababa, Ethiopia",
+    "mobile": "Mobile",
+    "email": "Email",
+    "loadingMap": "Loading map...",
+    "form": {
+      "name": "Your Name",
+      "email": "Your Email",
+      "phone": "Phone",
+      "message": "Message",
+      "messagePlaceholder": "Leave a message here",
+      "submit": "Submit"
+    },
+    "errors": {
+      "messageRequired": "Message is required",
+      "messageTooLong": "Message must be less than 500 characters",
+      "nameTooLong": "Name must be less than 50 characters",
+      "emailInvalid": "Invalid email format",
+      "emailTooLong": "Email must be less than 150 characters",
+      "phoneRequired": "Phone required",
+      "phoneInvalid": "Enter a valid phone number (optional +country code, {{min}}-{{max}} digits, spaces allowed)."
+    },
+    "success": "Email sent successfully!",
+    "failed": "Failed to send email"
+  },
+  "whatsapp": {
+    "fabLabel": "Chat on WhatsApp",
+    "cardAriaLabel": "Contact us on WhatsApp",
+    "cardTitle": "WhatsApp",
+    "cardSubtitle": "Typically replies instantly",
+    "close": "Close",
+    "description": "Choose a number to start a conversation with our team.",
+    "number1Label": "Number 1",
+    "number2Label": "Number 2"
+  },
+  "aboutDetail": {
+    "title": "About ALETISALAT",
+    "kicker": "Striving for a Better Future for Others.",
+    "lead": "<strong>ALETISALAT Private Foreign Employment Agency</strong> is a professional foreign employment and workforce placement agency committed to connecting qualified Ethiopian workers with legitimate employment opportunities abroad. We believe that employment is more than simply finding a job. It is about creating opportunities that improve lives, strengthen families, develop skills, and contribute to a better future. Our agency works to build a trusted bridge between Ethiopian job seekers and international employers by providing responsible, transparent, professional, and efficient recruitment services.",
+    "tagline": "\"Connecting People. Creating Opportunities. Building Better Futures.\"",
+    "visionMission": {
+      "eyebrow": "Who We Are",
+      "title": "Vision & Mission",
+      "visionLabel": "Our Vision",
+      "vision": "\"We strive to create a better future for others by connecting people with meaningful opportunities.\"",
+      "missionLabel": "Our Mission",
+      "mission": "Our mission is to provide ethical, transparent, reliable, and professional foreign employment services by connecting qualified workers with legitimate international employment opportunities while creating value for workers, employers, families, and communities."
+    },
+    "coreValues": {
+      "eyebrow": "What We Stand For",
+      "title": "Our Core Values",
+      "subtitle": "The principles that guide every placement we make.",
+      "items": {
+        "integrity": {
+          "title": "Integrity",
+          "desc": "We conduct our business with honesty, fairness, accountability, and respect."
+        },
+        "trust": {
+          "title": "Trust",
+          "desc": "We build lasting relationships through transparency, reliability, and responsible service."
+        },
+        "peopleFirst": {
+          "title": "People First",
+          "desc": "We put the dignity, safety, rights, and interests of people at the heart of our work."
+        },
+        "professionalism": {
+          "title": "Professionalism",
+          "desc": "We deliver our services with competence, efficiency, discipline, and professionalism."
+        },
+        "opportunity": {
+          "title": "Opportunity",
+          "desc": "We connect people with opportunities that can improve their livelihoods and future."
+        },
+        "excellence": {
+          "title": "Excellence",
+          "desc": "We continuously improve our services to achieve the highest standards of quality and client satisfaction."
+        }
+      }
+    },
+    "whyChoose": {
+      "eyebrow": "Why Us",
+      "title": "Why Choose ALETISALAT?",
+      "items": {
+        "trusted": {
+          "title": "Trusted",
+          "desc": "We value honesty, transparency, and long-term relationships."
+        },
+        "professional": {
+          "title": "Professional",
+          "desc": "We provide organized and professional recruitment and placement services."
+        },
+        "peopleCentered": {
+          "title": "People-Centered",
+          "desc": "We respect the dignity, rights, safety, and interests of workers."
+        },
+        "employerFocused": {
+          "title": "Employer-Focused",
+          "desc": "We help employers find suitable and dependable human resources."
+        },
+        "opportunityDriven": {
+          "title": "Opportunity-Driven",
+          "desc": "We work to open new pathways for Ethiopian workers in the international employment market."
+        },
+        "responsible": {
+          "title": "Responsible",
+          "desc": "We are committed to responsible recruitment and compliance with applicable laws and regulations."
+        }
+      }
+    },
+    "promise": {
+      "eyebrow": "Our Commitment To You",
+      "title": "Our Promise",
+      "items": {
+        "workers": {
+          "title": "To Workers",
+          "desc": "We strive to connect you with legitimate opportunities and provide professional guidance throughout your employment journey."
+        },
+        "employers": {
+          "title": "To Employers",
+          "desc": "We strive to provide qualified, reliable, and suitable human resources according to your requirements."
+        },
+        "partners": {
+          "title": "To Our Partners",
+          "desc": "We build relationships based on trust, professionalism, transparency, and mutual success."
+        }
+      }
+    },
+    "glance": {
+      "eyebrow": "Quick Facts",
+      "title": "ALETISALAT at a Glance",
+      "items": {
+        "companyName": {
+          "label": "Company Name",
+          "value": "ALETISALAT Private Foreign Employment Agency"
+        },
+        "industry": {
+          "label": "Industry",
+          "value": "Foreign Employment & Workforce Recruitment"
+        },
+        "coreService": {
+          "label": "Core Service",
+          "value": "International Recruitment & Employment Placement"
+        },
+        "primaryMarket": {
+          "label": "Primary Market",
+          "value": "Ethiopian Workforce & International Employers"
+        },
+        "coreValues": {
+          "label": "Core Values",
+          "value": "Integrity • Trust • People First • Professionalism • Opportunity • Excellence"
+        }
+      }
+    },
+    "future": {
+      "eyebrow": "Looking Ahead",
+      "title": "Our Future",
+      "text": "ALETISALAT aspires to become a trusted and recognized foreign employment agency known for responsible recruitment, professional service, strong international partnerships, and positive impact on the lives of workers and their families. We envision a future where Ethiopian workers can access legitimate international employment opportunities through a trusted, transparent, and professional pathway.",
+      "tagline": "ALETISALAT — Connecting People. Creating Opportunities. Building Better Futures."
+    }
+  },
+  "promotion": {
+    "title": "Building Trust in Overseas Employment",
+    "p1": "We believe working abroad should bring confidence, not uncertainty, so we make every step clear, guided, and accessible for every applicant.",
+    "p2": "From the start of your application to your arrival with your employer, we ensure you understand the process, know what to expect, and feel supported throughout by simplifying complex procedures into clear steps so you can move forward with confidence.",
+    "highlights": {
+      "connections": "Trusted international job connections",
+      "process": "Clear and simple application process",
+      "guidance": "Step-by-step guidance",
+      "information": "Transparent and accurate information",
+      "support": "Support throughout your journey",
+      "ethical": "Safe and ethical recruitment"
+    },
+    "videoTitle": "YouTube video player"
+  },
+  "footer": {
+    "gallery": "Gallary",
+    "agencyName": "ALETISALAT Private Foreign Employment Agency",
+    "developedBy": "Developed by",
+    "rights": "All Rights Reserved."
+  },
+  "notFound": {
+    "message": "Oops! The page you're looking for doesn't exist. Explore our properties or return to the homepage to continue with your search.",
+    "backHome": "Back To Home"
+  },
+  "install": {
+    "fabLabel": "Install App",
+    "title": "Install Aletisalat",
+    "subtitle": "Get quick access from your home screen",
+    "close": "Close",
+    "description": "Install this app on your device for a faster, app-like experience.",
+    "worksOffline": "Works Offline",
+    "fastLightweight": "Fast & Lightweight",
+    "install": "Install",
+    "notNow": "Not Now"
+  }
+}

@@ -7,6 +7,7 @@ import {
   MdSpeed,
 } from "react-icons/md";
 
+import { useTranslation } from "react-i18next";
 import styles from "./Install.module.css";
 
 /** True when already running inside the installed PWA (standalone mode) */
@@ -15,6 +16,7 @@ const isRunningAsApp = () =>
   window.navigator.standalone === true;
 
 export default function Install() {
+  const { t } = useTranslation();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [cardOpen, setCardOpen] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -95,8 +97,8 @@ export default function Install() {
       <button
         className={`${styles.fab} ${styles.fabDefault}`}
         onClick={() => setCardOpen((prev) => !prev)}
-        aria-label="Install App"
-        title="Install App"
+        aria-label={t("install.fabLabel")}
+        title={t("install.fabLabel")}
       >
         <span className={styles.fabIcon}>
           <MdDownloadForOffline />
@@ -108,7 +110,7 @@ export default function Install() {
         className={`${styles.card} ${cardOpen ? styles.cardOpen : ""}`}
         role="dialog"
         aria-modal="true"
-        aria-label="Install App"
+        aria-label={t("install.fabLabel")}
       >
         {/* Header */}
         <div className={styles.cardHeader}>
@@ -119,16 +121,14 @@ export default function Install() {
           </div>
 
           <div className={styles.headerText}>
-            <p className={styles.appTitle}>Install Aletisalat</p>
-            <p className={styles.appSubtitle}>
-              Get quick access from your home screen
-            </p>
+            <p className={styles.appTitle}>{t("install.title")}</p>
+            <p className={styles.appSubtitle}>{t("install.subtitle")}</p>
           </div>
 
           <button
             className={styles.closeBtn}
             onClick={() => setCardOpen(false)}
-            aria-label="Close"
+            aria-label={t("install.close")}
           >
             <MdClose />
           </button>
@@ -136,18 +136,16 @@ export default function Install() {
 
         {/* Body */}
         <div className={styles.cardBody}>
-          <p className={styles.description}>
-            Install this app on your device for a faster, app-like experience.
-          </p>
+          <p className={styles.description}>{t("install.description")}</p>
 
           <div className={styles.features}>
             <span className={styles.pill}>
               <MdWifiOff />
-              Works Offline
+              {t("install.worksOffline")}
             </span>
             <span className={styles.pill}>
               <MdSpeed />
-              Fast & Lightweight
+              {t("install.fastLightweight")}
             </span>
           </div>
         </div>
@@ -158,11 +156,11 @@ export default function Install() {
         <div className={styles.btnRow}>
           <button className={styles.btnInstall} onClick={handleInstall}>
             <MdDownloadForOffline />
-            Install
+            {t("install.install")}
           </button>
 
           <button className={styles.btnIgnore} onClick={handleIgnore}>
-            Not Now
+            {t("install.notNow")}
           </button>
         </div>
       </div>

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./Gallery.module.css";
 import getGalleryItems from "../../api/gallery.api";
 import useLoader from "../../../../context/Loader/useLoader";
 
 const Gallery = () => {
+  const { t } = useTranslation();
   const { showLoader, hideLoader } = useLoader();
 
   const [galleryItems, setGalleryItems] = useState([]);
@@ -77,13 +79,9 @@ const Gallery = () => {
           <div className="col-lg-7 col-md-10 text-center">
             <div className="sec-heading-center">
               <h2 id="gallery-title" className="fw-bold">
-                Capturing Memorable Moments
+                {t("gallery.title")}
               </h2>
-              <p>
-                Explore our gallery of professional photographs capturing
-                Ethiopian employees, events, and milestones—preserving memories of
-                every special occasion.
-              </p>
+              <p>{t("gallery.description")}</p>
             </div>
           </div>
         </div>
@@ -94,7 +92,7 @@ const Gallery = () => {
             <div
               key={item.id}
               className="col-12 col-md-4"
-              aria-label={`Gallery item: ${item.title}`}
+              aria-label={t("gallery.itemLabel", { title: item.title })}
             >
               <div
                 className={`card border-0 shadow-sm ${styles["gallery-card"]}`}
@@ -108,7 +106,7 @@ const Gallery = () => {
                 <div className={styles["image-wrapper"]}>
                   <img
                     src={item.image_url}
-                    alt={item.title || "Gallery Image"}
+                    alt={item.title || t("gallery.imageAlt")}
                     loading="lazy"
                     className={`card-img-top ${styles["gallery-image"]}`}
                   />
@@ -124,7 +122,7 @@ const Gallery = () => {
 
           {galleryItems.length === 0 && (
             <div className="col-12 text-center text-muted ">
-              <p>No gallery items available.</p>
+              <p>{t("gallery.empty")}</p>
             </div>
           )}
         </div>
@@ -146,7 +144,7 @@ const Gallery = () => {
             <button
               className={styles["close-button"]}
               onClick={closeModal}
-              aria-label="Close gallery modal"
+              aria-label={t("gallery.close")}
             >
               &times;
             </button>
@@ -154,7 +152,7 @@ const Gallery = () => {
             <div className={styles["image-container"]}>
               <img
                 src={selectedItem.image_url}
-                alt={selectedItem.title || "Gallery Image"}
+                alt={selectedItem.title || t("gallery.imageAlt")}
                 loading="lazy"
                 className={styles["modal-image"]}
               />
@@ -171,7 +169,7 @@ const Gallery = () => {
                 e.stopPropagation();
                 navigate("prev");
               }}
-              aria-label="Previous image"
+              aria-label={t("gallery.previous")}
             >
               &#10094;
             </button>
@@ -182,7 +180,7 @@ const Gallery = () => {
                 e.stopPropagation();
                 navigate("next");
               }}
-              aria-label="Next image"
+              aria-label={t("gallery.next")}
             >
               &#10095;
             </button>

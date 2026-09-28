@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import getSocialMedias from "../../../domains/public/api/socialMedia.api";
 import { getLocation } from "../../../domains/admin/api/location.api";
 
 const Footer = () => {
+  const { t } = useTranslation();
   const [agencyData, setAgencyData] = useState({
     agency_name: "ALETISALAT Private Foreign Employment Agency",
     agency_email: "",
@@ -102,12 +104,12 @@ const Footer = () => {
         <div className="col-12">
           <div className="footer-content pb-0">
             <div className="footer-links">
-              <a href="#how">Process</a>
-              <a href="#services">Services</a>
-              <a href="#about">About</a>
-              <a href="#gallery">Gallary</a>
-              <a href="#testimonials">Testimonials</a>
-              <a href="#contact">Contact</a>
+              <a href="#how">{t("nav.process")}</a>
+              <a href="#services">{t("nav.services")}</a>
+              <a href="#about">{t("nav.about")}</a>
+              <a href="#gallery">{t("footer.gallery")}</a>
+              <a href="#testimonials">{t("nav.testimonials")}</a>
+              <a href="#contact">{t("nav.contact")}</a>
             </div>
           </div>
         </div>
@@ -121,15 +123,15 @@ const Footer = () => {
             {/* Left side */}
             <div className="col-lg-8 col-md-8 text-center text-md-start mb-2 mb-md-0">
               <p className="mb-0">
-                © {new Date().getFullYear()} ALETISALAT Private Foreign
-                Employment Agency | Developed by{" "}
+                © {new Date().getFullYear()} {t("footer.agencyName")} |{" "}
+                {t("footer.developedBy")}{" "}
                 <a
                   href="https://abakastech.com/"
                   className="brand-link fw-bold"
                 >
                   Abakas Technologies{" "}
                 </a>
-                | All Rights Reserved.
+                | {t("footer.rights")}
               </p>
             </div>
 

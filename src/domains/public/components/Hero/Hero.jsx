@@ -1,45 +1,44 @@
+import { useTranslation } from "react-i18next";
 import styles from "./Hero.module.css";
 
-// The company's verified primary tagline, in both languages. Deliberately
-// static rather than translated per-headline — the client's company profile
-// only provides an approved Amharic version of this one core tagline, so
-// making up a translation for anything else risks shipping wording the
-// client never signed off on.
-const TAGLINE_EN =
-  "Connecting People. Creating Opportunities. Building Better Futures.";
+// The company's verified primary tagline. The approved Amharic wording is
+// always displayed as-is (it's the client-signed-off brand line); its
+// tooltip shows the tagline in the visitor's language (hero.taglineTitle).
 const TAGLINE_AM = "ሰዎችን እናገናኛለን። ዕድሎችን እንፈጥራለን። የተሻለ ወደፊት እንገነባለን።";
 
+// Stat labels are translation keys (hero.stats.*).
 const STATS = [
-  { value: "12,000+", label: "Ethiopians placed abroad" },
-  { value: "3", label: "destination countries" },
-  { value: "100%", label: "licensed and contract-checked" },
+  { value: "12,000+", labelKey: "hero.stats.placed" },
+  { value: "3", labelKey: "hero.stats.countries" },
+  { value: "100%", labelKey: "hero.stats.licensed" },
 ];
 
 // Destination nodes for the route illustration, positioned by hand in the
-// artwork's 560x700 coordinate space. Origin is Addis Ababa.
-const ORIGIN = { x: 96, y: 566, label: "Addis Ababa" };
+// artwork's 560x700 coordinate space. Origin is Addis Ababa. City labels
+// are translation keys (hero.cities.*).
+const ORIGIN = { x: 96, y: 566, labelKey: "hero.cities.addisAbaba" };
 const ROUTES = [
   {
     id: "amman",
-    label: "Amman",
+    labelKey: "hero.cities.amman",
     node: { x: 268, y: 196 },
     control: { x: 176, y: 322 },
   },
   {
     id: "riyadh",
-    label: "Riyadh",
+    labelKey: "hero.cities.riyadh",
     node: { x: 334, y: 372 },
     control: { x: 220, y: 418 },
   },
   {
     id: "kuwait",
-    label: "Kuwait City",
+    labelKey: "hero.cities.kuwait",
     node: { x: 384, y: 292 },
     control: { x: 252, y: 372 },
   },
   {
     id: "dubai",
-    label: "Dubai",
+    labelKey: "hero.cities.dubai",
     node: { x: 432, y: 456 },
     control: { x: 300, y: 520 },
   },
@@ -85,33 +84,31 @@ const buildFlightPath = () => {
 const FLIGHT_PATH = buildFlightPath();
 
 function Hero() {
+  const { t } = useTranslation();
+
   return (
     <section className={styles.hero} id="home">
       <div className={styles.grain} aria-hidden="true" />
 
       <div className={styles.inner}>
         <div className={styles.content}>
-          <p className={styles.eyebrow}>Ethiopia to the Gulf, done right</p>
+          <p className={styles.eyebrow}>{t("hero.eyebrow")}</p>
 
           <h1 className={styles.heading}>
-            <span className={styles.line}>Work abroad,</span>
-            <span className={styles.line}>without the guesswork.</span>
+            <span className={styles.line}>{t("hero.headingLine1")}</span>
+            <span className={styles.line}>{t("hero.headingLine2")}</span>
           </h1>
 
-          <p className={styles.sub}>
-            ALETISALAT places skilled Ethiopians in verified jobs across Saudi
-            Arabia, Jordan, and the Gulf — every contract checked, every step
-            explained before you sign.
-          </p>
+          <p className={styles.sub}>{t("hero.sub")}</p>
 
-          {/* Static bilingual tagline — same on every view; see note above the constants. */}
-          <p className={styles.tagline} title={TAGLINE_EN}>
+          {/* Approved Amharic tagline — same on every view; see note above the constants. */}
+          <p className={styles.tagline} title={t("hero.taglineTitle")} lang="am">
             {TAGLINE_AM}
           </p>
 
           <div className={styles.actions}>
             <a href="#contact" className={styles.btnPrimary}>
-              <span>Apply now</span>
+              <span>{t("hero.applyNow")}</span>
               <svg
                 className={styles.btnPlane}
                 viewBox="0 0 16 16"
@@ -123,7 +120,7 @@ function Hero() {
               </svg>
             </a>
             <a href="#about" className={styles.btnSecondary}>
-              About us
+              {t("hero.aboutUs")}
             </a>
           </div>
         </div>
@@ -135,9 +132,9 @@ function Hero() {
           <div className={styles.stamp}>
             <span className={styles.stampRing} />
             <span className={styles.stampText}>
-              Licensed
+              {t("hero.stampLine1")}
               <br />
-              Agency
+              {t("hero.stampLine2")}
             </span>
           </div>
         </div>
@@ -145,9 +142,9 @@ function Hero() {
 
       <div className={styles.stats}>
         {STATS.map((stat) => (
-          <div className={styles.stat} key={stat.label}>
+          <div className={styles.stat} key={stat.labelKey}>
             <span className={styles.statValue}>{stat.value}</span>
-            <span className={styles.statLabel}>{stat.label}</span>
+            <span className={styles.statLabel}>{t(stat.labelKey)}</span>
           </div>
         ))}
       </div>
@@ -156,12 +153,18 @@ function Hero() {
 }
 
 function FlightRoutes() {
+  const { t } = useTranslation();
+
+  // The map is geometry laid out left-to-right (Addis Ababa bottom-left),
+  // so it stays LTR even when the page is RTL — only its labels translate.
   return (
     <svg
       viewBox="0 0 560 700"
       className={styles.routeSvg}
       role="img"
-      aria-label="Animated map of flight routes from Addis Ababa looping through Amman, Riyadh, Kuwait City, and Dubai, flown by a plane"
+      aria-label={t("hero.mapLabel")}
+      direction="ltr"
+      style={{ direction: "ltr" }}
     >
       <defs>
         <linearGradient id="routeGold" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -268,7 +271,7 @@ function FlightRoutes() {
             y={route.node.y + 4}
             className={styles.nodeLabel}
           >
-            {route.label}
+            {t(route.labelKey)}
           </text>
         </g>
       ))}
@@ -276,7 +279,7 @@ function FlightRoutes() {
       {/* Origin node */}
       <circle cx={ORIGIN.x} cy={ORIGIN.y} r="7" className={styles.originNode} />
       <text x={ORIGIN.x} y={ORIGIN.y + 30} className={styles.originLabel}>
-        {ORIGIN.label}
+        {t(ORIGIN.labelKey)}
       </text>
 
       {/* Looping plane, flown along the full journey Addis Ababa -> Amman ->

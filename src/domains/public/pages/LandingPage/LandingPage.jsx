@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Testimonials from "../../components/Testimonials/Testimonials";
 import Hero from "../../components/Hero/Hero";
 import HowItWorks from "../../components/HowItWorks/HowItWorks";
@@ -10,9 +11,11 @@ import SEO from "../../../../shared/components/SEO/SEO";
 import WhatsAppButton from "../../components/WhatsAppButton/WhatsAppButton";
 
 function LandingPage() {
+  const { t } = useTranslation();
+
   return (
     <>
-      <SEO title="Aletisalat | Work Abroad Without the Guesswork" />
+      <SEO title={t("seo.landingTitle")} />
       <WhatsAppButton />
       <Hero />
       <HowItWorks />

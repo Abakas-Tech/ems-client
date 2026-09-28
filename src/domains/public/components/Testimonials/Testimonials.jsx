@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 
@@ -12,31 +13,33 @@ import person2 from "../../../../assets/img/testimonials/image-2.png";
 import person3 from "../../../../assets/img/testimonials/image-3.png";
 import person4 from "../../../../assets/img/testimonials/image-1.png";
 
+// Names are shown as written; positions are translation keys
+// (testimonials.positions.*). The quotes are the existing placeholder text.
 const testimonialData = [
   {
     name: "Sophia Anderson",
-    position: "Marketing Director",
+    positionKey: "testimonials.positions.marketingDirector",
     image: person1,
     quote:
       "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
   },
   {
     name: "Marcus Webb",
-    position: "Tech Lead",
+    positionKey: "testimonials.positions.techLead",
     image: person2,
     quote:
       "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.",
   },
   {
     name: "Elena Rodriguez",
-    position: "Startup Founder",
+    positionKey: "testimonials.positions.startupFounder",
     image: person3,
     quote:
       "Itaque earum rerum hic tenetur a sapiente delectus ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.",
   },
   {
     name: "Oliver Thompson",
-    position: "Product Designer",
+    positionKey: "testimonials.positions.productDesigner",
     image: person4,
     quote:
       "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
@@ -44,15 +47,14 @@ const testimonialData = [
 ];
 
 const Testimonials = () => {
+  const { t, i18n } = useTranslation();
+
   return (
     <section id="testimonials" className="testimonials section pb-0">
       {/* Section Title */}
       <div className="container text-center mb-5" data-aos="fade-up">
-        <h2>Testimonials</h2>
-        <p>
-          Hear from our successful candidates who achieved their overseas career
-          goals through our agency.
-        </p>
+        <h2>{t("testimonials.title")}</h2>
+        <p>{t("testimonials.description")}</p>
       </div>
 
       <div className="container" data-aos="fade-up" data-aos-delay="100">
@@ -61,21 +63,19 @@ const Testimonials = () => {
           <div className="col-lg-4" data-aos="fade-right" data-aos-delay="150">
             <div className="testimonials-sidebar">
               <div className="avatar-stack">
-                <img src={person1} alt="Happy Client" className="avatar" />
-                <img src={person2} alt="Happy Client" className="avatar" />
-                <img src={person3} alt="Happy Client" className="avatar" />
-                <img src={person4} alt="Happy Client" className="avatar" />
+                <img src={person1} alt={t("testimonials.happyClient")} className="avatar" />
+                <img src={person2} alt={t("testimonials.happyClient")} className="avatar" />
+                <img src={person3} alt={t("testimonials.happyClient")} className="avatar" />
+                <img src={person4} alt={t("testimonials.happyClient")} className="avatar" />
                 <span className="avatar-count">+2.5k</span>
               </div>
               <div className="sidebar-content">
                 <span className="satisfied-badge">
-                  <i className="bi bi-heart-fill"></i> Satisfied Clients
+                  <i className="bi bi-heart-fill"></i>{" "}
+                  {t("testimonials.satisfiedClients")}
                 </span>
-                <h3>Discover What Our Clients Say About Us</h3>
-                <p>
-                  Trust and success are our greatest pride. Read the experiences
-                  of those we've helped.
-                </p>
+                <h3>{t("testimonials.sidebarTitle")}</h3>
+                <p>{t("testimonials.sidebarText")}</p>
               </div>
             </div>
           </div>
@@ -83,6 +83,10 @@ const Testimonials = () => {
           {/* Right Testimonials Slider */}
           <div className="col-lg-8" data-aos="fade-left" data-aos-delay="200">
             <Swiper
+              // Re-created when the language (and so the direction) changes,
+              // so the slider lays itself out for LTR or RTL correctly.
+              key={i18n.language}
+              dir={i18n.dir()}
               modules={[Autoplay, Pagination]}
               loop={true}
               speed={700}
@@ -125,7 +129,7 @@ const Testimonials = () => {
                       />
                       <div className="author-details">
                         <h5>{item.name}</h5>
-                        <span>{item.position}</span>
+                        <span>{t(item.positionKey)}</span>
                       </div>
                     </div>
                   </div>

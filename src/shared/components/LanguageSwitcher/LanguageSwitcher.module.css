@@ -1,0 +1,95 @@
+/* Public-site language selector (English / Amharic / Arabic).
+   Ported from the agency-public LanguageSwitcher, using this site's
+   header colors. */
+.switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background-color: #4484ba;
+  border: 1px solid #4484ba;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+  line-height: 1.2;
+}
+
+.trigger:hover {
+  background-color: #0b1f3a;
+  border-color: #0b1f3a;
+}
+
+.label {
+  color: #fff;
+}
+
+.rotated {
+  transform: rotate(180deg);
+  transition: transform 0.2s;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e3e8ef;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(11, 31, 58, 0.15);
+  min-width: 160px;
+  overflow: hidden;
+  z-index: 1060;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+[dir="rtl"] .dropdown {
+  right: auto;
+  left: 0;
+}
+
+/* In the mobile drawer the menu opens inline under the trigger. */
+.inDrawer .dropdown {
+  position: static;
+  margin-top: 8px;
+  box-shadow: none;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0b1f3a;
+  cursor: pointer;
+  text-align: start;
+}
+
+.option:hover {
+  background: #f2f6fb;
+  color: #4484ba;
+}
+
+.option.active {
+  color: #4484ba;
+  background: #eaf2fa;
+}
+
+.check {
+  margin-inline-start: auto;
+}

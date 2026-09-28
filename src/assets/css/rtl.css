@@ -1,0 +1,49 @@
+/* ---------------------------------------------
+   Right-to-left adjustments for the public website (Arabic).
+   Every rule is scoped to [dir="rtl"], which is only set while a public
+   page is shown in Arabic (see usePageDirection), so English, Amharic and
+   the dashboards are untouched.
+--------------------------------------------- */
+
+/* Header: logo on the right, menu mirrored to read right-to-left */
+[dir="rtl"] .nav-header {
+  float: right;
+}
+
+[dir="rtl"] .nav-brand {
+  padding: 0px 0px 0px 15px;
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+[dir="rtl"] .align-to-right {
+  float: left;
+}
+
+[dir="rtl"] .nav-menu > li {
+  float: right;
+  text-align: right;
+}
+
+[dir="rtl"] .navigation-portrait .nav-menu > li > a {
+  padding: 12px 26px 12px 15px;
+}
+
+[dir="rtl"] .nav-menus-wrapper-close-button {
+  float: left;
+}
+
+/* Mobile drawer opens from the right in RTL: pin the (320px) menu to the
+   drawer's right edge so it extends over the page instead of off-screen. */
+[dir="rtl"] .navigation-portrait .nav-menus-wrapper.nav-menus-wrapper-open {
+  left: auto;
+  right: 0;
+}
+
+/* The Services section's decorative background (.services:before) is
+   anchored to the right edge and wider than phone screens. In LTR its
+   overflow falls off the left edge, which never scrolls; in RTL that side
+   scrolls, so clip it horizontally to avoid a sideways scrollbar. */
+[dir="rtl"] .services {
+  overflow-x: clip;
+}
