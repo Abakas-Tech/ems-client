@@ -15,6 +15,23 @@ export const INVOICE_PAGE_WIDTH_MM = 184;
 export const INVOICE_ELEMENT_WIDTH_MM = { stamp: 32, signature: 40 };
 export const INVOICE_BOTTOM_CENTER_MM = 6;
 
+// Default layout: signature and stamp side by side, centered on the page
+// as a pair (signature left, stamp right) with a gap between them, so they
+// never cover each other. `widths` are the current element widths (mm).
+export const INVOICE_ELEMENT_GAP_MM = 10;
+export const invoiceDefaultElementLeft = (
+  kind,
+  widths = INVOICE_ELEMENT_WIDTH_MM,
+) => {
+  const pairWidth = widths.signature + INVOICE_ELEMENT_GAP_MM + widths.stamp;
+  const start = (INVOICE_PAGE_WIDTH_MM - pairWidth) / 2;
+  const left =
+    kind === "signature"
+      ? start
+      : start + widths.signature + INVOICE_ELEMENT_GAP_MM;
+  return Math.round(left * 10) / 10;
+};
+
 // Default name of the printed/saved file (the browser adds ".pdf").
 export const DEFAULT_INVOICE_FILE_NAME = "invoice";
 
@@ -273,7 +290,7 @@ const REPORT_STYLES = `
   tbody td{padding:5px 7px;vertical-align:middle;border-right:1px solid #e8edf8;}
   tbody td:last-child{border-right:none;}
   tfoot .totals-row td{padding:7px;font-weight:800;font-size:9.5pt;color:#1a3c6e;background:#eaf1fc;border-top:2px solid #1a3c6e;}
-  .pf{position:absolute;bottom:0;left:0;right:0;padding-top:5px;border-top:1.5px solid #c8d8f0;display:flex;justify-content:space-between;font-size:7pt;color:#8a97b0;background:#fff;}
+  .pf{position:absolute;bottom:0;left:0;right:0;padding-top:5px;border-top:1.5px solid #c8d8f0;display:flex;justify-content:space-between;font-size:9pt;font-weight:600;color:#5a6a85;background:#fff;}
   .section-title{font-size:8.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#1a3c6e;margin:16px 0 8px;padding-bottom:5px;border-bottom:2px solid #e2e8f0;}
   .notes-box{font-size:8.5pt;color:#3c4a63;line-height:1.5;margin-bottom:8px;}
   .bank-box{font-size:9pt;color:#2b3a55;line-height:2.1;margin:26px 0 12px;padding:0;}
@@ -287,8 +304,10 @@ const REPORT_STYLES = `
      its white paper margins drawn around it — the page box itself is laid
      out exactly as printed. */
   @media screen{
-    body.doc-preview{background:#e9edf3;padding:7mm 0;}
-    body.doc-preview .page{background:#fff;margin:0 auto;box-shadow:0 0 0 5mm #fff,0 0 0 calc(5mm + 1px) #d5dbe5;}
+    html:has(body.doc-preview){overflow-y:hidden;scrollbar-width:none;}
+    html:has(body.doc-preview)::-webkit-scrollbar{width:0;height:0;}
+    body.doc-preview{background:#fff;padding:4mm 0;}
+    body.doc-preview .page{margin:0 auto;}
   }
 `;
 

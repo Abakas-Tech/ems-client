@@ -8,6 +8,7 @@ import {
   INVOICE_PAGE_WIDTH_MM,
   INVOICE_ELEMENT_WIDTH_MM,
   INVOICE_BOTTOM_CENTER_MM,
+  invoiceDefaultElementLeft,
 } from "../InvoicePrint/InvoicePrint";
 import { fetchOrganizationSettings } from "../../../api/organizationSettings.api";
 import {
@@ -83,6 +84,9 @@ const InvoicePrintPreview = ({ invoiceId }) => {
   // Kinds being attached right now (image loading) — shown as on meanwhile
   const [attachingKinds, setAttachingKinds] = useState([]);
   const previewFrameRef = useRef(null);
+  // The preview iframe is sized to the whole invoice page, so the page
+  // itself never shows a scrollbar.
+  const [previewHeight, setPreviewHeight] = useState(850);
   const previewEditorRef = useRef(null);
   const printElementsRef = useRef(printElements);
   const selectedPrintElementRef = useRef(selectedPrintElementId);
@@ -138,6 +142,28 @@ const InvoicePrintPreview = ({ invoiceId }) => {
     return orgImageCacheRef.current[kind];
   };
 
+  // Default position of a stamp/signature: the centered side-by-side pair
+  // (see invoiceDefaultElementLeft), just above the footer. Uses the
+  // current widths so a resized element still doesn't overlap the other.
+  const defaultPlacement = (kind, image, width, elements) => {
+    const widths = { ...INVOICE_ELEMENT_WIDTH_MM };
+    elements.forEach((el) => {
+      widths[el.type] = el.width;
+    });
+    widths[kind] = width;
+    return {
+      ...createBottomCenterElement({
+        type: kind,
+        src: image.src,
+        aspect: image.aspect,
+        width,
+        pageWidthMm: INVOICE_PAGE_WIDTH_MM,
+        bottomMm: INVOICE_BOTTOM_CENTER_MM,
+      }),
+      left: invoiceDefaultElementLeft(kind, widths),
+    };
+  };
+
   const isAttached = (kind) =>
     attachingKinds.includes(kind) ||
     printElements.some((el) => el.type === kind);
@@ -152,18 +178,13 @@ const InvoicePrintPreview = ({ invoiceId }) => {
     setAttachingKinds((prev) => [...prev, kind]);
     try {
       const image = await getOrgImage(kind);
-      const element = createBottomCenterElement({
-        type: kind,
-        src: image.src,
-        aspect: image.aspect,
-        width: INVOICE_ELEMENT_WIDTH_MM[kind],
-        pageWidthMm: INVOICE_PAGE_WIDTH_MM,
-        bottomMm: INVOICE_BOTTOM_CENTER_MM,
+      setPrintElements((prev) => {
+        const others = prev.filter((el) => el.type !== kind);
+        return [
+          ...others,
+          defaultPlacement(kind, image, INVOICE_ELEMENT_WIDTH_MM[kind], others),
+        ];
       });
-      setPrintElements((prev) => [
-        ...prev.filter((el) => el.type !== kind),
-        element,
-      ]);
     } catch (err) {
       addMessage(false, err.message);
     } finally {
@@ -171,18 +192,11 @@ const InvoicePrintPreview = ({ invoiceId }) => {
     }
   };
 
-  const handleResetToBottomCenter = () => {
+  const handleResetPositions = () => {
     setPrintElements((prev) =>
       prev.map((el) => ({
         ...el,
-        ...createBottomCenterElement({
-          type: el.type,
-          src: el.src,
-          aspect: el.aspect,
-          width: el.width,
-          pageWidthMm: INVOICE_PAGE_WIDTH_MM,
-          bottomMm: INVOICE_BOTTOM_CENTER_MM,
-        }),
+        ...defaultPlacement(el.type, el, el.width, prev),
         id: el.id,
       })),
     );
@@ -193,6 +207,7 @@ const InvoicePrintPreview = ({ invoiceId }) => {
   const handlePreviewLoad = () => {
     const doc = previewFrameRef.current?.contentDocument;
     if (!doc) return;
+    setPreviewHeight(doc.documentElement.scrollHeight);
     previewEditorRef.current?.destroy();
     previewEditorRef.current = attachDocumentElementEditor(doc, {
       pageWidthMm: INVOICE_PAGE_WIDTH_MM,
@@ -259,7 +274,7 @@ const InvoicePrintPreview = ({ invoiceId }) => {
               onLoad={handlePreviewLoad}
               style={{
                 width: "100%",
-                height: "850px",
+                height: `${previewHeight}px`,
                 border: "none",
                 display: "block",
                 borderRadius: "8px",
@@ -332,10 +347,10 @@ const InvoicePrintPreview = ({ invoiceId }) => {
                     <button
                       type="button"
                       className="btn btn-sm btn-outline-secondary w-100 mt-1"
-                      onClick={handleResetToBottomCenter}
+                      onClick={handleResetPositions}
                     >
-                      <i className="bi bi-align-bottom me-1"></i>
-                      Reset to bottom center
+                      <i className="bi bi-align-center me-1"></i>
+                      Reset positions
                     </button>
                     <p className="small text-muted mb-0 mt-1">
                       Drag to move, drag the blue corner to resize, × or
