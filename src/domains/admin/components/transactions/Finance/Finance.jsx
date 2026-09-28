@@ -578,8 +578,9 @@ const FinancePage = () => {
               )}
 
               {/* Final summary split — how the closed period's final
-                  summary was divided, and the Expense transactions it
-                  generated for the Government and Partner Splitting parts. */}
+                  summary was divided. The Expense transactions it generated
+                  (Government / Partner Splitting) are tagged in the period's
+                  transaction list below. */}
               {isClosed && periodSplit && (
                 <div className="mt-4 pt-4 border-top">
                   <h6 className="text-uppercase text-muted small fw-bold mb-3">
@@ -591,7 +592,6 @@ const FinancePage = () => {
                       ["Deposit (Final Profit)", periodSplit.deposit_amount, "text-success"],
                       ["Government", periodSplit.government_amount, "text-danger"],
                       ["Partner Splitting", periodSplit.partner_splitting_amount, "text-danger"],
-                      ["Remaining Balance", periodSplit.balance_amount, "text-muted"],
                     ].map(([label, value, tone]) => (
                       <div className="col-6 col-md" key={label}>
                         <div className="small text-muted">{label}</div>
@@ -608,50 +608,6 @@ const FinancePage = () => {
                     {formatAmount(periodSplit.partner_splitting_amount)} partner
                     splitting
                   </p>
-
-                  <h6 className="text-uppercase text-muted small fw-bold mt-4 mb-2">
-                    Generated Transactions
-                  </h6>
-                  {periodSplit.transactions?.length ? (
-                    <div className="table-responsive">
-                      <table className="table table-sm align-middle mb-0">
-                        <thead>
-                          <tr>
-                            <th>Split Part</th>
-                            <th>Category</th>
-                            <th>Reference</th>
-                            <th>Date</th>
-                            <th className="text-end">Amount</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {periodSplit.transactions.map((t) => (
-                            <tr key={t.id}>
-                              <td className="fw-semibold">
-                                {SPLIT_PART_LABELS[t.split_part] || t.split_part}
-                              </td>
-                              <td>
-                                <Badge
-                                  content={getCategoryLabel(t.category).toUpperCase()}
-                                  color="red"
-                                />
-                              </td>
-                              <td>{t.reference || "—"}</td>
-                              <td>{formatDate(t.transaction_date)}</td>
-                              <td className="text-end fw-semibold text-danger">
-                                - {formatAmount(t.amount)} Birr
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <p className="text-muted small mb-0">
-                      No Government or Partner Splitting amount, so no
-                      transactions were generated.
-                    </p>
-                  )}
                 </div>
               )}
             </div>
