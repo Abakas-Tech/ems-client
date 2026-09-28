@@ -77,6 +77,27 @@ const cancelInvoice = async (id) => {
   }
 };
 
+// Employees already on another invoice that is not Paid yet — an employee
+// can only be added to a new invoice once their previous invoice is Paid
+// (the backend enforces the same rule on every create/update).
+// Returns [{ user_id, user_full_name, invoice_id, invoice_number, status }].
+const fetchWorkerInvoiceConflicts = async (workerIds = [], excludeInvoiceId) => {
+  if (!workerIds.length) return [];
+  try {
+    const response = await axiosInstance.get(`/invoices/worker-conflicts`, {
+      params: {
+        worker_ids: workerIds.join(","),
+        exclude_invoice_id: excludeInvoiceId || undefined,
+      },
+    });
+    return response.data?.data || [];
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Error checking employee invoices",
+    );
+  }
+};
+
 // ─────────────────────────────────────────────────────────────
 // INVOICE ITEMS
 // ─────────────────────────────────────────────────────────────
@@ -178,6 +199,7 @@ export {
   deleteInvoice,
   issueInvoice,
   cancelInvoice,
+  fetchWorkerInvoiceConflicts,
 
   // Items
   massApplyInvoiceItems,
