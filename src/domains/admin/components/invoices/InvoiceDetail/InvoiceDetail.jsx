@@ -13,6 +13,7 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete.jsx";
 
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import { useAdminOwnership } from "../../../../../utils/adminOwnership";
 import Badge from "../../../../../shared/components/Badge/Badge";
 
 const STATUS_COLORS = {
@@ -45,6 +46,10 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
   // Print Invoice opens the separate print page (preview + print options
   // toolkit), see InvoicePrintPreview.
   const navigate = useNavigate();
+
+  // Admin record ownership: an invoice created by another admin is
+  // view-only for this admin (the API enforces the same rule).
+  const { canModify } = useAdminOwnership();
 
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
@@ -158,8 +163,10 @@ const InvoiceDetail = ({ invoiceId, onBack }) => {
     return nameA.localeCompare(nameB);
   });
 
-  const canIssue = invoice.status === "draft";
-  const canCancel = ["issued", "partially_paid"].includes(invoice.status);
+  const ownsInvoice = canModify(invoice.created_by);
+  const canIssue = invoice.status === "draft" && ownsInvoice;
+  const canCancel =
+    ["issued", "partially_paid"].includes(invoice.status) && ownsInvoice;
   const canRecordPayment = ["issued", "partially_paid"].includes(
     invoice.status,
   );

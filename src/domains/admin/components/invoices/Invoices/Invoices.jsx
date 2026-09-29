@@ -282,11 +282,13 @@ const Invoices = () => {
             type: "edit",
             onClick: (row) => openInvoiceForEdit(row.id),
             showOn: (row) => row.status === "draft",
+            ownerKey: "created_by",
           },
           {
             type: "delete",
             onClick: (row) => handleDelete(row),
             showOn: (row) => row.status === "draft",
+            ownerKey: "created_by",
           },
           {
             type: "issue",

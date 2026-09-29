@@ -152,9 +152,19 @@ const ArchivedWorkers = () => {
           { header: "Current Status", accessor: "status" },
         ]}
         actions={[
-          { type: "restore", onClick: (row) => handleRestore(row.id) },
+          {
+            type: "restore",
+            onClick: (row) => handleRestore(row.id),
+            ownerKey: "created_by",
+          },
           ...(isAdmin
-            ? [{ type: "delete", onClick: (row) => handleDelete(row.id) }]
+            ? [
+                {
+                  type: "delete",
+                  onClick: (row) => handleDelete(row.id),
+                  ownerKey: "created_by",
+                },
+              ]
             : []),
         ]}
         emptyState={{

@@ -632,9 +632,19 @@ const ActiveWorkers = () => {
   const actions = isArchivedView
     ? [
         { type: "view", onClick: (row) => handleView(row.id) },
-        { type: "restore", onClick: (row) => handleRestore(row.id) },
+        {
+          type: "restore",
+          onClick: (row) => handleRestore(row.id),
+          ownerKey: "created_by",
+        },
         ...(isAdmin
-          ? [{ type: "delete", onClick: (row) => handleDeleteArchived(row.id) }]
+          ? [
+              {
+                type: "delete",
+                onClick: (row) => handleDeleteArchived(row.id),
+                ownerKey: "created_by",
+              },
+            ]
           : []),
       ]
     : role === 3
@@ -643,7 +653,11 @@ const ActiveWorkers = () => {
           { type: "view", onClick: (row) => handleView(row.id) },
           { type: "viewCV", onClick: (row) => handleViewCv(row) },
           { type: "files", onClick: (row) => handleViewDocuments(row) },
-          { type: "edit", onClick: (row) => handleEdit(row) },
+          {
+            type: "edit",
+            onClick: (row) => handleEdit(row),
+            ownerKey: "created_by",
+          },
           {
             type: "transaction",
             onClick: (row) => handleRecordTransaction(row),
@@ -652,9 +666,19 @@ const ActiveWorkers = () => {
             type: "downloadVisa",
             onClick: (row) => handleDownloadVisaApplication(row.id),
           },
-          { type: "archive", onClick: (row) => handleArchive(row.id) },
+          {
+            type: "archive",
+            onClick: (row) => handleArchive(row.id),
+            ownerKey: "created_by",
+          },
           ...(isAdmin
-            ? [{ type: "delete", onClick: (row) => handleDelete(row.id) }]
+            ? [
+                {
+                  type: "delete",
+                  onClick: (row) => handleDelete(row.id),
+                  ownerKey: "created_by",
+                },
+              ]
             : []),
         ];
 

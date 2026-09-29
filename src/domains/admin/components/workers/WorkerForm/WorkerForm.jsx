@@ -39,6 +39,10 @@ import {
   PHONE_ERROR_MESSAGE,
 } from "../../../../../utils/phone.utils";
 import { generatePhoto3x4FromStanding } from "../../../../../utils/faceCrop.utils";
+import {
+  useAdminOwnership,
+  NOT_OWNER_MESSAGE,
+} from "../../../../../utils/adminOwnership";
 
 // worker_documents.description is VARCHAR(255) in the database schema.
 const DOCUMENT_DESCRIPTION_MAX_LENGTH = 255;
@@ -417,6 +421,11 @@ function WorkerForm() {
   const { addMessage } = useResponse();
   const { openModal } = useDelete();
   const { profile } = useProfile();
+
+  // Admin record ownership: a worker created by another admin is view-only
+  // for this admin — Save is disabled (the API enforces the same rule).
+  const { canModify } = useAdminOwnership();
+  const [workerCreatedBy, setWorkerCreatedBy] = useState(null);
   const passportInputRef = useRef(null);
   const [scanLoading, setScanLoading] = useState(false);
 
@@ -1034,6 +1043,7 @@ function WorkerForm() {
 
   // map the aggregated getWorkerProfile response onto the form state
   const applyProfileToForm = (profileData) => {
+    setWorkerCreatedBy(profileData.created_by ?? null);
     setBasic({
       full_name: profileData.full_name || "",
       phone_number: profileData.phone_number || "",
@@ -3602,12 +3612,15 @@ function WorkerForm() {
   // every screen size. Label only depends on create/edit mode; while a save
   // is in flight the button is simply disabled (the existing loader already
   // communicates the loading state), so the label never changes mid-save.
+  const ownerLocked = isEditMode && !canModify(workerCreatedBy);
+
   const renderActionButton = () => (
     <button
       type="button"
       className="btn btn-main text-white rounded px-3"
       onClick={handleSubmit}
-      disabled={submitLoading}
+      disabled={submitLoading || ownerLocked}
+      title={ownerLocked ? NOT_OWNER_MESSAGE : undefined}
     >
       {isEditMode ? "Save Changes" : "Create Worker"}
     </button>
@@ -4583,6 +4596,12 @@ function WorkerForm() {
                   </button>
                 )}
 
+                {ownerLocked && (
+                  <small className="text-danger me-2">
+                    <i className="bi bi-lock me-1"></i>
+                    View only — created by another admin
+                  </small>
+                )}
                 <div className="worker-form-action">{renderActionButton()}</div>
               </div>
             </div>

@@ -10,6 +10,7 @@ import {
   createPeriodSplit,
   updatePeriodSplit,
 } from "../../../domains/admin/api/finance.api";
+import { useAdminOwnership } from "../../../utils/adminOwnership";
 
 Modal.setAppElement("#root");
 
@@ -39,7 +40,7 @@ const SplitPeriodModal = ({
   show,
   onClose,
   period,
-  canEdit,
+  canEdit: canEditProp,
   onSaved,
   onDeleteRequest,
   addMessage,
@@ -51,6 +52,12 @@ const SplitPeriodModal = ({
   const [existingSplit, setExistingSplit] = useState(null);
   const [deposit, setDeposit] = useState("");
   const [government, setGovernment] = useState("");
+
+  // Admin record ownership: a split saved by another admin is view-only
+  // for this admin (the API enforces the same rule).
+  const { canModify } = useAdminOwnership();
+  const canEdit =
+    canEditProp && (!existingSplit || canModify(existingSplit.created_by));
 
   // Load the period's saved split (if any) every time the modal opens.
   useEffect(() => {

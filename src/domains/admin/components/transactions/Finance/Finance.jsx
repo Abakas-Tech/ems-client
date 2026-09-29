@@ -710,6 +710,7 @@ const FinancePage = () => {
                 ? [
                     {
                       type: "edit",
+                      ownerKey: "created_by",
                       onClick: (row) => {
                         setEditingTransaction(row);
                         setView("edit");
@@ -720,6 +721,7 @@ const FinancePage = () => {
                       type: "delete",
                       onClick: (row) => handleDelete(row.id),
                       showOn: (row) => row.is_active,
+                      ownerKey: "created_by",
                     },
                   ]
                 : []),
@@ -906,6 +908,8 @@ const FinancePage = () => {
                     type: "delete",
                     onClick: (row) => handleDeletePeriod(row),
                     showOn: (row) => row.status === "closed",
+                    // the admin who closed a period owns it
+                    ownerKey: "closed_by",
                   },
                 ]
               : []),
@@ -1012,6 +1016,7 @@ const FinancePage = () => {
           },
           {
             type: "edit",
+            ownerKey: "created_by",
             onClick: (row) => {
               setEditingTransaction(row);
               setView("edit");
@@ -1022,6 +1027,7 @@ const FinancePage = () => {
             type: "delete",
             onClick: (row) => handleDelete(row.id),
             showOn: true,
+            ownerKey: "created_by",
           },
         ]}
         pagination={{

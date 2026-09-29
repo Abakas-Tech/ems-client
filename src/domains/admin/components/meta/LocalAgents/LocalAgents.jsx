@@ -174,8 +174,8 @@ const LocalAgents = () => {
   ];
 
   const actions = [
-    { type: "rename", onClick: handleRename },
-    { type: "delete", onClick: handleDelete },
+    { type: "rename", onClick: handleRename, ownerKey: "created_by" },
+    { type: "delete", onClick: handleDelete, ownerKey: "created_by" },
   ];
 
   const fields = [
