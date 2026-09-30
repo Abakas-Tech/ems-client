@@ -29,7 +29,7 @@ const TARGET_SITES = [
     title: "Wafid",
     description: "Medical status verification system",
     logo: wafidLogo,
-    url: "https://wafid.com/en/book-appointment/",
+    url: "https://wafid.com/en",
   },
   {
     key: "tasheer",
