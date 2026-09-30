@@ -601,46 +601,34 @@ const FinancePage = () => {
                       </div>
                     ))}
                   </div>
-                  <p className="text-muted small mt-2 mb-0">
-                    {formatAmount(periodSplit.final_summary_amount)} ={" "}
-                    {formatAmount(periodSplit.deposit_amount)} deposit +{" "}
-                    {formatAmount(periodSplit.government_amount)} government +{" "}
-                    {formatAmount(periodSplit.partner_splitting_amount)} partner
-                    splitting
+                  {/* Split metadata — who split it and when. The two
+                      amounts and the tiles above already carry the actual
+                      numbers, so this stays to a single descriptive line;
+                      an "updated" clause only appears if the split was
+                      actually edited after creation (created_at and
+                      updated_at are identical on a fresh split). */}
+                  <p className="text-muted small mt-3 mb-0">
+                    Split by{" "}
+                    <span className="fw-semibold text-dark">
+                      {periodSplit.created_by_name || "—"}
+                    </span>{" "}
+                    on{" "}
+                    <span className="fw-semibold text-dark">
+                      {formatDate(periodSplit.created_at, true)}
+                    </span>
+                    {periodSplit.updated_at !== periodSplit.created_at && (
+                      <>
+                        {" "}
+                        · updated{" "}
+                        <span className="fw-semibold text-dark">
+                          {formatDate(periodSplit.updated_at, true)}
+                        </span>
+                        {periodSplit.updated_by_name && (
+                          <> by {periodSplit.updated_by_name}</>
+                        )}
+                      </>
+                    )}
                   </p>
-
-                  {/* Split metadata — who split it and when, and the last
-                      change (same values as the Last saved line in the
-                      split modal). */}
-                  <div className="d-flex flex-column flex-md-row flex-wrap gap-1 gap-md-4 text-muted small mt-3">
-                    <span>
-                      Split by{" "}
-                      <span className="fw-semibold text-dark">
-                        {periodSplit.created_by_name || "—"}
-                      </span>
-                    </span>
-                    <span>
-                      Split at{" "}
-                      <span className="fw-semibold text-dark">
-                        {formatDate(periodSplit.created_at, true)}
-                      </span>
-                    </span>
-                    <span>
-                      Last updated{" "}
-                      <span className="fw-semibold text-dark">
-                        {formatDate(periodSplit.updated_at, true)}
-                      </span>
-                      {periodSplit.updated_by_name && (
-                        <>
-                          {" "}
-                          by{" "}
-                          <span className="fw-semibold text-dark">
-                            {periodSplit.updated_by_name}
-                          </span>
-                        </>
-                      )}
-                    </span>
-                  </div>
                 </div>
               )}
             </div>
