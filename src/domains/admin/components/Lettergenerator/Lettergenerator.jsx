@@ -846,20 +846,7 @@ const LetterAttachmentTools = ({
             onClick={() => onStartPlacement(kind)}
             title={`Click, then click on the letter where the ${kind} should go`}
           >
-            <i
-              className={`bi ${kind === "stamp" ? "bi-patch-check" : "bi-pen"} me-1`}
-            ></i>
             Attach {ELEMENT_LABELS[kind]}
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-secondary"
-            disabled={!available || loading}
-            onClick={() => onPlaceBottomCenter(kind)}
-            title={`Attach the ${kind} at the bottom center`}
-            aria-label={`Attach the ${kind} at the bottom center`}
-          >
-            <i className="bi bi-align-bottom"></i>
           </button>
         </div>
       );
