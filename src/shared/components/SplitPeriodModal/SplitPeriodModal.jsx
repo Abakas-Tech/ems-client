@@ -119,7 +119,12 @@ const SplitPeriodModal = ({
   const partnerCents = finalCents - depositCents - governmentCents;
 
   const nothingToSplit = finalCents < 0;
-  const exceedsFinal = partnerCents < 0;
+  // `period` goes null right after a successful save (handleSubmit calls
+  // onClose(), which clears the parent's selected period) while the modal
+  // is still mounted for its ~200ms close animation. Without this guard,
+  // finalCents would momentarily read as 0 against the just-submitted
+  // deposit/government values, flashing this error during the close.
+  const exceedsFinal = Boolean(period) && partnerCents < 0;
   const readOnly = !canEdit || nothingToSplit;
 
   const handleSubmit = async (e) => {

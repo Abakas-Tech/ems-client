@@ -343,15 +343,12 @@ const ActiveWorkers = () => {
         if (conflicts.length > 0) {
           const names = [
             ...new Set(
-              conflicts.map(
-                (c) =>
-                  `${c.user_full_name || `Employee #${c.user_id}`} (${c.invoice_number})`,
-              ),
+              conflicts.map((c) => c.user_full_name || `Employee #${c.user_id}`),
             ),
           ];
           addMessage(
             false,
-            `Already on an unpaid invoice: ${names.join(", ")}. An employee can only be added to another invoice after that invoice is Paid.`,
+            `${names.join(", ")} already ${names.length > 1 ? "have" : "has"} an unpaid invoice.`,
           );
           return;
         }

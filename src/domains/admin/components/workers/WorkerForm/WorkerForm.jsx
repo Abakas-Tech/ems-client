@@ -2581,6 +2581,29 @@ function WorkerForm() {
         />
       </div>
       <div className="form-group col-md-6 mb-3">
+        {renderLabel("Photo Standing", !isEditMode)}
+        <input
+          type="file"
+          name="photo_standing_url"
+          accept="image/*"
+          className="form-control"
+          onChange={handlePhotoStandingChange}
+          required={!isEditMode}
+        />
+        {isEditMode && existingPhotoStandingUrl && !photoStanding && (
+          <small className="text-muted">
+            Current photo:{" "}
+            <a
+              href={existingPhotoStandingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </a>
+          </small>
+        )}
+      </div>
+      <div className="form-group col-md-6 mb-3">
         {renderLabel("Photo 3x4", !isEditMode)}
         <input
           ref={photo3x4InputRef}
@@ -2650,29 +2673,6 @@ function WorkerForm() {
             Current photo:{" "}
             <a
               href={existingPhoto3x4Url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View
-            </a>
-          </small>
-        )}
-      </div>
-      <div className="form-group col-md-6 mb-3">
-        {renderLabel("Photo Standing", !isEditMode)}
-        <input
-          type="file"
-          name="photo_standing_url"
-          accept="image/*"
-          className="form-control"
-          onChange={handlePhotoStandingChange}
-          required={!isEditMode}
-        />
-        {isEditMode && existingPhotoStandingUrl && !photoStanding && (
-          <small className="text-muted">
-            Current photo:{" "}
-            <a
-              href={existingPhotoStandingUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -3359,12 +3359,6 @@ function WorkerForm() {
             onChange={(e) => setDocumentDescription(e.target.value)}
             placeholder="e.g. COC certificate, page 1"
           />
-          {documentDescription.length > DOCUMENT_DESCRIPTION_MAX_LENGTH && (
-            <small className="text-danger">
-              Max {DOCUMENT_DESCRIPTION_MAX_LENGTH} characters (
-              {documentDescription.length})
-            </small>
-          )}
         </div>
         <div className="form-group col-md-3">
           {renderPlainLabel("File")}
@@ -3607,17 +3601,17 @@ function WorkerForm() {
     );
   };
 
-  // The single primary action button, rendered on the right of the Upload
-  // Passport row (same size as the Upload Passport button beside it) for
-  // every screen size. Label only depends on create/edit mode; while a save
-  // is in flight the button is simply disabled (the existing loader already
-  // communicates the loading state), so the label never changes mid-save.
+  // The single primary action button — reused for the fixed desktop tree
+  // and the mobile top nav. Label only depends on create/edit mode; while a
+  // save is in flight the button is simply disabled (the existing loader
+  // already communicates the loading state), so the label never changes
+  // mid-save. Kept compact (btn-sm) so it never dominates the tree nav.
   const ownerLocked = isEditMode && !canModify(workerCreatedBy);
 
   const renderActionButton = () => (
     <button
       type="button"
-      className="btn btn-main text-white rounded px-3"
+      className="btn btn-main btn-sm rounded px-3 w-100"
       onClick={handleSubmit}
       disabled={submitLoading || ownerLocked}
       title={ownerLocked ? NOT_OWNER_MESSAGE : undefined}
@@ -4447,22 +4441,17 @@ function WorkerForm() {
         .tree-nav-mobile-action-wrap {
           padding: 0 0.75rem 0.75rem;
         }
-
-        /* Primary Create/Save button, on the right of the Upload Passport
-           row. Fixed width on small screens so it never stretches or
-           squeezes the row; natural width on larger screens. */
-        .worker-form-action {
-          flex: 0 0 auto;
-          margin-left: auto;
-        }
-        .worker-form-action .btn {
-          min-width: 150px;
-          white-space: nowrap;
-        }
-        @media (max-width: 575.98px) {
-          .worker-form-action .btn {
-            width: 130px;
-            min-width: 130px;
+        /* w-100 on the button itself is fine on a phone-width row, but once
+           this same wrap is used up through tablet widths (still < lg) a
+           full-width button gets absurdly wide — cap it and center it
+           instead from the small breakpoint up. */
+        @media (min-width: 576px) {
+          .tree-nav-mobile-action-wrap .btn {
+            width: auto;
+            min-width: 220px;
+            max-width: 320px;
+            margin: 0 auto;
+            display: block;
           }
         }
 
@@ -4557,68 +4546,66 @@ function WorkerForm() {
               style={{ display: "none" }}
               onChange={handlePassportScan}
             />
-            {/* Same column width as the form below, so on large screens the
-                action button lines up with the form's right edge instead of
-                running under the fixed section nav. */}
-            <div className="row">
-              <div className="col-12 col-lg-9 d-flex flex-wrap align-items-center gap-2 mt-3">
+            <div className="d-flex flex-wrap gap-2 mt-3">
+              <button
+                type="button"
+                className="btn btn-main text-white d-flex align-items-center justify-content-center"
+                onClick={() => passportInputRef.current?.click()}
+                style={{ whiteSpace: "nowrap" }}
+              >
+                Upload Passport
+              </button>
+
+              {(basic.full_name || passport.passport_number) && (
                 <button
                   type="button"
-                  className="btn btn-main text-white d-flex align-items-center justify-content-center"
-                  onClick={() => passportInputRef.current?.click()}
+                  className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
+                  onClick={() => {
+                    setPassport({
+                      passport_number: " ",
+                      passport_issue_date: "",
+                      passport_expiry_date: "",
+                      passport_issuing_country: "Ethiopia",
+                    });
+                    setBasic({
+                      full_name: "",
+                    });
+                    setPersonal({
+                      date_of_birth: "",
+                    });
+                  }}
                   style={{ whiteSpace: "nowrap" }}
+                  disabled={scanLoading}
                 >
-                  Upload Passport
+                  Reset
                 </button>
+              )}
 
-                {(basic.full_name || passport.passport_number) && (
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
-                    onClick={() => {
-                      setPassport({
-                        passport_number: " ",
-                        passport_issue_date: "",
-                        passport_expiry_date: "",
-                        passport_issuing_country: "Ethiopia",
-                      });
-                      setBasic({
-                        full_name: "",
-                      });
-                      setPersonal({
-                        date_of_birth: "",
-                      });
-                    }}
-                    style={{ whiteSpace: "nowrap" }}
-                    disabled={scanLoading}
-                  >
-                    Reset
-                  </button>
-                )}
-
-                {ownerLocked && (
-                  <small className="text-danger me-2">
-                    <i className="bi bi-lock me-1"></i>
-                    View only — created by another admin
-                  </small>
-                )}
-                <div className="worker-form-action">{renderActionButton()}</div>
-              </div>
+              {ownerLocked && (
+                <small className="text-danger d-flex align-items-center">
+                  <i className="bi bi-lock me-1"></i>
+                  View only — created by another admin
+                </small>
+              )}
             </div>
           </>
         )}
         {/* Right side — scan button only, mirrors + Status button */}
       </div>
 
-      {/* mobile / small-screen section nav: horizontal connected tree at top.
-          Hidden while reviewing the Preview. The primary action button
-          lives in the Upload Passport row above. Shared identically between
-          Create and Edit. */}
+      {/* mobile / small-screen section nav: horizontal connected tree at top,
+          plus the primary action button right below it so it stays
+          reachable once the tree moves to the top of the page. Hidden while
+          reviewing the Preview — the Preview card carries its own action
+          button instead. Shared identically between Create and Edit. */}
       {!previewMode && (
         <div className="d-lg-none mb-3">
           <div className="tree-nav-mobile-wrap shadow-sm rounded-4 bg-white">
             <div className="tree-nav-mobile">
               {navItems.map((s, idx) => renderNavItem(s, true, idx))}
+            </div>
+            <div className="tree-nav-mobile-action-wrap">
+              {renderActionButton()}
             </div>
           </div>
         </div>
@@ -4659,6 +4646,7 @@ function WorkerForm() {
                   {navItems.map((s, idx) => renderNavItem(s, false, idx))}
                 </ul>
               </div>
+              <div className="tree-nav-action-wrap">{renderActionButton()}</div>
             </div>
           </div>
         )}
