@@ -234,17 +234,6 @@ const SplitPeriodModal = ({
               readOnly
               disabled
             />
-            {exceedsFinal ? (
-              <div className="invalid-feedback d-block">
-                Deposit and Government together cannot exceed the final
-                summary.
-              </div>
-            ) : (
-              <small className="text-muted">
-                Calculated automatically: final summary − deposit −
-                government.
-              </small>
-            )}
           </div>
 
           {existingSplit?.updated_by_name && (
