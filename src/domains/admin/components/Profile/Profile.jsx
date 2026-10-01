@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { changePassword } from "../../api/auth.api";
 import useloader from "../../../../context/Loader/useLoader";
 import useResponse from "../../../../context/Response/useResponse";
+import { isValidPhone, PHONE_ERROR_MESSAGE } from "../../../../utils/phone.utils";
 import useProfile from "../../../../context/Profile/useProfile";
 import { useDelete } from "../../../../context/Delete/useDelete";
 import { updateProfile } from "../../api/profile.api";
@@ -139,18 +140,9 @@ const Profile = () => {
 
     if (!phone) return addMessage(false, "Phone number is required.");
 
-    // Accepts any country code (no longer limited to a fixed list) and
-    // allows spaces between digit groups (e.g. "+966 50 123 4567") - only
-    // an optional leading "+" plus digits/spaces is enforced structurally.
-    const phoneRegex = /^\+?[0-9\s]+$/;
-
-    if (!phoneRegex.test(phone))
-      return addMessage(false, "Phone number is invalid.");
-
-    const phoneDigits = phone.replace(/[\s+]/g, "");
-
-    if (phoneDigits.length < 7 || phoneDigits.length > 15)
-      return addMessage(false, "Phone number must be between 7 and 15 digits.");
+    // Shared phone rule (utils/phone.utils.js): any country code, spaces
+    // between digit groups (e.g. "+966 50 123 4567"), 7-15 digits.
+    if (!isValidPhone(phone)) return addMessage(false, PHONE_ERROR_MESSAGE);
 
     return true;
   };

@@ -23,6 +23,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useProfile from "../../../../../context/Profile/useProfile.jsx";
 import ClosePeriodModal from "../../../../../shared/components/ClosePeriodModal/ClosePeriodModal.jsx";
 import { generatePeriodReport } from "../../../../../shared/components/Report/PeriodReport.jsx";
+import {
+  getCategoryLabel,
+  isIncomeCategory,
+} from "../../../../../config/financeCategory.config.js";
 import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
 
 const formatDate = (value, withTime = false) => {
@@ -548,8 +552,8 @@ const FinancePage = () => {
                 header: "Category",
                 render: (row) => (
                   <Badge
-                    content={row.category.toUpperCase()}
-                    color={row.category === "income" ? "green" : "red"}
+                    content={getCategoryLabel(row.category).toUpperCase()}
+                    color={isIncomeCategory(row.category) ? "green" : "red"}
                   />
                 ),
               },
@@ -569,6 +573,7 @@ const FinancePage = () => {
                 ? [
                     {
                       type: "edit",
+                      ownerKey: "created_by",
                       onClick: (row) => {
                         setEditingTransaction(row);
                         setView("edit");
@@ -579,6 +584,7 @@ const FinancePage = () => {
                       type: "delete",
                       onClick: (row) => handleDelete(row.id),
                       showOn: (row) => row.is_active,
+                      ownerKey: "created_by",
                     },
                   ]
                 : []),
@@ -730,6 +736,8 @@ const FinancePage = () => {
                     type: "delete",
                     onClick: (row) => handleDeletePeriod(row),
                     showOn: (row) => row.status === "closed",
+                    // the admin who closed a period owns it
+                    ownerKey: "closed_by",
                   },
                 ]
               : []),
@@ -815,8 +823,8 @@ const FinancePage = () => {
             render: (row) => (
               <>
                 <Badge
-                  content={row.category.toUpperCase()}
-                  color={row.category === "income" ? "green" : "red"}
+                  content={getCategoryLabel(row.category).toUpperCase()}
+                  color={isIncomeCategory(row.category) ? "green" : "red"}
                 />
               </>
             ),
@@ -836,6 +844,7 @@ const FinancePage = () => {
           },
           {
             type: "edit",
+            ownerKey: "created_by",
             onClick: (row) => {
               setEditingTransaction(row);
               setView("edit");
@@ -846,6 +855,7 @@ const FinancePage = () => {
             type: "delete",
             onClick: (row) => handleDelete(row.id),
             showOn: true,
+            ownerKey: "created_by",
           },
         ]}
         pagination={{

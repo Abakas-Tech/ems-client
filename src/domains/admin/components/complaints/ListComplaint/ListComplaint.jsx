@@ -210,20 +210,22 @@ const ListComplaint = () => {
 
   const actions = [
     { type: "view", onClick: handleView },
-    { type: "edit", onClick: handleEdit },
+    { type: "edit", onClick: handleEdit, ownerKey: "received_by_user_id" },
     {
       type: "investigate",
       label: "Mark Investigating",
       onClick: (row) => handleStatusChange(row, "investigating"),
       showOn: (row) => row.status === "open",
+      ownerKey: "received_by_user_id",
     },
     {
       type: "resolve",
       label: "Mark Resolved",
       onClick: (row) => handleStatusChange(row, "resolved"),
       showOn: (row) => row.status !== "resolved",
+      ownerKey: "received_by_user_id",
     },
-    { type: "delete", onClick: handleDelete },
+    { type: "delete", onClick: handleDelete, ownerKey: "received_by_user_id" },
   ];
 
   const emptyState = {

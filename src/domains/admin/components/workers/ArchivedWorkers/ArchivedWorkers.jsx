@@ -14,12 +14,16 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
 import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
+import useProfile from "../../../../../context/Profile/useProfile";
 
 const ArchivedWorkers = () => {
   const navigate = useNavigate();
   const { openModal } = useDelete();
   const { showLoader, hideLoader } = useloader();
   const { addMessage } = useResponse();
+  const { profile } = useProfile();
+  // Permanent delete is admin-only in the worker lists (see ActiveWorkers).
+  const isAdmin = Number(profile?.role_id) === 1;
 
   const [workers, setWorkers] = useState([]);
   const [filters, setFilters] = useState({ status: "archived" });
@@ -139,6 +143,7 @@ const ArchivedWorkers = () => {
             filters={filters}
             onFilterChange={handleFilterChange}
             onClear={handleClear}
+            showAgentFilter={false}
           />
         }
         data={workers}
@@ -152,8 +157,20 @@ const ArchivedWorkers = () => {
           { header: "Current Status", accessor: "status" },
         ]}
         actions={[
-          { type: "restore", onClick: (row) => handleRestore(row.id) },
-          { type: "delete", onClick: (row) => handleDelete(row.id) },
+          {
+            type: "restore",
+            onClick: (row) => handleRestore(row.id),
+            ownerKey: "created_by",
+          },
+          ...(isAdmin
+            ? [
+                {
+                  type: "delete",
+                  onClick: (row) => handleDelete(row.id),
+                  ownerKey: "created_by",
+                },
+              ]
+            : []),
         ]}
         emptyState={{
           title: "No archived employees found",

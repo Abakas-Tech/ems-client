@@ -135,7 +135,6 @@ const MENU_CONFIG = [
     icon: "bi bi-people",
     roles: [ROLES.PARTNER],
   },
-
   {
     label: "Notifications",
     path: "/partner/notifications",

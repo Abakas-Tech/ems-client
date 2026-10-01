@@ -7,6 +7,7 @@ import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 import BackButton from "../../../../../shared/components/BackButton/BackButton";
+import { useAdminOwnership } from "../../../../../utils/adminOwnership";
 import styles from "./WorkerDocumentsModal.module.css";
 
 const IMAGE_TYPES = ["jpg", "jpeg", "png", "gif", "webp"];
@@ -36,6 +37,9 @@ const formatDate = (value) => {
 };
 
 const WorkerDocumentsModal = ({ show, onClose, worker }) => {
+  // Admin record ownership: a document uploaded by another admin can't be
+  // deleted by this admin (the API enforces the same rule).
+  const { canModify } = useAdminOwnership();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -183,15 +187,17 @@ const WorkerDocumentsModal = ({ show, onClose, worker }) => {
               >
                 <i className="fa-solid fa-download"></i>
               </button>
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-danger"
-                title="Delete"
-                aria-label="Delete"
-                onClick={() => handleDelete(selected)}
-              >
-                <i className="fa-solid fa-trash"></i>
-              </button>
+              {canModify(selected.uploaded_by_user_id) && (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-danger"
+                  title="Delete"
+                  aria-label="Delete"
+                  onClick={() => handleDelete(selected)}
+                >
+                  <i className="fa-solid fa-trash"></i>
+                </button>
+              )}
             </div>
           </div>
         </div>

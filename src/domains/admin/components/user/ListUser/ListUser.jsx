@@ -267,19 +267,21 @@ const ListUser = () => {
   ];
 
   const actions = [
-    { type: "edit", onClick: handleEdit },
+    { type: "edit", onClick: handleEdit, ownerKey: "created_by" },
 
     { type: "notify", onClick: (row) => handleNotify(row) },
 
     {
       type: "archive",
       onClick: handleStatusToggle,
+      ownerKey: "created_by",
       showOn: (row) => row.is_active === 1 && row.id !== loggedInUserId,
     },
 
     {
       type: "restore",
       onClick: handleStatusToggle,
+      ownerKey: "created_by",
       showOn: (row) => row.is_active === 0 && row.id !== loggedInUserId,
     },
 
@@ -287,6 +289,7 @@ const ListUser = () => {
       type: "delete",
       onClick: handleDelete,
       showOn: (row) => row.id !== loggedInUserId,
+      ownerKey: "created_by",
     },
 
     {

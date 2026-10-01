@@ -8,6 +8,7 @@ import {
   restoreWorker, // ADDED — merged in from ArchivedWorkers
 } from "../../../api/worker.api";
 import { getUsersLookup } from "../../../api/user.api";
+import { fetchWorkerInvoiceConflicts } from "../../../api/invoice.api";
 
 import ActiveWorkersFilters from "../WorkerFilter/WorkerFilter";
 import { printWorkerReport } from "../WorkerReport/WorkerReport";
@@ -322,8 +323,47 @@ const ActiveWorkers = () => {
   // If we arrived here mid-invoice (returnInvoiceId set, via InvoiceForm's
   // "Add Employee" button), this instead routes back to that same
   // invoice with the updated worker set — add/remove happened right here.
-  const handleCreateInvoiceForSelected = () => {
+  //
+  // An employee still on another invoice that isn't Paid can't be added
+  // to this one — checked here first so the message shows right away (the
+  // backend enforces the same rule). Employees already on the invoice
+  // being edited are checked by the invoice form itself.
+  const handleCreateInvoiceForSelected = async () => {
     if (selectedWorkerIds.length === 0) return;
+
+    const alreadyOnInvoice = returnInvoiceId
+      ? (location.state?.preSelectedWorkerIds || []).map(Number)
+      : [];
+    const newWorkerIds = selectedWorkerIds.filter(
+      (id) => !alreadyOnInvoice.includes(Number(id)),
+    );
+
+    if (newWorkerIds.length > 0) {
+      showLoader();
+      try {
+        const conflicts = await fetchWorkerInvoiceConflicts(
+          newWorkerIds,
+          returnInvoiceId,
+        );
+        if (conflicts.length > 0) {
+          const names = [
+            ...new Set(
+              conflicts.map((c) => c.user_full_name || `Employee #${c.user_id}`),
+            ),
+          ];
+          addMessage(
+            false,
+            `${names.join(", ")} already ${names.length > 1 ? "have" : "has"} an unpaid invoice.`,
+          );
+          return;
+        }
+      } catch {
+        // Couldn't check here — the invoice form and the API still
+        // enforce the rule, so carry on.
+      } finally {
+        hideLoader();
+      }
+    }
 
     navigate("/admin/invoices", {
       state: {
@@ -585,11 +625,29 @@ const ActiveWorkers = () => {
   //   navigate(-1);
   // };
 
+  // Permanent delete is admin-only in the worker lists (staff can still
+  // archive/restore). Only these lists are affected — the global
+  // ACTION_ROLE_CONFIG.delete stays as it is for every other module — and
+  // the backend rejects a non-admin permanent delete as well.
+  const isAdmin = Number(role) === 1;
+
   const actions = isArchivedView
     ? [
         { type: "view", onClick: (row) => handleView(row.id) },
-        { type: "restore", onClick: (row) => handleRestore(row.id) },
-        { type: "delete", onClick: (row) => handleDeleteArchived(row.id) },
+        {
+          type: "restore",
+          onClick: (row) => handleRestore(row.id),
+          ownerKey: "created_by",
+        },
+        ...(isAdmin
+          ? [
+              {
+                type: "delete",
+                onClick: (row) => handleDeleteArchived(row.id),
+                ownerKey: "created_by",
+              },
+            ]
+          : []),
       ]
     : role === 3
       ? [{ type: "viewCV", onClick: (row) => handleViewCv(row) }]
@@ -597,7 +655,11 @@ const ActiveWorkers = () => {
           { type: "view", onClick: (row) => handleView(row.id) },
           { type: "viewCV", onClick: (row) => handleViewCv(row) },
           { type: "files", onClick: (row) => handleViewDocuments(row) },
-          { type: "edit", onClick: (row) => handleEdit(row) },
+          {
+            type: "edit",
+            onClick: (row) => handleEdit(row),
+            ownerKey: "created_by",
+          },
           {
             type: "transaction",
             onClick: (row) => handleRecordTransaction(row),
@@ -606,8 +668,20 @@ const ActiveWorkers = () => {
             type: "downloadVisa",
             onClick: (row) => handleDownloadVisaApplication(row.id),
           },
-          { type: "archive", onClick: (row) => handleArchive(row.id) },
-          { type: "delete", onClick: (row) => handleDelete(row.id) },
+          {
+            type: "archive",
+            onClick: (row) => handleArchive(row.id),
+            ownerKey: "created_by",
+          },
+          ...(isAdmin
+            ? [
+                {
+                  type: "delete",
+                  onClick: (row) => handleDelete(row.id),
+                  ownerKey: "created_by",
+                },
+              ]
+            : []),
         ];
 
   return (

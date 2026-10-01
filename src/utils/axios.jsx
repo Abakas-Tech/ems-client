@@ -53,6 +53,54 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
+// Simple, user-friendly messages for failures that don't come back with a
+// message from the API (no connection, a timeout, or a proxy/gateway error
+// page). Messages sent by the API itself are left exactly as they are.
+const FRIENDLY_STATUS_MESSAGES = {
+  408: "The request took too long. Please try again.",
+  413: "The file is too large to upload. Please use a smaller file.",
+  499: "The request took too long. Please try again.",
+  502: "The server is temporarily unavailable. Please try again in a moment.",
+  503: "The server is temporarily unavailable. Please try again in a moment.",
+  504: "The server took too long to respond. Please try again.",
+};
+
+const applyFriendlyErrorMessage = (error) => {
+  if (axios.isCancel?.(error)) return;
+
+  const response = error.response;
+  const apiMessage =
+    response?.data && typeof response.data === "object"
+      ? response.data.message
+      : null;
+  if (apiMessage) return;
+
+  let friendly = null;
+  if (!response) {
+    friendly =
+      error.code === "ECONNABORTED" || error.code === "ETIMEDOUT"
+        ? "The request took too long. Please check your internet connection and try again."
+        : "Could not reach the server. Please check your internet connection and try again.";
+  } else {
+    friendly =
+      FRIENDLY_STATUS_MESSAGES[response.status] ||
+      (response.status >= 500
+        ? "Something went wrong on the server. Please try again."
+        : null);
+  }
+  if (!friendly) return;
+
+  // Both places the API helpers read from: error.response.data.message
+  // and error.message.
+  error.message = friendly;
+  if (response) {
+    response.data =
+      response.data && typeof response.data === "object"
+        ? { ...response.data, message: friendly }
+        : { message: friendly };
+  }
+};
+
 // RESPONSE INTERCEPTOR
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -114,6 +162,7 @@ axiosInstance.interceptors.response.use(
       }
     }
 
+    applyFriendlyErrorMessage(error);
     return Promise.reject(error);
   },
 );

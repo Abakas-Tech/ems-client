@@ -24,6 +24,17 @@ const validateWorkerStatusName = (name) => {
   return null;
 };
 
+// Suggested status names shown in the Create Status form — staff can
+// still type any custom status; these just appear as quick-pick options
+// via the input's native datalist.
+const SUGGESTED_STATUS_NAMES = [
+  "Application",
+  "Tasheer",
+  "Embassy",
+  "LMIS QR",
+  "LMIS Issued",
+];
+
 const WorkerStatus = () => {
   const { showLoader, hideLoader } = useLoader();
   const { addMessage } = useResponse();
@@ -160,11 +171,36 @@ const WorkerStatus = () => {
   ];
 
   const actions = [
-    { type: "rename", onClick: handleRename },
-    { type: "delete", onClick: handleDelete },
+    { type: "rename", onClick: handleRename, ownerKey: "created_by" },
+    { type: "delete", onClick: handleDelete, ownerKey: "created_by" },
   ];
 
-  const fields = [{ name: "name", label: "Employee Status Name" }];
+  // type: "custom" routes this field through CreateModal's
+  // renderCustomField below, so it's still a free-text input (any status
+  // name can be typed) but with the suggested names available as
+  // one-click datalist options.
+  const fields = [
+    { name: "name", label: "Employee Status Name", type: "custom" },
+  ];
+
+  const renderStatusNameField = (field, inputValues, handleChange) => (
+    <>
+      <input
+        type="text"
+        className="form-control"
+        list="worker-status-suggestions"
+        value={inputValues[field.name] || ""}
+        onChange={(e) => handleChange(field.name, e.target.value)}
+        required
+        style={{ backgroundColor: "#EDF1FB" }}
+      />
+      <datalist id="worker-status-suggestions">
+        {SUGGESTED_STATUS_NAMES.map((name) => (
+          <option key={name} value={name} />
+        ))}
+      </datalist>
+    </>
+  );
 
   const emptyState = {
     title: "No employee statuses found",
@@ -218,6 +254,7 @@ const WorkerStatus = () => {
             onCreate={handleCreate}
             fields={fields}
             title="Create New Employee Status"
+            renderCustomField={renderStatusNameField}
           />
         </div>
       </div>

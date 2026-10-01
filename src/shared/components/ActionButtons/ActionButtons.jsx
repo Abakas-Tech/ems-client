@@ -10,6 +10,7 @@ import { AiOutlineFolderView } from "react-icons/ai";
 import ACTION_ROLE_CONFIG from "../../../config/btn.config";
 import { getPermission } from "../../../domains/admin/api/permission.api";
 import useProfile from "../../../context/Profile/useProfile";
+import { useAdminOwnership } from "../../../utils/adminOwnership";
 import styles from "./ActionButtons.module.css";
 
 let permissionsRequest = null;
@@ -40,6 +41,10 @@ const ACTION_PERMISSION_CONFIG = {
 const ActionButtons = ({ actions = [], row }) => {
   const { profile } = useProfile();
   const role = profile?.role_id;
+  // Admin record ownership: an action that declares `ownerKey` (the row
+  // field holding the record's creator id, e.g. "created_by") is hidden
+  // when the record was created by another admin.
+  const { canModify } = useAdminOwnership();
 
   // Flat permissions record for the logged-in user (e.g.
   // { manage_finance: 0, manage_users: 1, ... }) — only fetched when at
@@ -169,6 +174,10 @@ const ActionButtons = ({ actions = [], row }) => {
         actionObj.bypassRole === true);
 
     if (!hasRoleAccess) return false;
+
+    if (actionObj.ownerKey && !canModify(row?.[actionObj.ownerKey])) {
+      return false;
+    }
 
     const requiredPermission = ACTION_PERMISSION_CONFIG[actionObj.type];
     if (requiredPermission) {

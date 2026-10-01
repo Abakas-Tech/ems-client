@@ -7,6 +7,7 @@ import {
   massApplyInvoiceItems,
   deleteInvoiceItem,
   fetchCustomerOptions,
+  fetchWorkerInvoiceConflicts,
 } from "../../../api/invoice.api";
 import { listWorkers } from "../../../api/worker.api";
 import {
@@ -69,6 +70,13 @@ const InvoiceForm = ({
 
   const [selectedWorkers, setSelectedWorkers] = useState([]);
   const [loadingWorkers, setLoadingWorkers] = useState(true);
+
+  // Duplicate-employee rule: an employee still on another invoice that is
+  // not Paid can't be added here. { [workerId]: [{ invoice_number, status }] }
+  // for the selected employees that break it (the backend enforces the
+  // same rule on save). Employees already saved on this invoice are not
+  // re-checked, so an existing invoice stays editable.
+  const [invoiceConflicts, setInvoiceConflicts] = useState({});
 
   // Per-worker amount entry: { [workerId]: "12.50" }. Never shared
   // across workers — each one is typed in individually via its own
@@ -191,6 +199,22 @@ const InvoiceForm = ({
         });
         const workers = res?.data?.items || [];
         setSelectedWorkers(workers);
+
+        const savedOnThisInvoice = new Set(
+          (initialData?.items || []).map((item) => Number(item.user_id)),
+        );
+        const workersToCheck = workers
+          .map((w) => w.id)
+          .filter((id) => !savedOnThisInvoice.has(Number(id)));
+        fetchWorkerInvoiceConflicts(workersToCheck, invoiceId)
+          .then((conflicts) => {
+            const byWorker = {};
+            conflicts.forEach((c) => {
+              (byWorker[c.user_id] = byWorker[c.user_id] || []).push(c);
+            });
+            setInvoiceConflicts(byWorker);
+          })
+          .catch(() => setInvoiceConflicts({}));
 
         // Existing invoice items carry each worker's previously saved
         // unit_price — use that as the starting amount when editing.
@@ -377,7 +401,34 @@ const InvoiceForm = ({
     }
   };
 
+  const INVOICE_STATUS_LABELS = {
+    draft: "Draft",
+    issued: "Issued",
+    partially_paid: "Partially Paid",
+  };
+
+  const conflictedWorkers = selectedWorkers.filter(
+    (w) => invoiceConflicts[w.id]?.length,
+  );
+
+  const duplicateEmployeeMessage = () => {
+    const w = conflictedWorkers[0];
+    const c = invoiceConflicts[w.id][0];
+    const others =
+      conflictedWorkers.length > 1
+        ? ` (and ${conflictedWorkers.length - 1} more)`
+        : "";
+    return `${w.full_name}${others} is already on invoice ${c.invoice_number} (${
+      INVOICE_STATUS_LABELS[c.status] || c.status
+    }). An employee can only be added to another invoice after that invoice is Paid — remove them to continue.`;
+  };
+
   const handleRemoveWorker = (worker) => {
+    setInvoiceConflicts((prev) => {
+      const next = { ...prev };
+      delete next[worker.id];
+      return next;
+    });
     setSelectedWorkers((prev) => prev.filter((w) => w.id !== worker.id));
     setWorkerAmounts((prev) => {
       const next = { ...prev };
@@ -410,6 +461,9 @@ const InvoiceForm = ({
     let targetInvoiceId = invoiceId;
 
     if (!isEditMode) {
+      if (conflictedWorkers.length > 0) {
+        return addMessage(false, duplicateEmployeeMessage());
+      }
       if (!invoiceDate) {
         return addMessage(
           false,
@@ -464,6 +518,9 @@ const InvoiceForm = ({
 
     if (selectedWorkers.length === 0) {
       return addMessage(false, "No employees selected");
+    }
+    if (conflictedWorkers.length > 0) {
+      return addMessage(false, duplicateEmployeeMessage());
     }
     if (!invoiceDate) {
       return addMessage(false, "Invoice date is required");
@@ -600,6 +657,20 @@ const InvoiceForm = ({
           onMouseLeave={handleWorkerHoverLeave}
         >
           <span className="fw-bold">{worker.full_name}</span>
+          {invoiceConflicts[worker.id]?.length > 0 && (
+            <small className="d-block text-danger">
+              <i className="bi bi-exclamation-triangle me-1"></i>
+              Already on{" "}
+              {invoiceConflicts[worker.id]
+                .map(
+                  (c) =>
+                    `${c.invoice_number} (${
+                      INVOICE_STATUS_LABELS[c.status] || c.status
+                    })`,
+                )
+                .join(", ")}
+            </small>
+          )}
         </span>
       ),
     },
@@ -869,6 +940,19 @@ const InvoiceForm = ({
                 <i className="bi bi-person-plus me-1"></i> Add Employee
               </button>
             </div>
+
+            {!loadingWorkers && conflictedWorkers.length > 0 && (
+              <div className="alert alert-danger py-2 small" role="alert">
+                <i className="bi bi-exclamation-triangle me-1"></i>
+                {conflictedWorkers.length === 1
+                  ? "This employee is"
+                  : `${conflictedWorkers.length} employees are`}{" "}
+                already on an invoice that is not Paid yet. An employee can
+                only be added to another invoice after that invoice is Paid —
+                remove them from
+                this invoice to save it.
+              </div>
+            )}
 
             {loadingWorkers ? (
               <p className="text-muted mb-0">Loading employees…</p>

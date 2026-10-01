@@ -1,4 +1,56 @@
 import { REPORT_META } from "../../../../../shared/components/Report/Data";
+import {
+  DOCUMENT_ELEMENT_STYLES,
+  buildElementsLayerHtml,
+} from "../../../../../utils/documentElements.utils";
+
+// Printable width of the invoice page: A4 210mm minus the 13mm left/right
+// @page margins. The print-options preview renders the page at exactly
+// this width, so a stamp/signature positioned there prints in the same
+// spot (same mm-based system as the Letter editor).
+export const INVOICE_PAGE_WIDTH_MM = 184;
+
+// Default stamp/signature widths and the bottom-center default's distance
+// from the bottom of the page (just above the footer line).
+export const INVOICE_ELEMENT_WIDTH_MM = { stamp: 32, signature: 40 };
+export const INVOICE_BOTTOM_CENTER_MM = 6;
+
+// Default layout: signature and stamp side by side, centered on the page
+// as a pair (signature left, stamp right) with a gap between them, so they
+// never cover each other. `widths` are the current element widths (mm).
+export const INVOICE_ELEMENT_GAP_MM = 10;
+export const invoiceDefaultElementLeft = (
+  kind,
+  widths = INVOICE_ELEMENT_WIDTH_MM,
+) => {
+  const pairWidth = widths.signature + INVOICE_ELEMENT_GAP_MM + widths.stamp;
+  const start = (INVOICE_PAGE_WIDTH_MM - pairWidth) / 2;
+  const left =
+    kind === "signature"
+      ? start
+      : start + widths.signature + INVOICE_ELEMENT_GAP_MM;
+  return Math.round(left * 10) / 10;
+};
+
+// Default name of the printed/saved file (the browser adds ".pdf").
+export const DEFAULT_INVOICE_FILE_NAME = "invoice";
+
+// The user-entered file name, made safe to use as a file name: characters
+// not allowed in file names are dropped and a typed ".pdf" is removed, since
+// the browser's "Save as PDF" adds the extension itself.
+export const sanitizeInvoiceFileName = (value) =>
+  String(value ?? "")
+    .replace(/[\\/:*?"<>|]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\.pdf$/i, "")
+    .trim() || DEFAULT_INVOICE_FILE_NAME;
+
+const escapeHtml = (value) =>
+  String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 
 const fmtDate = (val) =>
   val
@@ -220,7 +272,7 @@ const REPORT_STYLES = `
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   @page{size:A4;margin:11mm 13mm;}
   body{font-family:"Segoe UI",Tahoma,sans-serif;font-size:8.5pt;color:#1a2640;background:#fff;print-color-adjust:exact;-webkit-print-color-adjust:exact;}
-  .page{padding:0;position:relative;padding-bottom:70px;min-height:265mm;}
+  .page{padding:0;position:relative;padding-bottom:70px;min-height:265mm;width:${INVOICE_PAGE_WIDTH_MM}mm;}
   .ph{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #1a3c6e;padding-bottom:8px;margin-bottom:8px;}
   .logo-block{display:flex;align-items:center;gap:9px;min-width:190px;}
   .org-name{font-size:12.5pt;font-weight:700;color:#1a3c6e;line-height:1.15;}
@@ -238,7 +290,7 @@ const REPORT_STYLES = `
   tbody td{padding:5px 7px;vertical-align:middle;border-right:1px solid #e8edf8;}
   tbody td:last-child{border-right:none;}
   tfoot .totals-row td{padding:7px;font-weight:800;font-size:9.5pt;color:#1a3c6e;background:#eaf1fc;border-top:2px solid #1a3c6e;}
-  .pf{position:absolute;bottom:0;left:0;right:0;padding-top:5px;border-top:1.5px solid #c8d8f0;display:flex;justify-content:space-between;font-size:7pt;color:#8a97b0;background:#fff;}
+  .pf{position:absolute;bottom:0;left:0;right:0;padding-top:5px;border-top:1.5px solid #c8d8f0;display:flex;justify-content:space-between;font-size:9pt;font-weight:600;color:#5a6a85;background:#fff;}
   .section-title{font-size:8.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#1a3c6e;margin:16px 0 8px;padding-bottom:5px;border-bottom:2px solid #e2e8f0;}
   .notes-box{font-size:8.5pt;color:#3c4a63;line-height:1.5;margin-bottom:8px;}
   .bank-box{font-size:9pt;color:#2b3a55;line-height:2.1;margin:26px 0 12px;padding:0;}
@@ -247,11 +299,21 @@ const REPORT_STYLES = `
   .bank-value{color:#1a2640;font-weight:600;font-size:9.5pt;letter-spacing:.2px;}
   .bank-value--total{font-weight:800;font-size:10.5pt;color:#1a3c6e;}
   .sign-off{position:absolute;right:0;bottom:36px;font-size:8.5pt;font-weight:600;color:#1a2640;text-align:right;}
+  ${DOCUMENT_ELEMENT_STYLES}
+  /* On-screen preview only (print options): the page on a grey desk with
+     its white paper margins drawn around it — the page box itself is laid
+     out exactly as printed. */
+  @media screen{
+    html:has(body.doc-preview){overflow-y:hidden;scrollbar-width:none;}
+    html:has(body.doc-preview)::-webkit-scrollbar{width:0;height:0;}
+    body.doc-preview{background:#fff;padding:4mm 0;}
+    body.doc-preview .page{margin:0 auto;}
+  }
 `;
 
 // Column order: #, Worker (agent folded in as "Name (Agent)"), Passport #,
 // Employer, Amount, Status — Agent Name no longer has its own column.
-const buildInvoicePage = (invoice, bankOptions) => {
+const buildInvoicePage = (invoice, bankOptions, elements = []) => {
   const items = invoice.items || [];
   const payments = invoice.payments || [];
   const hasPayments = payments.length > 0;
@@ -309,6 +371,8 @@ const buildInvoicePage = (invoice, bankOptions) => {
     ${buildSignOff()}
 
     ${buildFooter("Page 1 of 1")}
+
+    ${buildElementsLayerHtml(elements, 0)}
   </div>`;
 };
 
@@ -316,7 +380,7 @@ const buildInvoicePage = (invoice, bankOptions) => {
 // PeriodReport.jsx's openAndPrint — renders into a fully isolated document
 // so nothing in this app's own layout/CSS can interfere with or blank out
 // the printed page.
-const openAndPrint = (html) => {
+const openAndPrint = (html, printTitle) => {
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
   iframe.style.right = "0";
@@ -326,17 +390,23 @@ const openAndPrint = (html) => {
   iframe.style.border = "0";
   iframe.style.visibility = "hidden";
 
+  // The browser names the saved PDF after the document title, so the page's
+  // title is set to the chosen file name while printing (same as the
+  // Letter print), and restored afterwards.
+  const originalTitle = document.title;
   let cleaned = false;
   const cleanup = () => {
     if (cleaned) return;
     cleaned = true;
     if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+    if (printTitle) document.title = originalTitle;
   };
 
   iframe.onload = () => {
     const win = iframe.contentWindow;
     if (!win) return;
 
+    if (printTitle) document.title = printTitle;
     win.focus();
     win.addEventListener("afterprint", cleanup);
 
@@ -361,13 +431,29 @@ const openAndPrint = (html) => {
 // Receiver / Total Payment / Amount in Words always print regardless of
 // bankOptions, positioned right after the items table and right above
 // the Bank Information block.
-export const printInvoiceDocument = (invoice, bankOptions) => {
+//
+// The full invoice document. `elements` are the stamp/signature placed from
+// the print options (mm positions); `preview` renders the on-screen preview
+// variant (the print output is unaffected by it).
+export const buildInvoiceDocumentHtml = (
+  invoice,
+  bankOptions,
+  { elements = [], title, preview = false } = {},
+) => `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
+<title>${escapeHtml(title || `Invoice ${invoice.invoice_number}`)}</title>
+<style>${REPORT_STYLES}</style>
+</head><body${preview ? ' class="doc-preview"' : ""}>${buildInvoicePage(invoice, bankOptions, elements)}</body></html>`;
+
+// printOptions (optional): { elements, fileName } — the stamp/signature to
+// print (Admin only, see InvoiceDetail) and the name of the saved file.
+export const printInvoiceDocument = (invoice, bankOptions, printOptions = {}) => {
   if (!invoice) return;
 
-  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
-<title>Invoice ${invoice.invoice_number}</title>
-<style>${REPORT_STYLES}</style>
-</head><body>${buildInvoicePage(invoice, bankOptions)}</body></html>`;
+  const fileName = sanitizeInvoiceFileName(printOptions.fileName);
+  const html = buildInvoiceDocumentHtml(invoice, bankOptions, {
+    elements: printOptions.elements || [],
+    title: fileName,
+  });
 
-  openAndPrint(html);
+  openAndPrint(html, fileName);
 };

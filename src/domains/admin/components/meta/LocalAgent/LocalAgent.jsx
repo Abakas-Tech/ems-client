@@ -12,6 +12,7 @@ import { useDelete } from "../../../../../context/Delete/useDelete";
 import MetaFilter from "../MetaFilter/MetaFilter";
 import CreateModal from "../../../../../shared/components/CreateModal/CreateModal";
 import useLiveUpdate from "../../../../../context/Socket/useLiveUpdate";
+import { isValidPhone, PHONE_ERROR_MESSAGE } from "../../../../../utils/phone.utils";
 
 // Validation for agent name
 const validateAgentName = (name) => {
@@ -24,8 +25,7 @@ const validateAgentName = (name) => {
 // Validation for agent phone
 const validateAgentPhone = (phone) => {
   if (!phone || !phone.trim()) return "Agent phone is required";
-  if (phone.length < 7) return "Agent phone must be at least 7 characters";
-  if (phone.length > 50) return "Agent phone cannot exceed 50 characters";
+  if (!isValidPhone(phone)) return PHONE_ERROR_MESSAGE;
   return null;
 };
 
@@ -179,8 +179,8 @@ const LocalAgent = () => {
   ];
 
   const actions = [
-    { type: "rename", onClick: handleRename },
-    { type: "delete", onClick: handleDelete },
+    { type: "rename", onClick: handleRename, ownerKey: "created_by" },
+    { type: "delete", onClick: handleDelete, ownerKey: "created_by" },
   ];
 
   const fields = [

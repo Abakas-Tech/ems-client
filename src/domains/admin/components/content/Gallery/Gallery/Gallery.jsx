@@ -150,13 +150,16 @@ const Gallery = () => {
             </p>
             <div className="mt-2">
               <ActionButtons
+                row={galleryItems[currentIndex]}
                 actions={[
                   {
                     type: "edit",
                     onClick: () => handleEdit(galleryItems[currentIndex]),
+                    ownerKey: "created_by",
                   },
                   {
                     type: "delete",
+                    ownerKey: "created_by",
                     onClick: () =>
                       handleDelete(
                         galleryItems[currentIndex].id,
