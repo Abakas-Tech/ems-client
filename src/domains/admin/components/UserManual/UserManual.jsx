@@ -2,6 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import useProfile from "../../../../context/Profile/useProfile";
+import BackButton from "../../../../shared/components/BackButton/BackButton";
 import { matchesAccessRule } from "../../../../utils/menuAccess";
 import MANUAL_MODULES, { MANUAL_GROUPS } from "./manualContent";
 import MANUAL_SHOTS from "./manualShots";
@@ -66,7 +67,9 @@ const searchTopics = (modules, query) => {
 };
 
 const Highlight = ({ text, query }) => {
-  const words = normalize(query).split(" ").filter((w) => w.length > 1);
+  const words = normalize(query)
+    .split(" ")
+    .filter((w) => w.length > 1);
   if (!words.length) return text;
   const pattern = new RegExp(
     `(${words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`,
@@ -92,7 +95,9 @@ const Screenshot = ({ shot, onZoom }) => {
   if (!size) return null;
   const src = `/user-manual/${shot.id}.webp`;
   return (
-    <figure className={`${styles.figure} ${shot.mobile ? styles.figureMobile : ""}`}>
+    <figure
+      className={`${styles.figure} ${shot.mobile ? styles.figureMobile : ""}`}
+    >
       <button
         type="button"
         className={styles.shotButton}
@@ -193,6 +198,47 @@ const UserManual = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [zoom, setZoom] = useState(null);
 
+  // Large screens: the Toolkit is pinned (position: fixed) on the right,
+  // lined up with its grid column — same approach as the Worker form's
+  // section tree. The column is re-measured whenever it moves or resizes
+  // (window resize, sidebar collapse), so the panel never drifts.
+  const DESKTOP_QUERY = "(min-width: 992px)";
+  const [isDesktop, setIsDesktop] = useState(
+    () =>
+      typeof window !== "undefined" && window.matchMedia(DESKTOP_QUERY).matches,
+  );
+  const toolkitColRef = useRef(null);
+  const menuScrollRef = useRef(null);
+  const [toolkitRect, setToolkitRect] = useState({ left: 0, width: 0 });
+
+  useEffect(() => {
+    const media = window.matchMedia(DESKTOP_QUERY);
+    const onChange = () => setIsDesktop(media.matches);
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop || !toolkitColRef.current) return undefined;
+    const col = toolkitColRef.current;
+    const measure = () => {
+      const rect = col.getBoundingClientRect();
+      setToolkitRect({ left: rect.left, width: rect.width });
+    };
+    requestAnimationFrame(measure);
+    window.addEventListener("resize", measure);
+    let observer = null;
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(measure);
+      observer.observe(col);
+      if (col.parentElement) observer.observe(col.parentElement);
+    }
+    return () => {
+      window.removeEventListener("resize", measure);
+      observer?.disconnect();
+    };
+  }, [isDesktop]);
+
   const moduleId = searchParams.get("module");
   const topicId = searchParams.get("topic");
   const activeModule = modules.find((m) => m.id === moduleId) || null;
@@ -227,14 +273,26 @@ const UserManual = () => {
     if (searching || !profile) return;
     if (topicId) {
       requestAnimationFrame(() =>
-        document
-          .getElementById(`topic-${topicId}`)
-          ?.scrollIntoView({ behavior: isFirst ? "auto" : "smooth", block: "start" }),
+        document.getElementById(`topic-${topicId}`)?.scrollIntoView({
+          behavior: isFirst ? "auto" : "smooth",
+          block: "start",
+        }),
       );
     } else if (!isFirst) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [moduleId, topicId, searching, profile]);
+
+  // Keep the open module visible inside the Toolkit's menu scroller.
+  useEffect(() => {
+    const box = menuScrollRef.current;
+    const item = box?.querySelector('[aria-current="page"]');
+    if (!box || !item) return;
+    const top = item.offsetTop - box.offsetTop;
+    if (top < box.scrollTop || top > box.scrollTop + box.clientHeight - 60) {
+      box.scrollTo({ top: Math.max(0, top - 12), behavior: "smooth" });
+    }
+  }, [moduleId]);
 
   // Keep the group chip in step with the open module.
   useEffect(() => {
@@ -261,7 +319,8 @@ const UserManual = () => {
         </div>
         <div>
           <h3 className={styles.welcomeTitle}>
-            Welcome{profile?.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}
+            Welcome
+            {profile?.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}
           </h3>
           <p className="text-muted mb-0">
             This manual shows the {topicCount} topics you can use as{" "}
@@ -298,6 +357,7 @@ const UserManual = () => {
 
   const renderResults = () => (
     <>
+      <BackButton onClick={() => setQuery("")} />
       <p className={styles.resultCount} aria-live="polite">
         {results.length} {results.length === 1 ? "result" : "results"} for “
         {query.trim()}”
@@ -347,13 +407,14 @@ const UserManual = () => {
 
   const renderModule = () => (
     <>
-      <nav className={styles.crumbs} aria-label="Breadcrumb">
+      <BackButton onClick={() => open(null)} />
+      <div className={styles.crumbs} role="navigation" aria-label="Breadcrumb">
         <button type="button" onClick={() => open(null)}>
           User Manual
         </button>
         <i className="bi bi-chevron-right" />
         <span>{activeModule.title}</span>
-      </nav>
+      </div>
 
       <header className={styles.moduleHeader}>
         <span className={styles.moduleHeaderIcon}>
@@ -404,66 +465,83 @@ const UserManual = () => {
 
   // ---- toolkit (right side on desktop, top on phones) ----
   const renderToolkit = () => (
-    <aside className={styles.toolkit} aria-label="Manual toolkit">
-      <h6 className={styles.toolkitTitle}>Toolkit</h6>
+    <aside
+      className={`${styles.toolkit} ${isDesktop ? styles.toolkitFixed : ""}`}
+      style={
+        isDesktop && toolkitRect.width
+          ? { left: toolkitRect.left, width: toolkitRect.width }
+          : undefined
+      }
+      aria-label="Manual toolkit"
+    >
+      <div className={styles.toolkitHead}>
+        <h6 className={styles.toolkitTitle}>Toolkit</h6>
 
-      <label htmlFor="manual-search" className={styles.toolkitLabel}>
-        Search
-      </label>
-      <div className={styles.searchWrap}>
-        <i className={`bi bi-search ${styles.searchIcon}`} />
-        <input
-          id="manual-search"
-          type="search"
-          className={styles.searchInput}
-          placeholder="Page, feature or job…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          autoComplete="off"
-        />
-        {query && (
-          <button
-            type="button"
-            className={styles.searchClear}
-            onClick={() => setQuery("")}
-            aria-label="Clear search"
-          >
-            <i className="bi bi-x-lg" />
-          </button>
-        )}
-      </div>
-
-      <span className={styles.toolkitLabel}>Show</span>
-      <div className={styles.chips} role="group" aria-label="Filter by group">
-        {[{ key: "all", label: "All", icon: "bi-grid" }, ...groups].map((g) => (
-          <button
-            key={g.key}
-            type="button"
-            className={`${styles.chip} ${group === g.key ? styles.chipActive : ""}`}
-            aria-pressed={group === g.key}
-            onClick={() => setGroup(g.key)}
-          >
-            <i className={`bi ${g.icon}`} /> {g.label}
-          </button>
-        ))}
-      </div>
-
-      <button
-        type="button"
-        className={styles.menuToggle}
-        onClick={() => setMenuOpen((v) => !v)}
-        aria-expanded={menuOpen}
-        aria-controls="manual-menu"
-      >
-        <span>
-          <i className="bi bi-list-nested me-2" />
-          Manual Menu
-          {activeModule && (
-            <span className={styles.menuToggleCurrent}> · {activeModule.title}</span>
+        <label htmlFor="manual-search" className={styles.toolkitLabel}>
+          Search
+        </label>
+        <div className={styles.searchWrap}>
+          <i className={`bi bi-search ${styles.searchIcon}`} />
+          <input
+            id="manual-search"
+            type="search"
+            className={styles.searchInput}
+            placeholder="Page, feature or job…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            autoComplete="off"
+          />
+          {query && (
+            <button
+              type="button"
+              className={styles.searchClear}
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+            >
+              <i className="bi bi-x-lg" />
+            </button>
           )}
-        </span>
-        <i className={`bi ${menuOpen ? "bi-chevron-up" : "bi-chevron-down"}`} />
-      </button>
+        </div>
+
+        <span className={styles.toolkitLabel}>Show</span>
+        <div className={styles.chips} role="group" aria-label="Filter by group">
+          {[{ key: "all", label: "All", icon: "bi-grid" }, ...groups].map(
+            (g) => (
+              <button
+                key={g.key}
+                type="button"
+                className={`${styles.chip} ${group === g.key ? styles.chipActive : ""}`}
+                aria-pressed={group === g.key}
+                onClick={() => setGroup(g.key)}
+              >
+                <i className={`bi ${g.icon}`} /> {g.label}
+              </button>
+            ),
+          )}
+        </div>
+
+        <button
+          type="button"
+          className={styles.menuToggle}
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-expanded={menuOpen}
+          aria-controls="manual-menu"
+        >
+          <span>
+            <i className="bi bi-list-nested me-2" />
+            Manual Menu
+            {activeModule && (
+              <span className={styles.menuToggleCurrent}>
+                {" "}
+                · {activeModule.title}
+              </span>
+            )}
+          </span>
+          <i
+            className={`bi ${menuOpen ? "bi-chevron-up" : "bi-chevron-down"}`}
+          />
+        </button>
+      </div>
 
       <div
         id="manual-menu"
@@ -472,54 +550,56 @@ const UserManual = () => {
         <span className={`${styles.toolkitLabel} ${styles.menuLabel}`}>
           Manual Menu
         </span>
-        <ul className={styles.menuList}>
-          <li>
-            <button
-              type="button"
-              className={`${styles.menuItem} ${!activeModule && !searching ? styles.menuItemActive : ""}`}
-              onClick={() => open(null)}
-            >
-              <span className={styles.menuIcon}>
-                <i className="bi bi-house" />
-              </span>
-              Overview
-            </button>
-          </li>
-          {groupModules.map((m) => {
-            const isActive = activeModule?.id === m.id && !searching;
-            return (
-              <li key={m.id}>
-                <button
-                  type="button"
-                  className={`${styles.menuItem} ${isActive ? styles.menuItemActive : ""}`}
-                  onClick={() => open(m.id)}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  <span className={styles.menuIcon}>
-                    <i className={`bi ${m.icon}`} />
-                  </span>
-                  <span className="flex-grow-1 text-start">{m.title}</span>
-                  <span className={styles.menuCount}>{m.topics.length}</span>
-                </button>
-                {isActive && (
-                  <ul className={styles.subList}>
-                    {m.topics.map((t) => (
-                      <li key={t.id}>
-                        <button
-                          type="button"
-                          className={`${styles.subItem} ${topicId === t.id ? styles.subItemActive : ""}`}
-                          onClick={() => open(m.id, t.id)}
-                        >
-                          {t.title}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+        <div className={styles.menuScroll} ref={menuScrollRef}>
+          <ul className={styles.menuList}>
+            <li>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${!activeModule && !searching ? styles.menuItemActive : ""}`}
+                onClick={() => open(null)}
+              >
+                <span className={styles.menuIcon}>
+                  <i className="bi bi-house" />
+                </span>
+                Overview
+              </button>
+            </li>
+            {groupModules.map((m) => {
+              const isActive = activeModule?.id === m.id && !searching;
+              return (
+                <li key={m.id}>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${isActive ? styles.menuItemActive : ""}`}
+                    onClick={() => open(m.id)}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    <span className={styles.menuIcon}>
+                      <i className={`bi ${m.icon}`} />
+                    </span>
+                    <span className="flex-grow-1 text-start">{m.title}</span>
+                    <span className={styles.menuCount}>{m.topics.length}</span>
+                  </button>
+                  {isActive && (
+                    <ul className={styles.subList}>
+                      {m.topics.map((t) => (
+                        <li key={t.id}>
+                          <button
+                            type="button"
+                            className={`${styles.subItem} ${topicId === t.id ? styles.subItemActive : ""}`}
+                            onClick={() => open(m.id, t.id)}
+                          >
+                            {t.title}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     </aside>
   );
@@ -545,7 +625,10 @@ const UserManual = () => {
                   : renderHome()}
           </div>
         </div>
-        <div className="col-12 col-lg-4 col-xl-3 order-1 order-lg-2">
+        <div
+          ref={toolkitColRef}
+          className="col-12 col-lg-4 col-xl-3 order-1 order-lg-2"
+        >
           {renderToolkit()}
         </div>
       </div>
@@ -562,7 +645,9 @@ const UserManual = () => {
         className={styles.zoomModal}
       >
         <Modal.Header closeButton>
-          <Modal.Title className="fs-6 fw-semibold">{zoom?.caption}</Modal.Title>
+          <Modal.Title className="fs-6 fw-semibold">
+            {zoom?.caption}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body className={styles.zoomBody}>
           {zoom && (

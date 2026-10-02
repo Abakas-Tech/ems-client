@@ -2,7 +2,9 @@
    soft borders, cyan→purple active pill). */
 
 .main {
+  position: relative; /* anchors the shared BackButton to this column */
   min-width: 0;
+  padding-top: 8px;
 }
 
 /* ---------- Toolkit (right on desktop, top on phones) ---------- */
@@ -15,14 +17,54 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-@media (min-width: 992px) {
-  .toolkit {
-    position: sticky;
-    top: 80px;
-    max-height: calc(100vh - 100px);
-    overflow-y: auto;
-    scrollbar-width: thin;
-  }
+/* Large screens: pinned on the right. The heading, search and filters stay
+   put at the top; only the Manual Menu list scrolls vertically. */
+.toolkitFixed {
+  position: fixed;
+  top: 84px;
+  height: calc(100vh - 104px);
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.toolkitHead {
+  flex: 0 0 auto;
+}
+
+.toolkitFixed .menu {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.toolkitFixed .menuLabel {
+  flex: 0 0 auto;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eef0f3;
+  margin-bottom: 4px;
+}
+
+.toolkitFixed .menuScroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #c4b5fd transparent;
+  margin-right: -8px;
+  padding-right: 6px;
+}
+
+.toolkitFixed .menuScroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.toolkitFixed .menuScroll::-webkit-scrollbar-thumb {
+  background: #c4b5fd;
+  border-radius: 6px;
 }
 
 .toolkitTitle {
@@ -361,6 +403,7 @@
 /* ---------- Search results ---------- */
 
 .resultCount {
+  padding-right: 60px;
   font-size: 0.9rem;
   color: #6b7280;
   margin-bottom: 12px;
@@ -424,6 +467,7 @@
 /* ---------- Module page ---------- */
 
 .crumbs {
+  padding-right: 60px; /* room for the back button */
   display: flex;
   align-items: center;
   flex-wrap: wrap;
