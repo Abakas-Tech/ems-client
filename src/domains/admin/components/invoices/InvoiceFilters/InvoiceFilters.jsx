@@ -7,7 +7,7 @@ const InvoiceFilters = ({ filters, onFilterChange, onClear }) => {
       <div className="card-body">
         <div className="row g-3 align-items-center">
           {/* Search (invoice # or customer name) */}
-          <div className="col-md-3">
+          <div className="col-12 col-md-6 col-lg-3">
             <input
               type="text"
               name="search"
@@ -19,7 +19,7 @@ const InvoiceFilters = ({ filters, onFilterChange, onClear }) => {
           </div>
 
           {/* Status */}
-          <div className="col-md-3">
+          <div className="col-12 col-md-6 col-lg-3">
             <select
               name="status"
               className={`form-select ${styles.input}`}
@@ -36,7 +36,7 @@ const InvoiceFilters = ({ filters, onFilterChange, onClear }) => {
           </div>
 
           {/* Start Date */}
-          <div className="col-md-2">
+          <div className="col-12 col-md-4 col-lg-2">
             <div className="input-group">
               <span className={`input-group-text bg-light ${styles.dateLabel}`}>
                 From
@@ -52,7 +52,7 @@ const InvoiceFilters = ({ filters, onFilterChange, onClear }) => {
           </div>
 
           {/* End Date */}
-          <div className="col-md-2">
+          <div className="col-12 col-md-4 col-lg-2">
             <div className="input-group">
               <span className={`input-group-text bg-light ${styles.dateLabel}`}>
                 To
@@ -68,7 +68,7 @@ const InvoiceFilters = ({ filters, onFilterChange, onClear }) => {
           </div>
 
           {/* Clear */}
-          <div className="col-md-2 d-grid">
+          <div className="col-12 col-md-4 col-lg-2 d-grid">
             <button
               className={`btn btn-outline-secondary ${styles["clear-btn"]}`}
               onClick={onClear}

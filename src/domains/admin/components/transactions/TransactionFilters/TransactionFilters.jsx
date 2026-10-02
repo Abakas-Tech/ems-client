@@ -8,7 +8,7 @@ const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
       <div className="card-body">
         <div className="row g-3 align-items-center">
           {/* Category Dropdown */}
-          <div className="col-md-4">
+          <div className="col-12 col-md-6 col-lg-4">
             <select
               name="category"
               className={`form-select ${styles.input}`}
@@ -25,7 +25,7 @@ const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
           </div>
 
           {/* Start Date with Label */}
-          <div className="col-md-3">
+          <div className="col-12 col-md-6 col-lg-3">
             <div className="input-group">
               <span className={`input-group-text bg-light ${styles.dateLabel}`}>
                 Start
@@ -41,7 +41,7 @@ const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
           </div>
 
           {/* End Date with Label */}
-          <div className="col-md-3">
+          <div className="col-12 col-md-6 col-lg-3">
             <div className="input-group">
               <span className={`input-group-text bg-light ${styles.dateLabel}`}>
                 End
@@ -58,7 +58,7 @@ const TransactionFilters = ({ filters, onFilterChange, onClear }) => {
 
           {/* Clear Button */}
 
-          <div className="col-md-2 d-grid">
+          <div className="col-12 col-md-6 col-lg-2 d-grid">
             <button
               className={`btn btn-outline-secondary ${styles["clear-btn"]}`}
               onClick={onClear}

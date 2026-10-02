@@ -53,12 +53,16 @@ const ListingComponent = ({
   const formatCellValue = (val) => {
     if (val === null || val === undefined || val === "") return "—";
 
-    // Format if it's a string/number that represents a valid date, skipping brief text values or pure ID strings
+    // Format only ISO date strings as returned by the API ("2026-09-30" or
+    // "2026-09-30T21:00:00.000Z"). Date.parse alone is too lenient — it
+    // happily reads IDs such as "LMIS-55126" as a date — so codes, labour
+    // IDs and reference numbers must not reach it.
     if (
       typeof val === "string" &&
-      val.length >= 10 &&
-      !isNaN(Date.parse(val)) &&
-      isNaN(Number(val)) // Prevents purely numerical IDs from accidentally qualifying
+      /^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?)?$/.test(
+        val,
+      ) &&
+      !isNaN(Date.parse(val))
     ) {
       const dateObj = new Date(val);
       return dateObj.toLocaleDateString("en-GB", {

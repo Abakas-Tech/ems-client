@@ -126,6 +126,11 @@ const AGENCY_CONTACT = {
    screen width. */
 const CV_PREVIEW_RESPONSIVE_STYLES = `
   .cv-preview-scroll-wrap{width:100%;}
+  /* Laptop widths with the sidebar open can be narrower than the A4 page,
+     so the preview scrolls inside its column instead of widening the page. */
+  @media (max-width: 1279px){
+    .cv-preview-scroll-wrap{max-width:100%;overflow-x:auto;overflow-y:hidden;}
+  }
   @media (max-width: 991px){
     .cv-preview-column{
       width:100%;

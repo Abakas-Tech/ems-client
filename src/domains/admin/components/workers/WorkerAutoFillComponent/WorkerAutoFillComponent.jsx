@@ -993,7 +993,7 @@ function WorkerAutoFillComponent() {
         </div>
 
         <div className="mt-3 mt-md-5">
-          <div className="d-flex align-items-center gap-2">
+          <div className="d-flex flex-wrap align-items-center gap-2">
             <button
               type="button"
               className="badge rounded-pill bg-light text-dark border px-3 py-2"

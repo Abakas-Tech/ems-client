@@ -121,6 +121,13 @@ const MENU_CONFIG = [
   },
 
   {
+    label: "User Manual",
+    path: "/admin/user-manual",
+    icon: "bi bi-journal-bookmark",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
+  },
+
+  {
     label: "Settings",
     path: "/admin/settings",
     icon: "bi-gear",
@@ -139,6 +146,13 @@ const MENU_CONFIG = [
     label: "Notifications",
     path: "/partner/notifications",
     icon: "bi bi-bell",
+    roles: [ROLES.PARTNER],
+  },
+
+  {
+    label: "User Manual",
+    path: "/partner/user-manual",
+    icon: "bi bi-journal-bookmark",
     roles: [ROLES.PARTNER],
   },
 

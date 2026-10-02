@@ -96,7 +96,12 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
   const formatPathLabel = (pathname) => {
     if (!pathname) return "";
 
-    const segments = pathname.split("/").filter(Boolean);
+    // Record ids (e.g. /admin/employees/edit/9) are not page names — use
+    // the segment before them instead ("Edit").
+    const segments = pathname
+      .split("/")
+      .filter(Boolean)
+      .filter((segment) => !/^\d+$/.test(segment));
     let lastSegment = segments.pop();
 
     // handle /admin → Dashboard
@@ -120,9 +125,16 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
           className="sticky-top d-flex justify-content-between align-items-center bg-white border-bottom px-3 py-2"
           style={{ zIndex: 100 }}
         >
-          <h5 className="mb-0 fw-semibold text-dark">{activePage}</h5>
+          {/* min-width: 0 + text-truncate let a long page title shorten
+              itself instead of squeezing the profile block on phones. */}
+          <h5
+            className="mb-0 fw-semibold text-dark text-truncate me-2"
+            style={{ minWidth: 0 }}
+          >
+            {activePage}
+          </h5>
 
-          <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-3 flex-shrink-0">
             {isAdmin ? <RealtimeAdminNotificationBell /> : <StaffNotificationBell />}
             <ProfileCell
               profile={{
@@ -131,7 +143,7 @@ const AdminHeader = ({ isDesktop, setMobileOpen, onToggle }) => {
               }}
             />
 
-            <div className="text-end">
+            <div className="text-end text-nowrap">
               <div className="fw-semibold" style={{ fontSize: "0.9rem" }}>
                 {formattedName}
               </div>

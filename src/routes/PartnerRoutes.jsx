@@ -9,6 +9,7 @@ import ChangePasswordPage from "../domains/admin/pages/ChangePassword/ChangePass
 import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx";
 import CV from "../domains/admin/pages/workers/modules/CV/CV.jsx"
 import NotificationPage from "../domains/admin/pages/NotificationPage/NotificationPage.jsx";
+import UserManual from "../domains/admin/pages/UserManual/UserManual.jsx";
 
 function PartnerRoutes() {
   return (
@@ -26,6 +27,7 @@ function PartnerRoutes() {
         <Route path="my-profile" element={<MyProfile />} />
          <Route path="notifications" element={<NotificationPage />} />
         <Route path="settings" element={<ChangePasswordPage />} />
+        <Route path="user-manual" element={<UserManual />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
