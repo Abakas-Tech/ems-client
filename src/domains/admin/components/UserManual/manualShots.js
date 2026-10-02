@@ -78,12 +78,12 @@ const MANUAL_SHOTS = {
     "h": 1125
   },
   "employee-cv": {
-    "w": 1400,
-    "h": 954
+    "w": 1600,
+    "h": 995
   },
   "employee-cv-shared": {
-    "w": 1400,
-    "h": 954
+    "w": 1600,
+    "h": 995
   },
   "employee-documents": {
     "w": 1226,
@@ -214,8 +214,8 @@ const MANUAL_SHOTS = {
     "h": 1061
   },
   "partner-cv": {
-    "w": 1400,
-    "h": 954
+    "w": 1600,
+    "h": 995
   },
   "partner-employees": {
     "w": 1400,
