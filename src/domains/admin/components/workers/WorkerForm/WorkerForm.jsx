@@ -256,92 +256,6 @@ const defaultBasic = () => ({
   is_active: true,
 });
 
-// Builds a plain, JSON-comparable object mirroring exactly what
-// handleSubmit sends to updateWorker/createWorker (minus the agent
-// section, photos, and documents, which are handled separately). Used
-// both to snapshot the worker's data right after it loads and to build
-// the current payload at submit time, so a submit that changed nothing
-// about the worker itself (e.g. only the Agent Information section was
-// touched) can be told apart from a real edit — this form always
-// re-renders/re-submits every optional section regardless of which one
-// the user actually touched, so comparing raw dataToSend against
-// "nothing" isn't an option.
-const buildComparableWorkerPayload = ({
-  basic,
-  personal,
-  sectionsEnabled,
-  passport,
-  coc,
-  medical,
-  guarantor,
-  visa,
-  travel,
-  contract,
-  languages,
-  skills,
-  experiences,
-  isEditMode,
-}) => {
-  const personalPayload = { ...personal };
-  if (isEditMode) delete personalPayload.status_id;
-  Object.keys(personalPayload).forEach((key) => {
-    if (personalPayload[key] === "" || personalPayload[key] === null) {
-      delete personalPayload[key];
-    }
-  });
-
-  const payload = {
-    full_name: basic.full_name,
-    phone_number: basic.phone_number,
-    email: basic.email,
-    is_active: basic.is_active,
-    personal_information: personalPayload,
-  };
-
-  if (sectionsEnabled.passport) payload.passport = passport;
-  if (sectionsEnabled.coc) {
-    payload.coc = {
-      ...coc,
-      coc_issue_date: null,
-      coc_assessment_date: null,
-      coc_expiry_date: null,
-    };
-  }
-  if (sectionsEnabled.medical) {
-    payload.medical = {
-      ...medical,
-      medical_issue_date: null,
-      medical_expiry_date: null,
-      medical_report_number: null,
-    };
-  }
-  if (sectionsEnabled.guarantor) payload.guarantor = guarantor;
-  if (sectionsEnabled.visa) {
-    payload.visa = {
-      ...visa,
-      visa_issue_date: null,
-      visa_expiry_date: null,
-      visa_reference_date: null,
-    };
-  }
-  if (sectionsEnabled.travel) {
-    payload.travel = { ...travel, departure_location: null };
-  }
-  if (sectionsEnabled.contract) payload.contract = contract;
-  if (sectionsEnabled.languages) payload.languages = languages;
-  if (sectionsEnabled.skills) payload.skills = skills;
-  if (sectionsEnabled.experience) {
-    payload.experiences = experiences
-      .filter((row) => row.country?.trim())
-      .map((row) => ({
-        country: row.country.trim(),
-        years_of_experience: Number(row.years_of_experience),
-      }));
-  }
-
-  return payload;
-};
-
 // `isCreate` gates the new-candidate defaults (Task: Candidate Form —
 // Default Values). Editing an existing candidate always passes false here
 // (see the `personal` state initializer below), so these never leak into
@@ -367,7 +281,7 @@ const defaultPersonal = (isCreate = false) => ({
   national_id_number: "",
   fingerprint_number: "",
   labour_id: "",
-  monthly_salary: isCreate ? 1500 : "",
+  monthly_salary: isCreate ? 1000 : "",
 });
 
 const defaultPassport = () => ({
@@ -626,22 +540,6 @@ function WorkerForm() {
   // submit, mirroring the create-vs-update branching used for the worker
   // itself (createWorker vs updateWorker).
   const [agentExists, setAgentExists] = useState(false);
-
-  // Snapshot of the agent assignment as loaded from the server (edit mode
-  // only), so submit can tell whether the user actually changed the agent
-  // selection. Without this, saving the worker form re-sends the PUT to
-  // /worker-agent/:userId on every save — even when the Agent Information
-  // section was never touched — which used to create a spurious "updated
-  // agent information" audit log entry for a no-op update.
-  const initialAgentRef = useRef(null);
-
-  // Snapshot of the worker's own data (everything buildComparableWorkerPayload
-  // covers) as loaded from the server, captured once applyProfileToForm runs
-  // (edit mode only) — compared against the same payload shape at submit
-  // time to tell a real edit apart from a no-op resubmit. See the comment
-  // on buildComparableWorkerPayload for why this can't just compare
-  // dataToSend directly.
-  const initialWorkerSnapshotRef = useRef(null);
 
   // All agents on file (fetched once), used to power the Agent Name
   // dropdown.
@@ -950,13 +848,11 @@ function WorkerForm() {
       try {
         const res = await getWorkerAgent(id);
         if (res?.data) {
-          const loadedAgent = {
+          setAgent({
             agent_name: res.data.agent_name || "",
             agent_phone: res.data.agent_phone || "",
             agent_code: res.data.agent_code || "",
-          };
-          setAgent(loadedAgent);
-          initialAgentRef.current = loadedAgent;
+          });
           setAgentExists(true);
           setSelectedAgentId(
             res.data.agent_id != null ? String(res.data.agent_id) : "",
@@ -1148,16 +1044,15 @@ function WorkerForm() {
   // map the aggregated getWorkerProfile response onto the form state
   const applyProfileToForm = (profileData) => {
     setWorkerCreatedBy(profileData.created_by ?? null);
-    const newBasic = {
+    setBasic({
       full_name: profileData.full_name || "",
       phone_number: profileData.phone_number || "",
       email: profileData.email || "",
       is_active: !!profileData.is_active,
-    };
-    setBasic(newBasic);
+    });
 
     const pi = profileData.personal_information || {};
-    const newPersonal = {
+    setPersonal({
       region: pi.region || "",
       wereda: pi.wereda || "",
       city: pi.city || "",
@@ -1181,51 +1076,43 @@ function WorkerForm() {
       labour_id: pi.labour_id || "",
       monthly_salary:
         pi.monthly_salary ?? profileData.contracts?.[0]?.monthly_salary ?? "",
-    };
-    setPersonal(newPersonal);
+    });
     setExistingPhoto3x4Url(pi.photo_3x4?.url || null);
     setExistingPhotoStandingUrl(pi.photo_standing?.url || null);
 
-    let newPassport = defaultPassport();
     if (profileData.passport) {
-      newPassport = {
+      setPassport({
         passport_number: profileData.passport.passport_number || "",
         passport_issue_date: profileData.passport.issue_date || "",
         passport_expiry_date: profileData.passport.expiry_date || "",
         passport_issuing_country:
           profileData.passport.issuing_country || "Ethiopia",
-      };
-      setPassport(newPassport);
+      });
       setExistingPassportScanUrl(profileData.passport?.scan?.url || null);
     }
 
-    let newCoc = defaultCoc();
     if (profileData.coc) {
-      newCoc = {
+      setCoc({
         coc_number: profileData.coc.coc_number || "",
         coc_assessment_center: profileData.coc.assessment_center || "",
         coc_assessment_date: profileData.coc.assessment_date || "",
         coc_issue_date: profileData.coc.issue_date || "",
         coc_expiry_date: profileData.coc.expiry_date || "",
-      };
-      setCoc(newCoc);
+      });
     }
 
-    let newMedical = defaultMedical();
     if (profileData.medical) {
-      newMedical = {
+      setMedical({
         medical_status: profileData.medical.medical_status || "",
         medical_center: profileData.medical.medical_center || "",
         medical_report_number: profileData.medical.medical_report_number || "",
         medical_issue_date: profileData.medical.issue_date || "",
         medical_expiry_date: profileData.medical.expiry_date || "",
-      };
-      setMedical(newMedical);
+      });
     }
 
-    let newGuarantor = defaultGuarantor();
     if (profileData.emergency) {
-      newGuarantor = {
+      setGuarantor({
         guarantor_name: profileData.emergency.guarantor_name || "",
         relation: profileData.emergency.relation || "",
         guarantor_gender: profileData.emergency.guarantor_gender
@@ -1235,13 +1122,11 @@ function WorkerForm() {
         guarantor_address: profileData.emergency.guarantor_address || "",
         guarantor_phone_number:
           profileData.emergency.guarantor_phone_number || "",
-      };
-      setGuarantor(newGuarantor);
+      });
     }
 
-    let newVisa = defaultVisa();
     if (profileData.visa) {
-      newVisa = {
+      setVisa({
         visa_number: profileData.visa.visa_number || "",
         visa_issue_date: profileData.visa.issue_date || "",
         visa_expiry_date: profileData.visa.expiry_date || "",
@@ -1249,34 +1134,29 @@ function WorkerForm() {
         visa_reference_date: profileData.visa.reference_date || "",
         issuance_id: profileData.visa.issuance_id || "",
         sponsor_id: profileData.visa.sponsor_id || "",
-      };
-      setVisa(newVisa);
+      });
     }
 
     const travelRecord = profileData.travel_records?.[0];
-    let newTravel = defaultTravel();
     if (travelRecord) {
-      newTravel = {
+      setTravel({
         ticket_number: travelRecord.ticket_number || "",
         departure_date: travelRecord.departure_date || "",
         arrival_date: travelRecord.arrival_date || "",
         departure_location: travelRecord.departure_location || "",
         arrival_location: travelRecord.arrival_location || "",
-      };
-      setTravel(newTravel);
+      });
     }
 
     const contractRecord = profileData.contracts?.[0];
-    let newContract = defaultContract();
     if (contractRecord) {
-      newContract = {
+      setContract({
         employer: contractRecord.employer_name || "",
         partner_id: contractRecord.partner_id || "",
         contract_start_date: contractRecord.contract_start_date || "",
         contract_end_date: contractRecord.contract_end_date || "",
         status: contractRecord.status || "pending",
-      };
-      setContract(newContract);
+      });
     }
 
     // NOTE: Agent Information is intentionally NOT populated here — it is
@@ -1316,34 +1196,19 @@ function WorkerForm() {
     // Include toggles for every OTHER optional module initially reflect
     // whatever was actually saved for this worker. The auto-toggle effect
     // below will keep them in sync afterwards as fields are edited.
-    const newSectionsEnabled = {
+    setSectionsEnabled((prev) => ({
+      ...prev,
       passport: Boolean(profileData.passport),
       coc: Boolean(profileData.coc),
       medical: Boolean(profileData.medical),
       guarantor: Boolean(profileData.emergency),
-      // Agent is deliberately left out here — it's loaded and tracked
-      // separately (initialAgentRef), never part of this snapshot.
       visa: Boolean(profileData.visa),
       travel: Boolean(travelRecord),
       contract: Boolean(contractRecord),
       languages: loadedLanguages.length > 0,
       skills: loadedSkills.length > 0,
       experience: loadedExperiences.length > 0,
-    };
-    setSectionsEnabled((prev) => ({ ...prev, ...newSectionsEnabled }));
-    setManualOverride({
-      passport: false,
-      coc: false,
-      medical: false,
-      guarantor: false,
-      agent: false,
-      visa: false,
-      travel: false,
-      contract: false,
-      languages: false,
-      skills: false,
-      experience: false,
-    });
+    }));
     // Drives the Reset control's visibility (see moduleHasData above) —
     // agent is intentionally left out here since it's tracked by the
     // separate loadAgent effect instead.
@@ -1359,28 +1224,19 @@ function WorkerForm() {
       contract: Boolean(contractRecord),
       experience: loadedExperiences.length > 0,
     }));
-
-    // Snapshot exactly what handleSubmit would send right now, so a later
-    // submit that leaves the worker's own data untouched (e.g. only the
-    // Agent Information section was changed) can be detected and skipped.
-    initialWorkerSnapshotRef.current = JSON.stringify(
-      buildComparableWorkerPayload({
-        basic: newBasic,
-        personal: newPersonal,
-        sectionsEnabled: newSectionsEnabled,
-        passport: newPassport,
-        coc: newCoc,
-        medical: newMedical,
-        guarantor: newGuarantor,
-        visa: newVisa,
-        travel: newTravel,
-        contract: newContract,
-        languages: loadedLanguages,
-        skills: loadedSkills,
-        experiences: loadedExperiences,
-        isEditMode: true,
-      }),
-    );
+    setManualOverride({
+      passport: false,
+      coc: false,
+      medical: false,
+      guarantor: false,
+      agent: false,
+      visa: false,
+      travel: false,
+      contract: false,
+      languages: false,
+      skills: false,
+      experience: false,
+    });
   };
 
   const handleBasicChange = (e) => {
@@ -2412,44 +2268,9 @@ function WorkerForm() {
       if (photoStanding) dataToSend.append("photo_standing_url", photoStanding);
       if (passportScan) dataToSend.append("passport_scan_url", passportScan);
 
-      // The form always re-renders/re-submits every optional section
-      // regardless of which one was actually touched, so a save that only
-      // changed the Agent Information section (handled separately below)
-      // would otherwise still PUT the worker's unchanged data and produce
-      // a redundant "updated worker X" audit entry alongside the correct
-      // agent one. Compare against the snapshot taken when the profile
-      // loaded (see buildComparableWorkerPayload) and skip the call when
-      // nothing about the worker itself — and no new photo/passport scan —
-      // actually changed.
-      const currentWorkerPayload = buildComparableWorkerPayload({
-        basic,
-        personal,
-        sectionsEnabled,
-        passport,
-        coc,
-        medical,
-        guarantor,
-        visa,
-        travel,
-        contract,
-        languages,
-        skills,
-        experiences,
-        isEditMode,
-      });
-      const workerDataUnchanged =
-        isEditMode &&
-        !photo3x4 &&
-        !photoStanding &&
-        !passportScan &&
-        initialWorkerSnapshotRef.current ===
-          JSON.stringify(currentWorkerPayload);
-
-      const response = workerDataUnchanged
-        ? null
-        : isEditMode
-          ? await updateWorker(id, dataToSend)
-          : await createWorker(dataToSend);
+      const response = isEditMode
+        ? await updateWorker(id, dataToSend)
+        : await createWorker(dataToSend);
 
       // Agent Information create/update flow.
       // - Edit mode: the worker's user_id is already known (`id`).
@@ -2463,14 +2284,7 @@ function WorkerForm() {
       // worker (never a second record).
       const workerId = isEditMode ? id : response?.data?.id;
 
-      const agentUnchanged =
-        agentExists &&
-        initialAgentRef.current?.agent_name === agent.agent_name &&
-        initialAgentRef.current?.agent_phone === agent.agent_phone &&
-        (initialAgentRef.current?.agent_code || "") ===
-          (agent.agent_code || "").trim();
-
-      if (sectionsEnabled.agent && workerId && !agentUnchanged) {
+      if (sectionsEnabled.agent && workerId) {
         const agentPayload = {
           agent_name: agent.agent_name,
           agent_phone: agent.agent_phone,
@@ -2536,10 +2350,7 @@ function WorkerForm() {
       }
 
       addMessage(
-        // workerDataUnchanged means the update call was skipped entirely
-        // (nothing to fail) — that's still a successful save overall as
-        // long as nothing else in this block threw.
-        workerDataUnchanged ? true : response?.success,
+        response?.success,
         response?.message ||
           (isEditMode
             ? "Worker updated successfully"
@@ -2837,18 +2648,20 @@ function WorkerForm() {
                   </button>
                 </>
               )}
-              {photo3x4Source === "auto" && isEditMode && existingPhoto3x4Url && (
-                <>
-                  {" · "}
-                  <button
-                    type="button"
-                    className="btn btn-link btn-sm p-0 align-baseline"
-                    onClick={handleKeepSavedPhoto3x4}
-                  >
-                    Keep current photo
-                  </button>
-                </>
-              )}
+              {photo3x4Source === "auto" &&
+                isEditMode &&
+                existingPhoto3x4Url && (
+                  <>
+                    {" · "}
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm p-0 align-baseline"
+                      onClick={handleKeepSavedPhoto3x4}
+                    >
+                      Keep current photo
+                    </button>
+                  </>
+                )}
             </small>
           </div>
         )}
@@ -3307,7 +3120,7 @@ function WorkerForm() {
           className="form-control"
           value={travel.arrival_location}
           onChange={handleTravelChange}
-          placeholder="e.g. Saudi Arabia"
+          placeholder="e.g. Riyadh"
           autoComplete="off"
         />
         <datalist id={travelDestinationListId}>
@@ -3323,9 +3136,9 @@ function WorkerForm() {
     <div className="row">
       <div className="form-group col-md-6 mb-3">
         {renderLabel(
-          "Employer",
+          "Sponsor",
           true,
-          isFieldFlaggedMissing("contract", "employer"),
+          isFieldFlaggedMissing("contract", "sponsor"),
         )}
         <input
           type="text"
@@ -3548,12 +3361,6 @@ function WorkerForm() {
             onChange={(e) => setDocumentDescription(e.target.value)}
             placeholder="e.g. COC certificate, page 1"
           />
-          {documentDescription.length > DOCUMENT_DESCRIPTION_MAX_LENGTH && (
-            <small className="text-danger">
-              Max {DOCUMENT_DESCRIPTION_MAX_LENGTH} characters (
-              {documentDescription.length})
-            </small>
-          )}
         </div>
         <div className="form-group col-md-3">
           {renderPlainLabel("File")}
@@ -3796,17 +3603,17 @@ function WorkerForm() {
     );
   };
 
-  // The single primary action button, rendered on the right of the Upload
-  // Passport row (same size as the Upload Passport button beside it) for
-  // every screen size. Label only depends on create/edit mode; while a save
-  // is in flight the button is simply disabled (the existing loader already
-  // communicates the loading state), so the label never changes mid-save.
+  // The single primary action button — reused for the fixed desktop tree
+  // and the mobile top nav. Label only depends on create/edit mode; while a
+  // save is in flight the button is simply disabled (the existing loader
+  // already communicates the loading state), so the label never changes
+  // mid-save. Kept compact (btn-sm) so it never dominates the tree nav.
   const ownerLocked = isEditMode && !canModify(workerCreatedBy);
 
   const renderActionButton = () => (
     <button
       type="button"
-      className="btn btn-main text-white rounded px-3"
+      className="btn btn-main btn-sm rounded px-3 w-100"
       onClick={handleSubmit}
       disabled={submitLoading || ownerLocked}
       title={ownerLocked ? NOT_OWNER_MESSAGE : undefined}
@@ -4363,7 +4170,7 @@ function WorkerForm() {
           "Contract",
           "contract",
           <>
-            {previewRow("Employer", contract.employer)}
+            {previewRow("Sponsor", contract.sponsor)}
             {previewRow(
               "Partner",
               partners.find(
@@ -4650,24 +4457,6 @@ function WorkerForm() {
           }
         }
 
-        /* Primary Create/Save button, on the right of the Upload Passport
-           row. Fixed width on small screens so it never stretches or
-           squeezes the row; natural width on larger screens. */
-        .worker-form-action {
-          flex: 0 0 auto;
-          margin-left: auto;
-        }
-        .worker-form-action .btn {
-          min-width: 150px;
-          white-space: nowrap;
-        }
-        @media (max-width: 575.98px) {
-          .worker-form-action .btn {
-            width: 130px;
-            min-width: 130px;
-          }
-        }
-
         /* keeps sections from hiding under the sticky header when jumped to */
         .section-scroll-anchor {
           scroll-margin-top: 100px;
@@ -4759,69 +4548,66 @@ function WorkerForm() {
               style={{ display: "none" }}
               onChange={handlePassportScan}
             />
-            {/* Same column width as the form below, so on large screens the
-                action button lines up with the form's right edge instead of
-                running under the fixed section nav. */}
-            <div className="row">
-              <div className="col-12 col-lg-9 d-flex flex-wrap align-items-center gap-2 mt-3">
+            <div className="d-flex flex-wrap gap-2 mt-3">
+              <button
+                type="button"
+                className="btn btn-main text-white d-flex align-items-center justify-content-center"
+                onClick={() => passportInputRef.current?.click()}
+                style={{ whiteSpace: "nowrap" }}
+              >
+                Upload Passport
+              </button>
+
+              {(basic.full_name || passport.passport_number) && (
                 <button
                   type="button"
-                  className="btn btn-main text-white d-flex align-items-center justify-content-center"
-                  onClick={() => passportInputRef.current?.click()}
+                  className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
+                  onClick={() => {
+                    setPassport({
+                      passport_number: " ",
+                      passport_issue_date: "",
+                      passport_expiry_date: "",
+                      passport_issuing_country: "Ethiopia",
+                    });
+                    setBasic({
+                      full_name: "",
+                    });
+                    setPersonal({
+                      date_of_birth: "",
+                    });
+                  }}
                   style={{ whiteSpace: "nowrap" }}
+                  disabled={scanLoading}
                 >
-                  Upload Passport
+                  Reset
                 </button>
+              )}
 
-                {(basic.full_name || passport.passport_number) && (
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
-                    onClick={() => {
-                      setPassport({
-                        passport_number: " ",
-                        passport_issue_date: "",
-                        passport_expiry_date: "",
-                        passport_issuing_country: "Ethiopia",
-                      });
-                      setBasic({
-                        full_name: "",
-                      });
-                      setPersonal({
-                        date_of_birth: "",
-                      });
-                    }}
-                    style={{ whiteSpace: "nowrap" }}
-                    disabled={scanLoading}
-                  >
-                    Reset
-                  </button>
-                )}
-
-                {ownerLocked && (
-                  <small className="text-danger d-flex align-items-center">
-                    <i className="bi bi-lock me-1"></i>
-                    View only — created by another admin
-                  </small>
-                )}
-
-                <div className="worker-form-action">{renderActionButton()}</div>
-              </div>
+              {ownerLocked && (
+                <small className="text-danger d-flex align-items-center">
+                  <i className="bi bi-lock me-1"></i>
+                  View only — created by another admin
+                </small>
+              )}
             </div>
           </>
         )}
         {/* Right side — scan button only, mirrors + Status button */}
       </div>
 
-      {/* mobile / small-screen section nav: horizontal connected tree at top.
-          Hidden while reviewing the Preview. The primary action button
-          lives in the Upload Passport row above. Shared identically between
-          Create and Edit. */}
+      {/* mobile / small-screen section nav: horizontal connected tree at top,
+          plus the primary action button right below it so it stays
+          reachable once the tree moves to the top of the page. Hidden while
+          reviewing the Preview — the Preview card carries its own action
+          button instead. Shared identically between Create and Edit. */}
       {!previewMode && (
         <div className="d-lg-none mb-3">
           <div className="tree-nav-mobile-wrap shadow-sm rounded-4 bg-white">
             <div className="tree-nav-mobile">
               {navItems.map((s, idx) => renderNavItem(s, true, idx))}
+            </div>
+            <div className="tree-nav-mobile-action-wrap">
+              {renderActionButton()}
             </div>
           </div>
         </div>
@@ -4862,6 +4648,7 @@ function WorkerForm() {
                   {navItems.map((s, idx) => renderNavItem(s, false, idx))}
                 </ul>
               </div>
+              <div className="tree-nav-action-wrap">{renderActionButton()}</div>
             </div>
           </div>
         )}
