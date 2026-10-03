@@ -1,4 +1,5 @@
 import { REPORT_META } from "./Data";
+import escapeHtml from "../../../utils/escapeHtml";
 import {
   getCategoryLabel,
   isIncomeCategory,
@@ -121,7 +122,7 @@ const buildHeader = (period, summaryOnly = false) => {
         <div class="report-title">Financial Period ${
           summaryOnly ? "Summary" : "Report"
         }</div>
-        <div class="report-sub">${getPeriodLabel(period)}</div>
+        <div class="report-sub">${escapeHtml(getPeriodLabel(period))}</div>
       </div>
       <div class="meta-r">
         <div><b>Status:</b> ${
@@ -157,11 +158,11 @@ const forColumnValue = (t) => {
   const roleLabel = ROLE_MAP[t.target_user_role] || "User";
   const roleColor = ROLE_COLORS[t.target_user_role] || DEFAULT_ROLE_COLOR;
   const roleBadge = `<span class="bp" style="background:${roleColor.bg};color:${roleColor.color};margin-left:5px;">${roleLabel}</span>`;
-  const name = t.target_user_name || `User #${t.user_id}`;
+  const name = escapeHtml(t.target_user_name || `User #${t.user_id}`);
   const nameLine = `${name}${roleBadge}`;
 
   return t.target_user_phone
-    ? `${nameLine}<br/><span style="font-weight:400;color:#8a97b0;">${t.target_user_phone}</span>`
+    ? `${nameLine}<br/><span style="font-weight:400;color:#8a97b0;">${escapeHtml(t.target_user_phone)}</span>`
     : nameLine;
 };
 
@@ -177,14 +178,14 @@ const buildTransactionRows = (transactions, startIdx) =>
         <td style="background:${bg}">${fmtDate(
           t.transaction_date || t.created_at,
         )}</td>
-        <td style="background:${bg}">${t.reference || "—"}</td>
+        <td style="background:${bg}">${escapeHtml(t.reference || "—")}</td>
         <td style="background:${bg}"><span class="bp" style="background:${
           isIncome ? "#dcfce7" : "#fee2e2"
         };color:${isIncome ? "#15803d" : "#b91c1c"}">${getCategoryLabel(
           t.category,
         ).toUpperCase()}</span></td>
         <td style="background:${bg}">${forColumnValue(t)}</td>
-        <td style="background:${bg}">${t.creator_name || "System"}</td>
+        <td style="background:${bg}">${escapeHtml(t.creator_name || "System")}</td>
         <td style="background:${bg};text-align:right;font-weight:600;color:${
           isIncome ? "#15803d" : "#b91c1c"
         }">${isIncome ? "+" : "-"} ${fmtAmount(t.amount)}</td>
@@ -267,8 +268,8 @@ const buildSummaryRows = (period, totals) => {
             ? "#b91c1c"
             : "#1a2640";
       return `<tr>
-        <td style="background:${bg};font-weight:600;">${label}</td>
-        <td style="background:${bg};${alignRight ? "text-align:right;" : ""}font-weight:600;color:${color};">${value}</td>
+        <td style="background:${bg};font-weight:600;">${escapeHtml(label)}</td>
+        <td style="background:${bg};${alignRight ? "text-align:right;" : ""}font-weight:600;color:${color};">${escapeHtml(value)}</td>
       </tr>`;
     })
     .join("");
@@ -408,7 +409,7 @@ export const generatePeriodReport = ({
     const printTitle = `${REPORT_META.orgName} - Finance ${getPeriodLabel(period)} Summary`;
     const summaryHtml = buildSummaryPage(period, transactions, 1, true);
     const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
-<title>${printTitle}</title>
+<title>${escapeHtml(printTitle)}</title>
 <style>${REPORT_STYLES}</style>
 </head><body>${summaryHtml}</body></html>`;
     openAndPrint(html, printTitle);
@@ -426,7 +427,7 @@ export const generatePeriodReport = ({
 
   const printTitle = `${REPORT_META.orgName} - Finance ${getPeriodLabel(period)} Report`;
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
-<title>${printTitle}</title>
+<title>${escapeHtml(printTitle)}</title>
 <style>${REPORT_STYLES}</style>
 </head><body>${txPagesHtml}${summaryHtml}</body></html>`;
 

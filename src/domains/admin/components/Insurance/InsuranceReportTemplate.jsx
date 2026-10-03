@@ -1,3 +1,4 @@
+import escapeHtml from "../../../../utils/escapeHtml";
 const ORG = {
   insurerName: "Nyala Insurance S.C",
   insurerAmharic: "ኒያላ ኢንሹራንስ አ.ማ",
@@ -7,7 +8,8 @@ const ORG = {
   insurerWebsite: "email: nisco@nyalainsurance.com",
 };
 
-const val = (v) => (v === null || v === undefined ? "" : String(v));
+// Escaped: these values come from worker records.
+const val = (v) => (v === null || v === undefined ? "" : escapeHtml(v));
 
 const fmtDate = (v) =>
   v

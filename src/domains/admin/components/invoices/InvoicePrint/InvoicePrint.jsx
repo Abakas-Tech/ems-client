@@ -3,6 +3,7 @@ import {
   DOCUMENT_ELEMENT_STYLES,
   buildElementsLayerHtml,
 } from "../../../../../utils/documentElements.utils";
+import escapeHtml from "../../../../../utils/escapeHtml";
 
 // Printable width of the invoice page: A4 210mm minus the 13mm left/right
 // @page margins. The print-options preview renders the page at exactly
@@ -46,11 +47,6 @@ export const sanitizeInvoiceFileName = (value) =>
     .replace(/\.pdf$/i, "")
     .trim() || DEFAULT_INVOICE_FILE_NAME;
 
-const escapeHtml = (value) =>
-  String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
 
 const fmtDate = (val) =>
   val
@@ -175,10 +171,10 @@ const buildHeader = (invoice) => {
       </div>
       <div class="title-block">
         <div class="report-title">Invoice</div>
-        <div class="report-sub">${invoice.invoice_number}</div>
+        <div class="report-sub">${escapeHtml(invoice.invoice_number)}</div>
       </div>
       <div class="meta-r">
-        <div><b>Partner:</b> ${invoice.customer_full_name || "—"}</div>
+        <div><b>Partner:</b> ${escapeHtml(invoice.customer_full_name || "—")}</div>
         <div><b>Invoice Date:</b> ${fmtDate(invoice.invoice_date)}</div>
       </div>
     </div>`;
@@ -199,7 +195,7 @@ const buildFooter = (pageLabel) => `
 // with the bank-details rows in a single shared "bank-box" container so
 // the whole block reads as one continuous section.
 const buildSummarySection = (invoice) => `
-    <div class="bank-row"><span class="bank-label">SENDER:</span> <span class="bank-value">${invoice.customer_full_name || "—"}</span></div>
+    <div class="bank-row"><span class="bank-label">SENDER:</span> <span class="bank-value">${escapeHtml(invoice.customer_full_name || "—")}</span></div>
     <div class="bank-row"><span class="bank-label">WORK RECEIVER:</span> <span class="bank-value">${WORK_RECEIVER_NAME}</span></div>
     <div class="bank-row"><span class="bank-label">TOTAL PAYMENT:</span> <span class="bank-value bank-value--total">${fmtAmount(invoice.total_amount)} (${amountToWords(invoice.total_amount)}) </span></div>`;
 
@@ -209,16 +205,16 @@ const buildItemRows = (items) =>
   items
     .map((item, i) => {
       const bg = i % 2 === 0 ? "#fff" : "#f5f8ff";
-      const workerLabel = `${item.user_full_name || "Unassigned"}${
-        item.agent_name ? ` (${item.agent_name})` : ""
+      const workerLabel = `${escapeHtml(item.user_full_name || "Unassigned")}${
+        item.agent_name ? ` (${escapeHtml(item.agent_name)})` : ""
       }`;
       return `<tr>
         <td style="background:${bg};color:#9aa4b8;font-weight:600;text-align:center;">${i + 1}</td>
         <td style="background:${bg}">${workerLabel}</td>
-        <td style="background:${bg}">${item.passport_number || "—"}</td>
-        <td style="background:${bg}">${item.employer_full_name || "—"}</td>
+        <td style="background:${bg}">${escapeHtml(item.passport_number || "—")}</td>
+        <td style="background:${bg}">${escapeHtml(item.employer_full_name || "—")}</td>
         <td style="background:${bg};text-align:right;font-weight:600;">${fmtAmount(item.unit_price)}</td>
-        <td style="background:${bg}">${item.status || "—"}</td>
+        <td style="background:${bg}">${escapeHtml(item.status || "—")}</td>
       </tr>`;
     })
     .join("");
@@ -229,8 +225,8 @@ const buildPaymentRows = (payments) =>
       const bg = i % 2 === 0 ? "#fff" : "#f5f8ff";
       return `<tr>
         <td style="background:${bg}">${fmtDate(p.transaction_date)}</td>
-        <td style="background:${bg}">${p.description || "—"}</td>
-        <td style="background:${bg}">${p.reference || "—"}</td>
+        <td style="background:${bg}">${escapeHtml(p.description || "—")}</td>
+        <td style="background:${bg}">${escapeHtml(p.reference || "—")}</td>
         <td style="background:${bg};text-align:right;font-weight:600;color:#15803d;">${fmtAmount(p.amount)}</td>
       </tr>`;
     })
@@ -257,7 +253,7 @@ const buildBankSection = (fields = {}) =>
     .filter(([key]) => (fields[key] ?? "").toString().trim())
     .map(
       ([key, label]) =>
-        `<div class="bank-row"><span class="bank-label">${label}:</span> <span class="bank-value">${fields[key]}</span></div>`,
+        `<div class="bank-row"><span class="bank-label">${label}:</span> <span class="bank-value">${escapeHtml(fields[key])}</span></div>`,
     )
     .join("");
 
@@ -359,7 +355,7 @@ const buildInvoicePage = (invoice, bankOptions, elements = []) => {
 
     <div class="bank-box">${buildSummarySection(invoice)}${bankSectionHtml}</div>
 
-    ${invoice.notes ? `<div class="section-title">Notes</div><div class="notes-box">${invoice.notes}</div>` : ""}
+    ${invoice.notes ? `<div class="section-title">Notes</div><div class="notes-box">${escapeHtml(invoice.notes)}</div>` : ""}
 
     ${
       hasPayments

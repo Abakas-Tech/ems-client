@@ -56,10 +56,10 @@ const PasswordResetForm = ({ email }) => {
     const value = e.target.value.replace(/\D/g, ""); // allow only numbers
     if (!value) return;
 
-    const newOtp = otp.split("");
-    newOtp[index] = value;
-    const updatedOtp = newOtp.join("").slice(0, 6);
-    setOtp(updatedOtp);
+    // Pad so a digit typed into a later box stays in that box.
+    const newOtp = otp.padEnd(6, " ").split("");
+    newOtp[index] = value.slice(-1);
+    setOtp(newOtp.join("").trimEnd());
 
     // Move to next input automatically
     const nextInput = e.target.nextSibling;
@@ -68,9 +68,9 @@ const PasswordResetForm = ({ email }) => {
 
   const handleOtpKeyDown = (e, index) => {
     if (e.key === "Backspace") {
-      const newOtp = otp.split("");
-      newOtp[index] = "";
-      setOtp(newOtp.join(""));
+      const newOtp = otp.padEnd(6, " ").split("");
+      newOtp[index] = " ";
+      setOtp(newOtp.join("").trimEnd());
 
       // Move focus to previous input
       const prevInput = e.target.previousSibling;
@@ -119,9 +119,11 @@ const PasswordResetForm = ({ email }) => {
                     inputMode="numeric"
                     maxLength={1}
                     className="form-control text-center fw-bold d-inline-block px-2 py-2 fs-4"
-                    value={otp[index] || ""}
+                    value={(otp[index] || "").trim()}
                     onChange={(e) => handleOtpChange(e, index)}
                     onKeyDown={(e) => handleOtpKeyDown(e, index)}
+                    // Select the digit so typing replaces it.
+                    onFocus={(e) => e.target.select()}
                   />
                 ))}
               </div>

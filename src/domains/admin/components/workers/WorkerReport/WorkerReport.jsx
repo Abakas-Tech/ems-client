@@ -1,4 +1,5 @@
 import { REPORT_META } from "../../../../../shared/components/Report/Data";
+import escapeHtml from "../../../../../utils/escapeHtml";
 
 const fmtDate = (val) =>
   val
@@ -33,10 +34,10 @@ const buildHeader = (partnerName, workerCount) => {
       </div>
       <div class="title-block">
         <div class="report-title">Employee Report</div>
-        <div class="report-sub">${partnerName}</div>
+        <div class="report-sub">${escapeHtml(partnerName)}</div>
       </div>
       <div class="meta-r">
-        <div><b>Partner:</b> ${partnerName}</div>
+        <div><b>Partner:</b> ${escapeHtml(partnerName)}</div>
         <div><b>Employees:</b> ${workerCount}</div>
         <div><b>Generated:</b> ${fmtDate(new Date())}</div>
       </div>
@@ -76,7 +77,7 @@ const buildWorkerRows = (workers) =>
     .map((worker, i) => {
       const bg = i % 2 === 0 ? "#fff" : "#f5f8ff";
       return `<tr style="background:${bg};">
-        <td style="font-weight:600;">${worker.full_name}</td>
+        <td style="font-weight:600;">${escapeHtml(worker.full_name)}</td>
         ${yesNoCell(worker.medical)}
         ${yesNoCell(worker.coc)}
         ${yesNoCell(worker.contract)}
@@ -86,7 +87,7 @@ const buildWorkerRows = (workers) =>
         ${yesNoCell(hasStatus(worker, "embassy"))}
         ${yesNoCell(hasStatus(worker, "lmis qr"))}
         ${yesNoCell(!!worker.ticket_date)}
-        <td>${worker.status || "—"}</td>
+        <td>${escapeHtml(worker.status || "—")}</td>
         ${yesNoCell(hasStatus(worker, "lmis issued"))}
       </tr>`;
     })
@@ -214,7 +215,7 @@ export const printWorkerReport = ({ partnerName, workers = [] }) => {
   const printTitle = `${REPORT_META.orgName} - ${partnerName} Employee Report`;
 
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/>
-<title>${printTitle}</title>
+<title>${escapeHtml(printTitle)}</title>
 <style>${REPORT_STYLES}</style>
 </head><body>${buildPages(partnerName, workers)}</body></html>`;
 

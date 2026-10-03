@@ -20,6 +20,7 @@ import {
 // REPORT_META from, so the letter header is guaranteed to be the same
 // logo/company name/confidentiality line as every other printed report.
 import { REPORT_META } from "../../../../shared/components/Report/Data";
+import escapeHtml from "../../../../utils/escapeHtml";
 
 // Predefined options (ለ / ጉዳዩ / default incident text)
 
@@ -276,7 +277,9 @@ const LETTER_STYLES = `
 const TO_LABEL = "ለ:";
 const SUBJECT_LABEL = "ጉዳዩ:";
 
-const textToBrHtml = (text) => (text || "").split("\n").join("<br/>");
+// To/Subject are plain text: escape them, then keep their line breaks.
+const textToBrHtml = (text) =>
+  escapeHtml(text || "").split("\n").join("<br/>");
 
 // The letter's writing surface, generated from the plain field values.
 const buildLetterCanvasHtml = ({
@@ -290,11 +293,11 @@ const buildLetterCanvasHtml = ({
         <div class="letter-to"><span data-field="to">${to ? textToBrHtml(to) : TO_LABEL}</span></div>
         <div class="letter-meta-col">
           <div><b>ቀን:</b> ${date}</div>
-          <div><b>ቁጥር:</b> <span data-field="reference">${referenceNumber || ""}</span></div>
+          <div><b>ቁጥር:</b> <span data-field="reference">${escapeHtml(referenceNumber || "")}</span></div>
         </div>
       </div>
       <div class="letter-subject"><span data-field="subject">${subject ? textToBrHtml(subject) : SUBJECT_LABEL}</span></div>
-      <div class="letter-body" data-field="body">${incidentText || ""}</div>
+      <div class="letter-body" data-field="body">${escapeHtml(incidentText || "")}</div>
     </div>`;
 
 // A formatted canvas restored from the cache keeps its content, but its
@@ -345,8 +348,8 @@ const buildLetterHtml = ({
       return `<div class="page${isLast ? "" : " pb"}">
         ${buildLetterHeader("Official Letter", "Attachment")}
         <div class="image-page">
-          <img src="${s.dataUrl}" alt="${s.name || `attachment-${i + 1}`}" />
-          <div class="image-caption">${s.name || ""}</div>
+          <img src="${escapeHtml(s.dataUrl)}" alt="${escapeHtml(s.name || `attachment-${i + 1}`)}" />
+          <div class="image-caption">${escapeHtml(s.name || "")}</div>
         </div>
         ${buildLetterFooter(`Page ${pageNum} of ${totalPages}`)}
         ${buildElementsLayerHtml(elements, pageNum - 1)}
@@ -358,7 +361,7 @@ const buildLetterHtml = ({
     ? `<div class="page">
         ${buildLetterHeader("Official Letter", "Passport Scan")}
         <div class="image-page">
-          <img src="${passportScan}" alt="Passport scan" />
+          <img src="${escapeHtml(passportScan)}" alt="Passport scan" />
           <div class="image-caption">Passport Scan</div>
         </div>
         ${buildLetterFooter(`Page ${totalPages} of ${totalPages}`)}
