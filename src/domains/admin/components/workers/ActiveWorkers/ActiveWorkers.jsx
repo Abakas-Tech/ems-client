@@ -125,6 +125,9 @@ const ActiveWorkers = () => {
       setTotalItems(res?.data?.meta?.total_items || 0);
     } catch (err) {
       console.error("Failed to fetch employees:", err);
+      // Without this the page only shows "No employees found", which
+      // looks like the data is gone when the server simply wasn't reached.
+      addMessage(false, err.message || "Failed to load employees");
     } finally {
       hideLoader();
     }
