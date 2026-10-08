@@ -19,7 +19,7 @@
   display: inline-flex;
   align-items: center;
   gap: 28px;
-  padding-right: 28px;
+  padding-inline-end: 28px;
   font-size: clamp(15px, 1.6vw, 19px);
   font-weight: 600;
   letter-spacing: -0.01em;

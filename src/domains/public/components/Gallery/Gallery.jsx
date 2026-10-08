@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, X, Expand, Images, RotateCw } from "lucide-react";
 
@@ -10,6 +11,7 @@ const PAGE = 6;
 const ease = [0.22, 1, 0.36, 1];
 
 function Gallery() {
+  const { t } = useTranslation();
   const [items, setItems] = useState([]);
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [visible, setVisible] = useState(PAGE);
@@ -84,17 +86,11 @@ function Gallery() {
       <div className="vx-container">
         <SectionHeading
           id="gallery-title"
-          eyebrow="Gallery"
-          title={
-            <>
-              Our work <span className="vx-serif">in action</span>
-            </>
-          }
-          lead="A look at our transparent recruitment work that benefits both workers and employers with confidence."
+          ns="gallery"
         />
 
         {status === "loading" && (
-          <div className={styles.grid} aria-busy="true" aria-label="Loading gallery">
+          <div className={styles.grid} aria-busy="true" aria-label={t("gallery.loading")}>
             {Array.from({ length: PAGE }, (_, i) => (
               <div key={i} className={`${styles.tile} ${styles.skeleton}`} />
             ))}
@@ -104,9 +100,9 @@ function Gallery() {
         {status === "error" && (
           <div className={styles.state}>
             <Images size={28} />
-            <p>We couldn’t load the gallery right now.</p>
+            <p>{t("gallery.error")}</p>
             <button type="button" className="vx-btn vx-btn--ghost vx-btn--sm" onClick={load}>
-              <RotateCw size={15} /> Try again
+              <RotateCw size={15} /> {t("gallery.retry")}
             </button>
           </div>
         )}
@@ -114,7 +110,7 @@ function Gallery() {
         {status === "ready" && items.length === 0 && (
           <div className={styles.state}>
             <Images size={28} />
-            <p>No gallery items available.</p>
+            <p>{t("gallery.empty")}</p>
           </div>
         )}
 
@@ -134,11 +130,11 @@ function Gallery() {
                     type="button"
                     className={styles.tileBtn}
                     onClick={(e) => open(index, e)}
-                    aria-label={`Open image${item.title ? `: ${item.title}` : ` ${index + 1}`}`}
+                    aria-label={`${t("gallery.open")}: ${item.title || t("gallery.image", { n: index + 1 })}`}
                   >
                     <img
                       src={item.image_url}
-                      alt={item.title || "Gallery image"}
+                      alt={item.title || t("gallery.image", { n: index + 1 })}
                       loading="lazy"
                       decoding="async"
                       className={styles.img}
@@ -157,7 +153,7 @@ function Gallery() {
 
             <div className={styles.more}>
               <span className={styles.count}>
-                Showing {shown.length} of {items.length}
+                {t("gallery.showing", { shown: shown.length, total: items.length })}
               </span>
               {visible < items.length && (
                 <button
@@ -165,7 +161,7 @@ function Gallery() {
                   className="vx-btn vx-btn--dark"
                   onClick={() => setVisible((v) => v + PAGE)}
                 >
-                  Show more photos
+                  {t("gallery.more")}
                 </button>
               )}
             </div>
@@ -195,7 +191,7 @@ function Gallery() {
                 type="button"
                 className={styles.lbBtn}
                 onClick={close}
-                aria-label="Close gallery"
+                aria-label={t("gallery.close")}
               >
                 <X size={20} />
               </button>
@@ -220,7 +216,7 @@ function Gallery() {
             >
               <img
                 src={current.image_url}
-                alt={current.title || "Gallery image"}
+                alt={current.title || t("gallery.image", { n: selected + 1 })}
                 className={styles.lbImg}
               />
               {(current.title || current.description) && (
@@ -231,7 +227,7 @@ function Gallery() {
               )}
               {!current.title && (
                 <span id="lightbox-title" className={styles.srOnly}>
-                  Gallery image {selected + 1}
+                  {t("gallery.image", { n: selected + 1 })}
                 </span>
               )}
             </Motion.figure>
@@ -245,7 +241,7 @@ function Gallery() {
                     e.stopPropagation();
                     step(-1);
                   }}
-                  aria-label="Previous image"
+                  aria-label={t("gallery.prev")}
                 >
                   <ChevronLeft size={22} />
                 </button>
@@ -256,7 +252,7 @@ function Gallery() {
                     e.stopPropagation();
                     step(1);
                   }}
-                  aria-label="Next image"
+                  aria-label={t("gallery.next")}
                 >
                   <ChevronRight size={22} />
                 </button>

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
-import { HERO_SLIDES, DESTINATIONS, AGENCY_NAME } from "../../data/content";
+import { HERO_IMAGES } from "../../data/content";
 import { scrollToSection } from "../../utils/scroll";
 import styles from "./Hero.module.css";
 
@@ -16,6 +17,9 @@ function Hero() {
   const [paused, setPaused] = useState(false);
   const reduceMotion = useReducedMotion();
   const timer = useRef(null);
+  const { t } = useTranslation();
+  const slidesText = t("hero.slides");
+  const HERO_SLIDES = HERO_IMAGES.map((img, i) => ({ id: i + 1, ...img, ...slidesText[i] }));
   const total = HERO_SLIDES.length;
 
   const goTo = useCallback(
@@ -52,7 +56,7 @@ function Hero() {
       id="home"
       className={styles.hero}
       aria-roledescription="carousel"
-      aria-label="Highlights"
+      aria-label={t("hero.carousel")}
     >
       {/* Background imagery */}
       <div className={styles.media} aria-hidden="true">
@@ -77,8 +81,7 @@ function Hero() {
 
       <div className={`vx-container ${styles.inner}`}>
         <h1 className={styles.srOnly}>
-          {AGENCY_NAME} — licensed overseas employment agency connecting
-          Ethiopian workers with verified employers abroad
+          {t("hero.srTitle", { name: t("brand") })}
         </h1>
 
         {/* All slides share one grid cell, so the block is always as tall
@@ -96,13 +99,13 @@ function Hero() {
                 aria-hidden={!on}
                 role="group"
                 aria-roledescription="slide"
-                aria-label={`${i + 1} of ${total}`}
+                aria-label={t("hero.slideOf", { n: i + 1, total })}
               >
                 <span className={styles.eyebrow}>
                   <span className={styles.pulse} aria-hidden="true" />
                   {slide.eyebrow}
                 </span>
-                <p className={styles.heading}>
+                <p className={`${styles.heading} vx-display`}>
                   <span className={styles.lineMask}>
                     <span className={styles.line}>{slide.heading[0]}</span>
                   </span>
@@ -124,10 +127,10 @@ function Hero() {
             onClick={jump("contact")}
             className="vx-btn vx-btn--primary"
           >
-            Apply Now <ArrowRight size={18} strokeWidth={2.2} />
+            {t("hero.apply")} <ArrowRight size={18} strokeWidth={2.2} className="vx-flip" />
           </a>
           <a href="#about" onClick={jump("about")} className="vx-btn vx-btn--glass">
-            About Us
+            {t("hero.about")}
           </a>
         </div>
       </div>
@@ -135,9 +138,9 @@ function Hero() {
       {/* Bottom rail: destinations + slide controls */}
       <div className={`vx-container ${styles.rail}`}>
         <div className={styles.destinations}>
-          <span className={styles.destLabel}>Placing talent in</span>
+          <span className={styles.destLabel}>{t("hero.placing")}</span>
           <ul className={styles.destList}>
-            {DESTINATIONS.map((d) => (
+            {t("hero.destinations").map((d) => (
               <li key={d}>{d}</li>
             ))}
           </ul>
@@ -157,7 +160,7 @@ function Hero() {
                   i === current ? styles.segmentOn : ""
                 } ${i < current ? styles.segmentDone : ""}`}
                 onClick={() => goTo(i)}
-                aria-label={`Go to slide ${i + 1}`}
+                aria-label={t("hero.goTo", { n: i + 1 })}
                 aria-current={i === current}
               >
                 <span
@@ -177,17 +180,17 @@ function Hero() {
               type="button"
               className={styles.arrow}
               onClick={() => goTo(current - 1)}
-              aria-label="Previous slide"
+              aria-label={t("hero.prev")}
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={18} className="vx-flip" />
             </button>
             <button
               type="button"
               className={styles.arrow}
               onClick={() => goTo(current + 1)}
-              aria-label="Next slide"
+              aria-label={t("hero.next")}
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={18} className="vx-flip" />
             </button>
           </div>
         </div>

@@ -1,7 +1,8 @@
 import { motion as Motion } from "framer-motion";
 import { Scale, Handshake, HeartHandshake, Briefcase, Sparkles, Award } from "lucide-react";
 
-import { CORE_VALUES } from "../../data/content";
+import { useTranslation } from "react-i18next";
+import { CORE_VALUES as VALUE_KEYS } from "../../data/content";
 import SectionHeading from "../ui/SectionHeading";
 import styles from "./CoreValues.module.css";
 
@@ -16,18 +17,17 @@ const ICONS = {
 const ease = [0.22, 1, 0.36, 1];
 
 function CoreValues() {
+  const { t, i18n } = useTranslation();
+  const itemsText = t("values.items");
+  const CORE_VALUES = VALUE_KEYS.map((v, i) => ({ ...v, ...itemsText[i] }));
+  /* The Amharic sub-label is redundant when the whole page is in Amharic */
+  const showAmharic = i18n.resolvedLanguage !== "am";
   return (
     <section className={`vx-section ${styles.section}`} aria-labelledby="values-title">
       <div className="vx-container">
         <SectionHeading
           id="values-title"
-          eyebrow="What we stand for"
-          title={
-            <>
-              Our core <span className="vx-serif">values</span>
-            </>
-          }
-          lead="The principles that guide every decision, placement, and relationship we build from start to finish."
+          ns="values"
         />
 
         <div className={styles.grid}>
@@ -46,9 +46,11 @@ function CoreValues() {
                   <span className={styles.icon}>
                     <Icon size={22} strokeWidth={1.7} />
                   </span>
-                  <span className={styles.amharic} lang="am">
-                    {value.amharic}
-                  </span>
+                  {showAmharic && (
+                    <span className={styles.amharic} lang="am">
+                      {value.amharic}
+                    </span>
+                  )}
                 </div>
                 <h3 className={styles.title}>{value.title}</h3>
                 <p className={styles.desc}>{value.desc}</p>

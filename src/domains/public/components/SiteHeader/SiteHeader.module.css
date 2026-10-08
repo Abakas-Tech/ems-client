@@ -166,7 +166,7 @@
   background: rgba(15, 27, 61, 0.06);
 }
 
-.apply {
+.actions .apply {
   display: none;
 }
 
@@ -197,7 +197,7 @@
 }
 
 @media (min-width: 640px) {
-  .apply {
+  .actions .apply {
     display: inline-flex;
   }
 }
@@ -369,4 +369,8 @@
   .bar {
     max-width: 1320px;
   }
+}
+
+.lang {
+  display: block;
 }

@@ -91,11 +91,11 @@
   position: relative;
   font-size: 15px;
   color: rgba(226, 232, 255, 0.72);
-  transition: color 0.25s ease, padding-left 0.35s var(--vx-ease);
+  transition: color 0.25s ease, padding 0.35s var(--vx-ease);
 }
 .links a:hover {
   color: #fff;
-  padding-left: 6px;
+  padding-inline-start: 6px;
 }
 .contact li {
   display: flex;

@@ -1,4 +1,5 @@
 import { ArrowRight, Phone } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { FaWhatsapp } from "react-icons/fa6";
 
 import bg from "../../../../assets/img/site/cta-bg.jpg";
@@ -8,6 +9,7 @@ import Reveal from "../ui/Reveal";
 import styles from "./CallToAction.module.css";
 
 function CallToAction() {
+  const { t } = useTranslation();
   const { whatsapp, phone } = useSiteInfo();
   const waLink = whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, "")}` : null;
 
@@ -18,13 +20,12 @@ function CallToAction() {
           <img src={bg} alt="" className={styles.bg} loading="lazy" />
           <div className={styles.shade} aria-hidden="true" />
           <div className={styles.content}>
-            <span className={styles.eyebrow}>Start your journey today</span>
-            <h2 id="cta-title" className={styles.title}>
-              Apply once. <span className="vx-serif">Change everything.</span>
+            <span className={styles.eyebrow}>{t("cta.eyebrow")}</span>
+            <h2 id="cta-title" className={`${styles.title} vx-display`}>
+              {t("cta.title")} <span className="vx-serif">{t("cta.accent")}</span>
             </h2>
             <p className={styles.text}>
-              Our simple application process gets you in front of verified
-              employers fast. No hidden fees. No middlemen. Just results.
+              {t("cta.text")}
             </p>
             <div className={styles.actions}>
               <a
@@ -35,7 +36,7 @@ function CallToAction() {
                   scrollToSection("contact");
                 }}
               >
-                Apply Now <ArrowRight size={18} />
+                {t("cta.apply")} <ArrowRight size={18} className="vx-flip" />
               </a>
               {waLink ? (
                 <a
@@ -44,12 +45,12 @@ function CallToAction() {
                   rel="noopener noreferrer"
                   className="vx-btn vx-btn--glass"
                 >
-                  <FaWhatsapp size={18} /> Chat on WhatsApp
+                  <FaWhatsapp size={18} /> {t("cta.whatsapp")}
                 </a>
               ) : (
                 phone && (
                   <a href={`tel:${phone}`} className="vx-btn vx-btn--glass">
-                    <Phone size={17} /> Call us
+                    <Phone size={17} /> {t("cta.call")}
                   </a>
                 )
               )}

@@ -1,8 +1,9 @@
 /* ------------------------------------------------------------------
-   Static copy for the public website.
+   Non-text data for the public website (images, keys, map positions).
 
-   Kept in one place so the content can be edited without touching
-   layout code. Dynamic content (gallery, contact details, location,
+   All visible text lives in ../i18n/locales/{en,am,ar}.js and is read
+   with useTranslation(); list items there line up by index with the
+   arrays below. Dynamic content (gallery, contact details, location,
    social links) still comes from the API.
    ------------------------------------------------------------------ */
 import hero1 from "../../../assets/img/site/hero-1.jpg";
@@ -19,242 +20,46 @@ import avatar1 from "../../../assets/img/site/avatar-1.jpg";
 import avatar2 from "../../../assets/img/site/avatar-2.jpg";
 import avatar3 from "../../../assets/img/site/avatar-3.jpg";
 
-export const AGENCY_NAME = "Al-Khedemat";
-export const AGENCY_LEGAL_NAME =
-  "Al-Khedemat Private Foreign Employment Agency";
+/* Section anchors used by the header, footer and in-page CTAs
+   (labels: nav.<id> in the locale files) */
+export const NAV_IDS = ["home", "how", "services", "about", "gallery", "testimonials", "contact"];
 
-/* Section anchors used by the header, footer and in-page CTAs */
-export const NAV_ITEMS = [
-  { id: "home", label: "Home" },
-  { id: "how", label: "Process" },
-  { id: "services", label: "Services" },
-  { id: "about", label: "About" },
-  { id: "gallery", label: "Gallery" },
-  { id: "testimonials", label: "Testimonials" },
-  { id: "contact", label: "Contact" },
+export const HERO_IMAGES = [
+  { image: hero1, imageSm: hero1Sm },
+  { image: hero2, imageSm: hero2Sm },
+  { image: hero3, imageSm: hero3Sm },
+  { image: hero4, imageSm: hero4Sm },
+  { image: hero5, imageSm: hero5Sm },
 ];
 
-export const HERO_SLIDES = [
-  {
-    id: 1,
-    image: hero1,
-    imageSm: hero1Sm,
-    eyebrow: "Your trusted partner in overseas employment",
-    heading: ["Your future", "starts here."],
-    sub: "Ethiopia's leading agency connecting skilled workers with top employers in Saudi Arabia, UAE, Kuwait, and Qatar.",
-  },
-  {
-    id: 2,
-    image: hero2,
-    imageSm: hero2Sm,
-    eyebrow: "Legal. Safe. Transparent.",
-    heading: ["Your safe", "path abroad."],
-    sub: "From documents to departure — we handle everything so you and your family have peace of mind.",
-  },
-  {
-    id: 3,
-    image: hero3,
-    imageSm: hero3Sm,
-    eyebrow: "Thousands placed. Countless lives changed.",
-    heading: ["Build a better", "life abroad."],
-    sub: "Thousands of Ethiopians have built successful careers in the Middle East — your story starts here.",
-  },
-  {
-    id: 4,
-    image: hero4,
-    imageSm: hero4Sm,
-    eyebrow: "Your gateway to the Gulf",
-    heading: ["Opportunity", "awaits you."],
-    sub: "From Addis Ababa to Dubai, Riyadh, and Kuwait City — we open doors to life-changing careers for hardworking Ethiopians.",
-  },
-  {
-    id: 5,
-    image: hero5,
-    imageSm: hero5Sm,
-    eyebrow: "Start your journey today",
-    heading: ["Apply once.", "Change everything."],
-    sub: "Our simple application process gets you in front of verified employers fast. No hidden fees. No middlemen. Just results.",
-  },
+export const PROCESS_KEYS = ["registration", "qualification", "placement", "deployment"];
+
+export const SERVICE_KEYS = ["recruitment", "placement", "employer", "support", "documentation"];
+
+/* Amharic names shown under each value (in the English/Arabic UI) */
+export const CORE_VALUES = [
+  { key: "integrity", amharic: "ታማኝነት" },
+  { key: "trust", amharic: "እምነት" },
+  { key: "people", amharic: "ሰው ቅድሚያ" },
+  { key: "professionalism", amharic: "ሙያዊነት" },
+  { key: "opportunity", amharic: "የዕድል ፈጠራ" },
+  { key: "excellence", amharic: "የላቀ አገልግሎት" },
 ];
 
-export const DESTINATIONS = ["Saudi Arabia", "UAE", "Kuwait", "Qatar"];
-
-/* Short promises drawn from the agency's own messaging */
-export const PROMISE_TICKER = [
-  "Legal. Safe. Transparent.",
-  "Verified employers",
-  "No hidden fees",
-  "No middlemen",
-  "From documents to departure",
-  "Ethical recruitment",
-  "Addis Ababa → The Gulf",
-];
-
-export const PROCESS_STEPS = [
-  {
-    key: "registration",
-    title: "Registration",
-    description:
-      "Register with the agency by submitting your personal details, identification documents, and creating your official overseas employment profile.",
-  },
-  {
-    key: "qualification",
-    title: "Qualification",
-    description:
-      "Complete required training, competency assessment, medical examination, and pre-employment orientation to become eligible for overseas placement.",
-  },
-  {
-    key: "placement",
-    title: "Job Placement",
-    description:
-      "Get matched with a verified employer, complete interviews, sign your employment contract, and process your visa and work permit.",
-  },
-  {
-    key: "deployment",
-    title: "Deployment",
-    description:
-      "Attend pre-departure orientation, finalize travel arrangements, receive exit clearance, and begin your overseas employment journey.",
-  },
-];
-
-export const SERVICES = [
-  {
-    key: "recruitment",
-    title: "Foreign Employment Recruitment",
-    description:
-      "We connect qualified Ethiopian workers with suitable employment opportunities in international markets.",
-  },
-  {
-    key: "placement",
-    title: "Workforce Selection & Placement",
-    description:
-      "We identify, screen, assess, and place candidates according to employer requirements and applicable regulations.",
-  },
-  {
-    key: "employer",
-    title: "Employer Recruitment Services",
-    description:
-      "We support international employers in sourcing suitable, qualified, and dependable workers.",
-  },
-  {
-    key: "support",
-    title: "Candidate Support",
-    description:
-      "We guide candidates throughout the recruitment and placement process and provide the necessary information and assistance.",
-  },
-  {
-    key: "documentation",
-    title: "Documentation & Processing Support",
-    description:
-      "We assist with the necessary recruitment, employment, and travel documentation in accordance with applicable requirements.",
-  },
-];
-
-export const ABOUT_PARAGRAPHS = [
-  "We connect talented individuals with trusted employers, creating pathways that support personal growth, strengthen families, build valuable skills, and open doors to brighter opportunities.",
-  "Our mission is to make the employment journey easier and more reliable, helping candidates discover suitable opportunities while connecting employers with skilled and dedicated professionals.",
-  "Our agency works to build a trusted bridge between Ethiopian job seekers and international employers by providing responsible, transparent, professional, and efficient recruitment services. At Al-Khedemat, we are committed to protecting the dignity and interests of workers while helping employers access reliable, qualified, and motivated human resources.",
-];
-
-/* Destinations shown on the route map. Positions are in the map's
-   viewBox (x = east, y = south), roughly to scale from Addis Ababa. */
-export const ROUTE_ORIGIN = { city: "Addis Ababa", country: "Ethiopia", x: 96, y: 452 };
+/* Route map positions in the SVG viewBox (x = east, y = south),
+   roughly to scale from Addis Ababa. */
+export const ROUTE_ORIGIN = { x: 96, y: 452 };
 
 export const DESTINATION_ROUTES = [
-  { key: "sa", city: "Riyadh", country: "Saudi Arabia", code: "KSA", x: 254, y: 146 },
-  { key: "kw", city: "Kuwait City", country: "Kuwait", code: "KWT", x: 282, y: 54 },
-  { key: "qa", city: "Doha", country: "Qatar", code: "QAT", x: 352, y: 140 },
-  { key: "ae", city: "Dubai", country: "United Arab Emirates", code: "UAE", x: 430, y: 128 },
-];
-
-export const VISION_MISSION = [
-  {
-    key: "vision",
-    label: "Our Vision",
-    text: "To be the most trusted name in international recruitment, opening safe and reliable pathways for Ethiopian talent to build better lives abroad.",
-  },
-  {
-    key: "mission",
-    label: "Our Mission",
-    text: "To connect skilled workers with verified international employers through ethical, transparent, and professional recruitment services built on trust.",
-  },
-];
-
-export const CORE_VALUES = [
-  {
-    key: "integrity",
-    title: "Integrity",
-    amharic: "ታማኝነት",
-    desc: "We conduct our business with honesty, fairness, accountability, and respect.",
-  },
-  {
-    key: "trust",
-    title: "Trust",
-    amharic: "እምነት",
-    desc: "We build lasting relationships through transparency, reliability, and responsible service.",
-  },
-  {
-    key: "people",
-    title: "People First",
-    amharic: "ሰው ቅድሚያ",
-    desc: "We put the dignity, safety, rights, and interests of people at the heart of our work.",
-  },
-  {
-    key: "professionalism",
-    title: "Professionalism",
-    amharic: "ሙያዊነት",
-    desc: "We deliver our services with competence, efficiency, discipline, and professionalism.",
-  },
-  {
-    key: "opportunity",
-    title: "Opportunity",
-    amharic: "የዕድል ፈጠራ",
-    desc: "We connect people with opportunities that can improve their livelihoods and future.",
-  },
-  {
-    key: "excellence",
-    title: "Excellence",
-    amharic: "የላቀ አገልግሎት",
-    desc: "We continuously improve our services to achieve the highest standards of quality and client satisfaction.",
-  },
-];
-
-export const WHY_CHOOSE = [
-  {
-    title: "Trusted",
-    desc: "We value honesty, transparency, and long-term relationships.",
-  },
-  {
-    title: "Professional",
-    desc: "We provide organized and professional recruitment and placement services.",
-  },
-  {
-    title: "People-Centered",
-    desc: "We respect the dignity, rights, safety, and interests of workers.",
-  },
-  {
-    title: "Employer-Focused",
-    desc: "We help employers find suitable and dependable human resources.",
-  },
-];
-
-export const PROMISES = [
-  {
-    title: "To Workers",
-    desc: "We strive to connect you with legitimate opportunities and provide professional guidance throughout your employment journey.",
-  },
-  {
-    title: "To Employers",
-    desc: "We strive to provide qualified, reliable, and suitable human resources according to your requirements.",
-  },
-  {
-    title: "To Our Partners",
-    desc: "We build lasting relationships based on trust, professionalism, transparency, and mutual success.",
-  },
+  { key: "sa", code: "KSA", x: 254, y: 146 },
+  { key: "kw", code: "KWT", x: 282, y: 54 },
+  { key: "qa", code: "QAT", x: 352, y: 140 },
+  { key: "ae", code: "UAE", x: 430, y: 128 },
 ];
 
 /* NOTE: carried over unchanged from the previous site — these are still
-   placeholder entries and should be replaced with real candidate stories. */
+   placeholder entries and should be replaced with real candidate stories.
+   They are shown as-is in every language. */
 export const TESTIMONIALS = [
   {
     name: "Sophia Anderson",
@@ -285,8 +90,6 @@ export const TESTIMONIALS = [
       "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
   },
 ];
-
-export const TESTIMONIAL_RATING_TEXT = "Rated by over 2,500 candidates";
 
 /* Role → dashboard mapping for the header's Sign In / Dashboard button */
 export const ROLE_DASHBOARD = {

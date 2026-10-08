@@ -4,7 +4,8 @@ import { Autoplay, A11y, Keyboard } from "swiper/modules";
 import { ArrowLeft, ArrowRight, Star } from "lucide-react";
 import "swiper/css";
 
-import { TESTIMONIALS, TESTIMONIAL_RATING_TEXT } from "../../data/content";
+import { useTranslation } from "react-i18next";
+import { TESTIMONIALS } from "../../data/content";
 import Reveal from "../ui/Reveal";
 import styles from "./Testimonials.module.css";
 
@@ -19,6 +20,8 @@ function Stars({ size = 15 }) {
 }
 
 function Testimonials() {
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir(i18n.resolvedLanguage);
   const swiperRef = useRef(null);
   const [active, setActive] = useState(0);
 
@@ -32,18 +35,18 @@ function Testimonials() {
       <div className="vx-container">
         <div className={styles.layout}>
           <Reveal className={styles.intro}>
-            <span className={styles.eyebrow}>Client stories</span>
+            <span className={styles.eyebrow}>{t("testimonials.eyebrow")}</span>
             <h2 id="testimonials-title" className={styles.title}>
-              Discover what our <span className="vx-serif">clients say</span>
+              {t("testimonials.title")}{" "}
+              <span className="vx-serif">{t("testimonials.accent")}</span>
             </h2>
             <p className={styles.lead}>
-              Real stories from candidates we have placed abroad about working
-              with our team from start to finish.
+              {t("testimonials.lead")}
             </p>
 
             <div className={styles.rating}>
               <Stars size={18} />
-              <span>{TESTIMONIAL_RATING_TEXT}</span>
+              <span>{t("testimonials.rating")}</span>
             </div>
 
             <div className={styles.nav}>
@@ -51,17 +54,17 @@ function Testimonials() {
                 type="button"
                 className={styles.navBtn}
                 onClick={() => swiperRef.current?.slidePrev()}
-                aria-label="Previous testimonial"
+                aria-label={t("testimonials.prev")}
               >
-                <ArrowLeft size={18} />
+                <ArrowLeft size={18} className="vx-flip" />
               </button>
               <button
                 type="button"
                 className={styles.navBtn}
                 onClick={() => swiperRef.current?.slideNext()}
-                aria-label="Next testimonial"
+                aria-label={t("testimonials.next")}
               >
-                <ArrowRight size={18} />
+                <ArrowRight size={18} className="vx-flip" />
               </button>
               <span className={styles.progress} aria-hidden="true">
                 <span
@@ -76,6 +79,8 @@ function Testimonials() {
 
           <Reveal delay={0.1} className={styles.sliderWrap}>
             <Swiper
+              key={dir}
+              dir={dir}
               modules={[Autoplay, A11y, Keyboard]}
               onSwiper={(s) => {
                 swiperRef.current = s;
@@ -93,8 +98,8 @@ function Testimonials() {
               }}
               className={styles.swiper}
             >
-              {TESTIMONIALS.map((t, i) => (
-                <SwiperSlide key={`${t.name}-${i}`} className={styles.slide}>
+              {TESTIMONIALS.map((item, i) => (
+                <SwiperSlide key={`${item.name}-${i}`} className={styles.slide}>
                   <figure className={styles.card}>
                     <div className={styles.cardTop}>
                       <span className={styles.quoteMark} aria-hidden="true">
@@ -102,10 +107,10 @@ function Testimonials() {
                       </span>
                       <Stars />
                     </div>
-                    <blockquote className={styles.quote}>{t.quote}</blockquote>
-                    <figcaption className={styles.author}>
+                    <blockquote className={styles.quote} dir="auto">{item.quote}</blockquote>
+                    <figcaption className={styles.author} dir="auto">
                       <img
-                        src={t.image}
+                        src={item.image}
                         alt=""
                         className={styles.avatar}
                         loading="lazy"
@@ -113,8 +118,8 @@ function Testimonials() {
                         height="52"
                       />
                       <span>
-                        <strong>{t.name}</strong>
-                        <small>{t.position}</small>
+                        <strong>{item.name}</strong>
+                        <small>{item.position}</small>
                       </span>
                     </figcaption>
                   </figure>

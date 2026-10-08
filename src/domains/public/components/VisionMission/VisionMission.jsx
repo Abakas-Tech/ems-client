@@ -1,7 +1,7 @@
 import { motion as Motion } from "framer-motion";
 import { Compass, Target } from "lucide-react";
 
-import { VISION_MISSION } from "../../data/content";
+import { useTranslation } from "react-i18next";
 import SectionHeading from "../ui/SectionHeading";
 import styles from "./VisionMission.module.css";
 
@@ -9,18 +9,20 @@ const ICONS = { vision: Compass, mission: Target };
 const ease = [0.22, 1, 0.36, 1];
 
 function VisionMission() {
+  const { t } = useTranslation();
+  const VISION_MISSION = ["vision", "mission"].map((key) => ({ key, ...t(`vm.${key}`) }));
   return (
     <section className={`vx-section ${styles.section}`} aria-labelledby="vm-title">
       <div className="vx-container">
         <SectionHeading
           id="vm-title"
-          eyebrow="Who we are"
+          ns="vm"
           title={
             <>
-              Vision <span className="vx-serif">&amp;</span> Mission
+              {t("vm.titleA")} <span className="vx-serif">{t("vm.amp")}</span>{" "}
+              {t("vm.titleB")}
             </>
           }
-          lead="The vision and mission driving every placement we make for workers and employers through every step."
         />
 
         <div className={styles.grid}>

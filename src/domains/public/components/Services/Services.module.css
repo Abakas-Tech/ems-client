@@ -117,7 +117,7 @@
 .index {
   position: absolute;
   top: 26px;
-  right: 28px;
+  inset-inline-end: 28px;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.1em;

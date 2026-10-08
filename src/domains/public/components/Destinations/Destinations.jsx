@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion as Motion, useReducedMotion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { ArrowRight, Plane, MapPin } from "lucide-react";
 
-import { DESTINATION_ROUTES, ROUTE_ORIGIN } from "../../data/content";
+import { DESTINATION_ROUTES as ROUTE_POINTS, ROUTE_ORIGIN as ORIGIN_POINT } from "../../data/content";
 import { scrollToSection } from "../../utils/scroll";
 import Reveal from "../ui/Reveal";
 import styles from "./Destinations.module.css";
@@ -11,7 +12,7 @@ const ease = [0.22, 1, 0.36, 1];
 
 /* Curved flight path from the origin to a destination, bowed to the west */
 const routePath = (to) => {
-  const { x: x1, y: y1 } = ROUTE_ORIGIN;
+  const { x: x1, y: y1 } = ORIGIN_POINT;
   const dx = to.x - x1;
   const dy = to.y - y1;
   const len = Math.hypot(dx, dy);
@@ -22,6 +23,9 @@ const routePath = (to) => {
 };
 
 function Destinations() {
+  const { t } = useTranslation();
+  const ROUTE_ORIGIN = { ...ORIGIN_POINT, ...t("routes.origin") };
+  const DESTINATION_ROUTES = ROUTE_POINTS.map((d) => ({ ...d, ...t(`routes.places.${d.key}`) }));
   const [active, setActive] = useState(null);
   const reduceMotion = useReducedMotion();
 
@@ -32,13 +36,12 @@ function Destinations() {
           <div className={styles.glow} aria-hidden="true" />
 
           <div className={styles.copy}>
-            <span className={styles.eyebrow}>Where we place talent</span>
+            <span className={styles.eyebrow}>{t("routes.eyebrow")}</span>
             <h2 id="routes-title" className={styles.title}>
-              From Addis Ababa <span className="vx-serif">to the Gulf</span>
+              {t("routes.title")} <span className="vx-serif">{t("routes.accent")}</span>
             </h2>
             <p className={styles.lead}>
-              From Addis Ababa to Dubai, Riyadh, and Kuwait City — we open
-              doors to life-changing careers for hardworking Ethiopians.
+              {t("routes.lead")}
             </p>
 
             <ul className={styles.list} onMouseLeave={() => setActive(null)}>
@@ -72,7 +75,7 @@ function Destinations() {
                 scrollToSection("contact");
               }}
             >
-              Start your application <ArrowRight size={18} />
+              {t("routes.cta")} <ArrowRight size={18} className="vx-flip" />
             </a>
           </div>
 
@@ -80,8 +83,12 @@ function Destinations() {
             <svg
               className={styles.map}
               viewBox="0 0 520 520"
+              dir="ltr"
               role="img"
-              aria-label={`Routes from ${ROUTE_ORIGIN.city} to ${DESTINATION_ROUTES.map((d) => d.city).join(", ")}`}
+              aria-label={t("routes.aria", {
+                from: ROUTE_ORIGIN.city,
+                to: DESTINATION_ROUTES.map((d) => d.city).join(", "),
+              })}
             >
               <defs>
                 <pattern id="vx-dots" width="16" height="16" patternUnits="userSpaceOnUse">
@@ -168,7 +175,7 @@ function Destinations() {
                 <circle r="22" className={styles.originHalo} />
                 <circle r="9" className={styles.originDot} />
                 <text x="34" y="-6" className={styles.originCity}>{ROUTE_ORIGIN.city}</text>
-                <text x="34" y="12" className={styles.originNote}>Departure hub</text>
+                <text x="34" y="12" className={styles.originNote}>{t("routes.hub")}</text>
               </g>
             </svg>
 
@@ -177,7 +184,7 @@ function Destinations() {
                 <MapPin size={14} /> {ROUTE_ORIGIN.city}, {ROUTE_ORIGIN.country}
               </span>
               <span>
-                <Plane size={14} /> {DESTINATION_ROUTES.length} destinations
+                <Plane size={14} /> {t("routes.count", { count: DESTINATION_ROUTES.length })}
               </span>
             </div>
           </div>

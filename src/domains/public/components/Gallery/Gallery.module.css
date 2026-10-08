@@ -36,7 +36,7 @@
   border: 0;
   background: none;
   cursor: zoom-in;
-  text-align: left;
+  text-align: start;
 }
 .img {
   width: 100%;
@@ -87,7 +87,7 @@
   place-items: center;
   width: 38px;
   height: 38px;
-  margin-left: auto;
+  margin-inline-start: auto;
   border-radius: 50%;
   color: #fff;
   background: rgba(255, 255, 255, 0.16);

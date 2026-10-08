@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import SEO from "../../../../shared/components/SEO/SEO";
 import Hero from "../../components/Hero/Hero";
 import PromiseTicker from "../../components/PromiseTicker/PromiseTicker";
@@ -14,9 +16,17 @@ import CallToAction from "../../components/CallToAction/CallToAction";
 import Contact from "../../components/Contact/Contact";
 
 function LandingPage() {
+  const { t, i18n } = useTranslation();
+  const title = t("meta.title");
+
+  /* SEO appends the English site name to titles that don't contain it;
+     use the localized title as-is (this effect runs after SEO's). */
+  useEffect(() => {
+    document.title = title;
+  }, [title, i18n.resolvedLanguage]);
   return (
     <>
-      <SEO title="Al-Khedemat | Work Abroad Without the Guesswork" />
+      <SEO title={title} />
       <Hero />
       <PromiseTicker />
       <HowItWorks />

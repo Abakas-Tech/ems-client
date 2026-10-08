@@ -3,13 +3,16 @@ import { ShieldCheck } from "lucide-react";
 
 import portrait from "../../../../assets/img/site/about-portrait.jpg";
 import logo from "../../../../assets/img/site/logo.png";
-import { ABOUT_PARAGRAPHS, AGENCY_NAME } from "../../data/content";
+import { useTranslation } from "react-i18next";
 import Reveal from "../ui/Reveal";
 import styles from "./AboutSnippet.module.css";
 
 const ease = [0.22, 1, 0.36, 1];
 
 function AboutSnippet() {
+  const { t } = useTranslation();
+  const name = t("brand");
+  const paragraphs = t("about.paragraphs", { name });
   return (
     <section
       id="about"
@@ -29,14 +32,14 @@ function AboutSnippet() {
             <div className={styles.frame}>
               <img
                 src={portrait}
-                alt="City skyline at dusk — destinations for overseas employment"
+                alt={t("about.imageAlt")}
                 className={styles.photo}
                 loading="lazy"
               />
               <div className={styles.photoShade} aria-hidden="true" />
               <span className={styles.badge}>
                 <span className={styles.badgeDot} aria-hidden="true" />
-                Trusted Overseas Recruitment
+                {t("about.badge")}
               </span>
             </div>
 
@@ -47,9 +50,9 @@ function AboutSnippet() {
               viewport={{ once: true }}
               transition={{ duration: 0.9, delay: 0.3, ease }}
             >
-              <img src={logo} alt={AGENCY_NAME} className={styles.logo} />
+              <img src={logo} alt={name} className={styles.logo} />
               <span className={styles.logoNote}>
-                <ShieldCheck size={16} /> Legal. Safe. Transparent.
+                <ShieldCheck size={16} /> {t("about.note")}
               </span>
             </Motion.div>
             <div className={styles.ring} aria-hidden="true" />
@@ -58,24 +61,21 @@ function AboutSnippet() {
           {/* Copy */}
           <div className={styles.copy}>
             <Reveal>
-              <span className={styles.eyebrow}>About {AGENCY_NAME}</span>
+              <span className={styles.eyebrow}>{t("about.eyebrow", { name })}</span>
               <h2 id="about-title" className={styles.title}>
-                A trusted bridge to{" "}
-                <span className="vx-serif vx-grad-text">opportunity</span>{" "}
-                abroad.
+                {t("about.titleA")}{" "}
+                <span className="vx-serif vx-grad-text">{t("about.accent")}</span>{" "}
+                {t("about.titleB")}
               </h2>
             </Reveal>
             <Reveal delay={0.1}>
               <p className={styles.lead}>
-                <strong>{AGENCY_NAME}</strong> is a professional foreign
-                employment and workforce placement agency committed to
-                connecting qualified Ethiopian workers with legitimate
-                employment opportunities abroad.
+                <strong>{name}</strong> {t("about.lead")}
               </p>
             </Reveal>
             <Reveal delay={0.15} className={styles.paras}>
-              {ABOUT_PARAGRAPHS.map((p) => (
-                <p key={p.slice(0, 24)}>{p}</p>
+              {paragraphs.map((p, i) => (
+                <p key={i}>{p}</p>
               ))}
             </Reveal>
           </div>

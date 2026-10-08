@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import {
@@ -34,29 +35,31 @@ const MAP_STYLES = [
   { featureType: "transit", stylers: [{ visibility: "off" }] },
 ];
 
-/* Same rules the form has always enforced */
+/* Same rules the form has always enforced; values are message keys
+   under contact.errors so they follow the active language. */
 const validate = (data) => {
   const errors = {};
   if (data.name && data.name.length > 50) {
-    errors.name = "Name must be less than 50 characters";
+    errors.name = "nameLong";
   }
   if (data.email) {
-    if (!/^\S+@\S+\.\S+$/.test(data.email)) errors.email = "Invalid email format";
+    if (!/^\S+@\S+\.\S+$/.test(data.email)) errors.email = "emailInvalid";
     else if (data.email.length > 150)
-      errors.email = "Email must be less than 150 characters";
+      errors.email = "emailLong";
   }
-  if (!data.phone || data.phone.trim() === "") errors.phone = "Phone required";
+  if (!data.phone || data.phone.trim() === "") errors.phone = "phoneRequired";
   else if (data.phone.length > 20)
-    errors.phone = "Phone must be less than 20 characters";
+    errors.phone = "phoneLong";
   if (!data.message || data.message.trim() === "") {
-    errors.message = "Message is required";
+    errors.message = "messageRequired";
   } else if (data.message.length > MESSAGE_MAX) {
-    errors.message = "Message must be less than 500 characters";
+    errors.message = "messageLong";
   }
   return errors;
 };
 
 function Field({ id, label, required, error, children, hint }) {
+  const { t } = useTranslation();
   return (
     <div className={`${styles.field} ${error ? styles.fieldError : ""}`}>
       <label htmlFor={id} className={styles.label}>
@@ -66,14 +69,14 @@ function Field({ id, label, required, error, children, hint }) {
             *
           </span>
         ) : (
-          <span className={styles.optional}>Optional</span>
+          <span className={styles.optional}>{t("contact.optional")}</span>
         )}
       </label>
       {children}
       <div className={styles.fieldFoot}>
         {error ? (
           <span id={`${id}-error`} className={styles.error} role="alert">
-            {error}
+            {t(`contact.errors.${error}`)}
           </span>
         ) : (
           <span />
@@ -97,9 +100,10 @@ function MapFallback({ text }) {
 
 /* Only mounted when an API key is configured, so no Maps script loads otherwise */
 function OfficeMap({ lat, lng, name, address }) {
+  const { t } = useTranslation();
   const { isLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: MAPS_KEY });
   if (loadError) return <MapFallback text={address} />;
-  if (!isLoaded) return <MapFallback text="Loading map…" />;
+  if (!isLoaded) return <MapFallback text={t("contact.loadingMap")} />;
   return (
     <GoogleMap
       mapContainerStyle={{ width: "100%", height: "100%" }}
@@ -118,6 +122,9 @@ function OfficeMap({ lat, lng, name, address }) {
 }
 
 function Contact() {
+  const { t, i18n } = useTranslation();
+  /* Server messages are English; show them only on the English site */
+  const isEnglish = (i18n.resolvedLanguage || "en") === "en";
   const { phone, email, location } = useSiteInfo();
   const [form, setForm] = useState(EMPTY);
   const [errors, setErrors] = useState({});
@@ -160,13 +167,11 @@ function Contact() {
       const ok = response?.success ?? true;
       setStatus({
         state: ok ? "success" : "error",
-        message:
-          response?.message ||
-          (ok ? "Email sent successfully!" : "Failed to send email"),
+        message: response?.message || "",
       });
       if (ok) setForm(EMPTY);
     } catch (err) {
-      setStatus({ state: "error", message: err.message || "Failed to send email" });
+      setStatus({ state: "error", message: err.message || "" });
     }
   };
 
@@ -182,13 +187,7 @@ function Contact() {
       <div className="vx-container">
         <SectionHeading
           id="contact-title"
-          eyebrow="Get in touch"
-          title={
-            <>
-              Contact <span className="vx-serif">us</span>
-            </>
-          }
-          lead="Reach out with any questions, we are here to help you start your journey abroad for a better future."
+          ns="contact"
         />
 
         <Reveal className={styles.shell}>
@@ -197,12 +196,11 @@ function Contact() {
             <div className={styles.infoGlow} aria-hidden="true" />
             <div className={styles.infoHead}>
               <h3 className={styles.infoTitle}>
-                Let’s start your journey <span className="vx-serif">abroad</span>
+                {t("contact.infoTitle")}{" "}
+                <span className="vx-serif">{t("contact.infoAccent")}</span>
               </h3>
               <p className={styles.infoText}>
-                Have a question or need assistance? We are here to help! Reach
-                out to us for any inquiries, and we will get back to you
-                promptly.
+                {t("contact.infoText")}
               </p>
             </div>
 
@@ -224,8 +222,8 @@ function Contact() {
                     <Phone size={18} />
                   </span>
                   <span className={styles.detailBody}>
-                    <small>Mobile</small>
-                    <span>{phone || "Contact us"}</span>
+                    <small>{t("contact.mobile")}</small>
+                    <span>{phone ? <bdi dir="ltr">{phone}</bdi> : t("contact.contactUs")}</span>
                   </span>
                 </a>
               </li>
@@ -235,8 +233,8 @@ function Contact() {
                     <Mail size={18} />
                   </span>
                   <span className={styles.detailBody}>
-                    <small>Email</small>
-                    <span>{email || "Contact us"}</span>
+                    <small>{t("contact.email")}</small>
+                    <span>{email ? <bdi dir="ltr">{email}</bdi> : t("contact.contactUs")}</span>
                   </span>
                 </a>
               </li>
@@ -259,7 +257,7 @@ function Contact() {
                 rel="noopener noreferrer"
                 className={styles.directions}
               >
-                <Navigation size={14} /> Get directions
+                <Navigation size={14} /> {t("contact.directions")}
               </a>
             </div>
           </aside>
@@ -280,14 +278,14 @@ function Contact() {
                   <span className={styles.successIcon}>
                     <CircleCheck size={34} strokeWidth={1.8} />
                   </span>
-                  <h3>Message sent</h3>
-                  <p>{status.message}</p>
+                  <h3>{t("contact.sentTitle")}</h3>
+                  <p>{isEnglish && status.message ? status.message : t("contact.sentText")}</p>
                   <button
                     type="button"
                     className="vx-btn vx-btn--ghost"
                     onClick={() => setStatus({ state: "idle", message: "" })}
                   >
-                    Send another message
+                    {t("contact.another")}
                   </button>
                 </Motion.div>
               ) : (
@@ -303,18 +301,18 @@ function Contact() {
                   transition={{ duration: 0.45 }}
                 >
                   <div className={styles.formHead}>
-                    <h3>Send us a message</h3>
-                    <p>Fields marked * are required.</p>
+                    <h3>{t("contact.formTitle")}</h3>
+                    <p>{t("contact.requiredNote")}</p>
                   </div>
 
                   <div className={styles.row}>
-                    <Field id="contact-name" label="Your Name" error={errors.name}>
+                    <Field id="contact-name" label={t("contact.name")} error={errors.name}>
                       <input
                         id="contact-name"
                         name="name"
                         type="text"
                         autoComplete="name"
-                        placeholder="Full name"
+                        placeholder={t("contact.namePh")}
                         value={form.name}
                         onChange={onChange}
                         maxLength={60}
@@ -323,13 +321,14 @@ function Contact() {
                         className={styles.input}
                       />
                     </Field>
-                    <Field id="contact-email" label="Your Email" error={errors.email}>
+                    <Field id="contact-email" label={t("contact.emailLabel")} error={errors.email}>
                       <input
                         id="contact-email"
                         name="email"
                         type="email"
                         autoComplete="email"
-                        placeholder="you@example.com"
+                        placeholder={t("contact.emailPh")}
+                        dir="ltr"
                         value={form.email}
                         onChange={onChange}
                         aria-invalid={!!errors.email}
@@ -339,14 +338,15 @@ function Contact() {
                     </Field>
                   </div>
 
-                  <Field id="contact-phone" label="Phone" required error={errors.phone}>
+                  <Field id="contact-phone" label={t("contact.phone")} required error={errors.phone}>
                     <input
                       id="contact-phone"
                       name="phone"
                       type="tel"
                       autoComplete="tel"
                       inputMode="tel"
-                      placeholder="+251 9XX XXX XXX"
+                      placeholder={t("contact.phonePh")}
+                      dir="ltr"
                       value={form.phone}
                       onChange={onChange}
                       aria-required="true"
@@ -358,7 +358,7 @@ function Contact() {
 
                   <Field
                     id="contact-message"
-                    label="Message"
+                    label={t("contact.message")}
                     required
                     error={errors.message}
                     hint={
@@ -375,7 +375,7 @@ function Contact() {
                       id="contact-message"
                       name="message"
                       rows={5}
-                      placeholder="Tell us how we can help — the role you're interested in, your questions, anything."
+                      placeholder={t("contact.messagePh")}
                       value={form.message}
                       onChange={onChange}
                       aria-required="true"
@@ -388,7 +388,7 @@ function Contact() {
                   {status.state === "error" && (
                     <div className={styles.alert} role="alert">
                       <CircleAlert size={18} />
-                      <span>{status.message}</span>
+                      <span>{isEnglish && status.message ? status.message : t("contact.failed")}</span>
                     </div>
                   )}
 
@@ -399,11 +399,11 @@ function Contact() {
                   >
                     {sending ? (
                       <>
-                        <Loader2 size={18} className={styles.spin} /> Sending…
+                        <Loader2 size={18} className={styles.spin} /> {t("contact.sending")}
                       </>
                     ) : (
                       <>
-                        Send Message <Send size={17} />
+                        {t("contact.send")} <Send size={17} className="vx-flip" />
                       </>
                     )}
                   </button>

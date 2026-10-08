@@ -8,7 +8,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-import { SERVICES } from "../../data/content";
+import { useTranslation } from "react-i18next";
+import { SERVICE_KEYS } from "../../data/content";
 import SectionHeading from "../ui/SectionHeading";
 import { scrollToSection } from "../../utils/scroll";
 import featuredBg from "../../../../assets/img/site/hero-4-sm.jpg";
@@ -32,6 +33,9 @@ const trackPointer = (e) => {
 };
 
 function Services() {
+  const { t } = useTranslation();
+  const itemsText = t("services.items");
+  const SERVICES = SERVICE_KEYS.map((key, i) => ({ key, ...itemsText[i] }));
   const [featured, ...rest] = SERVICES;
   const FeaturedIcon = ICONS[featured.key];
 
@@ -42,13 +46,7 @@ function Services() {
 
       <div className="vx-container">
         <SectionHeading
-          eyebrow="What we do"
-          title={
-            <>
-              Our <span className="vx-serif">services</span>
-            </>
-          }
-          lead="A wide range of recruitment services built for Ethiopian workers and international employers always."
+          ns="services"
           tone="dark"
         />
 
@@ -80,7 +78,7 @@ function Services() {
                   scrollToSection("contact");
                 }}
               >
-                Start your application <ArrowRight size={16} />
+                {t("services.cta")} <ArrowRight size={16} className="vx-flip" />
               </a>
             </div>
           </Motion.article>

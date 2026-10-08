@@ -2,13 +2,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowUp, ArrowUpRight, MapPin, Phone, Mail } from "lucide-react";
 
 import logoLight from "../../../../assets/img/site/logo-light.png";
-import { NAV_ITEMS, AGENCY_NAME, AGENCY_LEGAL_NAME } from "../../data/content";
+import { useTranslation } from "react-i18next";
+import { NAV_IDS } from "../../data/content";
 import { useSiteInfo } from "../../context/SiteInfo";
 import { scrollToSection } from "../../utils/scroll";
 import SocialIcon from "../ui/SocialIcon";
 import styles from "./SiteFooter.module.css";
 
 function SiteFooter() {
+  const { t } = useTranslation();
+  const brand = t("brand");
   const { phone, email, location, socials } = useSiteInfo();
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -36,19 +39,17 @@ function SiteFooter() {
           <div className={styles.brand}>
             <img
               src={logoLight}
-              alt={AGENCY_NAME}
+              alt={brand}
               className={styles.logo}
               width="623"
               height="394"
               loading="lazy"
             />
             <p className={styles.about}>
-              A professional foreign employment and workforce placement agency
-              connecting qualified Ethiopian workers with legitimate
-              employment opportunities abroad.
+              {t("footer.about")}
             </p>
             {socials.length > 0 && (
-              <ul className={styles.socials} aria-label="Social media">
+              <ul className={styles.socials} aria-label={t("footer.social")}>
                 {socials.map((s) => (
                   <li key={s.key}>
                     <a
@@ -66,13 +67,13 @@ function SiteFooter() {
             )}
           </div>
 
-          <nav className={styles.col} aria-label="Footer">
-            <h2 className={styles.colTitle}>Explore</h2>
+          <nav className={styles.col} aria-label={t("footer.nav")}>
+            <h2 className={styles.colTitle}>{t("footer.explore")}</h2>
             <ul className={styles.links}>
-              {NAV_ITEMS.filter((i) => i.id !== "home").map((item) => (
-                <li key={item.id}>
-                  <a href={`#${item.id}`} onClick={goTo(item.id)}>
-                    {item.label}
+              {NAV_IDS.filter((id) => id !== "home").map((id) => (
+                <li key={id}>
+                  <a href={`#${id}`} onClick={goTo(id)}>
+                    {t(`nav.${id}`)}
                   </a>
                 </li>
               ))}
@@ -80,7 +81,7 @@ function SiteFooter() {
           </nav>
 
           <div className={styles.col}>
-            <h2 className={styles.colTitle}>Contact</h2>
+            <h2 className={styles.colTitle}>{t("footer.contact")}</h2>
             <ul className={styles.contact}>
               <li>
                 <MapPin size={16} />
@@ -89,29 +90,29 @@ function SiteFooter() {
               {phone && (
                 <li>
                   <Phone size={16} />
-                  <a href={`tel:${phone}`}>{phone}</a>
+                  <a href={`tel:${phone}`} dir="ltr">{phone}</a>
                 </li>
               )}
               {email && (
                 <li>
                   <Mail size={16} />
-                  <a href={`mailto:${email}`}>{email}</a>
+                  <a href={`mailto:${email}`} dir="ltr">{email}</a>
                 </li>
               )}
             </ul>
           </div>
 
           <div className={`${styles.col} ${styles.ctaCol}`}>
-            <h2 className={styles.colTitle}>Ready to begin?</h2>
+            <h2 className={styles.colTitle}>{t("footer.ready")}</h2>
             <p className={styles.ctaText}>
-              Apply once — we guide you from documents to departure.
+              {t("footer.readyText")}
             </p>
             <a
               href="#contact"
               onClick={goTo("contact")}
               className="vx-btn vx-btn--primary vx-btn--sm"
             >
-              Apply Now <ArrowUpRight size={16} />
+              {t("footer.apply")} <ArrowUpRight size={16} className="vx-flip" />
             </a>
           </div>
         </div>
@@ -122,8 +123,8 @@ function SiteFooter() {
 
         <div className={styles.bottom}>
           <p className={styles.copy}>
-            © {year} {AGENCY_LEGAL_NAME} <span className={styles.sep}>|</span>{" "}
-            Developed by{" "}
+            © {year} {t("footer.legalName", { name: brand })}{" "}
+            <span className={styles.sep}>|</span> {t("footer.developedBy")}{" "}
             <a
               href="https://abakastech.com/"
               target="_blank"
@@ -132,10 +133,10 @@ function SiteFooter() {
             >
               Abakas Technologies
             </a>{" "}
-            <span className={styles.sep}>|</span> All Rights Reserved.
+            <span className={styles.sep}>|</span> {t("footer.rights")}
           </p>
           <button type="button" className={styles.toTop} onClick={toTop}>
-            Back to top <ArrowUp size={15} />
+            {t("footer.backToTop")} <ArrowUp size={15} />
           </button>
         </div>
       </div>

@@ -66,8 +66,8 @@
   right: 32px;
   height: 2px;
   border-radius: 2px;
-  background: linear-gradient(90deg, #ff5a4f, #e0307a 35%, #7a3ff0 70%, #2f6bff);
-  transform-origin: left center;
+  background: linear-gradient(var(--vx-fwd), #ff5a4f, #e0307a 35%, #7a3ff0 70%, #2f6bff);
+  transform-origin: var(--vx-start) center;
   opacity: 0.55;
 }
 
@@ -157,8 +157,9 @@
     display: block;
     top: 32px;
     bottom: 32px;
-    left: 31px;
+    left: auto;
     right: auto;
+    inset-inline-start: 31px;
     width: 2px;
     height: auto;
     transform-origin: center top;

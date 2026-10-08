@@ -219,7 +219,7 @@
   transition: transform 0.35s var(--vx-ease);
 }
 .vx-btn:hover svg {
-  transform: translateX(3px);
+  transform: translateX(var(--vx-nudge, 3px));
 }
 .vx-btn:active {
   transform: scale(0.98);
@@ -336,4 +336,54 @@
 .vx-site input,
 .vx-site textarea {
   scroll-margin-top: 120px;
+}
+
+/* ---------- Direction (LTR / RTL) ---------- */
+.vx-site {
+  --vx-fwd: 90deg; /* gradient running in reading direction */
+  --vx-start: left;
+}
+.vx-site[dir="rtl"] {
+  --vx-fwd: 270deg;
+  --vx-start: right;
+  --vx-hero-shade: 260deg;
+  --vx-nudge: -3px;
+}
+/* Arrow-like icons point the other way in RTL */
+.vx-site[dir="rtl"] .vx-flip {
+  transform: scaleX(-1);
+}
+.vx-site[dir="rtl"] .vx-btn:hover .vx-flip {
+  transform: scaleX(-1) translateX(3px);
+}
+
+/* ---------- Scripts: Arabic & Amharic ---------- */
+.vx-site[lang="ar"] {
+  --vx-font: "Plus Jakarta Sans", "IBM Plex Sans Arabic", ui-sans-serif,
+    system-ui, "Segoe UI", Tahoma, Arial, sans-serif;
+  --vx-serif: "Instrument Serif", "Amiri", "Noto Naskh Arabic", Georgia, serif;
+}
+.vx-site[lang="am"] {
+  --vx-font: "Plus Jakarta Sans", "Noto Sans Ethiopic", ui-sans-serif,
+    system-ui, "Nyala", "Segoe UI", sans-serif;
+  --vx-serif: "Instrument Serif", "Noto Serif Ethiopic", "Noto Sans Ethiopic",
+    Georgia, serif;
+}
+/* Connected / syllabic scripts: no negative tracking, no faux italics,
+   and a little more line-height so marks above and below aren't clipped */
+.vx-site:is([lang="ar"], [lang="am"]) * {
+  letter-spacing: normal !important;
+}
+.vx-site:is([lang="ar"], [lang="am"]) .vx-serif,
+.vx-site:is([lang="ar"], [lang="am"]) :where([class*="serif"], [class*="Accent"]) {
+  font-style: normal;
+}
+.vx-site:is([lang="ar"], [lang="am"]) :is(h1, h2, h3, h4) {
+  line-height: 1.3;
+}
+.vx-site:is([lang="ar"], [lang="am"]) .vx-display {
+  line-height: 1.22 !important;
+}
+.vx-site[lang="ar"] :is(p, li, dd, blockquote) {
+  line-height: 1.85;
 }

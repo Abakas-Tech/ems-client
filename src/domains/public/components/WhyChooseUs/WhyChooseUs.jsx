@@ -1,13 +1,16 @@
 import { motion as Motion } from "framer-motion";
 import { Check } from "lucide-react";
 
-import { WHY_CHOOSE, PROMISES } from "../../data/content";
+import { useTranslation } from "react-i18next";
 import SectionHeading from "../ui/SectionHeading";
 import styles from "./WhyChooseUs.module.css";
 
 const ease = [0.22, 1, 0.36, 1];
 
 function WhyChooseUs() {
+  const { t } = useTranslation();
+  const WHY_CHOOSE = t("why.items");
+  const PROMISES = t("why.promises");
   return (
     <section className={`vx-section ${styles.section}`} aria-labelledby="why-title">
       <div className="vx-container">
@@ -15,14 +18,7 @@ function WhyChooseUs() {
           <div className={styles.left}>
             <SectionHeading
               id="why-title"
-              eyebrow="Why choose us"
-              title={
-                <>
-                  Trusted by workers{" "}
-                  <span className="vx-serif">&amp; employers</span>
-                </>
-              }
-              lead="Trusted by workers and employers for honest, professional, and reliable recruitment services always."
+              ns="why"
               align="left"
               className={styles.heading}
             />
@@ -30,7 +26,7 @@ function WhyChooseUs() {
             <ul className={styles.why}>
               {WHY_CHOOSE.map((item, i) => (
                 <Motion.li
-                  key={item.title}
+                  key={i}
                   className={styles.whyItem}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -57,10 +53,10 @@ function WhyChooseUs() {
             transition={{ duration: 0.9, ease }}
           >
             <div className={styles.promiseGlow} aria-hidden="true" />
-            <span className={styles.promiseEyebrow}>Our promise</span>
+            <span className={styles.promiseEyebrow}>{t("why.promiseEyebrow")}</span>
             <ol className={styles.promiseList}>
               {PROMISES.map((item, i) => (
-                <li key={item.title} className={styles.promiseItem}>
+                <li key={i} className={styles.promiseItem}>
                   <span className={styles.promiseNum}>
                     {String(i + 1).padStart(2, "0")}
                   </span>

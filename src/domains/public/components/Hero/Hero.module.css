@@ -38,7 +38,7 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    100deg,
+    var(--vx-hero-shade, 100deg),
     rgba(7, 13, 34, 0.92) 0%,
     rgba(7, 13, 34, 0.72) 38%,
     rgba(7, 13, 34, 0.25) 70%,
@@ -303,7 +303,7 @@
 .destList li + li::before {
   content: "";
   position: absolute;
-  left: -12px;
+  inset-inline-start: -12px;
   top: 50%;
   width: 4px;
   height: 4px;
@@ -354,7 +354,8 @@
 }
 .segmentFill {
   position: absolute;
-  inset: 8px auto 8px 0;
+  inset-block: 8px;
+  inset-inline-start: 0;
   width: 0;
   border-radius: 2px;
   background: #fff;
@@ -367,7 +368,7 @@
   animation-name: fill;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
-  background: linear-gradient(90deg, #ff6fa8, #8fb8ff);
+  background: linear-gradient(var(--vx-fwd), #ff6fa8, #8fb8ff);
 }
 @keyframes fill {
   from {

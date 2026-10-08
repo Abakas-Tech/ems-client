@@ -151,7 +151,7 @@
 .directions,
 .directions:focus {
   position: absolute;
-  left: 12px;
+  inset-inline-start: 12px;
   bottom: 12px;
   display: inline-flex;
   align-items: center;
@@ -221,7 +221,7 @@
   color: var(--vx-rose);
 }
 .optional {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: 12px;
   font-weight: 500;
   color: var(--vx-subtle);
@@ -283,7 +283,7 @@
   color: #d93036;
 }
 .counter {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: 12.5px;
   color: var(--vx-subtle);
   font-variant-numeric: tabular-nums;

@@ -1,7 +1,8 @@
 import { motion as Motion } from "framer-motion";
 import { UserPlus, BadgeCheck, Handshake, Plane, Route } from "lucide-react";
 
-import { PROCESS_STEPS } from "../../data/content";
+import { useTranslation } from "react-i18next";
+import { PROCESS_KEYS } from "../../data/content";
 import SectionHeading from "../ui/SectionHeading";
 import styles from "./HowItWorks.module.css";
 
@@ -15,18 +16,15 @@ const ICONS = {
 const ease = [0.22, 1, 0.36, 1];
 
 function HowItWorks() {
+  const { t } = useTranslation();
+  const stepsText = t("process.steps");
+  const PROCESS_STEPS = PROCESS_KEYS.map((key, i) => ({ key, ...stepsText[i] }));
   return (
     <section id="how" className={`vx-section ${styles.section}`}>
       <div className="vx-container">
         <div className={styles.top}>
           <SectionHeading
-            eyebrow="How it works"
-            title={
-              <>
-                Your journey <span className="vx-serif">with us</span>
-              </>
-            }
-            lead="A streamlined process that guides you from registration through training to deployment step by step."
+            ns="process"
             align="left"
             className={styles.heading}
           />
@@ -41,8 +39,8 @@ function HowItWorks() {
               <Route size={22} />
             </span>
             <span>
-              <strong>The Process</strong>
-              <small>{PROCESS_STEPS.length} steps to deployment</small>
+              <strong>{t("process.summaryTitle")}</strong>
+              <small>{t("process.summarySteps", { count: PROCESS_STEPS.length })}</small>
             </span>
           </Motion.div>
         </div>
@@ -72,7 +70,7 @@ function HowItWorks() {
                 </span>
                 <div className={styles.card}>
                   <span className={styles.num}>
-                    Step {String(i + 1).padStart(2, "0")}
+                    {t("process.step", { n: String(i + 1).padStart(2, "0") })}
                   </span>
                   <h3 className={styles.title}>{step.title}</h3>
                   <p className={styles.desc}>{step.description}</p>
