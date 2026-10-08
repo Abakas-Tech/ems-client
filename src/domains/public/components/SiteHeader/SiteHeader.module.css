@@ -46,11 +46,11 @@
   position: relative;
   display: grid;
   flex: none;
-  height: 52px;
+  height: 56px;
 }
 .logo {
   grid-area: 1 / 1;
-  height: 52px;
+  height: 56px;
   width: auto;
   transition: opacity 0.4s ease;
 }
@@ -233,7 +233,7 @@
   }
   .brand,
   .logo {
-    height: 42px;
+    height: 46px;
   }
 }
 

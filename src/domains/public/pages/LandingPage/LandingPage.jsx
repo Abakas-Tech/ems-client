@@ -15,7 +15,7 @@ import Contact from "../../components/Contact/Contact";
 function LandingPage() {
   return (
     <>
-      <SEO title="Vision Recruitment | Work Abroad Without the Guesswork" />
+      <SEO title="Al-Khedemat | Work Abroad Without the Guesswork" />
       <Hero />
       <PromiseTicker />
       <HowItWorks />

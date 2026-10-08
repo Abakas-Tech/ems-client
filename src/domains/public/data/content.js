@@ -19,9 +19,9 @@ import avatar1 from "../../../assets/img/site/avatar-1.jpg";
 import avatar2 from "../../../assets/img/site/avatar-2.jpg";
 import avatar3 from "../../../assets/img/site/avatar-3.jpg";
 
-export const AGENCY_NAME = "Vision Recruitment Agency";
+export const AGENCY_NAME = "Al-Khedemat";
 export const AGENCY_LEGAL_NAME =
-  "Vision Recruitment Private Foreign Employment Agency";
+  "Al-Khedemat Private Foreign Employment Agency";
 
 /* Section anchors used by the header, footer and in-page CTAs */
 export const NAV_ITEMS = [
@@ -153,11 +153,11 @@ export const SERVICES = [
 export const ABOUT_PARAGRAPHS = [
   "We connect talented individuals with trusted employers, creating pathways that support personal growth, strengthen families, build valuable skills, and open doors to brighter opportunities.",
   "Our mission is to make the employment journey easier and more reliable, helping candidates discover suitable opportunities while connecting employers with skilled and dedicated professionals.",
-  "Our agency works to build a trusted bridge between Ethiopian job seekers and international employers by providing responsible, transparent, professional, and efficient recruitment services. At Vision Recruitment Agency, we are committed to protecting the dignity and interests of workers while helping employers access reliable, qualified, and motivated human resources.",
+  "Our agency works to build a trusted bridge between Ethiopian job seekers and international employers by providing responsible, transparent, professional, and efficient recruitment services. At Al-Khedemat, we are committed to protecting the dignity and interests of workers while helping employers access reliable, qualified, and motivated human resources.",
 ];
 
 export const AT_A_GLANCE = [
-  { label: "Company Name", value: "Vision Recruitment Agency" },
+  { label: "Company Name", value: "Al-Khedemat" },
   { label: "Industry", value: "Foreign Employment & Workforce Recruitment" },
   {
     label: "Core Service",

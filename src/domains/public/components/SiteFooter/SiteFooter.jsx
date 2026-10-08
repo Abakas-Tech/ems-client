@@ -38,8 +38,8 @@ function SiteFooter() {
               src={logoLight}
               alt={AGENCY_NAME}
               className={styles.logo}
-              width="520"
-              height="252"
+              width="623"
+              height="394"
               loading="lazy"
             />
             <p className={styles.about}>
@@ -117,7 +117,7 @@ function SiteFooter() {
         </div>
 
         <div className={styles.wordmark} aria-hidden="true">
-          VISION
+          AL-KHEDEMAT
         </div>
 
         <div className={styles.bottom}>

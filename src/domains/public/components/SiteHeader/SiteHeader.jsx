@@ -112,15 +112,15 @@ function SiteHeader() {
               src={logoLight}
               alt=""
               className={`${styles.logo} ${styles.logoLight}`}
-              width="520"
-              height="252"
+              width="623"
+              height="394"
             />
             <img
               src={logo}
               alt={AGENCY_NAME}
               className={`${styles.logo} ${styles.logoDark}`}
-              width="520"
-              height="252"
+              width="623"
+              height="394"
             />
           </a>
 

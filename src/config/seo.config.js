@@ -14,18 +14,18 @@
 
 export const SITE_URL = "https://visionrecruitment.com";
 
-export const SITE_NAME = "Vision Recruitment Agency | Work Abroad Without the Guesswork";
+export const SITE_NAME = "Al-Khedemat | Work Abroad Without the Guesswork";
 
 export const DEFAULT_TITLE =
-  "Vision Recruitment Agency | Work Abroad Without the Guesswork — Licensed Ethiopian Overseas Employment Agency";
+  "Al-Khedemat | Work Abroad Without the Guesswork — Licensed Ethiopian Overseas Employment Agency";
 
 export const DEFAULT_DESCRIPTION =
-  "Vision Recruitment Agency places skilled Ethiopians in verified jobs across Saudi Arabia, Jordan, and the Gulf. Every contract checked, every step explained before you sign.";
+  "Al-Khedemat places skilled Ethiopians in verified jobs across Saudi Arabia, Jordan, and the Gulf. Every contract checked, every step explained before you sign.";
 
 export const DEFAULT_OG_IMAGE = "/og-image.jpg";
 
 export const DEFAULT_KEYWORDS =
-  "Ethiopia overseas employment, work abroad Ethiopia, house maid Saudi Arabia, jobs Jordan Ethiopian, licensed employment agency Addis Ababa, domestic worker Gulf, Vision Recruitment Agency, verified overseas jobs Ethiopia, safe overseas employment Ethiopia, Ethiopian recruitment agency, overseas employment agency Ethiopia, legal recruitment agency Ethiopia, LMIS work permit processing Ethiopia, contract verification Ethiopia, flight coordination Ethiopia, pre-departure orientation Ethiopia";
+  "Ethiopia overseas employment, work abroad Ethiopia, house maid Saudi Arabia, jobs Jordan Ethiopian, licensed employment agency Addis Ababa, domestic worker Gulf, Al-Khedemat, verified overseas jobs Ethiopia, safe overseas employment Ethiopia, Ethiopian recruitment agency, overseas employment agency Ethiopia, legal recruitment agency Ethiopia, LMIS work permit processing Ethiopia, contract verification Ethiopia, flight coordination Ethiopia, pre-departure orientation Ethiopia";
 
 /* Organization structured data (EmploymentAgency type). Add social
    profile URLs into sameAs when the accounts exist — they feed
@@ -34,7 +34,7 @@ export const ORGANIZATION_JSON_LD = {
   "@context": "https://schema.org",
   "@type": "EmploymentAgency",
   name: SITE_NAME,
-  alternateName: "Vision Recruitment Agency",
+  alternateName: "Al-Khedemat",
   url: `${SITE_URL}/`,
   logo: `${SITE_URL}/logo192.png`,
   image: `${SITE_URL}${DEFAULT_OG_IMAGE}`,
