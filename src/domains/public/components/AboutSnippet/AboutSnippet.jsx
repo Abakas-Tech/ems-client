@@ -3,7 +3,7 @@ import { ShieldCheck } from "lucide-react";
 
 import portrait from "../../../../assets/img/site/about-portrait.jpg";
 import logo from "../../../../assets/img/site/logo.png";
-import { ABOUT_PARAGRAPHS, AT_A_GLANCE, AGENCY_NAME } from "../../data/content";
+import { ABOUT_PARAGRAPHS, AGENCY_NAME } from "../../data/content";
 import Reveal from "../ui/Reveal";
 import styles from "./AboutSnippet.module.css";
 
@@ -81,15 +81,6 @@ function AboutSnippet() {
           </div>
         </div>
 
-        {/* At a glance */}
-        <Reveal as="dl" className={styles.glance} aria-label="At a glance">
-          {AT_A_GLANCE.map((item) => (
-            <div className={styles.glanceItem} key={item.label}>
-              <dt>{item.label}</dt>
-              <dd>{item.value}</dd>
-            </div>
-          ))}
-        </Reveal>
       </div>
     </section>
   );

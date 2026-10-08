@@ -156,17 +156,15 @@ export const ABOUT_PARAGRAPHS = [
   "Our agency works to build a trusted bridge between Ethiopian job seekers and international employers by providing responsible, transparent, professional, and efficient recruitment services. At Al-Khedemat, we are committed to protecting the dignity and interests of workers while helping employers access reliable, qualified, and motivated human resources.",
 ];
 
-export const AT_A_GLANCE = [
-  { label: "Company Name", value: "Al-Khedemat" },
-  { label: "Industry", value: "Foreign Employment & Workforce Recruitment" },
-  {
-    label: "Core Service",
-    value: "International Recruitment & Employment Placement",
-  },
-  {
-    label: "Primary Market",
-    value: "Ethiopian Workforce & International Employers",
-  },
+/* Destinations shown on the route map. Positions are in the map's
+   viewBox (x = east, y = south), roughly to scale from Addis Ababa. */
+export const ROUTE_ORIGIN = { city: "Addis Ababa", country: "Ethiopia", x: 96, y: 452 };
+
+export const DESTINATION_ROUTES = [
+  { key: "sa", city: "Riyadh", country: "Saudi Arabia", code: "KSA", x: 254, y: 146 },
+  { key: "kw", city: "Kuwait City", country: "Kuwait", code: "KWT", x: 282, y: 54 },
+  { key: "qa", city: "Doha", country: "Qatar", code: "QAT", x: 352, y: 140 },
+  { key: "ae", city: "Dubai", country: "United Arab Emirates", code: "UAE", x: 430, y: 128 },
 ];
 
 export const VISION_MISSION = [

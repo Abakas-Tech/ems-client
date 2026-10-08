@@ -4,6 +4,7 @@ import PromiseTicker from "../../components/PromiseTicker/PromiseTicker";
 import HowItWorks from "../../components/HowItWorks/HowItWorks";
 import Services from "../../components/Services/Services";
 import AboutSnippet from "../../components/AboutSnippet/AboutSnippet";
+import Destinations from "../../components/Destinations/Destinations";
 import VisionMission from "../../components/VisionMission/VisionMission";
 import CoreValues from "../../components/CoreValues/CoreValues";
 import WhyChooseUs from "../../components/WhyChooseUs/WhyChooseUs";
@@ -21,6 +22,7 @@ function LandingPage() {
       <HowItWorks />
       <Services />
       <AboutSnippet />
+      <Destinations />
       <VisionMission />
       <CoreValues />
       <WhyChooseUs />

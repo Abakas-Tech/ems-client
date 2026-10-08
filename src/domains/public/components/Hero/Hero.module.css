@@ -108,7 +108,7 @@
 
 .copy {
   display: grid;
-  max-width: 860px;
+  max-width: 980px;
 }
 .slide {
   grid-area: 1 / 1;
@@ -199,7 +199,7 @@
 }
 
 .sub {
-  max-width: 560px;
+  max-width: 640px;
   font-size: clamp(16px, 1.55vw, 19px);
   line-height: 1.65;
   color: rgba(226, 232, 255, 0.8);
