@@ -1,300 +1,95 @@
-import {
-  FaCompass,
-  FaBullseye,
-  FaBalanceScale,
-  FaHandshake,
-  FaHeart,
-  FaBriefcase,
-  FaStar,
-  FaAward,
-  FaCheckCircle,
-} from "react-icons/fa";
-import about from "../../../../assets/img/logo/nejibat.png";
+import { motion as Motion } from "framer-motion";
+import { ShieldCheck } from "lucide-react";
+
+import portrait from "../../../../assets/img/site/about-portrait.jpg";
+import logo from "../../../../assets/img/site/logo.png";
+import { ABOUT_PARAGRAPHS, AT_A_GLANCE, AGENCY_NAME } from "../../data/content";
+import Reveal from "../ui/Reveal";
 import styles from "./AboutSnippet.module.css";
 
-const CORE_VALUES = [
-  {
-    icon: <FaBalanceScale />,
-    title: "Integrity",
-    amharic: "ታማኝነት",
-    desc: "We conduct our business with honesty, fairness, accountability, and respect.",
-  },
-  {
-    icon: <FaHandshake />,
-    title: "Trust",
-    amharic: "እምነት",
-    desc: "We build lasting relationships through transparency, reliability, and responsible service.",
-  },
-  {
-    icon: <FaHeart />,
-    title: "People First",
-    amharic: "ሰው ቅድሚያ",
-    desc: "We put the dignity, safety, rights, and interests of people at the heart of our work.",
-  },
-  {
-    icon: <FaBriefcase />,
-    title: "Professionalism",
-    amharic: "ሙያዊነት",
-    desc: "We deliver our services with competence, efficiency, discipline, and professionalism.",
-  },
-  {
-    icon: <FaStar />,
-    title: "Opportunity",
-    amharic: "የዕድል ፈጠራ",
-    desc: "We connect people with opportunities that can improve their livelihoods and future.",
-  },
-  {
-    icon: <FaAward />,
-    title: "Excellence",
-    amharic: "የላቀ አገልግሎት",
-    desc: "We continuously improve our services to achieve the highest standards of quality and client satisfaction.",
-  },
-];
-
-const WHY_CHOOSE = [
-  {
-    title: "Trusted",
-    desc: "We value honesty, transparency, and long-term relationships.",
-  },
-  {
-    title: "Professional",
-    desc: "We provide organized and professional recruitment and placement services.",
-  },
-  {
-    title: "People-Centered",
-    desc: "We respect the dignity, rights, safety, and interests of workers.",
-  },
-  {
-    title: "Employer-Focused",
-    desc: "We help employers find suitable and dependable human resources.",
-  },
-];
-
-const PROMISES = [
-  {
-    title: "To Workers",
-    desc: "We strive to connect you with legitimate opportunities and provide professional guidance throughout your employment journey.",
-  },
-  {
-    title: "To Employers",
-    desc: "We strive to provide qualified, reliable, and suitable human resources according to your requirements.",
-  },
-  {
-    title: "To Our Partners",
-    desc: "We build lasting relationships based on trust, professionalism, transparency, and mutual success.",
-  },
-];
-
-const GLANCE = [
-  { label: "Company Name", value: "Vision Recruitment Agency" },
-  { label: "Industry", value: "Foreign Employment & Workforce Recruitment" },
-  {
-    label: "Core Service",
-    value: "International Recruitment & Employment Placement",
-  },
-  {
-    label: "Primary Market",
-    value: "Ethiopian Workforce & International Employers",
-  },
-];
-
-function SubHeading({ eyebrow, title, subtitle, center }) {
-  return (
-    <div className={`${styles.subHead} ${center ? styles.subHeadCenter : ""}`}>
-      {eyebrow && <span className={styles.subEyebrow}>{eyebrow}</span>}
-      <h3 className={styles.subTitle}>{title}</h3>
-      {subtitle && <p className={styles.subSubtitle}>{subtitle}</p>}
-    </div>
-  );
-}
+const ease = [0.22, 1, 0.36, 1];
 
 function AboutSnippet() {
   return (
-    <section id="about" className={styles.aboutSection}>
-      {/* INTRO */}
-      <div className="container">
-        {/* Header */}
-        <div>
-          <SubHeading
-            eyebrow="About"
-            title="Vision Recruitment Agency"
-            subtitle="Discover how we connect Ethiopian workers with employers abroad through ethical recruitment for you."
-            center
-          />
-        </div>
-        <div className={`row align-items-center ${styles.introRow}`}>
-          <div className="col-lg-4">
-            <div className={styles.imageWrapper}>
-              <div className={styles.floatingBadge}>
-                <span className={styles.dot}></span>
-                Trusted Overseas Recruitment
-              </div>
+    <section
+      id="about"
+      className={`vx-section ${styles.section}`}
+      aria-labelledby="about-title"
+    >
+      <div className="vx-container">
+        <div className={styles.layout}>
+          {/* Visual */}
+          <Motion.div
+            className={styles.visual}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+            transition={{ duration: 1, ease }}
+          >
+            <div className={styles.frame}>
               <img
-                src={about}
-                alt="Vision Recruitment Agency"
-                className={`img-fluid ${styles.aboutImage}`}
+                src={portrait}
+                alt="City skyline at dusk — destinations for overseas employment"
+                className={styles.photo}
                 loading="lazy"
               />
-            </div>
-          </div>
-
-          <div className="col-lg-8">
-            <div className={styles.contentInner}>
-              <span className={styles.tag}>
-                About Vision Recruitment Agency
+              <div className={styles.photoShade} aria-hidden="true" />
+              <span className={styles.badge}>
+                <span className={styles.badgeDot} aria-hidden="true" />
+                Trusted Overseas Recruitment
               </span>
-              <p className={styles.description}>
-                <strong>Vision Recruitment Agency</strong> is a professional
-                foreign employment and workforce placement agency committed to
+            </div>
+
+            <Motion.div
+              className={styles.logoCard}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.3, ease }}
+            >
+              <img src={logo} alt={AGENCY_NAME} className={styles.logo} />
+              <span className={styles.logoNote}>
+                <ShieldCheck size={16} /> Legal. Safe. Transparent.
+              </span>
+            </Motion.div>
+            <div className={styles.ring} aria-hidden="true" />
+          </Motion.div>
+
+          {/* Copy */}
+          <div className={styles.copy}>
+            <Reveal>
+              <span className={styles.eyebrow}>About {AGENCY_NAME}</span>
+              <h2 id="about-title" className={styles.title}>
+                A trusted bridge to{" "}
+                <span className="vx-serif vx-grad-text">opportunity</span>{" "}
+                abroad.
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className={styles.lead}>
+                <strong>{AGENCY_NAME}</strong> is a professional foreign
+                employment and workforce placement agency committed to
                 connecting qualified Ethiopian workers with legitimate
                 employment opportunities abroad.
               </p>
-              <p className={styles.description}>
-                <strong>Vision Recruitment Agency</strong> is a professional
-                foreign employment and workforce placement agency committed to
-                connecting qualified Ethiopian workers with legitimate
-                employment opportunities abroad.
-              </p>
-              <p className={styles.description}>
-                We connect talented individuals with trusted employers, creating
-                pathways that support personal growth, strengthen families,
-                build valuable skills, and open doors to brighter opportunities.
-              </p>
-
-              <p className={styles.description}>
-                Our mission is to make the employment journey easier and more
-                reliable, helping candidates discover suitable opportunities
-                while connecting employers with skilled and dedicated
-                professionals.
-              </p>
-              <p className={styles.description}>
-                Our agency works to build a trusted bridge between Ethiopian job
-                seekers and international employers by providing responsible,
-                transparent, professional, and efficient recruitment services.
-                At Vision Recruitment Agency, we are committed to protecting the
-                dignity and interests of workers while helping employers access
-                reliable, qualified, and motivated human resources.
-              </p>
-            </div>
+            </Reveal>
+            <Reveal delay={0.15} className={styles.paras}>
+              {ABOUT_PARAGRAPHS.map((p) => (
+                <p key={p.slice(0, 24)}>{p}</p>
+              ))}
+            </Reveal>
           </div>
         </div>
-      </div>
 
-      {/* VISION & MISSION */}
-      <div className={styles.tintBlock}>
-        <div className="container">
-          <SubHeading
-            eyebrow="Who We Are"
-            title="Vision & Mission"
-            subtitle="The vision and mission driving every placement we make for workers and employers through every step."
-            center
-          />
-          <div className="row g-4">
-            <div className="col-md-6">
-              <div className={styles.pillarCard}>
-                <div className={styles.pillarIcon}>
-                  <FaCompass />
-                </div>
-                <span className={styles.pillarLabel}>Our Vision</span>
-                <p className={styles.pillarQuote}>
-                  To be the most trusted name in international recruitment,
-                  opening safe and reliable pathways for Ethiopian talent to
-                  build better lives abroad.
-                </p>
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className={styles.pillarCard}>
-                <div className={styles.pillarIcon}>
-                  <FaBullseye />
-                </div>
-                <span className={styles.pillarLabel}>Our Mission</span>
-                <p className={styles.pillarQuote}>
-                  To connect skilled workers with verified international
-                  employers through ethical, transparent, and professional
-                  recruitment services built on trust.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* CORE VALUES */}
-      <div className={`container ${styles.block}`}>
-        <SubHeading
-          eyebrow="What We Stand For"
-          title="Our Core Values"
-          subtitle="The principles that guide every decision, placement, and relationship we build from start to finish."
-          center
-        />
-        <div className={styles.valuesGrid}>
-          {CORE_VALUES.map((item) => (
-            <div className={styles.valueCard} key={item.title}>
-              <div className={styles.valueIcon}>{item.icon}</div>
-              <h6 className={styles.valueTitle}>
-                {item.title}
-                <span className={styles.valueAmharic}>{item.amharic}</span>
-              </h6>
-              <p className={styles.valueDesc}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* WHY CHOOSE US + PROMISE */}
-      <div className={styles.tintBlock}>
-        <SubHeading
-          eyebrow="Why Choose Us"
-          title="We Are Trusted By Workers & Employers"
-          subtitle="Trusted by workers and employers for honest, professional, and reliable recruitment services always."
-          center
-        />
-        <div className="container">
-          <div className="row g-5">
-            <div className="col-lg-6">
-              <div className={styles.whyList}>
-                {WHY_CHOOSE.map((item) => (
-                  <div className={styles.whyItem} key={item.title}>
-                    <span className={styles.whyIconWrap}>
-                      <FaCheckCircle />
-                    </span>
-                    <div>
-                      <h6 className={styles.whyTitle}>{item.title}</h6>
-                      <p className={styles.whyDesc}>{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="col-lg-6">
-              <div className={styles.promiseStack}>
-                {PROMISES.map((item, idx) => (
-                  <div className={styles.promiseCard} key={item.title}>
-                    <span className={styles.promiseNumber}>0{idx + 1}</span>
-                    <div>
-                      <h6 className={styles.promiseTitle}>{item.title}</h6>
-                      <p className={styles.promiseDesc}>{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* AT A GLANCE */}
-      <div className={`container ${styles.block}`}>
-        <div className={styles.glanceStrip}>
-          {GLANCE.map((item) => (
+        {/* At a glance */}
+        <Reveal as="dl" className={styles.glance} aria-label="At a glance">
+          {AT_A_GLANCE.map((item) => (
             <div className={styles.glanceItem} key={item.label}>
-              <span className={styles.glanceLabel}>{item.label}</span>
-              <span className={styles.glanceValue}>{item.value}</span>
+              <dt>{item.label}</dt>
+              <dd>{item.value}</dd>
             </div>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

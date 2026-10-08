@@ -1,0 +1,134 @@
+.section {
+  background:
+    radial-gradient(40% 50% at 0% 50%, rgba(224, 48, 122, 0.06), transparent 70%),
+    var(--vx-bg-soft);
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(40px, 6vw, 88px);
+  align-items: center;
+}
+.heading {
+  margin-bottom: 40px;
+}
+
+.why {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.whyItem {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.check {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-top: 1px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--vx-grad);
+  box-shadow: 0 8px 18px -8px rgba(224, 48, 122, 0.8);
+}
+.whyTitle {
+  margin-bottom: 4px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--vx-text);
+}
+.whyDesc {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--vx-muted);
+}
+
+.promise {
+  position: relative;
+  padding: clamp(32px, 4vw, 48px);
+  border-radius: var(--vx-r-xl);
+  background: var(--vx-ink);
+  color: #fff;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: var(--vx-shadow-lg);
+}
+.promiseGlow {
+  position: absolute;
+  z-index: -1;
+  width: 560px;
+  height: 560px;
+  left: -220px;
+  top: -300px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(47, 107, 255, 0.35), rgba(122, 63, 240, 0.15) 55%, transparent);
+}
+.promiseEyebrow {
+  display: inline-block;
+  margin-bottom: 18px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #ff9cc2;
+}
+.promiseList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.promiseItem {
+  display: flex;
+  gap: 22px;
+  padding: 24px 0;
+  border-top: 1px solid var(--vx-line-dark);
+}
+.promiseItem:last-child {
+  padding-bottom: 0;
+}
+.promiseNum {
+  flex: none;
+  font-family: var(--vx-serif);
+  font-style: italic;
+  font-size: 34px;
+  line-height: 1;
+  background: linear-gradient(120deg, #ff8a7a, #ff6fa8 50%, #8fb8ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.promiseTitle {
+  margin-bottom: 6px;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #fff;
+}
+.promiseDesc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(226, 232, 255, 0.7);
+}
+
+@media (max-width: 1000px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .why {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .promiseItem {
+    gap: 16px;
+  }
+}

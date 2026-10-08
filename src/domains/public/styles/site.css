@@ -1,0 +1,311 @@
+/* ==================================================================
+   Public website design system.
+
+   Everything is scoped under `.vx-site` (the PublicLayout root), so
+   none of these tokens or resets reach the admin / staff / partner
+   areas. The `:where()` wrappers keep the resets at element-level
+   specificity: they beat the legacy template rules in styles.css
+   (which load earlier) while any CSS-module class still wins.
+   ================================================================== */
+
+.vx-site {
+  /* Ink & surfaces */
+  --vx-ink: #070d22;
+  --vx-ink-2: #0d1736;
+  --vx-ink-3: #16224a;
+  --vx-text: #0f1b3d;
+  --vx-muted: #5a6585;
+  --vx-subtle: #8a93ad;
+  --vx-bg: #ffffff;
+  --vx-bg-soft: #f5f6fb;
+  --vx-bg-tint: #eef1fa;
+  --vx-line: rgba(15, 27, 61, 0.09);
+  --vx-line-strong: rgba(15, 27, 61, 0.16);
+  --vx-line-dark: rgba(255, 255, 255, 0.1);
+
+  /* Brand — taken from the Vision mark (crimson arc → royal blue) */
+  --vx-red: #ef3e4a;
+  --vx-rose: #e0307a;
+  --vx-violet: #7a3ff0;
+  --vx-blue: #2f6bff;
+  --vx-sky: #7fb2ff;
+  --vx-grad: linear-gradient(
+    110deg,
+    #ff5a4f 0%,
+    #e0307a 34%,
+    #7a3ff0 68%,
+    #2f6bff 100%
+  );
+  --vx-grad-soft: linear-gradient(
+    135deg,
+    rgba(239, 62, 74, 0.12),
+    rgba(47, 107, 255, 0.12)
+  );
+
+  /* Type */
+  --vx-font: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Ethiopic",
+    sans-serif;
+  --vx-serif: "Instrument Serif", "Iowan Old Style", "Palatino Linotype",
+    Georgia, serif;
+
+  /* Shape & depth */
+  --vx-r-sm: 12px;
+  --vx-r: 20px;
+  --vx-r-lg: 28px;
+  --vx-r-xl: 36px;
+  --vx-shadow-sm: 0 1px 2px rgba(7, 13, 34, 0.06),
+    0 2px 8px -2px rgba(7, 13, 34, 0.06);
+  --vx-shadow: 0 1px 2px rgba(7, 13, 34, 0.04),
+    0 12px 32px -12px rgba(7, 13, 34, 0.14);
+  --vx-shadow-lg: 0 2px 6px rgba(7, 13, 34, 0.05),
+    0 30px 60px -24px rgba(7, 13, 34, 0.28);
+  --vx-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --vx-header-h: 76px;
+  --vx-gutter: clamp(16px, 4vw, 32px);
+
+  font-family: var(--vx-font);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--vx-text);
+  background: var(--vx-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+/* ---------- Resets against the legacy template ---------- */
+:where(.vx-site) section {
+  padding: 0;
+}
+:where(.vx-site) h1,
+:where(.vx-site) h2,
+:where(.vx-site) h3,
+:where(.vx-site) h4,
+:where(.vx-site) h5,
+:where(.vx-site) h6 {
+  font-family: var(--vx-font);
+  color: inherit;
+  text-transform: none;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+:where(.vx-site) p,
+:where(.vx-site) ul,
+:where(.vx-site) ol,
+:where(.vx-site) dl,
+:where(.vx-site) dd,
+:where(.vx-site) dt,
+:where(.vx-site) blockquote,
+:where(.vx-site) figure {
+  margin: 0;
+  padding: 0;
+}
+:where(.vx-site) ul,
+:where(.vx-site) ol {
+  list-style: none;
+}
+:where(.vx-site) a {
+  color: inherit;
+  text-decoration: none;
+}
+:where(.vx-site) img {
+  max-width: 100%;
+  display: block;
+}
+:where(.vx-site) button {
+  font-family: inherit;
+}
+:where(.vx-site) label {
+  color: inherit;
+}
+.vx-site ::selection {
+  background: rgba(224, 48, 122, 0.22);
+  color: inherit;
+}
+
+/* Restore a visible keyboard focus ring (the template removes outlines) */
+.vx-site :focus-visible {
+  outline: 2px solid var(--vx-blue);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ---------- Layout primitives ---------- */
+.vx-container {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: var(--vx-gutter);
+}
+
+.vx-section {
+  position: relative;
+  padding-block: clamp(72px, 10vw, 136px);
+  scroll-margin-top: 72px;
+}
+
+/* Brand gradient text */
+.vx-grad-text {
+  background: var(--vx-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Editorial serif accent inside headings */
+.vx-serif {
+  font-family: var(--vx-serif);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Buttons ---------- */
+.vx-btn {
+  --btn-h: 52px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: var(--btn-h);
+  padding: 0 26px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: var(--vx-font);
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  cursor: pointer;
+  isolation: isolate;
+  transition: transform 0.35s var(--vx-ease), box-shadow 0.35s var(--vx-ease),
+    background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+.vx-btn svg {
+  flex: none;
+  transition: transform 0.35s var(--vx-ease);
+}
+.vx-btn:hover svg {
+  transform: translateX(3px);
+}
+.vx-btn:active {
+  transform: scale(0.98);
+}
+
+.vx-btn--primary,
+.vx-btn--primary:hover,
+.vx-btn--primary:focus {
+  color: #fff;
+}
+.vx-btn--primary {
+  background: var(--vx-grad);
+  background-size: 160% 100%;
+  background-position: 0% 0;
+  box-shadow: 0 10px 30px -10px rgba(224, 48, 122, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.vx-btn--primary:hover {
+  background-position: 100% 0;
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px -12px rgba(122, 63, 240, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.vx-btn--dark,
+.vx-btn--dark:hover,
+.vx-btn--dark:focus {
+  color: #fff;
+}
+.vx-btn--dark {
+  background: var(--vx-ink);
+  box-shadow: 0 10px 24px -12px rgba(7, 13, 34, 0.6);
+}
+.vx-btn--dark:hover {
+  background: var(--vx-ink-3);
+  transform: translateY(-2px);
+}
+
+.vx-btn--glass,
+.vx-btn--glass:hover,
+.vx-btn--glass:focus {
+  color: #fff;
+}
+.vx-btn--glass {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.vx-btn--glass:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.vx-btn--ghost,
+.vx-btn--ghost:focus {
+  color: var(--vx-text);
+}
+.vx-btn--ghost {
+  background: #fff;
+  border-color: var(--vx-line-strong);
+}
+.vx-btn--ghost:hover {
+  color: var(--vx-text);
+  border-color: var(--vx-text);
+  transform: translateY(-2px);
+}
+
+.vx-btn--sm {
+  --btn-h: 42px;
+  padding: 0 18px;
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .vx-btn {
+    --btn-h: 50px;
+    padding: 0 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vx-site *,
+  .vx-site *::before,
+  .vx-site *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Skip link — visible only on keyboard focus */
+.vx-skip {
+  position: fixed;
+  top: 12px;
+  left: -9999px;
+  z-index: 2000;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--vx-ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+.vx-skip:focus,
+.vx-skip:focus-visible {
+  left: 12px;
+  color: #fff;
+}
+
+/* Keep focused form fields clear of the fixed header */
+.vx-site input,
+.vx-site textarea {
+  scroll-margin-top: 120px;
+}

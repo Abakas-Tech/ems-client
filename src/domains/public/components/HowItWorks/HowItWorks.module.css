@@ -1,342 +1,181 @@
-/*
-  Shared brand palette (blue + red on white), repeated per-module since each
-  component is CSS-Modules scoped:
-  tint-50  #FFFFFF  page tint background
-  tint-100 #F2F8FF  light surface / secondary background
-  tint-200 #BFDDFF  borders / soft accents
-  blue-600 #0070E8  mid blue, icon tint on light bg
-  blue-800 #0054B8  deep blue, dark contrast panels
-  ink-900  #111111  headings / body text
-  red-500  #E00030  accent (kicker text, hover highlights)
-  red-300  #FF4010  bright accent (gradient highlight)
-  white    #FFFFFF  text on dark blue panels
-  muted    #545B66  muted body text
-*/
-
 .section {
-  --hiw-wood-900: #111111;
-  --hiw-wood-800: #0054B8;
-  --hiw-wood-600: #0070E8;
-  --hiw-gold: #E00030;
-  --hiw-gold-light: #FF4010;
-  --hiw-cream: #FFFFFF;
-  --hiw-muted: #545B66;
-  --hiw-border: #D7E6F7;
-
-  position: relative;
-  padding: 100px 0;
-  background: linear-gradient(180deg, #FFFFFF 0%, #F2F8FF 100%);
-  overflow: hidden;
+  background:
+    radial-gradient(60% 50% at 100% 0%, rgba(47, 107, 255, 0.07), transparent 70%),
+    radial-gradient(50% 40% at 0% 100%, rgba(224, 48, 122, 0.06), transparent 70%),
+    var(--vx-bg-soft);
 }
 
-.section::before {
-  content: "";
-  position: absolute;
-  top: -120px;
-  right: -120px;
-  width: 360px;
-  height: 360px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(0, 128, 255, 0.12),
-    transparent 70%
-  );
-  pointer-events: none;
+.top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: clamp(48px, 6vw, 80px);
+}
+.heading {
+  margin-bottom: 0;
 }
 
-.head {
-  position: relative;
-  max-width: 620px;
-  margin: 0 auto 64px;
-  text-align: center;
+.summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  flex: none;
+  padding: 12px 22px 12px 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--vx-line);
+  box-shadow: var(--vx-shadow-sm);
 }
-
-.kicker {
-  display: inline-block;
-  font-size: 0.78rem;
+.summary strong {
+  display: block;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--hiw-gold);
-  margin-bottom: 10px;
+  color: var(--vx-text);
+  line-height: 1.2;
+}
+.summary small {
+  display: block;
+  font-size: 13px;
+  color: var(--vx-muted);
+}
+.summaryIcon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--vx-grad);
 }
 
-.title {
-  font-size: clamp(1.9rem, 3vw, 2.4rem);
-  font-weight: 800;
-  color: var(--hiw-wood-900);
-  margin-bottom: 14px;
-}
-
-.subtitle {
-  color: var(--hiw-muted);
-  font-size: 1rem;
-  line-height: 1.7;
-  margin: 0 auto;
-}
-
-/* ---------- Horizontal tree ---------- */
-.tree {
+/* ---------- Timeline ---------- */
+.steps {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 56px;
-  max-width: 1040px;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rail {
+  position: absolute;
+  top: 31px;
+  left: 32px;
+  right: 32px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ff5a4f, #e0307a 35%, #7a3ff0 70%, #2f6bff);
+  transform-origin: left center;
+  opacity: 0.55;
 }
 
-.root {
+.step {
   position: relative;
-  flex: 0 0 230px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 8px;
-  padding: 40px 24px;
-  border-radius: 20px;
-  background: linear-gradient(150deg, #0054B8 0%, #0070E8 100%);
-  color: var(--hiw-cream);
-  box-shadow: 0 20px 44px rgba(0, 40, 90, 0.28);
+  gap: 26px;
 }
-
-.root::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: -56px;
-  width: 56px;
-  height: 2px;
-  background: linear-gradient(
-    to right,
-    var(--hiw-gold),
-    rgba(224, 0, 48, 0.3)
-  );
-  transform: translateY(-50%);
-}
-
-.rootIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
+.node {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  margin-bottom: 6px;
-  background: linear-gradient(135deg, var(--hiw-gold-light), var(--hiw-gold));
-  color: #FFFFFF;
-  font-size: 1.4rem;
+  color: var(--vx-text);
+  background: #fff;
+  border: 1px solid var(--vx-line);
+  box-shadow: 0 0 0 8px var(--vx-bg-soft), var(--vx-shadow);
+  transition: color 0.35s ease, background 0.35s ease, transform 0.5s var(--vx-ease);
 }
-
-.rootTitle {
-  font-size: 1.15rem;
-  font-weight: 800;
-  margin: 0;
-  color: var(--hiw-cream);
-}
-
-.rootCaption {
-  font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.75);
-  margin: 0;
-}
-
-.branches {
-  position: relative;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-  padding-left: 44px;
-}
-
-.branches::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 34px;
-  bottom: 34px;
-  width: 2px;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 84, 184, 0.45) 0,
-    rgba(0, 84, 184, 0.45) 6px,
-    transparent 6px,
-    transparent 14px
-  );
-}
-
-.branch {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.branch::before {
-  content: "";
-  position: absolute;
-  left: -44px;
-  top: 50%;
-  width: 44px;
-  height: 2px;
-  background: rgba(0, 84, 184, 0.45);
-  transform: translateY(-50%);
-}
-
-.branchDot {
-  position: absolute;
-  left: -48px;
-  top: 50%;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #0054B8;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 4px #FFFFFF;
-}
-
-.branchIcon {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: rgba(0, 84, 184, 0.12);
-  color: var(--hiw-wood-800);
-  font-size: 1.35rem;
-}
-
-.branchCard {
-  position: relative;
-  flex: 1;
-  padding: 18px 22px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow:
-    0 10px 26px rgba(0, 40, 90, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
-}
-
-.branch:hover .branchCard {
+.step:hover .node {
+  color: #fff;
+  background: var(--vx-ink);
   transform: translateY(-3px);
-  border-color: rgba(224, 0, 48, 0.35);
-  box-shadow: 0 16px 34px rgba(0, 40, 90, 0.12);
 }
 
-.branch:hover .branchIcon {
-  background: rgba(224, 0, 48, 0.16);
-  color: var(--hiw-wood-900);
+.card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 28px 26px 30px;
+  border-radius: var(--vx-r-lg);
+  background: #fff;
+  border: 1px solid var(--vx-line);
+  box-shadow: var(--vx-shadow-sm);
+  transition: transform 0.5s var(--vx-ease), box-shadow 0.5s var(--vx-ease),
+    border-color 0.3s ease;
 }
-
-.branchNumber {
-  position: absolute;
-  top: 14px;
-  right: 18px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: var(--hiw-wood-800);
-  opacity: 0.25;
+.step:hover .card {
+  transform: translateY(-6px);
+  box-shadow: var(--vx-shadow-lg);
+  border-color: transparent;
 }
-
-.branchTitle {
-  font-size: 1.02rem;
+.num {
+  font-size: 12px;
   font-weight: 700;
-  color: var(--hiw-wood-900);
-  margin-bottom: 4px;
-  padding-right: 30px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--vx-rose);
+}
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--vx-text);
+}
+.desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--vx-muted);
 }
 
-.branchDesc {
-  font-size: 0.87rem;
-  line-height: 1.6;
-  color: var(--hiw-muted);
-  margin: 0;
+@media (max-width: 1080px) {
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px 24px;
+  }
+  .rail {
+    display: none;
+  }
 }
 
-/* ---------- Responsive: vertical tree ---------- */
-@media (max-width: 991.98px) {
-  .tree {
+@media (max-width: 760px) {
+  .top {
     flex-direction: column;
-    align-items: stretch;
-    gap: 0;
+    align-items: flex-start;
   }
-
-  .root {
-    flex: none;
-    width: 100%;
-    margin-bottom: 44px;
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
-
-  .root::after {
-    top: 100%;
-    right: 50%;
-    left: auto;
+  .rail {
+    display: block;
+    top: 32px;
+    bottom: 32px;
+    left: 31px;
+    right: auto;
     width: 2px;
-    height: 44px;
-    transform: translateX(50%);
-    background: linear-gradient(
-      to bottom,
-      var(--hiw-gold),
-      rgba(224, 0, 48, 0.3)
-    );
+    height: auto;
+    transform-origin: center top;
+    background: linear-gradient(180deg, #ff5a4f, #e0307a 35%, #7a3ff0 70%, #2f6bff);
   }
-
-  .branches {
-    padding-left: 32px;
-  }
-
-  .branches::before {
-    top: 0;
-    bottom: 0;
-  }
-
-  .branch::before {
-    left: -32px;
-    width: 32px;
-  }
-
-  .branchDot {
-    left: -36px;
-  }
-}
-
-@media (max-width: 560px) {
-  .section {
-    padding: 72px 0;
-  }
-
-  .root {
-    padding: 32px 20px;
-    margin-bottom: 36px;
-  }
-
-  .branches {
+  .step {
+    flex-direction: row;
+    align-items: flex-start;
     gap: 18px;
   }
-
-  .branch {
-    flex-wrap: wrap;
+  .node {
+    flex: none;
   }
-
-  .branchIcon {
-    width: 44px;
-    height: 44px;
-    font-size: 1.15rem;
+  .card {
+    padding: 22px 22px 24px;
   }
-
-  .branchCard {
-    padding: 16px 18px;
+  .title {
+    font-size: 20px;
   }
 }

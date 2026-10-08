@@ -1,124 +1,196 @@
-import { useState, useEffect } from "react";
-import styles from "./Hero.module.css";
-import bg1 from "../../../../assets/img/banner/hero-1.jpg";
-import bg2 from "../../../../assets/img/banner/hero-2.jpg";
-import bg3 from "../../../../assets/img/banner/hero-3.jpg";
-import bg4 from "../../../../assets/img/banner/hero-4.jpg";
-import bg5 from "../../../../assets/img/banner/hero-5.jpg";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
-const slides = [
-  {
-    id: 1,
-    bg: bg1,
-    eyebrow: "Your trusted partner in overseas employment",
-    heading: "Your Future\nStarts Here.",
-    sub: "Ethiopia's leading agency connecting skilled workers with top employers in Saudi Arabia, UAE, Kuwait, and Qatar.",
-  },
-  {
-    id: 2,
-    bg: bg2,
-    eyebrow: "Legal. Safe. Transparent.",
-    heading: "Your Safe\nPath Abroad.",
-    sub: "From documents to departure — we handle everything so you and your family have peace of mind.",
-  },
-  {
-    id: 3,
-    bg: bg3,
-    eyebrow: "Thousands placed. Countless lives changed.",
-    heading: "Build a Better\nLife Abroad.",
-    sub: "Thousands of Ethiopians have built successful careers in the Middle East — your story starts here.",
-  },
-  {
-    id: 4,
-    bg: bg4,
-    eyebrow: "Your gateway to the Gulf",
-    heading: "Opportunity\nAwaits You.",
-    sub: "From Addis Ababa to Dubai, Riyadh, and Kuwait City — we open doors to life-changing careers for hardworking Ethiopians.",
-  },
-  {
-    id: 5,
-    bg: bg5,
-    eyebrow: "Start your journey today",
-    heading: "Apply Once.\nChange Everything.",
-    sub: "Our simple application process gets you in front of verified employers fast. No hidden fees. No middlemen. Just results.",
-  },
-];
+import { HERO_SLIDES, DESTINATIONS, AGENCY_NAME } from "../../data/content";
+import { scrollToSection } from "../../utils/scroll";
+import styles from "./Hero.module.css";
+
+const SLIDE_MS = 6500;
 
 function Hero() {
-  const [current, setCurrent] = useState(0);
-  const [animating, setAnimating] = useState(false);
+  const [{ current, previous }, setState] = useState({
+    current: 0,
+    previous: null,
+  });
+  const [paused, setPaused] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const timer = useRef(null);
+  const total = HERO_SLIDES.length;
 
+  const goTo = useCallback(
+    (index) =>
+      setState((s) => {
+        const next = ((index % total) + total) % total;
+        return next === s.current ? s : { current: next, previous: s.current };
+      }),
+    [total],
+  );
+
+  /* Autoplay — restarts whenever the slide changes, so manual
+     navigation always gets a full interval. */
   useEffect(() => {
-    const timer = setInterval(() => goTo((current + 1) % slides.length), 5500);
-    return () => clearInterval(timer);
-  }, [current]);
+    if (reduceMotion || paused) return undefined;
+    timer.current = setTimeout(() => goTo(current + 1), SLIDE_MS);
+    return () => clearTimeout(timer.current);
+  }, [current, paused, reduceMotion, goTo]);
 
-  function goTo(index) {
-    if (animating || index === current) return;
-    setAnimating(true);
-    setTimeout(() => {
-      setCurrent(index);
-      setAnimating(false);
-    }, 400);
-  }
+  /* Don't advance while the tab is in the background */
+  useEffect(() => {
+    const onVisibility = () => setPaused(document.hidden);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, []);
 
-  const slide = slides[current];
+  const jump = (id) => (e) => {
+    e.preventDefault();
+    scrollToSection(id);
+  };
 
   return (
-    <section className={styles["hero"]} id="home">
-      {/* bg image is driven by the current slide */}
-      <div
-        className={styles["hero-bg"]}
-        style={{ backgroundImage: `url(${slide.bg})` }}
-      />
-      <div className={styles["hero-overlay"]} />
+    <section
+      id="home"
+      className={styles.hero}
+      aria-roledescription="carousel"
+      aria-label="Highlights"
+    >
+      {/* Background imagery */}
+      <div className={styles.media} aria-hidden="true">
+        {HERO_SLIDES.map((slide, i) => (
+          <img
+            key={slide.id}
+            src={slide.image}
+            srcSet={`${slide.imageSm} 1000w, ${slide.image} 2200w`}
+            sizes="100vw"
+            alt=""
+            className={`${styles.layer} ${i === current ? styles.layerOn : ""}`}
+            loading={i === 0 ? "eager" : "lazy"}
+            fetchPriority={i === 0 ? "high" : "low"}
+            decoding="async"
+          />
+        ))}
+        <div className={styles.shadeSide} />
+        <div className={styles.shadeBottom} />
+        <div className={styles.glow} />
+        <div className={styles.grain} />
+      </div>
 
-      <div className={styles["hero-content"]}>
-        <p
-          className={`${styles["hero-eyebrow"]} ${animating ? styles["fade-out"] : styles["fade-in"]}`}
-        >
-          {slide.eyebrow}
-        </p>
-        <h1
-          className={`${styles["hero-heading"]} ${animating ? styles["slide-out"] : styles["slide-in"]}`}
-        >
-          {slide.heading.split("\n").map((line, i) => (
-            <span key={i} className={styles["heading-line"]}>
-              {line}
-            </span>
-          ))}
+      <div className={`vx-container ${styles.inner}`}>
+        <h1 className={styles.srOnly}>
+          {AGENCY_NAME} — licensed overseas employment agency connecting
+          Ethiopian workers with verified employers abroad
         </h1>
-        <p
-          className={`${styles["hero-sub"]} ${animating ? styles["fade-out"] : styles["fade-in"]}`}
-        >
-          {slide.sub}
-        </p>
 
-        <div className={styles["hero-actions"]}>
-          <div className={styles["hero-actions"]}>
-            <a href="#contact" className={styles["btn-primary"]}>
-              Apply Now
-            </a>
-            <a href="#about" className={styles["btn-secondary"]}>
-              About Us
-            </a>
-          </div>
+        {/* All slides share one grid cell, so the block is always as tall
+            as the longest slide and nothing below it shifts. */}
+        <div className={styles.copy}>
+          {HERO_SLIDES.map((slide, i) => {
+            const on = i === current;
+            const out = i === previous;
+            return (
+              <div
+                key={slide.id}
+                className={`${styles.slide} ${on ? styles.slideOn : ""} ${
+                  out ? styles.slideOut : ""
+                }`}
+                aria-hidden={!on}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${i + 1} of ${total}`}
+              >
+                <span className={styles.eyebrow}>
+                  <span className={styles.pulse} aria-hidden="true" />
+                  {slide.eyebrow}
+                </span>
+                <p className={styles.heading}>
+                  <span className={styles.lineMask}>
+                    <span className={styles.line}>{slide.heading[0]}</span>
+                  </span>
+                  <span className={styles.lineMask}>
+                    <span className={`${styles.line} ${styles.lineAccent}`}>
+                      {slide.heading[1]}
+                    </span>
+                  </span>
+                </p>
+                <p className={styles.sub}>{slide.sub}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className={styles.ctas}>
+          <a
+            href="#contact"
+            onClick={jump("contact")}
+            className="vx-btn vx-btn--primary"
+          >
+            Apply Now <ArrowRight size={18} strokeWidth={2.2} />
+          </a>
+          <a href="#about" onClick={jump("about")} className="vx-btn vx-btn--glass">
+            About Us
+          </a>
         </div>
       </div>
 
-      <div className={styles["carousel-controls"]}>
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            className={`${styles["dot"]} ${i === current ? styles["dot-active"] : ""}`}
-            onClick={() => goTo(i)}
-            aria-label={`Go to slide ${i + 1}`}
-          />
-        ))}
-      </div>
+      {/* Bottom rail: destinations + slide controls */}
+      <div className={`vx-container ${styles.rail}`}>
+        <div className={styles.destinations}>
+          <span className={styles.destLabel}>Placing talent in</span>
+          <ul className={styles.destList}>
+            {DESTINATIONS.map((d) => (
+              <li key={d}>{d}</li>
+            ))}
+          </ul>
+        </div>
 
-      <div className={styles["progress-bar"]}>
-        <div key={current} className={styles["progress-fill"]} />
+        <div className={styles.controls}>
+          <span className={styles.counter}>
+            <strong>{String(current + 1).padStart(2, "0")}</strong>
+            <span> / {String(total).padStart(2, "0")}</span>
+          </span>
+          <div className={styles.segments}>
+            {HERO_SLIDES.map((slide, i) => (
+              <button
+                key={slide.id}
+                type="button"
+                className={`${styles.segment} ${
+                  i === current ? styles.segmentOn : ""
+                } ${i < current ? styles.segmentDone : ""}`}
+                onClick={() => goTo(i)}
+                aria-label={`Go to slide ${i + 1}`}
+                aria-current={i === current}
+              >
+                <span
+                  key={i === current ? `on-${current}` : "off"}
+                  className={styles.segmentFill}
+                  style={{
+                    animationDuration: `${SLIDE_MS}ms`,
+                    animationPlayState:
+                      paused || reduceMotion ? "paused" : "running",
+                  }}
+                />
+              </button>
+            ))}
+          </div>
+          <div className={styles.arrows}>
+            <button
+              type="button"
+              className={styles.arrow}
+              onClick={() => goTo(current - 1)}
+              aria-label="Previous slide"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              className={styles.arrow}
+              onClick={() => goTo(current + 1)}
+              aria-label="Next slide"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

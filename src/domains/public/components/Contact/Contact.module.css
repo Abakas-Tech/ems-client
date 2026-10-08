@@ -1,292 +1,382 @@
 .section {
-  --ct-bg: #0054B8;
-  --ct-bg-deep: #003876;
-  --ct-gold: #E00030;
-  --ct-gold-light: #FF4010;
-  --ct-cream: #111111;
-  --ct-muted: #545B66;
-  --ct-border: rgba(0, 84, 184, 0.15);
-
-  position: relative;
-  padding: 100px 0;
-  background: #fff;
-  color: var(--ct-cream);
+  background: var(--vx-bg);
 }
 
-/* Centered main section header, sitting above the two-column layout */
-.sectionHead {
-  text-align: center;
-  margin-bottom: 64px;
-}
-
-.mainTitle {
-  font-size: clamp(1.9rem, 3vw, 2.4rem);
-  font-weight: 800;
-  color: var(--ct-cream);
-  margin: 0;
-  text-align: center;
-}
-
-.mainSubtitle {
-  color: var(--ct-muted);
-  font-size: 1rem;
-  line-height: 1.7;
-  max-width: 640px;
-  margin: 14px auto 0;
-  text-align: center;
-}
-
-/* 70 / 30 split between the info column (details + map) and the form */
-.wrapper {
+.shell {
   display: grid;
-  grid-template-columns: 7fr 3fr;
-  gap: 56px;
-  align-items: start;
-}
-
-/* ---------- Left: info ---------- */
-.infoCol {
-  text-align: left;
-}
-
-.kicker {
-  display: inline-block;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #E00030;
-  margin-bottom: 12px;
-}
-
-.title {
-  font-size: clamp(1.9rem, 3vw, 2.4rem);
-  font-weight: 800;
-  color: var(--ct-cream);
-  margin-bottom: 16px;
-  text-align: left;
-}
-
-.subtitle {
-  color: var(--ct-muted);
-  font-size: 1rem;
-  line-height: 1.7;
-  margin: 0 0 36px;
-  max-width: 60ch;
-  text-align: left;
-}
-
-/* Details list + map: side by side on larger screens, stacked on smaller */
-.infoRow {
-  display: flex;
-  align-items: stretch;
-  gap: 32px;
-}
-
-.detailsList {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.detailCard {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 18px 20px;
-  border-radius: 12px;
-  background: rgba(0, 84, 184, 0.06);
-  border: 1px solid rgba(0, 84, 184, 0.14);
-  text-align: left;
-  text-decoration: none;
-  color: inherit;
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.detailCard div {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.detailCard strong {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--ct-cream);
-}
-
-.detailCard span {
-  font-size: 0.88rem;
-  color: var(--ct-muted);
-}
-
-.detailIcon {
-  flex-shrink: 0;
-  margin-top: 3px;
-  font-size: 1.05rem;
-  color: var(--ct-gold);
-}
-
-a.detailCard:hover {
-  transform: translateY(-2px);
-  background: rgba(0, 84, 184, 0.08);
-  border-color: rgba(224, 0, 48, 0.35);
-}
-
-/* ---------- Map (nested inside the info column) ---------- */
-.mapCol {
-  flex: 1 1 0;
-  display: flex;
-}
-
-.mapWrapper {
-  width: 100%;
-  height: 100%;
-  min-height: 220px;
-  border-radius: 8px;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  border-radius: var(--vx-r-xl);
+  background: #fff;
+  border: 1px solid var(--vx-line);
+  box-shadow: var(--vx-shadow-lg);
   overflow: hidden;
 }
 
-.mapLoading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #fff;
-  font-size: 0.85rem;
-  margin: 0;
-}
-
-/* ---------- Right: form ---------- */
-.formCol {
-  text-align: left;
-}
-
-.formTitle {
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: var(--ct-cream);
-  margin-bottom: 6px;
-  text-align: left;
-}
-
-.formSubtitle {
-  color: var(--ct-muted);
-  font-size: 0.9rem;
-  margin-bottom: 28px;
-  text-align: left;
-}
-
-.fieldGroup {
+/* ---------- Info panel ---------- */
+.info {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 4px;
-  text-align: left;
-  border-bottom: 2px solid var(--ct-border);
+  gap: 32px;
+  padding: clamp(28px, 4vw, 48px);
+  background: var(--vx-ink);
+  color: #fff;
+  overflow: hidden;
+}
+.infoGlow {
+  position: absolute;
+  z-index: -1;
+  width: 560px;
+  height: 560px;
+  right: -260px;
+  top: -260px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(224, 48, 122, 0.35), rgba(122, 63, 240, 0.15) 55%, transparent);
+}
+.infoHead {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.infoTitle {
+  font-size: clamp(26px, 2.6vw, 34px);
+  font-weight: 750;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+.infoText {
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: rgba(226, 232, 255, 0.72);
 }
 
-.fieldGroup label {
-  font-size: 0.82rem;
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.detailRow,
+.detailRow:focus {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  margin: 0 -12px;
+  border-radius: 16px;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+.detailLink:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+.detailIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: background 0.3s ease;
+}
+.detailLink:hover .detailIcon {
+  background: var(--vx-grad);
+  border-color: transparent;
+}
+.detailBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+}
+.detailBody small {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+.detailBody > span {
+  font-size: 15.5px;
   font-weight: 600;
-  color: var(--ct-muted);
+  line-height: 1.45;
+  color: #fff;
+  overflow-wrap: anywhere;
 }
 
-.required {
-  color: var(--ct-gold-light);
+.map {
+  position: relative;
+  flex: 1;
+  min-height: 240px;
+  border-radius: var(--vx-r);
+  overflow: hidden;
+  background: #eef1f8;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
-
-.fieldGroup input,
-.fieldGroup textarea {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--ct-border);
-  padding: 8px 2px;
-  font-size: 0.95rem;
-  color: var(--ct-cream);
-  font-family: inherit;
-  resize: none;
-  transition: border-color 0.2s ease;
+.map > div:first-child {
+  position: absolute !important;
+  inset: 0;
 }
-
-.fieldGroup input::placeholder,
-.fieldGroup textarea::placeholder {
-  color: rgba(17, 17, 17, 0.35);
-}
-
-.fieldGroup input:focus,
-.fieldGroup textarea:focus {
-  outline: none;
-  border-color: var(--ct-gold);
-}
-
-.submitBtn {
-  display: inline-flex;
+.mapFallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  width: 100%;
-  margin-top: 20px;
-  padding: 14px 24px;
-  border: none;
-  border-radius: 6px;
-  background: linear-gradient(90deg, #A00045 0%, #E00030 45%, #FF4010 100%);
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.95rem;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  padding: 24px;
+  text-align: center;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--vx-muted);
+  background:
+    linear-gradient(rgba(15, 27, 61, 0.05) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, rgba(15, 27, 61, 0.05) 1px, transparent 1px) 0 0 / 28px 28px,
+    #eef1f8;
 }
-
-.submitBtn:hover {
+.mapFallback svg {
+  color: var(--vx-rose);
+}
+.directions,
+.directions:focus {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--vx-text);
+  background: #fff;
+  box-shadow: 0 8px 20px -8px rgba(7, 13, 34, 0.35);
+  transition: transform 0.3s var(--vx-ease);
+}
+.directions:hover {
+  color: var(--vx-text);
   transform: translateY(-2px);
-  box-shadow: 0 14px 28px rgba(224, 0, 48, 0.35);
 }
 
-/* ---------- Responsive ---------- */
+/* ---------- Form ---------- */
+.formWrap {
+  padding: clamp(28px, 4.5vw, 56px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.formHead {
+  margin-bottom: 6px;
+}
+.formHead h3 {
+  font-size: 24px;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  color: var(--vx-text);
+}
+.formHead p {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--vx-muted);
+}
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
 
-/* Below this, the details list and map stack vertically instead of
-   side by side (still nested inside the info column). */
-@media (max-width: 767.98px) {
-  .infoRow {
-    flex-direction: column;
-  }
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--vx-text);
+}
+.req {
+  color: var(--vx-rose);
+}
+.optional {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vx-subtle);
+}
+.input {
+  width: 100%;
+  height: 54px;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: 1px solid var(--vx-line-strong);
+  background: var(--vx-bg-soft);
+  font-family: var(--vx-font);
+  font-size: 15.5px;
+  color: var(--vx-text);
+  transition: border-color 0.25s ease, background-color 0.25s ease,
+    box-shadow 0.25s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.input::placeholder {
+  color: var(--vx-subtle);
+}
+.input:hover {
+  border-color: rgba(15, 27, 61, 0.28);
+}
+.input:focus,
+.input:focus-visible {
+  outline: none;
+  border-color: var(--vx-blue);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(47, 107, 255, 0.14);
+}
+.textarea {
+  height: auto;
+  min-height: 150px;
+  padding: 16px 18px;
+  line-height: 1.6;
+  resize: vertical;
+}
+.fieldError .input {
+  border-color: #e5484d;
+  background: #fff8f8;
+}
+.fieldError .input:focus {
+  box-shadow: 0 0 0 4px rgba(229, 72, 77, 0.14);
+}
+.fieldFoot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 0;
+}
+.fieldFoot:has(> span:only-child:empty) {
+  display: none;
+}
+.error {
+  font-size: 13px;
+  font-weight: 600;
+  color: #d93036;
+}
+.counter {
+  margin-left: auto;
+  font-size: 12.5px;
+  color: var(--vx-subtle);
+  font-variant-numeric: tabular-nums;
+}
+.counterOver {
+  color: #d93036;
+  font-weight: 700;
+}
 
-  .mapWrapper {
-    height: 240px;
-    min-height: 0;
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #fff1f1;
+  border: 1px solid #ffd2d2;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #b4232a;
+}
+.submit {
+  align-self: flex-start;
+  min-width: 200px;
+  margin-top: 4px;
+}
+.submit:disabled {
+  cursor: progress;
+  opacity: 0.85;
+  transform: none;
+}
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+.submit:hover .spin {
+  transform: none;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-/* Below this, the info column and the form stack: info (title,
-   description, details, map) above, form below. */
-@media (max-width: 991.98px) {
-  .wrapper {
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 40px 12px;
+  text-align: center;
+}
+.successIcon {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--vx-grad);
+  box-shadow: 0 18px 40px -14px rgba(224, 48, 122, 0.7);
+}
+.success h3 {
+  font-size: 26px;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  color: var(--vx-text);
+}
+.success p {
+  max-width: 380px;
+  margin-bottom: 10px;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--vx-muted);
+}
+
+@media (max-width: 1000px) {
+  .shell {
     grid-template-columns: 1fr;
-    gap: 40px;
   }
-
-  .subtitle {
-    max-width: 100%;
+  .map {
+    min-height: 260px;
+    flex: none;
   }
 }
-
 @media (max-width: 560px) {
-  .section {
-    padding: 72px 0;
+  .row {
+    grid-template-columns: 1fr;
   }
-
-  .sectionHead {
-    margin-bottom: 40px;
+  .submit {
+    align-self: stretch;
   }
-
-  .mapWrapper {
-    height: 200px;
+  .shell {
+    border-radius: var(--vx-r-lg);
   }
 }
