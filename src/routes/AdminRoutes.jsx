@@ -53,6 +53,7 @@ import WorkerForm from "../domains/admin/pages/workers/WorkerForm/WorkerForm.jsx
 // ADDED — Flexible Letter Generator page
 import LetterGenerator from "../domains/admin/pages/Lettergenerator/Lettergenerator.jsx";
 import NotificationPage from "../domains/admin/pages/NotificationPage/NotificationPage.jsx";
+import MessagesPage from "../domains/admin/pages/Messages/Messages.jsx";
 
 import ListActivities from "../domains/admin/pages/ListActivities/ListActivities.jsx";
 import ViewActivityDetail from "../domains/admin/pages/ViewActivityDetail/ViewActivityDetail.jsx";
@@ -104,6 +105,7 @@ const AdminRoutes = () => {
           }
         />
         <Route path="notifications" element={<NotificationPage />} />
+        <Route path="messages" element={<MessagesPage />} />
         <Route
           path="invoices"
           element={
