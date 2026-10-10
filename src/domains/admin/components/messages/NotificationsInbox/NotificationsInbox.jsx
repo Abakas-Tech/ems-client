@@ -28,20 +28,47 @@ const CAN_SEND = [1, 2];
 
 /* A small icon per kind of alert, guessed from the text */
 const KINDS = [
-  { test: /\bcv/i, icon: "bi-file-earmark-person", label: "CV shared", tone: ["#8b5cf6", "#06b6d4"] },
-  { test: /invoice|payment|paid/i, icon: "bi-receipt", label: "Billing", tone: ["#10b981", "#06b6d4"] },
-  { test: /status|departed|visa|passport|medical/i, icon: "bi-arrow-repeat", label: "Status update", tone: ["#f59e0b", "#f97316"] },
-  { test: /office|closed|holiday|meeting/i, icon: "bi-megaphone", label: "Announcement", tone: ["#f43f5e", "#f59e0b"] },
+  {
+    test: /\bcv/i,
+    icon: "bi-file-earmark-person",
+    label: "CV shared",
+    tone: ["#8b5cf6", "#06b6d4"],
+  },
+  {
+    test: /invoice|payment|paid/i,
+    icon: "bi-receipt",
+    label: "Billing",
+    tone: ["#10b981", "#06b6d4"],
+  },
+  {
+    test: /status|departed|visa|passport|medical/i,
+    icon: "bi-arrow-repeat",
+    label: "Status update",
+    tone: ["#f59e0b", "#f97316"],
+  },
+  {
+    test: /office|closed|holiday|meeting/i,
+    icon: "bi-megaphone",
+    label: "Announcement",
+    tone: ["#f43f5e", "#f59e0b"],
+  },
 ];
-const DEFAULT_KIND = { icon: "bi-bell", label: "Notification", tone: ["#6366f1", "#8b5cf6"] };
-const kindOf = (n) => KINDS.find((k) => k.test.test(n?.message || "")) || DEFAULT_KIND;
+const DEFAULT_KIND = {
+  icon: "bi-bell",
+  label: "Notification",
+  tone: ["#6366f1", "#8b5cf6"],
+};
+const kindOf = (n) =>
+  KINDS.find((k) => k.test.test(n?.message || "")) || DEFAULT_KIND;
 
 function KindIcon({ notification, size = "md" }) {
   const kind = kindOf(notification);
   return (
     <span
       className={`${styles.avatar} ${styles[`avatar_${size}`]}`}
-      style={{ background: `linear-gradient(135deg, ${kind.tone[0]}, ${kind.tone[1]})` }}
+      style={{
+        background: `linear-gradient(135deg, ${kind.tone[0]}, ${kind.tone[1]})`,
+      }}
       aria-hidden="true"
     >
       <i className={`bi ${kind.icon}`} />
@@ -51,10 +78,22 @@ function KindIcon({ notification, size = "md" }) {
 
 function EmptyList({ filter, search }) {
   const copy = search
-    ? { icon: "bi-search", title: "No matches", text: `Nothing matches “${search}”.` }
+    ? {
+        icon: "bi-search",
+        title: "No matches",
+        text: `Nothing matches “${search}”.`,
+      }
     : filter === "unread"
-      ? { icon: "bi-check2-circle", title: "You're all caught up", text: "Every notification has been read." }
-      : { icon: "bi-bell-slash", title: "No notifications yet", text: "Alerts sent to you by the system or your team will appear here." };
+      ? {
+          icon: "bi-check2-circle",
+          title: "You're all caught up",
+          text: "Every notification has been read.",
+        }
+      : {
+          icon: "bi-bell-slash",
+          title: "No notifications yet",
+          text: "Alerts sent to you by the system or your team will appear here.",
+        };
   return (
     <div className={styles.empty}>
       <span className={styles.emptyIcon}>
@@ -70,14 +109,14 @@ function Detail({ notification, onBack, onCopy }) {
   if (!notification) {
     return (
       <div className={styles.placeholder}>
-        <div className={`${styles.placeholderArt} ${own.placeholderArt}`} aria-hidden="true">
+        <div
+          className={`${styles.placeholderArt} ${own.placeholderArt}`}
+          aria-hidden="true"
+        >
           <i className="bi bi-bell" />
         </div>
         <h3>Select a notification</h3>
         <p>Pick an alert from the list to read it in full.</p>
-        <span className={styles.kbdHint}>
-          Tip: use <kbd>↑</kbd> <kbd>↓</kbd> to move through notifications
-        </span>
       </div>
     );
   }
@@ -111,7 +150,8 @@ function Detail({ notification, onBack, onCopy }) {
           <p>
             {received && (
               <>
-                <i className="bi bi-clock" /> {format(received, "EEEE, d MMMM yyyy · HH:mm")}
+                <i className="bi bi-clock" />{" "}
+                {format(received, "EEEE, d MMMM yyyy · HH:mm")}
                 <span className={styles.dotSep}>•</span>
                 {formatDistanceToNowStrict(received, { addSuffix: true })}
               </>
@@ -223,12 +263,16 @@ function NotificationsInbox({ switcher = null }) {
   /* ---- actions ---- */
   const markRead = async (n) => {
     if (!n || n.is_read) return;
-    setItems((prev) => prev.map((x) => (x.id === n.id ? { ...x, is_read: 1 } : x)));
+    setItems((prev) =>
+      prev.map((x) => (x.id === n.id ? { ...x, is_read: 1 } : x)),
+    );
     try {
       await markNotificationRead(n.id);
       getRef.current(); // refresh the app-wide unread count
     } catch (err) {
-      setItems((prev) => prev.map((x) => (x.id === n.id ? { ...x, is_read: 0 } : x)));
+      setItems((prev) =>
+        prev.map((x) => (x.id === n.id ? { ...x, is_read: 0 } : x)),
+      );
       notify(false, err.message);
     }
   };
@@ -243,7 +287,9 @@ function NotificationsInbox({ switcher = null }) {
     const unread = items.filter((n) => !n.is_read);
     if (!unread.length) return;
     setItems((prev) => prev.map((x) => ({ ...x, is_read: 1 })));
-    const results = await Promise.allSettled(unread.map((n) => markNotificationRead(n.id)));
+    const results = await Promise.allSettled(
+      unread.map((n) => markNotificationRead(n.id)),
+    );
     const failed = results.filter((r) => r.status === "rejected").length;
     getRef.current();
     if (failed) {
@@ -267,10 +313,15 @@ function NotificationsInbox({ switcher = null }) {
     if (!["ArrowDown", "ArrowUp"].includes(e.key) || !visible.length) return;
     e.preventDefault();
     const idx = visible.findIndex((n) => n.id === selectedId);
-    const nextIdx = e.key === "ArrowDown" ? Math.min(visible.length - 1, idx + 1) : Math.max(0, idx - 1);
+    const nextIdx =
+      e.key === "ArrowDown"
+        ? Math.min(visible.length - 1, idx + 1)
+        : Math.max(0, idx - 1);
     const next = visible[idx === -1 ? 0 : nextIdx];
     open(next);
-    listRef.current?.querySelector(`[data-id="${next.id}"]`)?.scrollIntoView({ block: "nearest" });
+    listRef.current
+      ?.querySelector(`[data-id="${next.id}"]`)
+      ?.scrollIntoView({ block: "nearest" });
   };
 
   /* ---- composer (unchanged behaviour) ---- */
@@ -298,7 +349,9 @@ function NotificationsInbox({ switcher = null }) {
     try {
       const finalData = {
         ...formValues,
-        recipient_id: incomingBulkIds ? incomingBulkIds : formValues.recipient_id,
+        recipient_id: incomingBulkIds
+          ? incomingBulkIds
+          : formValues.recipient_id,
       };
       // Role values the backend expects
       const ROLE_MAP = {
@@ -320,7 +373,10 @@ function NotificationsInbox({ switcher = null }) {
       );
       setShowCompose(false);
       setSearchTerm("");
-      navigate(location.pathname + location.search, { replace: true, state: {} });
+      navigate(location.pathname + location.search, {
+        replace: true,
+        state: {},
+      });
       load({ quiet: true });
     } catch (err) {
       notify(false, err.message);
@@ -347,7 +403,9 @@ function NotificationsInbox({ switcher = null }) {
             <i className="bi bi-people-fill me-2"></i>
             {incomingBulkIds.length} Selected Recipients
           </span>
-          <span className="badge bg-primary-subtle text-primary">Bulk Mode</span>
+          <span className="badge bg-primary-subtle text-primary">
+            Bulk Mode
+          </span>
         </div>
       );
     }
@@ -356,18 +414,28 @@ function NotificationsInbox({ switcher = null }) {
         <input
           type="text"
           className="form-control"
-          placeholder={inputValues.recipient_type ? "Type to search..." : "Choose a role first"}
+          placeholder={
+            inputValues.recipient_type
+              ? "Type to search..."
+              : "Choose a role first"
+          }
           disabled={!inputValues.recipient_type}
           value={searchTerm}
           required={!inputValues.recipient_id}
           style={{ backgroundColor: "#EDF1FB", borderRadius: "8px" }}
           autoComplete="off"
-          onChange={(e) => handleUserSearch(e.target.value, inputValues.recipient_type)}
+          onChange={(e) =>
+            handleUserSearch(e.target.value, inputValues.recipient_type)
+          }
         />
         {searchResults.length > 0 && (
           <div
             className="list-group position-absolute shadow-lg mt-1 z-3 w-auto"
-            style={{ maxHeight: "200px", overflowY: "auto", border: "1px solid #dee2e6" }}
+            style={{
+              maxHeight: "200px",
+              overflowY: "auto",
+              border: "1px solid #dee2e6",
+            }}
           >
             {searchResults.map((user) => (
               <button
@@ -381,8 +449,13 @@ function NotificationsInbox({ switcher = null }) {
                 }}
               >
                 <div className="text-start w-100" style={{ minWidth: 0 }}>
-                  <div className="fw-bold text-dark mb-0 text-truncate">{user.name || `${user.full_name}`}</div>
-                  <div className="text-muted text-truncate" style={{ fontSize: "0.7rem", lineHeight: "1" }}>
+                  <div className="fw-bold text-dark mb-0 text-truncate">
+                    {user.name || `${user.full_name}`}
+                  </div>
+                  <div
+                    className="text-muted text-truncate"
+                    style={{ fontSize: "0.7rem", lineHeight: "1" }}
+                  >
                     {user.email || user.phone_number}
                   </div>
                 </div>
@@ -396,7 +469,8 @@ function NotificationsInbox({ switcher = null }) {
 
   const fields = useMemo(() => {
     let idLabel = "Find User";
-    if (incomingBulkIds) idLabel = incomingBulkIds.length === 1 ? "Recipient Info" : "Group Info";
+    if (incomingBulkIds)
+      idLabel = incomingBulkIds.length === 1 ? "Recipient Info" : "Group Info";
     return [
       {
         name: "recipient_type",
@@ -410,7 +484,12 @@ function NotificationsInbox({ switcher = null }) {
         ],
       },
       { name: "recipient_id", label: idLabel, type: "custom" },
-      { name: "message", label: "Message Body", type: "textarea", placeholder: "Write your message here..." },
+      {
+        name: "message",
+        label: "Message Body",
+        type: "textarea",
+        placeholder: "Write your message here...",
+      },
     ];
   }, [incomingBulkIds, incomingType]);
 
@@ -426,14 +505,27 @@ function NotificationsInbox({ switcher = null }) {
             <i className="bi bi-broadcast" /> System alerts
           </span>
           <h1>Notifications</h1>
-          <p>Alerts sent to you by the system and your team — shared CVs, status changes and announcements.</p>
+          <p>
+            Alerts sent to you by the system and your team — shared CVs, status
+            changes and announcements.
+          </p>
         </div>
         <div className={styles.heroActions}>
-          <button type="button" className={styles.heroBtn} onClick={() => load({ quiet: true })} title="Refresh">
+          <button
+            type="button"
+            className={styles.heroBtn}
+            onClick={() => load({ quiet: true })}
+            title="Refresh"
+          >
             <i className="bi bi-arrow-clockwise" />
             <span>Refresh</span>
           </button>
-          <button type="button" className={styles.heroBtn} onClick={markAll} disabled={!stats.unread}>
+          <button
+            type="button"
+            className={styles.heroBtn}
+            onClick={markAll}
+            disabled={!stats.unread}
+          >
             <i className="bi bi-check2-all" />
             <span>Mark all read</span>
           </button>
@@ -454,13 +546,40 @@ function NotificationsInbox({ switcher = null }) {
       </section>
 
       <section className={styles.stats}>
-        <StatCard icon="bi-bell" label="All notifications" value={stats.total} tone="violet" active={filter === "all"} onClick={() => setFilter("all")} />
-        <StatCard icon="bi-bell-fill" label="Unread" value={stats.unread} tone="rose" active={filter === "unread"} onClick={() => setFilter("unread")} hint={stats.unread ? "New" : "All caught up"} />
-        <StatCard icon="bi-lightning-charge" label="Today" value={stats.today} tone="cyan" />
-        <StatCard icon="bi-calendar-week" label="This week" value={stats.week} tone="amber" />
+        <StatCard
+          icon="bi-bell"
+          label="All notifications"
+          value={stats.total}
+          tone="violet"
+          active={filter === "all"}
+          onClick={() => setFilter("all")}
+        />
+        <StatCard
+          icon="bi-bell-fill"
+          label="Unread"
+          value={stats.unread}
+          tone="rose"
+          active={filter === "unread"}
+          onClick={() => setFilter("unread")}
+          hint={stats.unread ? "New" : "All caught up"}
+        />
+        <StatCard
+          icon="bi-lightning-charge"
+          label="Today"
+          value={stats.today}
+          tone="cyan"
+        />
+        <StatCard
+          icon="bi-calendar-week"
+          label="This week"
+          value={stats.week}
+          tone="amber"
+        />
       </section>
 
-      <section className={`${styles.shell} ${mobileDetail ? styles.showDetail : ""}`}>
+      <section
+        className={`${styles.shell} ${mobileDetail ? styles.showDetail : ""}`}
+      >
         <aside className={styles.listPane}>
           <div className={styles.listTools}>
             <label className={styles.search}>
@@ -472,12 +591,20 @@ function NotificationsInbox({ switcher = null }) {
                 onChange={(e) => setSearchInput(e.target.value)}
               />
               {searchInput && (
-                <button type="button" onClick={() => setSearchInput("")} aria-label="Clear search">
+                <button
+                  type="button"
+                  onClick={() => setSearchInput("")}
+                  aria-label="Clear search"
+                >
                   <i className="bi bi-x-lg" />
                 </button>
               )}
             </label>
-            <div className={`${styles.filters} ${own.filters}`} role="tablist" aria-label="Filter notifications">
+            <div
+              className={`${styles.filters} ${own.filters}`}
+              role="tablist"
+              aria-label="Filter notifications"
+            >
               {FILTERS.map((f) => (
                 <button
                   key={f.key}
@@ -503,17 +630,29 @@ function NotificationsInbox({ switcher = null }) {
               </span>
               <h3>Couldn't load notifications</h3>
               <p>Check your connection and try again.</p>
-              <button type="button" className={styles.retry} onClick={() => load()}>
+              <button
+                type="button"
+                className={styles.retry}
+                onClick={() => load()}
+              >
                 <i className="bi bi-arrow-clockwise" /> Retry
               </button>
             </div>
           )}
 
-          {status === "ready" && visible.length === 0 && <EmptyList filter={filter} search={searchInput.trim()} />}
+          {status === "ready" && visible.length === 0 && (
+            <EmptyList filter={filter} search={searchInput.trim()} />
+          )}
 
           {status === "ready" && visible.length > 0 && (
             <div className={styles.listScroll}>
-              <ul className={styles.list} ref={listRef} tabIndex={0} onKeyDown={onListKey} aria-label="Notifications">
+              <ul
+                className={styles.list}
+                ref={listRef}
+                tabIndex={0}
+                onKeyDown={onListKey}
+                aria-label="Notifications"
+              >
                 {groups.map((g) => (
                   <li key={g.label} className={styles.group}>
                     <span className={styles.groupLabel}>{g.label}</span>
@@ -529,15 +668,24 @@ function NotificationsInbox({ switcher = null }) {
                             <KindIcon notification={n} />
                             <span className={styles.rowBody}>
                               <span className={styles.rowTop}>
-                                <span className={styles.rowName}>{kindOf(n).label}</span>
-                                <span className={styles.rowTime}>{listTime(n.created_at)}</span>
+                                <span className={styles.rowName}>
+                                  {kindOf(n).label}
+                                </span>
+                                <span className={styles.rowTime}>
+                                  {listTime(n.created_at)}
+                                </span>
                               </span>
                               <span className={styles.rowPreview} dir="auto">
                                 {n.message}
                               </span>
                             </span>
                             <span className={styles.rowFlags}>
-                              {!n.is_read && <span className={styles.unreadDot} title="Unread" />}
+                              {!n.is_read && (
+                                <span
+                                  className={styles.unreadDot}
+                                  title="Unread"
+                                />
+                              )}
                             </span>
                           </button>
                         </li>
@@ -556,7 +704,11 @@ function NotificationsInbox({ switcher = null }) {
         </aside>
 
         <div className={styles.detailPane}>
-          <Detail notification={selected} onBack={() => setMobileDetail(false)} onCopy={copy} />
+          <Detail
+            notification={selected}
+            onBack={() => setMobileDetail(false)}
+            onCopy={copy}
+          />
         </div>
       </section>
 
@@ -566,7 +718,11 @@ function NotificationsInbox({ switcher = null }) {
           onClose={() => {
             setShowCompose(false);
             if (incomingBulkIds && incomingBulkIds.length > 0) navigate(-1);
-            else navigate(location.pathname + location.search, { replace: true, state: {} });
+            else
+              navigate(location.pathname + location.search, {
+                replace: true,
+                state: {},
+              });
           }}
           onCreate={handleSend}
           title={
@@ -578,7 +734,11 @@ function NotificationsInbox({ switcher = null }) {
           }
           fields={fields}
           btnLabel={
-            incomingBulkIds ? (incomingBulkIds.length === 1 ? "Send to User" : "Send to Group") : "Send Alert"
+            incomingBulkIds
+              ? incomingBulkIds.length === 1
+                ? "Send to User"
+                : "Send to Group"
+              : "Send Alert"
           }
           renderCustomField={renderSearchField}
         />
