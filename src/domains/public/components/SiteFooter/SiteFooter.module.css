@@ -4,7 +4,7 @@
   overflow: hidden;
   /* extra room at the bottom keeps the copyright clear of the floating
      WhatsApp button */
-  padding: clamp(64px, 8vw, 104px) 0 104px;
+  padding: clamp(64px, 8vw, 64px) 0 24px;
   background: var(--vx-ink);
   color: rgba(226, 232, 255, 0.72);
 }

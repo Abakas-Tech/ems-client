@@ -321,9 +321,6 @@ function Detail({
           Pick a conversation from the list to read it, reply by email, call or
           chat on WhatsApp.
         </p>
-        <span className={styles.kbdHint}>
-          Tip: use <kbd>↑</kbd> <kbd>↓</kbd> to move through messages
-        </span>
       </div>
     );
   }
