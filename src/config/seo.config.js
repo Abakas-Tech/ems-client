@@ -20,7 +20,7 @@ export const DEFAULT_TITLE =
   "Al-Khedemat | Work Abroad Without the Guesswork — Licensed Ethiopian Overseas Employment Agency";
 
 export const DEFAULT_DESCRIPTION =
-  "Al-Khedemat places skilled Ethiopians in verified jobs across Saudi Arabia, Jordan, and the Gulf. Every contract checked, every step explained before you sign.";
+  "Al-Khedemat places skilled Ethiopians in verified jobs across Saudi Arabia, Kuwait, and Jordan. Every contract checked, every step explained before you sign.";
 
 export const DEFAULT_OG_IMAGE = "/og-image.jpg";
 
@@ -47,9 +47,8 @@ export const ORGANIZATION_JSON_LD = {
   areaServed: [
     "Ethiopia",
     "Saudi Arabia",
-    "Jordan",
-    "United Arab Emirates",
     "Kuwait",
+    "Jordan",
   ],
   knowsLanguage: ["en", "am", "ar"],
   sameAs: [],

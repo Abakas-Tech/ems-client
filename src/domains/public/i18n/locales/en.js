@@ -35,12 +35,12 @@ const en = {
     apply: "Apply Now",
     about: "About Us",
     placing: "Placing talent in",
-    destinations: ["Saudi Arabia", "UAE", "Kuwait", "Qatar"],
+    destinations: ["Saudi Arabia", "Kuwait", "Jordan"],
     slides: [
       {
         eyebrow: "Your trusted partner in overseas employment",
         heading: ["Your future", "starts here."],
-        sub: "Ethiopia's leading agency connecting skilled workers with top employers in Saudi Arabia, UAE, Kuwait, and Qatar.",
+        sub: "Ethiopia's leading agency connecting skilled workers with top employers in Saudi Arabia, Kuwait, and Jordan.",
       },
       {
         eyebrow: "Legal. Safe. Transparent.",
@@ -53,9 +53,9 @@ const en = {
         sub: "Thousands of Ethiopians have built successful careers in the Middle East — your story starts here.",
       },
       {
-        eyebrow: "Your gateway to the Gulf",
+        eyebrow: "Your gateway to the Middle East",
         heading: ["Opportunity", "awaits you."],
-        sub: "From Addis Ababa to Dubai, Riyadh, and Kuwait City — we open doors to life-changing careers for hardworking Ethiopians.",
+        sub: "From Addis Ababa to Riyadh, Kuwait City, and Amman — we open doors to life-changing careers for hardworking Ethiopians.",
       },
       {
         eyebrow: "Start your journey today",
@@ -71,7 +71,7 @@ const en = {
     "No middlemen",
     "From documents to departure",
     "Ethical recruitment",
-    "Addis Ababa → The Gulf",
+    "Addis Ababa → The Middle East",
   ],
   process: {
     eyebrow: "How it works",
@@ -156,8 +156,8 @@ const en = {
   routes: {
     eyebrow: "Where we place talent",
     title: "From Addis Ababa",
-    accent: "to the Gulf",
-    lead: "From Addis Ababa to Dubai, Riyadh, and Kuwait City — we open doors to life-changing careers for hardworking Ethiopians.",
+    accent: "to the Middle East",
+    lead: "From Addis Ababa to Riyadh, Kuwait City, and Amman — we open doors to life-changing careers for hardworking Ethiopians.",
     cta: "Start your application",
     hub: "Departure hub",
     count: "{{count}} destinations",
@@ -166,8 +166,7 @@ const en = {
     places: {
       sa: { country: "Saudi Arabia", city: "Riyadh" },
       kw: { country: "Kuwait", city: "Kuwait City" },
-      qa: { country: "Qatar", city: "Doha" },
-      ae: { country: "United Arab Emirates", city: "Dubai" },
+      jo: { country: "Jordan", city: "Amman" },
     },
   },
   vm: {
@@ -328,10 +327,18 @@ const en = {
       emailInvalid: "Invalid email format",
       emailLong: "Email must be less than 150 characters",
       phoneRequired: "Phone required",
+      phoneInvalid: "Incorrect phone number. Use digits with an optional country code, e.g. +251 911 234 567",
       phoneLong: "Phone must be less than 20 characters",
       messageRequired: "Message is required",
       messageLong: "Message must be less than 500 characters",
     },
+  },
+  whatsapp: {
+    label: "Chat on WhatsApp",
+    bubbleTitle: "Need help? 👋",
+    bubbleText: "Chat with our team on WhatsApp — we usually reply within minutes.",
+    greeting: "Hello {{name}}, I would like to know more about working abroad.",
+    close: "Close",
   },
   footer: {
     about:

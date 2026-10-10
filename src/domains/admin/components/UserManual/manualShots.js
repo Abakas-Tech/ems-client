@@ -197,6 +197,26 @@ const MANUAL_SHOTS = {
     "w": 1400,
     "h": 954
   },
+  "messages-actions": {
+    "w": 1120,
+    "h": 760
+  },
+  "messages-filters": {
+    "w": 1120,
+    "h": 760
+  },
+  "messages-inbox": {
+    "w": 1400,
+    "h": 954
+  },
+  "messages-mobile": {
+    "w": 520,
+    "h": 1125
+  },
+  "messages-reply": {
+    "w": 686,
+    "h": 592
+  },
   "mobile-drawer": {
     "w": 520,
     "h": 1125
@@ -220,6 +240,10 @@ const MANUAL_SHOTS = {
   "partner-employees": {
     "w": 1400,
     "h": 885
+  },
+  "public-site": {
+    "w": 1400,
+    "h": 954
   },
   "settings-organization": {
     "w": 1400,

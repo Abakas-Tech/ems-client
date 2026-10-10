@@ -1093,3 +1093,126 @@
     transition: none !important;
   }
 }
+
+/* ---------------------------------------------------------------- reply menu */
+.reply {
+  position: relative;
+}
+.reply > .action {
+  cursor: pointer;
+}
+.replyCaret {
+  font-size: 0.72rem;
+  margin-left: 2px;
+  transition: transform 0.2s ease;
+}
+.reply > .action[aria-expanded="true"] .replyCaret {
+  transform: rotate(180deg);
+}
+.replyMenu {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  z-index: 20;
+  width: 300px;
+  max-width: calc(100vw - 48px);
+  padding: 8px;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 50px -20px rgba(17, 24, 39, 0.4);
+  animation: menuIn 0.22s var(--ease) both;
+}
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+.replyTo {
+  display: block;
+  padding: 6px 10px 10px;
+  font-size: 0.76rem;
+  color: var(--subtle);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.replyTo strong {
+  color: var(--text);
+}
+.replyItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.replyItem:hover {
+  background: #f5f3ff;
+  color: var(--text);
+}
+.replyIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #fff;
+}
+.reply_app {
+  background: var(--grad);
+}
+.reply_gmail {
+  background: linear-gradient(135deg, #ea4335, #fbbc05);
+}
+.reply_outlook {
+  background: linear-gradient(135deg, #0078d4, #28a8ea);
+}
+.reply_copy {
+  background: #eef0f4;
+  color: var(--muted);
+}
+.replyText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.replyText strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.replyText small {
+  font-size: 0.75rem;
+  color: var(--subtle);
+}
+.replyGo {
+  color: var(--subtle);
+  font-size: 0.8rem;
+}
+@media (max-width: 575px) {
+  .reply {
+    flex: 1 1 100%;
+  }
+  .reply > .action {
+    width: 100%;
+    justify-content: center;
+  }
+  .replyMenu {
+    width: 100%;
+    max-width: none;
+  }
+}

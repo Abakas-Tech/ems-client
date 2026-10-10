@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import sendContactEmail from "../../api/contact.api";
+import { isValidPhone } from "../../../../utils/phone.utils";
 import { useSiteInfo } from "../../context/SiteInfo";
 import SectionHeading from "../ui/SectionHeading";
 import Reveal from "../ui/Reveal";
@@ -47,9 +48,9 @@ const validate = (data) => {
     else if (data.email.length > 150)
       errors.email = "emailLong";
   }
+  // Same phone rule the server enforces (optional +country code, 7–15 digits)
   if (!data.phone || data.phone.trim() === "") errors.phone = "phoneRequired";
-  else if (data.phone.length > 20)
-    errors.phone = "phoneLong";
+  else if (!isValidPhone(data.phone)) errors.phone = "phoneInvalid";
   if (!data.message || data.message.trim() === "") {
     errors.message = "messageRequired";
   } else if (data.message.length > MESSAGE_MAX) {
@@ -171,6 +172,14 @@ function Contact() {
       });
       if (ok) setForm(EMPTY);
     } catch (err) {
+      // The server re-validates; point at the phone field instead of a
+      // generic error when that is what it rejected.
+      if (err.status === 422 && /phone/i.test((err.errors || []).join(" ") || err.message)) {
+        setErrors((e) => ({ ...e, phone: "phoneInvalid" }));
+        setStatus({ state: "idle", message: "" });
+        document.getElementById("contact-phone")?.focus();
+        return;
+      }
       setStatus({ state: "error", message: err.message || "" });
     }
   };
