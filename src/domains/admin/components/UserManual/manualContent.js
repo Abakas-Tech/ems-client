@@ -872,16 +872,18 @@ const MANUAL_MODULES = [
     topics: [
       {
         id: "notifications-read",
-        title: "Read messages",
-        summary: "Open a message.",
-        keywords: ["inbox", "message", "read", "notification"],
-        where: "Menu → Notifications, or the bell",
+        title: "Read notifications",
+        summary: "Open an alert and see the full text.",
+        keywords: ["inbox", "message", "read", "notification", "unread", "mark all read"],
+        where: "Menu → Notifications (admins: also Messages → Notifications)",
         steps: [
-          "Click Notifications in the menu, or the bell.",
-          "Click a message in the Inbox (1). It opens on the right (2).",
-          "On a phone, tap the back arrow to go back.",
+          "Click Notifications in the menu. Admins can also open Messages and switch to Notifications at the top.",
+          "Click a notification in the list (1). It opens on the right (2) and is marked as read.",
+          "Click Unread (3) to see only new ones, or type in the search box to find one.",
+          "Click Mark all read at the top to clear them all.",
+          "On a phone, tap ← Notifications to go back to the list.",
         ],
-        shots: [{ id: "notifications-inbox", caption: "Inbox and an open message." }],
+        shots: [{ id: "notifications-inbox", caption: "A notification (1), the open notification (2), Unread (3) and Send Alert (4)." }],
       },
       {
         id: "notifications-send",
@@ -889,9 +891,9 @@ const MANUAL_MODULES = [
         summary: "To one person or many people.",
         keywords: ["send alert", "message", "broadcast", "notify"],
         access: { roles: [ADMIN, STAFF] },
-        where: "Notifications → Send Alert",
+        where: "Notifications → Send Alert (top right)",
         steps: [
-          "Click Send Alert.",
+          "Click Send Alert at the top right (4 in the picture above).",
           "Pick who gets it: Partner or Staff (1).",
           "Type part of the name and click the person (2).",
           "Write the message (3) and click Send Alert.",
@@ -942,6 +944,19 @@ const MANUAL_MODULES = [
           { type: "tip", text: "New messages appear at the top by themselves, with a short alert — you do not need to refresh the page." },
           { type: "tip", text: "Messages written in Arabic or Amharic show the right way round." },
         ],
+      },
+      {
+        id: "messages-switch",
+        title: "Switch to notifications",
+        summary: "Website messages and notifications live on the same page.",
+        keywords: ["switch", "toggle", "notifications", "messages", "tabs"],
+        where: "Messages → top of the page",
+        steps: [
+          "Use the switch at the top (1): Website messages or Notifications.",
+          "The small red numbers show what is not read yet in each one.",
+          "The page remembers your choice when you refresh it.",
+        ],
+        shots: [{ id: "messages-switch", caption: "The switch between Website messages and Notifications (1)." }],
       },
       {
         id: "messages-find",

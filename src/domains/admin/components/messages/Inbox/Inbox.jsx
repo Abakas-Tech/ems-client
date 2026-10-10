@@ -1,11 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  differenceInCalendarDays,
-  format,
-  formatDistanceToNowStrict,
-  isToday,
-  isYesterday,
-} from "date-fns";
+import { format, formatDistanceToNowStrict } from "date-fns";
 
 import useSocket from "../../../../../context/Socket/useSocket";
 import useResponse from "../../../../../context/Response/useResponse";
@@ -17,6 +11,8 @@ import {
   setContactMessageRead,
   setContactMessageStarred,
 } from "../../../api/contactMessage.api";
+import { groupByDay, listTime, toDate } from "../shared/inboxUtils";
+import { ListSkeleton, StatCard } from "../shared/InboxParts";
 import styles from "./Inbox.module.css";
 
 const PAGE_SIZE = 20;
@@ -47,8 +43,6 @@ const EMPTY_STATS = {
 
 /* ---------------------------------------------------------------- helpers */
 
-const toDate = (value) => (value ? new Date(value) : null);
-
 const displayName = (m) => (m?.name && m.name.trim()) || "Website visitor";
 
 const initials = (m) => {
@@ -65,24 +59,6 @@ const avatarStyle = (m) => {
     hash = (hash * 31 + seed.charCodeAt(i)) | 0;
   const [a, b] = AVATAR_GRADIENTS[Math.abs(hash) % AVATAR_GRADIENTS.length];
   return { background: `linear-gradient(135deg, ${a}, ${b})` };
-};
-
-const listTime = (value) => {
-  const d = toDate(value);
-  if (!d) return "";
-  if (isToday(d)) return format(d, "HH:mm");
-  if (isYesterday(d)) return "Yesterday";
-  if (differenceInCalendarDays(new Date(), d) < 7) return format(d, "EEE");
-  return format(d, "d MMM");
-};
-
-const groupLabel = (value) => {
-  const d = toDate(value);
-  if (!d) return "Earlier";
-  if (isToday(d)) return "Today";
-  if (isYesterday(d)) return "Yesterday";
-  if (differenceInCalendarDays(new Date(), d) < 7) return "This week";
-  return "Earlier";
 };
 
 const digitsOnly = (phone = "") => phone.replace(/\D/g, "");
@@ -102,26 +78,6 @@ function Avatar({ message, size = "md" }) {
         initials(message)
       )}
     </span>
-  );
-}
-
-function StatCard({ icon, label, value, tone, active, onClick, hint }) {
-  return (
-    <button
-      type="button"
-      className={`${styles.stat} ${styles[`tone_${tone}`]} ${active ? styles.statActive : ""}`}
-      onClick={onClick}
-      aria-pressed={active}
-    >
-      <span className={styles.statIcon}>
-        <i className={`bi ${icon}`} />
-      </span>
-      <span className={styles.statBody}>
-        <span className={styles.statValue}>{value}</span>
-        <span className={styles.statLabel}>{label}</span>
-      </span>
-      {hint && <span className={styles.statHint}>{hint}</span>}
-    </button>
   );
 }
 
@@ -157,32 +113,6 @@ function EmptyList({ filter, search }) {
       <h3>{copy.title}</h3>
       <p>{copy.text}</p>
     </div>
-  );
-}
-
-function ListSkeleton() {
-  return (
-    <ul className={styles.list} aria-busy="true">
-      {Array.from({ length: 6 }, (_, i) => (
-        <li key={i} className={styles.skelRow}>
-          <span className={`${styles.skel} ${styles.skelAvatar}`} />
-          <span className={styles.skelLines}>
-            <span
-              className={`${styles.skel} ${styles.skelLine}`}
-              style={{ width: "45%" }}
-            />
-            <span
-              className={`${styles.skel} ${styles.skelLine}`}
-              style={{ width: "90%" }}
-            />
-            <span
-              className={`${styles.skel} ${styles.skelLine}`}
-              style={{ width: "70%" }}
-            />
-          </span>
-        </li>
-      ))}
-    </ul>
   );
 }
 
@@ -462,7 +392,7 @@ function Detail({
 
 /* ---------------------------------------------------------------- inbox */
 
-function Inbox() {
+function Inbox({ switcher = null }) {
   const socket = useSocket();
   const { openModal } = useDelete();
   const { addMessage } = useResponse();
@@ -721,22 +651,14 @@ function Inbox() {
   };
 
   /* ---- grouped list ---- */
-  const groups = useMemo(() => {
-    const out = [];
-    messages.forEach((m) => {
-      const label = groupLabel(m.created_at);
-      const last = out[out.length - 1];
-      if (last && last.label === label) last.items.push(m);
-      else out.push({ label, items: [m] });
-    });
-    return out;
-  }, [messages]);
+  const groups = useMemo(() => groupByDay(messages), [messages]);
 
   return (
     <div className={styles.page}>
       {/* Hero */}
       <section className={styles.hero}>
         <div className={styles.heroGlow} aria-hidden="true" />
+        {switcher && <div className={styles.heroSwitch}>{switcher}</div>}
         <div className={styles.heroText}>
           <span className={styles.heroEyebrow}>
             <i className="bi bi-globe2" /> Website contact form

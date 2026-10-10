@@ -1,0 +1,86 @@
+.switch {
+  position: relative;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr; /* equal widths so the sliding thumb lines up */
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 6px 16px -6px rgba(17, 24, 39, 0.45);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.option {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 190px;
+  height: 40px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.option:hover {
+  color: #fff;
+}
+.on,
+.on:hover {
+  color: #4c1d95;
+}
+.count {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #f43f5e, #8b5cf6);
+}
+.short {
+  display: none;
+}
+@media (max-width: 575px) {
+  .option:has(.short) .label {
+    display: none;
+  }
+  .short {
+    display: inline;
+  }
+  .switch {
+    width: 100%;
+  }
+  .option {
+    flex: 1;
+    min-width: 0;
+    padding: 0 10px;
+    font-size: 0.8rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .thumb {
+    transition: none;
+  }
+}

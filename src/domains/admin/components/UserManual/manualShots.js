@@ -217,6 +217,10 @@ const MANUAL_SHOTS = {
     "w": 686,
     "h": 592
   },
+  "messages-switch": {
+    "w": 1120,
+    "h": 420
+  },
   "mobile-drawer": {
     "w": 520,
     "h": 1125
@@ -226,8 +230,8 @@ const MANUAL_SHOTS = {
     "h": 1125
   },
   "notifications-inbox": {
-    "w": 1400,
-    "h": 954
+    "w": 1120,
+    "h": 820
   },
   "notifications-send": {
     "w": 855,
