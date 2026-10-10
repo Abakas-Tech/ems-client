@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import toast from "react-hot-toast";
 import {
   differenceInCalendarDays,
   format,
@@ -9,6 +8,7 @@ import {
 } from "date-fns";
 
 import useSocket from "../../../../../context/Socket/useSocket";
+import useResponse from "../../../../../context/Response/useResponse";
 import { useDelete } from "../../../../../context/Delete/useDelete";
 import {
   deleteContactMessage,
@@ -186,6 +186,122 @@ function ListSkeleton() {
   );
 }
 
+/* Reply by email: the system mail app (mailto) plus Gmail / Outlook on the
+   web, since mailto does nothing on computers without a mail app set up. */
+function ReplyMenu({ message, onCopy }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDown = (e) =>
+      root.current && !root.current.contains(e.target) && setOpen(false);
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const received = toDate(message.created_at);
+  const to = message.email;
+  const subject = "Re: Your inquiry";
+  const body = `\n\n---\nOn ${received ? format(received, "d MMM yyyy, HH:mm") : ""}, ${displayName(message)} wrote:\n${message.message}`;
+  const q = (v) => encodeURIComponent(v);
+
+  const options = [
+    {
+      key: "app",
+      icon: "bi-envelope-paper",
+      label: "Default mail app",
+      hint: "Outlook, Apple Mail, Thunderbird…",
+      href: `mailto:${to}?subject=${q(subject)}&body=${q(body)}`,
+    },
+    {
+      key: "gmail",
+      icon: "bi-google",
+      label: "Gmail",
+      hint: "Opens a draft in your browser",
+      href: `https://mail.google.com/mail/?view=cm&fs=1&to=${q(to)}&su=${q(subject)}&body=${q(body)}`,
+      external: true,
+    },
+    {
+      key: "outlook",
+      icon: "bi-microsoft",
+      label: "Outlook on the web",
+      hint: "Outlook.com or Microsoft 365",
+      href: `https://outlook.office.com/mail/deeplink/compose?to=${q(to)}&subject=${q(subject)}&body=${q(body)}`,
+      external: true,
+    },
+  ];
+
+  return (
+    <div className={styles.reply} ref={root}>
+      <button
+        type="button"
+        className={`${styles.action} ${styles.actionPrimary}`}
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="true"
+        aria-expanded={open}
+      >
+        <i className="bi bi-reply-fill" /> Reply by email
+        <i className={`bi bi-chevron-down ${styles.replyCaret}`} />
+      </button>
+      {open && (
+        <div className={styles.replyMenu} role="menu">
+          <span className={styles.replyTo}>
+            Replying to <strong dir="ltr">{to}</strong>
+          </span>
+          {options.map((o) => (
+            <a
+              key={o.key}
+              role="menuitem"
+              className={styles.replyItem}
+              href={o.href}
+              {...(o.external
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+              onClick={() => setOpen(false)}
+            >
+              <span
+                className={`${styles.replyIcon} ${styles[`reply_${o.key}`]}`}
+              >
+                <i className={`bi ${o.icon}`} />
+              </span>
+              <span className={styles.replyText}>
+                <strong>{o.label}</strong>
+                <small>{o.hint}</small>
+              </span>
+              <i
+                className={`bi ${o.external ? "bi-box-arrow-up-right" : "bi-arrow-right"} ${styles.replyGo}`}
+              />
+            </a>
+          ))}
+          <button
+            type="button"
+            role="menuitem"
+            className={styles.replyItem}
+            onClick={() => {
+              onCopy(to, "Email address");
+              setOpen(false);
+            }}
+          >
+            <span className={`${styles.replyIcon} ${styles.reply_copy}`}>
+              <i className="bi bi-copy" />
+            </span>
+            <span className={styles.replyText}>
+              <strong>Copy email address</strong>
+              <small>Paste it into any mail app</small>
+            </span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Detail({
   message,
   onBack,
@@ -205,15 +321,14 @@ function Detail({
           Pick a conversation from the list to read it, reply by email, call or
           chat on WhatsApp.
         </p>
+        <span className={styles.kbdHint}>
+          Tip: use <kbd>↑</kbd> <kbd>↓</kbd> to move through messages
+        </span>
       </div>
     );
   }
 
   const received = toDate(message.created_at);
-  const subject = encodeURIComponent("Re: Your inquiry");
-  const body = encodeURIComponent(
-    `\n\n---\nOn ${received ? format(received, "d MMM yyyy, HH:mm") : ""}, ${displayName(message)} wrote:\n${message.message}`,
-  );
   const wa = digitsOnly(message.phone);
 
   return (
@@ -329,14 +444,7 @@ function Detail({
       </div>
 
       <footer className={styles.actions}>
-        {message.email && (
-          <a
-            className={`${styles.action} ${styles.actionPrimary}`}
-            href={`mailto:${message.email}?subject=${subject}&body=${body}`}
-          >
-            <i className="bi bi-reply-fill" /> Reply by email
-          </a>
-        )}
+        {message.email && <ReplyMenu message={message} onCopy={onCopy} />}
         <a className={styles.action} href={`tel:${message.phone}`}>
           <i className="bi bi-telephone-outbound" /> Call
         </a>
@@ -360,6 +468,13 @@ function Detail({
 function Inbox() {
   const socket = useSocket();
   const { openModal } = useDelete();
+  const { addMessage } = useResponse();
+
+  /* The app-wide success/error alerts. addMessage changes identity on every
+     provider render, so go through a ref to keep callbacks stable. */
+  const addMessageRef = useRef(addMessage);
+  addMessageRef.current = addMessage;
+  const notify = useCallback((ok, text) => addMessageRef.current(ok, text), []);
 
   const [messages, setMessages] = useState([]);
   const [stats, setStats] = useState(EMPTY_STATS);
@@ -409,12 +524,12 @@ function Inbox() {
       } catch (err) {
         if (id !== requestId.current) return;
         if (!append) setStatus("error");
-        toast.error(err.message || "Could not load messages");
+        notify(false, err.message || "Could not load messages");
       } finally {
         if (append) setLoadingMore(false);
       }
     },
-    [filter, search],
+    [filter, search, notify],
   );
 
   useEffect(() => {
@@ -427,24 +542,27 @@ function Inbox() {
       prev.map((m) => (m.id === id ? { ...m, ...changes } : m)),
     );
 
-  const markRead = useCallback(async (message, isRead) => {
-    if (!message || Boolean(message.is_read) === isRead) return;
-    patchMessage(message.id, { is_read: isRead ? 1 : 0 });
-    setStats((s) => ({
-      ...s,
-      unread: Math.max(0, s.unread + (isRead ? -1 : 1)),
-    }));
-    try {
-      await setContactMessageRead(message.id, isRead);
-    } catch (err) {
-      patchMessage(message.id, { is_read: isRead ? 0 : 1 });
+  const markRead = useCallback(
+    async (message, isRead) => {
+      if (!message || Boolean(message.is_read) === isRead) return;
+      patchMessage(message.id, { is_read: isRead ? 1 : 0 });
       setStats((s) => ({
         ...s,
-        unread: Math.max(0, s.unread + (isRead ? 1 : -1)),
+        unread: Math.max(0, s.unread + (isRead ? -1 : 1)),
       }));
-      toast.error(err.message);
-    }
-  }, []);
+      try {
+        await setContactMessageRead(message.id, isRead);
+      } catch (err) {
+        patchMessage(message.id, { is_read: isRead ? 0 : 1 });
+        setStats((s) => ({
+          ...s,
+          unread: Math.max(0, s.unread + (isRead ? 1 : -1)),
+        }));
+        notify(false, err.message);
+      }
+    },
+    [notify],
+  );
 
   const open = (message) => {
     setSelectedId(message.id);
@@ -470,7 +588,7 @@ function Inbox() {
         ...s,
         starred: Math.max(0, s.starred + (next ? -1 : 1)),
       }));
-      toast.error(err.message);
+      notify(false, err.message);
     }
   };
 
@@ -498,9 +616,9 @@ function Inbox() {
             starred: Math.max(0, s.starred - (message.is_starred ? 1 : 0)),
           }));
           setPagination((p) => ({ ...p, total: Math.max(0, p.total - 1) }));
-          toast.success("Message deleted");
+          notify(true, "Message deleted");
         } catch (err) {
-          toast.error(err.message);
+          notify(false, err.message);
         }
       },
       {
@@ -516,18 +634,18 @@ function Inbox() {
         filter === "unread" ? [] : prev.map((m) => ({ ...m, is_read: 1 })),
       );
       setStats((s) => ({ ...s, unread: 0 }));
-      toast.success("All messages marked as read");
+      notify(true, "All messages marked as read");
     } catch (err) {
-      toast.error(err.message);
+      notify(false, err.message);
     }
   };
 
   const copy = async (text, label) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success(`${label} copied`);
+      notify(true, `${label} copied`);
     } catch {
-      toast.error("Couldn't copy to clipboard");
+      notify(false, "Couldn't copy to clipboard");
     }
   };
 
@@ -560,7 +678,7 @@ function Inbox() {
           6000,
         );
       }
-      toast(`New message from ${displayName(message)}`, { icon: "✉️" });
+      notify(true, `New message from ${displayName(message)}`);
     };
 
     // Changes made by any admin (including this tab) — apply idempotently
@@ -587,7 +705,7 @@ function Inbox() {
       socket.off("contact:new", onNew);
       socket.off("contact:changed", onChanged);
     };
-  }, [socket, filter, search]);
+  }, [socket, filter, search, notify]);
 
   /* ---- keyboard navigation on the list ---- */
   const onListKey = (e) => {

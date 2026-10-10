@@ -357,7 +357,6 @@ const UserManual = () => {
 
   const renderResults = () => (
     <>
-      <BackButton onClick={() => setQuery("")} />
       <p className={styles.resultCount} aria-live="polite">
         {results.length} {results.length === 1 ? "result" : "results"} for “
         {query.trim()}”
@@ -407,7 +406,6 @@ const UserManual = () => {
 
   const renderModule = () => (
     <>
-      <BackButton onClick={() => open(null)} />
       <div className={styles.crumbs} role="navigation" aria-label="Breadcrumb">
         <button type="button" onClick={() => open(null)}>
           User Manual
@@ -607,6 +605,12 @@ const UserManual = () => {
   return (
     <div className="dashboard-wraper">
       <div className="mb-4">
+        {/* Same placement as every other page: top-right of the page card */}
+        {(searching || activeModule) && (
+          <BackButton
+            onClick={() => (searching ? setQuery("") : open(null))}
+          />
+        )}
         <h2 className="fw-bold text-dark mb-2">User Manual</h2>
         <p className="text-muted mb-0">
           Simple steps and real screenshots for every page you can use.

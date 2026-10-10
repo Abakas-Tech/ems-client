@@ -48,13 +48,12 @@ export const CORE_VALUES = [
 
 /* Route map positions in the SVG viewBox (x = east, y = south),
    roughly to scale from Addis Ababa. */
-export const ROUTE_ORIGIN = { x: 96, y: 452 };
+export const ROUTE_ORIGIN = { x: 193, y: 478 };
 
 export const DESTINATION_ROUTES = [
-  { key: "sa", code: "KSA", x: 254, y: 146 },
-  { key: "kw", code: "KWT", x: 282, y: 54 },
-  { key: "qa", code: "QAT", x: 352, y: 140 },
-  { key: "ae", code: "UAE", x: 430, y: 128 },
+  { key: "sa", code: "KSA", x: 355, y: 182 },
+  { key: "kw", code: "KWT", x: 379, y: 93 },
+  { key: "jo", code: "JOR", x: 139, y: 66 },
 ];
 
 /* NOTE: carried over unchanged from the previous site — these are still

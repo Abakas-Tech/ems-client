@@ -5,6 +5,7 @@ import { I18nextProvider, useTranslation } from "react-i18next";
 
 import SiteHeader from "../../components/SiteHeader/SiteHeader";
 import SiteFooter from "../../components/SiteFooter/SiteFooter";
+import WhatsAppButton from "../../components/WhatsAppButton/WhatsAppButton";
 import { SiteInfoProvider } from "../../context/SiteInfo";
 import publicI18n, { languageDir } from "../../i18n";
 import "../../styles/site.css";
@@ -70,6 +71,7 @@ function PublicShell() {
         <Outlet />
       </main>
       <SiteFooter />
+      <WhatsAppButton />
     </div>
   );
 }
