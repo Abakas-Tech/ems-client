@@ -37,7 +37,13 @@ const AVATAR_GRADIENTS = [
   ["#14b8a6", "#84cc16"],
 ];
 
-const EMPTY_STATS = { total: 0, unread: 0, starred: 0, today: 0, last_7_days: 0 };
+const EMPTY_STATS = {
+  total: 0,
+  unread: 0,
+  starred: 0,
+  today: 0,
+  last_7_days: 0,
+};
 
 /* ---------------------------------------------------------------- helpers */
 
@@ -55,7 +61,8 @@ const initials = (m) => {
 const avatarStyle = (m) => {
   const seed = `${m?.name || ""}${m?.phone || ""}`;
   let hash = 0;
-  for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) | 0;
+  for (let i = 0; i < seed.length; i += 1)
+    hash = (hash * 31 + seed.charCodeAt(i)) | 0;
   const [a, b] = AVATAR_GRADIENTS[Math.abs(hash) % AVATAR_GRADIENTS.length];
   return { background: `linear-gradient(135deg, ${a}, ${b})` };
 };
@@ -89,7 +96,11 @@ function Avatar({ message, size = "md" }) {
       style={avatarStyle(message)}
       aria-hidden="true"
     >
-      {initials(message) === "?" ? <i className="bi bi-person" /> : initials(message)}
+      {initials(message) === "?" ? (
+        <i className="bi bi-person" />
+      ) : (
+        initials(message)
+      )}
     </span>
   );
 }
@@ -156,9 +167,18 @@ function ListSkeleton() {
         <li key={i} className={styles.skelRow}>
           <span className={`${styles.skel} ${styles.skelAvatar}`} />
           <span className={styles.skelLines}>
-            <span className={`${styles.skel} ${styles.skelLine}`} style={{ width: "45%" }} />
-            <span className={`${styles.skel} ${styles.skelLine}`} style={{ width: "90%" }} />
-            <span className={`${styles.skel} ${styles.skelLine}`} style={{ width: "70%" }} />
+            <span
+              className={`${styles.skel} ${styles.skelLine}`}
+              style={{ width: "45%" }}
+            />
+            <span
+              className={`${styles.skel} ${styles.skelLine}`}
+              style={{ width: "90%" }}
+            />
+            <span
+              className={`${styles.skel} ${styles.skelLine}`}
+              style={{ width: "70%" }}
+            />
           </span>
         </li>
       ))}
@@ -166,7 +186,14 @@ function ListSkeleton() {
   );
 }
 
-function Detail({ message, onBack, onToggleStar, onToggleRead, onDelete, onCopy }) {
+function Detail({
+  message,
+  onBack,
+  onToggleStar,
+  onToggleRead,
+  onDelete,
+  onCopy,
+}) {
   if (!message) {
     return (
       <div className={styles.placeholder}>
@@ -174,10 +201,10 @@ function Detail({ message, onBack, onToggleStar, onToggleRead, onDelete, onCopy 
           <i className="bi bi-envelope-paper-heart" />
         </div>
         <h3>Select a message</h3>
-        <p>Pick a conversation from the list to read it, reply by email, call or chat on WhatsApp.</p>
-        <span className={styles.kbdHint}>
-          Tip: use <kbd>↑</kbd> <kbd>↓</kbd> to move through messages
-        </span>
+        <p>
+          Pick a conversation from the list to read it, reply by email, call or
+          chat on WhatsApp.
+        </p>
       </div>
     );
   }
@@ -204,7 +231,9 @@ function Detail({ message, onBack, onToggleStar, onToggleRead, onDelete, onCopy 
             title={message.is_starred ? "Remove star" : "Star"}
             aria-label={message.is_starred ? "Remove star" : "Star message"}
           >
-            <i className={`bi ${message.is_starred ? "bi-star-fill" : "bi-star"}`} />
+            <i
+              className={`bi ${message.is_starred ? "bi-star-fill" : "bi-star"}`}
+            />
           </button>
           <button
             type="button"
@@ -213,7 +242,9 @@ function Detail({ message, onBack, onToggleStar, onToggleRead, onDelete, onCopy 
             title={message.is_read ? "Mark as unread" : "Mark as read"}
             aria-label={message.is_read ? "Mark as unread" : "Mark as read"}
           >
-            <i className={`bi ${message.is_read ? "bi-envelope" : "bi-envelope-open"}`} />
+            <i
+              className={`bi ${message.is_read ? "bi-envelope" : "bi-envelope-open"}`}
+            />
           </button>
           <button
             type="button"
@@ -234,7 +265,8 @@ function Detail({ message, onBack, onToggleStar, onToggleRead, onDelete, onCopy 
           <p>
             {received && (
               <>
-                <i className="bi bi-clock" /> {format(received, "EEEE, d MMMM yyyy · HH:mm")}
+                <i className="bi bi-clock" />{" "}
+                {format(received, "EEEE, d MMMM yyyy · HH:mm")}
                 <span className={styles.dotSep}>•</span>
                 {formatDistanceToNowStrict(received, { addSuffix: true })}
               </>
@@ -249,7 +281,9 @@ function Detail({ message, onBack, onToggleStar, onToggleRead, onDelete, onCopy 
               : "The notification email could not be delivered — this dashboard is the only copy"
           }
         >
-          <i className={`bi ${message.email_sent ? "bi-envelope-check" : "bi-envelope-exclamation"}`} />
+          <i
+            className={`bi ${message.email_sent ? "bi-envelope-check" : "bi-envelope-exclamation"}`}
+          />
           {message.email_sent ? "Emailed to inbox" : "Dashboard only"}
         </span>
       </div>
@@ -260,7 +294,11 @@ function Detail({ message, onBack, onToggleStar, onToggleRead, onDelete, onCopy 
           <a href={`tel:${message.phone}`} dir="ltr">
             {message.phone}
           </a>
-          <button type="button" onClick={() => onCopy(message.phone, "Phone number")} aria-label="Copy phone number">
+          <button
+            type="button"
+            onClick={() => onCopy(message.phone, "Phone number")}
+            aria-label="Copy phone number"
+          >
             <i className="bi bi-copy" />
           </button>
         </div>
@@ -270,7 +308,11 @@ function Detail({ message, onBack, onToggleStar, onToggleRead, onDelete, onCopy 
             <a href={`mailto:${message.email}`} dir="ltr">
               {message.email}
             </a>
-            <button type="button" onClick={() => onCopy(message.email, "Email")} aria-label="Copy email">
+            <button
+              type="button"
+              onClick={() => onCopy(message.email, "Email")}
+              aria-label="Copy email"
+            >
               <i className="bi bi-copy" />
             </button>
           </div>
@@ -288,7 +330,10 @@ function Detail({ message, onBack, onToggleStar, onToggleRead, onDelete, onCopy 
 
       <footer className={styles.actions}>
         {message.email && (
-          <a className={`${styles.action} ${styles.actionPrimary}`} href={`mailto:${message.email}?subject=${subject}&body=${body}`}>
+          <a
+            className={`${styles.action} ${styles.actionPrimary}`}
+            href={`mailto:${message.email}?subject=${subject}&body=${body}`}
+          >
             <i className="bi bi-reply-fill" /> Reply by email
           </a>
         )}
@@ -347,10 +392,17 @@ function Inbox() {
       if (!append && !quiet) setStatus("loading");
       if (append) setLoadingMore(true);
       try {
-        const res = await getContactMessages({ page, limit: PAGE_SIZE, filter, search });
+        const res = await getContactMessages({
+          page,
+          limit: PAGE_SIZE,
+          filter,
+          search,
+        });
         if (id !== requestId.current) return;
         const data = res?.data || {};
-        setMessages((prev) => (append ? [...prev, ...(data.messages || [])] : data.messages || []));
+        setMessages((prev) =>
+          append ? [...prev, ...(data.messages || [])] : data.messages || [],
+        );
         setStats(data.stats || EMPTY_STATS);
         setPagination(data.pagination || { page: 1, pages: 1, total: 0 });
         setStatus("ready");
@@ -371,17 +423,25 @@ function Inbox() {
 
   /* ---- local updates ---- */
   const patchMessage = (id, changes) =>
-    setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...changes } : m)));
+    setMessages((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, ...changes } : m)),
+    );
 
   const markRead = useCallback(async (message, isRead) => {
     if (!message || Boolean(message.is_read) === isRead) return;
     patchMessage(message.id, { is_read: isRead ? 1 : 0 });
-    setStats((s) => ({ ...s, unread: Math.max(0, s.unread + (isRead ? -1 : 1)) }));
+    setStats((s) => ({
+      ...s,
+      unread: Math.max(0, s.unread + (isRead ? -1 : 1)),
+    }));
     try {
       await setContactMessageRead(message.id, isRead);
     } catch (err) {
       patchMessage(message.id, { is_read: isRead ? 0 : 1 });
-      setStats((s) => ({ ...s, unread: Math.max(0, s.unread + (isRead ? 1 : -1)) }));
+      setStats((s) => ({
+        ...s,
+        unread: Math.max(0, s.unread + (isRead ? 1 : -1)),
+      }));
       toast.error(err.message);
     }
   }, []);
@@ -395,7 +455,10 @@ function Inbox() {
   const toggleStar = async (message) => {
     const next = !message.is_starred;
     patchMessage(message.id, { is_starred: next ? 1 : 0 });
-    setStats((s) => ({ ...s, starred: Math.max(0, s.starred + (next ? 1 : -1)) }));
+    setStats((s) => ({
+      ...s,
+      starred: Math.max(0, s.starred + (next ? 1 : -1)),
+    }));
     try {
       await setContactMessageStarred(message.id, next);
       if (filter === "starred" && !next) {
@@ -403,7 +466,10 @@ function Inbox() {
       }
     } catch (err) {
       patchMessage(message.id, { is_starred: next ? 0 : 1 });
-      setStats((s) => ({ ...s, starred: Math.max(0, s.starred + (next ? -1 : 1)) }));
+      setStats((s) => ({
+        ...s,
+        starred: Math.max(0, s.starred + (next ? -1 : 1)),
+      }));
       toast.error(err.message);
     }
   };
@@ -420,7 +486,9 @@ function Inbox() {
           setMessages((prev) => prev.filter((m) => m.id !== message.id));
           if (selectedId === message.id) {
             // Keep reading flow: select the next message in the list
-            setSelectedId(remaining[Math.min(idx, remaining.length - 1)]?.id ?? null);
+            setSelectedId(
+              remaining[Math.min(idx, remaining.length - 1)]?.id ?? null,
+            );
             if (!remaining.length) setMobileDetail(false);
           }
           setStats((s) => ({
@@ -435,7 +503,10 @@ function Inbox() {
           toast.error(err.message);
         }
       },
-      { title: `Delete the message from ${displayName(message)}?`, confirmText: "Delete" },
+      {
+        title: `Delete the message from ${displayName(message)}?`,
+        confirmText: "Delete",
+      },
     );
 
   const markAll = async () => {
@@ -474,7 +545,9 @@ function Inbox() {
         last_7_days: s.last_7_days + 1,
       }));
       if (!search && filter !== "starred") {
-        setMessages((prev) => (prev.some((m) => m.id === message.id) ? prev : [message, ...prev]));
+        setMessages((prev) =>
+          prev.some((m) => m.id === message.id) ? prev : [message, ...prev],
+        );
         setPagination((p) => ({ ...p, total: p.total + 1 }));
         setFresh((prev) => new Set(prev).add(message.id));
         setTimeout(
@@ -493,9 +566,11 @@ function Inbox() {
     // Changes made by any admin (including this tab) — apply idempotently
     const onChanged = (e) => {
       if (!e) return;
-      if (typeof e.unread === "number") setStats((s) => ({ ...s, unread: e.unread }));
+      if (typeof e.unread === "number")
+        setStats((s) => ({ ...s, unread: e.unread }));
       const id = e.id;
-      if (e.action === "read-all") setMessages((prev) => prev.map((m) => ({ ...m, is_read: 1 })));
+      if (e.action === "read-all")
+        setMessages((prev) => prev.map((m) => ({ ...m, is_read: 1 })));
       if (e.action === "read") patchMessage(id, { is_read: 1 });
       if (e.action === "unread") patchMessage(id, { is_read: 0 });
       if (e.action === "starred") patchMessage(id, { is_starred: 1 });
@@ -520,10 +595,14 @@ function Inbox() {
     e.preventDefault();
     const idx = messages.findIndex((m) => m.id === selectedId);
     const nextIdx =
-      e.key === "ArrowDown" ? Math.min(messages.length - 1, idx + 1) : Math.max(0, idx - 1);
+      e.key === "ArrowDown"
+        ? Math.min(messages.length - 1, idx + 1)
+        : Math.max(0, idx - 1);
     const next = messages[idx === -1 ? 0 : nextIdx];
     open(next);
-    listRef.current?.querySelector(`[data-id="${next.id}"]`)?.scrollIntoView({ block: "nearest" });
+    listRef.current
+      ?.querySelector(`[data-id="${next.id}"]`)
+      ?.scrollIntoView({ block: "nearest" });
   };
 
   /* ---- grouped list ---- */
@@ -548,18 +627,31 @@ function Inbox() {
             <i className="bi bi-globe2" /> Website contact form
           </span>
           <h1>Messages</h1>
-          <p>Inquiries sent by visitors from your public website — read, reply and follow up in one place.</p>
+          <p>
+            Inquiries sent by visitors from your public website — read, reply
+            and follow up in one place.
+          </p>
         </div>
         <div className={styles.heroActions}>
           <span className={`${styles.live} ${socket ? styles.liveOn : ""}`}>
             <span className={styles.liveDot} />
             {socket ? "Live" : "Offline"}
           </span>
-          <button type="button" className={styles.heroBtn} onClick={() => load({ quiet: true })} title="Refresh">
+          <button
+            type="button"
+            className={styles.heroBtn}
+            onClick={() => load({ quiet: true })}
+            title="Refresh"
+          >
             <i className="bi bi-arrow-clockwise" />
             <span>Refresh</span>
           </button>
-          <button type="button" className={`${styles.heroBtn} ${styles.heroBtnSolid}`} onClick={markAll} disabled={!stats.unread}>
+          <button
+            type="button"
+            className={`${styles.heroBtn} ${styles.heroBtnSolid}`}
+            onClick={markAll}
+            disabled={!stats.unread}
+          >
             <i className="bi bi-check2-all" />
             <span>Mark all read</span>
           </button>
@@ -568,14 +660,44 @@ function Inbox() {
 
       {/* Stats */}
       <section className={styles.stats}>
-        <StatCard icon="bi-inbox" label="Total messages" value={stats.total} tone="violet" active={filter === "all"} onClick={() => setFilter("all")} />
-        <StatCard icon="bi-envelope-exclamation" label="Unread" value={stats.unread} tone="rose" active={filter === "unread"} onClick={() => setFilter("unread")} hint={stats.unread ? "Needs attention" : "All caught up"} />
-        <StatCard icon="bi-star" label="Starred" value={stats.starred} tone="amber" active={filter === "starred"} onClick={() => setFilter("starred")} />
-        <StatCard icon="bi-lightning-charge" label="Today" value={stats.today} tone="cyan" hint={`${stats.last_7_days} this week`} />
+        <StatCard
+          icon="bi-inbox"
+          label="Total messages"
+          value={stats.total}
+          tone="violet"
+          active={filter === "all"}
+          onClick={() => setFilter("all")}
+        />
+        <StatCard
+          icon="bi-envelope-exclamation"
+          label="Unread"
+          value={stats.unread}
+          tone="rose"
+          active={filter === "unread"}
+          onClick={() => setFilter("unread")}
+          hint={stats.unread ? "Needs attention" : "All caught up"}
+        />
+        <StatCard
+          icon="bi-star"
+          label="Starred"
+          value={stats.starred}
+          tone="amber"
+          active={filter === "starred"}
+          onClick={() => setFilter("starred")}
+        />
+        <StatCard
+          icon="bi-lightning-charge"
+          label="Today"
+          value={stats.today}
+          tone="cyan"
+          hint={`${stats.last_7_days} this week`}
+        />
       </section>
 
       {/* Inbox */}
-      <section className={`${styles.shell} ${mobileDetail ? styles.showDetail : ""}`}>
+      <section
+        className={`${styles.shell} ${mobileDetail ? styles.showDetail : ""}`}
+      >
         <aside className={styles.listPane}>
           <div className={styles.listTools}>
             <label className={styles.search}>
@@ -587,12 +709,20 @@ function Inbox() {
                 onChange={(e) => setSearchInput(e.target.value)}
               />
               {searchInput && (
-                <button type="button" onClick={() => setSearchInput("")} aria-label="Clear search">
+                <button
+                  type="button"
+                  onClick={() => setSearchInput("")}
+                  aria-label="Clear search"
+                >
                   <i className="bi bi-x-lg" />
                 </button>
               )}
             </label>
-            <div className={styles.filters} role="tablist" aria-label="Filter messages">
+            <div
+              className={styles.filters}
+              role="tablist"
+              aria-label="Filter messages"
+            >
               {FILTERS.map((f) => (
                 <button
                   key={f.key}
@@ -618,13 +748,19 @@ function Inbox() {
               </span>
               <h3>Couldn't load messages</h3>
               <p>Check your connection and try again.</p>
-              <button type="button" className={styles.retry} onClick={() => load()}>
+              <button
+                type="button"
+                className={styles.retry}
+                onClick={() => load()}
+              >
                 <i className="bi bi-arrow-clockwise" /> Retry
               </button>
             </div>
           )}
 
-          {status === "ready" && messages.length === 0 && <EmptyList filter={filter} search={search} />}
+          {status === "ready" && messages.length === 0 && (
+            <EmptyList filter={filter} search={search} />
+          )}
 
           {status === "ready" && messages.length > 0 && (
             <div className={styles.listScroll}>
@@ -652,8 +788,12 @@ function Inbox() {
                             <Avatar message={m} />
                             <span className={styles.rowBody}>
                               <span className={styles.rowTop}>
-                                <span className={styles.rowName}>{displayName(m)}</span>
-                                <span className={styles.rowTime}>{listTime(m.created_at)}</span>
+                                <span className={styles.rowName}>
+                                  {displayName(m)}
+                                </span>
+                                <span className={styles.rowTime}>
+                                  {listTime(m.created_at)}
+                                </span>
                               </span>
                               <span className={styles.rowPhone} dir="ltr">
                                 {m.phone}
@@ -663,9 +803,21 @@ function Inbox() {
                               </span>
                             </span>
                             <span className={styles.rowFlags}>
-                              {!m.is_read && <span className={styles.unreadDot} title="Unread" />}
-                              {Boolean(m.is_starred) && <i className={`bi bi-star-fill ${styles.rowStar}`} title="Starred" />}
-                              {fresh.has(m.id) && <span className={styles.newTag}>New</span>}
+                              {!m.is_read && (
+                                <span
+                                  className={styles.unreadDot}
+                                  title="Unread"
+                                />
+                              )}
+                              {Boolean(m.is_starred) && (
+                                <i
+                                  className={`bi bi-star-fill ${styles.rowStar}`}
+                                  title="Starred"
+                                />
+                              )}
+                              {fresh.has(m.id) && (
+                                <span className={styles.newTag}>New</span>
+                              )}
                             </span>
                           </button>
                         </li>
@@ -683,7 +835,9 @@ function Inbox() {
                   <button
                     type="button"
                     className={styles.more}
-                    onClick={() => load({ page: pagination.page + 1, append: true })}
+                    onClick={() =>
+                      load({ page: pagination.page + 1, append: true })
+                    }
                     disabled={loadingMore}
                   >
                     {loadingMore ? (
