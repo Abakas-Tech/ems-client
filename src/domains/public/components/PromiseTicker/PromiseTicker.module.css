@@ -1,0 +1,57 @@
+.band {
+  position: relative;
+  overflow: hidden;
+  padding: 22px 0;
+  background: var(--vx-ink);
+  border-top: 1px solid var(--vx-line-dark);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.track {
+  display: flex;
+  width: max-content;
+  animation: marquee 48s linear infinite;
+}
+.band:hover .track {
+  animation-play-state: paused;
+}
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  padding-inline-end: 28px;
+  font-size: clamp(15px, 1.6vw, 19px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.86);
+}
+.item:nth-child(odd) {
+  font-family: var(--vx-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(17px, 1.9vw, 22px);
+  color: rgba(255, 255, 255, 0.7);
+}
+.star {
+  font-size: 12px;
+  font-style: normal;
+  background: var(--vx-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

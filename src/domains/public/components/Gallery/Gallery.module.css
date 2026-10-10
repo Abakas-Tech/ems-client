@@ -1,196 +1,289 @@
-:root {
-  --ab-wood-900: #111111;
-  --ab-wood-800: #0054B8;
-  --ab-wood-600: #0070E8;
-  --ab-gold: #E00030;
-  --ab-gold-light: #FF4010;
-  --ab-cream: #FFFFFF;
-  --ab-muted: #545B66;
-  --ab-border: #D7E6F7;
-  --ab-tint: #F2F8FF;
+.section {
+  background: var(--vx-bg);
 }
 
-.gallery-card {
-  cursor: pointer;
-  overflow: hidden;
-}
-
-.gallery-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;   
-}
-
-.image-wrapper {
-  width: 100%;
-  aspect-ratio: 4 / 3; 
-  overflow: hidden;
-}
-
-.overlay {
-  background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
-}
-
-/* Modal */
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.85);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999999990;
-}
-
-/* MOBILE FIRST */
-
-.modal-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 1300px;
-  padding: 0 10px;
-}
-
-.image-container {
-  display: flex;
-  justify-content: center;
-  height: auto;
-}
-
-.modal-image {
-  max-width: 90vw;
-  max-height: 70vh;
-  object-fit: contain;
-}
-
-.close-button {
-  position: absolute;
-  top: -15px;
-  right: 20px;
-  font-size: 42px;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  z-index: 20;
-}
-
-/* Modal Info */
-
-.modal-info {
-  position: static;
-  margin: 10px ;
-  max-width: 90%;
-  color: white;
-
-}
-
-.modal-info h4 {
-  margin-bottom: 6px;
-  color: #fff;
-}
-
-.modal-info p {
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 240px;
+  grid-auto-flow: dense;
+  gap: 16px;
   margin: 0;
-  line-height: 1.6;
+  padding: 0;
+  list-style: none;
+}
+.tile {
+  position: relative;
+  border-radius: var(--vx-r);
+  overflow: hidden;
+  background: var(--vx-bg-tint);
+}
+.grid > .tile:nth-child(6n + 1) {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+.grid > .tile:nth-child(6n + 4) {
+  grid-column: span 2;
 }
 
-/* Navigation */
-
-.nav-button {
+.tileBtn {
   position: absolute;
-  top: 35%;
-  transform: translateY(-50%);
-  font-size: 46px;
-  border: none;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
   background: none;
-  color: white;
-  cursor: pointer;
-  margin: 0 0.3rem;
+  cursor: zoom-in;
+  text-align: start;
+}
+.img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  transition: transform 1.1s var(--vx-ease), filter 0.6s ease;
+}
+.tileBtn:hover .img,
+.tileBtn:focus-visible .img {
+  transform: scale(1.06);
+}
+.tileShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(7, 13, 34, 0.82) 100%);
+  opacity: 0.75;
+  transition: opacity 0.5s ease;
+}
+.tileBtn:hover .tileShade {
+  opacity: 1;
+}
+.tileMeta {
+  position: absolute;
+  left: 20px;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.tileTitle {
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: #fff;
+  transform: translateY(6px);
+  transition: transform 0.5s var(--vx-ease);
+}
+.tileBtn:hover .tileTitle {
+  transform: none;
+}
+.expand {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-inline-start: auto;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.4s ease, transform 0.5s var(--vx-ease);
+}
+.tileBtn:hover .expand,
+.tileBtn:focus-visible .expand {
+  opacity: 1;
+  transform: none;
 }
 
-.left {
-  left: 10px;
+.skeleton {
+  background: linear-gradient(100deg, var(--vx-bg-soft) 30%, #e7eaf4 50%, var(--vx-bg-soft) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
 }
-
-.right {
-  right: 10px;
-}
-
-/* Desktop adjustments */
-
-@media (min-width: 700px) {
-
-  .modal-wrapper {
-    padding: 0 80px;
-  }
-
-  .image-container {
-    height: 60vh;
-    margin-bottom: 2rem;
-  }
-
-  .left {
-    left: -60px;
-  }
-
-  .right {
-    right: -60px;
-  }
-
-  .close-button {
-    top: -100px;
-    right: 10px;
-  }
-
-  .modal-info {
-    position: absolute;
-    bottom: -70px;
-    left: 0;
-    max-width: 800px;
-    margin: 0 1rem;
-  }
-
-  .nav-button {
-    top: 50%;
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
   }
 }
 
-/* ---------- Sub-section heading ---------- */
-.subHead {
-  margin-bottom: 40px;
-  max-width: 640px;
-}
-
-.subHeadCenter {
-  margin-left: auto;
-  margin-right: auto;
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 56px 24px;
+  border-radius: var(--vx-r-lg);
+  border: 1px dashed var(--vx-line-strong);
+  background: var(--vx-bg-soft);
+  color: var(--vx-muted);
   text-align: center;
 }
-
-.subEyebrow {
-  display: inline-block;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--ab-gold);
-  margin-bottom: 8px;
+.state p {
+  font-size: 15.5px;
 }
 
-.subTitle {
-  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
-  font-weight: 800;
-  color: var(--ab-wood-900);
-  margin-bottom: 6px;
+.more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  margin-top: 40px;
+}
+.count {
+  font-size: 14px;
+  color: var(--vx-subtle);
+  font-variant-numeric: tabular-nums;
 }
 
-.subSubtitle {
-  color: var(--ab-muted);
-  font-size: 0.95rem;
+@media (max-width: 1000px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 220px;
+  }
+  .grid > .tile:nth-child(6n + 4) {
+    grid-column: span 1;
+  }
+}
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 260px;
+    gap: 12px;
+  }
+  .grid > .tile:nth-child(6n + 1) {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+  .tileShade {
+    opacity: 1;
+  }
+  .tileTitle {
+    transform: none;
+  }
+}
+
+/* ---------- Lightbox ---------- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px clamp(16px, 7vw, 110px) 32px;
+  background: rgba(5, 9, 24, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.lbTop {
+  position: absolute;
+  top: 18px;
+  left: clamp(16px, 3vw, 32px);
+  right: clamp(16px, 3vw, 32px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.lbCounter {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.6);
+  font-variant-numeric: tabular-nums;
+}
+.lbFigure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 1100px;
+  max-height: 100%;
   margin: 0;
+}
+.lbImg {
+  max-width: 100%;
+  max-height: calc(100vh - 230px);
+  max-height: calc(100svh - 230px);
+  width: auto;
+  height: auto;
+  border-radius: var(--vx-r);
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.7);
+  object-fit: contain;
+}
+.lbCaption {
+  max-width: 680px;
+  text-align: center;
+  color: #fff;
+}
+.lbCaption h3 {
+  font-size: 19px;
+  font-weight: 700;
+  color: #fff;
+}
+.lbCaption p {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(226, 232, 255, 0.7);
+}
+.lbBtn {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s var(--vx-ease);
+}
+.lbBtn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+.lbBtn:active {
+  transform: scale(0.94);
+}
+.lbNav {
+  position: absolute;
+  top: 50%;
+  margin-top: -23px;
+}
+.lbPrev {
+  left: clamp(10px, 2.5vw, 32px);
+}
+.lbNext {
+  right: clamp(10px, 2.5vw, 32px);
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+@media (max-width: 640px) {
+  .lbNav {
+    top: auto;
+    bottom: 22px;
+    margin-top: 0;
+  }
+  .lightbox {
+    padding-bottom: 88px;
+  }
+  .lbImg {
+    max-height: calc(100svh - 280px);
+  }
 }

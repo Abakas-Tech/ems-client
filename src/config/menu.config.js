@@ -15,6 +15,14 @@ const MENU_CONFIG = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
     permission: PERMISSIONS.MANAGE_ANALYTICS,
   },
+  // Contact-form inbox from the public website (badge = unread count)
+  {
+    label: "Messages",
+    path: "/admin/messages",
+    icon: "bi bi-envelope-paper-heart",
+    roles: [ROLES.ADMIN],
+    badge: "contactMessages",
+  },
   {
     label: "Users",
     path: "/admin/users",

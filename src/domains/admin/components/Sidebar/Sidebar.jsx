@@ -5,6 +5,7 @@ import "react-modern-drawer/dist/index.css";
 import styles from "./Sidebar.module.css";
 import useProfile from "../../../../context/Profile/useProfile";
 import MENU_CONFIG from "../../../../config/menu.config";
+import useUnreadContactMessages from "../../hooks/useUnreadContactMessages";
 
 const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
   const location = useLocation();
@@ -12,6 +13,8 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
   const user = profile;
+  const unreadMessages = useUnreadContactMessages(user?.role_id);
+  const badgeCounts = { contactMessages: unreadMessages };
 
   // Handle label animation
   useEffect(() => {
@@ -103,6 +106,8 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
               );
             }
 
+            const badge = item.badge ? badgeCounts[item.badge] : 0;
+
             const path =
               item.path.includes(":id") && user?.id
                 ? item.path.replace(":id", user.id)
@@ -114,13 +119,28 @@ const Sidebar = ({ isOpen, onClose, expanded, onLogout, isDesktop }) => {
                   to={path}
                   className={styles.navLink}
                   onClick={onClose}
-                  title={!showLabels ? item.label : undefined}
+                  title={
+                    !showLabels
+                      ? `${item.label}${badge ? ` (${badge})` : ""}`
+                      : undefined
+                  }
                 >
                   <span className={styles.iconWrap}>
                     <i className={`bi ${item.icon} ${styles.icon}`} />
+                    {badge > 0 && !showLabels && (
+                      <span className={styles.badgeDot} aria-hidden="true" />
+                    )}
                   </span>
                   {showLabels && (
                     <span className={styles.label}>{item.label}</span>
+                  )}
+                  {badge > 0 && showLabels && (
+                    <span
+                      className={styles.badge}
+                      aria-label={`${badge} unread`}
+                    >
+                      {badge > 99 ? "99+" : badge}
+                    </span>
                   )}
                 </Link>
               </li>

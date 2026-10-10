@@ -1,11 +1,7 @@
-import React from "react";
-import Notification from "../../components/notifications/Notification/Notification.jsx";
+import NotificationsInbox from "../../components/messages/NotificationsInbox/NotificationsInbox.jsx";
+
 function NotificationPage() {
-  return (
-    <>
-      <Notification />
-    </>
-  );
+  return <NotificationsInbox />;
 }
 
 export default NotificationPage;

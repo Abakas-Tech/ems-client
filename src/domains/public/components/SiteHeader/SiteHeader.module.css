@@ -1,0 +1,376 @@
+.header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1030;
+  padding: 14px 16px 0;
+  pointer-events: none;
+}
+
+.bar {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: 1320px;
+  height: 68px;
+  margin-inline: auto;
+  padding: 0 10px 0 22px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: background-color 0.45s var(--vx-ease), border-color 0.45s ease,
+    box-shadow 0.45s var(--vx-ease), backdrop-filter 0.45s ease;
+}
+
+.solid .bar {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(15, 27, 61, 0.08);
+  box-shadow: 0 1px 1px rgba(7, 13, 34, 0.03),
+    0 18px 40px -22px rgba(7, 13, 34, 0.35);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+}
+
+/* While the dark mobile sheet is open the bar sits on top of it */
+.menuOpen .bar {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ---------- Brand ---------- */
+.brand {
+  position: relative;
+  display: grid;
+  flex: none;
+  height: 56px;
+}
+.logo {
+  grid-area: 1 / 1;
+  height: 56px;
+  width: auto;
+  transition: opacity 0.4s ease;
+}
+.logoLight {
+  opacity: 1;
+}
+.logoDark {
+  opacity: 0;
+}
+.solid .logoLight {
+  opacity: 0;
+}
+.solid .logoDark {
+  opacity: 1;
+}
+.menuOpen .logoLight {
+  opacity: 1;
+}
+.menuOpen .logoDark {
+  opacity: 0;
+}
+
+/* ---------- Desktop nav ---------- */
+.nav {
+  display: none;
+}
+.navList {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.navLink,
+.navLink:focus {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 550;
+  letter-spacing: -0.005em;
+  color: rgba(255, 255, 255, 0.82);
+  transition: color 0.25s ease, background-color 0.25s ease;
+}
+.navLink:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+.navLinkActive,
+.navLinkActive:focus {
+  color: #fff;
+}
+.navLinkActive::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: var(--vx-grad);
+  box-shadow: 0 0 10px rgba(224, 48, 122, 0.9);
+}
+
+.solid .navLink,
+.solid .navLink:focus {
+  color: var(--vx-muted);
+}
+.solid .navLink:hover {
+  color: var(--vx-text);
+  background: rgba(15, 27, 61, 0.05);
+}
+.solid .navLinkActive,
+.solid .navLinkActive:focus {
+  color: var(--vx-text);
+}
+
+/* ---------- Actions ---------- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.signIn,
+.signIn:focus {
+  display: none;
+  align-items: center;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #fff;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+.signIn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+.solid .signIn,
+.solid .signIn:focus {
+  color: var(--vx-text);
+}
+.solid .signIn:hover {
+  color: var(--vx-text);
+  background: rgba(15, 27, 61, 0.06);
+}
+
+.actions .apply {
+  display: none;
+}
+
+.menuBtn {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background-color 0.25s ease, color 0.25s ease,
+    border-color 0.25s ease;
+}
+.solid .menuBtn {
+  border-color: var(--vx-line-strong);
+  background: #fff;
+  color: var(--vx-text);
+}
+.menuOpen .menuBtn {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+@media (min-width: 640px) {
+  .actions .apply {
+    display: inline-flex;
+  }
+}
+
+@media (min-width: 1100px) {
+  .nav {
+    display: block;
+  }
+  .signIn,
+  .signIn:focus {
+    display: inline-flex;
+  }
+  .menuBtn {
+    display: none;
+  }
+}
+
+@media (max-width: 1239px) and (min-width: 1100px) {
+  .navLink,
+  .navLink:focus {
+    padding: 0 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding-top: 10px;
+  }
+  .bar {
+    height: 58px;
+    padding: 0 6px 0 16px;
+  }
+  .brand,
+  .logo {
+    height: 46px;
+  }
+}
+
+/* ---------- Mobile sheet ---------- */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1025;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  padding: calc(var(--vx-header-h) + 40px) var(--vx-gutter) 32px;
+  background: var(--vx-ink);
+  color: #fff;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.sheetGlow {
+  position: absolute;
+  inset: auto -20% -30% auto;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(224, 48, 122, 0.35),
+    rgba(47, 107, 255, 0.15) 55%,
+    transparent
+  );
+  filter: blur(20px);
+  pointer-events: none;
+}
+.sheetNav {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.sheetLink,
+.sheetLink:focus {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--vx-line-dark);
+  font-size: clamp(28px, 7vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: rgba(255, 255, 255, 0.86);
+}
+.sheetLink:hover,
+.sheetLinkActive,
+.sheetLinkActive:focus {
+  color: #fff;
+}
+.sheetIndex {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+  font-variant-numeric: tabular-nums;
+}
+.sheetLinkActive .sheetIndex {
+  color: #ff8fb8;
+}
+
+.sheetFoot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.sheetCtas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.sheetCtas > * {
+  padding: 0 12px;
+}
+.sheetContact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  font-size: 14.5px;
+}
+.sheetContact a,
+.sheetContact a:focus {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.72);
+  word-break: break-all;
+}
+.sheetContact a:hover {
+  color: #fff;
+}
+.sheetSocials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sheetSocials a,
+.sheetSocials a:focus {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--vx-line-dark);
+  color: rgba(255, 255, 255, 0.8);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+.sheetSocials a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@media (min-width: 1100px) {
+  .sheet {
+    display: none;
+  }
+}
+
+/* Keep the bar aligned with the Bootstrap container on wide screens */
+@media (min-width: 1200px) {
+  .bar {
+    max-width: 1140px;
+  }
+}
+@media (min-width: 1400px) {
+  .bar {
+    max-width: 1320px;
+  }
+}
+
+.lang {
+  display: block;
+}

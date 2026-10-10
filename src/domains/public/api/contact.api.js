@@ -8,9 +8,13 @@ const sendContactEmail = async (contactData) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error(
-      error.response?.data?.message || "Failed to send contact email",
+    const data = error.response?.data;
+    const err = new Error(
+      data?.errors?.[0] || data?.message || "Failed to send contact email",
     );
+    err.status = error.response?.status;
+    err.errors = Array.isArray(data?.errors) ? data.errors : [];
+    throw err;
   }
 };
 

@@ -1,0 +1,14 @@
+/* Notifications reuse the Messages inbox styles (Inbox.module.css);
+   only the accents differ so the two views are easy to tell apart. */
+.hero {
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(56, 189, 248, 0.55), transparent 55%),
+    radial-gradient(90% 120% at 0% 100%, rgba(139, 92, 246, 0.45), transparent 55%),
+    linear-gradient(135deg, #1e1b4b, #3730a3 45%, #4f46e5) !important;
+}
+.filters {
+  grid-template-columns: repeat(2, 1fr) !important;
+}
+.placeholderArt {
+  background: linear-gradient(135deg, #38bdf8, #6366f1) !important;
+}
