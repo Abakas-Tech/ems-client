@@ -41,8 +41,8 @@ function SiteFooter() {
               src={logoLight}
               alt={brand}
               className={styles.logo}
-              width="623"
-              height="394"
+              width="620"
+              height="391"
               loading="lazy"
             />
             <p className={styles.about}>
